@@ -165,13 +165,13 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
                 if (strtolower($fieldname) != $fieldname) {
                     $ignored_cols++;
-                    error_log("ERROR (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
+                    error_log("INFO (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
                     continue;
                 }
 
                 $type = $this->convertType($mapping["type"]);
                 if ($type == "ERROR") {
-                    error_log("ERROR (IGNORING COLUMN) ! Type " . $mapping["type"] . " is not allowed with Cassandra implementation (in " . $entity->getName() . ")");
+                    error_log("INFO (IGNORING COLUMN) ! Type " . $mapping["type"] . " is not allowed with Cassandra implementation (in " . $entity->getName() . ")");
                     continue;
                 }
 
@@ -196,7 +196,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
                 if (strtolower($fieldname) != $fieldname) {
                     $ignored_cols++;
-                    error_log("ERROR (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
+                    error_log("INFO (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
                     continue;
                 }
 
@@ -208,7 +208,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             }
 
             if (strtolower($table_name) != $table_name) {
-                error_log("ERROR (IGNORING TABLE) ! Tables names MUST be snakecase and lowercase ! (" . $entity->getName() . ")");
+                error_log("INFO (IGNORING TABLE) ! Tables names MUST be snakecase and lowercase ! (" . $entity->getName() . ")");
                 continue;
             }
 
@@ -219,7 +219,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                 //Add Primary key
                 $identifiers = $entity->getIdentifier();
                 if (!$custom_keys && count($identifiers) != 1) {
-                    error_log("ERROR (IGNORING TABLE) ! Tables MUST have exactly one identifier for this implementation with Cassandra ! (in " . $entity->getName() . " " . json_encode($identifiers) . ")");
+                    error_log("INFO (IGNORING TABLE) ! Tables MUST have exactly one identifier for this implementation with Cassandra ! (in " . $entity->getName() . " " . json_encode($identifiers) . ")");
                     continue;
                 }
                 $identifier = $identifiers[0];
@@ -228,7 +228,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                 if (!$entity->hasAssociation($identifier)) {
                     $mapping = $entity->getFieldMapping($identifier);
                     if (!in_array($mapping["type"], Array("twake_timeuuid", "twake_uuid", "string", "blob", "twake_string", "twake_bigint"))) {
-                        error_log("ERROR (IGNORING TABLE) ! Tables index MUST be of type twake_timeuuid or string, or twake_string or blob or twake_bigint ! (in " . $entity->getName() . ")");
+                        error_log("INFO (IGNORING TABLE) ! Tables index MUST be of type twake_timeuuid or string, or twake_string or blob or twake_bigint ! (in " . $entity->getName() . ")");
                         continue;
                     }
                 } else {

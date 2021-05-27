@@ -1,6 +1,6 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { Multipart } from "fastify-multipart";
-import { ResourceDeleteResponse } from "../../../../services/types";
+import { ResourceDeleteResponse } from "../../../../utils/types";
 import { CompanyExecutionContext } from "../types";
 import { FileServiceAPI, UploadOptions } from "../../api";
 import { File } from "../../entities/file";

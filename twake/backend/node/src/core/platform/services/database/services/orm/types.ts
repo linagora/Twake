@@ -4,6 +4,11 @@ export type EntityDefinition = {
   options: {
     primaryKey: (string | string[])[];
     ttl?: number;
+    search?: {
+      source: <Entity>(entity: Entity) => any; //Should return an object that will be indexed
+      index?: string; //Index name
+      mapping?: any; //Used for elasticsearch mappings
+    };
   };
 };
 

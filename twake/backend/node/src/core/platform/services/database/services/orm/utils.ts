@@ -2,6 +2,7 @@ import crypto, { randomBytes } from "crypto";
 import _ from "lodash";
 import { FindOptions } from "./repository/repository";
 import { ColumnDefinition, EntityDefinition, ObjectType } from "./types";
+import { v1 as uuidv1 } from "uuid";
 
 export function getEntityDefinition(
   instance: any,
@@ -70,4 +71,34 @@ export function secureOperators<Entity>(
   });
 
   return findOptions;
+}
+
+let microCounter = 0; //We do not really use nanotime, our goal is to ensure unicity first.
+
+/**
+ * Build uuid from nanotime
+ * @param orderable
+ * @returns
+ */
+export function fromMongoDbOrderable(orderable: string) {
+  if (!orderable) {
+    return null;
+  }
+  let uuid_arr = orderable.split("-");
+  let timeuuid = [uuid_arr[2], uuid_arr[1], uuid_arr[0], uuid_arr[3], uuid_arr[4]].join("-");
+  return timeuuid;
+}
+
+/**
+ * Returns orderable string
+ * @param timeuuid
+ * @returns
+ */
+export function toMongoDbOrderable(timeuuid?: string): string {
+  if (!timeuuid) {
+    return null;
+  }
+  let uuid_arr = timeuuid.split("-");
+  let time_str = [uuid_arr[2], uuid_arr[1], uuid_arr[0], uuid_arr[3], uuid_arr[4]].join("-");
+  return time_str;
 }

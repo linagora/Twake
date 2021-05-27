@@ -11,7 +11,7 @@ import {
 import { TabService } from "../../provider";
 import { ChannelTab, ChannelTabPrimaryKey } from "../../entities";
 import { ChannelExecutionContext } from "../../types";
-import { Channel } from "../../../types";
+import { Channel } from "../../../../utils/types";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";

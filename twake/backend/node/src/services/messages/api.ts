@@ -48,7 +48,7 @@ export interface MessageThreadsServiceAPI
   addReply(thread_id: string): Promise<void>;
   save(
     item: Pick<Thread, "id"> & {
-      participants: Pick<ParticipantObject, "id" | "type">[];
+      participants: Pick<ParticipantObject, "id" | "type" | "workspace_id" | "company_id">[];
     },
     options?: { participants?: any; message?: Message },
     context?: CompanyExecutionContext,

@@ -11,7 +11,7 @@ import {
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
-} from "../../../../services/types";
+} from "../../../../utils/types";
 import { UserNotificationPreferences } from "../../entities";
 
 const ALL = "all";

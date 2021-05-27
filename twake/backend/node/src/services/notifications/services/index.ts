@@ -11,9 +11,13 @@ import { getService as getBadgeService } from "./badges";
 import { getService as getPreferencesService } from "./channel-preferences";
 import { getService as getChannelThreadsService } from "./channel-thread-users";
 import { getService as getNotificationPreferencesService } from "./preferences";
+import { getService as getMobilePushService } from "./mobile-push";
 import { NotificationEngine } from "./engine";
 import { NotificationPreferencesService } from "./preferences/service";
 import UserServiceAPI from "../../../services/user/api";
+import { MobilePushService } from "./mobile-push/service";
+import { NotificationConfiguration } from "../types";
+import config from "config";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -38,6 +42,7 @@ class Service implements NotificationServiceAPI {
   engine: NotificationEngine;
   channelThreads: ChannelThreadUsersServiceAPI;
   notificationPreferences: NotificationPreferencesService;
+  mobilePush: MobilePushService;
 
   constructor(
     databaseService: DatabaseServiceAPI,
@@ -48,6 +53,7 @@ class Service implements NotificationServiceAPI {
     this.channelPreferences = getPreferencesService(databaseService);
     this.channelThreads = getChannelThreadsService(databaseService);
     this.notificationPreferences = getNotificationPreferencesService(databaseService, userService);
+    this.mobilePush = getMobilePushService(databaseService, config.get("push"));
     this.engine = new NotificationEngine(this, pubsub);
   }
 
@@ -59,6 +65,7 @@ class Service implements NotificationServiceAPI {
         this.channelThreads.init(context),
         this.engine.init(),
         this.notificationPreferences.init(),
+        this.mobilePush.init(),
       ]);
     } catch (err) {
       console.error("Error while initializing notification service", err);

@@ -1,3 +1,3 @@
 export interface TwakeServiceConfiguration {
-  get<T>(name: string, defaultValue?: T): T;
+  get<T>(name?: string, defaultValue?: T): T;
 }

@@ -6,7 +6,7 @@ import {
   ResourceListResponse,
   ResourceGetResponse,
   ResourceUpdateResponse,
-} from "../../../src/services/types";
+} from "../../../src/utils/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelVisibility } from "../../../src/services/channels/types";
@@ -15,7 +15,7 @@ import {
   getPublicRoomName,
 } from "../../../src/services/channels/services/channel/realtime";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
-import { User } from "../../../src/services/types";
+import { User } from "../../../src/utils/types";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 
@@ -26,7 +26,16 @@ describe.skip("The /internal/services/channels/v1 API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["user", "websocket", "webserver", "channels", "auth", "database", "pubsub"],
+      services: [
+        "user",
+        "websocket",
+        "webserver",
+        "channels",
+        "auth",
+        "database",
+        "search",
+        "pubsub",
+      ],
     });
     channelUtils = getChannelUtils(platform);
   });

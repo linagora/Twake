@@ -20,7 +20,7 @@ import {
   MemberOfChannel,
 } from "../../entities";
 import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
-import { Channel, ResourceEventsPayload, User } from "../../../types";
+import { Channel, ResourceEventsPayload, User } from "../../../../utils/types";
 import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
 import { pick } from "../../../../utils/pick";
@@ -523,6 +523,7 @@ export class Service implements MemberService {
       actor: user,
       resourcesBefore: [member],
       channel: channel,
+      user,
     });
   }
 

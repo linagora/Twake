@@ -5,7 +5,7 @@ import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/pla
 import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
 import { DatabaseServiceAPI } from "../../../src/core/platform/services/database/api";
 import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
-import { Workspace } from "../../../src/services/types";
+import { Workspace } from "../../../src/utils/types";
 import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
 
 type TokenPayload = {

@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import socketIO from "socket.io";
 import { TwakeServiceProvider } from "../../framework";
-import { User } from "../../../../services/types";
+import { User } from "../../../../utils/types";
 import { WebsocketUserEvent } from "./types";
 
 export default interface WebSocketAPI extends TwakeServiceProvider, EventEmitter {

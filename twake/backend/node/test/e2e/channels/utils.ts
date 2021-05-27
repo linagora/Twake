@@ -6,7 +6,7 @@ import {
   ChannelVisibility,
   WorkspaceExecutionContext,
 } from "../../../src/services/channels/types";
-import { User } from "../../../src/services/types";
+import { User } from "../../../src/utils/types";
 import { TestPlatform } from "../setup";
 
 export interface ChannelUtils {

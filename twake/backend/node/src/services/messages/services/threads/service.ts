@@ -51,65 +51,79 @@ export class ThreadsService
 
       const thread = await this.repository.findOne({ id: item.id });
 
-      // Add the created_by information
-      participantsOperation.add = (participantsOperation.add || []).map(p => {
-        return {
-          created_by: context.user.id,
-          created_at: new Date().getTime(),
-          ...p,
-        };
-      }) as ParticipantObject[];
+      if (thread) {
+        // Add the created_by information
+        participantsOperation.add = (participantsOperation.add || []).map(p => {
+          return {
+            created_by: context.user.id,
+            created_at: new Date().getTime(),
+            ...p,
+          };
+        }) as ParticipantObject[];
 
-      thread.participants = _.uniqBy(
-        _.differenceBy(
-          [...thread.participants, ...participantsOperation.add],
-          participantsOperation.remove || [],
+        thread.participants = _.uniqBy(
+          _.differenceBy(
+            [...thread.participants, ...participantsOperation.add],
+            participantsOperation.remove || [],
+            p => p.id,
+          ),
           p => p.id,
-        ),
-        p => p.id,
-      ) as ParticipantObject[];
+        ) as ParticipantObject[];
 
-      this.repository.save(thread);
+        this.repository.save(thread);
 
-      //TODO ensure the thread is in all participants views (and removed from deleted participants)
+        //TODO ensure the thread is in all participants views (and removed from deleted participants)
 
-      return new SaveResult("thread", thread, OperationType.UPDATE);
-    } else {
-      //Creation
+        return new SaveResult("thread", thread, OperationType.UPDATE);
+      } else {
+        //Thread to edit does not exists
 
-      //Enforce current user in the participants list and add the created_by information
-      const participants: ParticipantObject[] = [
-        { type: "user", id: context.user.id },
-        ...item.participants,
-      ].map(p => {
-        return {
-          created_by: context.user.id,
-          created_at: new Date().getTime(),
-          ...p,
-        };
-      }) as ParticipantObject[];
-
-      const message: Message | null = options.message || null;
-
-      const thread = new Thread();
-      thread.created_at = new Date().getTime();
-      thread.last_activity = thread.created_at;
-      thread.answers = 0;
-      thread.created_by = context.user.id;
-      thread.participants = _.uniqBy(participants, p => p.id);
-
-      await this.repository.save(thread);
-
-      if (message) {
-        await this.service.messages.save(
-          message,
-          {},
-          Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
-        );
+        if (!context.user?.server_request) {
+          throw new Error(`ThreadService: Unable to edit inexistant thread`);
+        }
       }
-
-      return new SaveResult("thread", thread, OperationType.CREATE);
     }
+
+    //Creation of thread or server edition
+
+    //Enforce current user in the participants list and add the created_by information
+    const participants: ParticipantObject[] = [
+      { type: "user", id: context.user.id },
+      ...item.participants,
+    ].map(p => {
+      return {
+        created_by: context.user.id,
+        created_at: new Date().getTime(),
+        ...p,
+      };
+    }) as ParticipantObject[];
+
+    const message: Message | null = options.message || null;
+
+    const thread = new Thread();
+    thread.created_at = new Date().getTime();
+    thread.last_activity = thread.created_at;
+    thread.answers = 0;
+    thread.created_by = context.user.id;
+    thread.participants = _.uniqBy(participants, p => p.id);
+
+    //If server request, we allow more
+    if (context.user?.server_request) {
+      thread.id = item.id;
+      thread.created_at = (item as Thread)?.created_at || thread.created_at;
+    }
+
+    await this.repository.save(thread);
+
+    if (message) {
+      await this.service.messages.save(
+        message,
+        {},
+        Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
+      );
+    }
+
+    return new SaveResult("thread", thread, OperationType.CREATE);
   }
 
   /**
@@ -129,12 +143,12 @@ export class ThreadsService
    * @returns
    */
   async checkAccessToThread(context: ThreadExecutionContext): Promise<boolean> {
-    if (context.serverRequest) {
+    if (context?.user?.server_request) {
       return true;
     }
 
     logger.info(
-      `Check access to thread ${context.thread.id} in company ${context.company.id} for user ${context.user.id} and app ${context.app?.id}`,
+      `Check access to thread ${context.thread.id} in company ${context.company.id} for user ${context.user.id} and app ${context?.user?.application_id}`,
     );
 
     const thread = await this.repository.findOne({

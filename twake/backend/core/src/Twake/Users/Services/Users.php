@@ -215,6 +215,14 @@ class Users
                 }
             }
 
+            if($scope == "group"){
+                $repo = $this->em->getRepository("Twake\Workspaces:GroupUser");
+                $link = $repo->findOneBy(["group" => $group_id, "user" => $user[0]->getId()]);
+                if(!$link){
+                    continue;
+                }
+            }
+
             if($user[0]){
                 $this->list_users["users"][] = Array($entity ? $user[0] : $user[0]->getAsArray(), $user[1][0]);
             }

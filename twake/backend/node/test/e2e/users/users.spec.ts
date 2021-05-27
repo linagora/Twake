@@ -1,17 +1,16 @@
-import { beforeAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { beforeAll, afterAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestUsers } from "./utils";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1/users";
   let platform: TestPlatform;
-  jest.setTimeout(30000);
 
   let testUsers: TestUsers;
 
   beforeEach(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "websocket", "webserver", "user", "auth"],
+      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
     ends();
   });
@@ -23,7 +22,7 @@ describe("The /users API", () => {
 
   beforeAll(async ends => {
     const platform = await init({
-      services: ["database", "pubsub", "websocket", "webserver", "user", "auth"],
+      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
     testUsers = new TestUsers(platform);
     await testUsers.createCompanyAndUsers();

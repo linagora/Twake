@@ -14,16 +14,25 @@ import { getService as getMessageThreadsServiceAPI } from "./threads";
 import { getService as getMessageThreadMessagesServiceAPI } from "./messages";
 import { getService as getMessageViewsServiceAPI } from "./views";
 import { MessagesEngine } from "./engine";
+import UserServiceAPI from "../../user/api";
+import ChannelServiceAPI from "../../channels/provider";
 
-export function getService(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI): Service {
-  return getServiceInstance(databaseService, pubsub);
+export function getService(
+  databaseService: DatabaseServiceAPI,
+  pubsub: PubsubServiceAPI,
+  user: UserServiceAPI,
+  channel: ChannelServiceAPI,
+): Service {
+  return getServiceInstance(databaseService, pubsub, user, channel);
 }
 
 function getServiceInstance(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
+  user: UserServiceAPI,
+  channel: ChannelServiceAPI,
 ): Service {
-  return new Service(databaseService, pubsub);
+  return new Service(databaseService, pubsub, user, channel);
 }
 
 export default class Service implements MessageServiceAPI {
@@ -35,12 +44,17 @@ export default class Service implements MessageServiceAPI {
   views: MessageViewsServiceAPI;
   engine: MessagesEngine;
 
-  constructor(databaseService: DatabaseServiceAPI, pubsub: PubsubServiceAPI) {
+  constructor(
+    databaseService: DatabaseServiceAPI,
+    pubsub: PubsubServiceAPI,
+    user: UserServiceAPI,
+    channel: ChannelServiceAPI,
+  ) {
     this.userBookmarks = getMessageUserBookmarksServiceAPI(databaseService);
     this.messages = getMessageThreadMessagesServiceAPI(databaseService, this);
     this.threads = getMessageThreadsServiceAPI(databaseService, this);
     this.views = getMessageViewsServiceAPI(databaseService, this);
-    this.engine = new MessagesEngine(databaseService, this);
+    this.engine = new MessagesEngine(databaseService, pubsub, user, channel, this);
   }
 
   async init(context: TwakeContext): Promise<this> {

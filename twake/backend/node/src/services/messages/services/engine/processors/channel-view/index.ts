@@ -20,6 +20,8 @@ import {
   UpdateResult,
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { getThreadMessagePath } from "../../../../web/realtime";
+import fetch from "node-fetch";
+import config from "../../../../../../core/config";
 
 export class ChannelViewProcessor {
   repository: Repository<MessageChannelRef>;
@@ -42,34 +44,59 @@ export class ChannelViewProcessor {
     for (const participant of thread.participants.filter(p => p.type === "channel")) {
       //Publish message in corresponding channel
       if (message.created) {
+        const pkPrefix = {
+          company_id: participant.company_id,
+          workspace_id: participant.workspace_id,
+          channel_id: participant.id,
+        };
+
+        await this.repository.save(
+          getInstance({
+            ...pkPrefix,
+            thread_id: thread.id,
+            message_id: message.resource.id,
+          }),
+        );
+
         const reversed = await this.repositoryReversed.findOne({
-          company_id: participant.company_id,
-          workspace_id: participant.workspace_id,
-          channel_id: participant.id,
+          ...pkPrefix,
           thread_id: thread.id,
         });
-
-        const ref = getInstance({
-          company_id: participant.company_id,
-          workspace_id: participant.workspace_id,
-          channel_id: participant.id,
-          thread_id: thread.id,
-          message_id: message.resource.id,
-        });
-
-        await this.repository.save(ref);
 
         if (reversed) {
           const existingThreadRef = await this.repository.findOne({
-            company_id: participant.company_id,
-            workspace_id: participant.workspace_id,
-            channel_id: participant.id,
+            ...pkPrefix,
             message_id: reversed.message_id,
           });
           reversed.message_id = message.resource.id;
-          await this.repository.save(reversed);
+          await this.repositoryReversed.save(reversed);
           await this.repository.remove(existingThreadRef);
+        } else {
+          await this.repositoryReversed.save(
+            getInstanceReversed({
+              ...pkPrefix,
+              thread_id: thread.id,
+              message_id: message.resource.id,
+            }),
+          );
         }
+      }
+
+      //Monkey patch to remove as soon as nobody use php depreciated endpoints
+      if (config.get("phpnode.php_endpoint")) {
+        fetch(config.get("phpnode.php_endpoint") + "/ajax/discussion/noderealtime", {
+          method: "POST",
+          headers: {
+            Authorization: "Token " + config.get("phpnode.secret"),
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            entity: message.resource,
+            context: message.context,
+            participant: participant,
+          }),
+        });
       }
 
       //Publish message in realtime

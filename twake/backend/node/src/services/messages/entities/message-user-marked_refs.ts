@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "message_user_marked_refs";
 @Entity(TYPE, {
-  primaryKey: [["company_id"], "user_id", "bookmark", "id"],
+  primaryKey: [["company_id"], "user_id", "bookmark_id", "id"],
   type: TYPE,
 })
 export class MessageUserMarkedRef {
@@ -33,11 +33,11 @@ export class MessageUserMarkedRef {
   channel_id: string;
 
   @Type(() => String)
-  @Column("thread_id", "string")
+  @Column("thread_id", "timeuuid")
   thread_id: string;
 
   @Type(() => String)
-  @Column("message_id", "string")
+  @Column("message_id", "timeuuid")
   message_id: string;
 }
 

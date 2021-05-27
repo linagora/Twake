@@ -15,7 +15,7 @@ export default class Database extends TwakeService<DatabaseServiceAPI> {
     const secret = this.configuration.get<string>("secret");
 
     if (!driver) {
-      throw new Error("Database driver name must be specified in 'database.type' contfiguration");
+      throw new Error("Database driver name must be specified in 'database.type' configuration");
     }
 
     const configuration: ConnectionOptions = this.configuration.get<ConnectionOptions>(driver);

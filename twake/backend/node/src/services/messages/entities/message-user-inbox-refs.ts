@@ -21,7 +21,7 @@ export class MessageUserInboxRef {
   last_activity: number;
 
   @Type(() => String)
-  @Column("thread_id", "string")
+  @Column("thread_id", "timeuuid")
   thread_id: string;
 
   @Type(() => String)

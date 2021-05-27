@@ -54,7 +54,7 @@ class Service implements FileServiceAPI {
     context: CompanyExecutionContext,
   ): Promise<File> {
     const userId = context.user?.id;
-    const applicationId: string | null = context.app?.id || null;
+    const applicationId: string | null = context.user.application_id || null;
 
     let entity = null;
     if (id) {
@@ -88,7 +88,7 @@ class Service implements FileServiceAPI {
       // Detect a new file upload
       // Only applications car overwrite a file.
       // Users alone can only write an empty file.
-      if (applicationId || !entity.upload_data?.size || context.serverRequest) {
+      if (applicationId || !entity.upload_data?.size || context.user.server_request) {
         if (
           entity.upload_data?.size !== options.totalSize ||
           entity.metadata?.name !== options.filename

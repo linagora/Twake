@@ -26,6 +26,7 @@ describe.skip("The Channels Members Realtime feature", () => {
         "channels",
         "auth",
         "database",
+        "search",
         "realtime",
       ],
     });

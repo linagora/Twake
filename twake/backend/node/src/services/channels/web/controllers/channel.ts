@@ -35,7 +35,7 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
   ResourceUpdateResponse,
-} from "../../../../services/types";
+} from "../../../../utils/types";
 import { getLogger } from "../../../../core/platform/framework/logger";
 import _ from "lodash";
 

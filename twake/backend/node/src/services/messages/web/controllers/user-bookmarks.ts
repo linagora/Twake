@@ -7,7 +7,7 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
   ResourceWebsocket,
-} from "../../../../services/types";
+} from "../../../../utils/types";
 import { getInstance, UserMessageBookmark } from "../../entities/user-message-bookmarks";
 import { ExecutionContext, SaveResult } from "../../../../core/platform/framework/api/crud-service";
 import { handleError } from "../../../../utils/handleError";
@@ -128,6 +128,5 @@ function getCompanyExecutionContext(
     method: request.routerMethod,
     reqId: request.id,
     transport: "http",
-    serverRequest: false,
   };
 }

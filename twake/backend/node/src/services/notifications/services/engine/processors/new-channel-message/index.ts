@@ -10,7 +10,7 @@ import {
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 import { MentionNotification } from "../../../../types";
 import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
-import { ResourceEventsPayload } from "../../../../../types";
+import { ResourceEventsPayload } from "../../../../../../utils/types";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
@@ -55,8 +55,6 @@ export class NewChannelMessageProcessor
           message.channel_id
         } : ['${usersToNotify.join("', '")}']`,
       );
-
-      localEventBus.publish<ResourceEventsPayload>("channel:message_sent", { message });
 
       return {
         channel_id: message.channel_id,

@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { ChannelType } from "../../types";
+import { ChannelType } from "../../../utils/types";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { v4 as uuidv4 } from "uuid";
 import { merge } from "lodash";

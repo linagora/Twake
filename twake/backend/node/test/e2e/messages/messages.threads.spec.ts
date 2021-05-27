@@ -6,7 +6,7 @@ import {
   ResourceDeleteResponse,
   ResourceListResponse,
   ResourceUpdateResponse,
-} from "../../../src/services/types";
+} from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
 import { v4 as uuidv4 } from "uuid";
@@ -27,7 +27,9 @@ describe("The Messages Threads feature", () => {
         "messages",
         "auth",
         "database",
+        "search",
         "realtime",
+        "channels",
       ],
     });
   });
@@ -128,6 +130,7 @@ describe("The Messages Threads feature", () => {
             {
               type: "user",
               id: platform.currentUser.id,
+              company_id: platform.workspace.company_id,
             },
           ],
         },
@@ -179,10 +182,13 @@ describe("The Messages Threads feature", () => {
             {
               type: "user",
               id: platform.currentUser.id,
+              company_id: platform.workspace.company_id,
             },
             {
               type: "channel",
               id: uuidv4(),
+              workspace_id: platform.workspace.workspace_id,
+              company_id: platform.workspace.company_id,
             },
           ],
         },

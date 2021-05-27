@@ -3,6 +3,7 @@ import { ChannelMemberNotificationPreference, UserNotificationBadge } from "../.
 import { logger } from "../../../../../../core/platform/framework";
 import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
 import { Channel, ChannelMember } from "../../../../../channels/entities";
+import { isDirectChannel } from "../../../../../channels/utils";
 
 type LeaveChannelMessage = { channel: Channel; member: ChannelMember };
 
@@ -67,6 +68,13 @@ export class LeaveChannelMessageProcessor
   }
 
   async removePreferences(message: LeaveChannelMessage): Promise<void> {
+    if (isDirectChannel(message.channel)) {
+      logger.info(
+        `${this.name} - Notification preference was kept for user ${message.member.user_id} in direct channel ${message.channel.id}`,
+      );
+      return;
+    }
+
     try {
       const preference = merge(new ChannelMemberNotificationPreference(), {
         channel_id: message.member.channel_id,
