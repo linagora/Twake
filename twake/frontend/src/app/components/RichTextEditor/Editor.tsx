@@ -5,6 +5,7 @@ import useEmojis, { EmojiSuggestionType } from "./components/emoji";
 import { SuggestionList } from "./components/suggestion/SuggestionList";
 import EmojiSuggestion from "./components/emoji/EmojiSuggestion";
 import MentionSuggestion from "./components/mentions/MentionSuggestion";
+import EditorToolbar from "./EditorToolbar";
 
 // inspired from https://codepen.io/ndne/pen/XEbMyP
 
@@ -305,14 +306,19 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         handleKeyCommand={this.handleKeyCommand.bind(this)}
         placeholder="Type a message, @mention someone, #tag, /actionable"
         />
+        <EditorToolbar
+          editorState={this.state.editorState}
+          onChange={this.onChange.bind(this)}
+        />
       
       <div style={{ position: "relative", top: "-40px" }}>  
         {(
-          this.state.activeMentionSuggestion?.items.length && <SuggestionList<MentionSuggestionType>
-          list={this.state.activeMentionSuggestion?.items}
-          position={"top"}
-          renderItem={(props: MentionSuggestionType) => (<MentionSuggestion {...props} />)}
-          onSelected={this.handleMentionSuggestionSelected.bind(this)}
+          this.state.activeMentionSuggestion?.items.length &&
+          <SuggestionList<MentionSuggestionType>
+            list={this.state.activeMentionSuggestion?.items}
+            position={"top"}
+            renderItem={(props: MentionSuggestionType) => (<MentionSuggestion {...props} />)}
+            onSelected={this.handleMentionSuggestionSelected.bind(this)}
           />
         )}
 
@@ -327,5 +333,13 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       </div>
     </div>
   }
+}
 
+export function createEmptyValue(): EditorState {
+  return EditorState.createEmpty();
+}
+
+function createValueFromString(markup: string, format: "text" | "html" | "markdown" = "text"): EditorState {
+  // TODO
+  return EditorState.createEmpty();
 }

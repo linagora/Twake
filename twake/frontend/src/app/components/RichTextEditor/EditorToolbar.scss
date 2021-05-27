@@ -1,0 +1,9 @@
+.editor-toolbar {
+  .inline {
+    color: var(--grey-dark);
+
+    &.active {
+      color: var(--black);
+    }
+  }
+}
