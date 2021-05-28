@@ -3,7 +3,6 @@ import { init, TestPlatform } from "../setup";
 import { TestUsers } from "./utils";
 
 describe("The /users API", () => {
-  jest.setTimeout(30000);
   const url = "/internal/services/users/v1";
   let platform: TestPlatform;
 
@@ -299,9 +298,6 @@ describe("The /users API", () => {
       expect(response.statusCode).toBe(200);
 
       const json = response.json();
-      // expect(json).toMatchObject({ resource: expect.any(Array) });
-
-      console.log(json.resource);
 
       expect(json.resource).toMatchObject({
         id: expect.any(String),
