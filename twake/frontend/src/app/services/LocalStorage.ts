@@ -11,9 +11,6 @@ export default class LocalStorage {
     key = LocalStorage.prefix + key;
 
     return new Promise(resolve => {
-      if (callback) {
-        callback(window.localStorage.getItem(key));
-      }
       let value = window.localStorage.getItem(key);
 
       if (!value) {
