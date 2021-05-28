@@ -312,7 +312,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     },
   ])
   async onSaved(message: Message, options: { created: boolean }, context: ThreadExecutionContext) {
-    if (options.created) {
+    if (options.created && !message.ephemeral) {
       await this.service.threads.addReply(message.thread_id);
     }
 

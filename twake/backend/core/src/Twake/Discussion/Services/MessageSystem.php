@@ -46,8 +46,11 @@ class MessageSystem
         }
         $response = $this->forwardToNode("GET", $uri, [], $current_user);
 
+        error_log("All responses: ");
+
         $messages = [];
         foreach($response["resources"] as $message){
+            error_log("--> " . json_encode($message));
             $messages[] = $this->convertFromNode($message, $channel);
             if($message["last_replies"]){
                 foreach($message["last_replies"] as $reply){
@@ -133,6 +136,8 @@ class MessageSystem
                 $message["id"] = $response["resource"]["id"];
             }
 
+            error_log("upserted message request: ".json_encode($message));
+
             //New message in thread (also called for new threads because we set the parent_message_id automatically)
             if($object["parent_message_id"] && $newMessage){
 
@@ -161,7 +166,7 @@ class MessageSystem
 
         }
 
-        error_log(json_encode($response));
+        error_log("created message response: ".json_encode($response));
 
         return $this->convertFromNode($response["resource"], $channel);
     }
@@ -188,11 +193,24 @@ class MessageSystem
             }
         }
 
+        $ephemeral = null;
+        if($object["_once_ephemeral_message"]){
+            $ephemeral = [
+                "id"=> $object["front_id"] ?: date("U"), //Identifier of the ephemeral message
+                "version" => date("U"), //Version of ephemeral message (to update the view)
+                "recipient" => $object["ephemeral_message_recipients"][0], //User that will see this ephemeral message
+                "recipient_context_id" => null //Recipient current view/tab/window to send the message to
+            ];
+        }
+
+        error_log(json_encode($object));
+
         return [
             "text" => $object["content"]["original_str"] ?: $object["content"]["fallback_string"],
             "blocks" => $blocks,
             "files" => $files,
-            "context" => $object["hidden_data"]
+            "context" => $object["hidden_data"],
+            "ephemeral" => $ephemeral
         ];
     }
 
@@ -229,7 +247,15 @@ class MessageSystem
             "prepared" => $message["blocks"][0]["content"]
         ]);
 
-        return $phpMessage->getAsArray();
+        $array = $phpMessage->getAsArray();
+
+        if($message["ephemeral"]){
+            $array["ephemeral_id"] = $message["ephemeral"]["id"];
+            $array["ephemeral_message_recipients"] = [$message["ephemeral"]["recipient"]];
+            $array["_user_ephemeral"] = true;
+        }
+
+        return $array;
     }
 
     private function getInfosFromChannel($channelId){
