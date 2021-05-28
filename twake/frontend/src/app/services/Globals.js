@@ -1,6 +1,7 @@
 import environment from 'environment/environment';
 import version from 'environment/version';
 import * as Sentry from '@sentry/browser';
+import LocalStorage from './LocalStorage';
 
 if (process.env.NODE_ENV === 'production' && window.sentry_dsn) {
   Sentry.init({
@@ -51,7 +52,7 @@ class Globals {
 
     this.version_detail = window.version_detail;
 
-    this.localStorageGetItem('api_root_url', res => {
+    LocalStorage.getItem('api_root_url', res => {
       if (res) {
         this.window.api_root_url = res;
       }
@@ -64,24 +65,9 @@ class Globals {
   changeRootUrl(url) {
     url = (url.match(/https?:\/\/[a-zA-Z0-9._-]+/) || [])[0];
     if (url) {
-      this.localStorageSetItem('api_root_url', url);
+      LocalStorage.setItem('api_root_url', url);
       this.window.api_root_url = url;
     }
-  }
-
-  localStorageSetItem(key, value) {
-    window.localStorage.setItem(key, value);
-  }
-
-  localStorageGetItem(key, callback) {
-    if (callback) {
-      callback(window.localStorage.getItem(key));
-    }
-    return window.localStorage.getItem(key);
-  }
-
-  localStorageClear() {
-    window.localStorage.clear();
   }
 
   getDevice(callback, noTimeout) {

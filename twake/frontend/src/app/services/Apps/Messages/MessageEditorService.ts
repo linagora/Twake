@@ -1,5 +1,5 @@
 import Observable from 'app/services/Depreciated/observable';
-import LocalStorage from 'services/localStorage';
+import LocalStorage from 'app/services/LocalStorage';
 
 /*
   This class will manage editor states (opened editor and state)
@@ -23,7 +23,7 @@ export class MessageEditorService extends Observable {
 
   async setContent(threadId: string, messageId: string, content: string) {
     if (!messageId) {
-      const all = (await LocalStorage.getItem('m_input')) || {};
+      const all = ((await LocalStorage.getItem('m_input')) || {}) as any;
       all[this.channelId + (threadId ? '_thread=' + threadId : '')] = [
         content,
         new Date().getTime(),
