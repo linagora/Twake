@@ -185,7 +185,7 @@ class User {
         Api.post('users/all/get', { id: ids }, res => {
           if (res.data) {
             res.data.forEach((user, index) => {
-              if (!user) {
+              if (!user || !user.id) {
                 this.stop_async_get[ids[index]] = true;
               } else {
                 callback && callback(user);
