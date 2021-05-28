@@ -7,7 +7,7 @@ import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from 'services/workspaces/groups.js';
-import LocalStorage from 'services/localStorage.js';
+import LocalStorage from 'app/services/LocalStorage';
 import workspacesUsers from './workspaces_users.js';
 import WindowService from 'services/utils/window.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -84,7 +84,7 @@ class Workspaces extends Observable {
     let { workspaceId } = RouterServices.getStateFromRoute();
     const routerWorkspaceId = workspaceId;
 
-    const autoload_workspaces = (await LocalStorage.getItem('twake:autoload_workspaces')) || {};
+    const autoload_workspaces = (await LocalStorage.getItem('autoload_workspaces')) || {};
 
     workspaceId = workspaceId || autoload_workspaces.id || '';
 
@@ -168,7 +168,7 @@ class Workspaces extends Observable {
       RouterServices.push(route);
     }
 
-    LocalStorage.setItem('twake:autoload_workspaces', { id: workspace.id });
+    LocalStorage.setItem('autoload_workspaces', { id: workspace.id });
 
     this.notify();
   }

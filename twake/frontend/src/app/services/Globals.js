@@ -69,29 +69,6 @@ class Globals {
     }
   }
 
-  localStorageSetItem(key, value) {
-    window.localStorage.setItem(key, value);
-  }
-
-  localStorageGetItem(key, callback) {
-    if (callback) {
-      callback(window.localStorage.getItem(key));
-    }
-    return window.localStorage.getItem(key);
-  }
-
-  localStorageClear() {
-    for (var i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      const depreciatedKeysRemove =
-        ['twake-collections-db', 'm_input', 'language', 'jwt', 'autoload_workspaces'].indexOf(
-          key,
-        ) >= 0 || key.indexOf(':channel') > 0;
-      if (key.indexOf('twake:') === 0 || depreciatedKeysRemove) window.localStorage.removeItem(key);
-    }
-    window.localStorage.clear();
-  }
-
   getDevice(callback, noTimeout) {
     callback({});
   }

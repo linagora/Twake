@@ -73,7 +73,7 @@ class ChannelsBarService extends Observable {
   }
 
   private getLocalStorageKey(companyId: string, workspaceId: string): string {
-    return `twake:${companyId}:${workspaceId}:channel`;
+    return `${companyId}:${workspaceId}:channel`;
   }
 
   private getCallbackId(companyId: string, workspaceId: string): string {

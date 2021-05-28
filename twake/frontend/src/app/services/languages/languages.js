@@ -7,7 +7,7 @@ import locale_es from './locale/es';
 import locale_ja from './locale/ja';
 import locale_ru from './locale/ru';
 import WindowState from 'services/utils/window';
-import LocalStorage from 'services/localStorage';
+import LocalStorage from 'app/services/LocalStorage';
 import DateTime from 'services/utils/datetime';
 import Globals from 'services/Globals';
 

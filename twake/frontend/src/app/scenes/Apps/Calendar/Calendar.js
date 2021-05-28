@@ -5,7 +5,7 @@ import Languages from 'services/languages/languages.js';
 import UserService from 'services/user/user.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import './Calendar.scss';
-import LocalStorage from 'services/localStorage.js';
+import LocalStorage from 'app/services/LocalStorage';
 
 import ModalManager from 'app/components/Modal/ModalManager';
 

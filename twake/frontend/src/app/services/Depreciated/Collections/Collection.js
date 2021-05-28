@@ -3,7 +3,7 @@ import api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
 import MultipleSecuredConnections from './MultipleSecuredConnections.js';
-import LocalStorage from 'services/localStorage.js';
+import LocalStorage from 'app/services/LocalStorage';
 /** Collection
  * Act like a doctrine repository and try to be allways in sync with server in realtime
  */
@@ -1049,8 +1049,8 @@ export default class Collection extends Observable {
       that.known_objects_by_front_id[front_id].id = updated.id;
     }
 
-    that.known_objects_by_front_id[front_id]._created = !!that.known_objects_by_front_id[front_id]
-      .id; //Created (has an id)
+    that.known_objects_by_front_id[front_id]._created =
+      !!that.known_objects_by_front_id[front_id].id; //Created (has an id)
     that.known_objects_by_front_id[front_id]._updating = !!(
       that.known_objects_by_front_id[front_id].id &&
       (that.waiting_to_save_by_front_id[front_id] ||
