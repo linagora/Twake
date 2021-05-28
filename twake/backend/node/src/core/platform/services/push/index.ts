@@ -29,6 +29,9 @@ export default class Push extends TwakeService<PushServiceAPI> {
     if (!this.service) {
       return;
     }
+    if (!devices || devices.length === 0) {
+      return;
+    }
     return this.service.push(devices, notification, options);
   }
 
