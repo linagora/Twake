@@ -23,19 +23,19 @@ export class MessageEditorService extends Observable {
 
   async setContent(threadId: string, messageId: string, content: string) {
     if (!messageId) {
-      const all = (await LocalStorage.getItem('m_input')) || {};
+      const all = (await LocalStorage.getItem('twake:m_input')) || {};
       all[this.channelId + (threadId ? '_thread=' + threadId : '')] = [
         content,
         new Date().getTime(),
       ];
-      LocalStorage.setItem('m_input', all);
+      LocalStorage.setItem('twake:m_input', all);
     }
     this.editorsContents[threadId + '_' + messageId] = content;
   }
 
   async getContent(threadId: string, messageId: string) {
     if (!messageId) {
-      const all = this.cleanSavedInputContents((await LocalStorage.getItem('m_input')) || {});
+      const all = this.cleanSavedInputContents((await LocalStorage.getItem('twake:m_input')) || {});
       const res = (all[this.channelId + (threadId ? '_thread=' + threadId : '')] || {})[0];
       if (res) {
         this.editorsContents[threadId + '_' + messageId] = res;

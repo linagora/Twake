@@ -84,7 +84,7 @@ class Workspaces extends Observable {
     let { workspaceId } = RouterServices.getStateFromRoute();
     const routerWorkspaceId = workspaceId;
 
-    const autoload_workspaces = (await LocalStorage.getItem('autoload_workspaces')) || {};
+    const autoload_workspaces = (await LocalStorage.getItem('twake:autoload_workspaces')) || {};
 
     workspaceId = workspaceId || autoload_workspaces.id || '';
 
@@ -168,7 +168,7 @@ class Workspaces extends Observable {
       RouterServices.push(route);
     }
 
-    LocalStorage.setItem('autoload_workspaces', { id: workspace.id });
+    LocalStorage.setItem('twake:autoload_workspaces', { id: workspace.id });
 
     this.notify();
   }
@@ -256,7 +256,7 @@ class Workspaces extends Observable {
             ConsoleService.addMailsInWorkspace({
               workspace_id: res.data.workspace.id || '',
               company_id: res.data.workspace.group.id || '',
-              emails : wsMembers,
+              emails: wsMembers,
             }).finally(() => {
               that.loading = false;
               popupManager.close();

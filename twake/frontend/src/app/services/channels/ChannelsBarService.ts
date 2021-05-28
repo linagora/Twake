@@ -14,10 +14,7 @@ class ChannelsBarService extends Observable {
       const callback = (state: boolean) => {
         if (!state) {
           this.collectionIsReady(companyId, workspaceId);
-          collection.removeEventListener(
-            'http:loading',
-            callback,
-          );
+          collection.removeEventListener('http:loading', callback);
         }
       };
 
@@ -31,7 +28,7 @@ class ChannelsBarService extends Observable {
     let callbackId = this.getCallbackId(companyId, workspaceId);
 
     if (suffix && suffix.length) {
-      callbackId = [callbackId, ...suffix].join("+");
+      callbackId = [callbackId, ...suffix].join('+');
     }
 
     if (!this.ready.has(callbackId)) {
@@ -40,21 +37,25 @@ class ChannelsBarService extends Observable {
     }
   }
 
-  isReady(companyId: string = "", workspaceId: string = "", suffix?: string[]): boolean {
+  isReady(companyId: string = '', workspaceId: string = '', suffix?: string[]): boolean {
     let key = this.getCallbackId(companyId, workspaceId);
 
     if (suffix && suffix.length) {
-      key = [key, ...suffix].join("+");
+      key = [key, ...suffix].join('+');
     }
 
     return !!this.ready.get(key);
   }
 
-  updateCurrentChannelId(companyId: string = "", workspaceId: string = "", channelId: string = ""): void {
+  updateCurrentChannelId(
+    companyId: string = '',
+    workspaceId: string = '',
+    channelId: string = '',
+  ): void {
     localStorage.setItem(this.getLocalStorageKey(companyId, workspaceId), channelId);
   }
 
-  async autoSelectChannel(companyId: string = "", workspaceId: string = ""): Promise<void> {
+  async autoSelectChannel(companyId: string = '', workspaceId: string = ''): Promise<void> {
     let channelId = localStorage.getItem(this.getLocalStorageKey(companyId, workspaceId));
 
     if (!channelId) {
@@ -72,7 +73,7 @@ class ChannelsBarService extends Observable {
   }
 
   private getLocalStorageKey(companyId: string, workspaceId: string): string {
-    return `${companyId}:${workspaceId}:channel`;
+    return `twake:${companyId}:${workspaceId}:channel`;
   }
 
   private getCallbackId(companyId: string, workspaceId: string): string {

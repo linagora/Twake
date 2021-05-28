@@ -81,6 +81,14 @@ class Globals {
   }
 
   localStorageClear() {
+    for (var i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      const depreciatedKeysRemove =
+        ['twake-collections-db', 'm_input', 'language', 'jwt', 'autoload_workspaces'].indexOf(
+          key,
+        ) >= 0 || key.indexOf(':channel') > 0;
+      if (key.indexOf('twake:') === 0 || depreciatedKeysRemove) window.localStorage.removeItem(key);
+    }
     window.localStorage.clear();
   }
 

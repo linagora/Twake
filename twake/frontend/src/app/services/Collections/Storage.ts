@@ -218,12 +218,12 @@ function isIndexedDBSupported(): boolean {
 }
 
 function getExistingDatabase(): string {
-  const database = window.localStorage.getItem('twake-collection-db');
+  const database = window.localStorage.getItem('twake:collections_db');
   return database ? JSON.parse(database) : '';
 }
 
 function saveDatabaseName(name: string) {
-  window.localStorage.setItem('twake-collection-db', JSON.stringify(name));
+  window.localStorage.setItem('twake:collections_db', JSON.stringify(name));
 }
 
 function getDBName(userId: string): string {
