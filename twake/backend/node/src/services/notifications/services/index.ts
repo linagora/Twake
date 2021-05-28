@@ -16,23 +16,24 @@ import { NotificationEngine } from "./engine";
 import { NotificationPreferencesService } from "./preferences/service";
 import UserServiceAPI from "../../../services/user/api";
 import { MobilePushService } from "./mobile-push/service";
-import { NotificationConfiguration } from "../types";
-import config from "config";
+import { PushServiceAPI } from "../../../core/platform/services/push/api";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
+  push: PushServiceAPI,
   userService: UserServiceAPI,
 ): NotificationServiceAPI {
-  return getServiceInstance(databaseService, pubsub, userService);
+  return getServiceInstance(databaseService, pubsub, push, userService);
 }
 
 function getServiceInstance(
   databaseService: DatabaseServiceAPI,
   pubsub: PubsubServiceAPI,
+  push: PushServiceAPI,
   userService: UserServiceAPI,
 ): NotificationServiceAPI {
-  return new Service(databaseService, pubsub, userService);
+  return new Service(databaseService, pubsub, push, userService);
 }
 
 class Service implements NotificationServiceAPI {
@@ -47,13 +48,14 @@ class Service implements NotificationServiceAPI {
   constructor(
     databaseService: DatabaseServiceAPI,
     pubsub: PubsubServiceAPI,
+    push: PushServiceAPI,
     userService: UserServiceAPI,
   ) {
     this.badges = getBadgeService(databaseService, userService);
     this.channelPreferences = getPreferencesService(databaseService);
     this.channelThreads = getChannelThreadsService(databaseService);
     this.notificationPreferences = getNotificationPreferencesService(databaseService, userService);
-    this.mobilePush = getMobilePushService(databaseService, config.get("push"));
+    this.mobilePush = getMobilePushService(databaseService, push);
     this.engine = new NotificationEngine(this, pubsub);
   }
 

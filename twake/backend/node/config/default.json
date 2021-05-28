@@ -105,6 +105,7 @@
   },
   "services": [
     "auth",
+    "push",
     "storage",
     "webserver",
     "websocket",
