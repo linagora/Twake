@@ -191,10 +191,8 @@ export class UsersCrudController
 
   async getCompany(
     request: FastifyRequest<{ Params: CompanyParameters }>,
-    reply: FastifyReply,
   ): Promise<ResourceGetResponse<CompanyObject>> {
     const company = await this.companyService.getCompany({ id: request.params.id });
-
     return {
       resource: this.formatCompany(company),
       websocket: undefined, // empty for now
