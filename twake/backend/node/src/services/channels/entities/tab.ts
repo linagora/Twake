@@ -1,5 +1,4 @@
 import { Type } from "class-transformer";
-import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelType } from "../types";
 
@@ -7,7 +6,7 @@ import { ChannelType } from "../types";
   primaryKey: [["company_id", "workspace_id"], "channel_id", "id"],
   type: "channel_tabs",
 })
-export class ChannelTab extends UpdatableEntity {
+export class ChannelTab {
   // uuid-v4
   @Type(() => String)
   @Column("company_id", "string", { generator: "uuid" })
@@ -42,6 +41,12 @@ export class ChannelTab extends UpdatableEntity {
 
   @Column("col_order", "encoded_string")
   order: string;
+
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
 }
 
 export type ChannelTabPrimaryKey = Pick<

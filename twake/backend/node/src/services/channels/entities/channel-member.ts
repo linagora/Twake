@@ -1,6 +1,5 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
-import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelMemberNotificationLevel, ChannelMemberType } from "../types";
 
@@ -12,7 +11,7 @@ import { ChannelMemberNotificationLevel, ChannelMemberType } from "../types";
   primaryKey: [["company_id", "workspace_id"], "user_id", "channel_id"],
   type: "user_channels",
 })
-export class ChannelMember extends UpdatableEntity {
+export class ChannelMember {
   /**
    * Primary key
    */
@@ -82,6 +81,12 @@ export class ChannelMember extends UpdatableEntity {
   @Type(() => String)
   @Column("id", "string")
   id: string;
+
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
 }
 
 export type ChannelMemberPrimaryKey = Pick<

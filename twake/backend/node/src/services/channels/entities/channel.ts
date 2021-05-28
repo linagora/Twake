@@ -1,5 +1,4 @@
 import { Type } from "class-transformer";
-import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelVisibility, ChannelType } from "../types";
 import { ChannelMember } from "./channel-member";
@@ -8,7 +7,7 @@ import { ChannelMember } from "./channel-member";
   primaryKey: [["company_id", "workspace_id"], "id"],
   type: "channels",
 })
-export class Channel extends UpdatableEntity {
+export class Channel {
   // uuid-v4
   @Type(() => String)
   @Column("company_id", "uuid", { generator: "uuid" })
@@ -56,6 +55,12 @@ export class Channel extends UpdatableEntity {
 
   @Column("connectors", "encoded_json")
   connectors: string[] = []; //list of app-ids
+
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
 
   static isPrivateChannel(channel: Channel): boolean {
     return channel.visibility === ChannelVisibility.PRIVATE;

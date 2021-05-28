@@ -1,12 +1,11 @@
 import { Type } from "class-transformer";
-import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 
 @Entity("files", {
   primaryKey: [["company_id"], "id"],
   type: "files",
 })
-export class File extends UpdatableEntity {
+export class File {
   @Type(() => String)
   @Column("company_id", "uuid")
   company_id: string;
@@ -24,6 +23,12 @@ export class File extends UpdatableEntity {
 
   @Column("encryption_key", "encoded_string")
   encryption_key: string;
+
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
 
   @Column("metadata", "encoded_json")
   metadata: null | {

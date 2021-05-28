@@ -1,6 +1,5 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
-import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { Block } from "../blocks-types";
 
@@ -22,7 +21,7 @@ export const TYPE = "messages";
     },
   },
 })
-export class Message extends UpdatableEntity {
+export class Message {
   @Type(() => String)
   @Column("thread_id", "timeuuid")
   thread_id: string;
@@ -50,6 +49,9 @@ export class Message extends UpdatableEntity {
   @Type(() => Number)
   @Column("created_at", "number")
   created_at: number;
+
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
 
   @Type(() => String)
   @Column("user_id", "uuid")
