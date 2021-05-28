@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
+import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { Block } from "../blocks-types";
 
@@ -21,7 +22,7 @@ export const TYPE = "messages";
     },
   },
 })
-export class Message {
+export class Message extends UpdatableEntity {
   @Type(() => String)
   @Column("thread_id", "timeuuid")
   thread_id: string;

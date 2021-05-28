@@ -1,4 +1,5 @@
 import { Type } from "class-transformer";
+import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelType } from "../types";
 
@@ -6,7 +7,7 @@ import { ChannelType } from "../types";
   primaryKey: [["company_id", "workspace_id"], "channel_id", "id"],
   type: "channel_tabs",
 })
-export class ChannelTab {
+export class ChannelTab extends UpdatableEntity {
   // uuid-v4
   @Type(() => String)
   @Column("company_id", "string", { generator: "uuid" })

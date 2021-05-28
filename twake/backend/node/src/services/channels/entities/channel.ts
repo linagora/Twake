@@ -1,4 +1,5 @@
 import { Type } from "class-transformer";
+import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelVisibility, ChannelType } from "../types";
 import { ChannelMember } from "./channel-member";
@@ -7,7 +8,7 @@ import { ChannelMember } from "./channel-member";
   primaryKey: [["company_id", "workspace_id"], "id"],
   type: "channels",
 })
-export class Channel {
+export class Channel extends UpdatableEntity {
   // uuid-v4
   @Type(() => String)
   @Column("company_id", "uuid", { generator: "uuid" })

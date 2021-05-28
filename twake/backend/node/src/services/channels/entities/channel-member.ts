@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
+import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelMemberNotificationLevel, ChannelMemberType } from "../types";
 
@@ -11,7 +12,7 @@ import { ChannelMemberNotificationLevel, ChannelMemberType } from "../types";
   primaryKey: [["company_id", "workspace_id"], "user_id", "channel_id"],
   type: "user_channels",
 })
-export class ChannelMember {
+export class ChannelMember extends UpdatableEntity {
   /**
    * Primary key
    */

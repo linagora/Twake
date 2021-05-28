@@ -1,3 +1,13 @@
+import { Column } from "./decorators";
+
+export class UpdatableEntity {
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
+}
+
 export type EntityDefinition = {
   name: string;
   type: string;
@@ -21,6 +31,7 @@ export type ColumnDefinition = {
 export type ColumnOptions = {
   order?: "ASC" | "DESC";
   generator?: ColumnType;
+  onUpsert?: (value: any) => any;
 };
 
 export type ColumnType =

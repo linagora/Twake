@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
+import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 export const TYPE = "threads";
@@ -7,7 +8,7 @@ export const TYPE = "threads";
   primaryKey: [["id"]],
   type: TYPE,
 })
-export class Thread {
+export class Thread extends UpdatableEntity {
   @Type(() => String)
   @Column("id", "timeuuid")
   id: string;

@@ -1,11 +1,12 @@
 import { Type } from "class-transformer";
+import { UpdatableEntity } from "../../../core/platform/services/database/services/orm/types";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 
 @Entity("files", {
   primaryKey: [["company_id"], "id"],
   type: "files",
 })
-export class File {
+export class File extends UpdatableEntity {
   @Type(() => String)
   @Column("company_id", "uuid")
   company_id: string;
