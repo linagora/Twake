@@ -1,4 +1,4 @@
-import LocalStorage from 'services/localStorage';
+import LocalStorage from 'services/LocalStorage';
 import LoginService from 'services/login/login';
 
 type JWTDataType = {
@@ -22,7 +22,7 @@ class JWTStorageClass {
   };
 
   async init() {
-    this.updateJWT(await LocalStorage.getItem('jwt'), { fromLocalStorage: true });
+    this.updateJWT((await LocalStorage.getItem('jwt')) as JWTDataType, { fromLocalStorage: true });
     (window as any).JWTStorage = this;
   }
 

@@ -16,6 +16,7 @@ import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
+import LocalStorage from 'services/LocalStorage';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -57,7 +58,7 @@ class Login extends Observable {
 
   async init(did_wait = false) {
     if (!did_wait) {
-      Globals.localStorageGetItem('api_root_url', res => {
+      LocalStorage.getItem('api_root_url', res => {
         this.init(true);
       });
       return;
@@ -305,7 +306,7 @@ class Login extends Observable {
 
   clearLogin() {
     this.currentUserId = null;
-    Globals.localStorageClear();
+    LocalStorage.clear();
     Collections.clear();
     JWTStorage.clear();
   }

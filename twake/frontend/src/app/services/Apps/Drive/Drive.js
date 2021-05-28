@@ -6,7 +6,7 @@ import UserService from 'services/user/user.js';
 import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import LocalStorage from 'services/localStorage.js';
+import LocalStorage from 'app/services/LocalStorage';
 import AceModeList from './utils/ace_modelist.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';

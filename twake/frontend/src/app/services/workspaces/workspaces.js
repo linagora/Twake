@@ -7,7 +7,7 @@ import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from 'services/workspaces/groups.js';
-import LocalStorage from 'services/localStorage.js';
+import LocalStorage from 'app/services/LocalStorage';
 import workspacesUsers from './workspaces_users.js';
 import WindowService from 'services/utils/window.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -256,7 +256,7 @@ class Workspaces extends Observable {
             ConsoleService.addMailsInWorkspace({
               workspace_id: res.data.workspace.id || '',
               company_id: res.data.workspace.group.id || '',
-              emails : wsMembers,
+              emails: wsMembers,
             }).finally(() => {
               that.loading = false;
               popupManager.close();
