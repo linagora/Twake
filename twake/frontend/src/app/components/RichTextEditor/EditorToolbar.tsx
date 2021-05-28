@@ -23,7 +23,7 @@ export default (props: EditorToolbarProps) => {
       case 'INLINE_STYLE_BUTTONS': {
         return _renderInlineStyleButtons(groupName, toolbarConfig);
       }
-      // TODO: Other options will come here
+      // TODO: Other options will come here, list, etc
     }
   });
 

@@ -1,5 +1,6 @@
-import React from "react";
-import { Editor, EditorState, Modifier, CompositeDecorator, RichUtils, DraftEditorCommand, DraftHandleValue, DraftDecorator, convertToRaw } from "draft-js";
+import React, { KeyboardEvent } from "react";
+import { Editor, EditorState, Modifier, CompositeDecorator, RichUtils, DraftEditorCommand, DraftHandleValue, DraftDecorator, KeyBindingUtil } from "draft-js";
+import { toString } from "./EditorDataParser";
 import useMentions, { MentionSuggestionType } from "./components/mentions/index";
 import useEmojis, { EmojiSuggestionType } from "./components/emoji";
 import { SuggestionList } from "./components/suggestion/SuggestionList";
@@ -7,7 +8,13 @@ import EmojiSuggestion from "./components/emoji/EmojiSuggestion";
 import MentionSuggestion from "./components/mentions/MentionSuggestion";
 import EditorToolbar from "./EditorToolbar";
 
+const { isSoftNewlineEvent } = KeyBindingUtil;
+
 // inspired from https://codepen.io/ndne/pen/XEbMyP
+
+export type EditorTextFormat = "raw" | "markdown";
+
+type SyntheticKeyboardEvent = KeyboardEvent<{}> & {code: string};
 
 type CaretCoordinates = {
   x: number;
@@ -20,6 +27,221 @@ type CurrentSuggestion<T> = {
   selectedIndex: number;
   items: Array<T>;
 };
+
+type EditorProps = {
+  onSubmit?: (content: string, editorState?: EditorState) => void;
+  clearOnSubmit: boolean;
+  outputFormat: EditorTextFormat;
+};
+
+export type EditorSuggestionPlugin<SuggestionType> = {
+  resolver: (text: string, callback: (items: SuggestionType[]) => void) => void;
+  decorator: DraftDecorator;
+  trigger: string | RegExp;
+};
+
+type EditorViewState = {
+  editorState: EditorState;
+  activeMentionSuggestion: CurrentSuggestion<MentionSuggestionType> | null;
+  activeEmojiSuggestion: CurrentSuggestion<EmojiSuggestionType> | null;
+};
+
+export class EditorView extends React.Component<EditorProps, EditorViewState> {
+  outputFormat: EditorTextFormat;
+  editor!: Editor | null;
+  emojis: EditorSuggestionPlugin<EmojiSuggestionType>;
+  mentions: EditorSuggestionPlugin<MentionSuggestionType>;
+  decorators: CompositeDecorator;
+
+  constructor(props: EditorProps) {
+    super(props);
+
+    this.emojis = useEmojis();
+    this.mentions = useMentions();
+    this.outputFormat = this.props.outputFormat || "markdown";
+
+    // TODO: Create decorators from configuration
+    this.decorators = new CompositeDecorator([this.emojis.decorator, this.mentions.decorator]);
+    
+    // TODO: Populate state from configuration and activated decorators
+    this.state = this.getInitialState();
+  }
+
+  private getInitialState(): EditorViewState {
+    return {
+      editorState: EditorState.createEmpty(this.decorators),
+      activeMentionSuggestion: null,
+      activeEmojiSuggestion: null,
+    }
+  }
+
+  handleKeyCommand(command: DraftEditorCommand, editorState: EditorState): DraftHandleValue {
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+
+    if (newState) {
+      this.onChange(newState);
+      return 'handled';
+    }
+
+    return 'not-handled';
+  }
+
+  handleReturn(e: SyntheticKeyboardEvent, editorState: EditorState): DraftHandleValue {
+    if (this._handleReturnSoftNewline(e, editorState)) {
+      return 'handled';
+    }
+
+    if (this.submit(editorState)) {
+      return 'handled';
+    }
+    
+    return 'handled';
+  }
+  
+  submit(editorState: EditorState): boolean {
+    this.props.onSubmit && this.props.onSubmit(toString(editorState, this.outputFormat));
+    if (this.props.clearOnSubmit) {
+      this.setState(this.getInitialState(), () => {
+        requestAnimationFrame(() => this.focus());
+      });
+    }
+
+    return true;
+  }
+
+  /**
+   * Handle shift + enter
+   * 
+   * @param e 
+   * @param editorState 
+   * @returns 
+   */
+  _handleReturnSoftNewline(e: SyntheticKeyboardEvent, editorState: EditorState): boolean {
+    if (isSoftNewlineEvent(e)) {
+      const selection = editorState.getSelection();
+
+      if (selection.isCollapsed()) {
+        this.onChange(RichUtils.insertSoftNewline(editorState));
+      } else {
+        let content = editorState.getCurrentContent();
+        let newContent = Modifier.removeRange(content, selection, 'forward');
+        let newSelection = newContent.getSelectionAfter();
+        let block = newContent.getBlockForKey(newSelection.getStartKey());
+        newContent = Modifier.insertText(
+          newContent,
+          newSelection,
+          '\n',
+          block.getInlineStyleAt(newSelection.getStartOffset()),
+        );
+        this.onChange(
+          EditorState.push(editorState, newContent, 'insert-fragment')
+        );
+      }
+      return true;
+    }
+    return false;
+  }
+  
+  focus() {
+    this.editor?.focus();
+  }
+  
+  onChange(editorState: EditorState) {
+    this.setState({ editorState }, this.updateSuggestionsState.bind(this));
+  }
+  
+  updateSuggestionsState(): void {
+    const triggerMention = getTrigger(this.mentions.trigger);
+
+    if (!triggerMention) {
+      this.setState({ activeMentionSuggestion: null });
+    } else {
+      this.mentions.resolver(triggerMention.text.slice(1, triggerMention.text.length), (mentions) => {
+        const activeMentionSuggestion = {
+          position: getCaretCoordinates(),
+          searchText: triggerMention.text,
+          selectedIndex: 0,
+          items: mentions,
+        };
+        this.setState({ activeMentionSuggestion });
+      });
+      return;
+    }
+    
+    const triggerEmoji = getTrigger(this.emojis.trigger);
+    if (!triggerEmoji) {
+      this.setState({ activeEmojiSuggestion: null });
+    } else {
+      this.emojis.resolver(triggerEmoji.text, (emojis) => {
+        const activeEmojiSuggestion = {
+          position: getCaretCoordinates(),
+          searchText: triggerEmoji.text,
+          selectedIndex: 0,
+          items: emojis,
+        };
+        this.setState({ activeEmojiSuggestion });
+      });
+      return;
+    }
+  }
+  
+  handleMentionSuggestionSelected(user: MentionSuggestionType) {
+    const { editorState, activeMentionSuggestion } = this.state; 
+    this.onChange(addMention(editorState, activeMentionSuggestion, user, "@"));
+    this.setState({ activeMentionSuggestion: null }, () => {
+      requestAnimationFrame(() => this.focus());
+    })
+  }
+
+  handleEmojiSuggestionSelected(emoji: EmojiSuggestionType) {
+    const { editorState, activeEmojiSuggestion } = this.state; 
+    this.onChange(addEmoji(editorState, activeEmojiSuggestion, emoji));
+    this.setState({ activeEmojiSuggestion: null }, () => {
+      requestAnimationFrame(() => this.focus());
+    })
+  }
+
+  render() {
+    return <div 
+      className="editor" 
+      onClick={ this.focus.bind(this) }>
+      
+      <Editor
+        ref={ node => this.editor = node }
+        editorState={ this.state.editorState } 
+        onChange={this.onChange.bind(this)}
+        handleKeyCommand={this.handleKeyCommand.bind(this)}
+        handleReturn={this.handleReturn.bind(this)}
+        placeholder="Type a message, @mention someone, #tag, /actionable"
+        />
+        <EditorToolbar
+          editorState={this.state.editorState}
+          onChange={this.onChange.bind(this)}
+        />
+      
+      <div style={{ position: "relative", top: "-40px" }}>  
+        {(
+          this.state.activeMentionSuggestion?.items.length &&
+          <SuggestionList<MentionSuggestionType>
+            list={this.state.activeMentionSuggestion?.items}
+            position={"top"}
+            renderItem={(props: MentionSuggestionType) => (<MentionSuggestion {...props} />)}
+            onSelected={this.handleMentionSuggestionSelected.bind(this)}
+          />
+        )}
+
+        {(
+          this.state.activeEmojiSuggestion?.items.length && <SuggestionList<EmojiSuggestionType>
+          list={this.state.activeEmojiSuggestion?.items}
+          position={"top"}
+          renderItem={(props: EmojiSuggestionType) => (<EmojiSuggestion {...props} />)}
+          onSelected={this.handleEmojiSuggestionSelected.bind(this)}
+          />
+        )}
+      </div>
+    </div>
+  }
+}
 
 function getSelectionRange() {
   const selection = window.getSelection()
@@ -183,163 +405,4 @@ const addEmoji = (editorState: EditorState, activeSuggestion: any, emoji: EmojiS
   return EditorState.forceSelection(
     newEditorState,
     newContentState.getSelectionAfter());
-}
-
-type EditorProps = {
-  // TODO
-};
-
-export type EditorSuggestionPlugin<SuggestionType> = {
-  resolver: (text: string, callback: (items: SuggestionType[]) => void) => void;
-  decorator: DraftDecorator;
-  trigger: string | RegExp;
-};
-
-type EditorViewState = {
-  editorState: EditorState;
-  activeMentionSuggestion: CurrentSuggestion<MentionSuggestionType> | null;
-  activeEmojiSuggestion: CurrentSuggestion<EmojiSuggestionType> | null;
-};
-
-export class EditorView extends React.Component<EditorProps, EditorViewState> {
-  editor!: Editor | null;
-  emojis: EditorSuggestionPlugin<EmojiSuggestionType>;
-  mentions: EditorSuggestionPlugin<MentionSuggestionType>;
-
-  constructor(props: EditorProps) {
-    super(props);
-
-    this.emojis = useEmojis();
-    this.mentions = useMentions();
-
-    // TODO: Create decorators from configuration
-    const decorators = new CompositeDecorator([this.emojis.decorator, this.mentions.decorator]);
-    
-    // TODO: Populate state from configuration and activated decorators
-    this.state = {
-      editorState: EditorState.createEmpty(decorators),
-      activeMentionSuggestion: null,
-      activeEmojiSuggestion: null,
-    }
-  }
-
-  handleKeyCommand(command: DraftEditorCommand, editorState: EditorState): DraftHandleValue {
-    const newState = RichUtils.handleKeyCommand(editorState, command);
-
-    if (newState) {
-      this.onChange(newState);
-      return 'handled';
-    }
-
-    return 'not-handled';
-  }
-  
-  focus () {
-    this.editor?.focus();
-  }
-  
-  onChange(editorState: EditorState) {
-    console.log('raw state:', JSON.stringify(convertToRaw(editorState.getCurrentContent())));
-    this.setState({ editorState }, this.updateSuggestionsState.bind(this));
-  }
-  
-  updateSuggestionsState(): void {
-    const triggerMention = getTrigger(this.mentions.trigger);
-
-    if (!triggerMention) {
-      this.setState({ activeMentionSuggestion: null });
-    } else {
-      this.mentions.resolver(triggerMention.text.slice(1, triggerMention.text.length), (mentions) => {
-        const activeMentionSuggestion = {
-          position: getCaretCoordinates(),
-          searchText: triggerMention.text,
-          selectedIndex: 0,
-          items: mentions,
-        };
-        this.setState({ activeMentionSuggestion });
-      });
-      return;
-    }
-    
-    const triggerEmoji = getTrigger(this.emojis.trigger);
-    if (!triggerEmoji) {
-      this.setState({ activeEmojiSuggestion: null });
-    } else {
-      this.emojis.resolver(triggerEmoji.text, (emojis) => {
-        const activeEmojiSuggestion = {
-          position: getCaretCoordinates(),
-          searchText: triggerEmoji.text,
-          selectedIndex: 0,
-          items: emojis,
-        };
-        this.setState({ activeEmojiSuggestion });
-      });
-      return;
-    }
-  }
-  
-  handleMentionSuggestionSelected(user: MentionSuggestionType) {
-    const { editorState, activeMentionSuggestion } = this.state; 
-    this.onChange(addMention(editorState, activeMentionSuggestion, user, "@"));
-    this.setState({ activeMentionSuggestion: null }, () => {
-      requestAnimationFrame(() => this.focus());
-    })
-  }
-
-  handleEmojiSuggestionSelected(emoji: EmojiSuggestionType) {
-    const { editorState, activeEmojiSuggestion } = this.state; 
-    this.onChange(addEmoji(editorState, activeEmojiSuggestion, emoji));
-    this.setState({ activeEmojiSuggestion: null }, () => {
-      requestAnimationFrame(() => this.focus());
-    })
-  }
-
-  render() {
-    return <div 
-      className="editor" 
-      onClick={ this.focus.bind(this) }>
-      
-      <Editor
-        ref={ node => this.editor = node }
-        editorState={ this.state.editorState } 
-        onChange={this.onChange.bind(this)}
-        handleKeyCommand={this.handleKeyCommand.bind(this)}
-        placeholder="Type a message, @mention someone, #tag, /actionable"
-        />
-        <EditorToolbar
-          editorState={this.state.editorState}
-          onChange={this.onChange.bind(this)}
-        />
-      
-      <div style={{ position: "relative", top: "-40px" }}>  
-        {(
-          this.state.activeMentionSuggestion?.items.length &&
-          <SuggestionList<MentionSuggestionType>
-            list={this.state.activeMentionSuggestion?.items}
-            position={"top"}
-            renderItem={(props: MentionSuggestionType) => (<MentionSuggestion {...props} />)}
-            onSelected={this.handleMentionSuggestionSelected.bind(this)}
-          />
-        )}
-
-        {(
-          this.state.activeEmojiSuggestion?.items.length && <SuggestionList<EmojiSuggestionType>
-          list={this.state.activeEmojiSuggestion?.items}
-          position={"top"}
-          renderItem={(props: EmojiSuggestionType) => (<EmojiSuggestion {...props} />)}
-          onSelected={this.handleEmojiSuggestionSelected.bind(this)}
-          />
-        )}
-      </div>
-    </div>
-  }
-}
-
-export function createEmptyValue(): EditorState {
-  return EditorState.createEmpty();
-}
-
-function createValueFromString(markup: string, format: "text" | "html" | "markdown" = "text"): EditorState {
-  // TODO
-  return EditorState.createEmpty();
 }
