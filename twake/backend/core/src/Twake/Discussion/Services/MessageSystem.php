@@ -93,12 +93,17 @@ class MessageSystem
 
         if($object["id"]){
             //Manage message pin
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/pin", ["pin" => [$object["pinned"]]], $current_user, $application ? $application->getId() : null);
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/pin", ["pin" => $object["pinned"]], $current_user, $application ? $application->getId() : null);
+            error_log("pin result: ".json_encode($response["pinned_info"]));
         }
 
-        if($object["_user_reaction"]){
+        if(isset($object["_user_reaction"])){
             //Manage user reaction
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => [$object["_user_reaction"]]], $current_user, $application ? $application->getId() : null);
+            if($object["_user_reaction"]){
+                $list = [$object["_user_reaction"]];
+            }
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => $list], $current_user, $application ? $application->getId() : null);
+
         }else{
             //Manage message edition
 
@@ -203,8 +208,6 @@ class MessageSystem
             ];
         }
 
-        error_log(json_encode($object));
-
         return [
             "text" => $object["content"]["original_str"] ?: $object["content"]["fallback_string"],
             "blocks" => $blocks,
@@ -271,8 +274,6 @@ class MessageSystem
         $uri = str_replace("/private", "/internal/services/messages/v1", $this->app->getContainer()->getParameter("node.api")) . 
             ltrim($route, "/");
        
-        error_log($user);
-
         $key = $this->app->getContainer()->getParameter("jwt.secret");
         $payload = [
             "exp" => date("U") + 60,

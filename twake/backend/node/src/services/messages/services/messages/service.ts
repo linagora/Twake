@@ -146,8 +146,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       throw Error("Can't edit this message.");
     }
 
-    console.log("In 'pin' method");
-
     const message = await this.repository.findOne({
       thread_id: context.thread.id,
       id: operation.id,
@@ -185,8 +183,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       throw Error("Can't edit this message.");
     }
 
-    console.log("In 'reaction' method");
-
     const message = await this.repository.findOne({
       thread_id: context.thread.id,
       id: operation.id,
@@ -198,7 +194,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     //Update message reactions
-    updateMessageReactions(message, operation.reactions, context.user.id);
+    updateMessageReactions(message, operation.reactions || [], context.user.id);
 
     logger.info(
       `Updated message ${operation.id} reactions to ${JSON.stringify(message.reactions)} thread ${
@@ -363,6 +359,9 @@ function updateMessageReactions(message: Message, selectedReactions: string[], u
     if (selectedReactions.includes(key)) {
       reactions[key].count++;
       reactions[key].users.push(userId);
+    }
+    if (reactions[key].count === 0) {
+      delete reactions[key];
     }
   }
   message.reactions = Object.values(reactions);
