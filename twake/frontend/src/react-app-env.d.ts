@@ -64,3 +64,7 @@ declare module '*.module.sass' {
   const classes: { readonly [key: string]: string };
   export default classes;
 }
+
+declare module 'draft-js-export-markdown';
+declare module 'draft-js-import-markdown';
+declare module 'draft-js-import-element';
