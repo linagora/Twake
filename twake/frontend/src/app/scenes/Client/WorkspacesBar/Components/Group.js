@@ -81,7 +81,7 @@ export default class Group extends Component {
     Groups.getOrderedGroups().map(item => {
       this.change_group_menu.push(this.renderGroupInMenu(item));
     });
-    if (InitService.server_infos?.configuration?.account?.type !== 'console') {
+    if (InitService.server_infos?.configuration?.accounts?.type !== 'console') {
       this.change_group_menu.push({
         type: 'menu',
         text: Languages.t('scenes.app.workspacesbar.components.create_company_menu'),

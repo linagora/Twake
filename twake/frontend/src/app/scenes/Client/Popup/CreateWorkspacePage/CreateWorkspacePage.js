@@ -84,7 +84,7 @@ export default class CreateWorkspacePage extends Component {
       );
     }
     if (this.state.page == 2) {
-      if (InitService.server_infos?.configuration?.account?.type === 'console') {
+      if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
         return (
           <AddUserFromTwakeConsole
             inline

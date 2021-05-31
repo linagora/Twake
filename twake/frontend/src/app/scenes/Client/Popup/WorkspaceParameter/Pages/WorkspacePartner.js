@@ -89,7 +89,7 @@ export default class WorkspacePartner extends Component {
     var subMenu = [];
     var adminLevelId = workspacesUsers.getAdminLevel().id;
 
-    var bloc_edit_group_manager = (InitService.server_infos?.configuration?.account?.type !==
+    var bloc_edit_group_manager = (InitService.server_infos?.configuration?.accounts?.type !==
       'console' && [
       {
         type: 'react-element',
@@ -351,7 +351,7 @@ export default class WorkspacePartner extends Component {
               ),
               render: <Members buildMenu={e => this.buildMenu(e)} />,
             },
-            InitService.server_infos?.configuration?.account?.type !== 'console' && {
+            InitService.server_infos?.configuration?.accounts?.type !== 'console' && {
               title: Languages.t(
                 'scenes.apps.parameters.workspace_sections.members.pending',
                 [],

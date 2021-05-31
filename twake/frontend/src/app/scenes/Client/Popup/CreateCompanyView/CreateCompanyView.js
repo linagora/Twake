@@ -323,7 +323,7 @@ export default class CreateCompanyView extends Component {
       );
     }
     if (this.state.page == 3) {
-      if (InitService.server_infos?.configuration?.account?.type === 'console') {
+      if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
         return (
           <AddUserFromTwakeConsole
             inline
@@ -405,7 +405,7 @@ export default class CreateCompanyView extends Component {
     } else {
       if (
         (['openid', 'cas'].indexOf((CurrentUser.get() || {}).identity_provider) >= 0 ||
-          InitService.server_infos?.configuration?.account?.type ===
+          InitService.server_infos?.configuration?.accounts?.type ===
             'internal'.disable_email_verification) &&
         this.state.page == 3
       ) {
@@ -434,7 +434,7 @@ export default class CreateCompanyView extends Component {
       //Pass usage form
       if (
         (['openid', 'cas'].indexOf((CurrentUser.get() || {}).identity_provider) >= 0 ||
-          InitService.server_infos?.configuration?.account?.type ===
+          InitService.server_infos?.configuration?.accounts?.type ===
             'internal'.disable_email_verification) &&
         this.state.page == 1
       ) {

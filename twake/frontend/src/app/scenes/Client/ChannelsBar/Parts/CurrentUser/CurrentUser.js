@@ -156,7 +156,7 @@ export default class CurrentUser extends Component {
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),
         icon: 'cog',
         onClick: () => {
-          if (InitService.server_infos?.configuration?.account?.type === 'console') {
+          if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
             return window.open(
               InitService.server_infos?.auth?.console?.account_management_url,
               '_blank',
@@ -271,7 +271,7 @@ export default class CurrentUser extends Component {
         },
       });
     }
-    if (InitService.server_infos?.configuration?.account?.type !== 'console') {
+    if (InitService.server_infos?.configuration?.accounts?.type !== 'console') {
       usermenu.push({
         type: 'menu',
         text: Languages.t(

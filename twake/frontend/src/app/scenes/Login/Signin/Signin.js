@@ -247,7 +247,7 @@ export default class Signin extends Component {
     }
     if (
       this.state.page == 3 &&
-      !InitService.server_infos?.configuration?.account?.type ===
+      !InitService.server_infos?.configuration?.accounts?.type ===
         'internal'.disable_email_verification
     ) {
       var mail_inputs = 0;
@@ -286,7 +286,7 @@ export default class Signin extends Component {
     }
     if (
       this.state.page == 3 &&
-      InitService.server_infos?.configuration?.account?.type ===
+      InitService.server_infos?.configuration?.accounts?.type ===
         'internal'.disable_email_verification
     ) {
       return (

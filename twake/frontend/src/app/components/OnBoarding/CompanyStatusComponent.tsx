@@ -13,7 +13,7 @@ const CompanyStatusComponent = (): JSX.Element => {
   const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
 
   useEffect(() => {
-    if (InitService.server_infos?.configuration?.account?.type === 'console') {
+    if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
       isNewAccount();
     }
   }, []);

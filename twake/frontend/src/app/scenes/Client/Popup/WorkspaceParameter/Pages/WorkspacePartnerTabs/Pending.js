@@ -24,7 +24,7 @@ export default class Pending extends React.Component {
           onAdd={
             workspaceUserRightsService.hasWorkspacePrivilege() &&
             (() => {
-              if (InitService.server_infos?.configuration?.account?.type === 'console') {
+              if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
                 return popupManager.open(<AddUserFromTwakeConsole standalone />);
               } else {
                 return popupManager.open(<AddUser standalone />);
