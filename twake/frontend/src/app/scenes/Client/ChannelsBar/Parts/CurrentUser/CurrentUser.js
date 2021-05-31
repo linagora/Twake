@@ -158,7 +158,7 @@ export default class CurrentUser extends Component {
         onClick: () => {
           if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
             return window.open(
-              InitService.server_infos?.auth?.console?.account_management_url,
+              InitService.server_infos?.configuration?.accounts?.console?.account_management_url,
               '_blank',
             );
           } else {

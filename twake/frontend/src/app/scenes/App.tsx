@@ -5,6 +5,7 @@ import WindowService from 'services/utils/window.js';
 import BadDevice from './BadDevice/BadDevice';
 import InitService from 'app/services/InitService';
 import { AuthProvider } from 'oidc-react';
+import LoginService from '../services/login/LoginService';
 
 export default () => {
   const isAppReady = InitService.useWatcher(() => InitService.app_ready);
@@ -29,8 +30,8 @@ export default () => {
     </BadDevice>
   );
 
-  if (InitService.server_infos?.configuration.accounts.type === 'console') {
-    return <AuthProvider>{page}</AuthProvider>;
+  if (InitService.server_infos?.configuration.accounts.type === 'console' && !publicAccess) {
+    return <AuthProvider {...LoginService.getAuthProviderConfiguration()}>{page}</AuthProvider>;
   }
 
   return page;

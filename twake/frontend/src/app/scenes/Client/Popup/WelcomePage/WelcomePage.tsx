@@ -44,7 +44,7 @@ export default class WelcomePage extends Component {
     }
   }
   displayPage(page: number) {
-    const auth = InitService.server_infos?.auth as any;
+    const auth = InitService.server_infos?.configuration?.accounts;
 
     if (page == 1) {
       return (
@@ -58,7 +58,7 @@ export default class WelcomePage extends Component {
             <Emojione type=":crying_cat_face:" />
           </div>
 
-          {auth?.internal?.use && (
+          {auth?.type === 'internal' && (
             <div
               className="button big"
               onClick={() => Workspaces.openCreateCompanyPage(<CreateCompanyView />)}
@@ -74,7 +74,7 @@ export default class WelcomePage extends Component {
           </div>
 
           <div className="otherMail text">
-            {auth?.internal?.use && (
+            {auth?.type === 'internal' && (
               <>
                 <div className="label">
                   {Languages.t(

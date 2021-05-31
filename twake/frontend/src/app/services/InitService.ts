@@ -16,6 +16,8 @@ type ServerInfoType = null | {
     accounts: {
       type: 'console' | 'internal';
       console: null | {
+        authority: string;
+        client_id: string;
         max_unverified_days: number;
         account_management_url: string;
         company_management_url: string;

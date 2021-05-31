@@ -6,21 +6,19 @@ import InitService from './InitService';
 
 class ConsoleService {
   public getCompanyManagementUrl(companyId: string) {
-    const identity_provider_id = DepreciatedCollections.get('groups').find(companyId)
-      ?.identity_provider_id;
-    return (InitService.server_infos?.auth?.console?.company_management_url || '').replace(
-      '{company_id}',
-      identity_provider_id,
-    );
+    const identity_provider_id =
+      DepreciatedCollections.get('groups').find(companyId)?.identity_provider_id;
+    return (
+      InitService.server_infos?.configuration?.accounts?.console?.company_management_url || ''
+    ).replace('{company_id}', identity_provider_id);
   }
 
   public getCompanyUsersManagementUrl(companyId: string) {
-    const identity_provider_id = DepreciatedCollections.get('groups').find(companyId)
-      ?.identity_provider_id;
-    return (InitService.server_infos?.auth?.console?.collaborators_management_url || '').replace(
-      '{company_id}',
-      identity_provider_id,
-    );
+    const identity_provider_id =
+      DepreciatedCollections.get('groups').find(companyId)?.identity_provider_id;
+    return (
+      InitService.server_infos?.configuration?.accounts?.console?.collaborators_management_url || ''
+    ).replace('{company_id}', identity_provider_id);
   }
 
   public verifyMail() {

@@ -57,6 +57,8 @@ class Login extends Observable {
   }
 
   async init(did_wait = false) {
+    return;
+
     if (!did_wait) {
       LocalStorage.getItem('api_root_url', res => {
         this.init(true);
