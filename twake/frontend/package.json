@@ -153,6 +153,8 @@
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
     "node-sass": "^4.13.1",
+    "oidc-client": "^1.11.5",
+    "oidc-react": "^1.5.1",
     "optimize-css-assets-webpack-plugin": "5.0.3",
     "pnp-webpack-plugin": "1.6.4",
     "postcss-flexbugs-fixes": "4.2.1",

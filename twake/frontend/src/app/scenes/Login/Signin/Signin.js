@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
+import AccountService from 'services/login/account';
 import Emojione from 'components/Emojione/Emojione';
 import StepCounter from 'components/StepCounter/StepCounter.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
@@ -165,8 +166,8 @@ export default class Signin extends Component {
             {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_a')}{' '}
             <Emojione type=":raised_hand:" />
           </div>
-          {(!InitService.server_infos.branding.name ||
-            InitService.server_infos.branding.enable_newsletter) &&
+          {(!InitService.server_infos?.configuration?.branding.name ||
+            InitService.server_infos?.configuration?.branding.enable_newsletter) &&
             ((InitService.server_infos || {}).branding || {}).enable_newsletter !== false && (
               <div className="subtitle">
                 {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_b')}
@@ -200,8 +201,8 @@ export default class Signin extends Component {
             value={this.state.firstName}
             onChange={evt => this.setState({ firstName: evt.target.value })}
           />
-          {(!InitService.server_infos.branding.name ||
-            InitService.server_infos.branding.enable_newsletter) &&
+          {(!InitService.server_infos?.configuration?.branding.name ||
+            InitService.server_infos?.configuration?.branding.enable_newsletter) &&
             ((InitService.server_infos || {}).branding || {}).enable_newsletter !== false && [
               <Input
                 key="phone"
@@ -246,7 +247,8 @@ export default class Signin extends Component {
     }
     if (
       this.state.page == 3 &&
-      !(((InitService.server_infos || {}).auth || {}).internal || {}).disable_email_verification
+      !InitService.server_infos?.configuration?.account?.type ===
+        'internal'.disable_email_verification
     ) {
       var mail_inputs = 0;
       var last_not_empty = 0;
@@ -284,7 +286,8 @@ export default class Signin extends Component {
     }
     if (
       this.state.page == 3 &&
-      (((InitService.server_infos || {}).auth || {}).internal || {}).disable_email_verification
+      InitService.server_infos?.configuration?.account?.type ===
+        'internal'.disable_email_verification
     ) {
       return (
         <div className="">
@@ -324,7 +327,7 @@ export default class Signin extends Component {
     }
   }
   subscribeMail() {
-    LoginService.subscribeMail(
+    AccountService.subscribeMail(
       this.state.username,
       this.state.password,
       this.state.name,
@@ -339,7 +342,7 @@ export default class Signin extends Component {
   next() {
     if (this.state.page == 1) {
       if (this.checkForm()) {
-        this.state.login.checkMailandUsername(
+        AccountService.checkMailandUsername(
           this.state.email,
           this.state.username,
           (th, value) => {

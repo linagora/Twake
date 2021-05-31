@@ -4,6 +4,7 @@ import Globals from 'services/Globals.js';
 import WindowService from 'services/utils/window.js';
 import BadDevice from './BadDevice/BadDevice';
 import InitService from 'app/services/InitService';
+import { AuthProvider } from 'oidc-react';
 
 export default () => {
   const isAppReady = InitService.useWatcher(() => InitService.app_ready);
@@ -22,9 +23,15 @@ export default () => {
     (Globals as any).store_publicAccess_get_data = WindowService.allGetParameter();
   }
 
-  return (
+  const page = (
     <BadDevice force={publicAccess}>
       <ClientPage />
     </BadDevice>
   );
+
+  if (InitService.server_infos?.configuration.accounts.type === 'console') {
+    return <AuthProvider>{page}</AuthProvider>;
+  }
+
+  return page;
 };

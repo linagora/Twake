@@ -251,7 +251,7 @@ class Workspaces extends Observable {
         group_id = res.data.workspace.group.id;
         workspace = res.data.workspace;
         if (wsMembers.length > 0) {
-          if (InitService.server_infos?.auth?.console?.use) {
+          if (InitService.server_infos?.configuration?.account?.type === 'console') {
             //Invite using console
             ConsoleService.addMailsInWorkspace({
               workspace_id: res.data.workspace.id || '',

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
+import AccountService from 'services/login/account.js';
 import Emojione from 'components/Emojione/Emojione';
 import StepCounter from 'components/StepCounter/StepCounter.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
@@ -292,19 +293,19 @@ export default class ForgotPassword extends Component {
   next() {
     if (this.state.page == 1) {
       if (this.checkForm()) {
-        LoginService.recover(this.state.email, () => {
+        AccountService.recover(this.state.email, () => {
           this.setState({ page: this.state.page + 1 });
         });
       }
     } else if (this.state.page == 2) {
       if (this.checkForm()) {
-        LoginService.recoverCode(this.state.code, () => {
+        AccountService.recoverCode(this.state.code, () => {
           this.setState({ page: this.state.page + 1 });
         });
       }
     } else if (this.state.page == 3) {
       if (this.checkForm()) {
-        LoginService.recoverNewPassword(this.state.password1, this.state.password2, () => {
+        AccountService.recoverNewPassword(this.state.password1, this.state.password2, () => {
           this.setState({ page: this.state.page + 1 });
         });
       }
