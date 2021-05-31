@@ -10,10 +10,11 @@ import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/f
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
-import { Message } from "../../entities/messages";
+import { Message, TYPE as MessageTableName } from "../../entities/messages";
 import {
   BookmarkOperation,
   MessageLocalEvent,
+  MessagesSaveOptions,
   PinOperation,
   ReactionOperation,
   ThreadExecutionContext,
@@ -35,17 +36,27 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   async init(context: TwakeContext): Promise<this> {
-    this.repository = await this.database.getRepository<Message>("messages", Message);
+    this.repository = await this.database.getRepository<Message>(MessageTableName, Message);
     await this.operations.init(context);
     return this;
   }
 
-  async save<SaveOptions>(
+  /**
+   * Save a message
+   * The server / application / users can do different actions
+   * @param item
+   * @param options
+   * @param context
+   * @returns SaveResult<Message>
+   */
+  async save(
     item: Message,
-    options?: SaveOptions,
+    options?: MessagesSaveOptions,
     context?: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
+    const serverRequest = context?.user?.server_request;
+
+    if (!serverRequest && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't write this message.");
     }
@@ -55,7 +66,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     let message = getDefaultMessageInstance(item, context);
 
     //We try to update an existing message
-    if (item.id) {
+    if (!created) {
       const messageToUpdate = await this.repository.findOne({
         id: item.id,
         thread_id: context.thread.id,
@@ -65,9 +76,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       // - Server itself
       // - Message owner
       // - Application owner
-      // Deleted messages cannot be edited
+      // Deleted messages cannot be edited except by server itself
       if (
-        !context?.user?.server_request &&
+        !serverRequest &&
         (!messageToUpdate ||
           (context?.user?.application_id !== messageToUpdate.application_id &&
             context.user.id !== messageToUpdate.user_id) ||
@@ -77,6 +88,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         throw Error("Can't edit this message.");
       }
 
+      //Created with forced id (server only)
       if (!messageToUpdate) {
         created = true;
       }
@@ -87,16 +99,16 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         };
 
         message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
-        if (context?.user?.application_id || context?.user?.server_request) {
+        if (context?.user?.application_id || serverRequest) {
           message = _.assign(message, _.pick(message, "override"));
         }
-      } else if (context?.user?.server_request) {
+      } else if (serverRequest) {
         message.id = item.id;
       }
     }
 
     //Server request can edit more fields
-    if (context?.user?.server_request) {
+    if (serverRequest) {
       message.created_at = item.created_at || message.created_at;
     }
 

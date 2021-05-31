@@ -1,6 +1,6 @@
 import { SaveResult, OperationType } from "../../../../core/platform/framework/api/crud-service";
 import { logger, TwakeContext } from "../../../../core/platform/framework";
-import { Message } from "../../entities/messages";
+import { Message, TYPE as MessageTableName } from "../../entities/messages";
 import {
   BookmarkOperation,
   PinOperation,
@@ -23,7 +23,7 @@ export class ThreadMessagesOperationsService {
   repository: Repository<Message>;
 
   async init(context: TwakeContext): Promise<this> {
-    this.repository = await this.database.getRepository<Message>("messages", Message);
+    this.repository = await this.database.getRepository<Message>(MessageTableName, Message);
     return this;
   }
 

@@ -71,8 +71,22 @@ export interface MessageViewListOptions {
 
 export interface MessageListQueryParameters extends PaginationQueryParameters {}
 
-export type PinOperation = { id: string; pin: boolean };
+export interface PinOperation {
+  id: string;
+  pin: boolean;
+}
 
-export type ReactionOperation = { id: string; reactions: string[] };
+export interface ReactionOperation {
+  id: string;
+  reactions: string[];
+}
 
-export type BookmarkOperation = { id: string; bookmark_id: string; active: boolean };
+export interface BookmarkOperation {
+  id: string;
+  bookmark_id: string;
+  active: boolean;
+}
+
+export interface MessagesSaveOptions {
+  previous_thread?: string; //If message was in a previous thread before (moved) then this indicate when is it from
+}
