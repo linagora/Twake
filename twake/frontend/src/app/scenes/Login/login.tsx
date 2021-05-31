@@ -30,6 +30,10 @@ export default () => {
     };
   }, []);
 
+  if (!server_infos_loaded) {
+    return <div />;
+  }
+
   return (
     <div className={'loginPage'}>
       {server_infos_loaded && !server_infos?.configuration?.branding?.name && (

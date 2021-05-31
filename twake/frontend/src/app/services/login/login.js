@@ -17,6 +17,7 @@ import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
+import WindowService from 'services/utils/window.js';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -57,14 +58,17 @@ class Login extends Observable {
   }
 
   async init(did_wait = false) {
-    return;
-
     if (!did_wait) {
       LocalStorage.getItem('api_root_url', res => {
         this.init(true);
       });
       return;
     }
+
+    if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
+      return;
+    }
+
     const cancelAutoLogin =
       !this.firstInit &&
       RouterServices.history.location.pathname === RouterServices.pathnames.LOGIN;
@@ -393,6 +397,19 @@ class Login extends Observable {
       });
       Collections.connect();
     }
+  }
+
+  getIsPublicAccess() {
+    let publicAccess = false;
+    const viewParameter = WindowService.findGetParameter('view') || '';
+    if (
+      (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
+      Globals.store_publicAccess_get_data
+    ) {
+      publicAccess = true;
+      Globals.store_publicAccess_get_data = WindowService.allGetParameter();
+    }
+    return publicAccess;
   }
 }
 

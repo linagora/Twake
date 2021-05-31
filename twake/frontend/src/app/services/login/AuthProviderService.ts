@@ -12,6 +12,8 @@ class LoginService extends Observable {
   getAuthProviderConfiguration(): AuthProviderConfiguration {
     const consoleConfiguration = InitService.server_infos?.configuration.accounts.console;
 
+    console.log('here');
+
     if (!this.authProviderUserManager) {
       this.authProviderUserManager = new Oidc.UserManager({
         authority: consoleConfiguration?.authority || environment.api_root_url,
@@ -19,7 +21,7 @@ class LoginService extends Observable {
         redirect_uri: environment.front_root_url + '/oidccallback',
         response_type: 'code',
         scope: 'openid offline_access',
-        post_logout_redirect_uri: environment.front_root_url + '/',
+        post_logout_redirect_uri: environment.front_root_url + '/logout',
         silent_redirect_uri: environment.front_root_url + '/silientrenew',
         automaticSilentRenew: true,
         loadUserInfo: true,
@@ -28,7 +30,7 @@ class LoginService extends Observable {
       });
 
       Oidc.Log.logger = console;
-      Oidc.Log.level = Oidc.Log.INFO;
+      Oidc.Log.level = Oidc.Log.DEBUG;
 
       this.authProviderUserManager.events.addUserLoaded(user => {
         console.log('New User Loaded：', user);
