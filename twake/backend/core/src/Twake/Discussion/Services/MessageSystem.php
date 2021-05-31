@@ -46,11 +46,8 @@ class MessageSystem
         }
         $response = $this->forwardToNode("GET", $uri, [], $current_user);
 
-        error_log("All responses: ");
-
         $messages = [];
         foreach($response["resources"] as $message){
-            error_log("--> " . json_encode($message));
             $messages[] = $this->convertFromNode($message, $channel);
             if($message["last_replies"]){
                 foreach($message["last_replies"] as $reply){
@@ -93,17 +90,12 @@ class MessageSystem
 
         if($object["id"]){
             //Manage message pin
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/pin", ["pin" => $object["pinned"]], $current_user, $application ? $application->getId() : null);
-            error_log("pin result: ".json_encode($response["pinned_info"]));
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/pin", ["pin" => [$object["pinned"]]], $current_user, $application ? $application->getId() : null);
         }
 
-        if(isset($object["_user_reaction"])){
+        if($object["_user_reaction"]){
             //Manage user reaction
-            if($object["_user_reaction"]){
-                $list = [$object["_user_reaction"]];
-            }
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => $list], $current_user, $application ? $application->getId() : null);
-
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => [$object["_user_reaction"]]], $current_user, $application ? $application->getId() : null);
         }else{
             //Manage message edition
 
@@ -141,8 +133,6 @@ class MessageSystem
                 $message["id"] = $response["resource"]["id"];
             }
 
-            error_log("upserted message request: ".json_encode($message));
-
             //New message in thread (also called for new threads because we set the parent_message_id automatically)
             if($object["parent_message_id"] && $newMessage){
 
@@ -171,7 +161,7 @@ class MessageSystem
 
         }
 
-        error_log("created message response: ".json_encode($response));
+        error_log(json_encode($response));
 
         return $this->convertFromNode($response["resource"], $channel);
     }
@@ -182,7 +172,7 @@ class MessageSystem
 
         $blocks = [[
             "type" => "twacode",
-            "content" => $object["content"]["formatted"] ?: $object["content"]["prepared"] ?: $object["content"]
+            "elements" => $object["content"]["formatted"] ?: $object["content"]["prepared"] ?: $object["content"]
         ]];
 
         $files = [];
@@ -198,22 +188,11 @@ class MessageSystem
             }
         }
 
-        $ephemeral = null;
-        if($object["_once_ephemeral_message"]){
-            $ephemeral = [
-                "id"=> $object["front_id"] ?: date("U"), //Identifier of the ephemeral message
-                "version" => date("U"), //Version of ephemeral message (to update the view)
-                "recipient" => $object["ephemeral_message_recipients"][0], //User that will see this ephemeral message
-                "recipient_context_id" => null //Recipient current view/tab/window to send the message to
-            ];
-        }
-
         return [
             "text" => $object["content"]["original_str"] ?: $object["content"]["fallback_string"],
             "blocks" => $blocks,
             "files" => $files,
-            "context" => $object["hidden_data"],
-            "ephemeral" => $ephemeral
+            "context" => $object["hidden_data"]
         ];
     }
 
@@ -241,24 +220,25 @@ class MessageSystem
 
         $phpMessage->setResponsesCount(max(0, $message["stats"]["replies"] - 1));
 
-        //TODO find the twacode block if exists or get the fallback string
+        // Find the twacode block if exists or get the fallback string
+        $prepared = [];
+        foreach( $message["blocks"] as $block ){
+            if($block["type"] === "twacode"){
+                $prepared = $block["elements"];
+            }
+            if($block["type"] === "section"){
+                $prepared = [["type" => "twacode", "content" => $block["text"]["mrkdwn"]["text"] ?: $block["text"]["plain_text"]["text"] ?: ""]];
+            }
+        }
 
         $phpMessage->setContent([
             "fallback_string" => $message["text"],
             "original_str" => $message["text"],
             "files" => $message["files"],
-            "prepared" => $message["blocks"][0]["content"]
+            "prepared" => $prepared
         ]);
 
-        $array = $phpMessage->getAsArray();
-
-        if($message["ephemeral"]){
-            $array["ephemeral_id"] = $message["ephemeral"]["id"];
-            $array["ephemeral_message_recipients"] = [$message["ephemeral"]["recipient"]];
-            $array["_user_ephemeral"] = true;
-        }
-
-        return $array;
+        return $phpMessage->getAsArray();
     }
 
     private function getInfosFromChannel($channelId){
@@ -274,6 +254,8 @@ class MessageSystem
         $uri = str_replace("/private", "/internal/services/messages/v1", $this->app->getContainer()->getParameter("node.api")) . 
             ltrim($route, "/");
        
+        error_log($user);
+
         $key = $this->app->getContainer()->getParameter("jwt.secret");
         $payload = [
             "exp" => date("U") + 60,
