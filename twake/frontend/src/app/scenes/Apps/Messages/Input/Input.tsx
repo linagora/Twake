@@ -1,11 +1,15 @@
 import React, { useState, useRef } from 'react';
+import { Send } from 'react-feather';
+import { EditorState } from 'draft-js';
 import InputOptions from './Parts/InputOptions';
-import InputAutocomplete from './Parts/InputAutocomplete';
 import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import { MessageEditorService } from 'app/services/Apps/Messages/MessageEditorService';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import AttachedFiles from './Parts/AttachedFiles';
+import RichTextEditorStateService from "app/components/RichTextEditor/EditorStateService";
+import { EditorView } from "app/components/RichTextEditor";
+import {toString} from "app/components/RichTextEditor/EditorDataParser";
 import './Input.scss';
 
 type Props = {
@@ -25,43 +29,33 @@ type Props = {
 };
 
 export default (props: Props) => {
+  const editorRef = useRef<EditorView>(null);
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
-  const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const refInput = useRef<any>(null);
   const messageEditorService: MessageEditorService = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
+  const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(props.channelId));
 
-  let autocomplete: any = null;
-  let disable_app: any = {};
-  let hasFilesAttached: boolean = messageEditorService.filesAttachements[props.threadId || 'main']
+  const disable_app: any = {};
+  const hasFilesAttached = messageEditorService.filesAttachements[props.threadId || 'main']
     ?.length
     ? true
     : false;
-  const onChange = (text: string) => {
-    setContent(text);
-  };
-  const onSend = async () => {
-    const content = await messageEditorService.getContent(props.threadId, props.messageId || '');
 
-    refInput?.current?.change('');
+  const onSend = () => {
+    // TODO: Get the type from props
+    const content = toString(editorState, "markdown");
 
     if (props.onSend) {
       props.onSend(content);
       return;
     }
-    if (
-      content.trim() ||
-      messageEditorService.filesAttachements[props.threadId || 'main']?.length
-    ) {
-      sendMessage(content);
-      autocomplete.setContent('');
-      autocomplete.blur();
 
-      return true;
+    if (content.trim() || messageEditorService.filesAttachements[props.threadId || 'main']?.length) {
+      sendMessage(content);
+      setEditorState(RichTextEditorStateService.clear(props.channelId).get(props.channelId));
     }
-    return false;
-  };
+  }
 
   const triggerApp = (app: any, from_icon: any, evt: any) => {
     if (disable_app[app.id] && new Date().getTime() - disable_app[app.id] < 1000) {
@@ -89,7 +83,7 @@ export default (props: Props) => {
             messageEditorService.currentEditor ===
             messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
           ) {
-            autocomplete.focus();
+            editorRef.current?.focus();
           }
           if (!message.parent_message_id) {
             messageEditorService.openEditor(message.id, props.messageId || '');
@@ -104,6 +98,16 @@ export default (props: Props) => {
   const focus = () => {
     messageEditorService.openEditor(props.threadId || '', props.messageId || '', props.context);
   };
+
+  const setRichTextEditorState = (editorState: EditorState): void => {
+    setEditorState(editorState);
+    RichTextEditorStateService.set(props.channelId, editorState);
+  }
+
+  const isEmpty = (): boolean => {
+    // TODO: Move editorState empty to a service
+    return (!editorState.getCurrentContent().getPlainText().trim() || hasFilesAttached); 
+  }
 
   return (
     <div
@@ -133,47 +137,67 @@ export default (props: Props) => {
           }
         }}
       />
+
       <AttachedFiles channelId={props.channelId} threadId={props.threadId} />
+
       {!hasEphemeralMessage && (
-        <InputAutocomplete
-          ref={refInput}
-          messageId={props.messageId || ''}
-          onPaste={(evt: any) => messageEditorService.getUploadZone(props.threadId).paste(evt)}
-          channelId={props.channelId}
-          threadId={props.threadId}
-          onChange={(text: string) => {
-            onChange(text);
-          }}
-          onSend={() => onSend()}
-          onFocus={() => focus()}
-          autocompleteRef={node => {
-            autocomplete = node || autocomplete;
-          }}
-          onEditLastMessage={() => {
-            MessagesService.startEditingLastMessage({
-              channel_id: props.channelId,
-              parent_message_id: props.threadId,
-            });
-          }}
-        />
+        <div className="editorview-submit">
+          <EditorView
+            ref={editorRef}
+            onChange={(editorState) => setRichTextEditorState(editorState)}
+            clearOnSubmit={true}
+            outputFormat="markdown"
+            editorState={editorState}
+            onSubmit={() => onSend()}
+          />
+          <div
+            className={'submit-button ' + (!isEmpty() ? '' : 'disabled ')}
+            onClick={() => {
+              if (!isEmpty()) {
+                onSend();
+              }
+            }}>
+            <Send className="send-icon" size={20} />
+          </div>
+        </div>
+
+        //
+        //<InputAutocomplete
+        //  ref={refInput}
+        //  messageId={props.messageId || ''}
+        //  onPaste={(evt: any) => messageEditorService.getUploadZone(props.threadId).paste(evt)}
+        //  channelId={props.channelId}
+        //  threadId={props.threadId}
+        //  onChange={(text: string) => {
+        //    onChange(text);
+        //  }}
+        //  onSend={() => onSend()}
+        //  onFocus={() => focus()}
+        //  autocompleteRef={node => {
+        //    autocomplete = node || autocomplete;
+        //  }}
+        //  onEditLastMessage={() => {
+        //    MessagesService.startEditingLastMessage({
+        //      channel_id: props.channelId,
+        //      parent_message_id: props.threadId,
+        //    });
+        //  }}
+        ///>
       )}
 
       {!hasEphemeralMessage && !props.messageId && (
         <InputOptions
-          inputValue={content}
-          isEmpty={!(content || hasFilesAttached)}
+          isEmpty={isEmpty()}
           channelId={props.channelId}
           threadId={props.threadId}
           onSend={() => onSend()}
           triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
           onAddEmoji={emoji => {
-            if (autocomplete) {
-              autocomplete && autocomplete.putTextAtCursor(' ' + emoji.native + ' ');
-              setTimeout(() => {
-                autocomplete && autocomplete.focus();
-              }, 200);
-            }
+            // TODO Add emoji
+            console.log('TODO Add emoji', emoji);
           }}
+          richTextEditorState={editorState}
+          onRichTextChange={(editorState) => setRichTextEditorState(editorState)}
         />
       )}
     </div>

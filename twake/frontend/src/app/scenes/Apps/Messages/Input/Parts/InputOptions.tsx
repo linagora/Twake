@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Send, Smile, AlignLeft, Video, MoreHorizontal, Paperclip } from 'react-feather';
+import { EditorState } from 'draft-js';
+import { Smile, Send, Video, MoreHorizontal, Paperclip, Type, Bold } from 'react-feather';
+import RichTextEditorStateService from "app/components/RichTextEditor/EditorStateService";
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
@@ -8,18 +10,21 @@ import popupManager from 'services/popupManager/popupManager.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
+import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
 
 type Props = {
-  inputValue: string;
   channelId: string;
   threadId: string;
   onAddEmoji?: (emoji: any) => void;
   onSend?: () => void;
   triggerApp?: (app: any, fromIcon: any, evt: any) => void;
   isEmpty: boolean;
+  onRichTextChange: (editorState: EditorState) => void;
+  richTextEditorState: EditorState;
 };
 
 export default (props: Props) => {
+  const [displayRichText, setDisplayRichText] = useState(false);
   var addon_menu: any[] = [];
   var addon_right_icon: any[] = [];
   var addon_files: any[] = [];
@@ -90,91 +95,110 @@ export default (props: Props) => {
     }
   }
 
-  return (
-    <div className="input-options">
-      <Menu
-        className="option"
-        position="top"
-        menu={[
-          {
-            type: 'menu',
-            icon: 'desktop',
-            text: 'From computer',
-            onClick: (evt: any) => {
-              MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
-            },
-          },
-          ...addon_files,
-        ]}
-      >
-        <Paperclip size={16} />
-      </Menu>
+  const RichTextToolbar = () => (
+    <EditorToolbar
+      editorState={props.richTextEditorState}
+      onChange={editorState => props.onRichTextChange(editorState)}
+    />
+  )
 
-      {props.onAddEmoji && (
+  const toggleEditionMode = () => {
+    setDisplayRichText(!displayRichText);
+  }
+
+  return (
+    <div className="input-toolbar">
+      <div className="input-options">
         <Menu
           className="option"
+          position="top"
           menu={[
             {
-              type: 'react-element',
-              className: 'menu-cancel-margin',
-              reactElement: () => {
-                return (
-                  <EmojiPicker
-                    onChange={(emoji: any) => {
-                      MenusManager.closeMenu();
-                      props.onAddEmoji && props.onAddEmoji(emoji);
-                    }}
-                  />
-                );
+              type: 'menu',
+              icon: 'desktop',
+              text: 'From computer',
+              onClick: (evt: any) => {
+                MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
               },
             },
+            ...addon_files,
           ]}
-          position="top"
         >
-          <Smile size={16} />
+          <Paperclip size={16} />
         </Menu>
-      )}
-      {addon_calls.length > 1 && (
-        <Menu className="option" position="top" menu={addon_calls}>
-          <Video size={16} />
-        </Menu>
-      )}
-      {addon_calls.length === 1 && (
-        <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
-          <Video size={16} />
-        </div>
-      )}
 
-      {addon_right_icon.map((app: any) => {
-        return (
-          <div
+        {props.onAddEmoji && (
+          <Menu
             className="option"
-            onClick={(evt: any) => {
-              props.triggerApp && props.triggerApp(app, true, evt);
-            }}
+            menu={[
+              {
+                type: 'react-element',
+                className: 'menu-cancel-margin',
+                reactElement: () => {
+                  return (
+                    <EmojiPicker
+                      onChange={(emoji: any) => {
+                        MenusManager.closeMenu();
+                        props.onAddEmoji && props.onAddEmoji(emoji);
+                      }}
+                    />
+                  );
+                },
+              },
+            ]}
+            position="top"
           >
-            <div
-              className="messages-input-app-icon"
-              style={{
-                backgroundImage:
-                  'url(' + (app.display.messages_module.right_icon.icon_url || app.icon_url) + ')',
-              }}
-            />
+            <Smile size={16} />
+          </Menu>
+        )}
+        {addon_calls.length > 1 && (
+          <Menu className="option" position="top" menu={addon_calls}>
+            <Video size={16} />
+          </Menu>
+        )}
+        {addon_calls.length === 1 && (
+          <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
+            <Video size={16} />
           </div>
-        );
-      })}
+        )}
 
-      {addon_menu.length > 0 && (
-        <Menu className="option" position="top" menu={addon_menu}>
-          <MoreHorizontal size={16} />
-        </Menu>
-      )}
-      <div style={{ flex: 1 }} />
-      <div
-        className={'option ' + (!props.isEmpty ? '' : 'disabled ')}
-        onClick={() => !props.isEmpty && props.onSend && props.onSend()}
-      >
-        <Send size={16} />
+        {addon_right_icon.map((app: any) => {
+          return (
+            <div
+              className="option"
+              onClick={(evt: any) => {
+                props.triggerApp && props.triggerApp(app, true, evt);
+              }}
+            >
+              <div
+                className="messages-input-app-icon"
+                style={{
+                  backgroundImage:
+                    'url(' + (app.display.messages_module.right_icon.icon_url || app.icon_url) + ')',
+                }}
+              />
+            </div>
+          );
+        })}
+        
+        <Type
+          size={16}
+          className="option"
+          onMouseDown={(e) => {
+            e.preventDefault();
+            toggleEditionMode();
+          }}
+        />
+
+        {addon_menu.length > 0 && (
+          <Menu className="option" position="top" menu={addon_menu}>
+            <MoreHorizontal size={16} />
+          </Menu>
+        )}
+        <div style={{ flex: 1 }} />
+      </div>
+      <div className="input-options-toolbar">
+        {displayRichText && <RichTextToolbar />}
       </div>
     </div>
   );

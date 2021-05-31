@@ -6,7 +6,7 @@ import useEmojis, { EmojiSuggestionType } from "./components/emoji";
 import { SuggestionList } from "./components/suggestion/SuggestionList";
 import EmojiSuggestion from "./components/emoji/EmojiSuggestion";
 import MentionSuggestion from "./components/mentions/MentionSuggestion";
-import EditorToolbar from "./EditorToolbar";
+import "./Editor.scss";
 
 const { isSoftNewlineEvent } = KeyBindingUtil;
 
@@ -29,7 +29,9 @@ type CurrentSuggestion<T> = {
 };
 
 type EditorProps = {
+  editorState: EditorState;
   onSubmit?: (content: string, editorState?: EditorState) => void;
+  onChange?: (editorState: EditorState) => void;
   clearOnSubmit: boolean;
   outputFormat: EditorTextFormat;
 };
@@ -41,7 +43,6 @@ export type EditorSuggestionPlugin<SuggestionType> = {
 };
 
 type EditorViewState = {
-  editorState: EditorState;
   activeMentionSuggestion: CurrentSuggestion<MentionSuggestionType> | null;
   activeEmojiSuggestion: CurrentSuggestion<EmojiSuggestionType> | null;
 };
@@ -51,7 +52,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   editor!: Editor | null;
   emojis: EditorSuggestionPlugin<EmojiSuggestionType>;
   mentions: EditorSuggestionPlugin<MentionSuggestionType>;
-  decorators: CompositeDecorator;
 
   constructor(props: EditorProps) {
     super(props);
@@ -59,20 +59,18 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     this.emojis = useEmojis();
     this.mentions = useMentions();
     this.outputFormat = this.props.outputFormat || "markdown";
-
-    // TODO: Create decorators from configuration
-    this.decorators = new CompositeDecorator([this.emojis.decorator, this.mentions.decorator]);
-    
-    // TODO: Populate state from configuration and activated decorators
     this.state = this.getInitialState();
   }
 
   private getInitialState(): EditorViewState {
     return {
-      editorState: EditorState.createEmpty(this.decorators),
       activeMentionSuggestion: null,
       activeEmojiSuggestion: null,
     }
+  }
+
+  private shouldDisplaySuggestions(): boolean {
+    return !!(this.state.activeEmojiSuggestion?.items.length || this.state.activeMentionSuggestion?.items.length);
   }
 
   handleKeyCommand(command: DraftEditorCommand, editorState: EditorState): DraftHandleValue {
@@ -90,6 +88,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     if (this._handleReturnSoftNewline(e, editorState)) {
       return 'handled';
     }
+    
+    // TODO: Handle when suggestion is displayed. Pressing 'Enter' should not submit but select the choice 
 
     if (this.submit(editorState)) {
       return 'handled';
@@ -143,11 +143,13 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
   
   focus() {
+    console.log("FOCUS EDITOR");
     this.editor?.focus();
   }
   
   onChange(editorState: EditorState) {
-    this.setState({ editorState }, this.updateSuggestionsState.bind(this));
+    this.updateSuggestionsState();
+    this.props.onChange && this.props.onChange(editorState);
   }
   
   updateSuggestionsState(): void {
@@ -186,19 +188,19 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
   
   handleMentionSuggestionSelected(user: MentionSuggestionType) {
-    const { editorState, activeMentionSuggestion } = this.state; 
-    this.onChange(addMention(editorState, activeMentionSuggestion, user, "@"));
+    const { activeMentionSuggestion } = this.state; 
+    this.onChange(addMention(this.props.editorState, activeMentionSuggestion, user, "@"));
     this.setState({ activeMentionSuggestion: null }, () => {
       requestAnimationFrame(() => this.focus());
-    })
+    });
   }
-
+  
   handleEmojiSuggestionSelected(emoji: EmojiSuggestionType) {
-    const { editorState, activeEmojiSuggestion } = this.state; 
-    this.onChange(addEmoji(editorState, activeEmojiSuggestion, emoji));
+    const { activeEmojiSuggestion } = this.state; 
+    this.onChange(addEmoji(this.props.editorState, activeEmojiSuggestion, emoji));
     this.setState({ activeEmojiSuggestion: null }, () => {
       requestAnimationFrame(() => this.focus());
-    })
+    });
   }
 
   render() {
@@ -208,37 +210,41 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       
       <Editor
         ref={ node => this.editor = node }
-        editorState={ this.state.editorState } 
+        editorState={ this.props.editorState } 
         onChange={this.onChange.bind(this)}
         handleKeyCommand={this.handleKeyCommand.bind(this)}
         handleReturn={this.handleReturn.bind(this)}
-        placeholder="Type a message, @mention someone, #tag, /actionable"
+        placeholder="Type a message, @mention someone"
         />
-        <EditorToolbar
-          editorState={this.state.editorState}
-          onChange={this.onChange.bind(this)}
-        />
-      
-      <div style={{ position: "relative", top: "-40px" }}>  
+        
         {(
-          this.state.activeMentionSuggestion?.items.length &&
-          <SuggestionList<MentionSuggestionType>
-            list={this.state.activeMentionSuggestion?.items}
-            position={"top"}
-            renderItem={(props: MentionSuggestionType) => (<MentionSuggestion {...props} />)}
-            onSelected={this.handleMentionSuggestionSelected.bind(this)}
-          />
-        )}
+          this.shouldDisplaySuggestions() &&  
+            <div style={{ position: "relative", top: "-40px" }} className="suggestions">
+              {(
+                this.state.activeMentionSuggestion?.items.length &&
+                <div className="mentions">
+                  <SuggestionList<MentionSuggestionType>
+                    list={this.state.activeMentionSuggestion?.items}
+                    position={"top"}
+                    renderItem={(props: MentionSuggestionType) => (<MentionSuggestion {...props} />)}
+                    onSelected={this.handleMentionSuggestionSelected.bind(this)}
+                  />
+                </div>
+              )}
 
-        {(
-          this.state.activeEmojiSuggestion?.items.length && <SuggestionList<EmojiSuggestionType>
-          list={this.state.activeEmojiSuggestion?.items}
-          position={"top"}
-          renderItem={(props: EmojiSuggestionType) => (<EmojiSuggestion {...props} />)}
-          onSelected={this.handleEmojiSuggestionSelected.bind(this)}
-          />
+              {(
+                this.state.activeEmojiSuggestion?.items.length &&
+                <div className="emojis">
+                  <SuggestionList<EmojiSuggestionType>
+                  list={this.state.activeEmojiSuggestion?.items}
+                  position={"top"}
+                  renderItem={(props: EmojiSuggestionType) => (<EmojiSuggestion {...props} />)}
+                  onSelected={this.handleEmojiSuggestionSelected.bind(this)}
+                  />
+                </div>
+              )}
+          </div>
         )}
-      </div>
     </div>
   }
 }

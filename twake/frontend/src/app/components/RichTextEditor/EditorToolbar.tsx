@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { EditorState, RichUtils } from "draft-js";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import { BoldOutlined, UnderlineOutlined, ItalicOutlined, StrikethroughOutlined, CodeOutlined } from '@ant-design/icons';
 import DefaultToolbarConfig, { GroupName, StyleConfig, ToolbarConfig } from "./EditorToolbarConfig";
 import "./EditorToolbar.scss";
@@ -14,10 +14,12 @@ type EditorToolbarProps = {
   toobarConfig?: ToolbarConfig;
   editorState: EditorState;
   onChange: ChangeHandler;
+  buttonSize?: number;
 };
 
 export default (props: EditorToolbarProps) => {
   const toolbarConfig = props.toobarConfig || DefaultToolbarConfig;
+  const buttonSize = props.buttonSize || 16;
   const buttonGroups = toolbarConfig.display.map(groupName => {
     switch (groupName) {
       case 'INLINE_STYLE_BUTTONS': {
@@ -39,6 +41,7 @@ export default (props: EditorToolbarProps) => {
     const buttons = (config.INLINE_STYLE_BUTTONS || []).map((type, index) => (
       <Button
         key={`${index}`}
+        size="small"
         type="text"
         onMouseDown={e => {
           e.preventDefault();
@@ -59,19 +62,18 @@ export default (props: EditorToolbarProps) => {
   function getIcon(style: StyleConfig): ReactNode {
     switch (style.style) {
       case "BOLD":
-        return <BoldOutlined/>;
+        return <BoldOutlined style={{fontSize: buttonSize}}/>;
       case "ITALIC":
-        return <ItalicOutlined/>;
+        return <ItalicOutlined style={{fontSize: buttonSize}}/>;
       case "UNDERLINE":
-        return <UnderlineOutlined/>;
+        return <UnderlineOutlined style={{fontSize: buttonSize}}/>;
       case "STRIKETHROUGH":
-        return <StrikethroughOutlined/>;
+        return <StrikethroughOutlined style={{fontSize: buttonSize}}/>;
       case "CODE":
-        return <CodeOutlined/>;
+        return <CodeOutlined style={{fontSize: buttonSize}}/>;
       default:
         return <></>;
     }
-
   }
 
   function _toggleInlineStyle(inlineStyle: string) {
