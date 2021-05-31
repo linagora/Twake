@@ -166,7 +166,7 @@ export default class Signin extends Component {
             {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_a')}{' '}
             <Emojione type=":raised_hand:" />
           </div>
-          {(!InitService.server_infos?.configuration?.branding.name ||
+          {(!InitService.server_infos?.configuration?.branding?.name ||
             InitService.server_infos?.configuration?.branding.enable_newsletter) &&
             ((InitService.server_infos || {}).branding || {}).enable_newsletter !== false && (
               <div className="subtitle">
@@ -201,7 +201,7 @@ export default class Signin extends Component {
             value={this.state.firstName}
             onChange={evt => this.setState({ firstName: evt.target.value })}
           />
-          {(!InitService.server_infos?.configuration?.branding.name ||
+          {(!InitService.server_infos?.configuration?.branding?.name ||
             InitService.server_infos?.configuration?.branding.enable_newsletter) &&
             ((InitService.server_infos || {}).branding || {}).enable_newsletter !== false && [
               <Input
