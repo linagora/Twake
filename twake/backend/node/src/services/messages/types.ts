@@ -70,3 +70,9 @@ export interface MessageViewListOptions {
 }
 
 export interface MessageListQueryParameters extends PaginationQueryParameters {}
+
+export type PinOperation = { id: string; pin: boolean };
+
+export type ReactionOperation = { id: string; reactions: string[] };
+
+export type BookmarkOperation = { id: string; bookmark_id: string; active: boolean };
