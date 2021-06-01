@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { EditorState } from 'draft-js';
-import { Smile, Send, Video, MoreHorizontal, Paperclip, Type, Bold } from 'react-feather';
-import RichTextEditorStateService from "app/components/RichTextEditor/EditorStateService";
+import { Smile, Video, MoreHorizontal, Paperclip, Type } from 'react-feather';
+import { Button } from 'antd';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
@@ -109,91 +109,105 @@ export default (props: Props) => {
   return (
     <div className="input-toolbar">
       <div className="input-options">
-        <Menu
-          className="option"
-          position="top"
-          menu={[
-            {
-              type: 'menu',
-              icon: 'desktop',
-              text: 'From computer',
-              onClick: (evt: any) => {
-                MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
-              },
-            },
-            ...addon_files,
-          ]}
-        >
-          <Paperclip size={16} />
-        </Menu>
-
-        {props.onAddEmoji && (
+        <Button type="text" size="small">
           <Menu
             className="option"
+            position="top"
             menu={[
               {
-                type: 'react-element',
-                className: 'menu-cancel-margin',
-                reactElement: () => {
-                  return (
-                    <EmojiPicker
-                      onChange={(emoji: any) => {
-                        MenusManager.closeMenu();
-                        props.onAddEmoji && props.onAddEmoji(emoji);
-                      }}
-                    />
-                  );
+                type: 'menu',
+                icon: 'desktop',
+                text: 'From computer',
+                onClick: (evt: any) => {
+                  MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
                 },
               },
+              ...addon_files,
             ]}
-            position="top"
           >
-            <Smile size={16} />
+            <Paperclip size={16} />
           </Menu>
+        </Button>
+
+        {props.onAddEmoji && (
+          <Button type="text" size="small">
+            <Menu
+              className="option"
+              menu={[
+                {
+                  type: 'react-element',
+                  className: 'menu-cancel-margin',
+                  reactElement: () => {
+                    return (
+                      <EmojiPicker
+                        onChange={(emoji: any) => {
+                          MenusManager.closeMenu();
+                          props.onAddEmoji && props.onAddEmoji(emoji);
+                        }}
+                      />
+                    );
+                  },
+                },
+              ]}
+              position="top"
+            >
+              <Smile size={16} />
+            </Menu>
+          </Button>
         )}
         {addon_calls.length > 1 && (
-          <Menu className="option" position="top" menu={addon_calls}>
-            <Video size={16} />
-          </Menu>
+          <Button type="text" size="small">
+            <Menu className="option" position="top" menu={addon_calls}>
+              <Video size={16} />
+            </Menu>
+          </Button>
         )}
         {addon_calls.length === 1 && (
-          <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
-            <Video size={16} />
-          </div>
+          <Button type="text" size="small">
+            <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
+              <Video size={16} />
+            </div>
+          </Button>
         )}
 
         {addon_right_icon.map((app: any) => {
           return (
-            <div
-              className="option"
-              onClick={(evt: any) => {
-                props.triggerApp && props.triggerApp(app, true, evt);
-              }}
-            >
+            <Button type="text" size="small">
               <div
-                className="messages-input-app-icon"
-                style={{
-                  backgroundImage:
-                    'url(' + (app.display.messages_module.right_icon.icon_url || app.icon_url) + ')',
+                className="option"
+                onClick={(evt: any) => {
+                  props.triggerApp && props.triggerApp(app, true, evt);
                 }}
-              />
-            </div>
+              >
+                <div
+                  className="messages-input-app-icon"
+                  style={{
+                    backgroundImage:
+                      'url(' + (app.display.messages_module.right_icon.icon_url || app.icon_url) + ')',
+                  }}
+                />
+              </div>
+            </Button>
           );
         })}
         
-        <Type
-          size={16}
-          className="option"
-          onMouseDown={(e) => {
-            e.preventDefault();
-            toggleEditionMode();
-          }}
-        />
+        <Button type="text" size="small">
+          <Type
+            size={16}
+            className="option"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              toggleEditionMode();
+            }}
+          />
+        </Button>
 
         {addon_menu.length > 0 && (
-          <Menu className="option" position="top" menu={addon_menu}>
-            <MoreHorizontal size={16} />
-          </Menu>
+          <Button type="text" size="small">
+            <Menu className="option" position="top" menu={addon_menu}>
+              <MoreHorizontal size={16} />
+            </Menu>
+          </Button>
         )}
         <div style={{ flex: 1 }} />
       </div>

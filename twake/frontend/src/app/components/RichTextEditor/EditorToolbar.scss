@@ -6,4 +6,13 @@
       color: var(--black);
     }
   }
+
+  .button-group {
+    display: flex;
+    align-items: center;
+
+    .anticon-strikethrough {
+      padding-bottom: 2px;
+    }
+  }
 }

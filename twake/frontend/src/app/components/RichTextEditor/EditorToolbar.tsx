@@ -1,7 +1,8 @@
 import React, { ReactNode } from "react";
 import { EditorState, RichUtils } from "draft-js";
-import { Button, Tooltip } from "antd";
-import { BoldOutlined, UnderlineOutlined, ItalicOutlined, StrikethroughOutlined, CodeOutlined } from '@ant-design/icons';
+import { Bold, Underline, Italic, Code } from "react-feather";
+import { Button } from "antd";
+import { StrikethroughOutlined } from '@ant-design/icons';
 import DefaultToolbarConfig, { GroupName, StyleConfig, ToolbarConfig } from "./EditorToolbarConfig";
 import "./EditorToolbar.scss";
 
@@ -62,15 +63,15 @@ export default (props: EditorToolbarProps) => {
   function getIcon(style: StyleConfig): ReactNode {
     switch (style.style) {
       case "BOLD":
-        return <BoldOutlined style={{fontSize: buttonSize}}/>;
+        return <Bold size={buttonSize}/>;
       case "ITALIC":
-        return <ItalicOutlined style={{fontSize: buttonSize}}/>;
+        return <Italic size={buttonSize}/>;
       case "UNDERLINE":
-        return <UnderlineOutlined style={{fontSize: buttonSize}}/>;
+        return <Underline size={buttonSize}/>;
       case "STRIKETHROUGH":
         return <StrikethroughOutlined style={{fontSize: buttonSize}}/>;
       case "CODE":
-        return <CodeOutlined style={{fontSize: buttonSize}}/>;
+        return <Code size={buttonSize}/>;
       default:
         return <></>;
     }
