@@ -30,7 +30,7 @@ type MenuItem = {
 }
 
 export default (props: Props) => {
-  const [displayRichText, setDisplayRichText] = useState(false);
+  const [displayRichTextOptions, setDisplayRichTextOptions] = useState(false);
   const [displayFileMenu, setDisplayFileMenu] = useState(false);
   const [displayFileMenuTooltip, setDisplayFileMenuTooltip] = useState(false);
   const [displayEmojiMenu, setDisplayEmojiMenu] = useState(false);
@@ -90,8 +90,8 @@ export default (props: Props) => {
     />
   )
 
-  const toggleEditionMode = () => {
-    setDisplayRichText(!displayRichText);
+  const displayToolbar = () => {
+    return displayRichTextOptions;
   }
 
   return (
@@ -193,7 +193,7 @@ export default (props: Props) => {
         )}
 
         <Tooltip placement="top"
-          title={displayRichText
+          title={displayRichTextOptions
             ? Languages.t("scenes.apps.messages.input.hide_formatting", [], "Hide formatting")
             : Languages.t("scenes.apps.messages.input.show_formatting", [], "Show formatting")
           }>
@@ -203,7 +203,7 @@ export default (props: Props) => {
               className="option"
               onMouseDown={(e) => {
                 e.preventDefault();
-                toggleEditionMode();
+                setDisplayRichTextOptions(!displayRichTextOptions);
               }}
             />
           </Button>
@@ -240,7 +240,8 @@ export default (props: Props) => {
       </div>
 
       <div className="input-options-toolbar">
-        <div className={`richtext-toolbar ${displayRichText ? "show" : "hide"}`}>
+        <div className={`input-options-toolbar-separator ${displayToolbar() ? "show" : "hide"}`}></div>
+        <div className={`richtext-toolbar ${displayRichTextOptions ? "show" : "hide"}`}>
           <RichTextToolbar />
         </div>
       </div>
