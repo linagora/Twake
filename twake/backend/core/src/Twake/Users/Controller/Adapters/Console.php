@@ -116,34 +116,7 @@ class Console extends BaseController
                 $authentificated = false;
             }
             if ($authentificated) {
-
-                $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/profile";
-                $header = "Authorization: Bearer " . $oidc->getAccessToken();
-                $response = $this->app->getServices()->get("app.restclient")->get($url, array(CURLOPT_HTTPHEADER => [$header]));
-                $response = json_decode($response->getContent(), 1);
-
-                try {
-
-                    /** @var User $user */
-                    $user = (new ApplyUpdates($this->app))->updateUser($response);
-
-                    $userTokens = null;
-                    if($user){
-                        $userTokens = $this->get("app.user")->loginWithIdOnlyWithToken($user->getId());
-                    }
-
-                } catch (\Exception $e) {
-                    error_log($e);
-                    $this->logout($request, ["error" => "Unknown error while creating/getting account"]);
-                }
-
-                if ($userTokens) {
-                    return $this->redirect(rtrim($this->getParameter("env.server_name"), "/")
-                    . "/ajax/users/console/redirect_to_app?token=" . urlencode($userTokens["token"]) . "&username=" . urlencode($userTokens["username"]) );
-                }else{
-                    return $this->logout($request, ["error" => "No user profile created: is your email already used in Twake?"]);
-                }
-
+                return $this->generateReplyForLoginFromOIDCAccessToken($oidc->getAccessToken());
             }else{
                 return $this->logout($request, ["error" => "OIDC auth error"]);
             }
@@ -155,6 +128,43 @@ class Console extends BaseController
 
         return $this->logout($request, ["error" => "An unknown error occurred"]);
 
+    }
+
+    function loginFromOIDCAccessToken(Request $request){
+        return $this->generateReplyForLoginFromOIDCAccessToken($request->request->get("access_token"));
+    }
+
+
+    function generateReplyForLoginFromOIDCAccessToken(Request $request, $access_token = null){
+
+        $accessToken = $access_token;
+
+        $url = rtrim($this->getParameter("defaults.auth.console.provider"), "/") . "/users/profile";
+        $header = "Authorization: Bearer " . $accessToken;
+        $response = $this->app->getServices()->get("app.restclient")->get($url, array(CURLOPT_HTTPHEADER => [$header]));
+        $response = json_decode($response->getContent(), 1);
+
+        try {
+
+            /** @var User $user */
+            $user = (new ApplyUpdates($this->app))->updateUser($response);
+
+            $userTokens = null;
+            if($user){
+                $userTokens = $this->get("app.user")->loginWithIdOnlyWithToken($user->getId());
+            }
+
+        } catch (\Exception $e) {
+            error_log($e);
+            $this->logout($request, ["error" => "Unknown error while creating/getting account"]);
+        }
+
+        if ($userTokens) {
+            return $this->redirect(rtrim($this->getParameter("env.server_name"), "/")
+            . "/ajax/users/console/redirect_to_app?token=" . urlencode($userTokens["token"]) . "&username=" . urlencode($userTokens["username"]) );
+        }else{
+            return $this->logout($request, ["error" => "No user profile created: is your email already used in Twake?"]);
+        }
     }
 
     function redirectToApp(Request $request){

@@ -1,6 +1,7 @@
 import Oidc from 'oidc-client';
 import { AuthProviderProps } from 'oidc-react';
 import environment from '../../environment/environment';
+import Api from '../Api';
 import InitService from '../InitService';
 import Observable from '../Observable/Observable';
 
@@ -32,9 +33,13 @@ class LoginService extends Observable {
       Oidc.Log.logger = console;
       Oidc.Log.level = Oidc.Log.DEBUG;
 
-      this.authProviderUserManager.events.addUserLoaded(user => {
+      this.authProviderUserManager.events.addUserLoaded(async user => {
         console.log('New User Loaded：', user);
         console.log('Acess_token: ', user.access_token);
+
+        const response = await Api.post('users/console/token', { accessToken: user.access_token });
+
+        console.log(response);
       });
 
       this.authProviderUserManager.events.addAccessTokenExpiring(() => {
