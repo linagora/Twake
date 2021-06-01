@@ -131,7 +131,7 @@ class Console extends BaseController
     }
 
     function loginFromOIDCAccessToken(Request $request){
-        return $this->generateReplyForLoginFromOIDCAccessToken($request->request->get("access_token"), false);
+        return new Response($this->generateReplyForLoginFromOIDCAccessToken($request->request->get("access_token"), false), 200);
     }
 
 
