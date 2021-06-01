@@ -195,6 +195,11 @@ export class UsersCrudController
   ): Promise<ResourceGetResponse<CompanyObject>> {
     const company = await this.companyService.getCompany({ id: request.params.id });
 
+    if (!company) {
+      reply.notFound(`Company ${request.params.id} not found`);
+      return;
+    }
+
     return {
       resource: this.formatCompany(company),
       websocket: undefined, // empty for now
