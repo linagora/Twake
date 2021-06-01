@@ -50,8 +50,6 @@ const routes: FastifyPluginCallback<{
   fastify.route({
     method: "GET",
     url: "/companies/:id",
-    preHandler: accessControl,
-    preValidation: [fastify.authenticate],
     schema: getCompanySchema,
     handler: usersController.getCompany.bind(usersController),
   });

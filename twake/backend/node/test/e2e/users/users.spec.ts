@@ -3,7 +3,7 @@ import { init, TestPlatform } from "../setup";
 import { TestUsers } from "./utils";
 
 describe("The /users API", () => {
-  const url = "/internal/services/users/v1/users";
+  const url = "/internal/services/users/v1";
   let platform: TestPlatform;
 
   let testUsers: TestUsers;
@@ -38,7 +38,7 @@ describe("The /users API", () => {
     it("should 401 when not authenticated", async done => {
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/1`,
+        url: `${url}/users/1`,
       });
 
       expect(response.statusCode).toBe(401);
@@ -50,7 +50,7 @@ describe("The /users API", () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: testUsers.users[0].id });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/${id}`,
+        url: `${url}/users/${id}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -70,7 +70,7 @@ describe("The /users API", () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/${myId}`,
+        url: `${url}/users/${myId}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -126,7 +126,7 @@ describe("The /users API", () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/${anotherUserId}`,
+        url: `${url}/users/${anotherUserId}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -165,7 +165,7 @@ describe("The /users API", () => {
     it("should 401 when user is not authenticated", async done => {
       const response = await platform.app.inject({
         method: "GET",
-        url,
+        url: `${url}/users`,
       });
 
       expect(response.statusCode).toBe(401);
@@ -179,7 +179,7 @@ describe("The /users API", () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
         method: "GET",
-        url,
+        url: `${url}/users`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -202,7 +202,7 @@ describe("The /users API", () => {
     it("should 401 when not authenticated", async done => {
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/1/companies`,
+        url: `${url}/users/1/companies`,
       });
 
       expect(response.statusCode).toBe(401);
@@ -214,7 +214,7 @@ describe("The /users API", () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: testUsers.users[0].id });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/${id}/companies`,
+        url: `${url}/users/${id}/companies`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -236,7 +236,7 @@ describe("The /users API", () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/${anotherUserId}/companies`,
+        url: `${url}/users/${anotherUserId}/companies`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -278,11 +278,11 @@ describe("The /users API", () => {
     });
   });
 
-  describe.skip("The GET /companies/:company_id route", () => {
+  describe("The GET /companies/:company_id route", () => {
     it("should 404 when company does not exists", async done => {
       const response = await platform.app.inject({
         method: "GET",
-        url: "/companies/1",
+        url: `${url}/companies/11111111-1111-1111-1111-111111111111`,
       });
       expect(response.statusCode).toBe(404);
       done();
@@ -290,11 +290,40 @@ describe("The /users API", () => {
 
     it("should 200 when company exists", async done => {
       const companyId = testUsers.company.id;
+
       const response = await platform.app.inject({
         method: "GET",
-        url: `/companies/${companyId}`,
+        url: `${url}/companies/${companyId}`,
       });
       expect(response.statusCode).toBe(200);
+
+      const json = response.json();
+
+      expect(json.resource).toMatchObject({
+        id: expect.any(String),
+        name: expect.any(String),
+        logo: expect.any(String),
+      });
+
+      if (json.resource.plan) {
+        expect(json.resource.plan).toMatchObject({
+          name: expect.any(String),
+          limits: expect.objectContaining({
+            members: expect.any(Number),
+            guests: expect.any(Number),
+            storage: expect.any(Number),
+          }),
+        });
+      }
+
+      if (json.resource.stats) {
+        expect(json.resource.stats).toMatchObject({
+          created_at: expect.any(Number),
+          total_members: expect.any(Number),
+          total_guests: expect.any(Number),
+        });
+      }
+
       done();
     });
   });

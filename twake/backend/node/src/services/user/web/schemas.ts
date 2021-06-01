@@ -128,9 +128,9 @@ export const getCompanySchema = {
     "2xx": {
       type: "object",
       properties: {
-        resources: { type: "array", items: companyObjectSchema },
+        resource: companyObjectSchema,
       },
-      required: ["resources"],
+      required: ["resource"],
     },
   },
 };
