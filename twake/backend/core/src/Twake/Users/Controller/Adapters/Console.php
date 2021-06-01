@@ -131,11 +131,11 @@ class Console extends BaseController
     }
 
     function loginFromOIDCAccessToken(Request $request){
-        return $this->generateReplyForLoginFromOIDCAccessToken($request->request->get("access_token"));
+        return $this->generateReplyForLoginFromOIDCAccessToken($request->request->get("access_token"), false);
     }
 
 
-    function generateReplyForLoginFromOIDCAccessToken(Request $request, $access_token = null){
+    function generateReplyForLoginFromOIDCAccessToken($access_token = null, $redirect = true){
 
         $accessToken = $access_token;
 
@@ -156,13 +156,28 @@ class Console extends BaseController
 
         } catch (\Exception $e) {
             error_log($e);
+
+            if(!$redirect){
+                return ["error" => "Unknown error while creating/getting your account"];
+            }
+
             $this->logout($request, ["error" => "Unknown error while creating/getting account"]);
         }
 
         if ($userTokens) {
+
+            if(!$redirect){
+                return ["access_token" => $this->get("app.user")->generateJWT($user)];
+            }
+
             return $this->redirect(rtrim($this->getParameter("env.server_name"), "/")
             . "/ajax/users/console/redirect_to_app?token=" . urlencode($userTokens["token"]) . "&username=" . urlencode($userTokens["username"]) );
         }else{
+
+            if(!$redirect){
+                return ["error" => "No user profile created."];
+            }
+
             return $this->logout($request, ["error" => "No user profile created: is your email already used in Twake?"]);
         }
     }
