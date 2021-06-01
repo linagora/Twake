@@ -1,8 +1,9 @@
 import React, { ReactNode } from "react";
 import { EditorState, RichUtils } from "draft-js";
 import { Bold, Underline, Italic, Code } from "react-feather";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import { StrikethroughOutlined } from '@ant-design/icons';
+import Languages from "services/languages/languages";
 import DefaultToolbarConfig, { GroupName, StyleConfig, ToolbarConfig } from "./EditorToolbarConfig";
 import "./EditorToolbar.scss";
 
@@ -40,17 +41,19 @@ export default (props: EditorToolbarProps) => {
     const { editorState } = props;
     const currentStyle = editorState.getCurrentInlineStyle();
     const buttons = (config.INLINE_STYLE_BUTTONS || []).map((type, index) => (
-      <Button
-        key={`${index}`}
-        size="small"
-        type="text"
-        onMouseDown={e => {
-          e.preventDefault();
-          _toggleInlineStyle(type.style)
-        }}
-        className={`inline ${type.className} ${currentStyle.has(type.style) ? "active" : "not-active"}`}
-        icon={getIcon(type)}
-      />
+      <Tooltip placement="top" title={Languages.t(type.i18n, [], type.label)}>
+        <Button
+          key={`${index}`}
+          size="small"
+          type="text"
+          onMouseDown={e => {
+            e.preventDefault();
+            _toggleInlineStyle(type.style)
+          }}
+          className={`inline ${type.className} ${currentStyle.has(type.style) ? "active" : "not-active"}`}
+          icon={getIcon(type)}
+        />
+      </Tooltip>
     ));
 
     return (

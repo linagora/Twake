@@ -1638,7 +1638,7 @@ export default {
   'scenes.apps.drive.viewer.loading_preview_message': 'Chargement...',
   'scenes.apps.drive.viewer.no_preview_message': 'Impossible de visualiser ce type de fichier.',
   'scenes.apps.drive.viewer.open_with_button': 'Ouvrir avec...',
-  'scenes.apps.messages.input.autocompletes_placeholder':
+  'scenes.apps.messages.input.placeholder':
     'Écrivez un message, utilisez @ pour citer un utilisateur.',
   'scenes.apps.messages.input.no_email_module_menu_text': "Vous n'avez aucun module de messagerie.",
   'scenes.apps.messages.input.search_module_text': 'Chercher des modules...',
@@ -1750,6 +1750,11 @@ export default {
   'scenes.apps.messages.from_device': "Depuis l'appareil",
   'scenes.apps.messages.input.message_to': 'Message à $1',
   'scenes.apps.messages.input.no_messagerie_module': "Vous n'avez aucun modules de messagerie.",
+  'scenes.apps.messages.input.send_message': 'Envoyer le message',
+  'scenes.apps.messages.input.attach_files': 'Joindre des fichiers',
+  'scenes.apps.messages.input.emoji': 'Emoji',
+  'scenes.apps.messages.input.hide_formatting': 'Masquer le formatage',
+  'scenes.apps.messages.input.show_formatting': 'Montrer le formatage',
   'scenes.apps.messages.message.answer': 'Répondre',
   'scenes.apps.messages.message.elementsmessage.hello': '',
   'scenes.apps.messages.message.elementsmessage.hide_me': '',
@@ -2030,4 +2035,9 @@ export default {
   'general.user.role.company.guest': 'Invité',
   'general.user.deleted': 'Compte supprimé',
   'scenes.app.channelsbar.channel_menu.guest_management': 'Gestion des invités',
+  'components.richtexteditor.toolbar.bold': 'Gras',
+  'components.richtexteditor.toolbar.underline': 'Souligné',
+  'components.richtexteditor.toolbar.italic': 'Italique',
+  'components.richtexteditor.toolbar.strikethrough': 'Barré',
+  'components.richtexteditor.toolbar.code': 'Code',
 };

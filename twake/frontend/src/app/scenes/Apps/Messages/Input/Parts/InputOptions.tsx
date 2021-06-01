@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { EditorState } from 'draft-js';
 import { Smile, Video, MoreHorizontal, Paperclip, Type } from 'react-feather';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
@@ -109,65 +109,73 @@ export default (props: Props) => {
   return (
     <div className="input-toolbar">
       <div className="input-options">
-        <Button type="text" size="small">
-          <Menu
-            className="option"
-            position="top"
-            menu={[
-              {
-                type: 'menu',
-                icon: 'desktop',
-                text: 'From computer',
-                onClick: (evt: any) => {
-                  MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
-                },
-              },
-              ...addon_files,
-            ]}
-          >
-            <Paperclip size={16} />
-          </Menu>
-        </Button>
-
-        {props.onAddEmoji && (
+        <Tooltip placement="top" title={Languages.t("scenes.apps.messages.input.attach_file", [], "Attach file(s)")}>
           <Button type="text" size="small">
             <Menu
               className="option"
+              position="top"
               menu={[
                 {
-                  type: 'react-element',
-                  className: 'menu-cancel-margin',
-                  reactElement: () => {
-                    return (
-                      <EmojiPicker
-                        onChange={(emoji: any) => {
-                          MenusManager.closeMenu();
-                          props.onAddEmoji && props.onAddEmoji(emoji);
-                        }}
-                      />
-                    );
+                  type: 'menu',
+                  icon: 'desktop',
+                  text: 'From computer',
+                  onClick: (evt: any) => {
+                    MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
                   },
                 },
+                ...addon_files,
               ]}
-              position="top"
             >
-              <Smile size={16} />
+              <Paperclip size={16} />
             </Menu>
           </Button>
+        </Tooltip>
+
+        {props.onAddEmoji && (
+          <Tooltip placement="top" title={Languages.t("scenes.apps.messages.input.emoji", [], "Emoji")}>
+            <Button type="text" size="small">
+              <Menu
+                className="option"
+                menu={[
+                  {
+                    type: 'react-element',
+                    className: 'menu-cancel-margin',
+                    reactElement: () => {
+                      return (
+                        <EmojiPicker
+                          onChange={(emoji: any) => {
+                            MenusManager.closeMenu();
+                            props.onAddEmoji && props.onAddEmoji(emoji);
+                          }}
+                        />
+                      );
+                    },
+                  },
+                ]}
+                position="top"
+              >
+                <Smile size={16} />
+              </Menu>
+            </Button>
+          </Tooltip>
         )}
         {addon_calls.length > 1 && (
-          <Button type="text" size="small">
-            <Menu className="option" position="top" menu={addon_calls}>
-              <Video size={16} />
-            </Menu>
-          </Button>
+          <Tooltip placement="top" title={Languages.t("scenes.apps.messages.input.start_call", [], "Start a call")}>
+            <Button type="text" size="small">
+              <Menu className="option" position="top" menu={addon_calls}>
+                <Video size={16} />
+              </Menu>
+            </Button>
+          </Tooltip>
         )}
         {addon_calls.length === 1 && (
-          <Button type="text" size="small">
-            <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
-              <Video size={16} />
-            </div>
-          </Button>
+          <Tooltip placement="top" title={Languages.t("scenes.apps.messages.input.start_call", [], "Start a call")}>
+            <Button type="text" size="small">
+              <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
+                <Video size={16} />
+              </div>
+            </Button>
+          </Tooltip>
         )}
 
         {addon_right_icon.map((app: any) => {
@@ -191,16 +199,22 @@ export default (props: Props) => {
           );
         })}
         
-        <Button type="text" size="small">
-          <Type
-            size={16}
-            className="option"
-            onMouseDown={(e) => {
-              e.preventDefault();
-              toggleEditionMode();
-            }}
-          />
-        </Button>
+        <Tooltip placement="top"
+          title={displayRichText
+            ? Languages.t("scenes.apps.messages.input.hide_formatting", [], "Hide formatting")
+            : Languages.t("scenes.apps.messages.input.show_formatting", [], "Show formatting")
+          }>
+          <Button type="text" size="small">
+            <Type
+              size={16}
+              className="option"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                toggleEditionMode();
+              }}
+            />
+          </Button>
+        </Tooltip>
 
         {addon_menu.length > 0 && (
           <Button type="text" size="small">

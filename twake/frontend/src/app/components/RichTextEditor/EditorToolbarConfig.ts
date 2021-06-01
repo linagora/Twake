@@ -1,6 +1,16 @@
 export type StyleConfig = {
-  label: string;
+  /**
+   * Draft.js style to apply
+   */
   style: string;
+  /**
+   * Label to display when i18n is not defined
+   */
+  label: string;
+  /**
+   * i18n key
+   */
+  i18n?: string;
   className?: string;
 };
 
@@ -18,11 +28,11 @@ export type ToolbarConfig = {
 };
 
 export const INLINE_STYLE_BUTTONS: StyleConfigList = [
-  {label: 'Bold', style: 'BOLD'},
-  {label: 'Underline', style: 'UNDERLINE'},
-  {label: 'Italic', style: 'ITALIC'},
-  {label: 'Strikethrough', style: 'STRIKETHROUGH'},
-  {label: 'Monospace', style: 'CODE'},
+  { label: 'Bold', style: 'BOLD', i18n: 'components.richtexteditor.toolbar.bold' },
+  { label: 'Underline', style: 'UNDERLINE', i18n: 'components.richtexteditor.toolbar.underline' },
+  { label: 'Italic', style: 'ITALIC', i18n: 'components.richtexteditor.toolbar.italic' },
+  { label: 'Strikethrough', style: 'STRIKETHROUGH', i18n: 'components.richtexteditor.toolbar.strikethrough' },
+  { label: 'Code', style: 'CODE', i18n: 'components.richtexteditor.toolbar.code' },
 ];
 
 export const BLOCK_ALIGNMENT_BUTTONS: StyleConfigList = [

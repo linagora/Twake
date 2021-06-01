@@ -1600,7 +1600,7 @@ export default {
   'scenes.apps.drive.viewer.loading_preview_message': 'Wird geladen...',
   'scenes.apps.drive.viewer.no_preview_message': 'Kann diese Art von Datei nicht anzeigen.',
   'scenes.apps.drive.viewer.open_with_button': 'Öffnen mit...',
-  'scenes.apps.messages.input.autocompletes_placeholder':
+  'scenes.apps.messages.input.placeholder':
     'Schreiben Sie eine Nachricht und zitieren Sie einen Benutzer mit @.',
   'scenes.apps.messages.input.no_email_module_menu_text': 'Sie haben kein Mailmodul.',
   'scenes.apps.messages.input.search_module_text': 'Module suchen ...',

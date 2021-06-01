@@ -1617,7 +1617,7 @@ export default {
   'scenes.apps.drive.viewer.loading_preview_message': 'Загрузка...',
   'scenes.apps.drive.viewer.no_preview_message': 'Не могу показать такой тип файла.',
   'scenes.apps.drive.viewer.open_with_button': 'Открыть с...',
-  'scenes.apps.messages.input.autocompletes_placeholder':
+  'scenes.apps.messages.input.placeholder':
     'Написать сообщение. Используйте @ для упоминания определенного пользователя.',
   'scenes.apps.messages.input.no_email_module_menu_text': 'У вас нет почтового модуля.',
   'scenes.apps.messages.input.search_module_text': 'Поиск модулей...',

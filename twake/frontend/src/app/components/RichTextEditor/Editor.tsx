@@ -34,6 +34,7 @@ type EditorProps = {
   onChange?: (editorState: EditorState) => void;
   clearOnSubmit: boolean;
   outputFormat: EditorTextFormat;
+  placeholder?: string;
 };
 
 export type EditorSuggestionPlugin<SuggestionType> = {
@@ -214,7 +215,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         onChange={this.onChange.bind(this)}
         handleKeyCommand={this.handleKeyCommand.bind(this)}
         handleReturn={this.handleReturn.bind(this)}
-        placeholder="Type a message, @mention someone"
+        placeholder={this.props.placeholder || ""}
         />
         
         {(

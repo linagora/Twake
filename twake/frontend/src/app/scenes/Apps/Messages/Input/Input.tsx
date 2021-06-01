@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Send } from 'react-feather';
 import { EditorState } from 'draft-js';
+import { Tooltip } from 'antd';
 import InputOptions from './Parts/InputOptions';
 import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
@@ -10,6 +11,7 @@ import AttachedFiles from './Parts/AttachedFiles';
 import RichTextEditorStateService from "app/components/RichTextEditor/EditorStateService";
 import { EditorView } from "app/components/RichTextEditor";
 import {toString} from "app/components/RichTextEditor/EditorDataParser";
+import Languages from 'app/services/languages/languages';
 import './Input.scss';
 
 type Props = {
@@ -149,16 +151,19 @@ export default (props: Props) => {
             outputFormat="markdown"
             editorState={editorState}
             onSubmit={() => onSend()}
+            placeholder={Languages.t("scenes.apps.messages.input.placeholder", [], "Write a message. Use @ to quote a user.")}
           />
-          <div
-            className={'submit-button ' + (!isEmpty() ? '' : 'disabled ')}
-            onClick={() => {
-              if (!isEmpty()) {
-                onSend();
-              }
-            }}>
-            <Send className="send-icon" size={20} />
-          </div>
+          <Tooltip title={Languages.t("scenes.apps.messages.input.send_message", [], "Send message")} placement="top">
+            <div
+              className={'submit-button ' + (!isEmpty() ? '' : 'disabled ')}
+              onClick={() => {
+                if (!isEmpty()) {
+                  onSend();
+                }
+              }}>
+              <Send className="send-icon" size={20} />
+            </div>
+          </Tooltip>
         </div>
 
         //
