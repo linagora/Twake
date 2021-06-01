@@ -282,7 +282,7 @@ describe("The /users API", () => {
     it("should 404 when company does not exists", async done => {
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/1`,
+        url: `${url}/companies/11111111-1111-1111-1111-111111111111`,
       });
       expect(response.statusCode).toBe(404);
       done();

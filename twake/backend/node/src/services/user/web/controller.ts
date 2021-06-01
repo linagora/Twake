@@ -2,26 +2,26 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ExecutionContext, Pagination } from "../../../core/platform/framework/api/crud-service";
 
 import { CrudController } from "../../../core/platform/services/webserver/types";
-import { ResourceListResponse } from "../../../utils/types";
-import { ResourceDeleteResponse } from "../../../utils/types";
-import { ResourceCreateResponse } from "../../../utils/types";
-import { ResourceGetResponse } from "../../../utils/types";
+import {
+  ResourceCreateResponse,
+  ResourceDeleteResponse,
+  ResourceGetResponse,
+  ResourceListResponse,
+} from "../../../utils/types";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../api";
 
 import User from "../entities/user";
 import {
+  CompanyObject,
+  CompanyParameters,
+  CompanyShort,
   UserCompanyObject,
-  UserListQueryParameters,
-  UserParameters,
-  UserObject,
   UserCompanyRole,
   UserCompanyStatus,
-  CompanyShort,
-  CompanyObject,
-  CompanyStatsObject,
-  CompanyParameters,
+  UserListQueryParameters,
+  UserObject,
+  UserParameters,
 } from "./types";
-import assert from "assert";
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
 
@@ -191,8 +191,15 @@ export class UsersCrudController
 
   async getCompany(
     request: FastifyRequest<{ Params: CompanyParameters }>,
+    reply: FastifyReply,
   ): Promise<ResourceGetResponse<CompanyObject>> {
     const company = await this.companyService.getCompany({ id: request.params.id });
+
+    if (!company) {
+      reply.notFound(`User ${request.params.id} not found`);
+      return;
+    }
+
     return {
       resource: this.formatCompany(company),
       websocket: undefined, // empty for now
