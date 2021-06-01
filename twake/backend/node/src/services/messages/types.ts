@@ -90,3 +90,6 @@ export interface BookmarkOperation {
 export interface MessagesSaveOptions {
   previous_thread?: string; //If message was in a previous thread before (moved) then this indicate when is it from
 }
+export interface MessagesGetThreadOptions {
+  replies_per_thread?: number;
+}

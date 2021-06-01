@@ -69,6 +69,8 @@ export class ThreadMessagesOperationsService {
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
+    console.log("here (for reaction)", operation);
+
     if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
@@ -83,6 +85,8 @@ export class ThreadMessagesOperationsService {
       logger.error(`This message doesn't exists`);
       throw Error("Can't edit this message.");
     }
+
+    console.log("react with: ", operation);
 
     //Update message reactions
     updateMessageReactions(message, operation.reactions || [], context.user.id);

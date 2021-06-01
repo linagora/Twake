@@ -14,6 +14,7 @@ import { Message, TYPE as MessageTableName } from "../../entities/messages";
 import {
   BookmarkOperation,
   MessageLocalEvent,
+  MessagesGetThreadOptions,
   MessagesSaveOptions,
   PinOperation,
   ReactionOperation,
@@ -25,6 +26,7 @@ import { buildMessageListPagination } from "../utils";
 import _ from "lodash";
 import { ThreadMessagesOperationsService } from "./operations";
 import { getDefaultMessageInstance } from "./utils";
+import { Thread } from "../../entities/threads";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -162,6 +164,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     await this.repository.save(message);
     this.onSaved(message, { created: false }, context);
 
+    //Server and application can definively remove a message
+    if (context.user.server_request || context.user.application_id) {
+      await this.repository.remove(message);
+    }
+
     return new DeleteResult<Message>("message", message, true);
   }
 
@@ -170,6 +177,43 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     context?: ThreadExecutionContext,
   ): Promise<Message> {
     return this.repository.findOne(pk);
+  }
+
+  async getThread(thread: Thread, options: MessagesGetThreadOptions = {}) {
+    const last_replies = (
+      await this.repository.find(
+        {
+          thread_id: thread.id,
+        },
+        {
+          pagination: new Pagination("", `${options?.replies_per_thread || 3}`, true),
+        },
+      )
+    ).getEntities();
+
+    if (last_replies.length === 0) {
+      //Delete the thread because it is empty
+      this.service.threads.delete(thread, { user: { id: null, server_request: true } });
+      return null;
+    }
+
+    const first_message = await this.repository.findOne(
+      {
+        thread_id: thread.id,
+      },
+      {
+        pagination: new Pagination("", `1`, false),
+      },
+    );
+
+    return {
+      ...first_message,
+      stats: {
+        replies: last_replies.length === 1 ? 1 : thread.answers, //This line ensure the thread can be deleted by user if there is no replies
+        last_activity: thread.last_activity,
+      },
+      last_replies: last_replies.sort((a, b) => a.created_at - b.created_at),
+    };
   }
 
   async list<ListOption>(
