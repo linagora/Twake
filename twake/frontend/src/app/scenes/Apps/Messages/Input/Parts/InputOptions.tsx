@@ -226,7 +226,9 @@ export default (props: Props) => {
         <div style={{ flex: 1 }} />
       </div>
       <div className="input-options-toolbar">
-        {displayRichText && <RichTextToolbar />}
+        <div className={`richtext-toolbar ${displayRichText ? "show" : "hide"}`}>
+          <RichTextToolbar />
+        </div>
       </div>
     </div>
   );

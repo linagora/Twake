@@ -107,6 +107,18 @@
     display: flex;
     flex-direction: row;
     margin-top: 8px;
+
+    .richtext-toolbar {
+      &.show {
+        opacity: 1;
+        transition: all 100ms linear;
+      }
+
+      &.hide {
+        opacity: 0;
+        transition: all 100ms linear;
+      }
+    }
   }
 
   .input-options {
