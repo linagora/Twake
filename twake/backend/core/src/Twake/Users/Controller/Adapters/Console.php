@@ -144,6 +144,9 @@ class Console extends BaseController
         $response = $this->app->getServices()->get("app.restclient")->get($url, array(CURLOPT_HTTPHEADER => [$header]));
         $response = json_decode($response->getContent(), 1);
 
+        error_log($header);
+        error_log(json_encode($response));
+
         try {
 
             /** @var User $user */

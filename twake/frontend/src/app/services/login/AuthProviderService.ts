@@ -3,17 +3,17 @@ import { AuthProviderProps } from 'oidc-react';
 import environment from '../../environment/environment';
 import Api from '../Api';
 import InitService from '../InitService';
+import JWTStorage, { JWTDataType } from '../JWTStorage';
 import Observable from '../Observable/Observable';
+import LoginService from './login';
 
 type AuthProviderConfiguration = AuthProviderProps;
 
-class LoginService extends Observable {
+class AuthProviderService extends Observable {
   private authProviderUserManager: Oidc.UserManager | null = null;
 
   getAuthProviderConfiguration(): AuthProviderConfiguration {
     const consoleConfiguration = InitService.server_infos?.configuration.accounts.console;
-
-    console.log('here');
 
     if (!this.authProviderUserManager) {
       this.authProviderUserManager = new Oidc.UserManager({
@@ -37,9 +37,12 @@ class LoginService extends Observable {
         console.log('New User Loaded：', user);
         console.log('Acess_token: ', user.access_token);
 
-        const response = await Api.post('users/console/token', { accessToken: user.access_token });
+        const response = (await Api.post('users/console/token', {
+          access_token: user.access_token,
+        })) as { access_token: JWTDataType };
 
-        console.log(response);
+        JWTStorage.updateJWT(response.access_token);
+        LoginService.init();
       });
 
       this.authProviderUserManager.events.addAccessTokenExpiring(() => {
@@ -71,4 +74,4 @@ class LoginService extends Observable {
   }
 }
 
-export default new LoginService();
+export default new AuthProviderService();
