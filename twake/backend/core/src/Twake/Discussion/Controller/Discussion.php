@@ -78,8 +78,6 @@ class Discussion extends BaseController
             "channel_id" => $channel_id
         ]);
 
-        error_log("realtime: " . json_encode($array));
-
         if($removed){
 
             $event = Array(
