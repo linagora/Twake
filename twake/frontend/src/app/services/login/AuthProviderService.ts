@@ -45,9 +45,10 @@ class AuthProviderService extends Observable {
         Logger.info('AccessToken Expiring');
       });
 
+      //This even listener is temporary disabled because of this issue: https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/-/issues/2358
       this.authProviderUserManager.events.addUserSignedOut(() => {
         Logger.info('Signed out');
-        this.signOut();
+        //this.signOut();
       });
 
       this.authProviderUserManager.events.addUserSignedIn(() => {
