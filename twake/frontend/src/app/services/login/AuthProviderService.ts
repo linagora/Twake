@@ -55,16 +55,7 @@ class AuthProviderService extends Observable {
 
       this.authProviderUserManager.events.addAccessTokenExpired(() => {
         Logger.info('AccessToken Expired');
-        if (this.authProviderUserManager)
-          this.authProviderUserManager
-            .signoutRedirect()
-            .then(function (resp) {
-              JWTStorage.clear();
-              window.location.reload();
-            })
-            .catch(function (err) {
-              Logger.info(err);
-            });
+        this.signOut();
       });
 
       this.authProviderUserManager.events.addSilentRenewError(error => {
@@ -84,6 +75,19 @@ class AuthProviderService extends Observable {
     return {
       userManager: this.authProviderUserManager,
     };
+  }
+
+  async signOut() {
+    if (this.authProviderUserManager)
+      this.authProviderUserManager
+        .signoutRedirect()
+        .then(function (resp) {
+          JWTStorage.clear();
+          window.location.reload();
+        })
+        .catch(function (err) {
+          Logger.info(err);
+        });
   }
 
   async getJWTFromOidcToken(user: Oidc.User | null) {
