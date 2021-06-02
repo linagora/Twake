@@ -31,18 +31,15 @@ class AuthProviderService extends Observable {
       });
 
       Oidc.Log.logger = console;
-      Oidc.Log.level = Oidc.Log.DEBUG;
+      Oidc.Log.level = Oidc.Log.INFO;
 
       this.authProviderUserManager.events.addUserLoaded(async user => {
-        console.log('New User Loaded：', user);
-        console.log('Acess_token: ', user.access_token);
-
+        console.log('User loaded');
         const response = (await Api.post('users/console/token', {
           access_token: user.access_token,
         })) as { access_token: JWTDataType };
-
         JWTStorage.updateJWT(response.access_token);
-        LoginService.init();
+        LoginService.updateUser();
       });
 
       this.authProviderUserManager.events.addAccessTokenExpiring(() => {
