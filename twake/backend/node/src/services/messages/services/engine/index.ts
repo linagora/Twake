@@ -1,5 +1,5 @@
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
-import { Initializable } from "../../../../core/platform/framework";
+import { Initializable, logger } from "../../../../core/platform/framework";
 import { MessageServiceAPI } from "../../api";
 import { MessageLocalEvent } from "../../types";
 import { ChannelViewProcessor } from "./processors/channel-view";
@@ -62,6 +62,7 @@ export class MessagesEngine implements Initializable {
       const thread = await this.threadRepository.findOne({
         id: e.resource.thread_id,
       });
+
       this.channelViewProcessor.process(thread, e);
       this.channelMarkedViewProcessor.process(thread, e);
       this.userInboxViewProcessor.process(thread, e);

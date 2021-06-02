@@ -85,7 +85,10 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
   });
 
   if (context.user.server_request) {
-    instance = _.assign(instance, item);
+    instance = _.assign(
+      instance,
+      _.pickBy(item, v => v !== undefined),
+    );
   }
 
   return instance;

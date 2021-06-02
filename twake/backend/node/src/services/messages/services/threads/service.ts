@@ -132,9 +132,13 @@ export class ThreadsService
    */
   async addReply(threadId: string) {
     const thread = await this.repository.findOne({ id: threadId });
-    thread.answers++;
-    thread.last_activity = new Date().getTime();
-    await this.repository.save(thread);
+    if (thread) {
+      thread.answers++;
+      thread.last_activity = new Date().getTime();
+      await this.repository.save(thread);
+    } else {
+      throw new Error("Try to add reply count to inexistant thread");
+    }
   }
 
   /**
