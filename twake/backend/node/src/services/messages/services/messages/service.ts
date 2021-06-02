@@ -129,6 +129,52 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     );
   }
 
+  /**
+   * Move a message from a thread to another
+   * @param item
+   * @param options
+   * @param context
+   * @returns
+   */
+  async move(
+    pk: Pick<Message, "id">,
+    options: { previous_thread: string },
+    context: ThreadExecutionContext,
+  ): Promise<void> {
+    //Fixme: check user has access to both threads
+
+    const messageInOldThread = await this.repository.findOne({
+      thread_id: options.previous_thread,
+      id: pk.id,
+    });
+
+    if (!messageInOldThread) {
+      logger.error(`Unable to find message ${pk.id} in old thread ${context.thread.id}`);
+      throw Error("Can't move this message.");
+    }
+
+    const messageInNewThread = _.cloneDeep(messageInOldThread);
+    messageInNewThread.thread_id = context.thread.id;
+
+    this.save(
+      messageInNewThread,
+      {},
+      {
+        user: { id: null, server_request: true },
+        thread: context.thread,
+        company: context.company,
+      },
+    );
+
+    this.delete(messageInOldThread, {
+      user: { id: null, server_request: true },
+      thread: { id: messageInOldThread.thread_id },
+      company: context.company,
+    });
+
+    return;
+  }
+
   async delete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
     if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);

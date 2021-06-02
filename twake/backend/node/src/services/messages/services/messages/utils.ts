@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { getInstance, Message, MessageReaction } from "../../entities/messages";
 import { ThreadExecutionContext } from "../../types";
 
@@ -49,7 +50,7 @@ export function updateMessageReactions(
 }
 
 export function getDefaultMessageInstance(item: Partial<Message>, context: ThreadExecutionContext) {
-  return getInstance({
+  let instance = getInstance({
     id: undefined,
     ephemeral:
       (context?.user?.application_id || context?.user?.server_request) && item.ephemeral
@@ -82,4 +83,10 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
           }
         : null, // Only apps and server can set an override on a message
   });
+
+  if (context.user.server_request) {
+    instance = _.assign(instance, item);
+  }
+
+  return instance;
 }

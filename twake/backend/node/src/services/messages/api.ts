@@ -81,6 +81,12 @@ export interface MessageThreadMessagesServiceAPI
   ): Promise<SaveResult<Message>>;
 
   getThread(thread: Thread, options: MessagesGetThreadOptions): Promise<MessageWithReplies>;
+
+  move(
+    item: Pick<Message, "id">,
+    options: { previous_thread: string },
+    context: ThreadExecutionContext,
+  ): Promise<void>;
 }
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
