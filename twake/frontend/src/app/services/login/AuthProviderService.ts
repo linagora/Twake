@@ -21,12 +21,12 @@ class AuthProviderService extends Observable {
         client_id: consoleConfiguration?.client_id || 'twake',
         redirect_uri: environment.front_root_url + '/oidccallback',
         response_type: 'code',
-        scope: 'openid offline_access',
+        scope: 'openid profile email address phone offline_access',
         post_logout_redirect_uri: environment.front_root_url + '/logout',
         silent_redirect_uri: environment.front_root_url + '/silientrenew',
         automaticSilentRenew: true,
         loadUserInfo: true,
-        accessTokenExpiringNotificationTime: 10,
+        accessTokenExpiringNotificationTime: 60,
         filterProtocolClaims: true,
       });
 
@@ -56,7 +56,8 @@ class AuthProviderService extends Observable {
           this.authProviderUserManager
             .signoutRedirect()
             .then(function (resp) {
-              console.log('signed out', resp);
+              JWTStorage.clear();
+              window.location.reload();
             })
             .catch(function (err) {
               console.log(err);
