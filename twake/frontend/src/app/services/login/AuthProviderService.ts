@@ -39,16 +39,15 @@ class AuthProviderService extends Observable {
           access_token: user.access_token,
         })) as { access_token: JWTDataType };
         JWTStorage.updateJWT(response.access_token);
-        LoginService.updateUser();
+        LoginService.updateUser(() => {});
       });
 
       this.authProviderUserManager.events.addAccessTokenExpiring(() => {
         console.log('AccessToken Expiring');
       });
 
-      this.authProviderUserManager.events.addAccessTokenExpired(() => {
-        console.log('AccessToken Expired');
-        alert('Session expired. Going out!');
+      this.authProviderUserManager.events.addUserSignedOut(() => {
+        console.log('Signed out');
         if (this.authProviderUserManager)
           this.authProviderUserManager
             .signoutRedirect()
@@ -59,6 +58,14 @@ class AuthProviderService extends Observable {
             .catch(function (err) {
               console.log(err);
             });
+      });
+
+      this.authProviderUserManager.events.addUserSignedIn(() => {
+        console.log('Signed in');
+      });
+
+      this.authProviderUserManager.events.addAccessTokenExpired(() => {
+        console.log('AccessToken Expired');
       });
 
       this.authProviderUserManager.events.addSilentRenewError(error => {
