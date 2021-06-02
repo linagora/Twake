@@ -6,6 +6,7 @@ import InitService from '../InitService';
 import JWTStorage, { JWTDataType } from '../JWTStorage';
 import Observable from '../Observable/Observable';
 import LoginService from './login';
+import Logger from 'app/services/Logger';
 
 type AuthProviderConfiguration = AuthProviderProps;
 
@@ -36,28 +37,24 @@ class AuthProviderService extends Observable {
       Oidc.Log.level = Oidc.Log.DEBUG;
 
       this.authProviderUserManager.events.addUserLoaded(async user => {
-        console.log('User loaded');
-        const response = (await Api.post('users/console/token', {
-          access_token: user.access_token,
-        })) as { access_token: JWTDataType };
-        JWTStorage.updateJWT(response.access_token);
-        LoginService.updateUser(() => {});
+        Logger.info('User loaded');
+        this.getJWTFromOidcToken(user);
       });
 
       this.authProviderUserManager.events.addAccessTokenExpiring(() => {
-        console.log('AccessToken Expiring');
+        Logger.info('AccessToken Expiring');
       });
 
       this.authProviderUserManager.events.addUserSignedOut(() => {
-        console.log('Signed out');
+        Logger.info('Signed out');
       });
 
       this.authProviderUserManager.events.addUserSignedIn(() => {
-        console.log('Signed in');
+        Logger.info('Signed in');
       });
 
       this.authProviderUserManager.events.addAccessTokenExpired(() => {
-        console.log('AccessToken Expired');
+        Logger.info('AccessToken Expired');
         if (this.authProviderUserManager)
           this.authProviderUserManager
             .signoutRedirect()
@@ -66,18 +63,39 @@ class AuthProviderService extends Observable {
               window.location.reload();
             })
             .catch(function (err) {
-              console.log(err);
+              Logger.info(err);
             });
       });
 
       this.authProviderUserManager.events.addSilentRenewError(error => {
         console.error('Silent Renew Error', error);
       });
+
+      this.authProviderUserManager
+        .getUser()
+        .then(user => {
+          this.getJWTFromOidcToken(user);
+        })
+        .catch(() => {
+          Logger.info('User not already logged in (error while retrieving it)');
+        });
     }
 
     return {
       userManager: this.authProviderUserManager,
     };
+  }
+
+  async getJWTFromOidcToken(user: Oidc.User | null) {
+    if (!user) {
+      Logger.info('Cannot getJWTFromOidcToken with a null user');
+      return;
+    }
+    const response = (await Api.post('users/console/token', {
+      access_token: user.access_token,
+    })) as { access_token: JWTDataType };
+    JWTStorage.updateJWT(response.access_token);
+    LoginService.updateUser(() => {});
   }
 }
 
