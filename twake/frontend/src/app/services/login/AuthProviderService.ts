@@ -65,7 +65,7 @@ class AuthProviderService extends Observable {
       });
 
       this.authProviderUserManager
-        .getUser()
+        .signinSilent()
         .then(user => {
           this.getJWTFromOidcToken(user);
         })
@@ -105,4 +105,5 @@ class AuthProviderService extends Observable {
   }
 }
 
-export default new AuthProviderService();
+const authProviderService = new AuthProviderService();
+export default authProviderService;
