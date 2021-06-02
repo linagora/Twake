@@ -15,6 +15,8 @@ class AuthProviderService extends Observable {
   getAuthProviderConfiguration(): AuthProviderConfiguration {
     const consoleConfiguration = InitService.server_infos?.configuration.accounts.console;
 
+    (window as any).AuthProviderService = this;
+
     if (!this.authProviderUserManager) {
       this.authProviderUserManager = new Oidc.UserManager({
         authority: consoleConfiguration?.authority || environment.api_root_url,
@@ -23,7 +25,7 @@ class AuthProviderService extends Observable {
         response_type: 'code',
         scope: 'openid profile email address phone offline_access',
         post_logout_redirect_uri: environment.front_root_url + '/logout',
-        silent_redirect_uri: environment.front_root_url + '/silientrenew',
+        silent_redirect_uri: environment.front_root_url + '/oidcsilientrenew',
         automaticSilentRenew: true,
         loadUserInfo: true,
         accessTokenExpiringNotificationTime: 60,
@@ -31,7 +33,7 @@ class AuthProviderService extends Observable {
       });
 
       Oidc.Log.logger = console;
-      Oidc.Log.level = Oidc.Log.INFO;
+      Oidc.Log.level = Oidc.Log.DEBUG;
 
       this.authProviderUserManager.events.addUserLoaded(async user => {
         console.log('User loaded');
@@ -48,6 +50,14 @@ class AuthProviderService extends Observable {
 
       this.authProviderUserManager.events.addUserSignedOut(() => {
         console.log('Signed out');
+      });
+
+      this.authProviderUserManager.events.addUserSignedIn(() => {
+        console.log('Signed in');
+      });
+
+      this.authProviderUserManager.events.addAccessTokenExpired(() => {
+        console.log('AccessToken Expired');
         if (this.authProviderUserManager)
           this.authProviderUserManager
             .signoutRedirect()
@@ -58,14 +68,6 @@ class AuthProviderService extends Observable {
             .catch(function (err) {
               console.log(err);
             });
-      });
-
-      this.authProviderUserManager.events.addUserSignedIn(() => {
-        console.log('Signed in');
-      });
-
-      this.authProviderUserManager.events.addAccessTokenExpired(() => {
-        console.log('AccessToken Expired');
       });
 
       this.authProviderUserManager.events.addSilentRenewError(error => {
