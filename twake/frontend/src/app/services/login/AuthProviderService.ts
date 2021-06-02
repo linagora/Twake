@@ -47,6 +47,7 @@ class AuthProviderService extends Observable {
 
       this.authProviderUserManager.events.addUserSignedOut(() => {
         Logger.info('Signed out');
+        this.signOut();
       });
 
       this.authProviderUserManager.events.addUserSignedIn(() => {
