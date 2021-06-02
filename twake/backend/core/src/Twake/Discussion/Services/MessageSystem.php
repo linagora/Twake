@@ -147,11 +147,17 @@ class MessageSystem
                 $message["id"] = $response["resource"]["id"];
             }
 
+            $options = [];
+            if(isset($object["_once_replace_message_parent_message"])){
+                $options["previous_thread"] = $object["_once_replace_message_parent_message"] ?: $object["_once_replace_message"] ?: $object["id"];
+            }
+
             //New message in thread (also called for new threads because we set the parent_message_id automatically)
             if($object["parent_message_id"] && $newMessage){
 
                 $data = [
-                    "resource" => $message
+                    "resource" => $message,
+                    "options" => $options
                 ];
 
                 $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages", $data, $current_user, $application ? $application->getId() : null);
@@ -162,7 +168,8 @@ class MessageSystem
             if(!$newMessage){
 
                 $data = [
-                    "resource" => $message
+                    "resource" => $message,
+                    "options" => $options
                 ];
 
                 $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"], $data, $current_user, $application ? $application->getId() : null);
