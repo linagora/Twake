@@ -89,10 +89,7 @@ export class TestUsers {
     return createdUser.entity;
   }
 
-  private disabled = true;
-
   async deleteAll(): Promise<void> {
-    if (this.disabled) return;
     await Promise.all(
       this.users.map(async user => {
         await this.userService.users.delete({ id: user.id });

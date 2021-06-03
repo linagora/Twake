@@ -24,12 +24,13 @@ describe("The /workspaces API", () => {
       ],
     });
     testUsers = new TestUsers(platform);
+    await testUsers.deleteAll();
     await testUsers.createCompanyAndUsers();
     ends();
   });
 
   afterAll(async ends => {
-    await testUsers.deleteAll();
+    // await testUsers.deleteAll();
     await platform.tearDown();
     ends();
   });
