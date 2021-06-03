@@ -48,7 +48,10 @@ export class TestUsers {
       }),
     );
 
-    const createdWorkspace = await this.userService.workspaces.get({ id: workspaceId });
+    const createdWorkspace = await this.userService.workspaces.get({
+      id: workspaceId,
+      group_id: this.company.id,
+    });
 
     if (!createdWorkspace) {
       throw new Error("workspace wasn't created");
