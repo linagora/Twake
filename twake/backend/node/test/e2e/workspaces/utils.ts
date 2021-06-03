@@ -5,28 +5,60 @@ import { v1 as uuid } from "uuid";
 import Company, {
   getInstance as getCompanyInstance,
 } from "../../../src/services/user/entities/company";
+import Workspace, {
+  getInstance as getWorkspaceInstance,
+  WorkspacePrimaryKey,
+} from "../../../src/services/workspaces/entities/workspace";
 
 export class TestUsers {
   public company: Company;
   public users: User[];
+  public workspaces: Workspace[];
   private userService;
 
   constructor(protected testPlatform: TestPlatform) {
     this.userService = this.testPlatform.platform.getProvider<UserServiceAPI>("user");
     this.users = [];
+    this.workspaces = [];
   }
 
   async createCompany(): Promise<void> {
     this.company = await this.userService.companies.createCompany(
       getCompanyInstance({
-        id: uuid(),
+        id: "21111111-1111-1111-1111-111111111111",
         name: "TwakeAutotests-test-company",
         displayName: "TwakeAutotests-test-company",
       }),
     );
   }
 
-  async createUser(): Promise<User> {
+  async createWorkspace(): Promise<Workspace> {
+    if (!this.company || !this.company.id) {
+      throw new Error("Company is not defined");
+    }
+    const rand = Math.floor(Math.random() * 100000);
+
+    const workspaceId = "31111111-1111-1111-1111-111111111111";
+
+    const workspace = await this.userService.workspaces.create(
+      getWorkspaceInstance({
+        id: workspaceId,
+        name: `TwakeAutotests-test-workspace-${rand}`,
+        group_id: this.company.id,
+      }),
+    );
+
+    const createdWorkspace = await this.userService.workspaces.get({ id: workspaceId });
+
+    if (!createdWorkspace) {
+      throw new Error("workspace wasn't created");
+    }
+
+    this.workspaces.push(workspace.entity);
+    return workspace.entity;
+  }
+
+  async createUser(workspacesPk?: Array<WorkspacePrimaryKey>): Promise<User> {
     const rand = Math.floor(Math.random() * 100000);
     const user = new User();
     user.username_canonical = `test${rand}`;
@@ -41,13 +73,29 @@ export class TestUsers {
       "member",
     );
 
+    if (workspacesPk && workspacesPk.length) {
+      for (const workspacePk of workspacesPk) {
+        await this.userService.workspaces.addUser(
+          workspacePk,
+          { id: createdUser.entity.id },
+          "member",
+        );
+      }
+    }
+
     return createdUser.entity;
   }
 
+  private disabled = true;
+
   async deleteAll(): Promise<void> {
+    if (this.disabled) return;
     await Promise.all(
       this.users.map(async user => {
         await this.userService.users.delete({ id: user.id });
+        for (const workspace of this.workspaces) {
+          await this.userService.workspaces.removeUser({ id: workspace.id }, { id: user.id });
+        }
         await this.userService.companies.removeUserFromCompany(this.company, { id: user.id });
       }),
     );
@@ -58,7 +106,8 @@ export class TestUsers {
 
   async createCompanyAndUsers(): Promise<void> {
     await this.createCompany();
-    await this.createUser();
-    await this.createUser();
+    await this.createWorkspace();
+    await this.createUser(this.workspaces);
+    await this.createUser(this.workspaces);
   }
 }

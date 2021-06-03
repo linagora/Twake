@@ -6,6 +6,7 @@ import {
   DeleteResult,
   ExecutionContext,
   ListResult,
+  OperationType,
   Paginable,
   Pagination,
   SaveResult,
@@ -13,10 +14,21 @@ import {
 } from "../../../../core/platform/framework/api/crud-service";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { WorkspaceServiceAPI } from "../../api";
-import { TYPE as WorkspaceUserType } from "../../entities/workspace_user";
-import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../../entities/workspace_user";
-import Workspace, { WorkspacePrimaryKey } from "../../entities/workspace";
-import { TYPE as WorkspaceType } from "../../entities/workspace";
+import { TYPE as WorkspaceUserType } from "../../../user/entities/workspace_user";
+import WorkspaceUser, {
+  getInstance as getWorkspaceUserInstance,
+  WorkspaceUserPrimaryKey,
+} from "../../../user/entities/workspace_user";
+import Workspace, {
+  getInstance as getWorkspaceInstance,
+  TYPE,
+  WorkspacePrimaryKey,
+} from "../../../workspaces/entities/workspace";
+import { TYPE as WorkspaceType } from "../../../workspaces/entities/workspace";
+import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
+import { UserPrimaryKey } from "../../../user/entities/user";
+import _ from "lodash";
+import Company, { getInstance as getCompanyInstance } from "../../../user/entities/company";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -43,8 +55,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return this.workspaceRepository.findOne(pk);
   }
 
-  create?(item: Workspace, context?: ExecutionContext): Promise<CreateResult<Workspace>> {
-    throw new Error("Method not implemented.");
+  async create(workspace: Workspace, context?: ExecutionContext): Promise<CreateResult<Workspace>> {
+    const workspaceToCreate: Workspace = getWorkspaceInstance({
+      ...workspace,
+      ...{
+        dateAdded: Date.now(),
+        isDeleted: false,
+        isArchived: false,
+      },
+    });
+
+    await this.workspaceRepository.save(workspaceToCreate);
+    return new CreateResult<Workspace>(TYPE, workspaceToCreate);
   }
 
   update?(
@@ -73,9 +95,35 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   list<ListOptions>(
     pagination: Pagination,
     options?: ListOptions,
-    context?: ExecutionContext,
+    context?: WorkspaceExecutionContext,
   ): Promise<ListResult<Workspace>> {
-    return this.workspaceRepository.find({}, { pagination });
+    const pk = { group_id: context.company_id };
+
+    return this.workspaceRepository.find(pk, { pagination });
+  }
+
+  async addUser(
+    workspacePk: WorkspacePrimaryKey,
+    userPk: UserPrimaryKey,
+    role: WorkspaceUserRole,
+  ): Promise<void> {
+    await this.workspaceUserRepository.save(
+      getWorkspaceUserInstance({
+        workspaceId: workspacePk.id,
+        userId: userPk.id,
+        // role: WorkspaceUserRole, // FixME
+        role: "member",
+      }),
+    );
+  }
+
+  async removeUser(workspacePk: WorkspacePrimaryKey, userPk: UserPrimaryKey): Promise<void> {
+    await this.workspaceUserRepository.remove(
+      getWorkspaceUserInstance({
+        workspaceId: workspacePk.id,
+        userId: userPk.id,
+      }),
+    );
   }
 
   getUsers(
@@ -122,8 +170,4 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       }),
     );
   }
-}
-
-export function getService(database: DatabaseServiceAPI): WorkspaceService {
-  return new WorkspaceService(database);
 }

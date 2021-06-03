@@ -57,7 +57,7 @@ export class CassandraConnector extends AbstractConnector<
 > {
   private client: cassandra.Client;
   private searchClient: Search | null;
-  private keyspaceExists: boolean = false;
+  private keyspaceExists = false;
 
   getClient(): cassandra.Client {
     return this.client;
@@ -456,7 +456,7 @@ export class CassandraConnector extends AbstractConnector<
       },
     );
 
-    logger.debug(`services.database.orm.cassandra.find - Query: ${query}`);
+    logger.debug(`services.database.orm.cassandra.find - Query: \x1b[33m${query}\x1b[0m`);
 
     const results = await this.getClient().execute(query, [], {
       fetchSize: parseInt(options.pagination.limitStr) || 100,

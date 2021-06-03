@@ -4,12 +4,12 @@ import UserServiceAPI, {
   CompaniesServiceAPI,
   UserExternalLinksServiceAPI,
   UsersServiceAPI,
-  WorkspaceServiceAPI,
 } from "../api";
 import { getService as getUserService } from "./users";
 import { getService as getCompanyService } from "./companies";
 import { getService as getExternalService } from "./external_links";
-import { getService as getWorkspaceService } from "./workspace";
+import { getService as getWorkspaceService } from "../../workspaces/services/workspace";
+import { WorkspaceServiceAPI } from "../../workspaces/api";
 
 export function getService(databaseService: DatabaseServiceAPI): UserServiceAPI {
   return new Service(databaseService);
@@ -25,7 +25,7 @@ class Service implements UserServiceAPI {
   constructor(databaseService: DatabaseServiceAPI) {
     this.users = getUserService(databaseService);
     this.external = getExternalService(databaseService);
-    this.companies = getCompanyService(databaseService, this);
+    this.companies = getCompanyService(databaseService);
     this.workspaces = getWorkspaceService(databaseService);
   }
 
