@@ -22,8 +22,8 @@ const findChannelEntities = (contentBlock: ContentBlock, callback: any, contentS
 }
 
 const resolver = (text: string, max: number, callback: (channels: ChannelSuggestionType[]) => void) => {
+  console.log("CHANNEL", `'${text}'`)
   ChannelsService.search(text, (channels: ChannelResource[]) => {
-    console.log("CHANNELS", text, channels);
     if (!channels || !channels.length) {
       callback([]);
       return;

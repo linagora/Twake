@@ -246,6 +246,25 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       });
       return;
     }
+    
+    const triggerCommand = getTrigger(this.commands.trigger);
+    if (!triggerCommand) {
+      this.resetState();
+    } else {
+      this.commands.resolver(triggerCommand.text, (items) => {
+        const activeSuggestion = {
+          position: getCaretCoordinates(),
+          searchText: triggerCommand.text,
+          items,
+        };
+        this.setState({
+          activeSuggestion,
+          suggestionType: this.commands.resourceType,
+          suggestionIndex: 0,
+        });
+      });
+      return;
+    }
   }
 
   handleMentionSuggestionSelected(mention: MentionSuggestionType) {
