@@ -107,28 +107,12 @@
     display: flex;
     flex-direction: row;
     margin-top: 8px;
-
+    
     .input-options-toolbar-separator {
+      border-left: 1px solid var(--grey-light);
       width: 1px;
-      &.show {
-        border-left: 1px solid var(--grey-light);
-      }
-  
-      &.hide {
-        border-left: none;
-      }  
-    }
-
-    .richtext-toolbar {
-      &.show {
-        opacity: 1;
-        transition: all 100ms linear;
-      }
-
-      &.hide {
-        opacity: 0;
-        transition: all 100ms linear;
-      }
+      margin-left: 4px;
+      margin-right: 4px;
     }
   }
 

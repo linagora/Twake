@@ -240,10 +240,15 @@ export default (props: Props) => {
       </div>
 
       <div className="input-options-toolbar">
-        <div className={`input-options-toolbar-separator ${displayToolbar() ? "show" : "hide"}`}></div>
-        <div className={`richtext-toolbar ${displayRichTextOptions ? "show" : "hide"}`}>
-          <RichTextToolbar />
-        </div>
+        {
+          displayToolbar() && (
+          <>
+            <div className="input-options-toolbar-separator"></div>
+            <div className="richtext-toolbar">
+              <RichTextToolbar />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
