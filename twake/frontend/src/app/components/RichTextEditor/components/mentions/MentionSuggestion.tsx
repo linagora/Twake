@@ -14,5 +14,5 @@ export default (props: MentionSuggestionType): JSX.Element => {
         <span style={{ opacity: '0.5', textTransform: 'capitalize' }}>@{props.username}</span>
       </div>
     </>
-  )
+  );
 }

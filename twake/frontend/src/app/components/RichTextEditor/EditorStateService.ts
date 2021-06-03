@@ -1,5 +1,6 @@
-import { Editor, EditorState, Modifier, CompositeDecorator, RichUtils, DraftEditorCommand, DraftHandleValue, DraftDecorator, KeyBindingUtil } from "draft-js";
+import { EditorState, CompositeDecorator } from "draft-js";
 import mentionsPlugin from "./components/mentions";
+import channelsPlugin from "./components/channel";
 import emojisPugin from "./components/emoji";
 
 type EditorOptions = {};
@@ -47,7 +48,8 @@ class EditorStateService {
   private createEditor(): EditorState {
     const emojis = emojisPugin();
     const mentions = mentionsPlugin();
-    const decorators = new CompositeDecorator([emojis.decorator, mentions.decorator]);
+    const channels = channelsPlugin();
+    const decorators = new CompositeDecorator([emojis.decorator, mentions.decorator, channels.decorator]);
 
     return EditorState.createEmpty(decorators);
   }

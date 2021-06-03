@@ -3,9 +3,11 @@ import { Editor, EditorState, Modifier, CompositeDecorator, RichUtils, DraftEdit
 import { toString } from "./EditorDataParser";
 import useMentions, { MentionSuggestionType } from "./components/mentions/index";
 import useEmojis, { EmojiSuggestionType } from "./components/emoji";
+import useChannel, { ChannelSuggestionType } from "./components/channel";
 import { SuggestionList } from "./components/suggestion/SuggestionList";
 import EmojiSuggestion from "./components/emoji/EmojiSuggestion";
 import MentionSuggestion from "./components/mentions/MentionSuggestion";
+import ChannelSuggestion from "./components/channel/ChannelSuggestion";
 import "./Editor.scss";
 
 const { isSoftNewlineEvent } = KeyBindingUtil;
@@ -19,7 +21,7 @@ type SyntheticKeyboardEvent = KeyboardEvent<{}> & {code: string};
 type CaretCoordinates = {
   x: number;
   y: number;
-}
+};
 
 type CurrentSuggestion<T> = {
   position: CaretCoordinates;
@@ -45,7 +47,7 @@ export type EditorSuggestionPlugin<SuggestionType> = {
 };
 
 type EditorViewState = {
-  activeSuggestion: CurrentSuggestion<MentionSuggestionType | EmojiSuggestionType> | null;
+  activeSuggestion: CurrentSuggestion<MentionSuggestionType | EmojiSuggestionType | ChannelSuggestionType> | null;
   suggestionType: string;
   suggestionIndex: number;
 };
@@ -55,12 +57,14 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   editor!: Editor | null;
   emojis: EditorSuggestionPlugin<EmojiSuggestionType>;
   mentions: EditorSuggestionPlugin<MentionSuggestionType>;
+  channels: EditorSuggestionPlugin<ChannelSuggestionType>;
 
   constructor(props: EditorProps) {
     super(props);
 
     this.emojis = useEmojis();
     this.mentions = useMentions();
+    this.channels = useChannel();
     this.outputFormat = this.props.outputFormat || "markdown";
     this.state = this.getInitialState();
   }
@@ -109,6 +113,11 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       
       if (this.state.suggestionType === this.mentions.resourceType) {
         this.handleMentionSuggestionSelected(this.state.activeSuggestion?.items[this.state.suggestionIndex] as MentionSuggestionType);
+        return 'handled';
+      }
+
+      if (this.state.suggestionType === this.channels.resourceType) {
+        this.handleChannelSuggestionSelected(this.state.activeSuggestion?.items[this.state.suggestionIndex] as ChannelSuggestionType);
         return 'handled';
       }
 
@@ -174,17 +183,17 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
   
   updateSuggestionsState(): void {
-    const triggerMention = getTrigger(this.mentions.trigger);
+    const trigger = getTrigger(this.mentions.trigger);
 
-    if (!triggerMention) {
+    if (!trigger) {
       // TODO: Put this at the end of the whole function?
       this.resetState();
     } else {
-      this.mentions.resolver(triggerMention.text.slice(1, triggerMention.text.length), (mentions) => {
+      this.mentions.resolver(trigger.text.slice(1, trigger.text.length), (items) => {
         const activeSuggestion = {
           position: getCaretCoordinates(),
-          searchText: triggerMention.text,
-          items: mentions,
+          searchText: trigger.text,
+          items,
         };
         this.setState({
           activeSuggestion,
@@ -199,15 +208,34 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     if (!triggerEmoji) {
       this.resetState();
     } else {
-      this.emojis.resolver(triggerEmoji.text, (emojis) => {
+      this.emojis.resolver(triggerEmoji.text, (items) => {
         const activeSuggestion = {
           position: getCaretCoordinates(),
           searchText: triggerEmoji.text,
-          items: emojis,
+          items,
         };
         this.setState({
           activeSuggestion,
           suggestionType: this.emojis.resourceType,
+          suggestionIndex: 0,
+        });
+      });
+      return;
+    }
+
+    const triggerChannel = getTrigger(this.channels.trigger);
+    if (!triggerChannel) {
+      this.resetState();
+    } else {
+      this.channels.resolver(triggerChannel.text, (items) => {
+        const activeSuggestion = {
+          position: getCaretCoordinates(),
+          searchText: triggerChannel.text,
+          items,
+        };
+        this.setState({
+          activeSuggestion,
+          suggestionType: this.channels.resourceType,
           suggestionIndex: 0,
         });
       });
@@ -222,6 +250,11 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   
   handleEmojiSuggestionSelected(emoji: EmojiSuggestionType) {
     this.onChange(addEmoji(this.props.editorState, emoji));
+    this.resetStateAndFocus();
+  }
+
+  handleChannelSuggestionSelected(channel: ChannelSuggestionType) {
+    this.onChange(addChannel(this.props.editorState, channel, "#"));
     this.resetStateAndFocus();
   }
 
@@ -297,6 +330,19 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
               )}
 
               {(
+                this.state.activeSuggestion?.items.length && this.state.suggestionType === this.channels.resourceType &&
+                <div className="channels">
+                  <SuggestionList<ChannelSuggestionType>
+                    list={this.state.activeSuggestion?.items as ChannelSuggestionType[]}
+                    position={"top"}
+                    renderItem={(props: ChannelSuggestionType) => (<ChannelSuggestion {...props} />)}
+                    onSelected={this.handleChannelSuggestionSelected.bind(this)}
+                    selectedIndex={this.state.suggestionIndex}
+                  />
+                </div>
+              )}
+
+              {(
                 this.state.activeSuggestion?.items.length && this.state.suggestionType === this.emojis.resourceType &&
                 <div className="emojis">
                   <SuggestionList<EmojiSuggestionType>
@@ -316,8 +362,9 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
 
 function getSelectionRange() {
   const selection = window.getSelection()
-  if (selection?.rangeCount === 0)
+  if (selection?.rangeCount === 0) {
     return null
+  }
   return selection?.getRangeAt(0)
 }
 
@@ -371,7 +418,7 @@ function getTriggerRange(term: string) {
   return {
     end,
     start,
-    text:  text.substring(start),
+    text: text.substring(start),
   }
 }
 
@@ -447,6 +494,47 @@ const addMention = (editorState: EditorState, mention: MentionSuggestionType, pr
 //    newEditorState,
 //    newContentState.getSelectionAfter());
 }
+
+const addChannel = (editorState: EditorState, channel: ChannelSuggestionType, prefix: string): EditorState => {
+  const { start, end } = getInsertRange(editorState, prefix)
+  const contentState = editorState.getCurrentContent()
+  const currentSelection = editorState.getSelection()
+  const selection = currentSelection.merge({
+    anchorOffset: start,
+    focusOffset: end,
+  })
+  
+  // TODO: content can be anything so add the user id etc...
+  const contentStateWithEntity = contentState.createEntity('CHANNEL', 'IMMUTABLE', channel);
+  const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+
+  // TODO: Can we avoid inserting the text and just relying on the decorator and Mention component?
+  const newContentState = Modifier.replaceText(
+    contentStateWithEntity,
+    selection,
+    `${prefix}${channel.name}`,
+    undefined,
+    entityKey);
+
+  const newEditorState = EditorState.push(
+    // TODO: What is the difference with "insert-characters" which also works.
+    editorState, newContentState, "insert-fragment"
+  );
+
+  return EditorState.forceSelection(
+    newEditorState,
+    newContentState.getSelectionAfter());
+
+//  const newEditorState = EditorState.push(
+//    editorState,
+//    newContentState,
+//    "insert-characters");
+////    INSERT_ACTION_LABEL)
+//  
+//  return EditorState.forceSelection(
+//    newEditorState,
+//    newContentState.getSelectionAfter());
+};
 
 const addEmoji = (editorState: EditorState, emoji: EmojiSuggestionType): EditorState => {
   const { start, end } = getInsertRange(editorState, ":")
