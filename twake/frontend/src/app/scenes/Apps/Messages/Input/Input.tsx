@@ -200,9 +200,7 @@ export default (props: Props) => {
           onSend={() => onSend()}
           triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
           onAddEmoji={emoji => {
-            // TODO Add emoji
-            editorRef.current?.handleEmojiSuggestionSelected(emoji);
-            console.log('TODO Add emoji', emoji);
+            editorRef.current?.insertEmoji(emoji);
           }}
           richTextEditorState={editorState}
           onRichTextChange={(editorState) => setRichTextEditorState(editorState)}

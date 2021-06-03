@@ -286,9 +286,10 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     this.onChange(addCommand(this.props.editorState, command, "/"));
     this.resetStateAndFocus();
   }
-
+  
   insertEmoji(emoji: EmojiSuggestionType): void {
-    // TODO: Insert emoji at current position, witout the : prefix
+    this.onChange(insertEmoji(this.props.editorState, emoji));
+    this.resetStateAndFocus();
   }
 
   onDownArrow(e: SyntheticKeyboardEvent): void {
@@ -624,6 +625,38 @@ const addEmoji = (editorState: EditorState, emoji: EmojiSuggestionType): EditorS
   
   const newContentState = Modifier.replaceText(
     contentStateWithEntity,
+    selection,
+    emoji.native,
+    undefined,
+    entityKey)
+  
+  const newEditorState = EditorState.push(
+    editorState,
+    newContentState,
+    "insert-characters");
+  
+  return EditorState.forceSelection(
+    newEditorState,
+    newContentState.getSelectionAfter());
+}
+
+/**
+ * Temporary until we can merge with the one above
+ * 
+ * @param editorState
+ * @param emoji 
+ * @returns 
+ */
+const insertEmoji = (editorState: EditorState, emoji: EmojiSuggestionType): EditorState => {
+  const contentState = editorState.getCurrentContent()
+  const selection = editorState.getSelection()
+  
+  const entity = contentState.createEntity(
+    'EMOJI', 'IMMUTABLE', emoji)
+  const entityKey = entity.getLastCreatedEntityKey();
+  
+  const newContentState = Modifier.insertText(
+    entity,
     selection,
     emoji.native,
     undefined,
