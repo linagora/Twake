@@ -194,7 +194,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       // TODO: Put this at the end of the whole function?
       this.resetState();
     } else {
-      this.mentions.resolver(trigger.text.slice(1, trigger.text.length), (items) => {
+      this.mentions.resolver(trigger.text, (items) => {
         const activeSuggestion = {
           position: getCaretCoordinates(),
           searchText: trigger.text,
