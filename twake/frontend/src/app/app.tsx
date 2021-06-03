@@ -70,7 +70,9 @@ export default () => {
     !LoginService.getIsPublicAccess()
   ) {
     return (
-      <AuthProvider {...AuthProviderService.getAuthProviderConfiguration()}>{page}</AuthProvider>
+      <AuthProvider autoSignIn={false} {...AuthProviderService.getAuthProviderConfiguration()}>
+        {page}
+      </AuthProvider>
     );
   }
 

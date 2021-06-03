@@ -18,6 +18,7 @@ import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
 import WindowService from 'services/utils/window.js';
+import authProviderService from './AuthProviderService';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -314,14 +315,7 @@ class Login extends Observable {
 
     Api.post('users/logout', {}, function () {
       if (identity_provider === 'console') {
-        var location = Api.route('users/console/openid/logout');
-        Globals.window.location = location;
-      } else if (identity_provider === 'openid') {
-        var location = Api.route('users/openid/logout');
-        Globals.window.location = location;
-      } else if (identity_provider === 'cas') {
-        var location = Api.route('users/cas/logout');
-        Globals.window.location = location;
+        authProviderService.signOut();
       } else {
         if (!no_reload) {
           Globals.window.location.reload();

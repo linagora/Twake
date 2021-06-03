@@ -34,15 +34,10 @@ class AuthProviderService extends Observable {
       });
 
       Oidc.Log.logger = console;
-      Oidc.Log.level = Oidc.Log.DEBUG;
+      Oidc.Log.level = Oidc.Log.INFO;
 
       this.authProviderUserManager.events.addUserLoaded(async user => {
-        Logger.info('User loaded');
         this.getJWTFromOidcToken(user);
-      });
-
-      this.authProviderUserManager.events.addAccessTokenExpiring(() => {
-        Logger.info('AccessToken Expiring');
       });
 
       //This even listener is temporary disabled because of this issue: https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/-/issues/2358
@@ -51,27 +46,31 @@ class AuthProviderService extends Observable {
         //this.signOut();
       });
 
-      this.authProviderUserManager.events.addUserSignedIn(() => {
-        Logger.info('Signed in');
-      });
-
       this.authProviderUserManager.events.addAccessTokenExpired(() => {
-        Logger.info('AccessToken Expired');
         this.signOut();
       });
 
-      this.authProviderUserManager.events.addSilentRenewError(error => {
-        console.error('Silent Renew Error', error);
-      });
-
-      this.authProviderUserManager
-        .signinSilent()
-        .then(user => {
-          this.getJWTFromOidcToken(user);
-        })
-        .catch(() => {
-          Logger.info('User not already logged in (error while retrieving it)');
-        });
+      //This manage the initial sign-in when loading the app
+      const authProviderUserManager = this.authProviderUserManager;
+      (async () => {
+        try {
+          await authProviderUserManager.signinRedirectCallback();
+          authProviderUserManager.getUser();
+        } catch (e) {
+          //There is no sign-in response, so we can try to silent login and use refresh token
+          try {
+            const user = await authProviderUserManager.getUser();
+            if (user) {
+              const user = await authProviderUserManager.signinSilent();
+              this.getJWTFromOidcToken(user);
+            } else {
+              authProviderUserManager.signinRedirect();
+            }
+          } catch (e) {
+            authProviderUserManager?.signinRedirect();
+          }
+        }
+      })();
     }
 
     return {
