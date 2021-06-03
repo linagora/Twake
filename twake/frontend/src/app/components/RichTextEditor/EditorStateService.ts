@@ -2,6 +2,7 @@ import { EditorState, CompositeDecorator } from "draft-js";
 import mentionsPlugin from "./components/mentions";
 import channelsPlugin from "./components/channel";
 import emojisPugin from "./components/emoji";
+import commandsPugin from "./components/commands";
 
 type EditorOptions = {};
 
@@ -49,7 +50,9 @@ class EditorStateService {
     const emojis = emojisPugin();
     const mentions = mentionsPlugin();
     const channels = channelsPlugin();
-    const decorators = new CompositeDecorator([emojis.decorator, mentions.decorator, channels.decorator]);
+    // TODO: apps/commands can be disabled cf InputAutoComplete -> props -> disableApps
+    const commands = commandsPugin();
+    const decorators = new CompositeDecorator([emojis.decorator, mentions.decorator, channels.decorator, commands.decorator]);
 
     return EditorState.createEmpty(decorators);
   }

@@ -4,11 +4,13 @@ import { toString } from "./EditorDataParser";
 import useMentions, { MentionSuggestionType } from "./components/mentions/index";
 import useEmojis, { EmojiSuggestionType } from "./components/emoji";
 import useChannel, { ChannelSuggestionType } from "./components/channel";
+import useCommand, { CommandSuggestionType } from "./components/commands";
 import { SuggestionList } from "./components/suggestion/SuggestionList";
 import EmojiSuggestion from "./components/emoji/EmojiSuggestion";
 import MentionSuggestion from "./components/mentions/MentionSuggestion";
 import ChannelSuggestion from "./components/channel/ChannelSuggestion";
 import "./Editor.scss";
+import CommandSuggestion from "./components/commands/CommandSuggestion";
 
 const { isSoftNewlineEvent } = KeyBindingUtil;
 
@@ -47,7 +49,7 @@ export type EditorSuggestionPlugin<SuggestionType> = {
 };
 
 type EditorViewState = {
-  activeSuggestion: CurrentSuggestion<MentionSuggestionType | EmojiSuggestionType | ChannelSuggestionType> | null;
+  activeSuggestion: CurrentSuggestion<MentionSuggestionType | EmojiSuggestionType | ChannelSuggestionType | CommandSuggestionType> | null;
   suggestionType: string;
   suggestionIndex: number;
 };
@@ -58,6 +60,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   emojis: EditorSuggestionPlugin<EmojiSuggestionType>;
   mentions: EditorSuggestionPlugin<MentionSuggestionType>;
   channels: EditorSuggestionPlugin<ChannelSuggestionType>;
+  // TODO: apps/commands can be disabled cf InputAutoComplete -> props -> disableApps
+  commands: EditorSuggestionPlugin<CommandSuggestionType>;
 
   constructor(props: EditorProps) {
     super(props);
@@ -65,6 +69,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     this.emojis = useEmojis();
     this.mentions = useMentions();
     this.channels = useChannel();
+    this.commands = useCommand();
     this.outputFormat = this.props.outputFormat || "markdown";
     this.state = this.getInitialState();
   }
@@ -258,6 +263,11 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     this.resetStateAndFocus();
   }
 
+  handleCommandSuggestionSelected(command: CommandSuggestionType) {
+    this.onChange(addCommand(this.props.editorState, command, "/"));
+    this.resetStateAndFocus();
+  }
+
   insertEmoji(emoji: EmojiSuggestionType): void {
     // TODO: Insert emoji at current position, witout the : prefix
   }
@@ -337,6 +347,19 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
                     position={"top"}
                     renderItem={(props: ChannelSuggestionType) => (<ChannelSuggestion {...props} />)}
                     onSelected={this.handleChannelSuggestionSelected.bind(this)}
+                    selectedIndex={this.state.suggestionIndex}
+                  />
+                </div>
+              )}
+
+              {(
+                this.state.activeSuggestion?.items.length && this.state.suggestionType === this.commands.resourceType &&
+                <div className="commands">
+                  <SuggestionList<CommandSuggestionType>
+                    list={this.state.activeSuggestion?.items as CommandSuggestionType[]}
+                    position={"top"}
+                    renderItem={(props: CommandSuggestionType) => (<CommandSuggestion {...props} />)}
+                    onSelected={this.handleCommandSuggestionSelected.bind(this)}
                     selectedIndex={this.state.suggestionIndex}
                   />
                 </div>
@@ -493,6 +516,37 @@ const addMention = (editorState: EditorState, mention: MentionSuggestionType, pr
 //  return EditorState.forceSelection(
 //    newEditorState,
 //    newContentState.getSelectionAfter());
+}
+
+const addCommand = (editorState: EditorState, command: CommandSuggestionType, prefix: string): EditorState => {
+  const { start, end } = getInsertRange(editorState, prefix)
+  const contentState = editorState.getCurrentContent()
+  const currentSelection = editorState.getSelection()
+  const selection = currentSelection.merge({
+    anchorOffset: start,
+    focusOffset: end,
+  })
+  
+  // TODO: content can be anything so add the user id etc...
+  const entity = contentState.createEntity('COMMAND', 'IMMUTABLE', command);
+  const entityKey = entity.getLastCreatedEntityKey();
+
+  // TODO: Can we avoid inserting the text and just relying on the decorator and Mention component?
+  const newContentState = Modifier.replaceText(
+    entity,
+    selection,
+    command.command.split('[')[0].split('"')[0],
+    undefined,
+    entityKey);
+
+  const newEditorState = EditorState.push(
+    // TODO: What is the difference with "insert-characters" which also works.
+    editorState, newContentState, "insert-fragment"
+  );
+
+  return EditorState.forceSelection(
+    newEditorState,
+    newContentState.getSelectionAfter());
 }
 
 const addChannel = (editorState: EditorState, channel: ChannelSuggestionType, prefix: string): EditorState => {
