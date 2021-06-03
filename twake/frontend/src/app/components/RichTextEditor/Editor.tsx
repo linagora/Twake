@@ -24,7 +24,6 @@ type CaretCoordinates = {
 type CurrentSuggestion<T> = {
   position: CaretCoordinates;
   searchText: string;
-  selectedIndex: number;
   items: Array<T>;
 };
 
@@ -32,6 +31,7 @@ type EditorProps = {
   editorState: EditorState;
   onSubmit?: (content: string, editorState?: EditorState) => void;
   onChange?: (editorState: EditorState) => void;
+  onTab?: () => void;
   clearOnSubmit: boolean;
   outputFormat: EditorTextFormat;
   placeholder?: string;
@@ -41,11 +41,13 @@ export type EditorSuggestionPlugin<SuggestionType> = {
   resolver: (text: string, callback: (items: SuggestionType[]) => void) => void;
   decorator: DraftDecorator;
   trigger: string | RegExp;
+  resourceType: string;
 };
 
 type EditorViewState = {
-  activeMentionSuggestion: CurrentSuggestion<MentionSuggestionType> | null;
-  activeEmojiSuggestion: CurrentSuggestion<EmojiSuggestionType> | null;
+  activeSuggestion: CurrentSuggestion<MentionSuggestionType | EmojiSuggestionType> | null;
+  suggestionType: string;
+  suggestionIndex: number;
 };
 
 export class EditorView extends React.Component<EditorProps, EditorViewState> {
@@ -65,13 +67,22 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
 
   private getInitialState(): EditorViewState {
     return {
-      activeMentionSuggestion: null,
-      activeEmojiSuggestion: null,
+      activeSuggestion: null,
+      suggestionIndex: 0,
+      suggestionType: "",
     }
   }
 
-  private shouldDisplaySuggestions(): boolean {
-    return !!(this.state.activeEmojiSuggestion?.items.length || this.state.activeMentionSuggestion?.items.length);
+  private resetState(callback?: () => void | undefined): void {
+    this.setState(this.getInitialState(), callback);
+  }
+
+  private resetStateAndFocus(): void {
+    this.resetState(() => { (requestAnimationFrame(() => this.focus())) });
+  }
+
+  private isDisplayingSuggestions(): boolean {
+    return !!(this.state.activeSuggestion?.items.length);
   }
 
   handleKeyCommand(command: DraftEditorCommand, editorState: EditorState): DraftHandleValue {
@@ -90,7 +101,19 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       return 'handled';
     }
     
-    // TODO: Handle when suggestion is displayed. Pressing 'Enter' should not submit but select the choice 
+    if (this.isDisplayingSuggestions()) {
+      if (this.state.suggestionType === this.emojis.resourceType) {
+        this.handleEmojiSuggestionSelected(this.state.activeSuggestion?.items[this.state.suggestionIndex] as EmojiSuggestionType);
+        return 'handled';
+      }
+      
+      if (this.state.suggestionType === this.mentions.resourceType) {
+        this.handleMentionSuggestionSelected(this.state.activeSuggestion?.items[this.state.suggestionIndex] as MentionSuggestionType);
+        return 'handled';
+      }
+
+      return 'handled';
+    }
 
     if (this.submit(editorState)) {
       return 'handled';
@@ -102,9 +125,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   submit(editorState: EditorState): boolean {
     this.props.onSubmit && this.props.onSubmit(toString(editorState, this.outputFormat));
     if (this.props.clearOnSubmit) {
-      this.setState(this.getInitialState(), () => {
-        requestAnimationFrame(() => this.focus());
-      });
+      this.resetStateAndFocus();
     }
 
     return true;
@@ -144,7 +165,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
   
   focus() {
-    console.log("FOCUS EDITOR");
     this.editor?.focus();
   }
   
@@ -157,51 +177,89 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     const triggerMention = getTrigger(this.mentions.trigger);
 
     if (!triggerMention) {
-      this.setState({ activeMentionSuggestion: null });
+      // TODO: Put this at the end of the whole function?
+      this.resetState();
     } else {
       this.mentions.resolver(triggerMention.text.slice(1, triggerMention.text.length), (mentions) => {
-        const activeMentionSuggestion = {
+        const activeSuggestion = {
           position: getCaretCoordinates(),
           searchText: triggerMention.text,
-          selectedIndex: 0,
           items: mentions,
         };
-        this.setState({ activeMentionSuggestion });
+        this.setState({
+          activeSuggestion,
+          suggestionType: this.mentions.resourceType,
+          suggestionIndex: 0,
+        });
       });
       return;
     }
     
     const triggerEmoji = getTrigger(this.emojis.trigger);
     if (!triggerEmoji) {
-      this.setState({ activeEmojiSuggestion: null });
+      this.resetState();
     } else {
       this.emojis.resolver(triggerEmoji.text, (emojis) => {
-        const activeEmojiSuggestion = {
+        const activeSuggestion = {
           position: getCaretCoordinates(),
           searchText: triggerEmoji.text,
-          selectedIndex: 0,
           items: emojis,
         };
-        this.setState({ activeEmojiSuggestion });
+        this.setState({
+          activeSuggestion,
+          suggestionType: this.emojis.resourceType,
+          suggestionIndex: 0,
+        });
       });
       return;
     }
   }
-  
-  handleMentionSuggestionSelected(user: MentionSuggestionType) {
-    const { activeMentionSuggestion } = this.state; 
-    this.onChange(addMention(this.props.editorState, activeMentionSuggestion, user, "@"));
-    this.setState({ activeMentionSuggestion: null }, () => {
-      requestAnimationFrame(() => this.focus());
-    });
+
+  handleMentionSuggestionSelected(mention: MentionSuggestionType) {
+    this.onChange(addMention(this.props.editorState, mention, "@"));
+    this.resetStateAndFocus();
   }
   
   handleEmojiSuggestionSelected(emoji: EmojiSuggestionType) {
-    const { activeEmojiSuggestion } = this.state; 
-    this.onChange(addEmoji(this.props.editorState, activeEmojiSuggestion, emoji));
-    this.setState({ activeEmojiSuggestion: null }, () => {
-      requestAnimationFrame(() => this.focus());
-    });
+    this.onChange(addEmoji(this.props.editorState, emoji));
+    this.resetStateAndFocus();
+  }
+
+  insertEmoji(emoji: EmojiSuggestionType): void {
+    // TODO: Insert emoji at current position, witout the : prefix
+  }
+
+  onDownArrow(e: SyntheticKeyboardEvent): void {
+    if (this.isDisplayingSuggestions()) {
+      e.preventDefault();
+      this.setState({ suggestionIndex: (this.state.suggestionIndex - 1) < 0 ? 0 : this.state.suggestionIndex - 1 })
+    }
+  }
+  
+  onUpArrow(e: SyntheticKeyboardEvent): void {
+    if (this.isDisplayingSuggestions()) {
+      e.preventDefault();
+      const suggestionsLength = this.state.activeSuggestion?.items.length || 0;
+      const suggestionIndex = this.state.suggestionIndex === suggestionsLength - 1 ? suggestionsLength - 1 : this.state.suggestionIndex + 1;
+      this.setState({ suggestionIndex })
+    }
+  }
+
+  onEscape(e: SyntheticKeyboardEvent): void {
+    if (this.isDisplayingSuggestions()) {
+      e.preventDefault();
+      this.resetStateAndFocus();
+    }
+  }
+
+  onTab(e: SyntheticKeyboardEvent): void {
+    e.preventDefault();
+    
+    if (this.isDisplayingSuggestions()) {
+      this.resetStateAndFocus();
+    }
+
+    this.props.onTab && this.props.onTab();
   }
 
   render() {
@@ -215,32 +273,38 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         onChange={this.onChange.bind(this)}
         handleKeyCommand={this.handleKeyCommand.bind(this)}
         handleReturn={this.handleReturn.bind(this)}
+        onDownArrow={this.onDownArrow.bind(this)}
+        onUpArrow={this.onUpArrow.bind(this)}
+        onEscape={this.onEscape.bind(this)}
+        onTab={this.onTab.bind(this)}
         placeholder={this.props.placeholder || ""}
         />
         
         {(
-          this.shouldDisplaySuggestions() &&  
+          this.isDisplayingSuggestions() &&  
             <div style={{ position: "relative", top: "-40px" }} className="suggestions">
               {(
-                this.state.activeMentionSuggestion?.items.length &&
+                this.state.activeSuggestion?.items.length && this.state.suggestionType === this.mentions.resourceType &&
                 <div className="mentions">
                   <SuggestionList<MentionSuggestionType>
-                    list={this.state.activeMentionSuggestion?.items}
+                    list={this.state.activeSuggestion?.items as MentionSuggestionType[]}
                     position={"top"}
                     renderItem={(props: MentionSuggestionType) => (<MentionSuggestion {...props} />)}
                     onSelected={this.handleMentionSuggestionSelected.bind(this)}
+                    selectedIndex={this.state.suggestionIndex}
                   />
                 </div>
               )}
 
               {(
-                this.state.activeEmojiSuggestion?.items.length &&
+                this.state.activeSuggestion?.items.length && this.state.suggestionType === this.emojis.resourceType &&
                 <div className="emojis">
                   <SuggestionList<EmojiSuggestionType>
-                  list={this.state.activeEmojiSuggestion?.items}
-                  position={"top"}
-                  renderItem={(props: EmojiSuggestionType) => (<EmojiSuggestion {...props} />)}
-                  onSelected={this.handleEmojiSuggestionSelected.bind(this)}
+                    list={this.state.activeSuggestion?.items as EmojiSuggestionType[]}
+                    position={"top"}
+                    renderItem={(props: EmojiSuggestionType) => (<EmojiSuggestion {...props} />)}
+                    onSelected={this.handleEmojiSuggestionSelected.bind(this)}
+                    selectedIndex={this.state.suggestionIndex}
                   />
                 </div>
               )}
@@ -311,14 +375,14 @@ function getTriggerRange(term: string) {
   }
 }
 
-function getInsertRange(activeSuggestion: any, editorState: EditorState, trigger: string): { start: number, end: number } {
-  const selection = editorState.getSelection()
-  const content = editorState.getCurrentContent()
-  const anchorKey = selection.getAnchorKey()
-  const end = selection.getAnchorOffset()
-  const block = content.getBlockForKey(anchorKey)
-  const text = block.getText()
-  const start = text.substring(0, end).lastIndexOf(trigger)
+function getInsertRange(editorState: EditorState, firstCharacter: string): { start: number, end: number } {
+  const selection = editorState.getSelection();
+  const content = editorState.getCurrentContent();
+  const anchorKey = selection.getAnchorKey();
+  const end = selection.getAnchorOffset();
+  const block = content.getBlockForKey(anchorKey);
+  const text = block.getText();
+  const start = text.substring(0, end).lastIndexOf(firstCharacter);
 
   return {
     start,
@@ -343,8 +407,8 @@ function getCaretCoordinates(): CaretCoordinates {
 
 // TODO: Extract API
 
-const addMention = (editorState: EditorState, activeSuggestion: any, mention: MentionSuggestionType, prefix: string) => {
-  const { start, end } = getInsertRange(activeSuggestion, editorState, prefix)
+const addMention = (editorState: EditorState, mention: MentionSuggestionType, prefix: string): EditorState => {
+  const { start, end } = getInsertRange(editorState, prefix)
   const contentState = editorState.getCurrentContent()
   const currentSelection = editorState.getSelection()
   const selection = currentSelection.merge({
@@ -384,8 +448,8 @@ const addMention = (editorState: EditorState, activeSuggestion: any, mention: Me
 //    newContentState.getSelectionAfter());
 }
 
-const addEmoji = (editorState: EditorState, activeSuggestion: any, emoji: EmojiSuggestionType) => {
-  const { start, end } = getInsertRange(activeSuggestion, editorState, ":")
+const addEmoji = (editorState: EditorState, emoji: EmojiSuggestionType): EditorState => {
+  const { start, end } = getInsertRange(editorState, ":")
   const contentState = editorState.getCurrentContent()
   const currentSelection = editorState.getSelection()
   const selection = currentSelection.merge({

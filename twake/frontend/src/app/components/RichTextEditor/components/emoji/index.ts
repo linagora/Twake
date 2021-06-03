@@ -40,4 +40,5 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
     component: Emoji,
   },
   trigger: /\B:([\-+\w]+)$/,
+  resourceType: "emoji",
 });

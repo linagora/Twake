@@ -36,4 +36,5 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
     component: Mention,
   },
   trigger: "@",
+  resourceType: "mention",
 });

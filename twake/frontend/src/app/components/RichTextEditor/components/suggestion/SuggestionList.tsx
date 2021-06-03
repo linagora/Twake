@@ -7,11 +7,11 @@ type Props<T> = {
   renderItem: (item: T) => any;
   onSelected: (item: T) => void;
   disableNavigationKey?: boolean;
+  selectedIndex: number;
 }
 
 export const SuggestionList = <T, >(props: Props<T>): JSX.Element => {
   const [isFocused, setFocused] = useState(false);
-  const [selected, setSelected] = useState(0);
 
   const select = (item: T) => {
     item && props.onSelected(item);
@@ -30,12 +30,10 @@ export const SuggestionList = <T, >(props: Props<T>): JSX.Element => {
         return (
           <div
             key={index}
-            className={
-              'menu ' +
-              (!props.disableNavigationKey && item.autocomplete_id === selected ? 'is_selected' : '')
-            }
+            className={`menu ${(!props.disableNavigationKey && item.autocomplete_id === props.selectedIndex ? 'is_selected' : '')}`}
             onClick={() => select(item)}
             onMouseDown={() => select(item)}
+            onFocus={() => console.log("FOCUS", item)}
           >
             { item && props.renderItem(item) }
           </div>

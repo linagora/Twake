@@ -32,6 +32,7 @@ type Props = {
 
 export default (props: Props) => {
   const editorRef = useRef<EditorView>(null);
+  const submitRef = useRef<HTMLDivElement>(null);
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const messageEditorService: MessageEditorService = MessageEditorsManager.get(props.channelId);
@@ -57,7 +58,7 @@ export default (props: Props) => {
       sendMessage(content);
       setEditorState(RichTextEditorStateService.clear(props.channelId).get(props.channelId));
     }
-  }
+  };
 
   const triggerApp = (app: any, from_icon: any, evt: any) => {
     if (disable_app[app.id] && new Date().getTime() - disable_app[app.id] < 1000) {
@@ -155,7 +156,8 @@ export default (props: Props) => {
           />
           <Tooltip title={Languages.t("scenes.apps.messages.input.send_message", [], "Send message")} placement="top">
             <div
-              className={'submit-button ' + (!isEmpty() ? '' : 'disabled ')}
+              ref={submitRef}
+              className={`submit-button ${!isEmpty() ? "" : "disabled"}`}
               onClick={() => {
                 if (!isEmpty()) {
                   onSend();
@@ -199,6 +201,7 @@ export default (props: Props) => {
           triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
           onAddEmoji={emoji => {
             // TODO Add emoji
+            editorRef.current?.handleEmojiSuggestionSelected(emoji);
             console.log('TODO Add emoji', emoji);
           }}
           richTextEditorState={editorState}
