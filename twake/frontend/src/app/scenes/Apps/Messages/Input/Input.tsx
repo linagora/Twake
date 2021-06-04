@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Send } from 'react-feather';
 import { EditorState } from 'draft-js';
 import { Tooltip } from 'antd';
@@ -38,6 +38,8 @@ export default (props: Props) => {
   const messageEditorService: MessageEditorService = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
   const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(props.channelId));
+
+  useEffect(() => focusEditor());
 
   const disable_app: any = {};
   const hasFilesAttached = messageEditorService.filesAttachements[props.threadId || 'main']
@@ -86,7 +88,7 @@ export default (props: Props) => {
             messageEditorService.currentEditor ===
             messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
           ) {
-            editorRef.current?.focus();
+            focusEditor();
           }
           if (!message.parent_message_id) {
             messageEditorService.openEditor(message.id, props.messageId || '');
@@ -101,6 +103,10 @@ export default (props: Props) => {
   const focus = () => {
     messageEditorService.openEditor(props.threadId || '', props.messageId || '', props.context);
   };
+
+  const focusEditor = () => {
+    requestAnimationFrame(() => editorRef.current?.focus());
+  }
 
   const setRichTextEditorState = (editorState: EditorState): void => {
     setEditorState(editorState);
