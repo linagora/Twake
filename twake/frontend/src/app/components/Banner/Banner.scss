@@ -26,6 +26,11 @@
     color: var(--white);
   }
 
+  &.ghost {
+    background-color: transparent;
+    color: var(--black);
+  }
+
   .banner-col-icon {
     display: flex;
     align-items: center;
