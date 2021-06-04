@@ -35,6 +35,6 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
     strategy:  findSuggestionEntities,
     component: Mention,
   },
-  trigger: "@",
+  trigger: /\B@([\-+\w]+)$/,
   resourceType: "mention",
 });
