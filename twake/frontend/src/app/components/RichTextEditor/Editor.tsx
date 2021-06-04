@@ -578,15 +578,15 @@ const addChannel = (editorState: EditorState, channel: ChannelSuggestionType, pr
     focusOffset: end,
   })
   
-  // TODO: content can be anything so add the user id etc...
   const contentStateWithEntity = contentState.createEntity('CHANNEL', 'IMMUTABLE', channel);
   const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+  const channelAsString = (channel.name || "").toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '');
 
   // TODO: Can we avoid inserting the text and just relying on the decorator and Mention component?
   const newContentState = Modifier.replaceText(
     contentStateWithEntity,
     selection,
-    `${prefix}${channel.name}`,
+    `${prefix}${channelAsString}`,
     undefined,
     entityKey);
 
