@@ -5,6 +5,11 @@ type CaretCoordinates = {
   y: number;
 };
 
+const currentCoordinates: CaretCoordinates = {
+  x: 0,
+  y: 0,
+};
+
 export function getSelectionRange() {
   const selection = window.getSelection()
   if (selection?.rangeCount === 0) {
@@ -81,11 +86,6 @@ export function getInsertRange(editorState: EditorState, firstCharacter: string)
     end,
   };
 }
-
-const currentCoordinates: CaretCoordinates = {
-  x: 0,
-  y: 0,
-};
 
 export function getCaretCoordinates(): CaretCoordinates {
   const range = getSelectionRange();

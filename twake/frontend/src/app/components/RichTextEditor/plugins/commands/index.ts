@@ -1,7 +1,9 @@
-import { ContentBlock, ContentState } from "draft-js";
+import { ContentBlock, ContentState, EditorState, Modifier } from "draft-js";
 import WorkspacesApps from 'services/workspaces/workspaces_apps';
 import { Command } from "./Command";
-import { EditorSuggestionPlugin } from "../../Editor";
+import { getInsertRange } from "../../EditorUtils";
+import CommandSuggestion from "./CommandSuggestion";
+import { EditorSuggestionPlugin } from "../../EditorPlugins";
 
 export type CommandSuggestionType = {
   command: string;
@@ -41,6 +43,33 @@ const resolver = (text: string, max: number, callback: (commands: CommandSuggest
   );
 }
 
+const addCommand = (command: CommandSuggestionType, editorState: EditorState): EditorState => {
+  const { start, end } = getInsertRange(editorState, "/")
+  const contentState = editorState.getCurrentContent()
+  const currentSelection = editorState.getSelection()
+  const selection = currentSelection.merge({
+    anchorOffset: start,
+    focusOffset: end,
+  })
+  
+  const entity = contentState.createEntity(CommandResourceType, 'IMMUTABLE', command);
+  const entityKey = entity.getLastCreatedEntityKey();
+  const newContentState = Modifier.replaceText(
+    entity,
+    selection,
+    command.command.split('[')[0].split('"')[0],
+    undefined,
+    entityKey);
+
+  const newEditorState = EditorState.push(
+    editorState, newContentState, "insert-fragment"
+  );
+
+  return EditorState.forceSelection(
+    newEditorState,
+    newContentState.getSelectionAfter());
+}
+
 export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): EditorSuggestionPlugin<CommandSuggestionType> => ({
   resolver: (text, callback) => resolver(text, options.maxSuggestions, callback),
   decorator: {
@@ -49,4 +78,6 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
   },
   trigger: /^\/([a-z0-9]*)$/,
   resourceType: CommandResourceType,
+  onSelected: (command: CommandSuggestionType, editorState: EditorState) => addCommand(command, editorState),
+  renderSuggestion: (command: CommandSuggestionType) => CommandSuggestion(command),
 });

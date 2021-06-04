@@ -1,0 +1,10 @@
+.suggestion {
+  &.mention {
+    background: var(--primary-background);
+    border-radius: var(--border-radius-base);
+    color: var(--black);
+    display: inline-block;
+    padding-right: 2px;
+    padding-left: 2px;
+  }
+}

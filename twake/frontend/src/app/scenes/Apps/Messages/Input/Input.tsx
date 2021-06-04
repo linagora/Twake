@@ -156,6 +156,7 @@ export default (props: Props) => {
             onChange={(editorState) => setRichTextEditorState(editorState)}
             clearOnSubmit={true}
             outputFormat="markdown"
+            plugins={["emoji", "mention", "channel", "command"]}
             editorState={editorState}
             onSubmit={() => onSend()}
             placeholder={Languages.t("scenes.apps.messages.input.placeholder", [], "Write a message. Use @ to quote a user.")}
@@ -206,7 +207,7 @@ export default (props: Props) => {
           onSend={() => onSend()}
           triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
           onAddEmoji={emoji => {
-            editorRef.current?.insertEmoji(emoji);
+            editorRef.current?.insertCommand("EMOJI", emoji);
           }}
           richTextEditorState={editorState}
           onRichTextChange={(editorState) => setRichTextEditorState(editorState)}

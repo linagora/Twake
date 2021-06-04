@@ -1,8 +1,8 @@
 import { EditorState, CompositeDecorator } from "draft-js";
-import mentionsPlugin from "./components/mentions";
-import channelsPlugin from "./components/channel";
-import emojisPugin from "./components/emoji";
-import commandsPugin from "./components/commands";
+import mentionsPlugin from "./plugins/mentions";
+import channelsPlugin from "./plugins/channel";
+import emojisPugin from "./plugins/emoji";
+import commandsPugin from "./plugins/commands";
 
 type EditorOptions = {};
 
