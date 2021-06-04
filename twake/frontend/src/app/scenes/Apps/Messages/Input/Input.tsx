@@ -39,7 +39,7 @@ export default (props: Props) => {
   messageEditorService.useListener(useState);
   const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(props.channelId));
 
-  useEffect(() => focusEditor());
+  useEffect(() => focusEditor(), []);
 
   const disable_app: any = {};
   const hasFilesAttached = messageEditorService.filesAttachements[props.threadId || 'main']
