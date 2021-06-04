@@ -1,4 +1,4 @@
-import { EditorState } from "draft-js";
+import { EditorState, Modifier } from "draft-js";
 
 type CaretCoordinates = {
   x: number;
@@ -32,7 +32,6 @@ export function getTriggerMatchRange(regexp: RegExp) {
     return null;
   }
   const text  = range && range?.startContainer?.textContent?.substring(0, range.startOffset);
-  console.log("TRIGGER TEXT", `"${text}"`)
   if (!text || /\s+$/.test(text)) {
     return null;
   }
@@ -43,12 +42,11 @@ export function getTriggerMatchRange(regexp: RegExp) {
     return;
   }
 
-  const end = range.startOffset
   return {
-    end,
+    end: range.startOffset,
     start,
     text: start[1],
-  }
+  };
 }
 
 export function getTriggerRange(term: string) {
@@ -56,20 +54,20 @@ export function getTriggerRange(term: string) {
   if (!range) {
     return null;
   }
-  const text  = range && range?.startContainer?.textContent?.substring(0, range.startOffset)
+  const text  = range && range?.startContainer?.textContent?.substring(0, range.startOffset);
   if (!text || /\s+$/.test(text))
-    return null
+    return null;
 
-  const start = text.lastIndexOf(term)
+  const start = text.lastIndexOf(term);
   if (start === -1) {
-    return null
+    return null;
   }
 
   return {
     end: range.startOffset,
     start,
     text: text.substring(start),
-  }
+  };
 }
 
 export function getInsertRange(editorState: EditorState, firstCharacter: string): { start: number, end: number } {
@@ -94,4 +92,16 @@ export function getCaretCoordinates(): CaretCoordinates {
     Object.assign(currentCoordinates, { x, y });
   }
   return currentCoordinates;
+}
+
+export function insertText(text: string, editorState: EditorState): EditorState {
+  const selection = editorState.getSelection();
+  const cs = Modifier.insertText(editorState.getCurrentContent(), selection, text);
+  const newEditorState = EditorState.push(
+    editorState,
+    cs,
+    'insert-characters'
+  );
+
+  return newEditorState;
 }

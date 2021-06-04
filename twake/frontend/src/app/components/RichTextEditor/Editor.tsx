@@ -2,7 +2,7 @@ import React, { KeyboardEvent } from "react";
 import { Editor, EditorState, Modifier, CompositeDecorator, RichUtils, DraftEditorCommand, DraftHandleValue, DraftDecorator, KeyBindingUtil } from "draft-js";
 import { toString } from "./EditorDataParser";
 import { SuggestionList } from "./plugins/suggestion/SuggestionList";
-import { getCaretCoordinates, getTrigger } from "./EditorUtils";
+import { getCaretCoordinates, getTrigger, insertText } from "./EditorUtils";
 import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from "./EditorPlugins";
 import "./Editor.scss";
 
@@ -32,8 +32,6 @@ type EditorProps = {
   outputFormat: EditorTextFormat;
   placeholder?: string;
 };
-
-
 
 type EditorViewState = {
   activeSuggestion: CurrentSuggestion<SupportedSuggestionTypes> | null;
@@ -95,9 +93,11 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     }
     
     if (this.isDisplayingSuggestions()) {
-      this.onSuggestionSelected(this.state.activeSuggestion?.items[this.state.suggestionIndex]);
+      const result = this.onSuggestionSelected(this.state.activeSuggestion?.items[this.state.suggestionIndex]);
 
-      return 'handled';
+      if (result) {
+        return 'handled';
+      }
     }
 
     if (this.submit(editorState)) {
@@ -140,9 +140,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
           '\n',
           block.getInlineStyleAt(newSelection.getStartOffset()),
         );
-        this.onChange(
-          EditorState.push(editorState, newContent, 'insert-fragment')
-        );
+        this.onChange(EditorState.push(editorState, newContent, 'insert-fragment'));
       }
       return true;
     }
@@ -159,7 +157,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
   
   updateSuggestionsState(): void {
-    Array.from(this.plugins.values()).every(plugin => {
+    const triggered = Array.from(this.plugins.values()).some(plugin => {
       const trigger = getTrigger(plugin.trigger);
 
       if (trigger) {
@@ -175,11 +173,15 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
             suggestionIndex: 0,
           });  
         });
-        return false;
+        return true;
       }
 
-      return true;
+      return false;
     });
+
+    if (!triggered && this.isDisplayingSuggestions()) {
+      this.resetState();
+    }
   }
 
   onSuggestionSelected(suggestion: any): boolean {
@@ -188,7 +190,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     }
 
     const type = this.state.suggestionType;
-
     const plugin = this.plugins.get(type);
     if (!plugin) {
       return false;
@@ -198,8 +199,10 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       return false;
     }
 
-    this.onChange(plugin.onSelected(suggestion, this.props.editorState));
+    const editorState = plugin.onSelected(suggestion, this.props.editorState);
+    const newEditorState = insertText(" ", editorState);
     this.resetStateAndFocus();
+    this.onChange(newEditorState);
 
     return true;
   }

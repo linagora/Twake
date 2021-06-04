@@ -58,7 +58,7 @@ const addMention = (mention: MentionSuggestionType, editorState: EditorState): E
     editorState, newContentState, "insert-fragment"
   );
 
-  return EditorState.forceSelection( newEditorState, newContentState.getSelectionAfter());
+  return EditorState.forceSelection(newEditorState, newContentState.getSelectionAfter());
 }
 
 export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): EditorSuggestionPlugin<MentionSuggestionType>  => ({
