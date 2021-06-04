@@ -106,7 +106,7 @@ export default (props: Props) => {
             title={Languages.t("scenes.apps.messages.input.attach_file", [], "Attach file(s)")}
             visible={displayFileMenuTooltip && !displayFileMenu}
           >
-            <Button type="text" size="small">
+            <Button type="text" size="small" className="ant-btn-icon-only">
               <Menu
                 className="option"
                 position="top"
@@ -174,7 +174,7 @@ export default (props: Props) => {
 
         {addon_calls.length > 1 && (
           <Tooltip placement="top" title={Languages.t("scenes.apps.messages.input.start_call", [], "Start a call")}>
-            <Button type="text" size="small">
+            <Button type="text" size="small" className="ant-btn-icon-only">
               <Menu className="option" position="top" menu={addon_calls}>
                 <Video size={16} />
               </Menu>
@@ -184,7 +184,7 @@ export default (props: Props) => {
 
         {addon_calls.length === 1 && (
           <Tooltip placement="top" title={Languages.t("scenes.apps.messages.input.start_call", [], "Start a call")}>
-            <Button type="text" size="small">
+            <Button type="text" size="small" className="ant-btn-icon-only">
               <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
                 <Video size={16} />
               </div>
@@ -197,7 +197,7 @@ export default (props: Props) => {
             ? Languages.t("scenes.apps.messages.input.hide_formatting", [], "Hide formatting")
             : Languages.t("scenes.apps.messages.input.show_formatting", [], "Show formatting")
           }>
-          <Button type="text" size="small">
+          <Button type="text" size="small" className={`ant-btn-icon-only richtext ${displayRichTextOptions ? "selected" : ""}`}>
             <Type
               size={16}
               className="option"

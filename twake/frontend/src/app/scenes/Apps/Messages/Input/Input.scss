@@ -144,6 +144,16 @@
         border-radius: var(--border-radius-base);
       }
     }
+
+    .richtext {
+      &.selected {
+        background: var(--primary-background);
+
+        .option {
+          color: var(--primary);
+        }
+      }
+    }
   }
 
   .ephemerals {
