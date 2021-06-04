@@ -2045,4 +2045,15 @@ export default {
   'components.richtexteditor.toolbar.ordered-list': 'List ordonnée',
   'components.richtexteditor.toolbar.blockquote': 'Citation',
   'components.richtexteditor.toolbar.code-block': 'Bloc de code',
+  'components.locked_features.locked_history_banner.title':
+    "Vous venez d'atteindre la limite de messages",
+  'components.locked_features.locked_history_banner.description':
+    "Votre chaîne compte plus de 10 000 messages. C'est beaucoup! Mettez à niveau maintenant pour accéder à tout l'historique de vos messages.",
+  'components.locked_features.locked_history_banner.button': 'Voir plus',
+  'components.locked_features.locked_guests_popup.title':
+    "Vous n'avez pas accès aux fonctionnalités invité",
+  'components.locked_features.locked_guests_popup.description':
+    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam reiciendis quidem ad quos! Placeat, quo eius? Iure, provident, error mollitia veniam rerum ab voluptates porro optio illo quibusdam, quia sunt.',
+  'components.locked_features.locked_guests_popup.learn_more_button': 'Voir plus',
+  'components.locked_features.locked_guests_popup.skip_for_now_button': 'Ignorer',
 };
