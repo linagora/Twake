@@ -1,14 +1,16 @@
-import { beforeAll, afterAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
-import { TestUsers } from "./utils";
+import { TestDbService } from "../utils.prepare.db";
 
 describe("The /workspaces API", () => {
   const url = "/internal/services/workspaces/v1";
   let platform: TestPlatform;
 
-  let testUsers: TestUsers;
+  let testDbService: TestDbService;
 
   const nonExistentId = "11111111-1111-1111-1111-111111111111";
+  const companyId = "21111111-1111-1111-1111-111111111111";
+  const workspaceId = "31111111-1111-1111-1111-111111111111";
 
   beforeAll(async ends => {
     platform = await init({
@@ -23,9 +25,14 @@ describe("The /workspaces API", () => {
         "auth",
       ],
     });
-    testUsers = new TestUsers(platform);
-    await testUsers.deleteAll();
-    await testUsers.createCompanyAndUsers();
+
+    await platform.database.getConnector().drop();
+
+    testDbService = new TestDbService(platform);
+    await testDbService.createCompany(companyId);
+    const workspacePk = { id: workspaceId, group_id: companyId };
+    await testDbService.createWorkspace(workspacePk);
+    await testDbService.createUser([workspacePk]);
     ends();
   });
 
@@ -46,7 +53,7 @@ describe("The /workspaces API", () => {
     });
 
     it("should 404 when company not found", async done => {
-      const jwtToken = await platform.auth.getJWTToken({ sub: testUsers.users[0].id });
+      const jwtToken = await platform.auth.getJWTToken({ sub: testDbService.users[0].id });
 
       const response = await platform.app.inject({
         method: "GET",
@@ -58,8 +65,8 @@ describe("The /workspaces API", () => {
     });
 
     it("should 200 when company belongs to user", async done => {
-      const jwtToken = await platform.auth.getJWTToken({ sub: testUsers.users[0].id });
-      const companyId = testUsers.company.id;
+      const jwtToken = await platform.auth.getJWTToken({ sub: testDbService.users[0].id });
+      const companyId = testDbService.company.id;
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${companyId}/workspaces`,
@@ -67,6 +74,30 @@ describe("The /workspaces API", () => {
       });
       expect(response.statusCode).toBe(200);
       console.log(response.json());
+
+      const resources = response.json()["resources"];
+
+      expect(resources.length).toBeGreaterThan(0);
+
+      for (const resource of resources) {
+        expect(resource).toMatchObject({
+          id: expect.any(String),
+          company_id: expect.any(String),
+          name: expect.any(String),
+          logo: expect.any(String),
+          default: expect.any(Boolean),
+          archived: expect.any(Boolean),
+          role: expect.stringMatching(/admin|member/),
+        });
+
+        if (resource.stats) {
+          expect(resource.stats).toMatchObject({
+            created_at: expect.any(Number),
+            total_members: expect.any(Number),
+          });
+        }
+      }
+
       done();
     });
   });

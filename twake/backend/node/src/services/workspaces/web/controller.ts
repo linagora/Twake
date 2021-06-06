@@ -68,12 +68,16 @@ export class WorkspacesCrudController
       userId: context.user.id,
     });
 
+    const allUserWorkspacesHash = new Map<string, WorkspaceUser>();
+
+    for (const uw of allUserWorkspaces.getEntities()) {
+      allUserWorkspacesHash.set(uw.workspaceId, uw);
+    }
+
     const resources: WorkspaceObject[] = [];
 
     for (const workspace of allCompanyWorkspaces.getEntities()) {
-      // await this.workspaceService.getUser()
-
-      resources.push(this.formatWorkspace(workspace));
+      resources.push(this.formatWorkspace(workspace, allUserWorkspacesHash.get(workspace.id)));
     }
 
     return {
