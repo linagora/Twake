@@ -12,6 +12,7 @@ import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../types";
 import Workspace from "../entities/workspace";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../../user/entities/workspace_user";
+import workspace from "../../../cli/cmds/workspace";
 
 export class WorkspacesCrudController
   implements
@@ -58,30 +59,22 @@ export class WorkspacesCrudController
   ): Promise<ResourceListResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
 
-    const allCompanyWorkspaces = await this.workspaceService.list(
-      new Pagination(request.params.page_token, request.params.limit),
-      {},
-      context,
+    const allCompanyWorkspaces = await this.workspaceService
+      .list(new Pagination(request.params.page_token, request.params.limit), {}, context)
+      .then(a => a.getEntities());
+
+    const allUserWorkspaces = await this.workspaceService
+      .getAllForUser({ userId: context.user.id })
+      .then(a => a.getEntities());
+
+    const allUserWorkspacesMap: Map<string, WorkspaceUser> = new Map(
+      allUserWorkspaces.map(uw => [uw.workspaceId, uw]),
     );
 
-    const allUserWorkspaces = await this.workspaceService.getAllForUser({
-      userId: context.user.id,
-    });
-
-    const allUserWorkspacesHash = new Map<string, WorkspaceUser>();
-
-    for (const uw of allUserWorkspaces.getEntities()) {
-      allUserWorkspacesHash.set(uw.workspaceId, uw);
-    }
-
-    const resources: WorkspaceObject[] = [];
-
-    for (const workspace of allCompanyWorkspaces.getEntities()) {
-      resources.push(this.formatWorkspace(workspace, allUserWorkspacesHash.get(workspace.id)));
-    }
-
     return {
-      resources,
+      resources: allCompanyWorkspaces.map(workspace =>
+        this.formatWorkspace(workspace, allUserWorkspacesMap.get(workspace.id)),
+      ),
     };
   }
 
