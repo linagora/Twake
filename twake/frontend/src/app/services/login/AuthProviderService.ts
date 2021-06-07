@@ -20,6 +20,7 @@ class AuthProviderService extends Observable {
 
     if (!this.authProviderUserManager) {
       this.authProviderUserManager = new Oidc.UserManager({
+        userStore: new Oidc.WebStorageStateStore({ store: localStorage }),
         authority: consoleConfiguration?.authority || environment.api_root_url,
         client_id: consoleConfiguration?.client_id || 'twake',
         redirect_uri: environment.front_root_url + '/oidccallback',
