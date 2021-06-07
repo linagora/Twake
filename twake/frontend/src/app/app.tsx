@@ -22,11 +22,18 @@ export default () => {
     return <div />;
   }
 
+  if (
+    InitService.server_infos?.configuration.accounts.type === 'console' &&
+    !LoginService.getIsPublicAccess()
+  ) {
+    AuthProviderService.getAuthProviderConfiguration();
+  }
+
   try {
     (window as any).document.getElementById('app_loader').remove();
   } catch (err) {}
 
-  const page = (
+  return (
     <Integration>
       <Router history={RouterServices.history}>
         <Switch>
@@ -64,17 +71,4 @@ export default () => {
       </Router>
     </Integration>
   );
-
-  if (
-    InitService.server_infos?.configuration.accounts.type === 'console' &&
-    !LoginService.getIsPublicAccess()
-  ) {
-    return (
-      <AuthProvider autoSignIn={false} {...AuthProviderService.getAuthProviderConfiguration()}>
-        {page}
-      </AuthProvider>
-    );
-  }
-
-  return page;
 };
