@@ -17,6 +17,8 @@ export type ServerConfiguration = {
     accounts: {
       type: "console" | "internal";
       console: null | {
+        authority: string;
+        client_id: string;
         account_management_url: string;
         company_management_url: string;
         collaborators_management_url: string;

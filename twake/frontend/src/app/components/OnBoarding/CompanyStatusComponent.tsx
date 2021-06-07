@@ -13,7 +13,7 @@ const CompanyStatusComponent = (): JSX.Element => {
   const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
 
   useEffect(() => {
-    if (InitService.server_infos.auth?.console?.use === true) {
+    if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
       isNewAccount();
     }
   }, []);
@@ -31,7 +31,10 @@ const CompanyStatusComponent = (): JSX.Element => {
     if (!workspace?.id) return;
 
     const isNewUser: boolean =
-      onboarding !== 'completed' && workspace?.group?.stats?.total_members <= 1 && isNewCompany() && !user?.is_verified;
+      onboarding !== 'completed' &&
+      workspace?.group?.stats?.total_members <= 1 &&
+      isNewCompany() &&
+      !user?.is_verified;
 
     if (isNewUser) {
       localStorage.setItem(`onboarding_${companyId}`, 'completed');

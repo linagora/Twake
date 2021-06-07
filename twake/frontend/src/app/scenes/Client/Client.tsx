@@ -53,7 +53,7 @@ export default (): JSX.Element => {
       page = (
         <Layout className="appPage">
           <NewVersionComponent />
-          <CompanyStatusComponent />
+          {companyId && workspaceId && <CompanyStatusComponent />}
           <Layout hasSider>
             <Layout.Sider
               trigger={<Menu size={16} />}

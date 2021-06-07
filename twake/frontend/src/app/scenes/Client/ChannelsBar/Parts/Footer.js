@@ -35,16 +35,14 @@ export default class Footer extends Component {
       <FooterUI
         planName={group?.plan}
         onClickHelp={
-          InitService.server_infos.help_link &&
+          InitService.server_infos?.configuration?.help_link &&
           (() => {
-            window.open(InitService.server_infos.help_link);
+            window.open(InitService.server_infos?.configuration?.help_link);
           })
         }
-        onClickDocumentation={
-          () => {
-            window.open("https://doc.twake.app/how-to-use-it/welcome");
-          }
-        }
+        onClickDocumentation={() => {
+          window.open('https://doc.twake.app/how-to-use-it/welcome');
+        }}
       />
     );
   }

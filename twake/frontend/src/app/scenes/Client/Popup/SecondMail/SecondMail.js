@@ -5,6 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import userService from 'services/user/user.js';
 import loginService from 'services/login/login.js';
+import AccountService from 'services/login/account';
 import popupManager from 'services/popupManager/popupManager.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Input from 'components/Inputs/Input.js';
@@ -204,7 +205,7 @@ export default class SecondMail extends Component {
   next() {
     if (this.state.page == 2) {
       if (this.state.code) {
-        this.state.loginService.verifySecondMail(
+        AccountService.verifySecondMail(
           this.state.mail,
           this.state.code,
           thot => {
@@ -215,11 +216,7 @@ export default class SecondMail extends Component {
       }
     } else if (this.state.page == 1) {
       if (this.state.mail) {
-        this.state.loginService.addNewMail(
-          this.state.mail,
-          thot => thot.setState({ page: 2 }),
-          this,
-        );
+        AccountService.addNewMail(this.state.mail, thot => thot.setState({ page: 2 }), this);
       }
     }
   }

@@ -1,7 +1,7 @@
 import LocalStorage from 'services/LocalStorage';
 import LoginService from 'services/login/login';
 
-type JWTDataType = {
+export type JWTDataType = {
   time: 0;
   expiration: number;
   refresh_expiration: number;

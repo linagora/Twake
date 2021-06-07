@@ -7,11 +7,27 @@ import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import 'app/ui.scss';
 import InitService from './services/InitService';
 import 'app/theme.less';
+import { AuthProvider } from 'oidc-react';
+import AuthProviderService from './services/login/AuthProviderService';
+import LoginService from './services/login/login';
 
 export default () => {
   useEffect(() => {
     InitService.init();
   }, []);
+
+  const server_infos_loaded = InitService.useWatcher(() => InitService.server_infos_loaded);
+
+  if (!server_infos_loaded) {
+    return <div />;
+  }
+
+  if (
+    InitService.server_infos?.configuration.accounts.type === 'console' &&
+    !LoginService.getIsPublicAccess()
+  ) {
+    AuthProviderService.getAuthProviderConfiguration();
+  }
 
   try {
     (window as any).document.getElementById('app_loader').remove();
