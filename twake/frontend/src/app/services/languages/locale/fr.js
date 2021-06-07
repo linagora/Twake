@@ -2048,7 +2048,7 @@ export default {
   'components.locked_features.locked_history_banner.title':
     "Vous venez d'atteindre la limite de messages",
   'components.locked_features.locked_history_banner.description':
-    "Votre chaîne compte plus de 10 000 messages. C'est beaucoup! Mettez à niveau maintenant pour accéder à tout l'historique de vos messages.",
+    "Votre entreprise compte plus de 10 000 messages. C'est beaucoup! Mettez à niveau maintenant pour accéder à tout l'historique de vos messages.",
   'components.locked_features.locked_history_banner.button': 'Voir plus',
   'components.locked_features.locked_guests_popup.title':
     "Vous n'avez pas accès aux fonctionnalités invité",

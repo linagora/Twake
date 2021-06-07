@@ -1975,10 +1975,10 @@ export default {
   'components.locked_features.locked_history_banner.title':
     'You have just reached the message limit',
   'components.locked_features.locked_history_banner.description':
-    "Your channel has over 10000 messages. That's a lot! Upgrade now to access all your message history.",
+    "Your company has over 10000 messages. That's a lot! Upgrade now to access all your message history.",
   'components.locked_features.locked_history_banner.button': 'Learn more',
   'components.locked_features.locked_guests_popup.title':
-    'You are do not have access to guest features',
+    'You do not have access to guests feature',
   'components.locked_features.locked_guests_popup.description':
     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam reiciendis quidem ad quos! Placeat, quo eius? Iure, provident, error mollitia veniam rerum ab voluptates porro optio illo quibusdam, quia sunt.',
   'components.locked_features.locked_guests_popup.learn_more_button': 'Learn more',
