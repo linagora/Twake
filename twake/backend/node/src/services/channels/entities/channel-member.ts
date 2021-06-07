@@ -81,6 +81,12 @@ export class ChannelMember {
   @Type(() => String)
   @Column("id", "string")
   id: string;
+
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
 }
 
 export type ChannelMemberPrimaryKey = Pick<

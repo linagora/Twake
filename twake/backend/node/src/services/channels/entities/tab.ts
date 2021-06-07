@@ -41,6 +41,12 @@ export class ChannelTab {
 
   @Column("col_order", "encoded_string")
   order: string;
+
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
 }
 
 export type ChannelTabPrimaryKey = Pick<

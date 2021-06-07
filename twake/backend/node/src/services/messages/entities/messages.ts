@@ -50,6 +50,9 @@ export class Message {
   @Column("created_at", "number")
   created_at: number;
 
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
   @Type(() => String)
   @Column("user_id", "uuid")
   user_id: string;

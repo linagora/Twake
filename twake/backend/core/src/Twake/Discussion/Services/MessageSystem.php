@@ -48,26 +48,40 @@ class MessageSystem
 
         $messages = [];
         foreach($response["resources"] as $message){
-            $messages[] = $this->convertFromNode($message, $channel);
-            if($message["last_replies"]){
-                foreach($message["last_replies"] as $reply){
-                    if($reply["id"] !== $message["id"])
-                        $messages[] = $this->convertFromNode($reply, $channel);
+            if($message["subtype"] != "deleted"){
+                $messages[] = $this->convertFromNode($message, $channel);
+                if($message["last_replies"]){
+                    foreach($message["last_replies"] as $reply){
+                        if($reply["id"] !== $message["id"] && $reply["subtype"] != "deleted")
+                            $messages[] = $this->convertFromNode($reply, $channel);
+                    }
                 }
             }
         }
 
-        if(count($messages) === 0
+        if(count($messages) < abs($limit)
             && !$options["id"]
             && !$options["id"]
             && !$offset
             && $limit > 0
             && !$parent_message_id ){
-            $init_message = Array(
-                "channel_id" => $options["channel_id"],
-                "hidden_data" => Array("type" => "init_channel")
-            );
-            return [$this->save($init_message, Array())];
+
+            $found = false;
+            foreach($messages as $message){
+                if($message["hidden_data"]["type"] === "init_channel"){
+                    $found = true;
+                }
+            }
+
+            if(!$found){
+                $init_message = Array(
+                    "channel_id" => $options["channel_id"],
+                    "hidden_data" => Array("type" => "init_channel"),
+                    "created_at" => 0
+                );
+                $init_message = $this->save($init_message, Array());
+                array_merge([$init_message], $messages);
+            }
         }
 
         return $messages;
@@ -90,12 +104,12 @@ class MessageSystem
 
         if($object["id"]){
             //Manage message pin
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/pin", ["pin" => [$object["pinned"]]], $current_user, $application ? $application->getId() : null);
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/pin", ["pin" => $object["pinned"]], $current_user, $application ? $application->getId() : null);
         }
 
-        if($object["_user_reaction"]){
+        if(isset($object["_user_reaction"])){
             //Manage user reaction
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => [$object["_user_reaction"]]], $current_user, $application ? $application->getId() : null);
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => $object["_user_reaction"] ? [$object["_user_reaction"]] : []], $current_user, $application ? $application->getId() : null);
         }else{
             //Manage message edition
 
@@ -133,11 +147,17 @@ class MessageSystem
                 $message["id"] = $response["resource"]["id"];
             }
 
+            $options = [];
+            if(isset($object["_once_replace_message_parent_message"])){
+                $options["previous_thread"] = $object["_once_replace_message_parent_message"] ?: $object["_once_replace_message"] ?: $object["id"];
+            }
+
             //New message in thread (also called for new threads because we set the parent_message_id automatically)
             if($object["parent_message_id"] && $newMessage){
 
                 $data = [
-                    "resource" => $message
+                    "resource" => $message,
+                    "options" => $options
                 ];
 
                 $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages", $data, $current_user, $application ? $application->getId() : null);
@@ -148,7 +168,8 @@ class MessageSystem
             if(!$newMessage){
 
                 $data = [
-                    "resource" => $message
+                    "resource" => $message,
+                    "options" => $options
                 ];
 
                 $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"], $data, $current_user, $application ? $application->getId() : null);
@@ -172,7 +193,7 @@ class MessageSystem
 
         $blocks = [[
             "type" => "twacode",
-            "content" => $object["content"]["formatted"] ?: $object["content"]["prepared"] ?: $object["content"]
+            "elements" => $object["content"]["formatted"] ?: $object["content"]["prepared"] ?: $object["content"]
         ]];
 
         $files = [];
@@ -220,13 +241,25 @@ class MessageSystem
 
         $phpMessage->setResponsesCount(max(0, $message["stats"]["replies"] - 1));
 
-        //TODO find the twacode block if exists or get the fallback string
+        // Find the twacode block if exists or get the fallback string
+        $prepared = [];
+        if($message["blocks"])
+            foreach( $message["blocks"] as $block ){
+                if($block["type"] === "twacode"){
+                    $prepared = $block["elements"];
+                }
+                if($block["type"] === "section" && count($prepared) === 0){
+                    $prepared = [["type" => "twacode", "content" => $block["text"]["mrkdwn"]["text"] ?: $block["text"]["plain_text"]["text"] ?: ""]];
+                }
+            }
+
+        error_log(json_encode($prepared));
 
         $phpMessage->setContent([
             "fallback_string" => $message["text"],
             "original_str" => $message["text"],
             "files" => $message["files"],
-            "prepared" => $message["blocks"][0]["content"]
+            "prepared" => $prepared
         ]);
 
         return $phpMessage->getAsArray();

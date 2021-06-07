@@ -91,14 +91,21 @@ export default class MessageComponent extends Component<Props> {
     if (!this.message) {
       return [];
     }
-    return ((Collections.get('messages')
-      .findBy({
+    return (
+      (Collections.get('messages').findBy({
         channel_id: this.message.channel_id,
         parent_message_id: this.message.id,
         _user_ephemeral: undefined,
-      }) || []) as Message[])
+      }) || []) as Message[]
+    )
       .filter(i => !i._user_ephemeral)
-      .sort((a, b) => (a.creation_date || 0) - (b.creation_date || 0));
+      .sort((a, b) =>
+        a?.hidden_data?.type === 'init_channel'
+          ? -1
+          : b?.hidden_data?.type === 'init_channel'
+          ? 1
+          : (a.creation_date || 0) - (b.creation_date || 0),
+      );
   }
 
   render() {
@@ -140,11 +147,7 @@ export default class MessageComponent extends Component<Props> {
           message={message}
           className={canDropIn ? 'has-droppable ' : ''}
         >
-          <ThreadSection
-            small={linkToThread}
-            message={message}
-            head
-          >
+          <ThreadSection small={linkToThread} message={message} head>
             <MessageContent
               key={message?._last_modified || message?.front_id}
               threadHeader={this.props.threadHeader}
@@ -185,13 +188,7 @@ export default class MessageComponent extends Component<Props> {
                   previousMessageId={tmp_previous_message?.id || ''}
                   unreadAfter={this.props.unreadAfter || 0}
                 />,
-                <ThreadSection
-                  canDrag
-                  alinea
-                  message={message}
-                  small
-                  key={message.front_id}
-                >
+                <ThreadSection canDrag alinea message={message} small key={message.front_id}>
                   <MessageContent
                     message={message}
                     collectionKey={this.props.collectionKey}

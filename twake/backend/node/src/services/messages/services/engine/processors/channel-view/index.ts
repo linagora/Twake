@@ -21,7 +21,8 @@ import {
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { getThreadMessagePath } from "../../../../web/realtime";
 import fetch from "node-fetch";
-import config from "../../../../../../core/config";
+import config from "config";
+import { logger } from "../../../../../../core/platform/framework";
 
 export class ChannelViewProcessor {
   repository: Repository<MessageChannelRef>;
@@ -42,46 +43,49 @@ export class ChannelViewProcessor {
 
   async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
     for (const participant of thread.participants.filter(p => p.type === "channel")) {
-      //Publish message in corresponding channel
-      if (message.created) {
-        const pkPrefix = {
-          company_id: participant.company_id,
-          workspace_id: participant.workspace_id,
-          channel_id: participant.id,
-        };
+      if (!message.resource.ephemeral) {
+        //Publish message in corresponding channel
+        if (message.created) {
+          const pkPrefix = {
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+            channel_id: participant.id,
+          };
 
-        await this.repository.save(
-          getInstance({
-            ...pkPrefix,
-            thread_id: thread.id,
-            message_id: message.resource.id,
-          }),
-        );
-
-        const reversed = await this.repositoryReversed.findOne({
-          ...pkPrefix,
-          thread_id: thread.id,
-        });
-
-        if (reversed) {
-          const existingThreadRef = await this.repository.findOne({
-            ...pkPrefix,
-            message_id: reversed.message_id,
-          });
-          reversed.message_id = message.resource.id;
-          await this.repositoryReversed.save(reversed);
-          await this.repository.remove(existingThreadRef);
-        } else {
-          await this.repositoryReversed.save(
-            getInstanceReversed({
+          await this.repository.save(
+            getInstance({
               ...pkPrefix,
               thread_id: thread.id,
               message_id: message.resource.id,
             }),
           );
+
+          const reversed = await this.repositoryReversed.findOne({
+            ...pkPrefix,
+            thread_id: thread.id,
+          });
+
+          if (reversed) {
+            const existingThreadRef = await this.repository.findOne({
+              ...pkPrefix,
+              message_id: reversed.message_id,
+            });
+            reversed.message_id = message.resource.id;
+            await this.repositoryReversed.save(reversed);
+            await this.repository.remove(existingThreadRef);
+          } else {
+            await this.repositoryReversed.save(
+              getInstanceReversed({
+                ...pkPrefix,
+                thread_id: thread.id,
+                message_id: message.resource.id,
+              }),
+            );
+          }
         }
       }
 
+      logger.debug("Share with php realtime endpoint: " + config.get("phpnode.php_endpoint"));
       //Monkey patch to remove as soon as nobody use php depreciated endpoints
       if (config.get("phpnode.php_endpoint")) {
         fetch(config.get("phpnode.php_endpoint") + "/ajax/discussion/noderealtime", {
