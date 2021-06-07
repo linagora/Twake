@@ -5,15 +5,17 @@ import commandPlugin, { CommandSuggestionType } from "./plugins/commands";
 import { DraftDecorator, EditorState } from "draft-js";
 
 export type SupportedSuggestionTypes = MentionSuggestionType | EmojiSuggestionType | ChannelSuggestionType | CommandSuggestionType;
-
+export type SelectOrInsertOptions = {
+  addSpaceAfter: boolean;
+}
 export type EditorSuggestionPlugin<T extends SupportedSuggestionTypes> = {
   resolver: (text: string, callback: (items: T[]) => void) => void;
   decorator: DraftDecorator;
   trigger: string | RegExp;
   resourceType: string;
   getTextDisplay?: (item: T) => string;
-  onSelected?: (item: T, editorState: EditorState) => EditorState;
-  insert?: (item: T, editorState: EditorState) => EditorState;
+  onSelected?: (item: T, editorState: EditorState, options?: SelectOrInsertOptions) => EditorState;
+  insert?: (item: T, editorState: EditorState, options?: SelectOrInsertOptions) => EditorState;
   renderSuggestion?: (item: T) => JSX.Element;
 };
 

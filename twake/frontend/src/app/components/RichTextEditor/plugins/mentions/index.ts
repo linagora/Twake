@@ -3,7 +3,7 @@ import { getSelectedBlock } from "draftjs-utils";
 import WorkspacesUser from 'services/workspaces/workspaces_users';
 import { Mention } from "./Mention";
 import MentionSuggestion from "./MentionSuggestion";
-import { EditorSuggestionPlugin } from "../../EditorPlugins";
+import { EditorSuggestionPlugin, SelectOrInsertOptions } from "../../EditorPlugins";
 import "./style.scss";
 
 export const MENTION_TYPE = "MENTION";
@@ -35,7 +35,7 @@ const resolver = (text: string, max: number, callback: (mentions: MentionSuggest
   });
 }
 
-const addMention = (mention: MentionSuggestionType, editorState: EditorState): EditorState => {
+const addMention = (mention: MentionSuggestionType, editorState: EditorState, options: SelectOrInsertOptions): EditorState => {
   let spaceAlreadyPresent = false;
   const mentionText = mention.username;
   const entityKey = editorState.getCurrentContent().createEntity(MENTION_TYPE, 'IMMUTABLE', mention).getLastCreatedEntityKey();
@@ -67,7 +67,7 @@ const addMention = (mention: MentionSuggestionType, editorState: EditorState): E
 
   newEditorState = EditorState.push(newEditorState, contentState, 'insert-characters');
 
-  if (!spaceAlreadyPresent) {
+  if (!spaceAlreadyPresent && options.addSpaceAfter) {
     // insert a blank space after mention
     updatedSelection = newEditorState.getSelection().merge({
       anchorOffset: mentionIndex + mentionText.length + MENTION_CHAR.length,
@@ -95,6 +95,6 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
   trigger: /\B@([\-+\w]+)$/,
   resourceType: MENTION_TYPE,
   getTextDisplay: (mention: MentionSuggestionType) => mention.username,
-  onSelected: (mention: MentionSuggestionType, editorState: EditorState) => addMention(mention, editorState),
+  onSelected: (mention: MentionSuggestionType, editorState: EditorState, options: SelectOrInsertOptions = { addSpaceAfter: true }) => addMention(mention, editorState, options),
   renderSuggestion: (mention: MentionSuggestionType) => MentionSuggestion(mention),
 });
