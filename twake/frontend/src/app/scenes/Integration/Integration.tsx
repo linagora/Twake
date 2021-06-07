@@ -12,7 +12,7 @@ export default (props: { children: React.ReactNode }): JSX.Element => {
     return <></>;
   }
 
-  let branding = (server_infos && server_infos?.branding) || {};
+  let branding = (server_infos && server_infos?.configuration?.branding) || {};
 
   if (!(branding || {}).name) {
     return <>{props.children}</>;

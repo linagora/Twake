@@ -60,6 +60,7 @@ class Routing extends BaseRouting
 
         // Console
         "console/hook" => ["handler" => "Adapters/Console:hook", "methods" => ["POST"]],
+        "console/token" => ["handler" => "Adapters/Console:loginFromOIDCAccessToken", "methods" => ["POST"]],
         "console/redirect_to_app" => ["handler" => "Adapters/Console:redirectToApp", "methods" => ["GET"]],
         "console/openid/logout" => ["handler" => "Adapters/Console:logout", "methods" => ["GET"]],
         "console/openid/logout_success" => ["handler" => "Adapters/Console:logoutSuccess", "methods" => ["GET"]],

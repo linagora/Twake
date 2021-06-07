@@ -63,7 +63,11 @@ export default class Api {
   ) {
     return new Promise((resolve, reject) => {
       //@ts-ignore old code to fix
-      route = Globals.window.api_root_url + '/ajax/' + route;
+      route =
+        //@ts-ignore old code to fix
+        Globals.window.api_root_url +
+        (route.indexOf('://') < 0 && route.indexOf('/internal/') < 0 ? '/ajax/' : '') +
+        route;
 
       Requests.request(
         'get',
@@ -96,10 +100,11 @@ export default class Api {
         return;
       }
 
-      if (route.indexOf('http') !== 0) {
+      route =
         //@ts-ignore old code to fix
-        route = Globals.window.api_root_url + '/ajax/' + route;
-      }
+        Globals.window.api_root_url +
+        (route.indexOf('://') < 0 && route.indexOf('/internal/') < 0 ? '/ajax/' : '') +
+        route;
 
       Requests.request(
         'post',

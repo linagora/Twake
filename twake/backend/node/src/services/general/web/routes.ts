@@ -23,6 +23,8 @@ const routes: FastifyPluginCallback<{ configuration: ServerConfiguration["config
             type: accounts.type,
             console: _.pick(
               accounts.console,
+              "authority",
+              "client_id",
               "account_management_url",
               "company_management_url",
               "collaborators_management_url",

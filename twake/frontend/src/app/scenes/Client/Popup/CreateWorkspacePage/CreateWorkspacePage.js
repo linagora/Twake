@@ -84,11 +84,11 @@ export default class CreateWorkspacePage extends Component {
       );
     }
     if (this.state.page == 2) {
-      if (InitService.server_infos?.auth?.console?.use) {
+      if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
         return (
           <AddUserFromTwakeConsole
             inline
-            onChange={(members) => {
+            onChange={members => {
               this.state.members = members;
               this.setState({});
             }}
