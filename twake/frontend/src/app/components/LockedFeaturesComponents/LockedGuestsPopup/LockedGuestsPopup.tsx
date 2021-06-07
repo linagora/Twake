@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Typography } from 'antd';
 import ObjectModal from 'app/components/ObjectModal/ObjectModal';
 import React from 'react';
 import ModalManager from 'app/components/Modal/ModalManager';
@@ -9,6 +9,7 @@ type PropsType = {
   pricingPlanUrl: string;
 };
 
+const { Text } = Typography;
 const LockedGuestsPopup = ({ pricingPlanUrl }: PropsType): JSX.Element => {
   const onClickLearnMore = () => window.open(pricingPlanUrl, 'blank');
   const onClickSkipForNow = () => ModalManager.close();
@@ -33,7 +34,7 @@ const LockedGuestsPopup = ({ pricingPlanUrl }: PropsType): JSX.Element => {
       }
     >
       <div className="x-margin">
-        {Languages.t('components.locked_features.locked_guests_popup.description')}
+        <Text>{Languages.t('components.locked_features.locked_guests_popup.description')}</Text>
       </div>
     </ObjectModal>
   );

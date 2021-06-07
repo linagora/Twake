@@ -9,6 +9,7 @@ type PropsType = {
   pricingPlanUrl: string;
 };
 
+const { Title, Text } = Typography;
 const LockedHistoryBanner = ({ pricingPlanUrl }: PropsType): JSX.Element => {
   const onClickBtn = () => window.open(pricingPlanUrl, 'blank');
 
@@ -27,13 +28,13 @@ const LockedHistoryBanner = ({ pricingPlanUrl }: PropsType): JSX.Element => {
     >
       <div className="title-container">
         <Emojione type=":rocket:" s64 />
-        <Typography.Title level={5} className="title">
+        <Title level={5} className="title">
           {Languages.t('components.locked_features.locked_history_banner.title')}
-        </Typography.Title>
+        </Title>
       </div>
-      <Typography.Text type="secondary" className="description">
+      <Text type="secondary" className="description">
         {Languages.t('components.locked_features.locked_history_banner.description')}
-      </Typography.Text>
+      </Text>
       <Button type="primary" size="middle" onClick={onClickBtn} style={{ margin: '16px 0 16px 0' }}>
         {Languages.t('components.locked_features.locked_history_banner.button')}
       </Button>
