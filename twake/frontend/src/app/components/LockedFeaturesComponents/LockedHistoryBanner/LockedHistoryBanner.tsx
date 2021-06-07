@@ -2,13 +2,14 @@ import React from 'react';
 import { Typography, Button } from 'antd';
 import Banner from 'app/components/Banner/Banner';
 import Emojione from 'app/components/Emojione/Emojione';
-import RouterService from 'app/services/RouterService';
 import Languages from 'services/languages/languages.js';
 import './LockedHistoryBanner.scss';
 
-const LockedHistoryBanner = (): JSX.Element => {
-  const { companyId } = RouterService.getStateFromRoute();
-  const pricingPlanUrl = `https://console.twake.app/companies/${companyId}/subscription`;
+type PropsType = {
+  pricingPlanUrl: string;
+};
+
+const LockedHistoryBanner = ({ pricingPlanUrl }: PropsType): JSX.Element => {
   const onClickBtn = () => window.open(pricingPlanUrl, 'blank');
 
   return (

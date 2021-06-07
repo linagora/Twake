@@ -3,13 +3,13 @@ import ObjectModal from 'app/components/ObjectModal/ObjectModal';
 import React from 'react';
 import ModalManager from 'app/components/Modal/ModalManager';
 import Languages from 'services/languages/languages.js';
-import RouterService from 'app/services/RouterService';
 import Emojione from 'app/components/Emojione/Emojione';
 
-const LockedGuestsPopup = (): JSX.Element => {
-  const { companyId } = RouterService.getStateFromRoute();
-  const pricingPlanUrl = `https://console.twake.app/companies/${companyId}/subscription`;
+type PropsType = {
+  pricingPlanUrl: string;
+};
 
+const LockedGuestsPopup = ({ pricingPlanUrl }: PropsType): JSX.Element => {
   const onClickLearnMore = () => window.open(pricingPlanUrl, 'blank');
   const onClickSkipForNow = () => ModalManager.close();
 
