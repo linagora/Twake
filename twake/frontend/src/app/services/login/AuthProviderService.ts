@@ -84,7 +84,9 @@ class AuthProviderService extends Observable {
         .signoutRedirect()
         .then(function (resp) {
           JWTStorage.clear();
-          window.location.reload();
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
         })
         .catch(function (err) {
           Logger.info(err);
