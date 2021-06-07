@@ -37,7 +37,7 @@ const resolver = (text: string, max: number, callback: (mentions: MentionSuggest
 
 const addMention = (mention: MentionSuggestionType, editorState: EditorState, options: SelectOrInsertOptions): EditorState => {
   let spaceAlreadyPresent = false;
-  const mentionText = mention.username;
+  const mentionText = `${MENTION_CHAR}${mention.username}`;
   const entityKey = editorState.getCurrentContent().createEntity(MENTION_TYPE, 'IMMUTABLE', mention).getLastCreatedEntityKey();
   const selectedBlock = getSelectedBlock(editorState);
   const selectedBlockText = selectedBlock.getText();
@@ -60,7 +60,7 @@ const addMention = (mention: MentionSuggestionType, editorState: EditorState, op
   let contentState = Modifier.replaceText(
     newEditorState.getCurrentContent(),
     updatedSelection,
-    `${MENTION_CHAR}${mentionText}`,
+    mentionText,
     newEditorState.getCurrentInlineStyle(),
     entityKey,
   );
@@ -70,8 +70,8 @@ const addMention = (mention: MentionSuggestionType, editorState: EditorState, op
   if (!spaceAlreadyPresent && options.addSpaceAfter) {
     // insert a blank space after mention
     updatedSelection = newEditorState.getSelection().merge({
-      anchorOffset: mentionIndex + mentionText.length + MENTION_CHAR.length,
-      focusOffset: mentionIndex + mentionText.length + MENTION_CHAR.length,
+      anchorOffset: mentionIndex + mentionText.length,
+      focusOffset: mentionIndex + mentionText.length,
     });
     newEditorState = EditorState.acceptSelection(newEditorState, updatedSelection);
     contentState = Modifier.insertText(

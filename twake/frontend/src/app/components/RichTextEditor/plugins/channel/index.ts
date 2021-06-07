@@ -37,7 +37,7 @@ const resolver = (text: string, max: number, callback: (channels: ChannelSuggest
 
 const addChannel = (channel: ChannelSuggestionType, editorState: EditorState, options: SelectOrInsertOptions): EditorState => {
   let spaceAlreadyPresent = false;
-  const channelAsString = (channel.name || "").toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '');
+  const channelAsString = `${CHANNEL_CHAR}${(channel.name || "").toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '')}`;
   const entityKey = editorState.getCurrentContent().createEntity(ChannelResourceType, 'IMMUTABLE', channel).getLastCreatedEntityKey();
   const selectedBlock = getSelectedBlock(editorState);
   const selectedBlockText = selectedBlock.getText();
@@ -60,7 +60,7 @@ const addChannel = (channel: ChannelSuggestionType, editorState: EditorState, op
   let contentState = Modifier.replaceText(
     newEditorState.getCurrentContent(),
     updatedSelection,
-    `${CHANNEL_CHAR}${channelAsString}`,
+    channelAsString,
     newEditorState.getCurrentInlineStyle(),
     entityKey,
   );
@@ -70,8 +70,8 @@ const addChannel = (channel: ChannelSuggestionType, editorState: EditorState, op
   if (!spaceAlreadyPresent && options.addSpaceAfter) {
     // insert a blank space after mention
     updatedSelection = newEditorState.getSelection().merge({
-      anchorOffset: channelIndex + channelAsString.length + CHANNEL_CHAR.length,
-      focusOffset: channelIndex + channelAsString.length + CHANNEL_CHAR.length,
+      anchorOffset: channelIndex + channelAsString.length,
+      focusOffset: channelIndex + channelAsString.length,
     });
     newEditorState = EditorState.acceptSelection(newEditorState, updatedSelection);
     contentState = Modifier.insertText(
