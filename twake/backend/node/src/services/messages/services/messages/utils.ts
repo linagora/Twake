@@ -25,8 +25,8 @@ export function updateMessageReactions(
   userId: string,
 ) {
   let reactions: Map<string, MessageReaction> = new Map<string, MessageReaction>();
-  [...message.reactions].forEach(r => reactions.set(r.name, r));
-  [...selectedReactions].forEach(r =>
+  [...(message.reactions || [])].forEach(r => reactions.set(r.name, r));
+  [...(selectedReactions || [])].forEach(r =>
     reactions.set(r, reactions.get(r) || { name: r, count: 0, users: [] }),
   );
 
