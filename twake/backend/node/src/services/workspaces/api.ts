@@ -11,6 +11,7 @@ import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../user/entities/workspa
 import { Observable } from "rxjs";
 import { UserPrimaryKey } from "../user/entities/user";
 import { WorkspaceUserRole } from "./types";
+import { CompanyPrimaryKey } from "../user/entities/company";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
   workspaces: WorkspaceServiceAPI;
@@ -54,10 +55,12 @@ export interface WorkspaceServiceAPI
    * Get all the workspace for a user
    *
    * @param userId
+   * @param userId
    */
   getAllForUser(
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
-  ): Promise<ListResult<WorkspaceUser>>;
+    companyId: CompanyPrimaryKey,
+  ): Promise<WorkspaceUser[]>;
 
   /**
    * Get all the users of a workspace as Observable

@@ -10,7 +10,10 @@ const workspacesUrl = "/companies/:company_id/workspaces";
 const routes: FastifyPluginCallback<{
   service: WorkspaceServicesAPI;
 }> = (fastify: FastifyInstance, options, next) => {
-  const workspacesController = new WorkspacesCrudController(options.service.workspaces);
+  const workspacesController = new WorkspacesCrudController(
+    options.service.workspaces,
+    options.service.companies,
+  );
 
   const accessControl = async (request: FastifyRequest) => {
     // TODO

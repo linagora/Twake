@@ -1,6 +1,9 @@
-import { PaginationQueryParameters, Workspace } from "../../../utils/types";
-import { ExecutionContext } from "../../../core/platform/framework/api/crud-service";
+import { PaginationQueryParameters } from "../../../utils/types";
 import { WorkspaceUserRole } from "../types";
+
+export interface WorkspaceRequest extends WorkspaceBaseRequest {
+  id: string;
+}
 
 export interface WorkspaceBaseRequest {
   company_id: string;

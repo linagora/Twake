@@ -14,7 +14,7 @@ export type uuid = string;
 export class TestDbService {
   public company: Company;
   public users: User[];
-  public workspaces: Workspace[];
+  private workspacesMap: Map<string, { workspace: Workspace; users: User[] }>;
   private userService;
 
   rand = () => Math.floor(Math.random() * 100000);
@@ -22,7 +22,11 @@ export class TestDbService {
   constructor(protected testPlatform: TestPlatform) {
     this.userService = this.testPlatform.platform.getProvider<UserServiceAPI>("user");
     this.users = [];
-    this.workspaces = [];
+    this.workspacesMap = new Map<string, { workspace: Workspace; users: User[] }>();
+  }
+
+  public get workspaces() {
+    return [...this.workspacesMap.values()];
   }
 
   // "21111111-1111-1111-1111-111111111111"
@@ -59,11 +63,18 @@ export class TestDbService {
       throw new Error("workspace wasn't created");
     }
 
-    this.workspaces.push(workspace.entity);
-    return workspace.entity;
+    const createdWorkspaceEntity = workspace.entity;
+    this.workspacesMap.set(createdWorkspaceEntity.id, {
+      workspace: createdWorkspaceEntity,
+      users: [],
+    });
+    return createdWorkspaceEntity;
   }
 
-  async createUser(workspacesPk?: Array<WorkspacePrimaryKey>): Promise<User> {
+  async createUser(
+    workspacesPk?: Array<WorkspacePrimaryKey>,
+    role?: "member" | "admin",
+  ): Promise<User> {
     const user = new User();
     const random = this.rand();
     user.username_canonical = `test${random}`;
@@ -75,7 +86,7 @@ export class TestDbService {
     await this.userService.companies.setUserRole(
       { id: this.company.id },
       { id: createdUser.entity.id },
-      "member",
+      role ? role : "member",
     );
 
     if (workspacesPk && workspacesPk.length) {
@@ -85,6 +96,8 @@ export class TestDbService {
           { id: createdUser.entity.id },
           "member",
         );
+        const wsContainer = this.workspacesMap.get(workspacePk.id);
+        wsContainer.users.push(createdUser.entity);
       }
     }
 

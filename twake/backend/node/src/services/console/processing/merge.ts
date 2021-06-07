@@ -293,10 +293,11 @@ export class MergeProcess {
         if (companyUser.isExterne) {
           role = "guest";
         }
-        const workspacesUsers = await this.userService.workspaces.getAllForUser({
-          userId: companyUser.user_id,
-        });
-        workspacesUsers.getEntities().forEach(e => {
+        const workspacesUsers = await this.userService.workspaces.getAllForUser(
+          { userId: companyUser.user_id },
+          { id: company.id },
+        );
+        workspacesUsers.forEach(e => {
           if (e.isExternal) {
             role = "guest";
           }

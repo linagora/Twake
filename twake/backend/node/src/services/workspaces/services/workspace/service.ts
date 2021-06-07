@@ -6,7 +6,6 @@ import {
   DeleteResult,
   ExecutionContext,
   ListResult,
-  OperationType,
   Paginable,
   Pagination,
   SaveResult,
@@ -14,21 +13,20 @@ import {
 } from "../../../../core/platform/framework/api/crud-service";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { WorkspaceServiceAPI } from "../../api";
-import { TYPE as WorkspaceUserType } from "../../../user/entities/workspace_user";
 import WorkspaceUser, {
   getInstance as getWorkspaceUserInstance,
+  TYPE as WorkspaceUserType,
   WorkspaceUserPrimaryKey,
 } from "../../../user/entities/workspace_user";
 import Workspace, {
   getInstance as getWorkspaceInstance,
   TYPE,
+  TYPE as WorkspaceType,
   WorkspacePrimaryKey,
 } from "../../../workspaces/entities/workspace";
-import { TYPE as WorkspaceType } from "../../../workspaces/entities/workspace";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { UserPrimaryKey } from "../../../user/entities/user";
-import _ from "lodash";
-import Company, { getInstance as getCompanyInstance } from "../../../user/entities/company";
+import { CompanyPrimaryKey } from "../../../user/entities/company";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -145,14 +143,24 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     });
   }
 
-  getAllForUser(
+  async getAllForUser(
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
-    pagination?: Paginable,
-  ): Promise<ListResult<WorkspaceUser>> {
-    return this.workspaceUserRepository.find(
-      { user_id: userId.userId },
-      { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
+    companyId: CompanyPrimaryKey,
+  ): Promise<WorkspaceUser[]> {
+    const allCompanyWorkspaces = await this.workspaceRepository
+      .find({ group_id: companyId.id })
+      .then(a => a.getEntities());
+
+    const UserWorkspaces = await Promise.all(
+      allCompanyWorkspaces.map(workspace =>
+        this.workspaceUserRepository.findOne({
+          user_id: userId.userId,
+          workspace_id: workspace.id,
+        }),
+      ),
     );
+
+    return UserWorkspaces.filter(uw => uw);
   }
 
   getAllUsers$(

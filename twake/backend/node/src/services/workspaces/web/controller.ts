@@ -6,13 +6,20 @@ import {
   ResourceListResponse,
 } from "../../../utils/types";
 import { WorkspaceServiceAPI } from "../api";
-import { WorkspaceBaseRequest, WorkspaceObject, WorkspacesListRequest } from "./types";
+import {
+  WorkspaceBaseRequest,
+  WorkspaceObject,
+  WorkspaceRequest,
+  WorkspacesListRequest,
+} from "./types";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
-import { WorkspaceExecutionContext, WorkspaceUserRole } from "../types";
-import Workspace from "../entities/workspace";
-import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../../user/entities/workspace_user";
+import { WorkspaceExecutionContext } from "../types";
+import Workspace, { WorkspacePrimaryKey } from "../entities/workspace";
+import WorkspaceUser from "../../user/entities/workspace_user";
 import workspace from "../../../cli/cmds/workspace";
+import { CompanyService } from "../../user/services/companies/service";
+import { CompaniesServiceAPI } from "../../user/api";
 
 export class WorkspacesCrudController
   implements
@@ -22,7 +29,10 @@ export class WorkspacesCrudController
       ResourceListResponse<WorkspaceObject>,
       ResourceDeleteResponse
     > {
-  constructor(protected workspaceService: WorkspaceServiceAPI) {}
+  constructor(
+    protected workspaceService: WorkspaceServiceAPI,
+    protected companyService: CompaniesServiceAPI,
+  ) {}
 
   private formatWorkspace(workspace: Workspace, workspaceUser?: WorkspaceUser): WorkspaceObject {
     const res: WorkspaceObject = {
@@ -47,10 +57,41 @@ export class WorkspacesCrudController
   }
 
   async get(
-    request: FastifyRequest<{ Querystring: WorkspaceBaseRequest }>,
+    request: FastifyRequest<{ Params: WorkspaceRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceObject>> {
-    throw new Error("Method not implemented.");
+    const context = getExecutionContext(request);
+
+    const workspace = await this.workspaceService.get({
+      group_id: context.company_id,
+      id: request.params.id,
+    });
+
+    if (!workspace) {
+      reply.notFound(`Workspace ${request.params.id} not found`);
+      return;
+    }
+
+    const workspaceUser = await this.workspaceService.getUser({
+      workspaceId: request.params.id,
+      userId: context.user.id,
+    });
+
+    if (!workspaceUser) {
+      const companyService = await this.companyService.getCompanyUser(
+        { id: context.company_id },
+        { id: context.user.id },
+      );
+
+      if (companyService.role !== "admin") {
+        reply.forbidden(`You are not belong to workspace ${request.params.id}`);
+        return;
+      }
+    }
+
+    return {
+      resource: this.formatWorkspace(workspace, workspaceUser),
+    };
   }
 
   async list(
@@ -63,26 +104,14 @@ export class WorkspacesCrudController
       .list(new Pagination(request.params.page_token, request.params.limit), {}, context)
       .then(a => a.getEntities());
 
-    const allUserWorkspacesMap = new Map<string, WorkspaceUser>();
-
-    for (const workspace of allCompanyWorkspaces) {
-      const workspaceUser = await this.workspaceService.getUser({
-        workspaceId: workspace.id,
-        userId: context.user.id,
-      });
-
-      if (workspaceUser) {
-        allUserWorkspacesMap.set(workspaceUser.workspaceId, workspaceUser);
-      }
-    }
+    const allUserWorkspacesMap = await this.workspaceService
+      .getAllForUser({ userId: context.user.id }, { id: context.company_id })
+      .then(uws => new Map(uws.map(uw => [uw.workspaceId, uw])));
 
     return {
       resources: allCompanyWorkspaces
         .filter(workspace => allUserWorkspacesMap.has(workspace.id.toString()))
-        .map(
-          workspace =>
-            this.formatWorkspace(workspace, allUserWorkspacesMap.get(workspace.id.toString())), // FIXME: switch to the same type
-        ),
+        .map(ws => this.formatWorkspace(ws, allUserWorkspacesMap.get(ws.id))),
     };
   }
 

@@ -8,10 +8,10 @@ export const TYPE = "workspace";
   type: TYPE,
 })
 export default class Workspace {
-  @Column("id", "timeuuid")
+  @Column("id", "uuid")
   id: string;
 
-  @Column("group_id", "timeuuid")
+  @Column("group_id", "uuid")
   group_id: string;
 
   @Column("name", "encoded_string")
