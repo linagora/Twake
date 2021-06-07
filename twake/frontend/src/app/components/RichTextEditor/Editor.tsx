@@ -1,8 +1,8 @@
 import React, { KeyboardEvent } from "react";
-import { Editor, EditorState, Modifier, CompositeDecorator, RichUtils, DraftEditorCommand, DraftHandleValue, DraftDecorator, KeyBindingUtil } from "draft-js";
+import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHandleValue, DraftDecorator, KeyBindingUtil, ContentBlock } from "draft-js";
 import { toString } from "./EditorDataParser";
 import { SuggestionList } from "./plugins/suggestion/SuggestionList";
-import { getCaretCoordinates, getTrigger, insertText } from "./EditorUtils";
+import { getCaretCoordinates, getTextToMatch, isMatching } from "./EditorUtils";
 import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from "./EditorPlugins";
 import "./Editor.scss";
 
@@ -37,6 +37,7 @@ type EditorViewState = {
   activeSuggestion: CurrentSuggestion<SupportedSuggestionTypes> | null;
   suggestionType: string;
   suggestionIndex: number;
+  displaySuggestion: boolean;
 };
 
 export class EditorView extends React.Component<EditorProps, EditorViewState> {
@@ -61,6 +62,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       activeSuggestion: null,
       suggestionIndex: 0,
       suggestionType: "",
+      displaySuggestion: false,
     }
   }
 
@@ -73,7 +75,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
 
   private isDisplayingSuggestions(): boolean {
-    return !!(this.state.activeSuggestion?.items.length);
+    return this.state.displaySuggestion && !!this.state.activeSuggestion?.items.length;
   }
 
   handleKeyCommand(command: DraftEditorCommand, editorState: EditorState): DraftHandleValue {
@@ -152,15 +154,22 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
   
   onChange(editorState: EditorState) {
-    this.updateSuggestionsState();
     this.props.onChange && this.props.onChange(editorState);
+    setTimeout(() => {
+      this.updateSuggestionsState();
+    });
   }
   
   updateSuggestionsState(): void {
-    const triggered = Array.from(this.plugins.values()).some(plugin => {
-      const trigger = getTrigger(plugin.trigger);
+    const textToMatch = getTextToMatch(this.props.editorState, " ");
+    if (!textToMatch) {
+      return;
+    }
 
-      if (trigger) {
+    const triggered = Array.from(this.plugins.values()).some(plugin => {
+      const trigger = isMatching(plugin.trigger, textToMatch);
+
+      if (trigger && trigger.text) {
         plugin.resolver(trigger.text, items => {
           const activeSuggestion = {
             position: getCaretCoordinates(),
@@ -179,12 +188,14 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       return false;
     });
 
-    if (!triggered && this.isDisplayingSuggestions()) {
+    if (triggered && this.state.activeSuggestion?.items.length) {
+      this.setState({ displaySuggestion: true });
+    } else {
       this.resetState();
     }
   }
 
-  onSuggestionSelected(suggestion: any): boolean {
+  onSuggestionSelected(suggestion: SupportedSuggestionTypes | undefined): boolean {
     if (!suggestion) {
       return false;
     }
@@ -200,9 +211,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     }
 
     const editorState = plugin.onSelected(suggestion, this.props.editorState);
-    const newEditorState = insertText(" ", editorState);
     this.resetStateAndFocus();
-    this.onChange(newEditorState);
+    this.onChange(editorState);
 
     return true;
   }
@@ -285,10 +295,10 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         />
         
         {(
-          this.isDisplayingSuggestions() &&  
+          this.state.displaySuggestion &&  
             <div style={{ position: "relative", top: "-40px" }} className="suggestions">
               {(
-                this.state.activeSuggestion?.items.length && this.state.suggestionType &&
+                this.state.displaySuggestion && this.state.suggestionType &&
                 <SuggestionList<any>
                   list={this.state.activeSuggestion?.items}
                   position={"top"}

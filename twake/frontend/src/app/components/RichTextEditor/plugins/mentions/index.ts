@@ -1,12 +1,13 @@
 import { CharacterMetadata, ContentBlock, ContentState, EditorState, Modifier } from "draft-js";
+import { getSelectedBlock } from "draftjs-utils";
 import WorkspacesUser from 'services/workspaces/workspaces_users';
 import { Mention } from "./Mention";
-import { getInsertRange } from "../../EditorUtils";
 import MentionSuggestion from "./MentionSuggestion";
 import { EditorSuggestionPlugin } from "../../EditorPlugins";
 import "./style.scss";
 
 export const MENTION_TYPE = "MENTION";
+const MENTION_CHAR = "@";
 
 export type MentionSuggestionType = {
   username: string;
@@ -35,30 +36,54 @@ const resolver = (text: string, max: number, callback: (mentions: MentionSuggest
 }
 
 const addMention = (mention: MentionSuggestionType, editorState: EditorState): EditorState => {
-  const { start, end } = getInsertRange(editorState, "@");
-  const contentState = editorState.getCurrentContent();
-  const currentSelection = editorState.getSelection();
-  const selection = currentSelection.merge({
-    anchorOffset: start,
-    focusOffset: end,
+  let spaceAlreadyPresent = false;
+  const mentionText = mention.username;
+  const entityKey = editorState.getCurrentContent().createEntity(MENTION_TYPE, 'IMMUTABLE', mention).getLastCreatedEntityKey();
+  const selectedBlock = getSelectedBlock(editorState);
+  const selectedBlockText = selectedBlock.getText();
+  let focusOffset = editorState.getSelection().getFocusOffset();
+  const mentionIndex = (selectedBlockText.lastIndexOf(` ${MENTION_CHAR}`, focusOffset) || 0) + 1;
+
+  if (selectedBlockText.length === mentionIndex + 1) {
+    focusOffset = selectedBlockText.length;
+  }
+
+  if (selectedBlockText[focusOffset] === ' ') {
+    spaceAlreadyPresent = true;
+  }
+
+  let updatedSelection = editorState.getSelection().merge({
+    anchorOffset: mentionIndex,
+    focusOffset,
   });
-  
-  const mentionEntity = contentState.createEntity(MENTION_TYPE, 'IMMUTABLE', mention);
-  const entityKey = mentionEntity.getLastCreatedEntityKey();
-
-  // TODO: Can we avoid inserting the text and just relying on the decorator and Mention component?
-  const newContentState = Modifier.replaceText(
-    mentionEntity,
-    selection,
-    `@${mention.username}`,
-    undefined,
-    entityKey);
-
-  const newEditorState = EditorState.push(
-    editorState, newContentState, "insert-fragment"
+  let newEditorState = EditorState.acceptSelection(editorState, updatedSelection);
+  let contentState = Modifier.replaceText(
+    newEditorState.getCurrentContent(),
+    updatedSelection,
+    `${MENTION_CHAR}${mentionText}`,
+    newEditorState.getCurrentInlineStyle(),
+    entityKey,
   );
 
-  return EditorState.forceSelection(newEditorState, newContentState.getSelectionAfter());
+  newEditorState = EditorState.push(newEditorState, contentState, 'insert-characters');
+
+  if (!spaceAlreadyPresent) {
+    // insert a blank space after mention
+    updatedSelection = newEditorState.getSelection().merge({
+      anchorOffset: mentionIndex + mentionText.length + MENTION_CHAR.length,
+      focusOffset: mentionIndex + mentionText.length + MENTION_CHAR.length,
+    });
+    newEditorState = EditorState.acceptSelection(newEditorState, updatedSelection);
+    contentState = Modifier.insertText(
+      newEditorState.getCurrentContent(),
+      updatedSelection,
+      ' ',
+      newEditorState.getCurrentInlineStyle(),
+      undefined,
+    );
+  }
+
+  return EditorState.push(newEditorState, contentState, 'insert-characters');
 }
 
 export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): EditorSuggestionPlugin<MentionSuggestionType>  => ({

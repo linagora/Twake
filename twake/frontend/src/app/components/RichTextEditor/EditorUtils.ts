@@ -1,4 +1,5 @@
-import { EditorState, Modifier } from "draft-js";
+import { ContentBlock, EditorState, Modifier } from "draft-js";
+import { getSelectedBlock } from "draftjs-utils";
 
 type CaretCoordinates = {
   x: number;
@@ -18,20 +19,15 @@ export function getSelectionRange() {
   return selection?.getRangeAt(0)
 }
 
-export function getTrigger(trigger: string | RegExp) {
+export function isMatching(trigger: string | RegExp, textToMatch: string) {
   if (typeof trigger === "string") {
-    return getTriggerRange(trigger);
+    return getTriggerRange(trigger, textToMatch);
   } else if (trigger instanceof RegExp) {
-    return getTriggerMatchRange(trigger);
+    return getTriggerMatchRange(trigger, textToMatch);
   }
 }
 
-export function getTriggerMatchRange(regexp: RegExp) {
-  const range = getSelectionRange();
-  if (!range) {
-    return null;
-  }
-  const text  = range && range?.startContainer?.textContent?.substring(0, range.startOffset);
+export function getTriggerMatchRange(regexp: RegExp, text: string) {
   if (!text || /\s+$/.test(text)) {
     return null;
   }
@@ -43,18 +39,11 @@ export function getTriggerMatchRange(regexp: RegExp) {
   }
 
   return {
-    end: range.startOffset,
-    start,
     text: start[1],
   };
 }
 
-export function getTriggerRange(term: string) {
-  const range = getSelectionRange();
-  if (!range) {
-    return null;
-  }
-  const text  = range && range?.startContainer?.textContent?.substring(0, range.startOffset);
+export function getTriggerRange(term: string, text: string) {
   if (!text || /\s+$/.test(text))
     return null;
 
@@ -64,10 +53,24 @@ export function getTriggerRange(term: string) {
   }
 
   return {
-    end: range.startOffset,
-    start,
     text: text.substring(start),
   };
+}
+
+export function getTextToMatch(editorState: EditorState, separator: string = " "): string | null {
+  let result: string | null = null;
+  const selection = editorState.getSelection();
+  const selectedBlock: ContentBlock = getSelectedBlock(editorState);
+  const selectedBlockText = selectedBlock.getText();
+  const focusOffset = selection.getFocusOffset();
+  const lastSeparator = (selectedBlockText.lastIndexOf(separator, focusOffset));
+
+  // check on first character or after last space
+  if ((lastSeparator === -1 && focusOffset > 1) || (lastSeparator >= 0 && lastSeparator <= focusOffset)) {
+    result = selectedBlockText.substring(lastSeparator === -1 ? 0 : lastSeparator, focusOffset);
+  }
+
+  return result;
 }
 
 export function getInsertRange(editorState: EditorState, firstCharacter: string): { start: number, end: number } {
