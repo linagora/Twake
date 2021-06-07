@@ -25,6 +25,12 @@ export class MessageToNotificationsProcessor {
 
   async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
     logger.debug(`${this.name} - Share message with notification microservice`);
+
+    if (message.resource.ephemeral) {
+      logger.debug(`${this.name} - Cancel because message is ephemeral`);
+      return;
+    }
+
     try {
       const messageResource = message.resource;
 

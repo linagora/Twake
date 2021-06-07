@@ -32,12 +32,26 @@ export class MessagesController
       };
       Body: {
         resource: Message;
+        options: {
+          previous_thread: string;
+        };
       };
     }>,
     reply: FastifyReply,
   ): Promise<ResourceUpdateResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
+      if (request.body.options?.previous_thread) {
+        //First move the message to another thread, then edit it
+        await this.service.messages.move(
+          { id: request.params.message_id || undefined },
+          {
+            previous_thread: request.body.options?.previous_thread,
+          },
+          context,
+        );
+      }
+
       const result = await this.service.messages.save(
         {
           id: request.params.message_id || undefined,

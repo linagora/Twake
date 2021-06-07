@@ -20,6 +20,9 @@ export class Thread {
   @Column("created_at", "number")
   created_at: number;
 
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
   @Type(() => Number)
   @Column("last_activity", "number")
   last_activity: number;

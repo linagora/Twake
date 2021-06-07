@@ -56,6 +56,12 @@ export class Channel {
   @Column("connectors", "encoded_json")
   connectors: string[] = []; //list of app-ids
 
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
+
   static isPrivateChannel(channel: Channel): boolean {
     return channel.visibility === ChannelVisibility.PRIVATE;
   }

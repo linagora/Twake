@@ -102,7 +102,7 @@ export const transformValueFromDbString = (
     try {
       decryptedValue = decrypt(v, options.secret).data;
     } catch (err) {
-      logger.debug({ err }, `Can not decrypt data %o of type ${type}`, v);
+      logger.debug(`Can not decrypt data (${err.message}) %o of type ${type}`, v);
 
       decryptedValue = v;
     }

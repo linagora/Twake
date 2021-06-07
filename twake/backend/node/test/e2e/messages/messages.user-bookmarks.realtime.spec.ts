@@ -3,6 +3,7 @@ import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import io from "socket.io-client";
 import { TestPlatform, init } from "../setup";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
+import { TwakePlatform } from "../../../src/core/platform/platform";
 
 describe("The Bookmarks Realtime feature", () => {
   const url = "/internal/services/messages/v1";
@@ -131,7 +132,7 @@ describe("The Bookmarks Realtime feature", () => {
   });
 });
 
-function getContext(platform) {
+function getContext(platform: TestPlatform) {
   return {
     company: { id: platform.workspace.company_id },
     user: { id: platform.currentUser.id },

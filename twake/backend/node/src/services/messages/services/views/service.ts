@@ -13,6 +13,7 @@ import {
 import { MessageChannelRef } from "../../entities/message-channel-refs";
 import { buildMessageListPagination } from "../utils";
 import _ from "lodash";
+import { option } from "yargs";
 
 export class ViewsService implements MessageViewsServiceAPI {
   version: "1";
@@ -84,34 +85,10 @@ export class ViewsService implements MessageViewsServiceAPI {
     let threadWithLastMessages: MessageWithReplies[] = [];
     await Promise.all(
       threads.map(async (thread: Thread) => {
-        const last_replies = (
-          await this.repository.find(
-            {
-              thread_id: thread.id,
-            },
-            {
-              pagination: new Pagination("", `${options?.replies_per_thread || 3}`, true),
-            },
-          )
-        ).getEntities();
-
-        const first_message = await this.repository.findOne(
-          {
-            thread_id: thread.id,
-          },
-          {
-            pagination: new Pagination("", `1`, false),
-          },
-        );
-
-        threadWithLastMessages.push({
-          ...first_message,
-          stats: {
-            replies: thread.answers,
-            last_activity: thread.last_activity,
-          },
-          last_replies: last_replies.sort((a, b) => a.created_at - b.created_at),
+        const extendedThread = await this.service.messages.getThread(thread, {
+          replies_per_thread: options.replies_per_thread || 3,
         });
+        if (extendedThread) threadWithLastMessages.push(extendedThread);
       }),
     );
     threadWithLastMessages.sort((a, b) => a.stats.last_activity - b.stats.last_activity);

@@ -18,6 +18,7 @@ import {
   MessageViewListOptions,
   ThreadExecutionContext,
   MessageWithReplies,
+  MessagesGetThreadOptions,
 } from "./types";
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey } from "./entities/messages";
@@ -78,6 +79,14 @@ export interface MessageThreadMessagesServiceAPI
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
+
+  getThread(thread: Thread, options: MessagesGetThreadOptions): Promise<MessageWithReplies>;
+
+  move(
+    item: Pick<Message, "id">,
+    options: { previous_thread: string },
+    context: ThreadExecutionContext,
+  ): Promise<void>;
 }
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
