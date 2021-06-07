@@ -132,9 +132,13 @@ export class ThreadsService
    */
   async addReply(threadId: string) {
     const thread = await this.repository.findOne({ id: threadId });
-    thread.answers++;
-    thread.last_activity = new Date().getTime();
-    await this.repository.save(thread);
+    if (thread) {
+      thread.answers++;
+      thread.last_activity = new Date().getTime();
+      await this.repository.save(thread);
+    } else {
+      throw new Error("Try to add reply count to inexistant thread");
+    }
   }
 
   /**
@@ -180,8 +184,12 @@ export class ThreadsService
     throw new Error("CRUD method not used.");
   }
 
-  delete(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<DeleteResult<Thread>> {
-    throw new Error("CRUD method not used.");
+  async delete(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<DeleteResult<Thread>> {
+    const thread = await this.repository.findOne(pk);
+    if (context.user.server_request) {
+      await this.repository.remove(thread);
+    }
+    return new DeleteResult("thread", thread, context.user.server_request && !!thread);
   }
 
   list<ListOptions>(
