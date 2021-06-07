@@ -34,8 +34,8 @@ class AuthProviderService extends Observable {
         filterProtocolClaims: true,
       });
 
-      Oidc.Log.logger = console;
-      Oidc.Log.level = Oidc.Log.INFO;
+      Oidc.Log.logger = Logger;
+      Oidc.Log.level = Oidc.Log.WARN;
 
       this.authProviderUserManager.events.addUserLoaded(async user => {
         this.getJWTFromOidcToken(user);
