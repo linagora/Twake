@@ -143,6 +143,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   ): Promise<void> {
     //Fixme: check user has access to both threads
 
+    if (options.previous_thread === context.thread.id) {
+      return;
+    }
+
     const messageInOldThread = await this.repository.findOne({
       thread_id: options.previous_thread,
       id: pk.id,
@@ -166,11 +170,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       },
     );
 
-    this.delete(messageInOldThread, {
-      user: { id: null, server_request: true },
-      thread: { id: messageInOldThread.thread_id },
-      company: context.company,
-    });
+    await this.repository.remove(messageInOldThread);
 
     return;
   }
