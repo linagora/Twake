@@ -233,21 +233,7 @@ export class MergeProcess {
       distinct((company: Company) => company.id),
     );
   }
-  /*
-  private getWorkspaces(paginable?: Paginable): Observable<Workspace> {
-    return from(this.userService.workspaces.getWorkspaces(paginable)).pipe(
-      mergeMap(workspacesResult => {
-        const items$ = from(workspacesResult.getEntities());
-        const next$ = workspacesResult?.nextPage?.page_token
-          ? this.getWorkspaces(workspacesResult.nextPage)
-          : EMPTY;
 
-        return concat(items$, next$);
-      }),
-      distinct((workspace: Workspace) => workspace.id),
-    );
-  }
-*/
   private async createCompany(company: Company): Promise<CompanyCreatedStreamObject> {
     logger.debug("Creating company in the Console %s", company.displayName);
     let createdCompany: CreatedConsoleCompany;
