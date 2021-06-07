@@ -26,8 +26,7 @@ describe("The /workspaces API", () => {
       ],
     });
 
-    await platform.database.getConnector().drop();
-
+    await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
     const workspacePk = { id: workspaceId, group_id: companyId };
@@ -37,7 +36,7 @@ describe("The /workspaces API", () => {
   });
 
   afterAll(async ends => {
-    // await testUsers.deleteAll();
+    await platform.database.getConnector().drop();
     await platform.tearDown();
     ends();
   });

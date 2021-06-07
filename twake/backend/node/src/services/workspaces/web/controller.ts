@@ -63,18 +63,26 @@ export class WorkspacesCrudController
       .list(new Pagination(request.params.page_token, request.params.limit), {}, context)
       .then(a => a.getEntities());
 
-    const allUserWorkspaces = await this.workspaceService
-      .getAllForUser({ userId: context.user.id })
-      .then(a => a.getEntities());
+    const allUserWorkspacesMap = new Map<string, WorkspaceUser>();
 
-    const allUserWorkspacesMap: Map<string, WorkspaceUser> = new Map(
-      allUserWorkspaces.map(uw => [uw.workspaceId, uw]),
-    );
+    for (const workspace of allCompanyWorkspaces) {
+      const workspaceUser = await this.workspaceService.getUser({
+        workspaceId: workspace.id,
+        userId: context.user.id,
+      });
+
+      if (workspaceUser) {
+        allUserWorkspacesMap.set(workspaceUser.workspaceId, workspaceUser);
+      }
+    }
 
     return {
-      resources: allCompanyWorkspaces.map(workspace =>
-        this.formatWorkspace(workspace, allUserWorkspacesMap.get(workspace.id)),
-      ),
+      resources: allCompanyWorkspaces
+        .filter(workspace => allUserWorkspacesMap.has(workspace.id.toString()))
+        .map(
+          workspace =>
+            this.formatWorkspace(workspace, allUserWorkspacesMap.get(workspace.id.toString())), // FIXME: switch to the same type
+        ),
     };
   }
 
