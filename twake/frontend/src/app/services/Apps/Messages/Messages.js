@@ -183,7 +183,7 @@ class Messages extends Observable {
         : [];
 
       val.files = preparedFiles;
-      val.prepared.push({ type: 'nop', content: preparedFiles });
+      val.prepared.push({ type: 'nop', content: [{ type: 'br' }, ...preparedFiles] });
       message.channel_id = options.channel_id;
       message.parent_message_id = options.parent_message_id || '';
       message.sender = CurrentUser.get().id;

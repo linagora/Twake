@@ -24,27 +24,26 @@ export function updateMessageReactions(
   selectedReactions: string[],
   userId: string,
 ) {
-  let reactions: Map<string, MessageReaction> = new Map<string, MessageReaction>();
-  [...(message.reactions || [])].forEach(r => reactions.set(r.name, r));
-  [...(selectedReactions || [])].forEach(r =>
-    reactions.set(r, reactions.get(r) || { name: r, count: 0, users: [] }),
-  );
-
-  reactions.forEach((reaction, key) => {
-    if (reaction.users.includes(userId)) {
-      reaction.count--;
-      reaction.users = reaction.users.filter(u => u != userId);
+  let reactions: { [key: string]: MessageReaction } = {};
+  for (const reaction of message.reactions || []) {
+    reactions[reaction.name] = reaction;
+  }
+  for (const reaction of selectedReactions) {
+    reactions[reaction] = reactions[reaction] || { name: reaction, count: 0, users: [] };
+  }
+  for (const key in reactions) {
+    if (reactions[key].users.includes(userId)) {
+      reactions[key].count--;
+      reactions[key].users = reactions[key].users.filter(u => u != userId);
     }
     if (selectedReactions.includes(key)) {
-      reaction.count++;
-      reaction.users.push(userId);
+      reactions[key].count++;
+      reactions[key].users.push(userId);
     }
-    if (reaction.count === 0) {
-      reactions.delete(key);
-    } else {
-      reactions.set(key, reaction);
+    if (reactions[key].count === 0) {
+      delete reactions[key];
     }
-  });
+  }
 
   message.reactions = Object.values(reactions);
 }
