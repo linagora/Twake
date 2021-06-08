@@ -161,6 +161,10 @@ export default (props: Props) => {
     messageEditorService.getUploadZone(props.threadId).uploadFiles(files);
   };
 
+  const isEditing = (): boolean => {
+    return !!(props.messageId && props.messageId === messageEditorService.currentEditorMessageId);
+  };
+
   return (
     <div
       className={
@@ -206,19 +210,21 @@ export default (props: Props) => {
             onFilePaste={onFilePaste}
             placeholder={Languages.t("scenes.apps.messages.input.placeholder", [], "Write a message. Use @ to quote a user.")}
           />
-          <Tooltip title={Languages.t("scenes.apps.messages.input.send_message", [], "Send message")} placement="top">
-            <div
-              ref={submitRef}
-              className={`submit-button ${!isEmpty() ? "" : "disabled"}`}
-              onClick={() => {
-                if (!isEmpty()) {
-                  onSend();
-                }
-              }}>
-              <Send className="send-icon" size={20} />
-            </div>
-          </Tooltip>
-        </div>
+          { !isEditing() && (
+            <Tooltip title={Languages.t("scenes.apps.messages.input.send_message", [], "Send message")} placement="top">
+              <div
+                ref={submitRef}
+                className={`submit-button ${!isEmpty() ? "" : "disabled"}`}
+                onClick={() => {
+                  if (!isEmpty()) {
+                    onSend();
+                  }
+                }}>
+                <Send className="send-icon" size={20} />
+              </div>
+            </Tooltip>
+          )}
+       </div>
       )}
 
       {!hasEphemeralMessage && !props.messageId && (
