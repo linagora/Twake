@@ -28,6 +28,7 @@ type EditorProps = {
   onSubmit?: (content: string, editorState?: EditorState) => void;
   onChange?: (editorState: EditorState) => void;
   onTab?: () => void;
+  onFilePaste?: (files: Blob[]) => void;
   clearOnSubmit: boolean;
   outputFormat: EditorTextFormat;
   placeholder?: string;
@@ -278,6 +279,15 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     this.props.onTab && this.props.onTab();
   }
 
+  handlePastedFiles(files: Blob[]): DraftHandleValue {
+    if (this.props.onFilePaste) {
+      this.props.onFilePaste(files);
+      return "handled";
+    }
+
+    return "not-handled";
+  }
+
   render() {
     return <div 
       className="editor" 
@@ -293,6 +303,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         onUpArrow={this.onUpArrow.bind(this)}
         onEscape={this.onEscape.bind(this)}
         onTab={this.onTab.bind(this)}
+        handlePastedFiles={this.handlePastedFiles.bind(this)}
         placeholder={this.props.placeholder || ""}
         />
         

@@ -156,6 +156,10 @@ export default (props: Props) => {
     setRichTextEditorState(editorState);
   };
 
+  const onFilePaste = (files: Blob[]) => {
+    messageEditorService.getUploadZone(props.threadId).uploadFiles(files);
+  };
+
   return (
     <div
       className={
@@ -198,6 +202,7 @@ export default (props: Props) => {
             editorState={editorState}
             onSubmit={() => onSend()}
             onUpArrow={(e) => onUpArrow(e)}
+            onFilePaste={onFilePaste}
             placeholder={Languages.t("scenes.apps.messages.input.placeholder", [], "Write a message. Use @ to quote a user.")}
           />
           <Tooltip title={Languages.t("scenes.apps.messages.input.send_message", [], "Send message")} placement="top">
@@ -213,29 +218,6 @@ export default (props: Props) => {
             </div>
           </Tooltip>
         </div>
-
-        //
-        //<InputAutocomplete
-        //  ref={refInput}
-        //  messageId={props.messageId || ''}
-        //  onPaste={(evt: any) => messageEditorService.getUploadZone(props.threadId).paste(evt)}
-        //  channelId={props.channelId}
-        //  threadId={props.threadId}
-        //  onChange={(text: string) => {
-        //    onChange(text);
-        //  }}
-        //  onSend={() => onSend()}
-        //  onFocus={() => focus()}
-        //  autocompleteRef={node => {
-        //    autocomplete = node || autocomplete;
-        //  }}
-        //  onEditLastMessage={() => {
-        //    MessagesService.startEditingLastMessage({
-        //      channel_id: props.channelId,
-        //      parent_message_id: props.threadId,
-        //    });
-        //  }}
-        ///>
       )}
 
       {!hasEphemeralMessage && !props.messageId && (
