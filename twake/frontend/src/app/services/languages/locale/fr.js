@@ -1643,6 +1643,7 @@ export default {
   'scenes.apps.messages.input.no_email_module_menu_text': "Vous n'avez aucun module de messagerie.",
   'scenes.apps.messages.input.search_module_text': 'Chercher des modules...',
   'scenes.apps.messages.input.send_button': 'Envoyer',
+  'scenes.apps.messages.input.edited': 'Edité',
   'scenes.apps.messages.just_you': 'Visible uniquement par vous',
   'scenes.apps.messages.message.new_messages_bar': 'Nouveaux messages',
   'scenes.apps.messages.message.cancel_button': 'Annuler',

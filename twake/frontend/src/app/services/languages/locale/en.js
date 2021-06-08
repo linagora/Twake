@@ -1572,6 +1572,7 @@ export default {
   'scenes.apps.messages.input.no_email_module_menu_text': 'You have no mail module.',
   'scenes.apps.messages.input.search_module_text': 'Search modules...',
   'scenes.apps.messages.input.send_button': 'Send',
+  'scenes.apps.messages.input.edited': 'Edited',
   'scenes.apps.messages.just_you': 'Visible only to you',
   'scenes.apps.messages.message.new_messages_bar': 'New messages',
   'scenes.apps.messages.message.cancel_button': 'Cancel',

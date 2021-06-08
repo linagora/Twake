@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import MessagesService from 'services/Apps/Messages/Messages.js';
 import 'moment-timezone';
+import MessagesService from 'services/Apps/Messages/Messages.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import Input from '../../Input/Input';
 import Button from 'components/Buttons/Button.js';
@@ -76,13 +76,15 @@ export default (props: Props) => {
             ),
           );
         }}
-      >
-        Save
-      </Button>
+        value={Languages.t("scenes.apps.messages.message.save_button", [], "Save")}
+      ></Button>
 
-      <Button className="secondary-light" small onClick={() => messageEditorService.closeEditor()}>
-        Cancel
-      </Button>
+      <Button
+        className="secondary-light"
+        small
+        onClick={() => messageEditorService.closeEditor()}
+        value={Languages.t("scenes.apps.messages.message.cancel_button", [], "Cancel")}
+      ></Button>
     </div>
   );
 };
