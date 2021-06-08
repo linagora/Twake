@@ -31,6 +31,7 @@ type EditorProps = {
   clearOnSubmit: boolean;
   outputFormat: EditorTextFormat;
   placeholder?: string;
+  onUpArrow?: (e: SyntheticKeyboardEvent) => void;
 };
 
 type EditorViewState = {
@@ -257,6 +258,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       const suggestionIndex = this.state.suggestionIndex === suggestionsLength - 1 ? suggestionsLength - 1 : this.state.suggestionIndex + 1;
       this.setState({ suggestionIndex })
     }
+    this.props.onUpArrow && this.props.onUpArrow(e);
   }
 
   onEscape(e: SyntheticKeyboardEvent): void {

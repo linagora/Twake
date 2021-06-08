@@ -5,12 +5,11 @@ import { Tooltip } from 'antd';
 import InputOptions from './Parts/InputOptions';
 import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
-import { MessageEditorService } from 'app/services/Apps/Messages/MessageEditorService';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import AttachedFiles from './Parts/AttachedFiles';
 import RichTextEditorStateService from "app/components/RichTextEditor/EditorStateService";
 import { EditorView } from "app/components/RichTextEditor";
-import {toString} from "app/components/RichTextEditor/EditorDataParser";
+import {fromString, toString} from "app/components/RichTextEditor/EditorDataParser";
 import Languages from 'app/services/languages/languages';
 import './Input.scss';
 
@@ -28,18 +27,40 @@ type Props = {
   localStorageIdentifier?: string;
   disableApps?: boolean;
   context?: string; //Main input or response input (empty string)
+  format?: "markdown" | "raw";
 };
 
 export default (props: Props) => {
+  const editorPlugins = ["emoji", "mention", "channel", "command"];
+  const format = props.format || "markdown";
   const editorRef = useRef<EditorView>(null);
   const submitRef = useRef<HTMLDivElement>(null);
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
   const [loading, setLoading] = useState(false);
-  const messageEditorService: MessageEditorService = MessageEditorsManager.get(props.channelId);
-  messageEditorService.useListener(useState);
-  const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(props.channelId));
+  const messageEditorService = MessageEditorsManager.get(props.channelId);
+  const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(props.channelId, { plugins: editorPlugins }));
 
-  useEffect(() => focusEditor(), []);
+  messageEditorService.useListener(useState);
+
+  useEffect(() => {
+    focusEditor();
+    (async () => {
+      const initialMessage = await messageEditorService.getContent(props.threadId, props.messageId || '');
+
+      if (initialMessage && initialMessage.length) {
+        setEditorState(
+          RichTextEditorStateService.get(
+            props.channelId,
+            {
+              plugins: editorPlugins,
+              clearIfExists: true,
+              initialContent: fromString(initialMessage, format),
+            }
+          )
+        );
+      }
+    })();
+  }, []);
 
   const disable_app: any = {};
   const hasFilesAttached = messageEditorService.filesAttachements[props.threadId || 'main']
@@ -47,9 +68,12 @@ export default (props: Props) => {
     ? true
     : false;
 
+  const getContentOutput = (editorState: EditorState) => {
+    return toString(editorState, format);
+  };
+
   const onSend = () => {
-    // TODO: Get the type from props
-    const content = toString(editorState, "markdown");
+    const content = getContentOutput(editorState);
 
     if (props.onSend) {
       props.onSend(content);
@@ -118,6 +142,20 @@ export default (props: Props) => {
     return (!editorState.getCurrentContent().getPlainText().trim() || hasFilesAttached); 
   }
 
+  const onUpArrow = (e: any): void => {
+    if (isEmpty()) {
+      MessagesService.startEditingLastMessage({
+        channel_id: props.channelId,
+        parent_message_id: props.threadId,
+      });
+    }
+  }
+
+  const onChange = (editorState: EditorState) => {
+    messageEditorService.setContent(props.threadId, props.messageId || '', getContentOutput(editorState));
+    setRichTextEditorState(editorState);
+  };
+
   return (
     <div
       className={
@@ -153,12 +191,13 @@ export default (props: Props) => {
         <div className="editorview-submit">
           <EditorView
             ref={editorRef}
-            onChange={(editorState) => setRichTextEditorState(editorState)}
+            onChange={(editorState) => onChange(editorState)}
             clearOnSubmit={true}
-            outputFormat="markdown"
-            plugins={["emoji", "mention", "channel", "command"]}
+            outputFormat={format}
+            plugins={editorPlugins}
             editorState={editorState}
             onSubmit={() => onSend()}
+            onUpArrow={(e) => onUpArrow(e)}
             placeholder={Languages.t("scenes.apps.messages.input.placeholder", [], "Write a message. Use @ to quote a user.")}
           />
           <Tooltip title={Languages.t("scenes.apps.messages.input.send_message", [], "Send message")} placement="top">

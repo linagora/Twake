@@ -1,16 +1,10 @@
-import { EditorState, CompositeDecorator } from "draft-js";
-import mentionsPlugin from "./plugins/mentions";
-import channelsPlugin from "./plugins/channel";
-import emojisPugin from "./plugins/emoji";
-import commandsPugin from "./plugins/commands";
-
-type EditorOptions = {};
+import { EditorState, CompositeDecorator, ContentState } from "draft-js";
+import { getPlugins } from "./EditorPlugins";
 
 class EditorStateService {
   private states: Map<string, EditorState>;
   
-  // TODO: Add decorators
-  constructor(options: EditorOptions) {
+  constructor() {
     this.states = new Map();
   }
 
@@ -20,14 +14,19 @@ class EditorStateService {
    * @param editorId
    * @returns 
    */
-  get(editorId: string): EditorState {
+  get(editorId: string, options?: { plugins?: Array<string>, initialContent?: ContentState, clearIfExists?: boolean }): EditorState {
     if (!editorId) {
       throw new Error("Editor id is required");
     }
 
     let editor = this.states.get(editorId);
+
+    if (editor && options?.clearIfExists) {
+      editor = this.clear(editorId).states.get(editorId);
+    }
+
     if (!editor) {
-      editor = this.createEditor();
+      editor = this.createEditor(options?.plugins, options?.initialContent);
       this.states.set(editorId, editor);
     }
 
@@ -46,18 +45,19 @@ class EditorStateService {
     return this;
   }
 
-  private createEditor(): EditorState {
-    const emojis = emojisPugin();
-    const mentions = mentionsPlugin();
-    const channels = channelsPlugin();
-    // TODO: apps/commands can be disabled cf InputAutoComplete -> props -> disableApps
-    const commands = commandsPugin();
-    const decorators = new CompositeDecorator([emojis.decorator, mentions.decorator, channels.decorator, commands.decorator]);
+  createEditor(plugins?: Array<string>, initialContent?: ContentState): EditorState {
+    const editorPlugins = getPlugins(plugins);
+    const decorators = new CompositeDecorator(editorPlugins.map(p => p.decorator));
+
+    if (initialContent) {
+      return EditorState.createWithContent(initialContent, decorators);
+    }
 
     return EditorState.createEmpty(decorators);
   }
+
 }
 
-const instance = new EditorStateService({});
+const instance = new EditorStateService();
 
 export default instance;
