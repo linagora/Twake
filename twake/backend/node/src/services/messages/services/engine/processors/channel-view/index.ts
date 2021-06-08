@@ -70,9 +70,11 @@ export class ChannelViewProcessor {
               ...pkPrefix,
               message_id: reversed.message_id,
             });
-            reversed.message_id = message.resource.id;
-            await this.repositoryReversed.save(reversed);
-            await this.repository.remove(existingThreadRef);
+            if (existingThreadRef.thread_id === message.resource.thread_id) {
+              reversed.message_id = message.resource.id;
+              await this.repositoryReversed.save(reversed);
+              await this.repository.remove(existingThreadRef);
+            }
           } else {
             await this.repositoryReversed.save(
               getInstanceReversed({

@@ -91,7 +91,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
 
       //Created with forced id (server only)
-      if (!messageToUpdate) {
+      if (!messageToUpdate && !options?.message_moved) {
         created = true;
       }
 
@@ -166,7 +166,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     await this.save(
       messageInNewThread,
-      {},
+      {
+        message_moved: true,
+      },
       {
         user: { id: null, server_request: true },
         thread: context.thread,
