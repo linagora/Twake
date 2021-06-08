@@ -38,7 +38,8 @@ export type ColumnType =
   | "blob"
   | "boolean"
   // backward compatibility
-  | "twake_boolean";
+  | "twake_boolean"
+  | "twake_int";
 
 export type EntityTarget<Entity> = ObjectType<Entity>;
 

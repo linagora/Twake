@@ -11,12 +11,16 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
+import Repository, {
+  FindFilter,
+  FindOptions,
+} from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { WorkspaceServiceAPI } from "../../api";
 import { TYPE as WorkspaceUserType } from "../../entities/workspace_user";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../../entities/workspace_user";
 import Workspace, { WorkspacePrimaryKey } from "../../entities/workspace";
 import { TYPE as WorkspaceType } from "../../entities/workspace";
+import { ListWorkspaceOptions } from "./types";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -76,6 +80,21 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     context?: ExecutionContext,
   ): Promise<ListResult<Workspace>> {
     return this.workspaceRepository.find({}, { pagination });
+  }
+
+  getWorkspaces(
+    pagination?: Pagination,
+    options?: ListWorkspaceOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<Workspace>> {
+    const findFilter: FindFilter = {};
+    const findOptions: FindOptions = {
+      pagination,
+    };
+
+    if (options.company_id) findFilter.group_id = options.company_id;
+
+    return this.workspaceRepository.find(findFilter, findOptions);
   }
 
   getUsers(

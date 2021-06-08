@@ -12,7 +12,13 @@ export type Block = { block_id?: string } & (
   | BlockInput
   | BlockSection
   | BlockIframe
+  | BlockTwacode
 );
+
+type BlockTwacode = {
+  type: "twacode";
+  elements: any;
+};
 
 type BlockActions = {
   type: "actions";
@@ -57,7 +63,7 @@ type BlockSection = {
   type: "section";
   text?: CompositionTextObject;
   fields?: CompositionTextObject[];
-  accessory: BlockElement;
+  accessory?: BlockElement;
 };
 
 type BlockIframe = {
