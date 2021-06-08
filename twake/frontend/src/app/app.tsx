@@ -23,7 +23,7 @@ export default () => {
   }
 
   if (
-    InitService.server_infos?.configuration.accounts.type === 'console' &&
+    InitService.server_infos?.configuration?.accounts.type === 'console' &&
     !LoginService.getIsPublicAccess()
   ) {
     AuthProviderService.getAuthProviderConfiguration();

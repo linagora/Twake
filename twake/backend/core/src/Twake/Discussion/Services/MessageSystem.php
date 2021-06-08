@@ -197,13 +197,14 @@ class MessageSystem
         ]];
 
         $files = [];
-        foreach(($object["files"] ?: []) as $file){
+        foreach(($object["content"]["files"] ?: $object["files"] ?: []) as $file){
             if($file["type"] == "file"){
                 $files[] = [
                     "id" => $file["content"],
                     "metadata" => [
                         "source" => "drive",
-                        "external_id" => $file["content"]
+                        "external_id" => $file["content"],
+                        "has_preview" => $file["mode"] === "preview"
                     ]
                 ];
             }
@@ -252,13 +253,20 @@ class MessageSystem
                     $prepared = [["type" => "twacode", "content" => $block["text"]["mrkdwn"]["text"] ?: $block["text"]["plain_text"]["text"] ?: ""]];
                 }
             }
-
-        error_log(json_encode($prepared));
+            
+        $files = [];
+        foreach($message["files"] ?: [] as $file){
+            $files[] = array_merge($file, [
+                "content" => $file["id"],
+                "mode" => $file["metadata"]["has_preview"] ? "preview" : "mini",
+                "type" => "file"
+            ]);
+        }
 
         $phpMessage->setContent([
             "fallback_string" => $message["text"],
             "original_str" => $message["text"],
-            "files" => $message["files"],
+            "files" => $files,
             "prepared" => $prepared
         ]);
 

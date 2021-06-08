@@ -88,6 +88,7 @@ export interface BookmarkOperation {
 }
 
 export interface MessagesSaveOptions {
+  message_moved?: boolean;
   previous_thread?: string; //If message was in a previous thread before (moved) then this indicate when is it from
 }
 export interface MessagesGetThreadOptions {
