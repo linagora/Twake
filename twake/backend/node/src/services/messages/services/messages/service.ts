@@ -143,6 +143,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   ): Promise<void> {
     //Fixme: check user has access to both threads
 
+    logger.error(
+      `Try to move message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
+    );
+
     if (options.previous_thread === context.thread.id) {
       return;
     }
@@ -160,7 +164,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const messageInNewThread = _.cloneDeep(messageInOldThread);
     messageInNewThread.thread_id = context.thread.id;
 
-    this.save(
+    await this.save(
       messageInNewThread,
       {},
       {
@@ -171,6 +175,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     );
 
     await this.repository.remove(messageInOldThread);
+
+    logger.error(
+      `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
+    );
 
     return;
   }

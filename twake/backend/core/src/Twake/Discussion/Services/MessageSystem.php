@@ -254,7 +254,7 @@ class MessageSystem
                 }
             }
             
-        $files = [];    
+        $files = [];
         foreach($message["files"] ?: [] as $file){
             $files[] = array_merge($file, [
                 "content" => $file["id"],
