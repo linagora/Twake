@@ -91,7 +91,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
 
       //Created with forced id (server only)
-      if (!messageToUpdate) {
+      if (!messageToUpdate && !options?.message_moved) {
         created = true;
       }
 
@@ -143,6 +143,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   ): Promise<void> {
     //Fixme: check user has access to both threads
 
+    logger.error(
+      `Try to move message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
+    );
+
+    if (options.previous_thread === context.thread.id) {
+      return;
+    }
+
     const messageInOldThread = await this.repository.findOne({
       thread_id: options.previous_thread,
       id: pk.id,
@@ -156,9 +164,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const messageInNewThread = _.cloneDeep(messageInOldThread);
     messageInNewThread.thread_id = context.thread.id;
 
-    this.save(
+    await this.save(
       messageInNewThread,
-      {},
+      {
+        message_moved: true,
+      },
       {
         user: { id: null, server_request: true },
         thread: context.thread,
@@ -166,11 +176,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       },
     );
 
-    this.delete(messageInOldThread, {
-      user: { id: null, server_request: true },
-      thread: { id: messageInOldThread.thread_id },
-      company: context.company,
-    });
+    await this.repository.remove(messageInOldThread);
+
+    logger.error(
+      `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
+    );
 
     return;
   }

@@ -30,7 +30,13 @@ export class NewChannelMessageProcessor
   readonly name = "NewChannelMessageProcessor";
 
   validate(message: MessageNotification): boolean {
-    return !!(message && message.channel_id && message.company_id && message.workspace_id);
+    return !!(
+      message &&
+      message.channel_id &&
+      message.company_id &&
+      message.workspace_id &&
+      message.creation_date > Date.now() - 5 * 60 * 1000
+    );
   }
 
   async process(message: MessageNotification): Promise<MentionNotification> {
