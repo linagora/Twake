@@ -63,10 +63,12 @@ export default (props: Props) => {
   }, []);
 
   const disable_app: any = {};
-  const hasFilesAttached = messageEditorService.filesAttachements[props.threadId || 'main']
-    ?.length
-    ? true
-    : false;
+  const hasFilesAttached = (): boolean => {
+    return messageEditorService.filesAttachements[props.threadId || 'main']
+      ?.length
+      ? true
+      : false;
+  }
 
   const getContentOutput = (editorState: EditorState) => {
     return toString(editorState, format);
@@ -138,8 +140,7 @@ export default (props: Props) => {
   }
 
   const isEmpty = (): boolean => {
-    // TODO: Move editorState empty to a service
-    return (!editorState.getCurrentContent().getPlainText().trim() || hasFilesAttached); 
+    return ((editorState.getCurrentContent().getPlainText().trim().length === 0) && !hasFilesAttached()); 
   }
 
   const onUpArrow = (e: any): void => {
