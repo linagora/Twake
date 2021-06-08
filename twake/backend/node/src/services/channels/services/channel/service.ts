@@ -463,7 +463,7 @@ export class Service implements ChannelService {
     channels = await this.channelRepository.find(findFilters, { pagination });
     channels.filterEntities(channel => channel.visibility !== ChannelVisibility.DIRECT);
 
-    if (!isWorkspaceAdmin) {
+    if (!isWorkspaceAdmin && !context.user.server_request) {
       channels.filterEntities(channel => channel.visibility === ChannelVisibility.PUBLIC);
     }
 
@@ -489,6 +489,13 @@ export class Service implements ChannelService {
 
     // TODO map
     return directChannel;
+  }
+
+  async getDirectChannelsInCompany(
+    pagination: Pagination,
+    company_id: string,
+  ): Promise<ListResult<DirectChannel>> {
+    return await this.directChannelRepository.find({ company_id }, { pagination });
   }
 
   async getDirectChannelsForUsersInCompany(
