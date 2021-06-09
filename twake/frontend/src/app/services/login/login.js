@@ -176,9 +176,11 @@ class Login extends Observable {
       this.notify();
     }
 
-    if (!InitService.server_infos?.auth?.internal && !this.firstInit) {
+    if (InitService.server_infos?.configuration?.accounts?.type !== 'internal' && !this.firstInit) {
       //Check I am connected with external sign-in provider
-      return this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+      return this.loginWithExternalProvider(
+        InitService.server_infos?.configuration?.accounts?.type,
+      );
     } else {
       //We can thrust the JWT
       this.updateUser();
@@ -202,7 +204,7 @@ class Login extends Observable {
         if (res.errors.length > 0) {
           if (
             (res.errors.indexOf('redirect_to_openid') >= 0 ||
-              that.server_infos.configuration.accounts.type === 'console') &&
+              that.server_infos.configuration?.accounts.type === 'console') &&
             !that.external_login_error
           ) {
             let developerSuffix = '';
@@ -249,11 +251,9 @@ class Login extends Observable {
     } else if (service === 'cas') {
       url = Api.route('users/cas');
     } else if (service === 'console') {
-      let developerSuffix = '';
-      if (Environment.env_dev && document.location.host.indexOf('localhost') === 0) {
-        developerSuffix = '?localhost=1&port=' + window.location.port;
-      }
-      url = Api.route('users/console/openid' + developerSuffix);
+      return;
+    } else {
+      return;
     }
 
     Globals.window.location = url;
