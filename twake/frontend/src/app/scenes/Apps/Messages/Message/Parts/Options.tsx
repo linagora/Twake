@@ -1,7 +1,7 @@
 import React from 'react';
 import 'moment-timezone';
-
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
+
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
@@ -46,7 +46,7 @@ export default (props: Props) => {
   if (props.message._user_ephemeral) {
     menu.push({
       type: 'menu',
-      text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Supprimer'),
+      text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
       className: 'error',
       onClick: () => {
         MessagesService.deleteMessage(props.message, props.collectionKey);
@@ -56,7 +56,7 @@ export default (props: Props) => {
     if (!props.message.parent_message_id) {
       menu.push({
         type: 'menu',
-        text: Languages.t('scenes.apps.messages.message.show_button', [], 'Afficher'),
+        text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
         onClick: () => {
           MessagesService.showMessage(props.message.id);
         },
@@ -146,7 +146,7 @@ export default (props: Props) => {
       if (!props.message.application_id) {
         menu.push({
           type: 'menu',
-          text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Modifier'),
+          text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Edit'),
           onClick: () => {
             MessageEditorsManager.get(props.message?.channel_id || '').openEditor(
               props.message?.parent_message_id || '',
@@ -159,7 +159,7 @@ export default (props: Props) => {
       if (!props.message.responses_count) {
         menu.push({
           type: 'menu',
-          text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Supprimer'),
+          text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
           className: 'error',
           onClick: () => {
             AlertManager.confirm(() =>
