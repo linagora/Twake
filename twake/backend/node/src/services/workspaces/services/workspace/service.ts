@@ -27,6 +27,8 @@ import Workspace, {
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { UserPrimaryKey } from "../../../user/entities/user";
 import { CompanyPrimaryKey } from "../../../user/entities/company";
+import { ChannelMemberNotificationPreference } from "../../../notifications/entities";
+import { merge } from "lodash";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -83,11 +85,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  delete(
+  async delete(
     pk: Partial<Pick<Workspace, "id">>,
-    context?: ExecutionContext,
+    context?: WorkspaceExecutionContext,
   ): Promise<DeleteResult<Workspace>> {
-    throw new Error("Method not implemented.");
+    const primaryKey: Workspace = merge(new Workspace(), {
+      group_id: context.company_id,
+      id: pk.id,
+    });
+    await this.workspaceRepository.remove(primaryKey);
+    return new DeleteResult(TYPE, primaryKey, true);
   }
 
   list<ListOptions>(

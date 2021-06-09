@@ -449,7 +449,7 @@ describe("The /workspaces API", () => {
 
   // delete
 
-  describe.skip("The DELETE /workspaces route", () => {
+  describe("The DELETE /workspaces route", () => {
     it("should 401 when not authenticated", async done => {
       const companyId = testDbService.company.id;
 
@@ -463,12 +463,13 @@ describe("The /workspaces API", () => {
 
     it("should 403 when user is not (company member or company admin) ", async done => {
       const companyId = testDbService.company.id;
-      const userId = testDbService.users[0].id;
+      const userId = testDbService.users[3].id;
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+      const workspaceId = testDbService.workspaces[0].workspace.id;
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
@@ -478,16 +479,27 @@ describe("The /workspaces API", () => {
 
     it("should 204 when workspace deleted", async done => {
       const companyId = testDbService.company.id;
-      const userId = testDbService.users[0].id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[0].id;
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
       expect(response.statusCode).toBe(204);
+
+      const checkResponse = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${companyId}/workspaces`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+      });
+
+      const checkResponseJson = checkResponse.json();
+
+      expect(checkResponseJson.resources.find((a: any) => a.id === workspaceId)).toBe(undefined);
 
       done();
     });

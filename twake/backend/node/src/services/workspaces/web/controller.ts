@@ -16,11 +16,12 @@ import {
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../types";
-import Workspace from "../entities/workspace";
+import Workspace, { WorkspacePrimaryKey } from "../entities/workspace";
 import { CompaniesServiceAPI } from "../../user/api";
 import CompanyUser from "../../user/entities/company_user";
 import { merge } from "lodash";
 import WorkspaceUser from "../entities/workspace_user";
+import workspace from "../../../cli/cmds/workspace";
 
 export class WorkspacesCrudController
   implements
@@ -198,10 +199,34 @@ export class WorkspacesCrudController
   }
 
   async delete(
-    request: FastifyRequest<{ Params: WorkspaceBaseRequest }>,
+    request: FastifyRequest<{ Params: WorkspaceRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
-    throw new Error("Method not implemented.");
+    const context = getExecutionContext(request);
+
+    const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
+
+    if (workspaceUserRole !== "admin") {
+      const companyUserRole = await this.getCompanyUserRole(context);
+      if (companyUserRole !== "admin") {
+        reply.forbidden("You are not a admin of workspace or company");
+        return;
+      }
+    }
+
+    const deleteResult = await this.workspaceService.delete({ id: request.params.id }, context);
+
+    if (deleteResult.deleted) {
+      reply.code(204);
+
+      return {
+        status: "success",
+      };
+    }
+
+    return {
+      status: "error",
+    };
   }
 }
 
