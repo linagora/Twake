@@ -24,10 +24,6 @@ import {
 
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey } from "./entities/messages";
-import {
-  PhpMessage,
-  PhpMessagePrimaryKey,
-} from "../../cli/cmds/migration_cmds/php-message/php-message-entity";
 
 export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
   userBookmarks: MessageUserBookmarksServiceAPI;
@@ -100,11 +96,6 @@ export interface MessageThreadMessagesServiceAPI
     context: ThreadExecutionContext,
   ): Promise<void>;
 }
-
-export interface PhpMessagesServiceAPI
-  extends TwakeServiceProvider,
-    Initializable,
-    CRUDService<PhpMessage, PhpMessagePrimaryKey, ExecutionContext> {}
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
   listChannel(

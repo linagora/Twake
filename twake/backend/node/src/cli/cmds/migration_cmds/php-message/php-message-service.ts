@@ -7,7 +7,7 @@ import { DatabaseServiceAPI } from "../../../../core/platform/services/database/
 import Repository, {
   FindFilter,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { PhpMessagesServiceAPI } from "../../../../services/messages/api";
+import { PhpMessagesServiceAPI } from "./types";
 import { PhpMessage, PhpMessagePrimaryKey } from "./php-message-entity";
 import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 

@@ -15,11 +15,7 @@ import {
   MessagePinnedInfo,
   MessageReaction,
 } from "../../../../services/messages/entities/messages";
-import {
-  ParticipantObject,
-  Thread,
-  ThreadPrimaryKey,
-} from "../../../../services/messages/entities/threads";
+import { ParticipantObject, Thread } from "../../../../services/messages/entities/threads";
 import { Block } from "../../../../services/messages/blocks-types";
 
 type MigratedChannel = {
@@ -28,7 +24,6 @@ type MigratedChannel = {
   company_id: string;
   owner?: string;
 };
-import { pick } from "../../../../utils/pick";
 
 class MessageMigrator {
   private database: DatabaseServiceAPI;
@@ -301,10 +296,6 @@ class MessageMigrator {
    * @param message PhpMessage
    */
   private setMessageOverrideObject(message: PhpMessage): MessageOverride {
-    const isSystemMessage = message.message_type === 2;
-
-    if (isSystemMessage) return { type: message.hidden_data.type };
-
     return null;
   }
 
