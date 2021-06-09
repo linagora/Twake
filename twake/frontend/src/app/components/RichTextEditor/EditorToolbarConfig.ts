@@ -50,14 +50,14 @@ export const BLOCK_TYPE_DROPDOWN: StyleConfigList = [
   {label: 'Code Block', style: 'code-block'},
 ];
 export const BLOCK_TYPE_BUTTONS: StyleConfigList = [
-  {label: 'UL', style: 'unordered-list-item'},
-  {label: 'OL', style: 'ordered-list-item'},
-  {label: 'Blockquote', style: 'blockquote'},
+  {label: 'UL', style: 'unordered-list-item', i18n: 'components.richtexteditor.toolbar.unordered-list'},
+  {label: 'OL', style: 'ordered-list-item', i18n: 'components.richtexteditor.toolbar.ordered-list'},
+  //{label: 'Blockquote', style: 'blockquote'},
 ];
 
 let EditorToolbarConfig: ToolbarConfig = {
   //display: ['INLINE_STYLE_BUTTONS', 'BLOCK_ALIGNMENT_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'IMAGE_BUTTON', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
-  display: ['INLINE_STYLE_BUTTONS'],
+  display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS'],
   INLINE_STYLE_BUTTONS,
   BLOCK_ALIGNMENT_BUTTONS,
   BLOCK_TYPE_DROPDOWN,

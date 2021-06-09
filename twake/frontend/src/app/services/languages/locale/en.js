@@ -1968,4 +1968,6 @@ export default {
   'components.richtexteditor.toolbar.italic': 'Italic',
   'components.richtexteditor.toolbar.strikethrough': 'Strikethrough',
   'components.richtexteditor.toolbar.code': 'Code',
+  'components.richtexteditor.toolbar.unordered-list': 'Bulleted list',
+  'components.richtexteditor.toolbar.ordered-list': 'Ordered list',
 };

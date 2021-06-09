@@ -2041,4 +2041,6 @@ export default {
   'components.richtexteditor.toolbar.italic': 'Italique',
   'components.richtexteditor.toolbar.strikethrough': 'Barré',
   'components.richtexteditor.toolbar.code': 'Code',
+  'components.richtexteditor.toolbar.unordered-list': 'Liste',
+  'components.richtexteditor.toolbar.ordered-list': 'List ordonnée',
 };

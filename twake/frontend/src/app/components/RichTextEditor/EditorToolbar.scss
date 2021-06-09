@@ -1,5 +1,8 @@
 .editor-toolbar {
-  .inline {
+  display: flex;
+  flex-direction: row;
+
+  .inline, .block {
     color: var(--grey-dark);
     margin-right: 2px;
     margin-left: 2px;
