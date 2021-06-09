@@ -1,9 +1,12 @@
 .editor-toolbar {
   .inline {
     color: var(--grey-dark);
+    margin-right: 2px;
+    margin-left: 2px;
 
     &.active {
       color: var(--black);
+      background: var(--grey-background);
     }
   }
 

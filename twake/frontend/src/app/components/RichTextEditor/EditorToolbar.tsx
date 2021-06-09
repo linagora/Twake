@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import classNames from "classnames";
 import { EditorState, RichUtils } from "draft-js";
 import { Bold, Underline, Italic, Code } from "react-feather";
 import { Button, Tooltip } from "antd";
@@ -50,7 +51,13 @@ export default (props: EditorToolbarProps) => {
             e.preventDefault();
             _toggleInlineStyle(type.style)
           }}
-          className={`inline ${type.className} ${currentStyle.has(type.style) ? "active" : "not-active"}`}
+          className={
+            classNames(
+              'inline',
+              { active: currentStyle.has(type.style) },
+              { 'not-active': !currentStyle.has(type.style),
+            })
+          }
           icon={getIcon(type)}
         />
       </Tooltip>

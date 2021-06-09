@@ -115,6 +115,7 @@
     "babel-preset-stage-0": "^6.24.1",
     "camelcase": "^5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.3.0",
+    "classnames": "^2.3.1",
     "craco-less": "^1.17.0",
     "crypto-js": "^4.0.0",
     "css-loader": "3.6.0",
