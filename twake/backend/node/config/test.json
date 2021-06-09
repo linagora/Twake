@@ -1,7 +1,7 @@
 {
   "database": {
     "secret": "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
-    "type": "cassandra",
+    "type": "mongodb",
     "mongodb": {
       "uri": "mongodb://localhost:27017",
       "database": "twake"

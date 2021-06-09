@@ -17,7 +17,7 @@ import WorkspaceUser, {
   getInstance as getWorkspaceUserInstance,
   TYPE as WorkspaceUserType,
   WorkspaceUserPrimaryKey,
-} from "../../../user/entities/workspace_user";
+} from "../../../workspaces/entities/workspace_user";
 import Workspace, {
   getInstance as getWorkspaceInstance,
   TYPE,
@@ -109,8 +109,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       getWorkspaceUserInstance({
         workspaceId: workspacePk.id,
         userId: userPk.id,
-        // role: WorkspaceUserRole, // FixME
-        role: "member",
+        role: role,
       }),
     );
   }

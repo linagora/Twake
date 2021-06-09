@@ -30,14 +30,15 @@ describe("The /workspaces API", () => {
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
+    const ws0pk = { id: uuidv4(), group_id: companyId };
     const ws1pk = { id: uuidv4(), group_id: companyId };
     const ws2pk = { id: uuidv4(), group_id: companyId };
-    const ws3pk = { id: uuidv4(), group_id: companyId };
+    await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createWorkspace(ws2pk);
-    await testDbService.createWorkspace(ws3pk);
-    await testDbService.createUser([ws1pk, ws2pk]);
-    await testDbService.createUser([ws3pk], "admin");
+    await testDbService.createUser([ws0pk, ws1pk]);
+    await testDbService.createUser([ws2pk], "admin");
+    await testDbService.createUser([ws2pk], undefined, "admin");
     ends();
   });
 
@@ -226,6 +227,270 @@ describe("The /workspaces API", () => {
           total_members: expect.any(Number),
         });
       }
+
+      done();
+    });
+  });
+
+  // create
+
+  describe("The POST /workspaces route (creating workspace)", () => {
+    it("should 401 when not authenticated", async done => {
+      const companyId = testDbService.company.id;
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}`,
+      });
+      expect(response.statusCode).toBe(401);
+      done();
+    });
+
+    it("should 403 when user is not (company member or company admin) ", async done => {
+      const companyId = testDbService.company.id;
+      const userId = testDbService.users[0].id;
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          resource: {
+            name: "Some channel name",
+            logo: "some logo",
+            default: false,
+          },
+        },
+      });
+
+      expect(response.statusCode).toBe(403);
+      done();
+    });
+
+    it("should 201 when workspace created well", async done => {
+      const companyId = testDbService.company.id;
+      const userId = testDbService.users[0].id;
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          resource: {
+            name: "Random channel name",
+            logo: "logo",
+            default: false,
+          },
+        },
+      });
+
+      expect(response.statusCode).toBe(201);
+
+      const resource = response.json()["resource"];
+
+      expect(resource).toMatchObject({
+        id: expect.any(String),
+        company_id: expect.any(String),
+        name: expect.any(String),
+        logo: expect.any(String),
+        default: expect.any(Boolean),
+        archived: expect.any(Boolean),
+        role: expect.stringMatching(/admin/),
+      });
+
+      done();
+    });
+  });
+
+  // update
+
+  describe("The POST /workspaces/:workspace_id route (updating workspace)", () => {
+    it("should 401 when not authenticated", async done => {
+      const companyId = testDbService.company.id;
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}`,
+        payload: { resource: {} },
+      });
+      expect(response.statusCode).toBe(401);
+      done();
+    });
+
+    it("should 404 when not workspace not found", async done => {
+      const companyId = testDbService.company.id;
+      const userId = testDbService.workspaces[0].users[0].id;
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: { resource: {} },
+      });
+
+      expect(response.statusCode).toBe(404);
+
+      done();
+    });
+
+    it("should 403 when not belong to workspace", async done => {
+      const companyId = testDbService.company.id;
+      const workspaceId = testDbService.workspaces[1].workspace.id;
+      const userId = testDbService.workspaces[0].users[0].id;
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: { resource: {} },
+      });
+
+      expect(response.statusCode).toBe(403);
+
+      done();
+    });
+
+    it("should 403 when not workspace admin", async done => {
+      const companyId = testDbService.company.id;
+      const workspaceId = testDbService.workspaces[1].workspace.id;
+      const userId = testDbService.workspaces[0].users[0].id;
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: { resource: {} },
+      });
+
+      expect(response.statusCode).toBe(403);
+
+      done();
+    });
+
+    it("should 200 when admin of company (full update)", async done => {
+      const companyId = testDbService.company.id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[0].id; // company admin
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          resource: {
+            name: "Random channel name",
+            logo: "logo",
+            default: false,
+            archived: false,
+          },
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      const resource = response.json()["resource"];
+
+      expect(resource).toMatchObject({
+        id: workspaceId,
+        company_id: companyId,
+        name: "Random channel name",
+        logo: "logo",
+        default: false,
+        archived: false,
+        role: "member",
+      });
+
+      done();
+    });
+
+    it("should 200 when admin of workspace (partial update)", async done => {
+      const companyId = testDbService.company.id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[1].id; // workspace admin
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          resource: {
+            name: null,
+            default: true,
+          },
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      const resource = response.json()["resource"];
+
+      expect(resource).toMatchObject({
+        id: workspaceId,
+        company_id: companyId,
+        name: "",
+        logo: "workspace_logo",
+        default: true,
+        archived: false,
+        role: "admin",
+      });
+
+      done();
+    });
+  });
+
+  // delete
+
+  describe("The DELETE /workspaces route", () => {
+    it("should 401 when not authenticated", async done => {
+      const companyId = testDbService.company.id;
+
+      const response = await platform.app.inject({
+        method: "DELETE",
+        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}`,
+      });
+      expect(response.statusCode).toBe(401);
+      done();
+    });
+
+    it("should 403 when user is not (company member or company admin) ", async done => {
+      const companyId = testDbService.company.id;
+      const userId = testDbService.users[0].id;
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "DELETE",
+        url: `${url}/companies/${companyId}/workspaces`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+      });
+
+      expect(response.statusCode).toBe(403);
+      done();
+    });
+
+    it("should 204 when workspace deleted", async done => {
+      const companyId = testDbService.company.id;
+      const userId = testDbService.users[0].id;
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "DELETE",
+        url: `${url}/companies/${companyId}/workspaces`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+      });
+
+      expect(response.statusCode).toBe(204);
 
       done();
     });

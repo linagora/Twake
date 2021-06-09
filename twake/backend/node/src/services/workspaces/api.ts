@@ -7,7 +7,7 @@ import {
 } from "../../core/platform/framework/api/crud-service";
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
 import { CompaniesServiceAPI } from "../user/api";
-import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../user/entities/workspace_user";
+import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../workspaces/entities/workspace_user";
 import { Observable } from "rxjs";
 import { UserPrimaryKey } from "../user/entities/user";
 import { WorkspaceUserRole } from "./types";

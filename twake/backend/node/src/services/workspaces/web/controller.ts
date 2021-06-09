@@ -7,6 +7,7 @@ import {
 } from "../../../utils/types";
 import { WorkspaceServiceAPI } from "../api";
 import {
+  UpdateWorkspaceBody,
   WorkspaceBaseRequest,
   WorkspaceObject,
   WorkspaceRequest,
@@ -15,11 +16,11 @@ import {
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import { WorkspaceExecutionContext } from "../types";
-import Workspace, { WorkspacePrimaryKey } from "../entities/workspace";
-import WorkspaceUser from "../../user/entities/workspace_user";
-import workspace from "../../../cli/cmds/workspace";
-import { CompanyService } from "../../user/services/companies/service";
+import Workspace from "../entities/workspace";
 import { CompaniesServiceAPI } from "../../user/api";
+import CompanyUser from "../../user/entities/company_user";
+import { merge } from "lodash";
+import WorkspaceUser from "../entities/workspace_user";
 
 export class WorkspacesCrudController
   implements
@@ -33,6 +34,10 @@ export class WorkspacesCrudController
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
   ) {}
+
+  private getCompanyUser(context: WorkspaceExecutionContext) {
+    return this.companyService.getCompanyUser({ id: context.company_id }, { id: context.user.id });
+  }
 
   private formatWorkspace(workspace: Workspace, workspaceUser?: WorkspaceUser): WorkspaceObject {
     const res: WorkspaceObject = {
@@ -78,12 +83,9 @@ export class WorkspacesCrudController
     });
 
     if (!workspaceUser) {
-      const companyService = await this.companyService.getCompanyUser(
-        { id: context.company_id },
-        { id: context.user.id },
-      );
+      const companyUser = await this.getCompanyUser(context);
 
-      if (companyService.role !== "admin") {
+      if (!companyUser || companyUser.role !== "admin") {
         reply.forbidden(`You are not belong to workspace ${request.params.id}`);
         return;
       }
@@ -116,10 +118,84 @@ export class WorkspacesCrudController
   }
 
   async save(
-    request: FastifyRequest<{ Params: WorkspaceBaseRequest }>,
+    request: FastifyRequest<{ Params: WorkspaceRequest; Body: UpdateWorkspaceBody }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceObject>> {
-    throw new Error("Method not implemented.");
+    const context = getExecutionContext(request);
+
+    const companyUser = await this.getCompanyUser(context);
+
+    if (!companyUser) {
+      reply.forbidden(`You are not a member of company ${context.company_id}`);
+      return;
+    }
+
+    let workspaceEntity: Workspace;
+
+    if (request.params.id) {
+      // ON UPDATE
+
+      workspaceEntity = await this.workspaceService.get({
+        group_id: context.company_id,
+        id: request.params.id,
+      });
+
+      if (!workspaceEntity) {
+        reply.notFound(`Workspace ${request.params.id} not found`);
+        return;
+      }
+
+      if (companyUser.role !== "admin") {
+        const workspaceUserEntity = await this.workspaceService.getUser({
+          workspaceId: request.params.id,
+          userId: context.user.id,
+        });
+
+        if (!workspaceUserEntity || workspaceUserEntity.role !== "admin") {
+          reply.forbidden("You are not a admin of workspace or company");
+          return;
+        }
+      }
+
+      const r = request.body.resource;
+
+      workspaceEntity = merge(workspaceEntity, {
+        name: r.name,
+        logo: r.logo,
+        isDefault: r.default,
+        isArchived: r.archived,
+      });
+    } else {
+      // ON CREATE
+
+      // you must be a company admin or member to create workspaces
+      if (!companyUser || !["admin", "member"].includes(companyUser.role)) {
+        reply.forbidden(`You are not a member of company ${context.company_id}`);
+        return;
+      }
+
+      const obj = merge(new Workspace(), request.body.resource, {
+        group_id: context.company_id,
+        isDefault: request.body.resource.default,
+      });
+
+      workspaceEntity = await this.workspaceService.create(obj).then(a => a.entity);
+      await this.workspaceService.addUser(
+        { id: workspaceEntity.id },
+        { id: context.user.id },
+        "admin",
+      );
+      reply.code(201);
+    }
+
+    const workspaceUserEntity = await this.workspaceService.getUser({
+      workspaceId: workspaceEntity.id,
+      userId: context.user.id,
+    });
+
+    return {
+      resource: this.formatWorkspace(workspaceEntity, workspaceUserEntity),
+    };
   }
 
   async delete(

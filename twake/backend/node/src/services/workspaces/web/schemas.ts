@@ -42,7 +42,34 @@ export const getWorkspaceSchema = {
   },
 };
 
-export const postWorkspaceSchema = {
+export const createWorkspaceSchema = {
+  body: {
+    type: "object",
+    properties: {
+      resource: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          logo: { type: "string" },
+          default: { type: "boolean" },
+        },
+        required: ["name", "logo", "default"],
+      },
+    },
+    required: ["resource"],
+  },
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resource: workspaceObjectSchema,
+      },
+      required: ["resource"],
+    },
+  },
+};
+
+export const updateWorkspaceSchema = {
   body: {
     type: "object",
     properties: {
@@ -54,7 +81,6 @@ export const postWorkspaceSchema = {
           default: { type: "boolean" },
           archived: { type: "boolean" },
         },
-        required: ["name", "logo", "default", "archived"],
       },
     },
     required: ["resource"],

@@ -1,6 +1,11 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { WorkspacesCrudController } from "./controller";
-import { getWorkspaceSchema, getWorkspacesSchema, postWorkspaceSchema } from "./schemas";
+import {
+  createWorkspaceSchema,
+  getWorkspaceSchema,
+  getWorkspacesSchema,
+  updateWorkspaceSchema,
+} from "./schemas";
 
 import WorkspaceServicesAPI from "../api";
 import { WorkspaceBaseRequest } from "./types";
@@ -65,7 +70,7 @@ const routes: FastifyPluginCallback<{
     url: `${workspacesUrl}`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: postWorkspaceSchema,
+    schema: createWorkspaceSchema,
     handler: workspacesController.save.bind(workspacesController),
   });
 
@@ -74,7 +79,7 @@ const routes: FastifyPluginCallback<{
     url: `${workspacesUrl}/:id`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: postWorkspaceSchema,
+    schema: updateWorkspaceSchema,
     handler: workspacesController.save.bind(workspacesController),
   });
 

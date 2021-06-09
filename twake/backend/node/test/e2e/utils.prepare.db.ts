@@ -50,6 +50,7 @@ export class TestDbService {
       getWorkspaceInstance({
         id: workspacePk.id,
         name: name,
+        logo: "workspace_logo",
         group_id: workspacePk.group_id,
       }),
     );
@@ -73,7 +74,8 @@ export class TestDbService {
 
   async createUser(
     workspacesPk?: Array<WorkspacePrimaryKey>,
-    role?: "member" | "admin",
+    companyRole?: "member" | "admin",
+    workspaceRole?: "member" | "admin",
   ): Promise<User> {
     const user = new User();
     const random = this.rand();
@@ -86,7 +88,7 @@ export class TestDbService {
     await this.userService.companies.setUserRole(
       { id: this.company.id },
       { id: createdUser.entity.id },
-      role ? role : "member",
+      companyRole ? companyRole : "member",
     );
 
     if (workspacesPk && workspacesPk.length) {
@@ -94,7 +96,7 @@ export class TestDbService {
         await this.userService.workspaces.addUser(
           workspacePk,
           { id: createdUser.entity.id },
-          "member",
+          workspaceRole ? workspaceRole : "member",
         );
         const wsContainer = this.workspacesMap.get(workspacePk.id);
         wsContainer.users.push(createdUser.entity);
@@ -103,19 +105,4 @@ export class TestDbService {
 
     return createdUser.entity;
   }
-
-  // async deleteAll(): Promise<void> {
-  //   await Promise.all(
-  //     this.users.map(async user => {
-  //       await this.userService.users.delete({ id: user.id });
-  //       for (const workspace of this.workspaces) {
-  //         await this.userService.workspaces.removeUser({ id: workspace.id }, { id: user.id });
-  //       }
-  //       await this.userService.companies.removeUserFromCompany(this.company, { id: user.id });
-  //     }),
-  //   );
-  //
-  //   await this.userService.companies.delete({ id: this.company.id });
-  //   this.company = null;
-  // }
 }
