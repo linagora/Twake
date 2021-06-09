@@ -170,5 +170,61 @@ type ApplicationAccess = {
 };
 
 type ApplicationDisplay = {
-  twake: {};
+  twake: {
+    version: 1;
+
+    files?: {
+      preview?: {
+        url: string; //Url to preview file (full screen or inline)
+        inline?: boolean;
+        main_ext?: string[]; //Main extensions app can read
+        other_ext?: string[]; //Secondary extensions app can read
+      };
+      actions?: //List of action that can apply on a file
+      {
+        name: string;
+        id: string;
+      }[];
+    };
+
+    //Chat plugin
+    chat: {
+      input?:
+        | true
+        | {
+            icon?: string; //If defined replace original icon url of your app
+            type?: "file" | "call"; //To add in existing apps folder / default icon
+          };
+      commands?: {
+        command: string; // my_app mycommand
+        description: string;
+      }[];
+      actions?: //List of action that can apply on a message
+      {
+        name: string;
+        id: string;
+      }[];
+    };
+
+    //Allow app to appear as a bot user in direct chat
+    direct?:
+      | true
+      | {
+          name?: string;
+          icon?: string; //If defined replace original icon url of your app
+        };
+
+    //Display app as a standalone application in a tab
+    tab?: {
+      url: string;
+    };
+
+    //Display app as a standalone application on the left bar
+    standalone?: {
+      url: string;
+    };
+
+    //Define where the app can be configured from
+    configuration: ("global" | "channel")[];
+  };
 };
