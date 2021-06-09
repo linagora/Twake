@@ -74,7 +74,7 @@ export class TestDbService {
 
   async createUser(
     workspacesPk?: Array<WorkspacePrimaryKey>,
-    companyRole?: "member" | "admin",
+    companyRole?: "member" | "admin" | "guest",
     workspaceRole?: "member" | "admin",
   ): Promise<User> {
     const user = new User();
