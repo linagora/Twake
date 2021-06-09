@@ -19,13 +19,13 @@ export default class LoginView extends Component {
     Languages.addListener(this);
   }
   componentDidMount() {
-    const authModes = [InitService.server_infos?.configuration?.accounts?.type];
     if (
-      authModes.length > 0 &&
-      authModes.indexOf('internal') < 0 &&
+      InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
       !(LoginService.external_login_error || false)
     ) {
-      LoginService.loginWithExternalProvider(authModes[0]);
+      LoginService.loginWithExternalProvider(
+        InitService.server_infos?.configuration?.accounts?.type,
+      );
     }
   }
   componentWillUnmount() {
@@ -33,12 +33,8 @@ export default class LoginView extends Component {
     Languages.removeListener(this);
   }
   render() {
-    const login = this.state.login;
-
-    const authModes = [InitService.server_infos?.configuration?.accounts?.type];
     if (
-      authModes.length > 0 &&
-      authModes.indexOf('internal') < 0 &&
+      InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
       !(LoginService.external_login_error || false)
     ) {
       return <></>;

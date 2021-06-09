@@ -14,7 +14,7 @@ class AuthProviderService extends Observable {
   private authProviderUserManager: Oidc.UserManager | null = null;
 
   getAuthProviderConfiguration(): AuthProviderConfiguration {
-    const consoleConfiguration = InitService.server_infos?.configuration.accounts.console;
+    const consoleConfiguration = InitService.server_infos?.configuration?.accounts.console;
 
     (window as any).AuthProviderService = this;
 
