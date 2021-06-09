@@ -47,6 +47,14 @@ export default class EntityManager<EntityType extends Record<string, any>> {
       }
     });
 
+    //Apply the onUpsert
+    for (const column in columnsDefinition) {
+      const definition = columnsDefinition[column];
+      if (definition.options.onUpsert) {
+        entity[definition.nodename] = definition.options.onUpsert(entity[definition.nodename]);
+      }
+    }
+
     this.toPersist = this.toPersist.filter(e => e !== entity);
     this.toPersist.push(_.cloneDeep(entity));
 

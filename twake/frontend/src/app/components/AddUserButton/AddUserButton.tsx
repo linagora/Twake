@@ -13,7 +13,7 @@ export default (props: any) => {
     <div
       className="channel addUserButton"
       onClick={() => {
-        if (InitService.server_infos?.auth?.console?.use) {
+        if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
           return popupManager.open(<AddUserFromTwakeConsole standalone />);
         } else {
           return popupManager.open(<AddUser standalone />);

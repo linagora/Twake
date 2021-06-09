@@ -30,9 +30,15 @@ export default () => {
     };
   }, []);
 
+  if (!server_infos_loaded) {
+    return <div />;
+  }
+
   return (
     <div className={'loginPage'}>
-      {server_infos_loaded && !server_infos.branding.name && <div className="twake_logo" />}
+      {server_infos_loaded && !server_infos?.configuration?.branding?.name && (
+        <div className="twake_logo" />
+      )}
 
       {['logged_out', 'signin', 'forgot_password'].indexOf(LoginService.state) != -1 && (
         <InteractiveLoginBackground />
@@ -48,12 +54,12 @@ export default () => {
       <div className={'app_version_footer '}>
         <div className="version_name fade_in">Twake {(Globals.window as any)?.version_name}</div>
         <div style={{ height: 20 }}>
-          {server_infos_loaded && server_infos.branding.name && (
+          {server_infos_loaded && server_infos?.configuration?.branding?.name && (
             <div className="smalltext fade_in">
-              {server_infos.branding.name &&
+              {server_infos?.configuration?.branding?.name &&
                 Languages.t('scenes.login.footer.branding', [
-                  server_infos.branding.name,
-                  server_infos.branding.link || 'twake.app',
+                  server_infos?.configuration?.branding?.name,
+                  server_infos?.configuration?.branding.link || 'twake.app',
                 ])}
               <a target="_BLANK" href="https://twakeapp.com">
                 {Languages.t('scenes.login.footer.go_to_twake')}
@@ -61,7 +67,7 @@ export default () => {
               {' - ' + (Globals.window as any)?.version}
             </div>
           )}
-          {server_infos_loaded && !server_infos.branding.name && (
+          {server_infos_loaded && !server_infos?.configuration?.branding?.name && (
             <a className="fade_in" target="_BLANK" href="https://twakeapp.com">
               {Languages.t('scenes.login.footer.go_to_twake')}
             </a>
@@ -70,9 +76,9 @@ export default () => {
       </div>
 
       <div className={'help_footer'}>
-        {server_infos_loaded && server_infos.help_link && (
+        {server_infos_loaded && server_infos?.configuration?.help_link && (
           <a
-            href={'' + InitService.server_infos.help_link}
+            href={'' + InitService.server_infos?.configuration?.help_link}
             target="_BLANK"
             className="blue_link fade_in"
           >

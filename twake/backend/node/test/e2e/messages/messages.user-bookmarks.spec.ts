@@ -191,7 +191,7 @@ describe("The Messages User Bookmarks feature", () => {
   });
 });
 
-function getContext(platform) {
+function getContext(platform: TestPlatform) {
   return {
     company: { id: platform.workspace.company_id },
     user: { id: platform.currentUser.id },

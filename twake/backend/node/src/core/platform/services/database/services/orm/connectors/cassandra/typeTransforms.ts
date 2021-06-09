@@ -17,7 +17,10 @@ export const cassandraType = {
   counter: "COUNTER",
   blob: "BLOB",
   boolean: "BOOLEAN",
+
+  // backward compatibility
   twake_boolean: "TINYINT",
+  twake_int: "INT", //Depreciated
 };
 
 type TransformOptions = {
@@ -102,7 +105,7 @@ export const transformValueFromDbString = (
     try {
       decryptedValue = decrypt(v, options.secret).data;
     } catch (err) {
-      logger.debug({ err }, `Can not decrypt data %o of type ${type}`, v);
+      logger.debug(`Can not decrypt data (${err.message}) %o of type ${type}`, v);
 
       decryptedValue = v;
     }
@@ -134,11 +137,14 @@ export const transformValueFromDbString = (
       return null;
     }
   }
+
   if (type === "uuid") {
-    return String(v);
+    return v ? String(v) : null;
   }
+
   if (type === "number") {
     return new Number(v).valueOf();
   }
+
   return v;
 };

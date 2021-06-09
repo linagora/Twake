@@ -1,3 +1,5 @@
+import { Column } from "./decorators";
+
 export type EntityDefinition = {
   name: string;
   type: string;
@@ -21,6 +23,7 @@ export type ColumnDefinition = {
 export type ColumnOptions = {
   order?: "ASC" | "DESC";
   generator?: ColumnType;
+  onUpsert?: (value: any) => any;
 };
 
 export type ColumnType =
@@ -35,7 +38,8 @@ export type ColumnType =
   | "blob"
   | "boolean"
   // backward compatibility
-  | "twake_boolean";
+  | "twake_boolean"
+  | "twake_int";
 
 export type EntityTarget<Entity> = ObjectType<Entity>;
 

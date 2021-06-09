@@ -4,7 +4,6 @@ import short, { Translator } from 'short-uuid';
 
 import App from 'app/scenes/App';
 import Login from 'app/scenes/Login/login';
-import Setup from 'app/scenes/Setup/Setup';
 import Error from 'app/scenes/Error/Error';
 import Collections from 'services/Depreciated/Collections/Collections';
 
@@ -56,14 +55,13 @@ class RouterServices extends Observable {
   ];
 
   private allowedQueryParameters: Record<string, Map<string, string>> = {
-    '/client/:workspaceId/c/:channelId': new Map<string, string>([["m", "messageId"]]),
+    '/client/:workspaceId/c/:channelId': new Map<string, string>([['m', 'messageId']]),
   };
 
   pathnames: Readonly<Pathnames> = {
     CLIENT: '/client',
     SHARED: '/shared/:workspaceId/:appName/:documentId/t/:token',
     LOGIN: '/login',
-    SETUP: '/setup',
     ERROR: '/error',
   };
 
@@ -79,21 +77,11 @@ class RouterServices extends Observable {
   ];
 
   routes: Readonly<RouteType[]> = [
-    //TODO add parameters / account / workspace creation pages
     {
       path: this.pathnames.LOGIN,
       exact: true,
       key: 'login',
       component: Login,
-      options: {
-        withErrorBoundary: true,
-      },
-    },
-    {
-      path: this.pathnames.SETUP,
-      exact: true,
-      key: 'setup',
-      component: Setup,
       options: {
         withErrorBoundary: true,
       },
@@ -241,11 +229,11 @@ class RouterServices extends Observable {
       );
     }
 
-    const searchParameters = new URLSearchParams(search ? search.substring(1) : "");
+    const searchParameters = new URLSearchParams(search ? search.substring(1) : '');
     if (state.messageId) {
-      searchParameters.append("m", state.messageId);
+      searchParameters.append('m', state.messageId);
     }
-    search = searchParameters.toString() ? `?${searchParameters.toString()}` : "";
+    search = searchParameters.toString() ? `?${searchParameters.toString()}` : '';
 
     return (
       `${this.pathnames.CLIENT}/${state.workspaceId}` +

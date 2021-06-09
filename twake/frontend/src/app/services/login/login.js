@@ -17,6 +17,8 @@ import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
+import WindowService from 'services/utils/window.js';
+import authProviderService from './AuthProviderService';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -63,6 +65,11 @@ class Login extends Observable {
       });
       return;
     }
+
+    if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
+      return;
+    }
+
     const cancelAutoLogin =
       !this.firstInit &&
       RouterServices.history.location.pathname === RouterServices.pathnames.LOGIN;
@@ -169,9 +176,11 @@ class Login extends Observable {
       this.notify();
     }
 
-    if (!InitService.server_infos?.auth?.internal && !this.firstInit) {
+    if (InitService.server_infos?.configuration?.accounts?.type !== 'internal' && !this.firstInit) {
       //Check I am connected with external sign-in provider
-      return this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+      return this.loginWithExternalProvider(
+        InitService.server_infos?.configuration?.accounts?.type,
+      );
     } else {
       //We can thrust the JWT
       this.updateUser();
@@ -195,14 +204,7 @@ class Login extends Observable {
         if (res.errors.length > 0) {
           if (
             (res.errors.indexOf('redirect_to_openid') >= 0 ||
-              ((that.server_infos.auth || {}).openid || {}).use) &&
-            !that.external_login_error
-          ) {
-            document.location = Api.route('users/openid');
-            return;
-          } else if (
-            (res.errors.indexOf('redirect_to_openid') >= 0 ||
-              ((that.server_infos.auth || {}).console || {}).use) &&
+              that.server_infos.configuration?.accounts.type === 'console') &&
             !that.external_login_error
           ) {
             let developerSuffix = '';
@@ -211,13 +213,6 @@ class Login extends Observable {
             }
 
             document.location = Api.route('users/console/openid' + developerSuffix);
-            return;
-          } else if (
-            (res.errors.indexOf('redirect_to_cas') >= 0 ||
-              ((that.server_infos.auth || {}).cas || {}).use) &&
-            !that.external_login_error
-          ) {
-            document.location = Api.route('users/cas/login');
             return;
           }
 
@@ -256,11 +251,9 @@ class Login extends Observable {
     } else if (service === 'cas') {
       url = Api.route('users/cas');
     } else if (service === 'console') {
-      let developerSuffix = '';
-      if (Environment.env_dev && document.location.host.indexOf('localhost') === 0) {
-        developerSuffix = '?localhost=1&port=' + window.location.port;
-      }
-      url = Api.route('users/console/openid' + developerSuffix);
+      return;
+    } else {
+      return;
     }
 
     Globals.window.location = url;
@@ -322,14 +315,7 @@ class Login extends Observable {
 
     Api.post('users/logout', {}, function () {
       if (identity_provider === 'console') {
-        var location = Api.route('users/console/openid/logout');
-        Globals.window.location = location;
-      } else if (identity_provider === 'openid') {
-        var location = Api.route('users/openid/logout');
-        Globals.window.location = location;
-      } else if (identity_provider === 'cas') {
-        var location = Api.route('users/cas/logout');
-        Globals.window.location = location;
+        authProviderService.signOut();
       } else {
         if (!no_reload) {
           Globals.window.location.reload();
@@ -407,237 +393,17 @@ class Login extends Observable {
     }
   }
 
-  /**
-   * Recover password
-   */
-
-  recover(mail, funct, th) {
-    var data = {
-      email: mail,
-    };
-    var that = this;
-    this.login_loading = true;
-    that.error_recover_nosuchmail = false;
-    this.notify();
-    Api.post('users/recover/mail', data, function (res) {
-      if (res.data.token) {
-        that.recover_token = res.data.token;
-
-        that.login_loading = false;
-        that.notify();
-        funct(th);
-      } else {
-        that.error_recover_nosuchmail = true;
-        that.login_loading = false;
-
-        that.notify();
-        //appel de funtion error
-      }
-    });
-  }
-
-  recoverCode(code, funct, th) {
-    var data = {
-      code: code,
-      token: this.recover_token,
-    };
-    var that = this;
-    that.error_recover_badcode = false;
-    this.login_loading = true;
-    this.notify();
-    Api.post('users/recover/verify', data, function (res) {
-      if (res.data.status === 'success') {
-        that.recover_code = code;
-
-        that.login_loading = false;
-        that.notify();
-        funct(th);
-      } else {
-        that.error_recover_badcode = true;
-        that.login_loading = false;
-
-        that.notify();
-      }
-    });
-  }
-
-  recoverNewPassword(password, password2, funct, th) {
-    this.login_loading = true;
-    this.notify();
-
-    if (password !== password2 || password.length < 8) {
-      this.error_recover_badpasswords = true;
-      this.login_loading = false;
-      this.notify();
-      return;
+  getIsPublicAccess() {
+    let publicAccess = false;
+    const viewParameter = WindowService.findGetParameter('view') || '';
+    if (
+      (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
+      Globals.store_publicAccess_get_data
+    ) {
+      publicAccess = true;
+      Globals.store_publicAccess_get_data = WindowService.allGetParameter();
     }
-
-    var data = {
-      code: this.recover_code,
-      token: this.recover_token,
-      password: password,
-    };
-    var that = this;
-    that.error_recover_badpasswords = false;
-    that.error_recover_unknown = false;
-    this.notify();
-    Api.post('users/recover/password', data, function (res) {
-      if (res.data.status === 'success') {
-        funct(th);
-
-        that.login_loading = false;
-        that.notify();
-      } else {
-        that.error_recover_unknown = true;
-        that.login_loading = false;
-
-        that.notify();
-      }
-    });
-  }
-
-  subscribeMail(username, password, name, firstname, phone, mail, newsletter, cb, th) {
-    if (this.doing_subscribe) {
-      return;
-    }
-    var data = {
-      email: mail,
-      username: username,
-      password: password,
-      name: name,
-      firstname: firstname,
-      phone: phone,
-      language: Languages.language,
-      newsletter: newsletter,
-    };
-    var that = this;
-    that.error_subscribe_mailalreadyused = false;
-    that.login_loading = true;
-    that.doing_subscribe = true;
-    this.notify();
-    Api.post('users/subscribe/mail', data, function (res) {
-      that.login_loading = false;
-      that.doing_subscribe = false;
-      that.notify();
-      if (res.data.token) {
-        that.subscribe_token = res.data.token;
-        cb(th, 0);
-
-        that.waitForVerification(username, password, th);
-      } else {
-        cb(th, 1);
-        that.error_subscribe_mailalreadyused = true;
-      }
-    });
-  }
-
-  waitForVerification(username, password, th) {
-    if (this.waitForVerificationTimeout) {
-      clearTimeout(this.waitForVerificationTimeout);
-    }
-    this.waitForVerificationTimeout = setTimeout(() => {
-      this.waitForVerification(username, password, th);
-      this.login(username, password, 1, true);
-    }, 2000);
-  }
-
-  doVerifyMail(mail, code, token, success, fail) {
-    Globals.getDevice(device => {
-      Api.post(
-        'users/subscribe/doverifymail',
-        {
-          code: code,
-          token: token,
-          mail: mail,
-          device: device,
-        },
-        function (res) {
-          if (res.data.status === 'success') {
-            success();
-          } else {
-            fail();
-          }
-        },
-      );
-    });
-  }
-
-  checkMailandUsername(mail, username, callback, th) {
-    var that = this;
-
-    that.error_subscribe_username = false;
-    that.error_subscribe_mailalreadyused = false;
-    var data = {
-      mail: mail,
-      username: username,
-    };
-    that.login_loading = true;
-    that.notify();
-    Api.post('users/subscribe/availability', data, function (res) {
-      that.login_loading = false;
-      if (res.data.status === 'success') {
-        callback(th, 0);
-      } else {
-        if (res.errors.length === 1 && res.errors[0] === 'mailalreadytaken') {
-          callback(th, 1);
-          that.error_subscribe_mailalreadyused = true;
-        } else if (res.errors.length === 1 && res.errors[0] === 'usernamealreadytaken') {
-          callback(th, 2);
-          that.error_subscribe_username = true;
-        } else {
-          callback(th, 3);
-          that.error_subscribe_mailalreadyused = true;
-          that.error_subscribe_username = true;
-        }
-      }
-      that.notify();
-    });
-  }
-
-  addNewMail(mail, cb, thot) {
-    var that = this;
-    that.loading = true;
-    that.error_secondary_mail_already = false;
-    that.error_code = false;
-    that.notify();
-    Api.post('users/account/addmail', { mail: mail }, function (res) {
-      that.loading = false;
-
-      if (res.errors.indexOf('badmail') > -1) {
-        that.error_secondary_mail_already = true;
-        that.notify();
-      } else {
-        that.addmail_token = res.data.token;
-        that.notify();
-        cb(thot);
-      }
-    });
-  }
-
-  verifySecondMail(mail, code, cb, thot) {
-    var that = this;
-    that.loading = true;
-    that.error_secondary_mail_already = false;
-    that.error_code = false;
-    that.notify();
-    Api.post(
-      'users/account/addmailverify',
-      { code: code, token: this.addmail_token },
-      function (res) {
-        that.loading = false;
-        if (res.errors.length > 0) {
-          that.error_code = true;
-          that.notify();
-        } else {
-          var user = DepreciatedCollections.get('users').find(that.currentUserId);
-          user.mails.push({ email: mail, main: false, id: res.data.idMail });
-          DepreciatedCollections.get('users').updateObject(user);
-          that.error_code = false;
-          cb(thot);
-          that.notify();
-        }
-      },
-    );
+    return publicAccess;
   }
 }
 

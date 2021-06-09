@@ -50,6 +50,9 @@ export class Message {
   @Column("created_at", "number")
   created_at: number;
 
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
   @Type(() => String)
   @Column("user_id", "uuid")
   user_id: string;
@@ -88,7 +91,7 @@ export class Message {
 
 export type MessageReaction = { count: number; name: string; users: string[] };
 
-export type MessageOverride = { title?: string; picture?: string };
+export type MessageOverride = { title?: string; picture?: string; type?: string };
 
 export type MessagePinnedInfo = { pinned_at: number; pinned_by: string };
 

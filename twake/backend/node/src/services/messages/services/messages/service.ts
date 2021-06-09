@@ -10,73 +10,65 @@ import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/f
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
-import { getInstance, Message, MessageReaction } from "../../entities/messages";
-import { MessageLocalEvent, ThreadExecutionContext } from "../../types";
+import { Message, TYPE as MessageTableName } from "../../entities/messages";
+import {
+  BookmarkOperation,
+  MessageLocalEvent,
+  MessagesGetThreadOptions,
+  MessagesSaveOptions,
+  PinOperation,
+  ReactionOperation,
+  ThreadExecutionContext,
+} from "../../types";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../../web/realtime";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { buildMessageListPagination } from "../utils";
 import _ from "lodash";
-import { ResourceEventsPayload } from "../../../../utils/types";
+import { ThreadMessagesOperationsService } from "./operations";
+import { getDefaultMessageInstance } from "./utils";
+import { Thread } from "../../entities/threads";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
   repository: Repository<Message>;
+  operations: ThreadMessagesOperationsService;
 
-  constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {
+    this.operations = new ThreadMessagesOperationsService(database, service, this);
+  }
 
   async init(context: TwakeContext): Promise<this> {
-    this.repository = await this.database.getRepository<Message>("messages", Message);
+    this.repository = await this.database.getRepository<Message>(MessageTableName, Message);
+    await this.operations.init(context);
     return this;
   }
 
-  async save<SaveOptions>(
+  /**
+   * Save a message
+   * The server / application / users can do different actions
+   * @param item
+   * @param options
+   * @param context
+   * @returns SaveResult<Message>
+   */
+  async save(
     item: Message,
-    options?: SaveOptions,
+    options?: MessagesSaveOptions,
     context?: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
+    const serverRequest = context?.user?.server_request;
+
+    if (!serverRequest && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't write this message.");
     }
 
     let created = !item.id;
 
-    let message = getInstance({
-      id: undefined,
-      ephemeral:
-        (context?.user?.application_id || context?.user?.server_request) && item.ephemeral
-          ? item.ephemeral
-          : null,
-      thread_id: context.thread.id,
-      type: context?.user?.server_request && item.type === "event" ? "event" : "message",
-      subtype: getSubtype(item, context),
-      created_at: new Date().getTime(),
-      user_id: context.user.id,
-      application_id: context?.user?.application_id || null,
-      text: item.text || "",
-      blocks: item.blocks || [],
-      files: item.files || null,
-      context: item.context || null,
-      edited: null, //Message cannot be created with edition status
-      pinned_info: item.pinned_info
-        ? {
-            pinned_at: new Date().getTime(),
-            pinned_by: context.user.id,
-          }
-        : null,
-      reactions: null, // Reactions cannot be set on creation
-      bookmarks: null,
-      override:
-        (context?.user?.application_id || context?.user?.server_request) && item.override
-          ? {
-              title: item.override.title,
-              picture: item.override.picture,
-            }
-          : null, // Only apps and server can set an override on a message
-    });
+    let message = getDefaultMessageInstance(item, context);
 
     //We try to update an existing message
-    if (item.id) {
+    if (!created) {
       const messageToUpdate = await this.repository.findOne({
         id: item.id,
         thread_id: context.thread.id,
@@ -86,9 +78,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       // - Server itself
       // - Message owner
       // - Application owner
-      // Deleted messages cannot be edited
+      // Deleted messages cannot be edited except by server itself
       if (
-        !context?.user?.server_request &&
+        !serverRequest &&
         (!messageToUpdate ||
           (context?.user?.application_id !== messageToUpdate.application_id &&
             context.user.id !== messageToUpdate.user_id) ||
@@ -98,7 +90,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         throw Error("Can't edit this message.");
       }
 
-      if (!messageToUpdate) {
+      //Created with forced id (server only)
+      if (!messageToUpdate && !options?.message_moved) {
         created = true;
       }
 
@@ -108,16 +101,16 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         };
 
         message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
-        if (context?.user?.application_id || context?.user?.server_request) {
+        if (context?.user?.application_id || serverRequest) {
           message = _.assign(message, _.pick(message, "override"));
         }
-      } else if (context?.user?.server_request) {
+      } else if (serverRequest) {
         message.id = item.id;
       }
     }
 
     //Server request can edit more fields
-    if (context?.user?.server_request) {
+    if (serverRequest) {
       message.created_at = item.created_at || message.created_at;
     }
 
@@ -136,116 +129,60 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     );
   }
 
-  async pin(
-    operation: { id: string; pin: boolean },
-    options: {},
+  /**
+   * Move a message from a thread to another
+   * @param item
+   * @param options
+   * @param context
+   * @returns
+   */
+  async move(
+    pk: Pick<Message, "id">,
+    options: { previous_thread: string },
     context: ThreadExecutionContext,
-  ): Promise<SaveResult<Message>> {
-    if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
-      logger.error(`Unable to write in thread ${context.thread.id}`);
-      throw Error("Can't edit this message.");
+  ): Promise<void> {
+    //Fixme: check user has access to both threads
+
+    logger.error(
+      `Try to move message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
+    );
+
+    if (options.previous_thread === context.thread.id) {
+      return;
     }
 
-    console.log("In 'pin' method");
-
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: operation.id,
+    const messageInOldThread = await this.repository.findOne({
+      thread_id: options.previous_thread,
+      id: pk.id,
     });
 
-    if (!message) {
-      logger.error(`This message doesn't exists`);
-      throw Error("Can't edit this message.");
+    if (!messageInOldThread) {
+      logger.error(`Unable to find message ${pk.id} in old thread ${context.thread.id}`);
+      throw Error("Can't move this message.");
     }
 
-    message.pinned_info = operation.pin
-      ? {
-          pinned_by: context.user.id,
-          pinned_at: new Date().getTime(),
-        }
-      : null;
+    const messageInNewThread = _.cloneDeep(messageInOldThread);
+    messageInNewThread.thread_id = context.thread.id;
 
-    logger.info(
-      `Updated message ${operation.id} pin to ${JSON.stringify(message.pinned_info)} thread ${
-        message.thread_id
-      }`,
+    await this.save(
+      messageInNewThread,
+      {
+        message_moved: true,
+      },
+      {
+        user: { id: null, server_request: true },
+        thread: context.thread,
+        company: context.company,
+      },
     );
-    await this.repository.save(message);
-    this.onSaved(message, { created: false }, context);
-    return new SaveResult<Message>("message", message, OperationType.UPDATE);
-  }
 
-  async reaction(
-    operation: { id: string; reactions: string[] },
-    options: {},
-    context: ThreadExecutionContext,
-  ): Promise<SaveResult<Message>> {
-    if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
-      logger.error(`Unable to write in thread ${context.thread.id}`);
-      throw Error("Can't edit this message.");
-    }
+    await this.repository.remove(messageInOldThread);
 
-    console.log("In 'reaction' method");
-
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: operation.id,
-    });
-
-    if (!message) {
-      logger.error(`This message doesn't exists`);
-      throw Error("Can't edit this message.");
-    }
-
-    //Update message reactions
-    updateMessageReactions(message, operation.reactions, context.user.id);
-
-    logger.info(
-      `Updated message ${operation.id} reactions to ${JSON.stringify(message.reactions)} thread ${
-        message.thread_id
-      }`,
+    logger.error(
+      `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
     );
-    await this.repository.save(message);
-    this.onSaved(message, { created: false }, context);
-    return new SaveResult<Message>("message", message, OperationType.UPDATE);
-  }
 
-  async bookmark(
-    operation: { id: string; bookmark_id: string; active: boolean },
-    options: {},
-    context: ThreadExecutionContext,
-  ): Promise<SaveResult<Message>> {
-    const message = await this.repository.findOne({
-      thread_id: context.thread.id,
-      id: operation.id,
-    });
-
-    if (!message) {
-      logger.error(`This message doesn't exists`);
-      throw Error("Can't edit this message.");
-    }
-
-    //TODO add message to user bookmarks
-    message.bookmarks = message.bookmarks.filter(
-      b => !(b.user_id === context.user.id && b.bookmark_id === operation.bookmark_id),
-    );
-    if (operation.active) {
-      message.bookmarks.push({
-        user_id: context.user.id,
-        bookmark_id: operation.bookmark_id,
-        created_at: new Date().getTime(),
-      });
-    }
-
-    logger.info(
-      `Added bookmark to message ${operation.id} => ${JSON.stringify(
-        message.bookmarks,
-      )} to thread ${message.thread_id}`,
-    );
-    await this.repository.save(message);
-    this.onSaved(message, { created: false }, context);
-
-    return new SaveResult<Message>("message", message, OperationType.UPDATE);
+    return;
   }
 
   async delete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
@@ -283,6 +220,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     await this.repository.save(message);
     this.onSaved(message, { created: false }, context);
 
+    //Server and application can definively remove a message
+    if (context.user.server_request || context.user.application_id || message.application_id) {
+      await this.repository.remove(message);
+    }
+
     return new DeleteResult<Message>("message", message, true);
   }
 
@@ -291,6 +233,43 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     context?: ThreadExecutionContext,
   ): Promise<Message> {
     return this.repository.findOne(pk);
+  }
+
+  async getThread(thread: Thread, options: MessagesGetThreadOptions = {}) {
+    const last_replies = (
+      await this.repository.find(
+        {
+          thread_id: thread.id,
+        },
+        {
+          pagination: new Pagination("", `${options?.replies_per_thread || 3}`, true),
+        },
+      )
+    ).getEntities();
+
+    if (last_replies.length === 0) {
+      //Delete the thread because it is empty
+      this.service.threads.delete(thread, { user: { id: null, server_request: true } });
+      return null;
+    }
+
+    const first_message = await this.repository.findOne(
+      {
+        thread_id: thread.id,
+      },
+      {
+        pagination: new Pagination("", `1`, false),
+      },
+    );
+
+    return {
+      ...first_message,
+      stats: {
+        replies: last_replies.length === 1 ? 1 : thread.answers, //This line ensure the thread can be deleted by user if there is no replies
+        last_activity: thread.last_activity,
+      },
+      last_replies: last_replies.sort((a, b) => a.created_at - b.created_at),
+    };
   }
 
   async list<ListOption>(
@@ -312,7 +291,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     },
   ])
   async onSaved(message: Message, options: { created: boolean }, context: ThreadExecutionContext) {
-    if (options.created) {
+    if (options.created && !message.ephemeral) {
       await this.service.threads.addReply(message.thread_id);
     }
 
@@ -328,42 +307,28 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       options.created ? OperationType.CREATE : OperationType.UPDATE,
     );
   }
-}
 
-function getSubtype(
-  item: Message,
-  context?: ThreadExecutionContext,
-): null | "application" | "deleted" | "system" {
-  //Application request
-  if (context?.user?.application_id) {
-    return item.subtype === "application" ? "application" : null;
-  }
-  //System request
-  else if (context?.user?.server_request) {
-    return item.subtype;
+  async pin(
+    operation: PinOperation,
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    return this.operations.pin(operation, options, context);
   }
 
-  //User cannot set a subtype itself
-  return null;
-}
+  async reaction(
+    operation: ReactionOperation,
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    return this.operations.reaction(operation, options, context);
+  }
 
-function updateMessageReactions(message: Message, selectedReactions: string[], userId: string) {
-  let reactions: { [key: string]: MessageReaction } = {};
-  for (const reaction of message.reactions || []) {
-    reactions[reaction.name] = reaction;
+  async bookmark(
+    operation: BookmarkOperation,
+    options: {},
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    return this.operations.bookmark(operation, options, context);
   }
-  for (const reaction of selectedReactions) {
-    reactions[reaction] = reactions[reaction] || { name: reaction, count: 0, users: [] };
-  }
-  for (const key in reactions) {
-    if (reactions[key].users.includes(userId)) {
-      reactions[key].count--;
-      reactions[key].users = reactions[key].users.filter(u => u != userId);
-    }
-    if (selectedReactions.includes(key)) {
-      reactions[key].count++;
-      reactions[key].users.push(userId);
-    }
-  }
-  message.reactions = Object.values(reactions);
 }

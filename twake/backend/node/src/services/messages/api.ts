@@ -12,15 +12,22 @@ import {
   UserMessageBookmarkPrimaryKey,
 } from "./entities/user-message-bookmarks";
 import { MessagesEngine } from "./services/engine";
+
 import {
   ChannelViewExecutionContext,
   CompanyExecutionContext,
   MessageViewListOptions,
   ThreadExecutionContext,
   MessageWithReplies,
+  MessagesGetThreadOptions,
 } from "./types";
+
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey } from "./entities/messages";
+import {
+  PhpMessage,
+  PhpMessagePrimaryKey,
+} from "../../cli/cmds/migration_cmds/php-message/php-message-entity";
 
 export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
   userBookmarks: MessageUserBookmarksServiceAPI;
@@ -73,12 +80,31 @@ export interface MessageThreadMessagesServiceAPI
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
 
+  save<SaveOptions>(
+    item: Message,
+    options?: SaveOptions,
+    context?: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
+
   bookmark(
     item: { id: string; bookmark_id: string; active: boolean },
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
+
+  getThread(thread: Thread, options: MessagesGetThreadOptions): Promise<MessageWithReplies>;
+
+  move(
+    item: Pick<Message, "id">,
+    options: { previous_thread: string },
+    context: ThreadExecutionContext,
+  ): Promise<void>;
 }
+
+export interface PhpMessagesServiceAPI
+  extends TwakeServiceProvider,
+    Initializable,
+    CRUDService<PhpMessage, PhpMessagePrimaryKey, ExecutionContext> {}
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
   listChannel(

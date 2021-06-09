@@ -19,13 +19,13 @@ export default class LoginView extends Component {
     Languages.addListener(this);
   }
   componentDidMount() {
-    const authModes = Object.keys((InitService.server_infos || {}).auth || {});
     if (
-      authModes.length > 0 &&
-      authModes.indexOf('internal') < 0 &&
+      InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
       !(LoginService.external_login_error || false)
     ) {
-      LoginService.loginWithExternalProvider(authModes[0]);
+      LoginService.loginWithExternalProvider(
+        InitService.server_infos?.configuration?.accounts?.type,
+      );
     }
   }
   componentWillUnmount() {
@@ -33,12 +33,8 @@ export default class LoginView extends Component {
     Languages.removeListener(this);
   }
   render() {
-    const login = this.state.login;
-
-    const authModes = Object.keys((InitService.server_infos || {}).auth || {});
     if (
-      authModes.length > 0 &&
-      authModes.indexOf('internal') < 0 &&
+      InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
       !(LoginService.external_login_error || false)
     ) {
       return <></>;
@@ -63,36 +59,6 @@ export default class LoginView extends Component {
               style={{ marginBottom: 40, marginTop: 10, width: 140 }}
               src={((InitService.server_infos || {}).branding || {}).logo}
             />
-          )}
-
-          {Object.keys((InitService.server_infos || {}).auth || []).indexOf('cas') >= 0 && (
-            <div className="external-login" style={{ marginBottom: 16 }}>
-              <Button
-                id="login_btn"
-                type="button"
-                className="medium full_width "
-                style={{ marginBottom: 8 }}
-                disabled={this.state.login.login_loading}
-                onClick={() => LoginService.loginWithExternalProvider('cas')}
-              >
-                {this.state.i18n.t('scenes.login.home.login_external_btn', ['CAS'])}
-              </Button>
-            </div>
-          )}
-
-          {Object.keys((InitService.server_infos || {}).auth || []).indexOf('openid') >= 0 && (
-            <div className="external-login" style={{ marginBottom: 16 }}>
-              <Button
-                id="login_btn"
-                type="button"
-                className="medium full_width "
-                style={{ marginBottom: 8 }}
-                disabled={this.state.login.login_loading}
-                onClick={() => LoginService.loginWithExternalProvider('openid')}
-              >
-                {this.state.i18n.t('scenes.login.home.login_external_btn', ['OpenID'])}
-              </Button>
-            </div>
           )}
 
           {this.state.login.external_login_error && (
@@ -154,8 +120,8 @@ export default class LoginView extends Component {
               >
                 {this.state.i18n.t('scenes.login.home.login_btn')}
               </Button>
-              {!(((InitService.server_infos || {}).auth || {}).internal || {})
-                .disable_account_creation && (
+              {!InitService.server_infos?.configuration?.accounts?.type ===
+                'internal'.disable_account_creation && (
                 <a
                   onClick={() => this.state.login.changeState('signin')}
                   id="create_btn"

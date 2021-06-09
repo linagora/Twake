@@ -24,6 +24,12 @@ export class File {
   @Column("encryption_key", "encoded_string")
   encryption_key: string;
 
+  @Column("updated_at", "number", { onUpsert: _ => new Date().getTime() })
+  updated_at: number;
+
+  @Column("created_at", "number", { onUpsert: d => d || new Date().getTime() })
+  created_at: number;
+
   @Column("metadata", "encoded_json")
   metadata: null | {
     name: string;
