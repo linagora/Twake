@@ -11,7 +11,6 @@ describe("The /workspaces API", () => {
 
   const nonExistentId = "11111111-1111-1111-1111-111111111111";
   const companyId = "21111111-1111-1111-1111-111111111111";
-  // let workspaceId: string = null;
 
   beforeAll(async ends => {
     platform = await init({
@@ -35,10 +34,16 @@ describe("The /workspaces API", () => {
   });
 
   afterAll(async ends => {
-    // await platform.database.getConnector().drop();
+    await platform.database.getConnector().drop();
     await platform.tearDown();
     ends();
   });
+
+  // describe("Mock", () => {
+  //   it("id", async done => {
+  //     done();
+  //   });
+  // });
 
   describe("The GET /workspaces/ route", () => {
     it("should 401 when not authenticated", async done => {
