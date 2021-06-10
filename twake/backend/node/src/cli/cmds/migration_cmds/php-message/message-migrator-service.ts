@@ -73,8 +73,8 @@ class MessageMigrator {
         {},
         {
           workspace: {
-            workspace_id: 'direct',
-            company_id: workspace.group_id,
+            workspace_id: "direct",
+            company_id: company.id,
           },
           user: { id: null, server_request: true },
         },
