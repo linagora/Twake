@@ -98,7 +98,7 @@ class MessageMigrator {
   private async migrateCompanyChannelsMessages(company: Company) {
     // Get all workspaces in company
     const workspacesInCompany = (
-      await this.userService.workspaces.getWorkspaces({ limitStr: "" }, { company_id: company.id })
+      await this.userService.workspaces.list({ limitStr: "" }, { company_id: company.id })
     ).getEntities();
 
     // For each workspaces find channels
