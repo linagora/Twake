@@ -29,8 +29,6 @@ export class TestDbService {
     return [...this.workspacesMap.values()];
   }
 
-  // "21111111-1111-1111-1111-111111111111"
-
   async createCompany(id: uuid): Promise<void> {
     const name = `TwakeAutotests-test-company-${this.rand()}`;
     this.company = await this.userService.companies.createCompany(
@@ -41,8 +39,6 @@ export class TestDbService {
       }),
     );
   }
-
-  // "31111111-1111-1111-1111-111111111111"
 
   async createWorkspace(workspacePk: WorkspacePrimaryKey): Promise<Workspace> {
     const name = `TwakeAutotests-test-workspace-${this.rand()}`;
