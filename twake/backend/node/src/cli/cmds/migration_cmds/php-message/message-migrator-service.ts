@@ -68,15 +68,23 @@ class MessageMigrator {
     let pageDirectChannels: Pagination = { limitStr: "100" };
     // For each directChannels find messages
     do {
-      const directChannelsInCompanyResult = await this.channelService.channels.getDirectChannelsInCompany(
+      const directChannelsInCompanyResult = await this.channelService.channels.list(
         pageDirectChannels,
-        company.id,
+        {},
+        {
+          workspace: {
+            workspace_id: 'direct',
+            company_id: workspace.group_id,
+          },
+          user: { id: null, server_request: true },
+        },
       );
+
       pageDirectChannels = directChannelsInCompanyResult.nextPage as Pagination;
 
       for (const directChannel of directChannelsInCompanyResult.getEntities()) {
         await this.migrateChannelsMessages(company, {
-          id: directChannel.channel_id,
+          id: directChannel.id,
           workspace_id: "direct",
           company_id: directChannel.company_id,
         });
