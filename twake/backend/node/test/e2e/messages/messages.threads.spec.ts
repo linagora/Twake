@@ -9,7 +9,7 @@ import {
 } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
 import { createMessage, createParticipant, e2e_createThread } from "./utils";
 
@@ -86,7 +86,7 @@ describe("The Messages Threads feature", () => {
           createParticipant(
             {
               type: "user",
-              id: uuidv4(),
+              id: uuidv1(),
             },
             platform,
           ),
@@ -152,7 +152,7 @@ describe("The Messages Threads feature", () => {
               add: [
                 {
                   type: "user",
-                  id: uuidv4(),
+                  id: uuidv1(),
                 },
               ],
             },

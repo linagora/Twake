@@ -1,3 +1,5 @@
+import { PaginationQueryParameters } from "../../../utils/types";
+
 export interface UserParams {
   id?: string;
 }
@@ -7,11 +9,7 @@ export interface CreateUserBody {
   firstname?: string;
   lastname?: string;
 }
-export interface PaginationQueryParameters {
-  page_token?: string;
-  limit?: string;
-  websockets?: boolean;
-}
+
 export interface UserListQueryParameters extends PaginationQueryParameters {
   user_ids?: string;
   include_companies?: boolean;

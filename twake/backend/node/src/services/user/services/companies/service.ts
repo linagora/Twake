@@ -27,7 +27,7 @@ export class CompanyService implements CompaniesServiceAPI {
   companyRepository: Repository<Company>;
   companyUserRepository: Repository<CompanyUser>;
 
-  constructor(private database: DatabaseServiceAPI, private userService: UserServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
     this.companyRepository = await this.database.getRepository<Company>("group_entity", Company);

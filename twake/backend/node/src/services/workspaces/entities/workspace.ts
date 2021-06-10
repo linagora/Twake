@@ -8,10 +8,10 @@ export const TYPE = "workspace";
   type: TYPE,
 })
 export default class Workspace {
-  @Column("id", "timeuuid")
+  @Column("id", "uuid")
   id: string;
 
-  @Column("group_id", "timeuuid")
+  @Column("group_id", "uuid")
   group_id: string;
 
   @Column("name", "encoded_string")
@@ -36,7 +36,7 @@ export default class Workspace {
   dateAdded: number;
 }
 
-export type WorkspacePrimaryKey = Partial<Pick<Workspace, "id">>;
+export type WorkspacePrimaryKey = Partial<Pick<Workspace, "group_id" | "id">>;
 
 export function getInstance(workspace: Partial<Workspace> & WorkspacePrimaryKey): Workspace {
   return merge(new Workspace(), workspace);
