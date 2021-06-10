@@ -15,11 +15,7 @@ import {
   MessagePinnedInfo,
   MessageReaction,
 } from "../../../../services/messages/entities/messages";
-import {
-  ParticipantObject,
-  Thread,
-  ThreadPrimaryKey,
-} from "../../../../services/messages/entities/threads";
+import { ParticipantObject, Thread } from "../../../../services/messages/entities/threads";
 import { Block } from "../../../../services/messages/blocks-types";
 
 type MigratedChannel = {
@@ -28,7 +24,6 @@ type MigratedChannel = {
   company_id: string;
   owner?: string;
 };
-import { pick } from "../../../../utils/pick";
 
 class MessageMigrator {
   private database: DatabaseServiceAPI;
@@ -73,15 +68,23 @@ class MessageMigrator {
     let pageDirectChannels: Pagination = { limitStr: "100" };
     // For each directChannels find messages
     do {
-      const directChannelsInCompanyResult = await this.channelService.channels.getDirectChannelsInCompany(
+      const directChannelsInCompanyResult = await this.channelService.channels.list(
         pageDirectChannels,
-        company.id,
+        {},
+        {
+          workspace: {
+            workspace_id: 'direct',
+            company_id: workspace.group_id,
+          },
+          user: { id: null, server_request: true },
+        },
       );
+
       pageDirectChannels = directChannelsInCompanyResult.nextPage as Pagination;
 
       for (const directChannel of directChannelsInCompanyResult.getEntities()) {
         await this.migrateChannelsMessages(company, {
-          id: directChannel.channel_id,
+          id: directChannel.id,
           workspace_id: "direct",
           company_id: directChannel.company_id,
         });
@@ -301,10 +304,6 @@ class MessageMigrator {
    * @param message PhpMessage
    */
   private setMessageOverrideObject(message: PhpMessage): MessageOverride {
-    const isSystemMessage = message.message_type === 2;
-
-    if (isSystemMessage) return { type: message.hidden_data.type };
-
     return null;
   }
 

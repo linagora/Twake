@@ -55,7 +55,7 @@ export class MergeProcess {
   ) {
     this.client = new ConsoleHTTPClient(consoleClientParameters, dryRun);
   }
-  //
+
   merge(concurrent: number = 1): MergeProgress {
     const progress$ = new ReplaySubject<ProcessReport>();
     const { users$, companies$ } = this.getStreams(concurrent);
