@@ -1,22 +1,20 @@
 {
   "database": {
     "secret": "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
-    "type": "cassandra",
     "mongodb": {
-      "uri": "mongodb://localhost:27017",
-      "database": "twake"
+      "uri": "mongodb://mongo:27017"
     },
     "cassandra": {
-      "contactPoints": ["15.188.182.169:18678"],
-      "keyspace": "twake_autotest",
+      "contactPoints": ["scylladb:9042"],
       "wait": true,
       "retries": 50,
       "delay": 500,
+
       "elasticsearch": null
     }
   },
   "pubsub": {
-    "urls": ["amqp://admin:admin@15.188.182.169:5672"]
+    "urls": ["amqp://admin:admin@rabbitmq:5672"]
   },
   "phpnode": {
     "php_endpoint": false
