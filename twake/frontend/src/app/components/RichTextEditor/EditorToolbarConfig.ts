@@ -52,7 +52,8 @@ export const BLOCK_TYPE_DROPDOWN: StyleConfigList = [
 export const BLOCK_TYPE_BUTTONS: StyleConfigList = [
   {label: 'UL', style: 'unordered-list-item', i18n: 'components.richtexteditor.toolbar.unordered-list'},
   {label: 'OL', style: 'ordered-list-item', i18n: 'components.richtexteditor.toolbar.ordered-list'},
-  //{label: 'Blockquote', style: 'blockquote'},
+  {label: 'Blockquote', style: 'blockquote', i18n: 'components.richtexteditor.toolbar.blockquote'},
+  {label: 'Code Block', style: 'code-block', i18n: 'components.richtexteditor.toolbar.code-block'},
 ];
 
 let EditorToolbarConfig: ToolbarConfig = {

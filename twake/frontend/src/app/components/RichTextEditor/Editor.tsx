@@ -1,5 +1,5 @@
 import React, { KeyboardEvent } from "react";
-import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHandleValue, KeyBindingUtil } from "draft-js";
+import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHandleValue, KeyBindingUtil, ContentBlock } from "draft-js";
 import { toString } from "./EditorDataParser";
 import { SuggestionList } from "./plugins/suggestion/SuggestionList";
 import { getCaretCoordinates, getCurrentBlock, getTextToMatch, isMatching, resetBlockWithType, splitBlockWithType } from "./EditorUtils";
@@ -403,6 +403,20 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     return "handled";
   }
 
+  handleBlockStyle(contentBlock: ContentBlock): string {
+    const type = contentBlock.getType();
+    
+    if (type === 'blockquote') {
+      return 'editor-blockquote';
+    }
+
+    if (type === 'code-block') {
+      return 'editor-code-block';
+    }
+
+    return '';
+  }
+
   render() {
     // TODO Hide placeholders in some conditions
     // https://github.com/facebook/draft-js/blob/master/examples/draft-0-10-0/rich/rich.html#L99
@@ -422,6 +436,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         onEscape={this.onEscape.bind(this)}
         onTab={this.onTab.bind(this)}
         handlePastedFiles={this.handlePastedFiles.bind(this)}
+        blockStyleFn={this.handleBlockStyle.bind(this)}
         placeholder={this.props.placeholder || ""}
         />
         

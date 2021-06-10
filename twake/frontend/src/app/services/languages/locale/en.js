@@ -1970,4 +1970,6 @@ export default {
   'components.richtexteditor.toolbar.code': 'Code',
   'components.richtexteditor.toolbar.unordered-list': 'Bulleted list',
   'components.richtexteditor.toolbar.ordered-list': 'Ordered list',
+  'components.richtexteditor.toolbar.blockquote': 'Blockquote',
+  'components.richtexteditor.toolbar.code-block': 'Code Block',
 };

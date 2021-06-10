@@ -2043,4 +2043,6 @@ export default {
   'components.richtexteditor.toolbar.code': 'Code',
   'components.richtexteditor.toolbar.unordered-list': 'Liste',
   'components.richtexteditor.toolbar.ordered-list': 'List ordonnée',
+  'components.richtexteditor.toolbar.blockquote': 'Citation',
+  'components.richtexteditor.toolbar.code-block': 'Bloc de code',
 };

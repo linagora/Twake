@@ -1,5 +1,28 @@
+$editor-blockquote-background: var(--grey-background);
+
 .public-DraftEditorPlaceholder-inner {
   color: var(--grey-dark);
   position: absolute;
   pointer-events: none;
+}
+
+.editor-blockquote {
+  background-color: var(--grey-background);
+  border-left: 3px solid var(--grey-dark);
+  padding-left: 5px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.editor-code-block {
+  vertical-align: middle;
+  color: #e6e1dc;
+  background: #535353;
+  font-family: monospace;
+  padding: 0 5px;
+  white-space: pre-wrap;
+  max-height: 400px;
+  overflow: auto;
+  box-sizing: border-box;
+  line-break: anywhere;
 }

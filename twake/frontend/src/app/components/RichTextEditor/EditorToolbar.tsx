@@ -1,9 +1,9 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames";
 import { EditorState, RichUtils } from "draft-js";
-import { Bold, Underline, Italic, Code, List } from "react-feather";
+import { Bold, Underline, Italic, Code } from "react-feather";
 import { Button, Tooltip } from "antd";
-import { StrikethroughOutlined, OrderedListOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { StrikethroughOutlined, OrderedListOutlined, UnorderedListOutlined, MenuUnfoldOutlined, CodeOutlined } from '@ant-design/icons';
 import Languages from "services/languages/languages";
 import DefaultToolbarConfig, { GroupName, StyleConfig, ToolbarConfig } from "./EditorToolbarConfig";
 import "./EditorToolbar.scss";
@@ -48,7 +48,7 @@ export default (props: EditorToolbarProps) => {
       .getBlockForKey(selection.getStartKey())
       .getType();
     const buttons = (config.BLOCK_TYPE_BUTTONS || []).map((type, index) => (
-      <Tooltip placement="top" title={Languages.t(type.i18n, [], type.label)}>
+      <Tooltip placement="top" title={Languages.t(type.i18n, [], type.label)} key={`${index}`}>
         <Button
           key={`${index}`}
           size="small"
@@ -80,7 +80,7 @@ export default (props: EditorToolbarProps) => {
     const { editorState } = props;
     const currentStyle = editorState.getCurrentInlineStyle();
     const buttons = (config.INLINE_STYLE_BUTTONS || []).map((type, index) => (
-      <Tooltip placement="top" title={Languages.t(type.i18n, [], type.label)}>
+      <Tooltip placement="top" title={Languages.t(type.i18n, [], type.label)} key={`${index}`}>
         <Button
           key={`${index}`}
           size="small"
@@ -131,8 +131,10 @@ export default (props: EditorToolbarProps) => {
         return <UnorderedListOutlined style={{fontSize: buttonSize}}/>;
       case "ordered-list-item":
         return <OrderedListOutlined style={{fontSize: buttonSize}}/>;
-      //case "blockquote":
-      //  return <Underline size={buttonSize}/>;
+      case "blockquote":
+        return <MenuUnfoldOutlined style={{fontSize: buttonSize}}/>;
+      case "code-block":
+        return <CodeOutlined style={{fontSize: buttonSize}}/>;
       default:
         return <></>;
     }
