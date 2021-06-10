@@ -15,16 +15,7 @@ describe("The /workspaces API", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: [
-        "database",
-        "search",
-        "pubsub",
-        "websocket",
-        "webserver",
-        "user",
-        "workspaces",
-        "auth",
-      ],
+      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth"],
     });
 
     await platform.database.getConnector().init();
@@ -44,7 +35,7 @@ describe("The /workspaces API", () => {
   });
 
   afterAll(async ends => {
-    await platform.database.getConnector().drop();
+    // await platform.database.getConnector().drop();
     await platform.tearDown();
     ends();
   });
