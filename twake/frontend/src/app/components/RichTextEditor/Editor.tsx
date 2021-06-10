@@ -1,4 +1,5 @@
 import React, { KeyboardEvent } from "react";
+import classNames from "classnames";
 import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHandleValue, KeyBindingUtil, ContentBlock } from "draft-js";
 import { toString } from "./EditorDataParser";
 import { SuggestionList } from "./plugins/suggestion/SuggestionList";
@@ -417,11 +418,15 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     return '';
   }
 
+  shouldHidePlaceHolder(): boolean {
+    const contentState = this.props.editorState.getCurrentContent();
+
+    return !contentState.hasText() && contentState.getBlockMap().first().getType() !== 'unstyled';
+  }
+
   render() {
-    // TODO Hide placeholders in some conditions
-    // https://github.com/facebook/draft-js/blob/master/examples/draft-0-10-0/rich/rich.html#L99
     return <div 
-      className="editor" 
+      className={classNames("editor", { "editor-hide-placeholder": this.shouldHidePlaceHolder.bind(this)() })} 
       onClick={ this.focus.bind(this) }>
       
       <Editor

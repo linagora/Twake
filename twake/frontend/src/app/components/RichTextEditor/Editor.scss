@@ -1,9 +1,15 @@
-$editor-blockquote-background: var(--grey-background);
-
 .public-DraftEditorPlaceholder-inner {
   color: var(--grey-dark);
   position: absolute;
   pointer-events: none;
+}
+
+.public-DraftStyleDefault-pre {
+  margin-bottom: 0;
+}
+
+.editor-hide-placeholder .public-DraftEditorPlaceholder-root {
+  display: none;
 }
 
 .editor-blockquote {
@@ -16,8 +22,9 @@ $editor-blockquote-background: var(--grey-background);
 
 .editor-code-block {
   vertical-align: middle;
+  margin-bottom: 0;
   color: #e6e1dc;
-  background: #535353;
+  background: var(--grey-dark);
   font-family: monospace;
   padding: 0 5px;
   white-space: pre-wrap;
