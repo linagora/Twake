@@ -1,8 +1,8 @@
 import React, { KeyboardEvent } from "react";
-import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHandleValue, DraftDecorator, KeyBindingUtil, ContentBlock } from "draft-js";
+import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHandleValue, KeyBindingUtil } from "draft-js";
 import { toString } from "./EditorDataParser";
 import { SuggestionList } from "./plugins/suggestion/SuggestionList";
-import { getCaretCoordinates, getTextToMatch, isMatching } from "./EditorUtils";
+import { getCaretCoordinates, getCurrentBlock, getTextToMatch, isMatching, resetBlockWithType, splitBlockWithType } from "./EditorUtils";
 import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from "./EditorPlugins";
 import "./Editor.scss";
 
@@ -91,11 +91,16 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     return 'not-handled';
   }
 
+  /**
+   * Handle return before a new block is added to the editor state
+   */
   handleReturn(e: SyntheticKeyboardEvent, editorState: EditorState): DraftHandleValue {
+    // Shift+Enter adds a soft new line
     if (this._handleReturnSoftNewline(e, editorState)) {
       return 'handled';
     }
     
+    // when displaying suggestion, enter will select the current one
     if (this.isDisplayingSuggestions()) {
       const result = this.onSuggestionSelected(this.state.activeSuggestion?.items[this.state.suggestionIndex]);
 
@@ -104,11 +109,31 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       }
     }
 
-    if (this.submit(editorState)) {
-      return 'handled';
+    if (!e.altKey && !e.metaKey && !e.ctrlKey) {
+      const selection = editorState.getSelection();
+      const currentBlock = getCurrentBlock(editorState);
+      const blockType = currentBlock.getType();
+
+      // When on a list, pressing Enter 2 times will add a new unstyled block
+      if (currentBlock.getLength() === 0) {
+        if (["unordered-list-item", "ordered-list-item"].includes(blockType)) {
+          // Update the current block as unstyled one
+          this.onChange(resetBlockWithType(editorState, "unstyled"));
+          return "handled";
+        } else {
+          this.submit(editorState);
+          return "handled";
+        }
+      }
+      
+      if (selection.isCollapsed() && currentBlock.getLength() === selection.getStartOffset()) {
+        if (blockType === "unstyled") {
+          this.submit(editorState);
+          return "handled";
+        }
+      }
     }
-    
-    return 'handled';
+    return 'not-handled';
   }
   
   submit(editorState: EditorState): boolean {
@@ -288,7 +313,99 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     return "not-handled";
   }
 
+  handleBeforeInput(inputString: string, editorState: EditorState): DraftHandleValue {
+    const mapping: {[index: string]: string} = {
+      "*.": "unordered-list-item",
+      "* ": "unordered-list-item",
+      "- ": "unordered-list-item",
+      "1.": "ordered-list-item",
+    };
+
+    const selection = editorState.getSelection();
+    const block = getCurrentBlock(editorState);
+    const currentBlockType = block.getType();
+    const blockLength = block.getLength();
+    const blockText = block.getText();
+    const regex = new RegExp("\r|\n", "gm");
+
+    if (currentBlockType.indexOf("atomic") === 0) {
+      return "not-handled";
+    }
+
+    let textToMatch = "";
+    let resetBlock = false;
+    let insertIndex = 0;
+
+    if (selection.getAnchorOffset() === 1 && blockLength === 1) {
+      // first line of the block, reset block with new one
+      resetBlock = true;
+      textToMatch = blockText[0] + inputString;
+    } else {
+      // check if we are at a new line
+      const matches = [...blockText.matchAll(regex)];
+      
+      if (matches.length) {
+        const lastMatch = matches[matches.length - 1];
+        if (lastMatch) {
+          insertIndex = (lastMatch.index ? lastMatch.index : 0) + 1;
+          const afterLastSoftLine = blockText.substring(insertIndex, blockText.length);
+          textToMatch = `${afterLastSoftLine}${inputString}`;
+        }
+      }
+    }
+
+    if (textToMatch === "") {
+      return "not-handled";
+    }
+
+    const blockTo = mapping[textToMatch];
+
+    if (!blockTo) {
+      return "not-handled";
+    }
+    
+    const finalType = blockTo.split(':');
+    
+    if (finalType.length < 1 || finalType.length > 3) {
+      return "not-handled";
+    }
+    
+    let mappingBlockType = finalType[0];
+    
+    if (finalType.length === 1) {
+      if (currentBlockType === finalType[0]) {
+        return "not-handled";
+      }
+    } else if (finalType.length === 2) {
+      if (currentBlockType === finalType[1]) {
+        return "not-handled";
+      }
+      if (currentBlockType === finalType[0]) {
+        mappingBlockType = finalType[1];
+      }
+    } else if (finalType.length === 3) {
+      if (currentBlockType === finalType[2]) {
+        return "not-handled";
+      }
+      if (currentBlockType === finalType[0]) {
+        mappingBlockType = finalType[1];
+      } else {
+        mappingBlockType = finalType[2];
+      }
+    }
+
+    if (resetBlock) {
+      this.onChange(resetBlockWithType(editorState, mappingBlockType, ""));
+    } else {
+      this.onChange(splitBlockWithType(editorState, mappingBlockType, insertIndex, true))
+    }
+
+    return "handled";
+  }
+
   render() {
+    // TODO Hide placeholders in some conditions
+    // https://github.com/facebook/draft-js/blob/master/examples/draft-0-10-0/rich/rich.html#L99
     return <div 
       className="editor" 
       onClick={ this.focus.bind(this) }>
@@ -299,6 +416,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         onChange={this.onChange.bind(this)}
         handleKeyCommand={this.handleKeyCommand.bind(this)}
         handleReturn={this.handleReturn.bind(this)}
+        handleBeforeInput={this.handleBeforeInput.bind(this)}
         onDownArrow={this.onDownArrow.bind(this)}
         onUpArrow={this.onUpArrow.bind(this)}
         onEscape={this.onEscape.bind(this)}

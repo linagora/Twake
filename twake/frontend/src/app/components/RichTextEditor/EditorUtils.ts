@@ -11,6 +11,83 @@ const currentCoordinates: CaretCoordinates = {
   y: 0,
 };
 
+export function getCurrentBlock(editorState: EditorState): ContentBlock {
+  return editorState.getCurrentContent().getBlockForKey(editorState.getSelection().getStartKey())
+};
+
+/**
+ * Add a block after the current one with given type and initial content
+ *
+ * @param editorState
+ * @param newType 
+ * @param initialContent 
+ */
+export const splitBlockWithType = (editorState: EditorState, type = "unstyled", splitOffset: number, deleteAfter: boolean): EditorState => {
+  let contentState = editorState.getCurrentContent();
+  const selection = editorState.getSelection();
+  let updatedSelection = selection.merge({
+    anchorOffset: splitOffset,
+    focusOffset: splitOffset,
+  });
+
+  let newEditorState = EditorState.acceptSelection(editorState, updatedSelection);
+
+  contentState = Modifier.splitBlock(contentState, updatedSelection);
+  newEditorState = EditorState.push(editorState, contentState, "split-block")
+  newEditorState = resetBlockWithType(newEditorState, type, "");
+
+  if (deleteAfter) {
+    let contentState = newEditorState.getCurrentContent();
+    const selectedBlock = getSelectedBlock(newEditorState);
+
+    updatedSelection = newEditorState.getSelection().merge({
+      anchorOffset: 0,
+      focusOffset: selectedBlock.getText().length,
+    });
+
+    contentState = Modifier.replaceText(
+      newEditorState.getCurrentContent(),
+      updatedSelection,
+      "",
+      newEditorState.getCurrentInlineStyle(),
+    );
+
+    newEditorState = EditorState.push(editorState, contentState, 'insert-characters');
+  }
+
+  return newEditorState;
+}
+
+/**
+ * Will reset the current block with the given type and the initial content
+ * Note that it will remove all the text already existing
+ *
+ * @param editorState 
+ * @param newType 
+ * @param initialContent 
+ * @returns 
+ */
+export const resetBlockWithType = (editorState: EditorState, newType = "unstyled", initialContent = ""): EditorState => {
+  let contentState = editorState.getCurrentContent();
+  const focusOffset = editorState.getSelection().getFocusOffset();
+  const updatedSelection = editorState.getSelection().merge({
+    anchorOffset: 0,
+    focusOffset,
+  });
+  const newEditorState = EditorState.acceptSelection(editorState, updatedSelection);
+  contentState = Modifier.replaceText(
+    newEditorState.getCurrentContent(),
+    updatedSelection,
+    initialContent,
+    newEditorState.getCurrentInlineStyle(),
+  );
+
+  contentState = Modifier.setBlockType(contentState, updatedSelection, newType);
+  
+  return EditorState.push(editorState, contentState, 'change-block-type');
+};
+
+
 export function getSelectionRange() {
   const selection = window.getSelection()
   if (selection?.rangeCount === 0) {
