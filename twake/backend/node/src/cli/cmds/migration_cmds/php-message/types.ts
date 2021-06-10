@@ -6,7 +6,7 @@ import {
 import {
   PhpMessage,
   PhpMessagePrimaryKey,
-} from "../../../../cli/cmds/migration_cmds/php-message/php-message-entity";
+} from "./php-message-entity";
 
 export interface PhpMessagesServiceAPI
   extends TwakeServiceProvider,
