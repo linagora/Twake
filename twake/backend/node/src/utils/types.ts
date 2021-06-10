@@ -8,7 +8,7 @@ import {
   ChannelTab,
   ChannelPendingEmails,
 } from "../services/channels/entities";
-import { ChannelParameters, PaginationQueryParameters } from "../services/channels/web/types";
+import { ChannelParameters } from "../services/channels/web/types";
 import { MessageNotification } from "../services/messages/types";
 
 export type uuid = string;
@@ -107,4 +107,10 @@ export interface ResourceEventsPayload {
   resourcesAfter?: (User | ChannelEntity | ChannelTab)[];
   tab?: ChannelTab;
   company?: { id: string };
+}
+
+export interface PaginationQueryParameters {
+  page_token?: string;
+  limit?: string;
+  websockets?: boolean;
 }

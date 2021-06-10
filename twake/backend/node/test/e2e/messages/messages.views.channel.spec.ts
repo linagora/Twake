@@ -9,7 +9,7 @@ import {
 } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
 import { createMessage, createParticipant, e2e_createMessage, e2e_createThread } from "./utils";
 import { MessageWithReplies } from "../../../src/services/messages/types";

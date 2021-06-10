@@ -11,16 +11,24 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import Repository, {
-  FindFilter,
-  FindOptions,
-} from "../../../../core/platform/services/database/services/orm/repository/repository";
+import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { WorkspaceServiceAPI } from "../../api";
-import { TYPE as WorkspaceUserType } from "../../entities/workspace_user";
-import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../../entities/workspace_user";
-import Workspace, { WorkspacePrimaryKey } from "../../entities/workspace";
-import { TYPE as WorkspaceType } from "../../entities/workspace";
-import { ListWorkspaceOptions } from "./types";
+import WorkspaceUser, {
+  getInstance as getWorkspaceUserInstance,
+  TYPE as WorkspaceUserType,
+  WorkspaceUserPrimaryKey,
+} from "../../../workspaces/entities/workspace_user";
+import Workspace, {
+  getInstance as getWorkspaceInstance,
+  TYPE,
+  TYPE as WorkspaceType,
+  WorkspacePrimaryKey,
+} from "../../../workspaces/entities/workspace";
+import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
+import { UserPrimaryKey } from "../../../user/entities/user";
+import { CompanyPrimaryKey } from "../../../user/entities/company";
+import { ChannelMemberNotificationPreference } from "../../../notifications/entities";
+import { merge } from "lodash";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -47,8 +55,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return this.workspaceRepository.findOne(pk);
   }
 
-  create?(item: Workspace, context?: ExecutionContext): Promise<CreateResult<Workspace>> {
-    throw new Error("Method not implemented.");
+  async create(workspace: Workspace, context?: ExecutionContext): Promise<CreateResult<Workspace>> {
+    const workspaceToCreate: Workspace = getWorkspaceInstance({
+      ...workspace,
+      ...{
+        dateAdded: Date.now(),
+        isDeleted: false,
+        isArchived: false,
+      },
+    });
+
+    await this.workspaceRepository.save(workspaceToCreate);
+    return new CreateResult<Workspace>(TYPE, workspaceToCreate);
   }
 
   update?(
@@ -67,34 +85,49 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  delete(
+  async delete(
     pk: Partial<Pick<Workspace, "id">>,
-    context?: ExecutionContext,
+    context?: WorkspaceExecutionContext,
   ): Promise<DeleteResult<Workspace>> {
-    throw new Error("Method not implemented.");
+    const primaryKey: Workspace = merge(new Workspace(), {
+      group_id: context.company_id,
+      id: pk.id,
+    });
+    await this.workspaceRepository.remove(primaryKey);
+    return new DeleteResult(TYPE, primaryKey, true);
   }
 
   list<ListOptions>(
     pagination: Pagination,
     options?: ListOptions,
-    context?: ExecutionContext,
+    context?: WorkspaceExecutionContext,
   ): Promise<ListResult<Workspace>> {
-    return this.workspaceRepository.find({}, { pagination });
+    const pk = { group_id: context.company_id };
+
+    return this.workspaceRepository.find(pk, { pagination });
   }
 
-  getWorkspaces(
-    pagination?: Pagination,
-    options?: ListWorkspaceOptions,
-    context?: ExecutionContext,
-  ): Promise<ListResult<Workspace>> {
-    const findFilter: FindFilter = {};
-    const findOptions: FindOptions = {
-      pagination,
-    };
+  async addUser(
+    workspacePk: WorkspacePrimaryKey,
+    userPk: UserPrimaryKey,
+    role: WorkspaceUserRole,
+  ): Promise<void> {
+    await this.workspaceUserRepository.save(
+      getWorkspaceUserInstance({
+        workspaceId: workspacePk.id,
+        userId: userPk.id,
+        role: role,
+      }),
+    );
+  }
 
-    if (options.company_id) findFilter.group_id = options.company_id;
-
-    return this.workspaceRepository.find(findFilter, findOptions);
+  async removeUser(workspacePk: WorkspacePrimaryKey, userPk: UserPrimaryKey): Promise<void> {
+    await this.workspaceUserRepository.remove(
+      getWorkspaceUserInstance({
+        workspaceId: workspacePk.id,
+        userId: userPk.id,
+      }),
+    );
   }
 
   getUsers(
@@ -116,14 +149,24 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     });
   }
 
-  getAllForUser(
+  async getAllForUser(
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
-    pagination?: Paginable,
-  ): Promise<ListResult<WorkspaceUser>> {
-    return this.workspaceUserRepository.find(
-      { user_id: userId.userId },
-      { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
+    companyId: CompanyPrimaryKey,
+  ): Promise<WorkspaceUser[]> {
+    const allCompanyWorkspaces = await this.workspaceRepository
+      .find({ group_id: companyId.id })
+      .then(a => a.getEntities());
+
+    const UserWorkspaces = await Promise.all(
+      allCompanyWorkspaces.map(workspace =>
+        this.workspaceUserRepository.findOne({
+          user_id: userId.userId,
+          workspace_id: workspace.id,
+        }),
+      ),
     );
+
+    return UserWorkspaces.filter(uw => uw);
   }
 
   getAllUsers$(
@@ -141,8 +184,4 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       }),
     );
   }
-}
-
-export function getService(database: DatabaseServiceAPI): WorkspaceService {
-  return new WorkspaceService(database);
 }

@@ -1,12 +1,16 @@
 import { beforeAll, afterAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
-import { TestUsers } from "./utils";
+import { TestDbService } from "../utils.prepare.db";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1";
   let platform: TestPlatform;
 
-  let testUsers: TestUsers;
+  let testDbService: TestDbService;
+
+  const nonExistentId = "11111111-1111-1111-1111-111111111111";
+  const companyId = "21111111-1111-1111-1111-111111111111";
+  const workspaceId = "31111111-1111-1111-1111-111111111111";
 
   beforeEach(async ends => {
     platform = await init({
@@ -24,13 +28,18 @@ describe("The /users API", () => {
     const platform = await init({
       services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
-    testUsers = new TestUsers(platform);
-    await testUsers.createCompanyAndUsers();
+
+    testDbService = new TestDbService(platform);
+    await testDbService.createCompany(companyId);
+    const workspacePk = { id: workspaceId, group_id: companyId };
+    await testDbService.createWorkspace(workspacePk);
+    await testDbService.createUser([workspacePk]);
+    await testDbService.createUser([workspacePk]);
+
     ends();
   });
 
   afterAll(async ends => {
-    await testUsers.deleteAll();
     ends();
   });
 
@@ -46,11 +55,10 @@ describe("The /users API", () => {
     });
 
     it("should 404 when user does not exists", async done => {
-      const id = "11111111-1111-1111-1111-111111111111";
-      const jwtToken = await platform.auth.getJWTToken({ sub: testUsers.users[0].id });
+      const jwtToken = await platform.auth.getJWTToken({ sub: testDbService.users[0].id });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/users/${id}`,
+        url: `${url}/users/${nonExistentId}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -59,14 +67,14 @@ describe("The /users API", () => {
       expect(response.statusCode).toBe(404);
       expect(response.json()).toEqual({
         error: "Not Found",
-        message: `User ${id} not found`,
+        message: `User ${nonExistentId} not found`,
         statusCode: 404,
       });
       done();
     });
 
     it("should 200 and big response for myself", async done => {
-      const myId = testUsers.users[0].id;
+      const myId = testDbService.users[0].id;
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
         method: "GET",
@@ -120,8 +128,8 @@ describe("The /users API", () => {
     });
 
     it("should 200 and short response for another user", async done => {
-      const myId = testUsers.users[0].id;
-      const anotherUserId = testUsers.users[1].id;
+      const myId = testDbService.users[0].id;
+      const anotherUserId = testDbService.users[1].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
@@ -173,8 +181,8 @@ describe("The /users API", () => {
     });
 
     it("should 200 with array of users", async done => {
-      const myId = testUsers.users[0].id;
-      const anotherUserId = testUsers.users[1].id;
+      const myId = testDbService.users[0].id;
+      const anotherUserId = testDbService.users[1].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
@@ -210,11 +218,10 @@ describe("The /users API", () => {
     });
 
     it("should 404 when user does not exists", async done => {
-      const id = "11111111-1111-1111-1111-111111111111";
-      const jwtToken = await platform.auth.getJWTToken({ sub: testUsers.users[0].id });
+      const jwtToken = await platform.auth.getJWTToken({ sub: testDbService.users[0].id });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/users/${id}/companies`,
+        url: `${url}/users/${nonExistentId}/companies`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -223,15 +230,15 @@ describe("The /users API", () => {
       expect(response.statusCode).toBe(404);
       expect(response.json()).toEqual({
         error: "Not Found",
-        message: `User ${id} not found`,
+        message: `User ${nonExistentId} not found`,
         statusCode: 404,
       });
       done();
     });
 
     it("should 200 and on correct request", async done => {
-      const myId = testUsers.users[0].id;
-      const anotherUserId = testUsers.users[1].id;
+      const myId = testDbService.users[0].id;
+      const anotherUserId = testDbService.users[1].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: myId });
       const response = await platform.app.inject({
@@ -289,7 +296,7 @@ describe("The /users API", () => {
     });
 
     it("should 200 when company exists", async done => {
-      const companyId = testUsers.company.id;
+      const companyId = testDbService.company.id;
 
       const response = await platform.app.inject({
         method: "GET",

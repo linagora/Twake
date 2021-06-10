@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import {
@@ -64,7 +64,7 @@ export function get(platform: TestPlatform): ChannelUtils {
    *
    * @param owner will be a random uuidv4 if not defined
    */
-  function getChannel(owner: string = uuidv4()): Channel {
+  function getChannel(owner: string = uuidv1()): Channel {
     const channel = new Channel();
 
     channel.name = "Test Channel";
@@ -78,7 +78,7 @@ export function get(platform: TestPlatform): ChannelUtils {
     return channel;
   }
 
-  function getDirectChannel(owner: string = uuidv4()): Channel {
+  function getDirectChannel(owner: string = uuidv1()): Channel {
     const channel = getChannel(owner);
 
     channel.visibility = ChannelVisibility.DIRECT;

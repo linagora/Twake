@@ -26,10 +26,7 @@ export default class User {
   public get status_icon(): string {
     if (this._status_icon && this._status_icon.startsWith("[\\")) {
       try {
-        const parsed = JSON.parse(this._status_icon
-            .replace(/\\"/g, "\"")
-            .replace(/\\\\/g, "\\")
-        );
+        const parsed = JSON.parse(this._status_icon.replace(/\\"/g, "\"").replace(/\\\\/g, "\\"));
         return `${parsed[0]} ${parsed[1]}`;
       } catch (e) {
         return "";

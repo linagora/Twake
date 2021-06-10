@@ -1,5 +1,5 @@
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { FastifyInstance } from "fastify";
 import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/platform/platform";
 import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
@@ -76,7 +76,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
   testPlatform.app.server.close();
   await testPlatform.pubsub.processor.stop();
 
-  testPlatform.currentUser = { id: uuidv4() };
+  testPlatform.currentUser = { id: uuidv1() };
   testPlatform.workspace = {
     company_id: uuidv4(),
     workspace_id: uuidv4(),

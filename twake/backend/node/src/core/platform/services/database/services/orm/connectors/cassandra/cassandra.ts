@@ -57,7 +57,7 @@ export class CassandraConnector extends AbstractConnector<
 > {
   private client: cassandra.Client;
   private searchClient: Search | null;
-  private keyspaceExists: boolean = false;
+  private keyspaceExists = false;
 
   getClient(): cassandra.Client {
     return this.client;
@@ -147,12 +147,7 @@ export class CassandraConnector extends AbstractConnector<
   }
 
   async drop(): Promise<this> {
-    try {
-      await this.client.execute(`DROP KEYSPACE IF EXISTS ${this.options.keyspace};`);
-    } catch (err) {
-      logger.error({ err }, "services.database.orm.cassandra - Error while dropping keyspace");
-    }
-
+    logger.info("Drop database is not implemented for security reasons.");
     return this;
   }
 

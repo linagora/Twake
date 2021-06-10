@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
@@ -45,7 +45,7 @@ describe.skip("The ChannelMembers REST API", () => {
    *
    * @param owner will be a random uuidv4 if not defined
    */
-  function getChannel(owner: string = uuidv4()): Channel {
+  function getChannel(owner: string = uuidv1()): Channel {
     const channel = new Channel();
 
     channel.name = "Test Channel";
@@ -196,7 +196,7 @@ describe.skip("The ChannelMembers REST API", () => {
         },
         payload: {
           resource: {
-            user_id: uuidv4(),
+            user_id: uuidv1(),
           },
         },
       });
@@ -221,7 +221,7 @@ describe.skip("The ChannelMembers REST API", () => {
         method: "GET",
         url: `${url}/companies/${platform.workspace.company_id}/workspaces/${
           platform.workspace.workspace_id
-        }/channels/${createdChannel.entity.id}/members/${uuidv4()}`,
+        }/channels/${createdChannel.entity.id}/members/${uuidv1()}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -354,7 +354,7 @@ describe.skip("The ChannelMembers REST API", () => {
         method: "DELETE",
         url: `${url}/companies/${platform.workspace.company_id}/workspaces/${
           platform.workspace.workspace_id
-        }/channels/${createdChannel.entity.id}/members/${uuidv4()}`,
+        }/channels/${createdChannel.entity.id}/members/${uuidv1()}`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },

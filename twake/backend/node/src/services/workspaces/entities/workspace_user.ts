@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { WorkspaceUserRole } from "../types";
 
 export const TYPE = "workspace_user";
 
@@ -21,7 +22,7 @@ export default class WorkspaceUser {
   id: string;
 
   @Column("role", "string")
-  role: "admin" | "member"; //Relative to workspace only (not relative to company)
+  role: WorkspaceUserRole; //Relative to workspace only (not relative to company)
 
   @Column("date_added", "number")
   dateAdded: number;
