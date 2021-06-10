@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 
 describe("The /workspaces API", () => {
   const url = "/internal/services/workspaces/v1";
@@ -34,7 +34,6 @@ describe("The /workspaces API", () => {
   });
 
   afterAll(async ends => {
-    await platform.database.getConnector().drop();
     await platform.tearDown();
     ends();
   });

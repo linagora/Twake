@@ -9,7 +9,7 @@ import {
 } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 
 describe("The Messages User Bookmarks feature", () => {
   const url = "/internal/services/messages/v1";

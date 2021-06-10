@@ -28,8 +28,6 @@ describe("The /users API", () => {
     const platform = await init({
       services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
-    await platform.database.getConnector().drop();
-    await platform.database.getConnector().drop();
 
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
