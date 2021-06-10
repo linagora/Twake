@@ -2112,6 +2112,11 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@paralleldrive/react-feature-toggles@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@paralleldrive/react-feature-toggles/-/react-feature-toggles-2.3.1.tgz#7b4f105fcb003fd22a875f7718a737ec78751add"
+  integrity sha512-GJbpD2R+h2s1SjlZgFGSlAMHSMJLJYuGk/0GMiVzubOchOun/dIZXp8HqYvNXvr4yOFU4Ocsgd8BgribBZIGrw==
+
 "@pmmmwh/react-refresh-webpack-plugin@0.4.3":
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/@pmmmwh/react-refresh-webpack-plugin/-/react-refresh-webpack-plugin-0.4.3.tgz#1eec460596d200c0236bf195b078a5d1df89b766"
