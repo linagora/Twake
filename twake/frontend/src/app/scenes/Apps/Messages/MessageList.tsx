@@ -501,6 +501,7 @@ export default class MessagesList extends React.Component<Props, State> {
                 if (message?.hidden_data?.type === 'limit_channel')
                   return (
                     <LockedHistoryBanner
+                      // TO REMOVE
                       pricingPlanUrl={`https://console.twake.app/companies/${
                         RouterService.getStateFromRoute().companyId
                       }/subscription`}

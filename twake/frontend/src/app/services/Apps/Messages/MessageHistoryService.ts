@@ -2,7 +2,7 @@ import { Message } from './Message';
 import Numbers from '../../utils/Numbers';
 
 class MessageHistoryService {
-  shouldLimitMessages(loadUp: boolean, firstMessageId: string): boolean {
+  shouldLimitMessages(firstMessageId: string): boolean {
     const MONTH = 1000 * 60 * 60 * 24 * 30;
     const DELAY = 3 * MONTH;
 
@@ -11,14 +11,13 @@ class MessageHistoryService {
 
     console.log({
       firstMessageTimestamp,
-      loadUp,
       isFirstMessageOlderOrEqualThanDelay,
       threeMonthsAgo: DELAY,
     });
 
     // TODO check if message limit is reached with features service
 
-    return isFirstMessageOlderOrEqualThanDelay && loadUp;
+    return isFirstMessageOlderOrEqualThanDelay;
   }
 
   getLimitChannelMessageObject(): Message {
