@@ -38,12 +38,6 @@ describe("The /workspaces API", () => {
     ends();
   });
 
-  // describe("Mock", () => {
-  //   it("id", async done => {
-  //     done();
-  //   });
-  // });
-
   describe("The GET /workspaces/ route", () => {
     it("should 401 when not authenticated", async done => {
       const response = await platform.app.inject({
