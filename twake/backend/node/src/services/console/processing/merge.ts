@@ -34,7 +34,6 @@ import CompanyUser from "../../user/entities/company_user";
 import { ConsoleHTTPClient } from "../client";
 import { ConsoleServiceClient } from "../api";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import Workspace from "../../user/entities/workspace";
 
 const logger = getLogger("console.process.merge");
 
