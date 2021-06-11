@@ -7,7 +7,7 @@ export function toString(editorState: EditorState, format: EditorTextFormat): st
   let contentState = editorState.getCurrentContent();
   switch (format) {
     case "markdown": {
-      return stateToMarkdown(contentState);
+      return stateToMarkdown(contentState, { gfm: true });
     }
     case "raw": {
       return JSON.stringify(convertToRaw(contentState));
