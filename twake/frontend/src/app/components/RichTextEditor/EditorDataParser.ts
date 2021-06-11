@@ -7,7 +7,13 @@ export function toString(editorState: EditorState, format: EditorTextFormat): st
   let contentState = editorState.getCurrentContent();
   switch (format) {
     case "markdown": {
-      return stateToMarkdown(contentState, { gfm: true });
+      const markdown: string = stateToMarkdown(contentState, { gfm: true }).trim();
+      // when empty the stateToMarkdown lib returns a zero-width-space character in first position
+      if (markdown.length === 1 && markdown.charCodeAt(0) === 8203) {
+        return "";
+      }
+
+      return markdown;
     }
     case "raw": {
       return JSON.stringify(convertToRaw(contentState));

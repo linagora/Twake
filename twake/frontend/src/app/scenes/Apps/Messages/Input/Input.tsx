@@ -82,7 +82,7 @@ export default (props: Props) => {
       return;
     }
 
-    if (content.trim() || messageEditorService.filesAttachements[props.threadId || 'main']?.length) {
+    if (content || messageEditorService.filesAttachements[props.threadId || 'main']?.length) {
       sendMessage(content);
       setEditorState(RichTextEditorStateService.clear(props.channelId).get(props.channelId));
     }
