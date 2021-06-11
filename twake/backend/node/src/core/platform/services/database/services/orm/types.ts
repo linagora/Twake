@@ -45,3 +45,20 @@ export type EntityTarget<Entity> = ObjectType<Entity>;
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type ObjectType<T> = { new (): T } | Function;
+
+/** Local Event bus */
+
+export type DatabaseTableCreatedEvent = {
+  definition: {
+    entity: EntityDefinition;
+    columns: { [name: string]: ColumnDefinition };
+  };
+};
+
+export type DatabaseEntitiesSavedEvent = {
+  entities: any[];
+};
+
+export type DatabaseEntitiesRemovedEvent = {
+  entities: any[];
+};

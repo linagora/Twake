@@ -1,8 +1,9 @@
+import { localEventBus } from "../../../../../../../core/platform/framework/pubsub";
 import { logger } from "../../../../../../../core/platform/framework";
 import { ListResult, Pagination } from "../../../../../framework/api/crud-service";
 import { Connector } from "../connectors";
 import Manager from "../manager";
-import { EntityTarget } from "../types";
+import { DatabaseTableCreatedEvent, EntityTarget } from "../types";
 import { getEntityDefinition } from "../utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,6 +58,12 @@ export default class Repository<EntityType> {
     if (this.checkEntityDefinition()) {
       const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
       await this.connector.createTable(entityDefinition, columnsDefinition);
+      localEventBus.publish("database:table:saved", {
+        definition: {
+          entity: entityDefinition,
+          columns: columnsDefinition,
+        },
+      } as DatabaseTableCreatedEvent);
     }
 
     return this;

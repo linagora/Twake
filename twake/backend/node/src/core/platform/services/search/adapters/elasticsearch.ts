@@ -1,11 +1,12 @@
-import { CassandraConnectionOptions } from "..";
+import { getEntityDefinition, unwrapPrimarykey } from "../../database/services/orm/utils";
+import { DatabaseTableCreatedEvent } from "../../database/services/orm/types";
+
 import { Client } from "@elastic/elasticsearch";
-import { EntityDefinition } from "../../types";
-import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
 import { Readable } from "stream";
-import { logger } from "../../../../../../framework";
+import { logger } from "../../../framework";
 import _ from "lodash";
 import streamToIterator from "stream-to-iterator";
+import { SearchAdapter, SearchConfiguration } from "../api";
 
 type Operation = {
   index: string;
@@ -14,11 +15,11 @@ type Operation = {
   body?: any;
 };
 
-export default class Search {
+export default class Search implements SearchAdapter {
   private client: Client;
   private buffer: Readable;
 
-  constructor(readonly configuration: CassandraConnectionOptions["elasticsearch"]) {}
+  constructor(readonly configuration: SearchConfiguration["elasticsearch"]) {}
 
   public async connect() {
     try {
@@ -31,7 +32,9 @@ export default class Search {
     this.startBulkReader();
   }
 
-  public async createIndex(entity: EntityDefinition) {
+  public async createIndex(event: DatabaseTableCreatedEvent) {
+    const entity = event.definition.entity;
+
     if (!entity.options?.search) {
       return;
     }
