@@ -12,14 +12,18 @@ const { isSoftNewlineEvent } = KeyBindingUtil;
 export type EditorTextFormat = "raw" | "markdown";
 type SyntheticKeyboardEvent = KeyboardEvent<{}> & {code: string};
 
-type CaretCoordinates = {
-  x: number;
-  y: number;
-};
-
 type CurrentSuggestion<T> = {
-  position: CaretCoordinates;
+  /**
+   * The position of the caret the suggestion is linked to
+   */
+  position: DOMRect | null;
+  /**
+   * The text which has been searched for the current suggestion
+   */
   searchText: string;
+  /**
+   * The items for the current suggestion
+   */
   items: Array<T>;
 };
 
@@ -41,6 +45,7 @@ type EditorViewState = {
   suggestionType: string;
   suggestionIndex: number;
   displaySuggestion: boolean;
+  editorPosition: DOMRect | null;
 };
 
 export class EditorView extends React.Component<EditorProps, EditorViewState> {
@@ -66,6 +71,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       suggestionIndex: 0,
       suggestionType: "",
       displaySuggestion: false,
+      editorPosition: null,
     }
   }
 
@@ -452,7 +458,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
                 this.state.displaySuggestion && this.state.suggestionType &&
                 <SuggestionList<any>
                   list={this.state.activeSuggestion?.items}
-                  position={"top"}
+                  position={this.state.activeSuggestion ? this.state.activeSuggestion.position : null}
+                  editorPosition={(this.editor as any)?.editorContainer?.getBoundingClientRect()}
                   renderItem={(props: any) => this.renderSuggestion(props, this.state.suggestionType)}
                   onSelected={this.onSuggestionSelected.bind(this)}
                   selectedIndex={this.state.suggestionIndex}

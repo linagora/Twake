@@ -1,15 +1,7 @@
 import { ContentBlock, EditorState, Modifier } from "draft-js";
 import { getSelectedBlock } from "draftjs-utils";
 
-type CaretCoordinates = {
-  x: number;
-  y: number;
-};
-
-const currentCoordinates: CaretCoordinates = {
-  x: 0,
-  y: 0,
-};
+type CaretCoordinates = DOMRect;
 
 export function getCurrentBlock(editorState: EditorState): ContentBlock {
   return editorState.getCurrentContent().getBlockForKey(editorState.getSelection().getStartKey())
@@ -88,14 +80,6 @@ export const resetBlockWithType = (editorState: EditorState, newType = "unstyled
 };
 
 
-export function getSelectionRange() {
-  const selection = window.getSelection()
-  if (selection?.rangeCount === 0) {
-    return null
-  }
-  return selection?.getRangeAt(0)
-}
-
 export function isMatching(trigger: string | RegExp, textToMatch: string) {
   if (typeof trigger === "string") {
     return getTriggerRange(trigger, textToMatch);
@@ -165,13 +149,38 @@ export function getInsertRange(editorState: EditorState, firstCharacter: string)
   };
 }
 
-export function getCaretCoordinates(): CaretCoordinates {
-  const range = getSelectionRange();
-  if (range) {
-    const { left: x, top: y }  = range.getBoundingClientRect();
-    Object.assign(currentCoordinates, { x, y });
+export const getSelection = (root: Window = window): Selection | null => {
+  let selection: Selection | null = null;
+  if (root.getSelection) {
+    selection = root.getSelection();
+  } else if (root.document.getSelection) {
+    selection = root.document.getSelection();
   }
-  return currentCoordinates;
+  return selection;
+};
+
+export function getSelectionRange(): Range | null {
+  const selection = getSelection();
+
+  if (!selection) {
+    return null;
+  }
+
+  if (selection?.rangeCount === 0) {
+    return null
+  }
+
+  return selection?.getRangeAt(0);
+}
+
+export function getCaretCoordinates(): DOMRect | null {
+  const selection = getSelectionRange();
+
+  if (!selection) {
+    return null;
+  }
+
+  return selection.getBoundingClientRect();
 }
 
 export function insertText(text: string, editorState: EditorState): EditorState {
