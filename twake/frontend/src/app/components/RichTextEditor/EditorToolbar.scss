@@ -1,6 +1,7 @@
 .editor-toolbar {
   display: flex;
   flex-direction: row;
+  padding-left: 5px;
 
   .inline, .block {
     color: var(--grey-dark);
@@ -14,6 +15,10 @@
   }
 
   .button-group {
+    border-left: 1px solid var(--grey-light);
+    padding-left: 4px;
+    padding-right: 4px;
+
     display: flex;
     align-items: center;
 

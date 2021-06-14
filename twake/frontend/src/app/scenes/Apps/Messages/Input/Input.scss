@@ -107,13 +107,6 @@
     display: flex;
     flex-direction: row;
     margin-top: 8px;
-    
-    .input-options-toolbar-separator {
-      border-left: 1px solid var(--grey-light);
-      width: 1px;
-      margin-left: 4px;
-      margin-right: 4px;
-    }
   }
 
   .input-options {
