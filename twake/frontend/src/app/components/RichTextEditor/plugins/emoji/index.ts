@@ -3,7 +3,7 @@ import { Emoji } from "./Emoji";
 import EmojiService from 'services/emojis/emojis';
 import { getInsertRange } from "../../EditorUtils";
 import EmojiSuggestion from "./EmojiSuggestion";
-import { EditorSuggestionPlugin } from "../../EditorPlugins";
+import { EditorSuggestionPlugin } from "../";
 
 export type EmojiSuggestionType = {
   name: string;

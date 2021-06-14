@@ -1,8 +1,6 @@
 import { ContentBlock, EditorState, Modifier } from "draft-js";
 import { getSelectedBlock } from "draftjs-utils";
 
-type CaretCoordinates = DOMRect;
-
 export function getCurrentBlock(editorState: EditorState): ContentBlock {
   return editorState.getCurrentContent().getBlockForKey(editorState.getSelection().getStartKey())
 };

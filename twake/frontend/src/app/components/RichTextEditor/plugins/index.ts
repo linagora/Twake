@@ -1,13 +1,19 @@
-import mentionPlugin, { MentionSuggestionType } from "./plugins/mentions";
-import emojiPlugin, { EmojiSuggestionType } from "./plugins/emoji";
-import channelPlugin, { ChannelSuggestionType } from "./plugins/channel";
-import commandPlugin, { CommandSuggestionType } from "./plugins/commands";
 import { DraftDecorator, EditorState } from "draft-js";
+import mentionPlugin, { MentionSuggestionType } from "./mentions";
+import emojiPlugin, { EmojiSuggestionType } from "./emoji";
+import channelPlugin, { ChannelSuggestionType } from "./channel";
+import commandPlugin, { CommandSuggestionType } from "./commands";
 
-export type SupportedSuggestionTypes = MentionSuggestionType | EmojiSuggestionType | ChannelSuggestionType | CommandSuggestionType;
+export type SupportedSuggestionTypes =
+  | MentionSuggestionType
+  | EmojiSuggestionType
+  | ChannelSuggestionType
+  | CommandSuggestionType;
+
 export type SelectOrInsertOptions = {
   addSpaceAfter: boolean;
-}
+};
+
 export type EditorSuggestionPlugin<T extends SupportedSuggestionTypes> = {
   resolver: (text: string, callback: (items: T[]) => void) => void;
   decorator: DraftDecorator;
@@ -37,7 +43,7 @@ export function getPlugins(types: string[] = []): Array<EditorSuggestionPlugin<a
     if (plugins.has(t)) {
       result.push(plugins.get(t)!);
     }
-  })
-  
+  });
+
   return result.filter(Boolean);
 }

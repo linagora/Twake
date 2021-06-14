@@ -3,7 +3,7 @@ import { getSelectedBlock } from "draftjs-utils";
 import WorkspacesUser from 'services/workspaces/workspaces_users';
 import { Mention } from "./Mention";
 import MentionSuggestion from "./MentionSuggestion";
-import { EditorSuggestionPlugin, SelectOrInsertOptions } from "../../EditorPlugins";
+import { EditorSuggestionPlugin, SelectOrInsertOptions } from "../";
 import "./style.scss";
 
 export const MENTION_TYPE = "MENTION";

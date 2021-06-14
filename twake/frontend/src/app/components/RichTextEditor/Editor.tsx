@@ -4,7 +4,7 @@ import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHand
 import { toString } from "./EditorDataParser";
 import { SuggestionList } from "./plugins/suggestion/SuggestionList";
 import { getCaretCoordinates, getCurrentBlock, getTextToMatch, isMatching, resetBlockWithType, splitBlockWithType } from "./EditorUtils";
-import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from "./EditorPlugins";
+import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from "./plugins";
 import "./Editor.scss";
 
 const { isSoftNewlineEvent } = KeyBindingUtil;

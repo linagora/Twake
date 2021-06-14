@@ -1,5 +1,5 @@
 import { EditorState, CompositeDecorator, ContentState } from "draft-js";
-import { getPlugins } from "./EditorPlugins";
+import { getPlugins } from "./plugins";
 
 class EditorStateService {
   private states: Map<string, EditorState>;

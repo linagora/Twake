@@ -3,7 +3,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps';
 import { Command } from "./Command";
 import { getInsertRange } from "../../EditorUtils";
 import CommandSuggestion from "./CommandSuggestion";
-import { EditorSuggestionPlugin } from "../../EditorPlugins";
+import { EditorSuggestionPlugin } from "../";
 
 export type CommandSuggestionType = {
   command: string;

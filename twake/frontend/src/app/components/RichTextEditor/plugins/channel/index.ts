@@ -4,7 +4,7 @@ import { Channel } from "./Channel";
 import ChannelsService from 'services/channels/channels';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
 import ChannelSuggestion from "./ChannelSuggestion";
-import { EditorSuggestionPlugin, SelectOrInsertOptions } from "../../EditorPlugins";
+import { EditorSuggestionPlugin, SelectOrInsertOptions } from "../";
 
 export type ChannelSuggestionType = ChannelType & { autocomplete_id: number };
 
