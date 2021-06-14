@@ -17,6 +17,7 @@ import {
 } from "../../../../services/messages/entities/messages";
 import { ParticipantObject, Thread } from "../../../../services/messages/entities/threads";
 import { Block } from "../../../../services/messages/blocks-types";
+import { WorkspaceExecutionContext } from "../../../../services/workspaces/types";
 
 type MigratedChannel = {
   id: string;
@@ -98,7 +99,13 @@ class MessageMigrator {
   private async migrateCompanyChannelsMessages(company: Company) {
     // Get all workspaces in company
     const workspacesInCompany = (
-      await this.userService.workspaces.list({ limitStr: "" }, { company_id: company.id })
+      await this.userService.workspaces.list({ limitStr: "" }, {}, {
+        user: {
+          id: null,
+          server_request: true,
+        },
+        company_id: company.id,
+      } as WorkspaceExecutionContext)
     ).getEntities();
 
     // For each workspaces find channels
