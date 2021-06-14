@@ -177,7 +177,6 @@ class MessageMigrator {
       if (threadDoesNotExists) {
         await this.migratePhpMessageToNodeThread(message, channel, company);
         this.migratedThreads.push(threadId);
-        console.log(this.migratedThreads + "");
       }
 
       //Migrate message itself
