@@ -10,6 +10,23 @@
       "webRoot": "${workspaceFolder}/twake/frontend/src"
     },
     {
+      "name": "Launch & Debug on Canay",
+      "port": 9222,
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/twake/frontend/src",
+      "runtimeExecutable": "canary"
+    },
+    {
+      "name": "Launch & Debug on Firefox",
+      "type": "firefox",
+      "request": "launch",
+      "reAttach": true,
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/twake/frontend/src",
+    },
+    {
       "name": "Debug Node Backend",
       "request": "launch",
       "cwd": "${workspaceFolder}/twake/backend/node/",
