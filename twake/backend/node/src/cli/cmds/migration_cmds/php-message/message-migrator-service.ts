@@ -159,6 +159,11 @@ class MessageMigrator {
 
       pagePhpMessages = messages.nextPage as Pagination;
     } while (pagePhpMessages.page_token);
+
+    //Force delay between channels
+    await new Promise(r => {
+      setTimeout(r, 100);
+    });
   }
 
   private migratedThreads: string[] = [];
