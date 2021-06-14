@@ -21,10 +21,11 @@
 }
 
 .editor-code-block {
+  border-radius: 3px;
   vertical-align: middle;
   margin-bottom: 0;
   color: #e6e1dc;
-  background: var(--grey-dark);
+  background: #232323;
   font-family: monospace;
   padding: 0 5px;
   white-space: pre-wrap;

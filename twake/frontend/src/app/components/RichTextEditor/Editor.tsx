@@ -1,6 +1,6 @@
 import React, { KeyboardEvent } from "react";
 import classNames from "classnames";
-import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHandleValue, KeyBindingUtil, ContentBlock } from "draft-js";
+import { Editor, EditorState, Modifier, RichUtils, DraftEditorCommand, DraftHandleValue, KeyBindingUtil, ContentBlock, DraftStyleMap } from "draft-js";
 import { toString } from "./EditorDataParser";
 import { SuggestionList } from "./plugins/suggestion/SuggestionList";
 import { getCaretCoordinates, getCurrentBlock, getTextToMatch, isMatching, resetBlockWithType, splitBlockWithType } from "./EditorUtils";
@@ -52,6 +52,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   outputFormat: EditorTextFormat;
   editor!: Editor | null;
   plugins: Map<EditorSuggestionPlugin<any>["resourceType"], EditorSuggestionPlugin<any>> = new Map();
+  customStyleMap: DraftStyleMap;
 
   constructor(props: EditorProps) {
     super(props);
@@ -59,6 +60,16 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     getPlugins(this.props.plugins || []).forEach(p => this.enablePlugin(p));
     this.outputFormat = this.props.outputFormat || "markdown";
     this.state = this.getInitialState();
+    this.customStyleMap = {
+      "CODE": {
+        borderRadius: 3,
+        background: "#232323",
+        color: "#e6e1dc",
+        padding: "0 5px",
+        fontFamily: "monospace",
+        paddingBottom: "1px",
+      }
+    }
   }
 
   private enablePlugin(plugin: EditorSuggestionPlugin<any>): void {
@@ -448,6 +459,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         onTab={this.onTab.bind(this)}
         handlePastedFiles={this.handlePastedFiles.bind(this)}
         blockStyleFn={this.handleBlockStyle.bind(this)}
+        customStyleMap={this.customStyleMap}
         placeholder={this.props.placeholder || ""}
         />
         
