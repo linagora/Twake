@@ -1,27 +1,24 @@
-import { CrudController } from "../../../core/platform/services/webserver/types";
+import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
   ResourceGetResponse,
-  ResourceListResponse,
-} from "../../../utils/types";
-import { WorkspaceServiceAPI } from "../api";
+  ResourceListResponse
+} from "../../../../utils/types";
+import { WorkspaceServiceAPI } from "../../api";
 import {
   UpdateWorkspaceBody,
   WorkspaceBaseRequest,
   WorkspaceObject,
   WorkspaceRequest,
-  WorkspacesListRequest,
-} from "./types";
+  WorkspacesListRequest
+} from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Pagination } from "../../../core/platform/framework/api/crud-service";
-import { WorkspaceExecutionContext, WorkspaceUserRole } from "../types";
-import Workspace, { WorkspacePrimaryKey } from "../entities/workspace";
-import { CompaniesServiceAPI } from "../../user/api";
-import CompanyUser from "../../user/entities/company_user";
+import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import Workspace from "../../entities/workspace";
+import { CompaniesServiceAPI } from "../../../user/api";
 import { merge } from "lodash";
-import WorkspaceUser from "../entities/workspace_user";
-import workspace from "../../../cli/cmds/workspace";
+import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 
 export class WorkspacesCrudController
   implements
@@ -130,11 +127,6 @@ export class WorkspacesCrudController
     const context = getExecutionContext(request);
 
     const companyUserRole = await this.getCompanyUserRole(context);
-
-    if (!companyUserRole) {
-      reply.forbidden(`You are not a member of company ${context.company_id}`);
-      return;
-    }
 
     let workspaceEntity: Workspace;
 

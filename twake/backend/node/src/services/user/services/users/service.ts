@@ -18,6 +18,7 @@ import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
 import { ListUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
+import Company from "../../entities/company";
 
 export class UserService implements UsersServiceAPI {
   version: "1";

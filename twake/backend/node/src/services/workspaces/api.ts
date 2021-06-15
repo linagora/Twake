@@ -1,12 +1,7 @@
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
-import {
-  CRUDService,
-  ExecutionContext,
-  ListResult,
-  Paginable,
-} from "../../core/platform/framework/api/crud-service";
+import { CRUDService, ExecutionContext, ListResult, Paginable } from "../../core/platform/framework/api/crud-service";
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
-import { CompaniesServiceAPI } from "../user/api";
+import { CompaniesServiceAPI, UsersServiceAPI } from "../user/api";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../workspaces/entities/workspace_user";
 import { Observable } from "rxjs";
 import { UserPrimaryKey } from "../user/entities/user";
@@ -16,6 +11,7 @@ import { CompanyPrimaryKey } from "../user/entities/company";
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
   workspaces: WorkspaceServiceAPI;
   companies: CompaniesServiceAPI;
+  users: UsersServiceAPI;
 }
 
 export interface WorkspaceServiceAPI
@@ -27,6 +23,8 @@ export interface WorkspaceServiceAPI
     userPk: UserPrimaryKey,
     role: WorkspaceUserRole,
   ): Promise<void>;
+
+  updateUserRole(workspaceUserPk: WorkspaceUserPrimaryKey, role: WorkspaceUserRole): Promise<void>;
 
   removeUser(workspacePk: WorkspacePrimaryKey, userPk: UserPrimaryKey): Promise<void>;
 

@@ -1,4 +1,4 @@
-const userObjectSchema = {
+export const userObjectSchema = {
   type: "object",
   properties: {
     id: { type: "string" },
