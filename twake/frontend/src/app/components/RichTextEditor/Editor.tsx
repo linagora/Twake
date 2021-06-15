@@ -69,7 +69,21 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         fontFamily: "monospace",
         paddingBottom: "1px",
       }
-    }
+    };
+
+    this.onChange=this.onChange.bind(this);
+    this.handleKeyCommand=this.handleKeyCommand.bind(this);
+    this.handleReturn=this.handleReturn.bind(this);
+    this.handleBeforeInput=this.handleBeforeInput.bind(this);
+    this.onDownArrow=this.onDownArrow.bind(this);
+    this.onUpArrow=this.onUpArrow.bind(this);
+    this.onEscape=this.onEscape.bind(this);
+    this.onTab=this.onTab.bind(this);
+    this.handlePastedFiles=this.handlePastedFiles.bind(this);
+    this.handleBlockStyle=this.handleBlockStyle.bind(this);
+    this.shouldHidePlaceHolder = this.shouldHidePlaceHolder.bind(this);
+    this.onSuggestionSelected = this.onSuggestionSelected.bind(this);
+    this.focus = this.focus.bind(this);
   }
 
   private enablePlugin(plugin: EditorSuggestionPlugin<any>): void {
@@ -443,22 +457,22 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
 
   render() {
     return <div 
-      className={classNames("editor", { "editor-hide-placeholder": this.shouldHidePlaceHolder.bind(this)() })} 
-      onClick={ this.focus.bind(this) }>
+      className={classNames("editor", { "editor-hide-placeholder": this.shouldHidePlaceHolder() })} 
+      onClick={ this.focus }>
       
       <Editor
         ref={ node => this.editor = node }
         editorState={ this.props.editorState } 
-        onChange={this.onChange.bind(this)}
-        handleKeyCommand={this.handleKeyCommand.bind(this)}
-        handleReturn={this.handleReturn.bind(this)}
-        handleBeforeInput={this.handleBeforeInput.bind(this)}
-        onDownArrow={this.onDownArrow.bind(this)}
-        onUpArrow={this.onUpArrow.bind(this)}
-        onEscape={this.onEscape.bind(this)}
-        onTab={this.onTab.bind(this)}
-        handlePastedFiles={this.handlePastedFiles.bind(this)}
-        blockStyleFn={this.handleBlockStyle.bind(this)}
+        onChange={this.onChange}
+        handleKeyCommand={this.handleKeyCommand}
+        handleReturn={this.handleReturn}
+        handleBeforeInput={this.handleBeforeInput}
+        onDownArrow={this.onDownArrow}
+        onUpArrow={this.onUpArrow}
+        onEscape={this.onEscape}
+        onTab={this.onTab}
+        handlePastedFiles={this.handlePastedFiles}
+        blockStyleFn={this.handleBlockStyle}
         customStyleMap={this.customStyleMap}
         placeholder={this.props.placeholder || ""}
         />
@@ -473,7 +487,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
                   position={this.state.activeSuggestion ? this.state.activeSuggestion.position : null}
                   editorPosition={(this.editor as any)?.editorContainer?.getBoundingClientRect()}
                   renderItem={(props: any) => this.renderSuggestion(props, this.state.suggestionType)}
-                  onSelected={this.onSuggestionSelected.bind(this)}
+                  onSelected={this.onSuggestionSelected}
                   selectedIndex={this.state.suggestionIndex}
                 />
               )}
