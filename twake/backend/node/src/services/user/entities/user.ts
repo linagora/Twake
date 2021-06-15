@@ -8,7 +8,7 @@ export const TYPE = "user";
   type: TYPE,
 })
 export default class User {
-  @Column("id", "timeuuid")
+  @Column("id", "uuid")
   id: string;
 
   @Column("first_name", "encoded_string")

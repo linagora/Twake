@@ -4,7 +4,7 @@ import {
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
-  uuid
+  uuid,
 } from "../../../../utils/types";
 import { WorkspaceServiceAPI } from "../../api";
 import {
@@ -13,7 +13,7 @@ import {
   WorkspaceUsersAddBody,
   WorkspaceUsersBaseRequest,
   WorkspaceUsersInvitationRequest,
-  WorkspaceUsersRequest
+  WorkspaceUsersRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../../../user/api";
@@ -25,6 +25,7 @@ import CompanyUser from "../../../user/entities/company_user";
 import { CompanyShort, CompanyUserRole, CompanyUserStatus } from "../../../user/web/types";
 import Company from "../../../user/entities/company";
 import { chain } from "lodash";
+import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 
 export class WorkspaceUsersCrudController
   implements
@@ -163,6 +164,10 @@ export class WorkspaceUsersCrudController
 
     const user = await this.usersService.get({ id: userId });
 
+    if (!user) {
+      throw CrudExeption.badRequest("User entity not found");
+    }
+
     const userCompanies: CompanyUser[] = await this.usersService
       .getUserCompanies({ id: userId })
       .then(a => a.getEntities());
@@ -220,7 +225,6 @@ export class WorkspaceUsersCrudController
         reply.notFound(`User ${userId} not found in this workspace`);
         return;
       }
-
       await this.workspaceService.updateUserRole(
         { workspaceId: context.workspace_id, userId },
         role,
@@ -244,8 +248,27 @@ export class WorkspaceUsersCrudController
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
-    reply.status(501);
-    throw Error("Not implemented");
+    const context = getExecutionContext(request);
+
+    const workspaceUser = await this.workspaceService.getUser({
+      workspaceId: context.workspace_id,
+      userId: request.params.user_id,
+    });
+
+    if (!workspaceUser) {
+      reply.notFound("Default channel has not been found");
+      return;
+    }
+
+    await this.workspaceService.removeUser({
+      workspaceId: context.workspace_id,
+      userId: request.params.user_id,
+    });
+
+    reply.status(204);
+    return {
+      status: "success",
+    };
   }
 
   async invite(

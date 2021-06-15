@@ -1,5 +1,11 @@
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
-import { CRUDService, ExecutionContext, ListResult, Paginable } from "../../core/platform/framework/api/crud-service";
+import {
+  CRUDService,
+  DeleteResult,
+  ExecutionContext,
+  ListResult,
+  Paginable,
+} from "../../core/platform/framework/api/crud-service";
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../user/api";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../workspaces/entities/workspace_user";
@@ -26,7 +32,9 @@ export interface WorkspaceServiceAPI
 
   updateUserRole(workspaceUserPk: WorkspaceUserPrimaryKey, role: WorkspaceUserRole): Promise<void>;
 
-  removeUser(workspacePk: WorkspacePrimaryKey, userPk: UserPrimaryKey): Promise<void>;
+  removeUser(
+    workspaceUserPk: WorkspaceUserPrimaryKey,
+  ): Promise<DeleteResult<WorkspaceUserPrimaryKey>>;
 
   /**
    * Get workspace users in the given workspace

@@ -10,20 +10,20 @@ import {
   Paginable,
   Pagination,
   SaveResult,
-  UpdateResult
+  UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { WorkspaceServiceAPI } from "../../api";
 import WorkspaceUser, {
   getInstance as getWorkspaceUserInstance,
   TYPE as WorkspaceUserType,
-  WorkspaceUserPrimaryKey
+  WorkspaceUserPrimaryKey,
 } from "../../../workspaces/entities/workspace_user";
 import Workspace, {
   getInstance as getWorkspaceInstance,
   TYPE,
   TYPE as WorkspaceType,
-  WorkspacePrimaryKey
+  WorkspacePrimaryKey,
 } from "../../../workspaces/entities/workspace";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { UserPrimaryKey } from "../../../user/entities/user";
@@ -127,18 +127,22 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   ): Promise<void> {
     const workspaceUser = await this.getUser(workspaceUserPk);
     if (!workspaceUser) {
-      throw CrudExeption.badRequest("WorkspaceUser entity not found");
+      throw CrudExeption.notFound("WorkspaceUser entity not found");
     }
     await this.workspaceUserRepository.save(merge(workspaceUser, { role }));
   }
 
-  async removeUser(workspacePk: WorkspacePrimaryKey, userPk: UserPrimaryKey): Promise<void> {
-    await this.workspaceUserRepository.remove(
-      getWorkspaceUserInstance({
-        workspaceId: workspacePk.id,
-        userId: userPk.id,
-      }),
-    );
+  async removeUser(
+    workspaceUserPk: WorkspaceUserPrimaryKey,
+  ): Promise<DeleteResult<WorkspaceUserPrimaryKey>> {
+    const entity = await this.getUser(workspaceUserPk);
+
+    if (!entity) {
+      throw CrudExeption.notFound("WorkspaceUser entity not found");
+    }
+
+    await this.workspaceUserRepository.remove(entity);
+    return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
   getUsers(
