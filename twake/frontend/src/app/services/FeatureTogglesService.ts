@@ -24,25 +24,32 @@ const availableFeatures = [
  * Service that allow you to manage feature flipping in Twake using react feature toggles
  */
 class FeatureTogglesService {
-  public activeFeatureNames: string[];
+  public activeFeatureNames: FeatureNames[];
 
   constructor() {
     this.activeFeatureNames = [];
   }
 
   public setFeaturesFromCompanyPlan(plan: { [key: string]: boolean }): void {
-    availableFeatures.forEach(featureName =>
-      this.addOrRemoveActiveFeatureName(featureName, plan[featureName]),
-    );
+    availableFeatures.forEach(featureName => {
+      return this.setActiveFeatureName(
+        featureName,
+        plan[featureName] !== undefined ? plan[featureName] : true,
+      );
+    });
   }
 
-  private addOrRemoveActiveFeatureName(featureName: string, isActive: boolean): void {
-    const shouldAddFeature = !this.activeFeatureNames.includes(featureName) && isActive === true;
+  private setActiveFeatureName(featureName: FeatureNames, isActive: boolean): void {
+    const shouldAddFeature = isActive === true && !this.isActiveFeatureName(featureName);
     if (shouldAddFeature) this.activeFeatureNames.push(featureName);
 
-    const shouldRemoveFeature = this.activeFeatureNames.includes(featureName) && isActive === false;
+    const shouldRemoveFeature = isActive === false && this.isActiveFeatureName(featureName);
     if (shouldRemoveFeature)
       this.activeFeatureNames = this.activeFeatureNames.filter(name => name !== featureName);
+  }
+
+  public isActiveFeatureName(featureName: FeatureNames) {
+    return this.activeFeatureNames.includes(featureName);
   }
 }
 

@@ -6,12 +6,12 @@ import Languages from 'services/languages/languages.js';
 import './LockedHistoryBanner.scss';
 
 type PropsType = {
-  pricingPlanUrl: string;
+  companySubscriptionUrl: string;
 };
 
 const { Title, Text } = Typography;
-const LockedHistoryBanner = ({ pricingPlanUrl }: PropsType): JSX.Element => {
-  const onClickBtn = () => window.open(pricingPlanUrl, 'blank');
+const LockedHistoryBanner = ({ companySubscriptionUrl }: PropsType): JSX.Element => {
+  const onClickBtn = () => window.open(companySubscriptionUrl, 'blank');
 
   return (
     <Banner

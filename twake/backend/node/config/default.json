@@ -1,6 +1,7 @@
 {
   "general": {
-    "help_link": false,
+    "help_url": false,
+    "pricing_plan_url": "",
     "accounts": {
       "type": "internal",
       "internal": {

@@ -18,7 +18,7 @@ const routes: FastifyPluginCallback<{ configuration: ServerConfiguration["config
         status: "ready",
         version: version,
         configuration: {
-          ..._.pick(options.configuration, "help_link"),
+          ..._.pick(options.configuration, "help_url", "pricing_plan_url"),
           accounts: {
             type: accounts.type,
             console: _.pick(
@@ -26,6 +26,7 @@ const routes: FastifyPluginCallback<{ configuration: ServerConfiguration["config
               "authority",
               "client_id",
               "account_management_url",
+              "company_subscription_url",
               "company_management_url",
               "collaborators_management_url",
             ),

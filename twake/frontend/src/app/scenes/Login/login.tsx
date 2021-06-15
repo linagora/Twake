@@ -76,9 +76,9 @@ export default () => {
       </div>
 
       <div className={'help_footer'}>
-        {server_infos_loaded && server_infos?.configuration?.help_link && (
+        {server_infos_loaded && server_infos?.configuration?.help_url && (
           <a
-            href={'' + InitService.server_infos?.configuration?.help_link}
+            href={'' + InitService.server_infos?.configuration?.help_url}
             target="_BLANK"
             className="blue_link fade_in"
           >

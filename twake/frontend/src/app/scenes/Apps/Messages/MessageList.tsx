@@ -15,6 +15,7 @@ import { MessageListService } from 'app/services/Apps/Messages/MessageListServic
 import { ChannelResource } from 'app/models/Channel';
 import RouterService from 'app/services/RouterService';
 import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
+import InitService from 'app/services/InitService';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
@@ -142,6 +143,7 @@ export default class MessagesList extends React.Component<Props, State> {
       isLoaded: false,
       messages: [],
     };
+
     this.onNewCollectionEvent = this.onNewCollectionEvent.bind(this);
   }
 
@@ -501,10 +503,10 @@ export default class MessagesList extends React.Component<Props, State> {
                 if (message?.hidden_data?.type === 'limit_channel')
                   return (
                     <LockedHistoryBanner
-                      // TO REMOVE
-                      pricingPlanUrl={`https://console.twake.app/companies/${
-                        RouterService.getStateFromRoute().companyId
-                      }/subscription`}
+                      companySubscriptionUrl={
+                        InitService.server_infos?.configuration?.accounts?.console
+                          ?.company_subscription_url || ''
+                      }
                     />
                   );
 

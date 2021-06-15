@@ -6,12 +6,12 @@ import Languages from 'services/languages/languages.js';
 import Emojione from 'app/components/Emojione/Emojione';
 
 type PropsType = {
-  pricingPlanUrl: string;
+  companySubscriptionUrl: string;
 };
 
 const { Text } = Typography;
-const LockedGuestsPopup = ({ pricingPlanUrl }: PropsType): JSX.Element => {
-  const onClickLearnMore = () => window.open(pricingPlanUrl, 'blank');
+const LockedGuestsPopup = ({ companySubscriptionUrl }: PropsType): JSX.Element => {
+  const onClickLearnMore = () => window.open(companySubscriptionUrl, 'blank');
   const onClickSkipForNow = () => ModalManager.close();
 
   return (

@@ -50,17 +50,17 @@ export default () => {
             </textarea>
             <br />
             <br />
-            {InitService.server_infos?.configuration?.help_link && (
+            {InitService.server_infos?.configuration?.help_url && (
               <span>
                 {Languages.t('scenes.tell_us', [], 'Please tell us what you were doing at :')}
                 <br />
                 <a
                   href="#"
                   onClick={() =>
-                    window.open(InitService.server_infos?.configuration?.help_link + '')
+                    window.open(InitService.server_infos?.configuration?.help_url + '')
                   }
                 >
-                  {InitService.server_infos?.configuration?.help_link}
+                  {InitService.server_infos?.configuration?.help_url}
                 </a>
                 <br />
                 <br />

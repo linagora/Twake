@@ -12,7 +12,8 @@ type ServerInfoType = null | {
   };
   configuration: {
     branding: any;
-    help_link: string | null;
+    help_url: string | null;
+    pricing_plan_url: string | null;
     accounts: {
       type: 'console' | 'internal';
       console: null | {
@@ -20,6 +21,7 @@ type ServerInfoType = null | {
         client_id: string;
         max_unverified_days: number;
         account_management_url: string;
+        company_subscription_url: string;
         company_management_url: string;
         collaborators_management_url: string;
       };

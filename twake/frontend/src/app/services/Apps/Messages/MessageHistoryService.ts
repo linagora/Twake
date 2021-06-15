@@ -1,5 +1,6 @@
 import { Message } from './Message';
 import Numbers from '../../utils/Numbers';
+import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 
 class MessageHistoryService {
   shouldLimitMessages(firstMessageId: string): boolean {
@@ -8,16 +9,8 @@ class MessageHistoryService {
 
     const firstMessageTimestamp = Numbers.timeuuidToDate(firstMessageId) * 1000;
     const isFirstMessageOlderOrEqualThanDelay = firstMessageTimestamp >= DELAY;
-
-    console.log({
-      firstMessageTimestamp,
-      isFirstMessageOlderOrEqualThanDelay,
-      threeMonthsAgo: DELAY,
-    });
-
-    // TODO check if message limit is reached with features service
-
-    return isFirstMessageOlderOrEqualThanDelay;
+    const isActiveFeature = FeatureTogglesService.isActiveFeatureName(FeatureNames.MESSAGE_HISTORY);
+    return isFirstMessageOlderOrEqualThanDelay && !isActiveFeature;
   }
 
   getLimitChannelMessageObject(): Message {
