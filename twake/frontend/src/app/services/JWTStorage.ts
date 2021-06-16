@@ -52,7 +52,9 @@ class JWTStorageClass {
     LocalStorage.getItem('mobile_login', (res: string) => {
       LocalStorage.setItem('mobile_login', '0');
       if (res == '1') {
-        document.location.replace('/mobile?jwt=' + encodeURI(JSON.stringify(jwtData)));
+        document.location.replace(
+          '/internal/mobile/login/redirect?jwt=' + encodeURI(JSON.stringify(jwtData)),
+        );
       }
     });
 
