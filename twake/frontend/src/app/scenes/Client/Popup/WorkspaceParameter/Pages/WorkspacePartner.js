@@ -18,7 +18,7 @@ import Pending from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspaceP
 import Members from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';
 import Tabs from 'components/Tabs/Tabs.js';
 import InitService from 'app/services/InitService';
-import ConsoleService from 'app/services/ConsoleService';
+import ConsoleService from 'app/services/Console/ConsoleService';
 
 export default class WorkspacePartner extends Component {
   constructor() {

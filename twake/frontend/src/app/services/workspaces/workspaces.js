@@ -1,4 +1,5 @@
 import React from 'react';
+import $ from 'jquery';
 import Observable from 'app/services/Depreciated/observable.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import PopupManager from 'services/popupManager/popupManager.js';
@@ -14,13 +15,12 @@ import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
 import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
 import Notifications from 'services/user/notifications';
-import $ from 'jquery';
 import AccessRightsService from 'services/AccessRightsService';
 import loginService from 'services/login/login.js';
 import InitService from 'app/services/InitService';
 import Globals from 'services/Globals.js';
 import JWTStorage from 'services/JWTStorage';
-import ConsoleService from 'services/ConsoleService';
+import ConsoleService from 'services/Console/ConsoleService';
 
 class Workspaces extends Observable {
   constructor() {

@@ -1,8 +1,8 @@
 import { message as toaster } from 'antd';
 import Languages from 'services/languages/languages.js';
-import Api from './Api';
-import DepreciatedCollections from './Depreciated/Collections/Collections';
-import InitService from './InitService';
+import Api from '../Api';
+import DepreciatedCollections from '../Depreciated/Collections/Collections';
+import InitService from '../InitService';
 
 class ConsoleService {
   public getCompanyManagementUrl(companyId: string) {
@@ -22,7 +22,7 @@ class ConsoleService {
   }
 
   public verifyMail() {
-    const onVerification = new Promise(async resolve => {
+    return new Promise(async resolve => {
       const response = await Api.post(
         'users/console/api/verify_mail',
         {},
@@ -37,8 +37,6 @@ class ConsoleService {
 
       return resolve(response);
     });
-
-    return onVerification;
   }
 
   public addMailsInWorkspace(data: {
@@ -47,7 +45,7 @@ class ConsoleService {
     emails: string[];
     role?: 'admin' | 'member' | 'guest';
   }) {
-    const onVerification = new Promise(async resolve => {
+    return new Promise(async resolve => {
       const response = await Api.post('users/console/api/invite', data, (res: any) => {
         if (res) {
           if (res.error) return toaster.error(res.error);
@@ -71,8 +69,6 @@ class ConsoleService {
       });
       return resolve(response);
     });
-
-    return onVerification;
   }
 }
 

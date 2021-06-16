@@ -15,7 +15,7 @@ import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import MenuList from 'components/Menus/MenuComponent.js';
 import InitService from 'app/services/InitService';
-import ConsoleService from 'app/services/ConsoleService';
+import ConsoleService from 'app/services/Console/ConsoleService';
 import './WorkspaceParameter.scss';
 
 export default class WorkspaceParameter extends Component {

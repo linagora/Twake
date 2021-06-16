@@ -15,7 +15,7 @@ import Collection from 'app/services/Collections/Collection';
 import UsersService from 'services/user/user.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { PendingEmailResource } from 'app/models/PendingEmail';
-import GuestManagementService from 'app/services/GuestManagementService';
+import GuestManagementService from 'app/services/GuestMember/GuestManagementService';
 import UserService from 'services/user/user.js';
 
 const { Text } = Typography;
@@ -32,7 +32,7 @@ type Props = {
   onPendingEmailDeletion?: () => unknown;
 };
 
-export default (props: Props) => {
+export default (props: Props): JSX.Element => {
   let userEvents: JSX.Element;
   const [isMember, setIsMember] = useState<boolean>(false);
   const [selected, setSelected] = useState<boolean>(false);
