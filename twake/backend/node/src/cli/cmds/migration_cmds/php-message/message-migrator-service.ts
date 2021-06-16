@@ -53,10 +53,16 @@ class MessageMigrator {
       page = companyListResult.nextPage as Pagination;
 
       for (const company of companyListResult.getEntities()) {
+        console.log(`Start migration for ${company.id}...`);
         await this.migrateCompanyDirectMessages(company);
+        console.log(
+          `${company.id} - (1/2) migrated direct messages (total: ${this.migratedMessages} messages)  ✅`,
+        );
 
         await this.migrateCompanyChannelsMessages(company);
-        console.log(`${company.id} - completed (total: ${this.migratedMessages} messages)  ✅`);
+        console.log(
+          `${company.id} - (2/2) completed (total: ${this.migratedMessages} messages)  ✅`,
+        );
       }
     } while (page.page_token);
 
@@ -185,9 +191,13 @@ class MessageMigrator {
 
       this.migratedMessages++;
 
+      if (this.migratedMessages % 100 == 0) {
+        console.log(`${company.id} - ... (total: ${this.migratedMessages} messages)`);
+      }
+
       //Force delay between channels
       await new Promise(r => {
-        setTimeout(r, 70);
+        setTimeout(r, 40);
       });
     }
   }
