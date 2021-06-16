@@ -214,7 +214,7 @@ class MessageSystem
 
         return [
             "ephemeral" => $ephemeral ? [
-                "id" => $object["ephemeral_id"],
+                "id" => $object["ephemeral_id"] ?: $object["front_id"] ?: $object["id"] ?: ("fake-" . date("U") . "-id"),
                 "version" => date("U"),
                 "recipient" => $object["ephemeral_message_recipients"][0],
                 "recipient_context_id" => "",
