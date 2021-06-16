@@ -8,9 +8,8 @@ import {
   getWorkspacesSchema,
   getWorkspaceUserSchema,
   getWorkspaceUsersSchema,
-  inviteWorkspaceUserSchema,
   updateWorkspaceSchema,
-  updateWorkspaceUserSchema
+  updateWorkspaceUserSchema,
 } from "./schemas";
 
 import WorkspaceServicesAPI from "../api";
@@ -142,15 +141,6 @@ const routes: FastifyPluginCallback<{
     preValidation: [fastify.authenticate],
     schema: getWorkspaceUserSchema,
     handler: workspaceUsersController.get.bind(workspaceUsersController),
-  });
-
-  fastify.route({
-    method: "POST",
-    url: `${workspaceUsersUrl}/invite`,
-    preHandler: [accessControl, companyCheck, checkUserIsWorkspaceAdmin],
-    preValidation: [fastify.authenticate],
-    schema: inviteWorkspaceUserSchema,
-    handler: workspaceUsersController.invite.bind(workspaceUsersController),
   });
 
   fastify.route({

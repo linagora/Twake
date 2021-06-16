@@ -3,7 +3,7 @@ import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
   ResourceGetResponse,
-  ResourceListResponse
+  ResourceListResponse,
 } from "../../../../utils/types";
 import { WorkspaceServiceAPI } from "../../api";
 import {
@@ -11,7 +11,7 @@ import {
   WorkspaceBaseRequest,
   WorkspaceObject,
   WorkspaceRequest,
-  WorkspacesListRequest
+  WorkspacesListRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
@@ -45,7 +45,7 @@ export class WorkspacesCrudController
       .then(a => (a ? a.role : null));
   }
 
-  private formatWorkspace(workspace: Workspace, role?: WorkspaceUserRole): WorkspaceObject {
+  private static formatWorkspace(workspace: Workspace, role?: WorkspaceUserRole): WorkspaceObject {
     const res: WorkspaceObject = {
       id: workspace.id,
       company_id: workspace.group_id,
@@ -95,13 +95,12 @@ export class WorkspacesCrudController
     }
 
     return {
-      resource: this.formatWorkspace(workspace, workspaceUserRole),
+      resource: WorkspacesCrudController.formatWorkspace(workspace, workspaceUserRole),
     };
   }
 
   async list(
     request: FastifyRequest<{ Params: WorkspacesListRequest }>,
-    reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
 
@@ -116,7 +115,9 @@ export class WorkspacesCrudController
     return {
       resources: allCompanyWorkspaces
         .filter(workspace => allUserWorkspaceRolesMap.has(workspace.id.toString()))
-        .map(ws => this.formatWorkspace(ws, allUserWorkspaceRolesMap.get(ws.id))),
+        .map(ws =>
+          WorkspacesCrudController.formatWorkspace(ws, allUserWorkspaceRolesMap.get(ws.id)),
+        ),
     };
   }
 
@@ -186,7 +187,7 @@ export class WorkspacesCrudController
     const workspaceUserRole = await this.getWorkspaceUserRole(workspaceEntity.id, context);
 
     return {
-      resource: this.formatWorkspace(workspaceEntity, workspaceUserRole),
+      resource: WorkspacesCrudController.formatWorkspace(workspaceEntity, workspaceUserRole),
     };
   }
 

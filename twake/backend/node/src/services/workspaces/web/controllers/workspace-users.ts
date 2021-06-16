@@ -8,11 +8,9 @@ import {
 } from "../../../../utils/types";
 import { WorkspaceServiceAPI } from "../../api";
 import {
-  WorkspaceUserInvitationResponse,
   WorkspaceUserObject,
   WorkspaceUsersAddBody,
   WorkspaceUsersBaseRequest,
-  WorkspaceUsersInvitationRequest,
   WorkspaceUsersRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
@@ -269,14 +267,6 @@ export class WorkspaceUsersCrudController
     return {
       status: "success",
     };
-  }
-
-  async invite(
-    request: FastifyRequest<{ Params: WorkspaceUsersInvitationRequest }>,
-    reply: FastifyReply,
-  ): Promise<WorkspaceUserInvitationResponse> {
-    reply.status(501);
-    throw Error("Not implemented");
   }
 }
 

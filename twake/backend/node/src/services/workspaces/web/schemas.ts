@@ -173,46 +173,6 @@ export const createWorkspaceUserSchema = {
   },
 };
 
-export const inviteWorkspaceUserSchema = {
-  body: {
-    type: "object",
-    properties: {
-      invitations: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            email: { type: "string" },
-            role: { type: "string", enum: ["admin", "member"] },
-            company_role: { type: "string", enum: ["owner", "admin", "member", "guest"] },
-          },
-          required: ["email", "role", "company_role"],
-        },
-      },
-    },
-    required: ["invitations"],
-  },
-  response: {
-    "2xx": {
-      type: "object",
-      properties: {
-        resource: workspaceUserObjectSchema,
-      },
-      result: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            email: { type: "string" },
-            status: { type: "string", enum: ["ok", "error"] },
-            message: { type: "string" },
-          },
-        },
-      },
-    },
-  },
-};
-
 export const updateWorkspaceUserSchema = {
   body: {
     type: "object",
