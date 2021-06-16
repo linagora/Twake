@@ -13,7 +13,7 @@ export type JWTDataType = {
 
 //Mobile temporary
 if ((WindowService.findGetParameter('mobile_login') as any) == '1') {
-  LocalStorage.setItem('mobile_login', 1);
+  LocalStorage.setItem('mobile_login', '1');
 }
 
 class JWTStorageClass {
@@ -49,10 +49,12 @@ class JWTStorageClass {
     }
 
     //Mobile temporary
-    if (LocalStorage.getItem('mobile_login')) {
-      LocalStorage.setItem('mobile_login', 0);
-      document.location.replace('/mobile?jwt=' + encodeURI(JSON.stringify(jwtData)));
-    }
+    LocalStorage.getItem('mobile_login', (res: string) => {
+      LocalStorage.setItem('mobile_login', '0');
+      if (res == '1') {
+        document.location.replace('/mobile?jwt=' + encodeURI(JSON.stringify(jwtData)));
+      }
+    });
 
     this.jwtData = jwtData;
     if (!options?.fromLocalStorage) {
