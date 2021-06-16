@@ -32,6 +32,7 @@ class MessageMigrator {
   private channelService: ChannelServiceAPI;
   private phpMessageService: PhpMessagesService;
   private nodeMessageService: MessageServiceAPI;
+  private migratedMessages: number = 0;
 
   constructor(readonly platform: TwakePlatform) {
     this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
@@ -55,7 +56,7 @@ class MessageMigrator {
         await this.migrateCompanyDirectMessages(company);
 
         await this.migrateCompanyChannelsMessages(company);
-        console.log(`${company.id} - completed  ✅`);
+        console.log(`${company.id} - completed (total: ${this.migratedMessages} messages)  ✅`);
       }
     } while (page.page_token);
 
@@ -159,11 +160,6 @@ class MessageMigrator {
 
       pagePhpMessages = messages.nextPage as Pagination;
     } while (pagePhpMessages.page_token);
-
-    //Force delay between channels
-    await new Promise(r => {
-      setTimeout(r, 100);
-    });
   }
 
   private migratedThreads: string[] = [];
@@ -186,6 +182,13 @@ class MessageMigrator {
 
       //Migrate message itself
       await this.migratePhpMessageToNodeMessage(threadId, message, company);
+
+      this.migratedMessages++;
+
+      //Force delay between channels
+      await new Promise(r => {
+        setTimeout(r, 70);
+      });
     }
   }
 
