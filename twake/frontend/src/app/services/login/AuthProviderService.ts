@@ -60,9 +60,9 @@ class AuthProviderService extends Observable {
         } catch (e) {
           //There is no sign-in response, so we can try to silent login and use refresh token
           try {
-            const user = await authProviderUserManager.getUser();
+            let user = await authProviderUserManager.getUser();
             if (user) {
-              const user = await authProviderUserManager.signinSilent();
+              user = await authProviderUserManager.signinSilent();
               this.getJWTFromOidcToken(user);
             } else {
               authProviderUserManager.signinRedirect();
