@@ -392,7 +392,6 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
-      console.log(response.json());
       expect(response.statusCode).toBe(404);
 
       done();
