@@ -1977,12 +1977,12 @@ export default {
   'components.locked_features.locked_history_banner.description':
     "Your company has over 10000 messages. That's a lot! Upgrade now to access all your message history.",
   'components.locked_features.locked_history_banner.button': 'Learn more',
-  'components.locked_features.locked_guests_popup.title': 'Feature is locked',
+  'components.locked_features.locked_guests_popup.title': 'Guests feature is locked',
   'components.locked_features.locked_guests_popup.subtitle':
-    'You do not have access to guests feature',
+    'This feature is not available in the Twake free version',
   'components.locked_features.locked_guests_popup.description':
-    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam reiciendis quidem ad quos! Placeat, quo eius? Iure, provident, error mollitia veniam rerum ab voluptates porro optio illo quibusdam, quia sunt.',
+    'Whoops!! Seems like you want to invite external users to your workspace. You might want to consider upgrading your plan if you want to collaborate with guests and external partners. Explore our pricing options and select the best option for your team collaboration needs.',
   'components.locked_features.locked_guests_popup.learn_more_button': 'Learn more',
   'components.locked_features.locked_guests_popup.skip_for_now_button': 'Skip for Now',
-  'components.locked_features.locked_guests_popup.or' : 'Or'
+  'components.locked_features.locked_guests_popup.or': 'Or',
 };

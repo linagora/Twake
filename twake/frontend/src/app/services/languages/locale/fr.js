@@ -2052,9 +2052,9 @@ export default {
   'components.locked_features.locked_history_banner.button': 'Voir plus',
   'components.locked_features.locked_guests_popup.title': 'La fonctionnalité est verrouillée',
   'components.locked_features.locked_guests_popup.subtitle':
-    "Vous n'avez pas accès aux fonctionnalités invité",
+    "Cette fonctionnalité n'est pas disponible dans la version gratuite",
   'components.locked_features.locked_guests_popup.description':
-    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam reiciendis quidem ad quos! Placeat, quo eius? Iure, provident, error mollitia veniam rerum ab voluptates porro optio illo quibusdam, quia sunt.',
+    'Oups !! Il semble que vous souhaitiez inviter des utilisateurs externes dans votre espace de travail. Vous pouvez envisager de mettre à niveau votre plan si vous souhaitez collaborer avec des invités et des partenaires externes. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe.',
   'components.locked_features.locked_guests_popup.learn_more_button': 'Voir plus',
   'components.locked_features.locked_guests_popup.skip_for_now_button': 'Ignorer',
   'components.locked_features.locked_guests_popup.or': 'Ou',

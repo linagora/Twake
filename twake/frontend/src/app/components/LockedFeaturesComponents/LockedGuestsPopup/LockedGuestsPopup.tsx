@@ -33,7 +33,7 @@ const LockedGuestsPopup = ({ companySubscriptionUrl }: PropsType): JSX.Element =
       style={{ height: 400 }}
       hideFooterDivider
       footerAlign="center"
-      footerStyle={{ marginBottom: 32 }}
+      footerStyle={{ marginBottom: 16 }}
       footer={
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Button type="primary" size="large" onClick={onClickLearnMore}>
@@ -60,12 +60,11 @@ const LockedGuestsPopup = ({ companySubscriptionUrl }: PropsType): JSX.Element =
         </Typography.Title>
       </Row>
 
-      <Row justify="center" style={{ marginBottom: '12px' }}>
+      <Row justify="center">
         <Typography.Text
           style={{
             textAlign: 'center',
-            width: '396px',
-            height: '44px',
+            width: '404px',
           }}
         >
           {Languages.t('components.locked_features.locked_guests_popup.description')}
