@@ -278,7 +278,15 @@ class MessageSystem
             "prepared" => $prepared
         ]);
 
-        return $phpMessage->getAsArray();
+        $array = $phpMessage->getAsArray();
+
+        if($message["ephemeral"]){
+            $array["front_id"] = $message["ephemeral"]["id"] . $message["ephemeral"]["version"];
+            $array["ephemeral_id"] = $message["ephemeral"]["id"];
+            $array["ephemeral_message_recipients"] =[ $message["ephemeral"]["recipient"]];
+        }
+
+        return $array;
     }
 
     private function getInfosFromChannel($channelId){
