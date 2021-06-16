@@ -210,7 +210,15 @@ class MessageSystem
             }
         }
 
+        $ephemeral = (isset($object["_once_ephemeral_message"]) && $object["_once_ephemeral_message"] || isset($object["ephemeral_id"]) && $object["ephemeral_id"]);
+
         return [
+            "ephemeral" => $ephemeral ? [
+                "id" => $object["ephemeral_id"],
+                "version" => date("U"),
+                "recipient" => $object["ephemeral_message_recipients"][0],
+                "recipient_context_id" => "",
+            ] : null,
             "text" => $object["content"]["original_str"] ?: $object["content"]["fallback_string"],
             "blocks" => $blocks,
             "files" => $files,
