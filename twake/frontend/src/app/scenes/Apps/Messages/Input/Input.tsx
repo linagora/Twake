@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import classNames from 'classnames';
 import { Send } from 'react-feather';
 import { EditorState } from 'draft-js';
 import { Tooltip } from 'antd';
@@ -23,34 +24,40 @@ type Props = {
   onFocus?: () => void;
   ref?: (node: any) => void;
   onSend?: (text: string) => void;
+  onChange?: (editorState: EditorState) => void;
   triggerApp?: (app: any, from_icon: any, evt: any) => void;
   localStorageIdentifier?: string;
   disableApps?: boolean;
   context?: string; //Main input or response input (empty string)
   format?: "markdown" | "raw";
+  editorPlugins?: Array<string>;
+  editorState?: EditorState;
 };
 
 export default (props: Props) => {
-  const editorPlugins = ["emoji", "mention", "channel", "command"];
+  const editorPlugins = props.editorPlugins || ["emoji", "mention", "channel", "command"];
+  const editorId = `channel:${props.channelId || ""}/thread:${props.threadId || ""}/message:${props.messageId || ""}`;
   const format = props.format || "markdown";
   const editorRef = useRef<EditorView>(null);
   const submitRef = useRef<HTMLDivElement>(null);
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const messageEditorService = MessageEditorsManager.get(props.channelId);
-  const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(props.channelId, { plugins: editorPlugins }));
+  const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(editorId, { plugins: editorPlugins }))
+  const disable_app: any = {};
 
   messageEditorService.useListener(useState);
 
   useEffect(() => {
     focusEditor();
+
     (async () => {
-      const initialMessage = await messageEditorService.getContent(props.threadId, props.messageId || '');
+      const initialMessage = await messageEditorService.getContent(props.threadId, props.messageId);
 
       if (initialMessage && initialMessage.length) {
         setEditorState(
           RichTextEditorStateService.get(
-            props.channelId,
+            editorId,
             {
               plugins: editorPlugins,
               clearIfExists: true,
@@ -62,13 +69,12 @@ export default (props: Props) => {
     })();
   }, []);
 
-  const disable_app: any = {};
-  const hasFilesAttached = (): boolean => {
-    return messageEditorService.filesAttachements[props.threadId || 'main']
-      ?.length
-      ? true
-      : false;
-  }
+  useEffect(() => {
+    if (props.editorState && props.editorState !== editorState) {
+      setEditorState(props.editorState);
+    }
+  }, [props.editorState]);
+
 
   const getContentOutput = (editorState: EditorState) => {
     return toString(editorState, format);
@@ -82,9 +88,9 @@ export default (props: Props) => {
       return;
     }
 
-    if (content || messageEditorService.filesAttachements[props.threadId || 'main']?.length) {
+    if (content || messageEditorService.hasAttachments(props.threadId)) {
       sendMessage(content);
-      setEditorState(RichTextEditorStateService.clear(props.channelId).get(props.channelId));
+      setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
     }
   };
 
@@ -96,11 +102,11 @@ export default (props: Props) => {
     MessagesService.triggerApp(props.channelId, props.threadId, app, from_icon, evt);
   };
 
-  const sendMessage = (val: string) => {
+  const sendMessage = (message: string) => {
     setLoading(true);
     MessagesService.iamWriting(props.channelId, props.threadId, false);
     MessagesService.sendMessage(
-      val,
+      message,
       {
         channel_id: props.channelId,
         parent_message_id: props.threadId || '',
@@ -123,6 +129,7 @@ export default (props: Props) => {
       })
       .finally(() => {
         messageEditorService.clearAttachments(props.threadId);
+        messageEditorService.clearMessage(props.threadId, props.messageId || '');
       });
   };
 
@@ -136,11 +143,11 @@ export default (props: Props) => {
 
   const setRichTextEditorState = (editorState: EditorState): void => {
     setEditorState(editorState);
-    RichTextEditorStateService.set(props.channelId, editorState);
+    RichTextEditorStateService.set(editorId, editorState);
   }
 
   const isEmpty = (): boolean => {
-    return ((editorState.getCurrentContent().getPlainText().trim().length === 0) && !hasFilesAttached()); 
+    return ((editorState.getCurrentContent().getPlainText().trim().length === 0) && !messageEditorService.hasAttachments(props.threadId)); 
   }
 
   const onUpArrow = (e: any): void => {
@@ -152,9 +159,15 @@ export default (props: Props) => {
     }
   }
 
-  const onChange = (editorState: EditorState) => {
-    messageEditorService.setContent(props.threadId, props.messageId || '', getContentOutput(editorState));
+  const onChange = async (editorState: EditorState) => {
+    await messageEditorService.setContent(props.threadId, props.messageId || '', getContentOutput(editorState));
+
+    if (props.onChange) {
+      props.onChange(editorState);
+      return;
+    }
     setRichTextEditorState(editorState);
+    //props.onChange && props.onChange(editorState);
   };
 
   const onFilePaste = (files: Blob[]) => {
@@ -168,12 +181,10 @@ export default (props: Props) => {
   return (
     <div
       className={
-        'message-input ' +
-        (loading ? 'loading ' : '') +
-        (messageEditorService.currentEditor !==
-        messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
-          ? 'unfocused '
-          : '')
+        classNames('message-input', {
+          loading,
+          unfocused: (messageEditorService.currentEditor !== messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context))
+        })
       }
       ref={props.ref}
       onClick={() => focus()}
@@ -214,7 +225,11 @@ export default (props: Props) => {
             <Tooltip title={Languages.t("scenes.apps.messages.input.send_message", [], "Send message")} placement="top">
               <div
                 ref={submitRef}
-                className={`submit-button ${!isEmpty() ? "" : "disabled"}`}
+                className={
+                  classNames('submit-button', {
+                    'disabled': isEmpty(),
+                  })
+                }
                 onClick={() => {
                   if (!isEmpty()) {
                     onSend();
@@ -234,9 +249,7 @@ export default (props: Props) => {
           threadId={props.threadId}
           onSend={() => onSend()}
           triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
-          onAddEmoji={emoji => {
-            editorRef.current?.insertCommand("EMOJI", emoji);
-          }}
+          onAddEmoji={emoji => editorRef.current?.insertCommand("EMOJI", emoji)}
           richTextEditorState={editorState}
           onRichTextChange={(editorState) => setRichTextEditorState(editorState)}
         />

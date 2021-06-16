@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'moment-timezone';
+import classNames from 'classnames';
 import Twacode from 'components/Twacode/Twacode';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import Reactions from './Reactions';
@@ -23,7 +24,7 @@ export default (props: Props) => {
   const [loadingAction, setLoadingAction] = useState(false);
   let loading_interaction_timeout: any = 0;
 
-  const listener = Collections.get('messages').useListener(useState, [
+  Collections.get('messages').useListener(useState, [
     props.message?.id,
     props.message?.front_id,
     'msgcontent',
@@ -57,10 +58,11 @@ export default (props: Props) => {
   return (
     <div
       className={
-        'message-content ' +
-        (active ? 'active ' : '') +
-        (loadingAction ? 'loading-interaction ' : '') +
-        (props.linkToThread ? 'link-to-thread ' : '')
+        classNames('message-content', {
+          active,
+          'loading-interaction': loadingAction,
+          'link-to-thread': props.linkToThread,
+        })
       }
       onClick={() => setActive(false)}
     >
@@ -71,7 +73,12 @@ export default (props: Props) => {
       />
       {!!showEdition && (
         <div className="content-parent">
-          <MessageEdition message={props.message} collectionKey={props.collectionKey} />
+          <MessageEdition
+            message={props.message}
+            collectionKey={props.collectionKey}
+            onDeleted={() => console.log("Message has been deleted")}
+            onEdited={() => console.log("Message has been edited")}
+          />
         </div>
       )}
       {!showEdition && (

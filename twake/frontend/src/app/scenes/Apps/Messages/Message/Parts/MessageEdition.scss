@@ -1,0 +1,21 @@
+.message-edition {
+  padding-top: 4px;
+  padding-bottom: 12px;
+
+  .message-edition-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 4px;
+
+    .editor-toolbar {
+      padding-left: 0;
+
+      .button-group:first-child {
+        padding-left: 0;
+        border-left: none;
+      }
+    }
+  }
+}

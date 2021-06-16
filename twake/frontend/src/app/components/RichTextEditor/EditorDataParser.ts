@@ -13,8 +13,6 @@ export function toString(editorState: EditorState, format: EditorTextFormat): st
         markdown = "";
       }
 
-      console.log("MARKDOWN", `${markdown}`)
-
       return markdown;
     }
     case "raw": {
