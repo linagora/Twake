@@ -2050,10 +2050,12 @@ export default {
   'components.locked_features.locked_history_banner.description':
     "Votre entreprise compte plus de 10 000 messages. C'est beaucoup! Mettez à niveau maintenant pour accéder à tout l'historique de vos messages.",
   'components.locked_features.locked_history_banner.button': 'Voir plus',
-  'components.locked_features.locked_guests_popup.title':
+  'components.locked_features.locked_guests_popup.title': 'La fonctionnalité est verrouillée',
+  'components.locked_features.locked_guests_popup.subtitle':
     "Vous n'avez pas accès aux fonctionnalités invité",
   'components.locked_features.locked_guests_popup.description':
     'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam reiciendis quidem ad quos! Placeat, quo eius? Iure, provident, error mollitia veniam rerum ab voluptates porro optio illo quibusdam, quia sunt.',
   'components.locked_features.locked_guests_popup.learn_more_button': 'Voir plus',
   'components.locked_features.locked_guests_popup.skip_for_now_button': 'Ignorer',
+  'components.locked_features.locked_guests_popup.or': 'Ou',
 };
