@@ -117,6 +117,27 @@ export default class UploadZone extends React.Component {
     });
     node.addEventListener('drop', e => this.change(e));
   }
+
+  /**
+   * @param {Blob[]} files 
+   * @returns 
+   */
+  uploadFiles(files = []) {
+    if (!this.props.allowPaste || !files.length) {
+      return;
+    }
+
+    const filesToUpload = {};
+    
+    files.forEach((file, number) => {
+      const filename = file.name ? file.name.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '') : `file-${number}`;
+
+      filesToUpload[filename] = file;
+    });
+
+    this.upload(filesToUpload);
+  }
+
   paste(event) {
     if (this.props.allowPaste) {
       var clipboardData = event.clipboardData || event.originalEvent.clipboardData;

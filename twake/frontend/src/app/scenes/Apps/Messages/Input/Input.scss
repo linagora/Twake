@@ -58,6 +58,57 @@
     }
   }
 
+  .editorview-submit {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: flex-start;
+
+    .editor {
+      display: block;
+      width: 100%;
+    }
+
+    .submit-button {
+      display: flex;
+      align-self: flex-start;
+      color: var(--primary);
+      opacity: 50%;
+      padding-right: 10px;
+      cursor: not-allowed;
+      
+      &:not(.disabled):hover {
+        color: var(--primary-hover);
+      }
+      
+      &:not(.disabled) {
+        cursor: pointer;
+        color: var(--primary);
+        opacity: unset;
+      }
+      
+      .send-icon {
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  .input-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    border-top: var(--grey-background);
+    margin-top: 10px;
+  }
+
+  .input-options-toolbar {
+    display: flex;
+    flex-direction: row;
+    margin-top: 8px;
+  }
+
   .input-options {
     display: flex;
     flex-direction: row;
@@ -84,6 +135,16 @@
         background-position: center;
         background-size: contain;
         border-radius: var(--border-radius-base);
+      }
+    }
+
+    .richtext {
+      &.selected {
+        background: var(--primary-background);
+
+        .option {
+          color: var(--primary);
+        }
       }
     }
   }
