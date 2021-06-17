@@ -83,8 +83,8 @@ export class MessageToNotificationsProcessor {
         );
 
         const mentions = {
-          users: usersOutput.map(u => (u || "").trim()),
-          specials: globalOutput.map(g => (g || "").trim()) as specialMention[],
+          users: (usersOutput || []).map(u => (u || "").trim()),
+          specials: (globalOutput || []).map(g => (g || "").trim()) as specialMention[],
         };
 
         const messageEvent: MessageNotification = {
