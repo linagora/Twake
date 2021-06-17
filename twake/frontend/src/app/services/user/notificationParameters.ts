@@ -1,10 +1,9 @@
 import moment from 'moment';
-import { message } from 'antd';
 
 import Observable from 'services/Observable/Observable';
-import Languages from 'services/languages/languages.js';
-import FeedbackMessageManager from 'services/FeedbackMessageManager/FeedbackMessageManager';
-import Login from 'services/login/login.js';
+import Languages from 'services/languages/languages';
+import { ToasterService as Toaster } from 'services/Toaster';
+import Login from 'services/login/login';
 
 import { Collection } from '../CollectionsReact/Collections';
 import {
@@ -58,7 +57,7 @@ class NotificationParametersService extends Observable {
       })
     );
 
-    FeedbackMessageManager.success(Languages.t('services.user.notification_parameters_update_alert'), 3);
+    Toaster.success(Languages.t('services.user.notification_parameters_update_alert'), 3);
   }
 
 
