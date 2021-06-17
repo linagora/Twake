@@ -95,17 +95,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         created = true;
       }
 
-      if (messageToUpdate) {
-        messageToUpdate.edited = {
-          edited_at: new Date().getTime(),
-        };
+      if (serverRequest) {
+        message = _.assign(messageToUpdate || message, message);
+      } else {
+        if (messageToUpdate) {
+          messageToUpdate.edited = {
+            edited_at: new Date().getTime(),
+          };
 
-        message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
-        if (context?.user?.application_id || serverRequest) {
-          message = _.assign(message, _.pick(message, "override"));
+          let updatedMessage = _.assign(
+            messageToUpdate,
+            _.pick(message, "text", "blocks", "files", "context"),
+          );
+          if (context?.user?.application_id) {
+            updatedMessage = _.assign(updatedMessage, _.pick(message, "override"));
+          }
+
+          message = updatedMessage;
         }
-      } else if (serverRequest) {
-        message.id = item.id;
       }
     }
 

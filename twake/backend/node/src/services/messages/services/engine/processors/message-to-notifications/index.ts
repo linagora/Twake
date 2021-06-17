@@ -116,6 +116,10 @@ export class MessageToNotificationsProcessor {
         };
 
         if (messageResource.type === "message" && messageResource.subtype !== "system") {
+          logger.info(
+            `${this.name} - Forward message ${messageResource.id} to channel:activity and message:created / message:updated`,
+          );
+
           //Ignore system messages
           if (message.created) {
             await this.pubsub.publish<ChannelActivityNotification>("channel:activity", {
@@ -129,6 +133,8 @@ export class MessageToNotificationsProcessor {
               data: messageEvent,
             },
           );
+        } else {
+          logger.debug(`${this.name} - Cancel because this is system message`);
         }
       }
     } catch (err) {

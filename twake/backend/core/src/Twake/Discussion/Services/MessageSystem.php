@@ -32,19 +32,27 @@ class MessageSystem
     {
         $offset = isset($options["offset"]) ? $options["offset"] : null;
         $limit = isset($options["limit"]) ? $options["limit"] : 20;
-        $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : "";
+        $message_id = isset($options["id"]) ? $options["id"] : "";
+        $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : ($message_id ?: "");
 
         $channel = $this->getInfosFromChannel($options["channel_id"]);   
         if(!$channel){
             return;
         }
 
-        if(!$parent_message_id){
-            $uri = "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+        if($message_id){
+            $uri = "/companies/".$channel["company_id"]."/threads/".$parent_message_id."/messages/".$message_id;
+            $singleResponse = $this->forwardToNode("GET", $uri, [], $current_user);
+            $response = [];
+            $response["resources"] = [ $singleResponse["resource"] ];
         }else{
-            $uri = "/companies/".$channel["company_id"]."/threads/".$parent_message_id."/messages?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+            if(!$parent_message_id){
+                $uri = "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+            }else{
+                $uri = "/companies/".$channel["company_id"]."/threads/".$parent_message_id."/messages?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+            }
+            $response = $this->forwardToNode("GET", $uri, [], $current_user);
         }
-        $response = $this->forwardToNode("GET", $uri, [], $current_user);
 
         $messages = [];
         foreach($response["resources"] as $message){
