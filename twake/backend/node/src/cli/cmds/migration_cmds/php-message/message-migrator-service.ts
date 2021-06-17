@@ -253,7 +253,7 @@ class MessageMigrator {
 
     // Set nodeThread values
     thread.id = message.id;
-    thread.created_at = message.creation_date;
+    thread.created_at = message.creation_date * 1000;
     thread.last_activity = message.modification_date;
     thread.answers = message.responses_count;
     thread.participants = [
@@ -262,7 +262,7 @@ class MessageMigrator {
         id: channel.id,
         company_id: channel.company_id,
         workspace_id: channel.workspace_id,
-        created_at: message.creation_date,
+        created_at: message.creation_date * 1000,
         created_by: message.sender,
       } as ParticipantObject,
     ];
@@ -324,8 +324,8 @@ class MessageMigrator {
    * Set edited message Object
    * @param modification_date timestamp
    */
-  private setMessageEditedObject(modification_date: number): MessageEdited {
-    return modification_date ? { edited_at: modification_date } : null;
+  private setMessageEditedObject(message: PhpMessage): MessageEdited {
+    return message.edited ? { edited_at: message.modification_date * 1000 } : null;
   }
 
   /**
@@ -333,7 +333,10 @@ class MessageMigrator {
    * @param message PhpMessage
    */
   private setMessagePinnedObject(message: PhpMessage): MessagePinnedInfo {
-    return { pinned_at: 0, pinned_by: message.sender };
+    if (message.pinned) {
+      return { pinned_at: 0, pinned_by: message.sender };
+    }
+    return null;
   }
 
   /**
@@ -390,7 +393,7 @@ class MessageMigrator {
     nodeMessage.text = message.content?.original_str || "";
     nodeMessage.blocks = this.setBlocks(message.content);
     nodeMessage.context = message.hidden_data;
-    nodeMessage.edited = this.setMessageEditedObject(message.modification_date);
+    nodeMessage.edited = this.setMessageEditedObject(message);
     nodeMessage.pinned_info = this.setMessagePinnedObject(message);
     nodeMessage.reactions = this.setMessageReactionsObject(message.reactions);
     nodeMessage.override = this.setMessageOverrideObject(message);

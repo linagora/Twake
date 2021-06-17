@@ -5,6 +5,7 @@ import { isBoolean, isInteger, isNull, isString, isUndefined } from "lodash";
 import { ColumnOptions, ColumnType } from "../../types";
 import { decrypt, encrypt } from "../../../../../../../crypto";
 import { logger } from "../../../../../../../../core/platform/framework";
+import moment from "moment";
 
 export const cassandraType = {
   encoded_string: "TEXT",
@@ -34,6 +35,10 @@ export const transformValueToDbString = (
   type: ColumnType,
   options: TransformOptions = {},
 ): string => {
+  if (type === "twake_datetime") {
+    return moment.unix(v / 1000).format("YYYY-MM-DD HH:mm:ss");
+  }
+
   if (type === "number") {
     if (isNull(v)) {
       return "null";
@@ -94,6 +99,11 @@ export const transformValueFromDbString = (
   options: TransformOptions = {},
 ): any => {
   logger.trace(`Transform value %o of type ${type}`, v);
+
+  if (type === "twake_datetime") {
+    console.log(v);
+    return v;
+  }
 
   if (v !== null && (type === "encoded_string" || type === "encoded_json")) {
     let decryptedValue: any;
