@@ -36,7 +36,7 @@ export class MessageToNotificationsProcessor {
 
       for (const participant of thread.participants) {
         if (participant.type !== "channel") {
-          return;
+          continue;
         }
 
         const channel: Channel = await this.channels.channels.get(
