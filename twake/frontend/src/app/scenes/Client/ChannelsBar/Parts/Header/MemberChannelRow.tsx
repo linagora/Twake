@@ -12,11 +12,11 @@ import Icon from 'app/components/Icon/Icon';
 import AccessRightsService from 'app/services/AccessRightsService';
 import RouterServices from 'services/RouterService';
 import Collection from 'app/services/Collections/Collection';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { PendingEmailResource } from 'app/models/PendingEmail';
 import GuestManagementService from 'app/services/GuestMember/GuestManagementService';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 
 const { Text } = Typography;
 

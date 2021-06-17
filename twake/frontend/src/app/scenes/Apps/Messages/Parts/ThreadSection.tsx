@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import 'moment-timezone';
-import User from 'services/user/user.js';
+import User from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import { getSender } from 'app/services/Apps/Messages/MessagesUtils';
 import Draggable from 'components/Draggable/Draggable.js';

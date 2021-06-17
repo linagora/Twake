@@ -6,7 +6,7 @@ import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
 import MessageContent from './Parts/MessageContent';
 import MessagesService from 'services/Apps/Messages/Messages.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import { MessageEditorService } from 'app/services/Apps/Messages/MessageEditorService';
 import DroppableZone from 'components/Draggable/DroppableZone.js';

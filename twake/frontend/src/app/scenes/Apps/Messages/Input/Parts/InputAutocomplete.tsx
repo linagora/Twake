@@ -1,7 +1,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import AutoComplete from 'components/AutoComplete/AutoComplete';
 import EmojiService from 'services/emojis/emojis.js';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspacesUser from 'services/workspaces/workspaces_users.js';
 import Emojione from 'components/Emojione/Emojione';

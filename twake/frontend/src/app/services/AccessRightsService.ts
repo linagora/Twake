@@ -1,6 +1,7 @@
 import Observable from './Observable/Observable';
 
 type Rights = 'guest' | 'member' | 'administrator';
+type RightsOrNone = Rights | 'none';
 
 const rightLevels = {
   none: 0,
@@ -9,7 +10,7 @@ const rightLevels = {
   administrator: 50,
 };
 
-class _AccessRightsService extends Observable {
+class AccessRightsService extends Observable {
   workspaceLevels: { [workspaceId: string]: Rights } = {};
   companyLevels: { [companyId: string]: Rights } = {};
 
@@ -18,15 +19,15 @@ class _AccessRightsService extends Observable {
     (window as any).AccessRightsService = this;
   }
 
-  public hasLevel(workspaceId: string, right: 'none' | Rights) {
+  public hasLevel(workspaceId: string, right: RightsOrNone) {
     return rightLevels[this.workspaceLevels[workspaceId] || 'none'] >= rightLevels[right];
   }
 
-  public getLevel(workspaceId: string): 'none' | Rights {
+  public getLevel(workspaceId: string): RightsOrNone {
     return this.workspaceLevels[workspaceId] || 'none';
   }
 
-  public updateLevel(workspaceId: string, right: 'none' | Rights) {
+  public updateLevel(workspaceId: string, right: RightsOrNone) {
     delete this.workspaceLevels[workspaceId];
     if (right !== 'none') this.workspaceLevels[workspaceId] = right;
     this.notify();
@@ -38,20 +39,19 @@ class _AccessRightsService extends Observable {
     this.notify();
   }
 
-  public updateCompanyLevel(companyId: string, right: 'none' | Rights) {
+  public updateCompanyLevel(companyId: string, right: RightsOrNone) {
     delete this.companyLevels[companyId];
     if (right !== 'none') this.companyLevels[companyId] = right;
     this.notify();
   }
 
-  public hasCompanyLevel(companyId: string, right: 'none' | Rights) {
+  public hasCompanyLevel(companyId: string = '', right: RightsOrNone) {
     return rightLevels[this.companyLevels[companyId] || 'none'] >= rightLevels[right];
   }
 
-  public getCompanyLevel(companyId: string): 'none' | Rights {
+  public getCompanyLevel(companyId: string = ''): RightsOrNone {
     return this.companyLevels[companyId] || 'none';
   }
 }
 
-const AccessRightsService = new _AccessRightsService();
-export default AccessRightsService;
+export default new AccessRightsService();

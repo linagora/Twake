@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './elements.scss';
 import { Avatar, Col, Typography } from 'antd';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
 const { Text } = Typography;

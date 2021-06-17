@@ -5,7 +5,7 @@ import ChannelsService from 'services/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
 import React, { createRef, useEffect } from 'react';
 import ModalManager from 'app/components/Modal/ModalManager';
-import UserServices from 'services/user/user.js';
+import UserServices from 'services/user/UserService';
 
 type PropsType = {
   userIds: string[];

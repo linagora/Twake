@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Strings from 'app/services/utils/strings';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import UserOrMail from '../ui/UserOrMail';

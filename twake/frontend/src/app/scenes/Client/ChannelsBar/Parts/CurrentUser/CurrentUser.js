@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserService from 'services/user/user.js';
-import CurrentUserService from 'services/user/current_user.js';
+import UserService from 'services/user/UserService';
+import CurrentUserService from 'app/services/user/CurrentUser';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import LoginService from 'services/login/login.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
-import ListenUsers from 'services/user/listen_users.js';
+import ListenUsers from 'services/user/ListenUsers';
 import UserParameter from 'app/scenes/Client/Popup/UserParameter/UserParameter.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';

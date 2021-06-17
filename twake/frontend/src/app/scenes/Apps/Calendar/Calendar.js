@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import './Calendar.scss';
 import LocalStorage from 'app/services/LocalStorage';

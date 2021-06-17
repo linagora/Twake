@@ -3,7 +3,7 @@ import $ from 'jquery';
 import Observable from 'app/services/Depreciated/observable.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import PopupManager from 'services/popupManager/popupManager.js';
-import User from 'services/user/user.js';
+import User from 'services/user/UserService';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
@@ -14,7 +14,7 @@ import WindowService from 'services/utils/window.js';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
 import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
-import Notifications from 'services/user/notifications';
+import UserNotifications from 'app/services/user/UserNotifications';
 import AccessRightsService from 'services/AccessRightsService';
 import loginService from 'services/login/login.js';
 import InitService from 'app/services/InitService';
@@ -72,7 +72,7 @@ class Workspaces extends Observable {
   updateCurrentCompanyId(companyId) {
     if (this.currentGroupId != companyId && companyId) {
       this.currentGroupId = companyId;
-      Notifications.subscribeToCurrentCompanyNotifications(companyId);
+      UserNotifications.subscribeToCurrentCompanyNotifications(companyId);
     }
   }
 

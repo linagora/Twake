@@ -9,6 +9,9 @@ import AlertManager from 'services/AlertManager/AlertManager';
 
 import Globals from 'services/Globals.js';
 
+/**
+ * FIXME: This service seems still used by some components but we now have ./NotificationPreferences one which seems to overlap...
+ */
 class NotificationParameters extends Observable {
   constructor() {
     super();
@@ -208,5 +211,4 @@ class NotificationParameters extends Observable {
   }
 }
 
-const notifications_parameters = new NotificationParameters();
-export default notifications_parameters;
+export default new NotificationParameters();

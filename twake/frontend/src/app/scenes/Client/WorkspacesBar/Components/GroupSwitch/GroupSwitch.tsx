@@ -1,7 +1,6 @@
 import { NotificationResource } from 'app/models/Notification';
 import { Collection } from 'app/services/CollectionsReact/Collections';
-import Notifications from 'services/user/notifications';
-import React, { Component } from 'react';
+import React from 'react';
 
 import './GroupSwitch.scss';
 

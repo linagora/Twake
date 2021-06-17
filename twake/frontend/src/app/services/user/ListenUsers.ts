@@ -1,37 +1,47 @@
-import React from 'react';
-import ws from 'services/websocket.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserService from './user.js';
+import ws from 'services/websocket';
+import Collections from 'app/services/Depreciated/Collections/Collections';
+import UserService from './UserService';
+import Globals from 'services/Globals';
 
-import Globals from 'services/Globals.js';
+type Timeout = ReturnType<typeof setTimeout>;
 
 class ListenUsers {
+  users_repository: any;
+  connectedPing: {[key: string]: Timeout};
+  listenerCount: {[key: string]: number};
+  pingTimeouts: {[key: string]: Timeout};
+  was_connected_last_check: {[key: string]: boolean};
+  lastPong: number;
+
   constructor() {
     this.users_repository = Collections.get('users');
     this.listenerCount = {};
-
-    Globals.window.listenUsers = this;
-
     this.connectedPing = {};
     this.pingTimeouts = {};
-
     this.was_connected_last_check = {};
-
     this.lastPong = 0;
+    (Globals.window as any).listenUsers = this;
   }
 
-  //Check if we are active: new Date().getTime() - ws.lastAlive < 1000*60*5
-
-  ping(_idUser) {
-    var idUser = _idUser;
-    ws.publish('users/' + idUser, {
+  /**
+   * Check if the given user is active: new Date().getTime() - ws.lastAlive < 1000*60*5
+   *
+   * @param idUser 
+   */
+  ping(idUser: string): void {
+    ws.publish(`users/${idUser}`, {
       ping: true,
       user: { connected: true, id: UserService.getCurrentUserId() },
     });
-    if (this.pingTimeouts[idUser]) clearTimeout(this.pingTimeouts[idUser]);
+
+    if (this.pingTimeouts[idUser]) {
+      clearTimeout(this.pingTimeouts[idUser]);
+    }
+
     this.pingTimeouts[idUser] = setTimeout(() => {
       //Only say this to me !
-      var user = Collections.get('users').find(idUser);
+      const user = Collections.get('users').find(idUser);
+
       if (user) {
         if (user.connected) {
           user.connected = false;
@@ -42,14 +52,15 @@ class ListenUsers {
     }, 5000);
   }
 
-  pong() {
+  pong(): void {
     this.lastPong = new Date().getTime();
-    ws.publish('users/' + UserService.getCurrentUserId(), {
+
+    ws.publish(`users/${UserService.getCurrentUserId()}`, {
       user: { connected: true, id: UserService.getCurrentUserId() },
     });
   }
 
-  listenUser(idUser) {
+  listenUser(idUser: string): void {
     if (!idUser) {
       return;
     }
@@ -59,9 +70,9 @@ class ListenUsers {
     }
     this.listenerCount[idUser] += 1;
 
-    var that = this;
+    const that = this;
     if (this.listenerCount[idUser] == 1) {
-      ws.subscribe('users/' + idUser, function (uri, data) {
+      ws.subscribe(`users/${idUser}`, (_uri: string, data: any) => {
         /*if (idUser == UserService.getCurrentUserId()) {
           if (data.ping) {
             that.pong();
@@ -85,7 +96,7 @@ class ListenUsers {
             UserService.asyncGet(data.user.id);
           }
         }
-      });
+      }, null);
 
       if (idUser != UserService.getCurrentUserId()) {
         /*setTimeout(() => {
@@ -102,15 +113,18 @@ class ListenUsers {
     }
   }
 
-  setUserPingTimeout(idUser) {
-    if (this.connectedPing[idUser]) clearTimeout(this.connectedPing[idUser]);
+  setUserPingTimeout(idUser: string): void {
+    if (this.connectedPing[idUser]) {
+      clearTimeout(this.connectedPing[idUser]);
+    }
+
     this.connectedPing[idUser] = setTimeout(() => {
       this.ping(idUser);
       this.setUserPingTimeout(idUser);
     }, 600000);
   }
 
-  cancelListenUser(idUser) {
+  cancelListenUser(idUser: string) {
     if (!idUser) {
       return;
     }
@@ -118,12 +132,18 @@ class ListenUsers {
     if (this.listenerCount[idUser]) {
       this.listenerCount[idUser] += -1;
     }
-    if (!this.listenerCount[idUser] || this.listenerCount[idUser] == 0) {
-      ws.unsubscribe('users/' + idUser);
-      if (this.connectedPing[idUser]) clearInterval(this.connectedPing[idUser]);
+
+    if (!this.listenerCount[idUser] || this.listenerCount[idUser] === 0) {
+      ws.unsubscribe(`users/${idUser}`, null, null);
+
+      if (this.connectedPing[idUser]) {
+        clearInterval(this.connectedPing[idUser]);
+      }
     }
   }
 }
 
-Globals.services.listenUserService = Globals.services.listenUserService || new ListenUsers();
-export default Globals.services.listenUserService;
+const service = new ListenUsers();
+(Globals.services as any) = service;
+
+export default service;

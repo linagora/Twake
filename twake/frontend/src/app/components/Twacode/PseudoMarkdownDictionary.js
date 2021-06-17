@@ -6,7 +6,7 @@ import File from 'components/Drive/File.js';
 import User from './blocks/User.js';
 import Chan from './blocks/Chan.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
 

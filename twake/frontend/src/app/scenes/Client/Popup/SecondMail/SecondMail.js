@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import userService from 'services/user/user.js';
+import userService from 'services/user/UserService';
 import loginService from 'services/login/login.js';
 import AccountService from 'services/login/account';
 import popupManager from 'services/popupManager/popupManager.js';

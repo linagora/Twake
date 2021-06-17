@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ModalManager from 'app/components/Modal/ModalManager';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import WelcomeOnTwake from './popups/WelcomeOnTwake';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'app/services/InitService';

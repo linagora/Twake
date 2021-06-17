@@ -2,7 +2,8 @@ import Languages from 'services/languages/languages.js';
 import Api from '../Api';
 import DepreciatedCollections from '../Depreciated/Collections/Collections';
 import InitService from '../InitService';
-import { ToasterService as Toaster } from '../Toaster'
+import { ToasterService as Toaster } from '../Toaster';
+import { ConsoleMemberRole } from './types';
 
 class ConsoleService {
   public getCompanyManagementUrl(companyId: string) {
@@ -43,7 +44,7 @@ class ConsoleService {
     workspace_id: string;
     company_id: string;
     emails: string[];
-    role?: 'admin' | 'member' | 'guest';
+    role?: ConsoleMemberRole;
   }) {
     return new Promise(async resolve => {
       const response = await Api.post('users/console/api/invite', data, (res: any) => {

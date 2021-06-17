@@ -116,5 +116,4 @@ class Globals {
   }
 }
 
-const globals = new Globals();
-export default globals;
+export default new Globals();

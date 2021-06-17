@@ -2,18 +2,10 @@ import { PendingEmail, PendingEmailResource } from 'app/models/PendingEmail';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Collections, { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterService';
-import UserServices from 'services/user/user';
+import UserServices from 'services/user/UserService';
 import ConsoleService from '../Console/ConsoleService';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
-
-export type GenericMemberType = 'pending-email' | 'guest';
-
-export type GenericMember = {
-  key: string;
-  type: GenericMemberType;
-  filterString: string;
-  resource: PendingEmailResource | ChannelMemberResource;
-};
+import { GenericMember } from './types';
 
 class GuestManagementService {
   guests: GenericMember[] = [];
