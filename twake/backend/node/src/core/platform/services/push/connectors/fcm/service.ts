@@ -36,6 +36,7 @@ export default class FcmPushConnector implements PushConnector {
           "Content-Type": "application/json",
           Authorization: `key=${firebaseApiKey}`,
         },
+        method: "POST",
         body: JSON.stringify(pushMessage),
       });
       if (response.status !== 200) {
