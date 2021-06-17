@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';

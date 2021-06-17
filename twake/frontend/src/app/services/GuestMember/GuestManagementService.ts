@@ -1,18 +1,11 @@
 import { PendingEmail, PendingEmailResource } from 'app/models/PendingEmail';
-import Collections, { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
+import Collections, { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterService';
-import UserServices from 'services/user/user.js';
-import { UserType } from 'app/models/User';
-import ConsoleService from './ConsoleService';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-
-export type GenericMember = {
-  key: string;
-  type: 'pending-email' | 'guest';
-  filterString: string;
-  resource: PendingEmailResource | ChannelMemberResource;
-};
+import UserServices from 'services/user/UserService';
+import ConsoleService from '../Console/ConsoleService';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+import { GenericMember } from './types';
 
 class GuestManagementService {
   guests: GenericMember[] = [];
@@ -21,12 +14,9 @@ class GuestManagementService {
 
   bind({ search, channel_id }: { search: string; channel_id: string }): void {
     const { workspaceId, companyId } = RouterServices.getStateFromRoute();
-    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel_id}/members/::guests`;
-    const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+    const channelMembersCollection = this.getChannelMembersCollection(companyId, workspaceId, channel_id);
     const channelMembers = channelMembersCollection.find({}, { query: { company_role: 'guest' } });
-
-    const route = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel_id}/pending_emails/`;
-    const pendingEmailsCollection = Collections.get(route, PendingEmailResource);
+    const pendingEmailsCollection = this.getPendingEmailCollection(companyId, workspaceId, channel_id);
     const pendingEmails = pendingEmailsCollection.find({});
 
     this.setList(pendingEmails, channelMembers);
@@ -40,16 +30,16 @@ class GuestManagementService {
         ({ filterString }) =>
           (filterString || '').toUpperCase().indexOf((search || '').toUpperCase()) > -1,
       );
-    } else return this.list;
+    }
+    
+    return this.list;
   }
 
   setGuests(members: ChannelMemberResource[]): GenericMember[] {
     return (this.guests = members.map((member: ChannelMemberResource) => {
-      const user = DepreciatedCollections.get('users').find(member.data.user_id || '');
-
       return {
         type: 'guest',
-        filterString: UserServices.getFullName(user),
+        filterString: UserServices.getFullName(DepreciatedCollections.get('users').find(member.data.user_id || '')),
         resource: member,
         key: member.data.id || '',
       };
@@ -57,14 +47,12 @@ class GuestManagementService {
   }
 
   setPendingEmails(pendingEmails: PendingEmailResource[]): GenericMember[] {
-    const result: GenericMember[] = pendingEmails.map((pendingEmail: PendingEmailResource) => {
-      return {
-        key: pendingEmail.key,
-        type: 'pending-email',
-        filterString: pendingEmail.data.email,
-        resource: pendingEmail,
-      };
-    });
+    const result: GenericMember[] = pendingEmails.map((pendingEmail: PendingEmailResource) => ({
+      key: pendingEmail.key,
+      type: 'pending-email',
+      filterString: pendingEmail.data.email,
+      resource: pendingEmail,
+    }));
 
     return (this.pendingEmails = result.sort((a, b) =>
       (a.filterString || '').localeCompare(b.filterString || ''),
@@ -86,8 +74,7 @@ class GuestManagementService {
     channel_id,
     email,
   }: PendingEmail): Promise<PendingEmailResource> {
-    const pendingEmailRoute = `/channels/v1/companies/${company_id}/workspaces/${workspace_id}/channels/${channel_id}/pending_emails/`;
-    const pendingEmailCollection = Collections.get(pendingEmailRoute, PendingEmailResource);
+    const pendingEmailCollection = this.getPendingEmailCollection(company_id, workspace_id, channel_id);
     const resourceToAdd = new PendingEmailResource({ company_id, workspace_id, channel_id, email });
 
     ConsoleService.addMailsInWorkspace({
@@ -101,13 +88,33 @@ class GuestManagementService {
   }
 
   deletePendingEmail(data: PendingEmail): Promise<void> {
-    const pendingEmailRoute = `/channels/v1/companies/${data.company_id}/workspaces/${data.workspace_id}/channels/${data.channel_id}/pending_emails/`;
-    const pendingEmailCollection = Collections.get(pendingEmailRoute, PendingEmailResource);
-    return pendingEmailCollection.remove(data);
+    return this.getPendingEmailCollection(data.company_id, data.workspace_id, data.channel_id).remove(data);
   }
 
   destroyList(): void {
     this.list = [];
+  }
+
+  private getPendingEmailCollection(companyId: string = '', workspaceId: string = '', channelId: string = ''): Collection<PendingEmailResource> {
+    return Collections.get(
+      this.getPendingEmailsRoute(companyId, workspaceId, channelId),
+      PendingEmailResource,
+    );
+  }
+
+  private getChannelMembersCollection(companyId: string = '', workspaceId: string = '', channelId: string = ''): Collection<ChannelMemberResource> {
+    return Collections.get(
+      this.getGuestMembersRoute(companyId, workspaceId, channelId),
+      ChannelMemberResource,
+    )
+  }
+
+  private getPendingEmailsRoute(companyId: string = '', workspaceId: string = '', channelId: string = ''): string {
+    return `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/pending_emails/`;
+  }
+
+  private getGuestMembersRoute(companyId: string = '', workspaceId: string = '', channelId: string = ''): string {
+    return `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/::guests`;
   }
 }
 

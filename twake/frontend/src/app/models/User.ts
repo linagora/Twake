@@ -1,6 +1,6 @@
 export type UserType = {
   connected?: boolean;
-  email?: string;
+  email: string;
   firstname?: string;
   front_id?: string;
   groups_id?: string[];
@@ -23,6 +23,8 @@ export type UserType = {
   username: string;
   workspaces?: any;
   workspaces_id?: string[];
+  is_verified?: boolean;
+  created_at?: number;
   _cached?: boolean;
   _cached_from?: any;
   _created?: boolean;

@@ -2,7 +2,7 @@ import React from 'react';
 import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import User from 'services/user/user.js';
+import User from 'services/user/UserService';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
@@ -10,9 +10,9 @@ import groupService from 'services/workspaces/groups.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import Numbers from 'services/utils/Numbers.js';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import CurrentUser from 'services/user/current_user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
 import AlertManager from 'services/AlertManager/AlertManager';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 
 import Globals from 'services/Globals.js';
 

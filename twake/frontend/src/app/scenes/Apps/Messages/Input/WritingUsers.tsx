@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 
 type Props = {

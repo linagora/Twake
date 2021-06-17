@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './elements.scss';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 
 export default class User extends React.Component {
   render() {

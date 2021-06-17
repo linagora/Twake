@@ -5,13 +5,13 @@ import ObjectModal from '../../ObjectModal/ObjectModal';
 import Languages from 'services/languages/languages.js';
 import ModalManager from 'app/components/Modal/ModalManager';
 import AddMailsInWorkspace from './AddMailsInWorkspace';
-import ConsoleService from 'app/services/ConsoleService';
+import ConsoleService from 'app/services/Console/ConsoleService';
 
 type PropsType = {
   email: string;
 };
 
-const WelcomeOnTwake = ({ email }: PropsType) => {
+export default ({ email }: PropsType) => {
   const [loading, setLoading] = useState<boolean>(false);
   const openAddMembers = () =>
     ModalManager.open(<AddMailsInWorkspace />, {
@@ -117,5 +117,3 @@ const WelcomeOnTwake = ({ email }: PropsType) => {
     </ObjectModal>
   );
 };
-
-export default WelcomeOnTwake;

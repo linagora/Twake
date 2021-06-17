@@ -10,7 +10,7 @@ import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch.js';
 import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import CreateCompanyAccount from './CreateCompanyAccount.js';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
 import './Pages.scss';
@@ -18,7 +18,7 @@ import Pending from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspaceP
 import Members from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members.js';
 import Tabs from 'components/Tabs/Tabs.js';
 import InitService from 'app/services/InitService';
-import ConsoleService from 'app/services/ConsoleService';
+import ConsoleService from 'app/services/Console/ConsoleService';
 
 export default class WorkspacePartner extends Component {
   constructor() {

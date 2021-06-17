@@ -2,7 +2,7 @@ import React from 'react';
 
 import './CompanyHeader.scss';
 
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import Icon from 'components/Icon/Icon.js';
 import Emojione from 'components/Emojione/Emojione';
 import NotificationDelay from '../Notifications/NotificationDelay';

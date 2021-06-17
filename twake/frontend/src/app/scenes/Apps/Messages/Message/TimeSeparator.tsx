@@ -4,7 +4,7 @@ import Moment from 'react-moment';
 import 'moment-timezone';
 
 import Languages from 'services/languages/languages.js';
-import CurrentUser from 'services/user/current_user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import './Message.scss';
 

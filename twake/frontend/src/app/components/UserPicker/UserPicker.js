@@ -3,7 +3,7 @@ import Picker from 'components/Picker/Picker.js';
 import Icon from 'components/Icon/Icon.js';
 import './UserPicker.scss';
 import User from 'components/ui/User.js';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import Languages from 'services/languages/languages.js';
 
 export default class UserPicker extends React.Component {

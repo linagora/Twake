@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { Button, Typography } from 'antd';
 import Languages from 'services/languages/languages.js';
-import './AddUser.scss';
-import Emojione from 'app/components/Emojione/Emojione';
 import popupManager from 'services/popupManager/popupManager.js';
 import AutoHeight from 'app/components/AutoHeight/AutoHeight';
-import ConsoleService from 'app/services/ConsoleService';
+import ConsoleService from 'app/services/Console/ConsoleService';
 import RouterServices from 'services/RouterService';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import './AddUser.scss';
 
 type PropsType = {
   [key: string]: any;
 };
 
-const AddUserFromTwakeConsole = (props: PropsType) => {
+export default (props: PropsType): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -92,5 +91,3 @@ const AddUserFromTwakeConsole = (props: PropsType) => {
     </div>
   );
 };
-
-export default AddUserFromTwakeConsole;

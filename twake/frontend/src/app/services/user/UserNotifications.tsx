@@ -1,21 +1,21 @@
 import React from 'react';
-import Observable from 'app/services/Observable/Observable';
-import ElectronService from 'services/electron/electron.js';
-import windowState from 'services/utils/window.js';
-import { notification } from 'antd';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import { notification as antNotification } from 'antd';
 import { X } from 'react-feather';
+import emojione from 'emojione';
+import Observable from 'app/services/Observable/Observable';
+import ElectronService from 'services/electron/electron';
+import windowState from 'services/utils/window';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import { ChannelResource } from 'app/models/Channel';
 import { Collection } from '../CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
-import WorkspacesService from 'services/workspaces/workspaces.js';
-import popupManager from 'services/popupManager/popupManager.js';
+import WorkspacesService from 'services/workspaces/workspaces';
+import popupManager from 'services/popupManager/popupManager';
 import RouterService from '../RouterService';
-import ChannelsService from 'services/channels/channels.js';
-import emojione from 'emojione';
-import NotificationParameters from 'services/user/notification_parameters.js';
-import UserService from 'services/user/user.js';
-import NotificationPreferences from './notificationParameters';
+import ChannelsService from 'services/channels/channels';
+import NotificationParameters from 'services/user/notification_parameters';
+import UserService from 'services/user/UserService';
+import NotificationPreferences from './NotificationPreferences';
 
 type DesktopNotification = {
   channel_id: string;
@@ -29,27 +29,30 @@ type DesktopNotification = {
 };
 
 let inAppNotificationKey = 0;
-const openNotification = (n: any, newNotification: DesktopNotification | null, callback: any) => {
-  notification.close(inAppNotificationKey.toString());
+
+const openNotification = (
+  notification: { title: string, text: string },
+  newNotification: DesktopNotification | null,
+  callback: (desktopNotification: DesktopNotification | null, id: string) => void
+) => {
+  antNotification.close(inAppNotificationKey.toString());
   inAppNotificationKey++;
   const notificationKey = inAppNotificationKey.toString();
-  notification.open({
+  antNotification.open({
     key: notificationKey,
-    message: emojione.shortnameToUnicode(n.title),
+    message: emojione.shortnameToUnicode(notification.title),
     description: PseudoMarkdownCompiler.compileToSimpleHTML(
       PseudoMarkdownCompiler.compileToJSON(
-        (n.text || '').substr(0, 120) + ((n.text || '').length > 120 ? '...' : ''),
+        (notification.text || '').substr(0, 120) + ((notification.text || '').length > 120 ? '...' : ''),
       ),
     ),
-    onClick: () => {
-      callback(newNotification, notificationKey);
-    },
+    onClick: () => callback(newNotification, notificationKey),
     closeIcon: <X size={16} />,
   });
 };
 
 class Notifications extends Observable {
-  private newNotificationAudio: any;
+  private newNotificationAudio: HTMLAudioElement;
   private started: boolean = false;
 
   constructor() {
@@ -68,7 +71,7 @@ class Notifications extends Observable {
     this.started = true;
 
     if ('Notification' in window && window.Notification.requestPermission) {
-      var request = window.Notification.requestPermission();
+      const request = window.Notification.requestPermission();
       if (request && request.then) {
         request.then(function (result) {});
       }
@@ -213,7 +216,7 @@ class Notifications extends Observable {
         notificationObject: DesktopNotification | null,
         inAppNotificationKey?: string,
       ) => {
-        inAppNotificationKey && notification.close(inAppNotificationKey);
+        inAppNotificationKey && antNotification.close(inAppNotificationKey);
         popupManager.closeAll();
         if (!notificationObject) {
           return;
@@ -247,7 +250,7 @@ class Notifications extends Observable {
       );
 
       if ('Notification' in window && window.document.hasFocus) {
-        var n = new Notification(title, {
+        const n = new Notification(title, {
           body: message,
         });
         n.onclick = () => {
@@ -283,5 +286,4 @@ class Notifications extends Observable {
   }
 }
 
-const notificationsService = new Notifications();
-export default notificationsService;
+export default new Notifications();

@@ -10,7 +10,7 @@ import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import './CreateCompanyView.scss';
 import Input from 'components/Inputs/Input.js';
-import CurrentUser from 'services/user/current_user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
 import InitService from 'services/InitService';
 import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 

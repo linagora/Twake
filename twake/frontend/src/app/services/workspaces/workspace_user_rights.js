@@ -2,7 +2,7 @@ import React from 'react';
 import Observable from 'app/services/Depreciated/observable.js';
 import WorkspacesUsers from './workspaces_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import CurrentUser from 'services/user/current_user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
 import WindowService from 'services/utils/window.js';
 import AccessRightsService from 'services/AccessRightsService';
 
