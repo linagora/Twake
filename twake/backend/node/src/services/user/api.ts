@@ -13,7 +13,7 @@ import Company, { CompanyPrimaryKey } from "./entities/company";
 import ExternalUser from "./entities/external_user";
 import ExternalGroup from "./entities/external_company";
 import { ListUserOptions } from "./services/users/types";
-import { UserCompanyRole } from "./web/types";
+import { CompanyUserRole } from "./web/types";
 import { WorkspaceServiceAPI } from "../workspaces/api";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
@@ -117,6 +117,6 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   setUserRole(
     companyPk: CompanyPrimaryKey,
     userPk: UserPrimaryKey,
-    role: UserCompanyRole,
+    role: CompanyUserRole,
   ): Promise<void>;
 }

@@ -20,7 +20,7 @@ import CompanyUser, {
   getInstance as getCompanyUserInstance,
 } from "../../entities/company_user";
 import { ListUserOptions } from "../users/types";
-import { UserCompanyRole } from "../../web/types";
+import { CompanyUserRole } from "../../web/types";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -118,7 +118,7 @@ export class CompanyService implements CompaniesServiceAPI {
   async setUserRole(
     companyPk: CompanyPrimaryKey,
     userPk: UserPrimaryKey,
-    role: UserCompanyRole,
+    role: CompanyUserRole,
   ): Promise<void> {
     const entity = await this.companyUserRepository.findOne({
       group_id: companyPk.id,

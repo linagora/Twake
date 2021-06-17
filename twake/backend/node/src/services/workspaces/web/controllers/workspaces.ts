@@ -1,27 +1,24 @@
-import { CrudController } from "../../../core/platform/services/webserver/types";
+import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
-} from "../../../utils/types";
-import { WorkspaceServiceAPI } from "../api";
+} from "../../../../utils/types";
+import { WorkspaceServiceAPI } from "../../api";
 import {
   UpdateWorkspaceBody,
   WorkspaceBaseRequest,
   WorkspaceObject,
   WorkspaceRequest,
   WorkspacesListRequest,
-} from "./types";
+} from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Pagination } from "../../../core/platform/framework/api/crud-service";
-import { WorkspaceExecutionContext, WorkspaceUserRole } from "../types";
-import Workspace, { WorkspacePrimaryKey } from "../entities/workspace";
-import { CompaniesServiceAPI } from "../../user/api";
-import CompanyUser from "../../user/entities/company_user";
+import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import Workspace from "../../entities/workspace";
+import { CompaniesServiceAPI } from "../../../user/api";
 import { merge } from "lodash";
-import WorkspaceUser from "../entities/workspace_user";
-import workspace from "../../../cli/cmds/workspace";
+import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 
 export class WorkspacesCrudController
   implements
@@ -48,7 +45,7 @@ export class WorkspacesCrudController
       .then(a => (a ? a.role : null));
   }
 
-  private formatWorkspace(workspace: Workspace, role?: WorkspaceUserRole): WorkspaceObject {
+  private static formatWorkspace(workspace: Workspace, role?: WorkspaceUserRole): WorkspaceObject {
     const res: WorkspaceObject = {
       id: workspace.id,
       company_id: workspace.group_id,
@@ -98,13 +95,12 @@ export class WorkspacesCrudController
     }
 
     return {
-      resource: this.formatWorkspace(workspace, workspaceUserRole),
+      resource: WorkspacesCrudController.formatWorkspace(workspace, workspaceUserRole),
     };
   }
 
   async list(
     request: FastifyRequest<{ Params: WorkspacesListRequest }>,
-    reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
 
@@ -119,7 +115,9 @@ export class WorkspacesCrudController
     return {
       resources: allCompanyWorkspaces
         .filter(workspace => allUserWorkspaceRolesMap.has(workspace.id.toString()))
-        .map(ws => this.formatWorkspace(ws, allUserWorkspaceRolesMap.get(ws.id))),
+        .map(ws =>
+          WorkspacesCrudController.formatWorkspace(ws, allUserWorkspaceRolesMap.get(ws.id)),
+        ),
     };
   }
 
@@ -130,11 +128,6 @@ export class WorkspacesCrudController
     const context = getExecutionContext(request);
 
     const companyUserRole = await this.getCompanyUserRole(context);
-
-    if (!companyUserRole) {
-      reply.forbidden(`You are not a member of company ${context.company_id}`);
-      return;
-    }
 
     let workspaceEntity: Workspace;
 
@@ -194,7 +187,7 @@ export class WorkspacesCrudController
     const workspaceUserRole = await this.getWorkspaceUserRole(workspaceEntity.id, context);
 
     return {
-      resource: this.formatWorkspace(workspaceEntity, workspaceUserRole),
+      resource: WorkspacesCrudController.formatWorkspace(workspaceEntity, workspaceUserRole),
     };
   }
 

@@ -30,8 +30,8 @@ export interface UsersParameters {
   companies?: string;
 }
 
-export type UserCompanyRole = "owner" | "admin" | "member" | "guest";
-export type UserCompanyStatus = "active" | "deactivated" | "invited";
+export type CompanyUserRole = "owner" | "admin" | "member" | "guest";
+export type CompanyUserStatus = "active" | "deactivated" | "invited";
 
 export interface CompanyShort {
   id: string; //Related to console "code"
@@ -39,10 +39,10 @@ export interface CompanyShort {
   logo: string;
 }
 
-export interface UserCompanyObject {
+export interface CompanyUserObject {
   company: CompanyShort;
-  role: UserCompanyRole;
-  status: UserCompanyStatus;
+  role: CompanyUserRole;
+  status: CompanyUserStatus;
 }
 
 export interface UserObject {
@@ -66,7 +66,7 @@ export interface UserObject {
     timezone: number;
   };
 
-  companies?: UserCompanyObject[];
+  companies?: CompanyUserObject[];
 }
 
 export interface CompanyPlanObject {
@@ -90,6 +90,6 @@ export interface CompanyObject {
   logo: string;
   plan?: CompanyPlanObject;
   stats?: CompanyStatsObject;
-  role?: UserCompanyRole;
-  status?: UserCompanyStatus;
+  role?: CompanyUserRole;
+  status?: CompanyUserStatus;
 }

@@ -9,7 +9,7 @@ export const TYPE = "group_entity";
   type: TYPE,
 })
 export default class Company {
-  @Column("id", "timeuuid")
+  @Column("id", "uuid")
   id: string;
 
   @Column("name", "encoded_string")
