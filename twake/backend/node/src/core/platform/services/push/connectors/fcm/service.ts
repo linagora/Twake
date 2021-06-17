@@ -13,6 +13,8 @@ export default class FcmPushConnector implements PushConnector {
     notification: PushMessageNotification,
     options: PushMessageOptions,
   ): Promise<void> {
+    logger.debug(`${this.name} - Push notification to devices ${JSON.stringify(devices)}`);
+
     const firebaseEndpoint = this.configuration.endpoint;
     const firebaseApiKey = this.configuration.key;
 
@@ -42,7 +44,8 @@ export default class FcmPushConnector implements PushConnector {
         );
       }
     } catch (e) {
-      logger.error(`${this.name} - Error while sending message to FCM`, e);
+      logger.error(`${this.name} - Error while sending message to FCM`);
+      logger.error(e);
     }
   }
 }
