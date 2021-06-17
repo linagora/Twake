@@ -7,6 +7,7 @@ import JWTStorage, { JWTDataType } from '../JWTStorage';
 import Observable from '../Observable/Observable';
 import LoginService from './login';
 import Logger from 'app/services/Logger';
+import AlertManager from 'services/AlertManager/AlertManager';
 
 type AuthProviderConfiguration = AuthProviderProps;
 
@@ -102,6 +103,21 @@ class AuthProviderService extends Observable {
     const response = (await Api.post('users/console/token', {
       access_token: user.access_token,
     })) as { access_token: JWTDataType };
+    if (!response.access_token) {
+      AlertManager.confirm(
+        () => {
+          this.signOut();
+        },
+        () => {
+          this.signOut();
+        },
+        {
+          title: 'We are unable to open your account.',
+          text: (response as any).error,
+        },
+      );
+      return;
+    }
     JWTStorage.updateJWT(response.access_token);
     LoginService.updateUser(() => {});
   }
