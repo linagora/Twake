@@ -12,7 +12,7 @@ export type CompanyLimitsObjectType = {
   guests: number;
   storage: number;
   guests_feature: boolean; //True to enable it, false to not enable it
-  message_history_limit: 90; //Delay in days
+  message_history_limit: number; //Delay in days
 };
 
 export type CompanyStatsObjectType = {
