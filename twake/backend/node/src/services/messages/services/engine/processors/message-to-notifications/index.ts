@@ -40,7 +40,11 @@ export class MessageToNotificationsProcessor {
         }
 
         const channel: Channel = await this.channels.channels.get(
-          { id: messageResource.user_id },
+          {
+            id: participant.id,
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+          },
           {
             user: { server_request: true, id: null },
             workspace: {
