@@ -18,6 +18,7 @@ import {
 import { ParticipantObject, Thread } from "../../../../services/messages/entities/threads";
 import { Block } from "../../../../services/messages/blocks-types";
 import { WorkspaceExecutionContext } from "../../../../services/workspaces/types";
+import { option } from "yargs";
 
 type MigratedChannel = {
   id: string;
@@ -42,31 +43,49 @@ class MessageMigrator {
     this.nodeMessageService = this.platform.getProvider<MessageServiceAPI>("messages");
   }
 
-  public async run(): Promise<void> {
+  public async run(options: { from?: string; only?: string } = {}): Promise<void> {
     await this.phpMessageService.init();
 
-    // Get all companies
-    let page: Pagination = { limitStr: "100" };
-    // For each companies find workspaces
-    do {
-      const companyListResult = await this.userService.companies.getCompanies(page);
-      page = companyListResult.nextPage as Pagination;
-
-      for (const company of companyListResult.getEntities()) {
-        console.log(`Start migration for ${company.id}...`);
-        await this.migrateCompanyDirectMessages(company);
-        console.log(
-          `${company.id} - (1/2) migrated direct messages (total: ${this.migratedMessages} messages)  ✅`,
-        );
-
-        await this.migrateCompanyChannelsMessages(company);
-        console.log(
-          `${company.id} - (2/2) completed (total: ${this.migratedMessages} messages)  ✅`,
-        );
+    if (options.only) {
+      const company = await this.userService.companies.getCompany({ id: options.only });
+      await this.migrateCompanyMessages(company);
+    } else {
+      let waitForCompany = false;
+      if (options.from) {
+        waitForCompany = true;
       }
-    } while (page.page_token);
+
+      // Get all companies
+      let page: Pagination = { limitStr: "100" };
+      // For each companies find workspaces
+      do {
+        const companyListResult = await this.userService.companies.getCompanies(page);
+        page = companyListResult.nextPage as Pagination;
+
+        for (const company of companyListResult.getEntities()) {
+          if (waitForCompany && options.from == `${company.id}`) {
+            waitForCompany = false;
+          }
+
+          if (!waitForCompany) {
+            await this.migrateCompanyMessages(company);
+          }
+        }
+      } while (page.page_token);
+    }
 
     console.log("Php Messages successfully migrated to node !");
+  }
+
+  private async migrateCompanyMessages(company: Company) {
+    console.log(`Start migration for ${company.id}...`);
+    await this.migrateCompanyDirectMessages(company);
+    console.log(
+      `${company.id} - (1/2) migrated direct messages (total: ${this.migratedMessages} messages)  ✅`,
+    );
+
+    await this.migrateCompanyChannelsMessages(company);
+    console.log(`${company.id} - (2/2) completed (total: ${this.migratedMessages} messages)  ✅`);
   }
 
   /**
