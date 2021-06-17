@@ -19,6 +19,11 @@ const command: yargs.CommandModule<unknown, unknown> = {
       type: "string",
       description: "Migrate only this company ID",
     },
+    ignoreExisting: {
+      default: false,
+      type: "boolean",
+      description: "Skip existing message ids",
+    },
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handler: async argv => {
@@ -28,8 +33,9 @@ const command: yargs.CommandModule<unknown, unknown> = {
 
     const from = argv.from as string | null;
     const only = argv.only as string | null;
+    const ignoreExisting = (argv.ignoreExisting || false) as boolean;
 
-    await migrator.run({ from, only });
+    await migrator.run({ from, only, ignoreExisting });
 
     return spinner.stop();
   },

@@ -27,6 +27,8 @@ type MigratedChannel = {
   owner?: string;
 };
 
+type Options = { from?: string; only?: string; ignoreExisting?: boolean };
+
 class MessageMigrator {
   private database: DatabaseServiceAPI;
   private userService: UserServiceAPI;
@@ -34,6 +36,7 @@ class MessageMigrator {
   private phpMessageService: PhpMessagesService;
   private nodeMessageService: MessageServiceAPI;
   private migratedMessages: number = 0;
+  private options: Options = {};
 
   constructor(readonly platform: TwakePlatform) {
     this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
@@ -43,15 +46,17 @@ class MessageMigrator {
     this.nodeMessageService = this.platform.getProvider<MessageServiceAPI>("messages");
   }
 
-  public async run(options: { from?: string; only?: string } = {}): Promise<void> {
+  public async run(options: Options = {}): Promise<void> {
+    this.options = options;
+
     await this.phpMessageService.init();
 
-    if (options.only) {
+    if (this.options.only) {
       const company = await this.userService.companies.getCompany({ id: options.only });
       await this.migrateCompanyMessages(company);
     } else {
       let waitForCompany = false;
-      if (options.from) {
+      if (this.options.from) {
         waitForCompany = true;
       }
 
@@ -63,7 +68,7 @@ class MessageMigrator {
         page = companyListResult.nextPage as Pagination;
 
         for (const company of companyListResult.getEntities()) {
-          if (waitForCompany && options.from == `${company.id}`) {
+          if (waitForCompany && this.options.from == `${company.id}`) {
             waitForCompany = false;
           }
 
@@ -196,29 +201,42 @@ class MessageMigrator {
    * @param message
    */
   private async migrateMessage(company: Company, channel: MigratedChannel, message: PhpMessage) {
-    if (message.id) {
-      //Create thread first if not exists
-      const threadId = message.parent_message_id || message.id;
-      const threadDoesNotExists = !this.migratedThreads.includes(threadId);
-      if (threadDoesNotExists) {
-        await this.migratePhpMessageToNodeThread(message, channel, company);
-        this.migratedThreads.push(threadId);
-      }
-
-      //Migrate message itself
-      await this.migratePhpMessageToNodeMessage(threadId, message, company);
-
-      this.migratedMessages++;
-
-      if (this.migratedMessages % 100 == 0) {
-        console.log(`${company.id} - ... (total: ${this.migratedMessages} messages)`);
-      }
-
-      //Force delay between channels
-      await new Promise(r => {
-        setTimeout(r, 40);
-      });
+    if (!message.id) {
+      return;
     }
+
+    //Create thread first if not exists
+    const threadId = message.parent_message_id || message.id;
+
+    if (this.options.ignoreExisting) {
+      const msg = await this.nodeMessageService.messages.get({
+        thread_id: threadId,
+        id: message.id,
+      });
+      if (msg) {
+        return;
+      }
+    }
+
+    const threadDoesNotExists = !this.migratedThreads.includes(threadId);
+    if (threadDoesNotExists) {
+      await this.migratePhpMessageToNodeThread(message, channel, company);
+      this.migratedThreads.push(threadId);
+    }
+
+    //Migrate message itself
+    await this.migratePhpMessageToNodeMessage(threadId, message, company);
+
+    this.migratedMessages++;
+
+    if (this.migratedMessages % 100 == 0) {
+      console.log(`${company.id} - ... (total: ${this.migratedMessages} messages)`);
+    }
+
+    //Force delay between channels
+    await new Promise(r => {
+      setTimeout(r, 40);
+    });
   }
 
   /**
