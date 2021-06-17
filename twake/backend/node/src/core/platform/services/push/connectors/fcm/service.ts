@@ -2,6 +2,7 @@ import { option } from "yargs";
 import { logger } from "../../../../framework";
 import { PushConfiguration, PushMessageNotification, PushMessageOptions } from "../../types";
 import { PushConnector } from "../connector";
+import fetch from "node-fetch";
 
 export default class FcmPushConnector implements PushConnector {
   name = "FcmPushConnector";
@@ -30,7 +31,7 @@ export default class FcmPushConnector implements PushConnector {
 
     //Push to fcm
     try {
-      const response = await await fetch(firebaseEndpoint, {
+      const response = await fetch(firebaseEndpoint, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `key=${firebaseApiKey}`,
