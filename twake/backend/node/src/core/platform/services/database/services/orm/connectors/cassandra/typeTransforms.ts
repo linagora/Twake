@@ -22,6 +22,7 @@ export const cassandraType = {
   // backward compatibility
   twake_boolean: "TINYINT",
   twake_int: "INT", //Depreciated
+  twake_datetime: "TIMESTAMP", //Depreciated
 };
 
 type TransformOptions = {
