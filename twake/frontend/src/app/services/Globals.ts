@@ -33,7 +33,6 @@ document.body.addEventListener('drop', e => e.preventDefault());
 class TwakeApp {
   window: Window;
   environment: EnvironmentType;
-  version_detail: string;
   store_public_access_get_data: any;
   version: EnvironmentVersionType;
   services: any;
@@ -52,11 +51,6 @@ class TwakeApp {
         (this.window as any)[key] = (environment as any)[key];
       }
     });
-    Object.keys(version).forEach(key => {
-      (this.window as any)[key] = (version as any)[key];
-    });
-
-    this.version_detail = environment.version_detail;
 
     LocalStorage.getItem('api_root_url', (res: string) => {
       if (res) {

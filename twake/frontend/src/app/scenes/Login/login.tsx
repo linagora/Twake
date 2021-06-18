@@ -52,7 +52,7 @@ export default () => {
 
       <div className="white_background light_background" />
       <div className={'app_version_footer '}>
-        <div className="version_name fade_in">Twake {(Globals.window as any)?.version_name}</div>
+        <div className="version_name fade_in">Twake {Globals.version.version_name}</div>
         <div style={{ height: 20 }}>
           {server_infos_loaded && server_infos?.configuration?.branding?.name && (
             <div className="smalltext fade_in">
@@ -64,7 +64,7 @@ export default () => {
               <a target="_BLANK" href="https://twakeapp.com">
                 {Languages.t('scenes.login.footer.go_to_twake')}
               </a>
-              {' - ' + (Globals.window as any)?.version}
+              {' - ' + Globals.version.version}
             </div>
           )}
           {server_infos_loaded && !server_infos?.configuration?.branding?.name && (
