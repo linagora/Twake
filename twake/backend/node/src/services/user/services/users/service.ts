@@ -80,15 +80,18 @@ export class UserService implements UsersServiceAPI {
     return this.repository.find(findFilter, findOptions);
   }
 
+  getByEmails(emails: string[]): Promise<User[]> {
+    // return this.repository.findOne({}, { $in: [["email_canonical", [email]]] });
+    return this.repository
+      .find({}, { $in: [["email_canonical", emails]] })
+      .then(a => a.getEntities());
+  }
+
   async get(pk: UserPrimaryKey): Promise<User> {
     return await this.repository.findOne(pk);
   }
 
-  async getUserCompanies(
-    pk: UserPrimaryKey,
-    pagination?: Pagination,
-  ): Promise<ListResult<CompanyUser>> {
-    const findOptions: FindOptions = pagination ? { pagination } : {};
-    return await this.companyUserRepository.find({ user_id: pk.id }, findOptions);
+  async getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]> {
+    return await this.companyUserRepository.find({ user_id: pk.id }).then(a => a.getEntities());
   }
 }

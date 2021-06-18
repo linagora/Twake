@@ -72,12 +72,17 @@ export class TestDbService {
     workspacesPk?: Array<WorkspacePrimaryKey>,
     companyRole?: "member" | "admin" | "guest",
     workspaceRole?: "member" | "admin",
+    email?: string,
   ): Promise<User> {
     const user = new User();
     const random = this.rand();
     user.username_canonical = `test${random}`;
     user.first_name = `test${random}_first_name`;
     user.last_name = `test${random}_last_name`;
+
+    if (email) {
+      user.email_canonical = email;
+    }
     const createdUser = await this.userService.users.create(user);
     this.users.push(createdUser.entity);
     await this.userService.companies.addUserInCompany(this.company, createdUser.entity);

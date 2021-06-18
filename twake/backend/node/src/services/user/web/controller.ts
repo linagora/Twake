@@ -52,9 +52,7 @@ export class UsersCrudController
     } as UserObject;
 
     if (includeCompanies) {
-      const userCompanies = await this.service
-        .getUserCompanies({ id: user.id })
-        .then(a => a.getEntities());
+      const userCompanies = await this.service.getUserCompanies({ id: user.id });
 
       const companies = await Promise.all(
         userCompanies.map(async uc => {
@@ -163,7 +161,7 @@ export class UsersCrudController
 
     const [currentUserCompanies, requestedUserCompanies] = (await Promise.all(
       [context.user.id, request.params.id].map(userId =>
-        this.service.getUserCompanies({ id: userId }).then(a => a.getEntities()),
+        this.service.getUserCompanies({ id: userId }),
       ),
     )) as [CompanyUser[], CompanyUser[]];
 

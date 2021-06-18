@@ -209,3 +209,72 @@ export const deleteWorkspaceUserSchema = {
     },
   },
 };
+
+export const inviteWorkspaceUserSchema = {
+  body: {
+    type: "object",
+    properties: {
+      invitations: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            email: { type: "string" },
+            role: { type: "string", enum: ["admin", "member"] },
+            company_role: { type: "string", enum: ["owner", "admin", "member", "guest"] },
+          },
+          required: ["email", "role", "company_role"],
+        },
+      },
+    },
+    required: ["invitations"],
+  },
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resources: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              email: { type: "string" },
+              status: { type: "string", enum: ["ok", "error"] },
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+      required: ["resources"],
+    },
+  },
+};
+
+export const getWorkspacePendingUsersSchema = {
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resources: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              email: { type: "string" },
+              role: { type: "string", enum: ["admin", "member"] },
+              company_role: { type: "string", enum: ["owner", "admin", "member", "guest"] },
+            },
+            required: ["email", "role", "company_role"],
+          },
+        },
+      },
+      required: ["resources"],
+    },
+  },
+};
+
+export const deleteWorkspacePendingUsersSchema = {
+  response: {
+    "204": {},
+  },
+};

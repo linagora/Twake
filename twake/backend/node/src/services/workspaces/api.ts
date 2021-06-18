@@ -7,12 +7,17 @@ import {
   Paginable,
 } from "../../core/platform/framework/api/crud-service";
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
-import { CompaniesServiceAPI, UsersServiceAPI } from "../user/api";
+import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../user/api";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../workspaces/entities/workspace_user";
 import { Observable } from "rxjs";
 import { UserPrimaryKey } from "../user/entities/user";
 import { WorkspaceUserRole } from "./types";
 import { CompanyPrimaryKey } from "../user/entities/company";
+import WorkspacePendingUser, {
+  WorkspacePendingUserPrimaryKey,
+} from "./entities/workspace_pending_users";
+import { CompanyUserRole } from "../user/web/types";
+import { uuid } from "../../utils/types";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
   workspaces: WorkspaceServiceAPI;
@@ -31,6 +36,8 @@ export interface WorkspaceServiceAPI
   ): Promise<void>;
 
   updateUserRole(workspaceUserPk: WorkspaceUserPrimaryKey, role: WorkspaceUserRole): Promise<void>;
+
+  getAllForCompany(companyId: uuid): Promise<Workspace[]>;
 
   removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,
@@ -54,7 +61,7 @@ export interface WorkspaceServiceAPI
    * @param userId
    */
   getUser(
-    workspaceUser: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
+    workspaceUserPk: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
   ): Promise<WorkspaceUser>;
 
   /**
@@ -87,4 +94,20 @@ export interface WorkspaceServiceAPI
     workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination: Paginable,
   ): Observable<WorkspaceUser>;
+
+  addPendingUser(
+    workspacePk: WorkspacePendingUserPrimaryKey,
+    workspaceRole: WorkspaceUserRole,
+    companyRole: CompanyUserRole,
+  ): Promise<void>;
+
+  getPendingUser(primaryKey: WorkspacePendingUserPrimaryKey): Promise<WorkspacePendingUser>;
+
+  getPendingUsers(
+    workspaceId: Pick<WorkspacePendingUserPrimaryKey, "workspace_id">,
+  ): Promise<WorkspacePendingUser[]>;
+
+  removePendingUser(
+    workspaceUserPk: WorkspacePendingUserPrimaryKey,
+  ): Promise<DeleteResult<WorkspacePendingUserPrimaryKey>>;
 }
