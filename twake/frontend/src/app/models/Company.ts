@@ -33,8 +33,8 @@ export type CompanyType = {
   id: string; //Related to console code
   name: string;
   logo: string;
-  plan: CompanyPlanObjectType;
-  stats: CompanyStatsObjectType;
+  plan?: CompanyPlanObjectType;
+  stats?: CompanyStatsObjectType;
 
   //If requested as a user
   role?: CompanyRoleType;

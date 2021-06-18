@@ -1985,6 +1985,9 @@ export default {
   'components.locked_features.locked_guests_popup.learn_more_button': 'Learn more',
   'components.locked_features.locked_guests_popup.skip_for_now_button': 'Skip for Now',
   'components.locked_features.locked_guests_popup.or': 'Or',
-  'components.on_boarding.company_billing_banner.admin_or_owner_text': 'AdminOrOwner text',
-  'components.on_boarding.company_billing_banner.guest_or_member_text': 'GuestOrMember text',
+  'components.on_boarding.company_billing_banner.admin_or_owner_text':
+    'There is an issue with your company subscription. Please, take a look at your',
+  'components.on_boarding.company_billing_banner.guest_or_member_text':
+    'There is an issue with your company subscription. Please contact the owner or administrator of the company!',
+  'components.on_boarding.company_billing_banner.link': 'company subscription plan',
 };

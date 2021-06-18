@@ -37,13 +37,7 @@ const MainView: FC = () => {
       {!!channelId && ready && (
         <>
           <AccountStatusComponent />
-          {companyId && (
-            <CompanyBillingBanner
-              companyId={companyId}
-              // TODO ADD URL
-              url=""
-            />
-          )}
+          {companyId && <CompanyBillingBanner companyId={companyId} />}
           <MainHeader />
           <MainContent />
         </>
