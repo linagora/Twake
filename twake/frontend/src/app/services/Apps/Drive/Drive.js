@@ -11,7 +11,7 @@ import AceModeList from './utils/ace_modelist.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Drive extends Observable {
   constructor() {

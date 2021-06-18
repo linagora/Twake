@@ -4,6 +4,7 @@ import Api from 'services/Api';
 import Globals from 'services/Globals';
 import Languages from 'services/languages/languages';
 import { UserType } from 'app/models/User';
+import { TwakeService } from 'services/Decorators/TwakeService';
 
 type SearchQueryType = {
   searching: boolean;
@@ -12,6 +13,7 @@ type SearchQueryType = {
   timeout_search?: ReturnType<typeof setTimeout>;
 };
 
+@TwakeService('UserService')
 class User {
   private users_repository: typeof Collections;
   private stop_async_get: { [key: string]: boolean };
@@ -28,8 +30,6 @@ class User {
       previous: '',
       current: '',
     };
-
-    (Globals.window as any).UserService = this;
   }
 
   getCurrentUser(): UserType & { id: string } {

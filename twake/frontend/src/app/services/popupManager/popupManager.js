@@ -3,7 +3,7 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import WindowService from 'services/utils/window.js';
 import ChannelsService from 'services/channels/channels.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class PopupService extends Observable {
   constructor() {

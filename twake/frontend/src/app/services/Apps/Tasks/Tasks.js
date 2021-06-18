@@ -1,6 +1,6 @@
 import React from 'react';
 import Observable from 'app/services/Depreciated/observable.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Workspaces from 'services/workspaces/workspaces.js';

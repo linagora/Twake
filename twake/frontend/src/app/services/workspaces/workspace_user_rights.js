@@ -6,7 +6,7 @@ import CurrentUser from 'app/services/user/CurrentUser';
 import WindowService from 'services/utils/window.js';
 import AccessRightsService from 'services/AccessRightsService';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class WorkspaceUserRights extends Observable {
   constructor() {

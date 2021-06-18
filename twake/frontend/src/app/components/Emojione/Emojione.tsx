@@ -10,7 +10,7 @@ import data from 'emoji-mart/data/all.json';
 
 import emojione from 'emojione';
 import Icon from 'components/Icon/Icon.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 import './Emojione.scss';
 

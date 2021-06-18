@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Drive from 'scenes/Apps/Drive/Drive.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Api from 'services/Api';
 import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import RouterService from 'services/RouterService';

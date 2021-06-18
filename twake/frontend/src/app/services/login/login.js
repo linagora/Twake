@@ -10,7 +10,7 @@ import Groups from 'services/workspaces/groups.js';
 import UserNotifications from 'app/services/user/UserNotifications';
 import CurrentUser from 'app/services/user/CurrentUser';
 import ws from 'services/websocket.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
@@ -382,7 +382,7 @@ class Login extends Observable {
             },
           },
           rest: {
-            url: Globals.window.api_root_url + '/internal/services',
+            url: Globals.api_root_url + '/internal/services',
             headers: {
               Authorization: JWTStorage.getAutorizationHeader(),
             },

@@ -6,7 +6,7 @@ import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from './groups.js';
 import Workspaces from './workspaces.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Icon from 'app/components/Icon/Icon';
 import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';

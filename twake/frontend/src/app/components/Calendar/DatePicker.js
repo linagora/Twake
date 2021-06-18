@@ -3,7 +3,7 @@ import Tooltip from 'components/Tooltip/Tooltip.js';
 import moment from 'moment';
 import DateTimeUtils from 'services/utils/datetime.js';
 import UserService from 'services/user/UserService';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import DayPicker from './DayPicker/DayPicker.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import Input from 'components/Inputs/Input.js';

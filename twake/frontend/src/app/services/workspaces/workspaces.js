@@ -18,7 +18,7 @@ import UserNotifications from 'app/services/user/UserNotifications';
 import AccessRightsService from 'services/AccessRightsService';
 import loginService from 'services/login/login.js';
 import InitService from 'app/services/InitService';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
 
@@ -321,7 +321,7 @@ class Workspaces extends Observable {
   updateWorkspaceLogo(logo) {
     this.loading = true;
     this.notify();
-    var route = Globals.window.api_root_url + '/ajax/' + 'workspace/data/logo';
+    var route = Globals.api_root_url + '/ajax/' + 'workspace/data/logo';
 
     var data = new FormData();
     if (logo !== false) {

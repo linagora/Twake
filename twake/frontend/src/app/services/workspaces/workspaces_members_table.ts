@@ -14,7 +14,7 @@ import CurrentUser from 'app/services/user/CurrentUser';
 import AlertManager from 'services/AlertManager/AlertManager';
 import UsersService from 'services/user/UserService';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 type TableState = {
   loaded: number;

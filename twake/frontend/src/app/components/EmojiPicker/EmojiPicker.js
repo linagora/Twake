@@ -4,7 +4,7 @@ import './EmojiPicker.scss';
 import Languages from 'services/languages/languages.js';
 import 'emoji-mart/css/emoji-mart.css';
 import { Picker } from 'emoji-mart';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 Picker.defaultProps.backgroundImageFn = function backgroundImageFn(set, sheetSize) {
   sheetSize = 20;

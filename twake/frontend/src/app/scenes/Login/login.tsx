@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Languages from 'services/languages/languages.js';
 import InitService from 'services/InitService';
 import LoginService from 'services/login/login.js';

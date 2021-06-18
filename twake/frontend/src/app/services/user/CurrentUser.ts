@@ -131,7 +131,7 @@ class CurrentUser extends Observable {
     this.loading = true;
     this.notify();
 
-    const route = (Globals.window as any).api_root_url + '/ajax/users/account/identity';
+    const route = Globals.api_root_url + '/ajax/users/account/identity';
     const data = new FormData();
 
     if (thumbnail) {

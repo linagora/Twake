@@ -5,7 +5,7 @@ import Collections from 'app/services/CollectionsReact/Collections';
 import LocalStorage from 'app/services/LocalStorage';
 import WindowService from 'services/utils/window.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import { TabResource } from 'app/models/Tab';
 import { ChannelResource } from 'app/models/Channel';
 import UsersService from 'services/user/UserService';
