@@ -217,7 +217,7 @@ export class CassandraConnector extends AbstractConnector<
 
     if (primaryKey.length === 0) {
       logger.error(
-        "services.database.orm.cassandra - Primary key was not defined for table " + entity.name,
+        `services.database.orm.cassandra - Primary key was not defined for table ${entity.name}`,
       );
       return false;
     }
@@ -239,10 +239,10 @@ export class CassandraConnector extends AbstractConnector<
     });
     const clusteringOrderByString =
       clusteringOrderBy.length > 0
-        ? "WITH CLUSTERING ORDER BY (" + clusteringOrderBy.join(", ") + ")"
+        ? `WITH CLUSTERING ORDER BY (${clusteringOrderBy.join(", ")})`
         : "";
 
-    const allKeys = ["(" + partitionKey.join(", ") + ")", ...clusteringKeys];
+    const allKeys = [`(${partitionKey.join(", ")})`, ...clusteringKeys];
     const primaryKeyString = `(${allKeys.join(", ")})`;
 
     const columnsString = Object.keys(columns)
@@ -294,7 +294,7 @@ export class CassandraConnector extends AbstractConnector<
     if (entity.options.globalIndexes) {
       for (const globalIndex of entity.options.globalIndexes) {
         const indexName = globalIndex.join("_");
-        const indexDbName = "index_" + md5(indexName);
+        const indexDbName = `index_${md5(indexName)}`;
 
         let query = `CREATE INDEX ${this.options.keyspace}.${indexDbName} 
                       ON ${this.options.keyspace}.${entity.name} 
@@ -456,14 +456,10 @@ export class CassandraConnector extends AbstractConnector<
     if (Object.keys(filters).some(key => pk.indexOf(key) < 0)) {
       //Filter not in primary key
       throw new Error(
-        "All filter parameters must be defined in entity primary key, got: " +
-          JSON.stringify(Object.keys(filters)) +
-          " on table " +
-          entityDefinition.name +
-          " but pk is " +
-          JSON.stringify(pk) +
-          ", instance was " +
-          JSON.stringify(instance),
+        `All filter parameters must be defined in entity primary key,
+          got: ${JSON.stringify(Object.keys(filters))}
+          on table ${entityDefinition.name} but pk is ${JSON.stringify(pk)},
+          instance was ${JSON.stringify(instance)}`,
       );
     }
 
