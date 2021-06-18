@@ -19,7 +19,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 
 import Board from './Board/Board.js';

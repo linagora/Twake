@@ -13,7 +13,7 @@ import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class SearchService extends Observable {
   constructor() {

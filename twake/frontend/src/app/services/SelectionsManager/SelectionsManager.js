@@ -1,6 +1,6 @@
 import Observable from 'app/services/Depreciated/observable.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class SelectionsManager extends Observable {
   constructor() {

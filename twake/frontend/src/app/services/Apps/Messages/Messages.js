@@ -14,7 +14,7 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 

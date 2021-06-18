@@ -15,7 +15,7 @@ import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 import LoginService from 'services/login/login';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class WorkspacesUsers extends Observable {
   constructor() {

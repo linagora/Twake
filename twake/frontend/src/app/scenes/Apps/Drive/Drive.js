@@ -28,7 +28,7 @@ import UnconfiguredTab from './UnconfiguredTab.js';
 import Viewer from './Viewer/Viewer.js';
 
 import MainPlus from 'components/MainPlus/MainPlus.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
 
 import DriveList from './Lists/List.js';

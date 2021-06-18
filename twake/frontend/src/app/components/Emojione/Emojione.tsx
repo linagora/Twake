@@ -10,9 +10,9 @@ import data from 'emoji-mart/data/all.json';
 
 import emojione from 'emojione';
 import Icon from 'components/Icon/Icon.js';
-import Globals from 'services/Globals.js';
 
 import './Emojione.scss';
+import { getAsFrontUrl } from 'app/services/utils/URLUtils';
 
 type Props = {
   type: string;
@@ -102,10 +102,7 @@ export default React.memo((props: Props) => {
           if ([16, 20, 32, 64].indexOf(size) < 0) {
             size = 64;
           }
-          return (
-            (Globals.window.front_root_url || '') +
-            '/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(size, '.png')
-          );
+          return (getAsFrontUrl('/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(size, '.png')));
         }}
         emoji={uni || props.type}
         set="apple"

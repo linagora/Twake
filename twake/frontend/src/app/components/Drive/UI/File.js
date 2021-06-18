@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
-
-import Icon from 'components/Icon/Icon.js';
-import Menu from 'components/Menus/Menu.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
-import Numbers from 'services/utils/Numbers.js';
-import FileType from './FileType.js';
-import TagPicker from 'components/TagPicker/TagPicker.js';
-import '../Drive.scss';
+import React from 'react';
 import moment from 'moment';
 import 'moment-timezone';
+
+import Icon from 'components/Icon/Icon';
+import Menu from 'components/Menus/Menu';
+import DriveService from 'services/Apps/Drive/Drive';
+import Numbers from 'services/utils/Numbers';
+import FileType from './FileType';
+import TagPicker from 'components/TagPicker/TagPicker';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
+import '../Drive.scss';
 
 export default class File extends React.Component {
   constructor(props) {
@@ -41,10 +42,7 @@ export default class File extends React.Component {
         }
         style={
           this.props.data.has_preview
-            ? {
-                backgroundImage:
-                  "url('" + window.addApiUrlIfNeeded(this.props.data.preview_link) + "')",
-              }
+            ? { backgroundImage: addApiUrlIfNeeded((this.props.data.preview_link), true) }
             : {}
         }
       >
@@ -101,10 +99,7 @@ export default class File extends React.Component {
               }
               style={
                 this.props.data.has_preview
-                  ? {
-                      backgroundImage:
-                        "url('" + window.addApiUrlIfNeeded(this.props.data.preview_link) + "')",
-                    }
+                  ? { backgroundImage: addApiUrlIfNeeded(this.props.data.preview_link, true) }
                   : {}
               }
             />

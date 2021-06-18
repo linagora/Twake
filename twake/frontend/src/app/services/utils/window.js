@@ -1,5 +1,5 @@
 import React from 'react';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 export default class WindowState {
   constructor() {

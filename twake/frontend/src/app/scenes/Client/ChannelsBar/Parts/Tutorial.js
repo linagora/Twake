@@ -17,7 +17,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 
 import TutorialUI from 'app/scenes/Client/ChannelsBar/Parts/Tutorial/Tutorial.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 export default class Tutorial extends Component {
   constructor() {

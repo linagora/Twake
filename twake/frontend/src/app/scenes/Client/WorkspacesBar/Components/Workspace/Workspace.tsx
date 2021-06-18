@@ -1,6 +1,7 @@
+import React from 'react';
 import { NotificationResource } from 'app/models/Notification';
 import { Collection } from 'app/services/CollectionsReact/Collections';
-import React from 'react';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 
 import './Workspace.scss';
 
@@ -21,9 +22,7 @@ export default (props: { workspace: any; selected: boolean; onClick: () => {} })
     >
       <div
         className={'image ' + (workspace.logo ? 'has_image ' : '')}
-        style={{
-          backgroundImage: "url('" + (window as any).addApiUrlIfNeeded(workspace.logo) + "')",
-        }}
+        style={{ backgroundImage: addApiUrlIfNeeded(workspace.logo, true) }}
       >
         {((workspace.mininame || workspace.name || '') + '-')[0].toUpperCase()}
 

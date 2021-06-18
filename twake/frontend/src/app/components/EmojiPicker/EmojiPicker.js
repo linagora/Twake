@@ -1,17 +1,13 @@
-import React, { Component } from 'react';
-import Emojione from 'components/Emojione/Emojione';
-import './EmojiPicker.scss';
-import Languages from 'services/languages/languages.js';
-import 'emoji-mart/css/emoji-mart.css';
+import React from 'react';
 import { Picker } from 'emoji-mart';
-import Globals from 'services/Globals.js';
+import Emojione from 'components/Emojione/Emojione';
+import { getAsFrontUrl } from 'app/services/utils/URLUtils';
+import './EmojiPicker.scss';
+import 'emoji-mart/css/emoji-mart.css';
 
 Picker.defaultProps.backgroundImageFn = function backgroundImageFn(set, sheetSize) {
   sheetSize = 20;
-  return (
-    (Globals.window.front_root_url || '') +
-    '/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(sheetSize, '.png')
-  );
+  return getAsFrontUrl('/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(sheetSize, '.png'));
 };
 export default class EmojiPicker extends React.Component {
   /*

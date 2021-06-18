@@ -1,6 +1,7 @@
 {
   "extends": "./tsconfig.paths.json",
   "compilerOptions": {
+    "experimentalDecorators": true,
     "target": "es5",
     "downlevelIteration": true,
     "lib": [
@@ -21,7 +22,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "jsx": "react",
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
   },
   "include": [
     "src"

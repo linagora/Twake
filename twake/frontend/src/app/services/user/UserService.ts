@@ -4,6 +4,8 @@ import Api from 'services/Api';
 import Globals from 'services/Globals';
 import Languages from 'services/languages/languages';
 import { UserType } from 'app/models/User';
+import { TwakeService } from 'services/Decorators/TwakeService';
+import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/services/utils/URLUtils';
 
 type SearchQueryType = {
   searching: boolean;
@@ -12,6 +14,7 @@ type SearchQueryType = {
   timeout_search?: ReturnType<typeof setTimeout>;
 };
 
+@TwakeService('UserService')
 class User {
   private users_repository: typeof Collections;
   private stop_async_get: { [key: string]: boolean };
@@ -28,8 +31,6 @@ class User {
       previous: '',
       current: '',
     };
-
-    (Globals.window as any).UserService = this;
   }
 
   getCurrentUser(): UserType & { id: string } {
@@ -72,9 +73,9 @@ class User {
         output += string[i].charCodeAt(0);
       }
       const i = output % 100;
-      thumbnail = `${((Globals.window as any).front_root_url || '')}/public/identicon/${i}.png`;
+      thumbnail = getAsFrontUrl(`/public/identicon/${i}.png`);
     } else {
-      thumbnail = (Globals.window as any).addApiUrlIfNeeded(user.thumbnail);
+      thumbnail = addApiUrlIfNeeded(user.thumbnail);
     }
 
     if (user._deleted) {

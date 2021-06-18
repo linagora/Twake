@@ -5,7 +5,7 @@ import Number from 'services/utils/Numbers.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Resumable from 'services/uploadManager/resumable.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Api from 'services/Api';
 import JWTStorage from 'app/services/JWTStorage';
 
@@ -396,7 +396,7 @@ class UploadManager extends Observable {
 
     //Use Resumable.js for upload by chunk
     var r = new Resumable({
-      target: Globals.window.api_root_url + '/ajax/' + 'driveupload/upload',
+      target: Globals.api_root_url + '/ajax/' + 'driveupload/upload',
       chunkSize: 50000000,
       testChunks: false,
       simultaneousUploads: 5,

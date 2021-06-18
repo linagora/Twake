@@ -1,6 +1,6 @@
 import emojis_json from 'emojione/emoji.json';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import { emojiIndex } from 'emoji-mart';
 
 class Emojis {
