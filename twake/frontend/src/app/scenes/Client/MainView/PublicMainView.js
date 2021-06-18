@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Drive from 'scenes/Apps/Drive/Drive.js';
-import Globals from 'services/Globals';
+import Languages from 'services/languages/languages';
+import Collections from 'app/services/Depreciated/Collections/Collections';
+import Drive from 'scenes/Apps/Drive/Drive';
 import Api from 'services/Api';
-import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import RouterService from 'services/RouterService';
-import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
-import Viewer from 'scenes/Apps/Drive/Viewer/Viewer.js';
+import MenusBodyLayer from 'components/Menus/MenusBodyLayer';
+import Viewer from 'scenes/Apps/Drive/Viewer/Viewer';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
+
 import './MainView.scss';
 
 export default class MainView extends Component {
@@ -39,7 +39,7 @@ export default class MainView extends Component {
       if (res && res.data) {
         this.state.group = {
           name: res.data.group_name,
-          logo: Globals.window.addApiUrlIfNeeded(res.data.group_logo),
+          logo: addApiUrlIfNeeded(res.data.group_logo),
         };
         this.setState({});
       }
@@ -70,7 +70,7 @@ export default class MainView extends Component {
           <div className={'group_switch image_only'}>
             <div
               className={'current_company_logo ' + (group.logo ? 'has_image ' : '')}
-              style={{ backgroundImage: "url('" + window.addApiUrlIfNeeded(group.logo) + "')" }}
+              style={{ backgroundImage: addApiUrlIfNeeded(group.logo, true) }}
             >
               {((group.mininame || group.name || '') + '-')[0].toUpperCase()}
             </div>

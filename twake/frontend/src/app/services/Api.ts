@@ -1,18 +1,6 @@
 import Globals from 'services/Globals';
 import Requests from 'services/Requests';
 
-//@ts-ignore old code
-Globals.window.addApiUrlIfNeeded = url => {
-  if (!url) {
-    return url;
-  }
-  if (/^http/.test(url)) {
-    return url;
-  }
-  //@ts-ignore old code
-  return Globals.api_root_url + url;
-};
-
 class GroupedQueryApi {
   private groupedQueryBuffer: any;
   private groupedQueryTimeout: any;

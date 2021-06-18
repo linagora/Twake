@@ -367,7 +367,7 @@ class Login extends Observable {
         storageKey: this.currentUserId,
         transport: {
           socket: {
-            url: Globals.window.websocket_url,
+            url: Globals.environment.websocket_url,
             authenticate: async () => {
               let token = JWTStorage.getJWT();
               if (JWTStorage.isAccessExpired()) {

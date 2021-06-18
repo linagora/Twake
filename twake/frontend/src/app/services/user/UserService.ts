@@ -5,6 +5,7 @@ import Globals from 'services/Globals';
 import Languages from 'services/languages/languages';
 import { UserType } from 'app/models/User';
 import { TwakeService } from 'services/Decorators/TwakeService';
+import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/services/utils/URLUtils';
 
 type SearchQueryType = {
   searching: boolean;
@@ -72,9 +73,9 @@ class User {
         output += string[i].charCodeAt(0);
       }
       const i = output % 100;
-      thumbnail = `${((Globals.window as any).front_root_url || '')}/public/identicon/${i}.png`;
+      thumbnail = getAsFrontUrl(`/public/identicon/${i}.png`);
     } else {
-      thumbnail = (Globals.window as any).addApiUrlIfNeeded(user.thumbnail);
+      thumbnail = addApiUrlIfNeeded(user.thumbnail);
     }
 
     if (user._deleted) {
