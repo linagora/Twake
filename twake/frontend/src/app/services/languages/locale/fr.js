@@ -2058,4 +2058,6 @@ export default {
   'components.locked_features.locked_guests_popup.learn_more_button': 'Voir plus',
   'components.locked_features.locked_guests_popup.skip_for_now_button': 'Ignorer',
   'components.locked_features.locked_guests_popup.or': 'Ou',
+  'components.on_boarding.company_billing_banner.admin_or_owner_text': 'AdminOrOwner text',
+  'components.on_boarding.company_billing_banner.guest_or_member_text': 'GuestOrMember text',
 };
