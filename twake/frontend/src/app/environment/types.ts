@@ -1,12 +1,12 @@
 export type EnvironmentType = {
   env_dev: boolean;
-  mixpanel_enabled: boolean;
-  sentry_dsn: boolean;
-  mixpanel_id: boolean;
-  front_root_url: string;
   api_root_url: string;
-  socketio_url: string;
+  front_root_url: string;
   websocket_url: string;
+  socketio_url?: string;
+  mixpanel_enabled?: boolean;
+  mixpanel_id?: boolean;
+  sentry_dsn: boolean;
   version_detail: string;
 };
 
