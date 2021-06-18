@@ -392,7 +392,7 @@ class MessageMigrator {
     nodeMessage.application_id = message.application_id;
     nodeMessage.text = message.content?.original_str || "";
     nodeMessage.blocks = this.setBlocks(message.content);
-    nodeMessage.context = message.hidden_data;
+    nodeMessage.context = message.hidden_data || {};
     nodeMessage.edited = this.setMessageEditedObject(message);
     nodeMessage.pinned_info = this.setMessagePinnedObject(message);
     nodeMessage.reactions = this.setMessageReactionsObject(message.reactions);
