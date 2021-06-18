@@ -4,6 +4,7 @@ type EntityOption = {
   type?: string;
   ttl?: number;
   primaryKey: (string | string[])[];
+  globalIndexes?: string[][];
   search?: {
     source: (entity: any) => any; //Should return an object that will be indexed
     index?: string; //Index name

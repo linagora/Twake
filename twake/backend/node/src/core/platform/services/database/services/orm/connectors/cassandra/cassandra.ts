@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cassandra from "cassandra-driver";
+import { md5 } from "../../../../../../../crypto";
 import { defer, Subject, throwError, timer } from "rxjs";
 import { concat, delayWhen, retryWhen, take, tap } from "rxjs/operators";
 import { UpsertOptions } from "..";
@@ -287,6 +288,31 @@ export class CassandraConnector extends AbstractConnector<
         `service.database.orm.createTable - creation error for table ${entity.name} : ${err.message}`,
       );
       result = false;
+    }
+
+    // --- Create indexes --- //
+    if (entity.options.globalIndexes) {
+      for (const globalIndex of entity.options.globalIndexes) {
+        const indexName = globalIndex.join("_");
+        const indexDbName = "index_" + md5(indexName);
+
+        let query = `CREATE INDEX ${this.options.keyspace}.${indexDbName} 
+                      ON ${this.options.keyspace}.${entity.name} 
+                      (${globalIndex.join(", ")})`;
+
+        try {
+          logger.debug(
+            `service.database.orm.createTable - Creating index ${indexName} (${indexDbName}) : ${query}`,
+          );
+          await this.client.execute(query);
+        } catch (err) {
+          logger.warn(
+            { err },
+            `service.database.orm.createTable - creation error for index ${indexName} (${indexDbName}) : ${err.message}`,
+          );
+          result = false;
+        }
+      }
     }
 
     return result;
