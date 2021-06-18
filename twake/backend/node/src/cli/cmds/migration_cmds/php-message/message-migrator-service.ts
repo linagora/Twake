@@ -398,6 +398,8 @@ class MessageMigrator {
     nodeMessage.reactions = this.setMessageReactionsObject(message.reactions);
     nodeMessage.override = this.setMessageOverrideObject(message);
 
+    nodeMessage.context._front_id = message.id;
+
     // Create nodeMessage then add it to thread
     return await this.nodeMessageService.messages.save(
       nodeMessage,
