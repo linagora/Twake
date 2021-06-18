@@ -253,7 +253,7 @@ class MessageMigrator {
 
     // Set nodeThread values
     thread.id = message.id;
-    thread.created_at = message.creation_date * 1000;
+    thread.created_at = message.creation_date;
     thread.last_activity = message.modification_date;
     thread.answers = message.responses_count;
     thread.participants = [
@@ -262,7 +262,7 @@ class MessageMigrator {
         id: channel.id,
         company_id: channel.company_id,
         workspace_id: channel.workspace_id,
-        created_at: message.creation_date * 1000,
+        created_at: message.creation_date,
         created_by: message.sender,
       } as ParticipantObject,
     ];
@@ -325,7 +325,7 @@ class MessageMigrator {
    * @param modification_date timestamp
    */
   private setMessageEditedObject(message: PhpMessage): MessageEdited {
-    return message.edited ? { edited_at: message.modification_date * 1000 } : null;
+    return message.edited ? { edited_at: message.modification_date } : null;
   }
 
   /**
@@ -387,7 +387,7 @@ class MessageMigrator {
     nodeMessage.thread_id = threadId;
     nodeMessage.type = this.setMessageType(message.message_type).type;
     nodeMessage.subtype = this.setMessageType(message.message_type).subtype;
-    nodeMessage.created_at = message.creation_date * 1000;
+    nodeMessage.created_at = message.creation_date;
     nodeMessage.user_id = message.sender;
     nodeMessage.application_id = message.application_id;
     nodeMessage.text = message.content?.original_str || "";
