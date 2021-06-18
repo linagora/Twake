@@ -3,7 +3,7 @@ export type CompanyRoleType = 'owner' | 'admin' | 'member' | 'guest';
 export type CompanyStatusType = 'active' | 'deactivated' | 'invited';
 
 export type CompanyBillingObjectType = {
-  status: 'error' | string;
+  status: 'error' | 'warning' | string;
   trial_end: number;
 };
 
