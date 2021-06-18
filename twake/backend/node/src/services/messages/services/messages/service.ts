@@ -58,8 +58,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   ): Promise<SaveResult<Message>> {
     const serverRequest = context?.user?.server_request;
 
-    console.log("(A)" + item.created_at);
-
     if (!serverRequest && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't write this message.");
@@ -68,8 +66,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     let created = !item.id;
 
     let message = getDefaultMessageInstance(item, context);
-
-    console.log("(B)" + message.created_at);
 
     //We try to update an existing message
     if (!created) {
@@ -99,8 +95,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         created = true;
       }
 
-      console.log("(C)" + message.created_at);
-
       if (serverRequest) {
         message = _.assign(messageToUpdate || message, message);
       } else {
@@ -127,15 +121,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       message.created_at = item.created_at || message.created_at;
     }
 
-    console.log("(D)" + message.created_at);
-
     logger.info(`Saved message in thread ${message.thread_id}`);
 
     if (!message.ephemeral) {
       await this.repository.save(message);
     }
-
-    console.log("(E)" + message.created_at);
 
     this.onSaved(message, { created }, context);
 
