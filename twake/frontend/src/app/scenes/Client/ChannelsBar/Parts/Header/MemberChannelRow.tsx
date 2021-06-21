@@ -188,7 +188,7 @@ export default (props: Props): JSX.Element => {
             </Tag>
           </Col>
           <Col className="small-right-margin">
-            {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
+            {AccessRightsService.hasLevel(workspaceId, 'member') && userEvents}
           </Col>
         </Row>
       );
@@ -218,7 +218,7 @@ export default (props: Props): JSX.Element => {
       </Col>
       {UserService.getUserRole(users[0], companyId) === 'guest' && <Col>{companyRole}</Col>}
       <Col className="small-right-margin">
-        {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
+        {AccessRightsService.hasLevel(workspaceId, 'member') && userEvents}
       </Col>
     </Row>
   );

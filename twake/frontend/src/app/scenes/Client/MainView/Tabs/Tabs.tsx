@@ -60,7 +60,7 @@ export default (): JSX.Element => {
           })}
         </Tabs>
       )}
-      {AccessRightsService.hasLevel(workspaceId || '', 'member') && (
+      {AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Button
           className="add-tab-button"
           type="text"
