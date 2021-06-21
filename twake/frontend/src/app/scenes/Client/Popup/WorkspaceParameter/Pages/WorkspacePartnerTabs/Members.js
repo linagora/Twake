@@ -6,7 +6,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import workspacesUsers from 'services/workspaces/workspaces_users.js';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 import popupManager from 'services/popupManager/popupManager.js';
-import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
+import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 import InitService from 'app/services/InitService';

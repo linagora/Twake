@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Draggable from 'components/Draggable/Draggable.js';
 import DriveElement from './DriveElement.js';
 import './Drive.scss';
 import UIFile from './UI/File.js';
 import Loader from 'components/Loader/Loader.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Languages from 'services/languages/languages.js';
 
 export default class File extends DriveElement {
