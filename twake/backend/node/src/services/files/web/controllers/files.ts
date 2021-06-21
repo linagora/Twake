@@ -46,10 +46,10 @@ export class FileController {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
     const data = await this.service.download(params.id, context);
-    const filename = data.name.replace(/[^a-zA-Z0-9 ]/g, "");
+    const filename = data.name.replace(/[^a-zA-Z0-9 -_.]/g, "");
 
     response.header("Content-disposition", `attachment; filename="${filename}"`);
-    response.header("Content-Length", data.size);
+    if (data.size) response.header("Content-Length", data.size);
     response.type(data.mime);
     response.send(data.file);
   }
