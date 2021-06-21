@@ -10,7 +10,7 @@ import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/f
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
-import { Message, TYPE as MessageTableName } from "../../entities/messages";
+import { getInstance, Message, TYPE as MessageTableName } from "../../entities/messages";
 import {
   BookmarkOperation,
   MessageLocalEvent,
@@ -204,8 +204,18 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     });
 
     if (!message) {
-      logger.error(`This message doesn't exists`);
-      throw Error("Can't delete this message.");
+      logger.error(
+        `This message does not exists, only remove it on websockets (ephemeral message)`,
+      );
+
+      const msg = getInstance({
+        subtype: "deleted",
+        ...pk,
+      });
+
+      this.onSaved(msg, { created: false }, context);
+
+      return new DeleteResult<Message>("message", msg, true);
     }
 
     if (
