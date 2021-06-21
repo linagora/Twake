@@ -1,7 +1,8 @@
-import Languages from 'services/languages/languages.js';
 import Api from '../Api';
 import DepreciatedCollections from '../Depreciated/Collections/Collections';
 import InitService from '../InitService';
+import Languages from "services/languages/languages";
+import logger from "app/services/Logger";
 import { ToasterService as Toaster } from '../Toaster';
 import { ConsoleMemberRole } from './types';
 
@@ -49,12 +50,19 @@ class ConsoleService {
     return new Promise(async resolve => {
       const response = await Api.post('users/console/api/invite', data, (res: any) => {
         if (res) {
-          if (res.error) return Toaster.error(res.error);
-          else if (res.data?.nok?.length) {
-            res.data.nok.map(({ email, message }: { email: string; message: string }) => {
-              if (message !== 'User already belonged to the company') {
-                // FIXME : do not compare the message
-                Toaster.warning(`${email} - ${message}`);
+          if (res.error) {
+            logger.error('Error while adding emails', res.error);
+            return Toaster.error(Languages.t('services.console_services.toaster.add_emails_error', null, "Error while adding email(s)"));
+          } else if (res.data?.nok?.length) {
+            res.data.nok.forEach(({ email, message }: { email: string; message: string }) => {
+              // possible error messages are 
+              // 1. "User already belonged to the company" (Good typo in it...)
+              // 2. "Unable to invite user ${user.email} to company ${company.code}"
+              // TODO: do not compare the message but use error code...
+              logger.error("Error while adding email", email, message);
+
+              if (message.match(/Unable to invite user/)) {
+                Toaster.warning(Languages.t('services.console_services.toaster.add_email_error_message', [email], `Error while adding ${email}`));
               }
             });
           }
