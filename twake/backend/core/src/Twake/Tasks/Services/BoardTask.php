@@ -66,21 +66,32 @@ class BoardTask
                 }
             }
             $tasks_user = $this->doctrine->getRepository("Twake\Tasks:TaskUser")->findBy(Array("user_id_or_mail" => $user_id));
+            $boardIsDeleted = [];
             foreach ($tasks_user as $taskuser) {
                 $t = $this->doctrine->getRepository("Twake\Tasks:Task")->findOneBy(Array("id" => $taskuser->getTaskId()));
                 if ($t) {
-                    if ($user_id != $current_user->getId() . "") {
-                        $ok = false;
-                        foreach ($workspaces as $workspace_id) {
-                            if ($workspace_id == $t->getWorkspaceId()) {
-                                $ok = true;
-                                break;
-                            }
-                        }
-                    } else {
-                        $ok = true;
+
+                    if(!isset($boardIsDeleted[$t->getBoardId()])){
+                        $board = $this->doctrine->getRepository("Twake\Tasks:Board")->findOneBy(Array("id" => $t->getBoardId()));
+                        $boardIsDeleted[$t->getBoardId()] = $board->getDeleted();
                     }
-                    if ($ok) $tasks[] = $t;
+
+                    if(!$boardIsDeleted[$t->getBoardId()]){
+
+                        if ($user_id != $current_user->getId() . "") {
+                            $ok = false;
+                            foreach ($workspaces as $workspace_id) {
+                                if ($workspace_id == $t->getWorkspaceId()) {
+                                    $ok = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            $ok = true;
+                        }
+                        if ($ok) $tasks[] = $t;
+
+                    }
                 } else {
                     $this->doctrine->remove($taskuser);
                     $this->doctrine->flush();

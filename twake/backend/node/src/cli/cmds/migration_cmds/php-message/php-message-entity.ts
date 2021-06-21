@@ -27,10 +27,10 @@ export class PhpMessage {
   @Column("application_id", "encoded_string")
   application_id: string | null;
 
-  @Column("modification_date", "number")
+  @Column("modification_date", "twake_datetime")
   modification_date: number | null;
 
-  @Column("creation_date", "number")
+  @Column("creation_date", "twake_datetime")
   creation_date: number;
 
   @Column("message_type", "number")
@@ -49,6 +49,12 @@ export class PhpMessage {
 
   @Column("reactions", "encoded_string")
   reactions: string | null;
+
+  @Column("pinned", "twake_boolean")
+  pinned: boolean;
+
+  @Column("edited", "twake_boolean")
+  edited: boolean;
 
   @Column("responses_count", "twake_int")
   responses_count: number | null;

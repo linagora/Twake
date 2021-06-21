@@ -1937,7 +1937,7 @@ export default {
   'components.verify_mail.title_2': 'You are an official Twake user now!',
   'components.verify_mail.button': 'Add team members',
   'components.verify_mail.text':
-    'First of all, you have to verify your mail address. We’ve sent a verification link to',
+    'First of all, you have to verify your email address. We’ve sent a verification link to',
   'components.verify_mail.paragraph':
     'You can do it later if you want but unverified accounts have access to only a limited version of Twake',
   'services.console_services.toaster.success_verify_email':

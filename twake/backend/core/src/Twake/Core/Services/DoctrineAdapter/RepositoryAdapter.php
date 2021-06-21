@@ -29,7 +29,6 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         } catch (\Exception $e) {
             error_log($e);
-            var_dump($e->getTraceAsString());
             error_log("ERROR with find");
             $a = null;
         }
@@ -49,7 +48,6 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         } catch (\Exception $e) {
             error_log($e);
-            var_dump($e->getTraceAsString());
             error_log("ERROR with findOneBy");
             $a = null;
         }
@@ -126,7 +124,6 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         } catch (\Exception $e) {
             error_log($e);
-            var_dump($e->getTraceAsString());
             error_log("ERROR with findRange");
             $a = [];
         }

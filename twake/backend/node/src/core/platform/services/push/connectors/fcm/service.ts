@@ -2,6 +2,7 @@ import { option } from "yargs";
 import { logger } from "../../../../framework";
 import { PushConfiguration, PushMessageNotification, PushMessageOptions } from "../../types";
 import { PushConnector } from "../connector";
+import fetch from "node-fetch";
 
 export default class FcmPushConnector implements PushConnector {
   name = "FcmPushConnector";
@@ -13,6 +14,8 @@ export default class FcmPushConnector implements PushConnector {
     notification: PushMessageNotification,
     options: PushMessageOptions,
   ): Promise<void> {
+    logger.debug(`${this.name} - Push notification to devices ${JSON.stringify(devices)}`);
+
     const firebaseEndpoint = this.configuration.endpoint;
     const firebaseApiKey = this.configuration.key;
 
@@ -28,11 +31,12 @@ export default class FcmPushConnector implements PushConnector {
 
     //Push to fcm
     try {
-      const response = await await fetch(firebaseEndpoint, {
+      const response = await fetch(firebaseEndpoint, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `key=${firebaseApiKey}`,
         },
+        method: "POST",
         body: JSON.stringify(pushMessage),
       });
       if (response.status !== 200) {
@@ -42,7 +46,8 @@ export default class FcmPushConnector implements PushConnector {
         );
       }
     } catch (e) {
-      logger.error(`${this.name} - Error while sending message to FCM`, e);
+      logger.error(`${this.name} - Error while sending message to FCM`);
+      logger.error(e);
     }
   }
 }
