@@ -24,9 +24,9 @@ export class FileController {
     }
     const q = request.query;
     const options: UploadOptions = {
-      totalChunks: parseInt(q.resumableTotalChunks || q.total_chunks) || 0,
+      totalChunks: parseInt(q.resumableTotalChunks || q.total_chunks) || 1,
       totalSize: parseInt(q.resumableTotalSize || q.total_size) || 0,
-      chunkNumber: parseInt(q.resumableChunkNumber || q.chunk_number) || 0,
+      chunkNumber: parseInt(q.resumableChunkNumber || q.chunk_number) || 1,
       filename: q.resumableFilename || q.filename || file?.filename || undefined,
       type: q.resumableType || q.type || file?.mimetype || undefined,
     };

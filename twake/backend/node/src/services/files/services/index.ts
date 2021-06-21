@@ -56,7 +56,7 @@ class Service implements FileServiceAPI {
     const userId = context.user?.id;
     const applicationId: string | null = context.user.application_id || null;
 
-    let entity = null;
+    let entity: File = null;
     if (id) {
       entity = await this.repository.findOne({
         company_id: context.company.id,
@@ -111,7 +111,13 @@ class Service implements FileServiceAPI {
       const chunk_number = options.chunkNumber;
       const path = `${getFilePath(entity)}/chunk${chunk_number}`;
 
-      this.storage.write(path, newReadStream);
+      this.storage.write(path, newReadStream).then(res => {
+        //When we get chunk size after on, we need to update the file entity
+        if (res.size && entity.upload_data?.chunks === 1) {
+          entity.upload_data.size = res.size;
+          this.repository.save(entity);
+        }
+      });
     }
     return entity;
   }
