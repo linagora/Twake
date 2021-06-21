@@ -118,6 +118,7 @@
     "lodash": "^4.17.21",
     "match-all": "^1.2.6",
     "minio": "^7.0.18",
+    "moment": "^2.29.1",
     "mongodb": "4.0.0-beta.4",
     "multistream": "^4.1.0",
     "node-fetch": "^2.6.1",

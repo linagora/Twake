@@ -17,6 +17,8 @@ import {
 } from "../../../../services/messages/entities/messages";
 import { ParticipantObject, Thread } from "../../../../services/messages/entities/threads";
 import { Block } from "../../../../services/messages/blocks-types";
+import { WorkspaceExecutionContext } from "../../../../services/workspaces/types";
+import { option } from "yargs";
 
 type MigratedChannel = {
   id: string;
@@ -25,12 +27,16 @@ type MigratedChannel = {
   owner?: string;
 };
 
+type Options = { from?: string; only?: string; ignoreExisting?: boolean };
+
 class MessageMigrator {
   private database: DatabaseServiceAPI;
   private userService: UserServiceAPI;
   private channelService: ChannelServiceAPI;
   private phpMessageService: PhpMessagesService;
   private nodeMessageService: MessageServiceAPI;
+  private migratedMessages: number = 0;
+  private options: Options = {};
 
   constructor(readonly platform: TwakePlatform) {
     this.database = this.platform.getProvider<DatabaseServiceAPI>("database");
@@ -40,25 +46,51 @@ class MessageMigrator {
     this.nodeMessageService = this.platform.getProvider<MessageServiceAPI>("messages");
   }
 
-  public async run(): Promise<void> {
+  public async run(options: Options = {}): Promise<void> {
+    this.options = options;
+
     await this.phpMessageService.init();
 
-    // Get all companies
-    let page: Pagination = { limitStr: "100" };
-    // For each companies find workspaces
-    do {
-      const companyListResult = await this.userService.companies.getCompanies(page);
-      page = companyListResult.nextPage as Pagination;
-
-      for (const company of companyListResult.getEntities()) {
-        await this.migrateCompanyDirectMessages(company);
-
-        await this.migrateCompanyChannelsMessages(company);
-        console.log(`${company.id} - completed  ✅`);
+    if (this.options.only) {
+      const company = await this.userService.companies.getCompany({ id: options.only });
+      await this.migrateCompanyMessages(company);
+    } else {
+      let waitForCompany = false;
+      if (this.options.from) {
+        waitForCompany = true;
       }
-    } while (page.page_token);
+
+      // Get all companies
+      let page: Pagination = { limitStr: "100" };
+      // For each companies find workspaces
+      do {
+        const companyListResult = await this.userService.companies.getCompanies(page);
+        page = companyListResult.nextPage as Pagination;
+
+        for (const company of companyListResult.getEntities()) {
+          if (waitForCompany && this.options.from == `${company.id}`) {
+            waitForCompany = false;
+          }
+
+          if (!waitForCompany) {
+            await this.migrateCompanyMessages(company);
+          }
+        }
+      } while (page.page_token);
+    }
 
     console.log("Php Messages successfully migrated to node !");
+  }
+
+  private async migrateCompanyMessages(company: Company) {
+    console.log(`Start migration for ${company.id}...`);
+    await this.migrateCompanyDirectMessages(company);
+    console.log(
+      `${company.id} - (1/2) migrated direct messages (total: ${this.migratedMessages} messages)  ✅`,
+    );
+
+    await this.migrateCompanyChannelsMessages(company);
+    console.log(`${company.id} - (2/2) completed (total: ${this.migratedMessages} messages)  ✅`);
   }
 
   /**
@@ -98,7 +130,13 @@ class MessageMigrator {
   private async migrateCompanyChannelsMessages(company: Company) {
     // Get all workspaces in company
     const workspacesInCompany = (
-      await this.userService.workspaces.list({ limitStr: "" }, { company_id: company.id })
+      await this.userService.workspaces.list({ limitStr: "" }, {}, {
+        user: {
+          id: null,
+          server_request: true,
+        },
+        company_id: company.id,
+      } as WorkspaceExecutionContext)
     ).getEntities();
 
     // For each workspaces find channels
@@ -163,19 +201,42 @@ class MessageMigrator {
    * @param message
    */
   private async migrateMessage(company: Company, channel: MigratedChannel, message: PhpMessage) {
-    if (message.id) {
-      //Create thread first if not exists
-      const threadId = message.parent_message_id || message.id;
-      const threadDoesNotExists = !this.migratedThreads.includes(threadId);
-      if (threadDoesNotExists) {
-        await this.migratePhpMessageToNodeThread(message, channel, company);
-        this.migratedThreads.push(threadId);
-        console.log(this.migratedThreads + "");
-      }
-
-      //Migrate message itself
-      await this.migratePhpMessageToNodeMessage(threadId, message, company);
+    if (!message.id) {
+      return;
     }
+
+    //Create thread first if not exists
+    const threadId = message.parent_message_id || message.id;
+
+    if (this.options.ignoreExisting) {
+      const msg = await this.nodeMessageService.messages.get({
+        thread_id: threadId,
+        id: message.id,
+      });
+      if (msg) {
+        return;
+      }
+    }
+
+    const threadDoesNotExists = !this.migratedThreads.includes(threadId);
+    if (threadDoesNotExists) {
+      await this.migratePhpMessageToNodeThread(message, channel, company);
+      this.migratedThreads.push(threadId);
+    }
+
+    //Migrate message itself
+    await this.migratePhpMessageToNodeMessage(threadId, message, company);
+
+    this.migratedMessages++;
+
+    if (this.migratedMessages % 100 == 0) {
+      console.log(`${company.id} - ... (total: ${this.migratedMessages} messages)`);
+    }
+
+    //Force delay between channels
+    await new Promise(r => {
+      setTimeout(r, 40);
+    });
   }
 
   /**
@@ -263,8 +324,8 @@ class MessageMigrator {
    * Set edited message Object
    * @param modification_date timestamp
    */
-  private setMessageEditedObject(modification_date: number): MessageEdited {
-    return modification_date ? { edited_at: modification_date } : null;
+  private setMessageEditedObject(message: PhpMessage): MessageEdited {
+    return message.edited ? { edited_at: message.modification_date } : null;
   }
 
   /**
@@ -272,7 +333,10 @@ class MessageMigrator {
    * @param message PhpMessage
    */
   private setMessagePinnedObject(message: PhpMessage): MessagePinnedInfo {
-    return { pinned_at: 0, pinned_by: message.sender };
+    if (message.pinned) {
+      return { pinned_at: 0, pinned_by: message.sender };
+    }
+    return null;
   }
 
   /**
@@ -323,16 +387,18 @@ class MessageMigrator {
     nodeMessage.thread_id = threadId;
     nodeMessage.type = this.setMessageType(message.message_type).type;
     nodeMessage.subtype = this.setMessageType(message.message_type).subtype;
-    nodeMessage.created_at = message.creation_date * 1000;
+    nodeMessage.created_at = message.creation_date;
     nodeMessage.user_id = message.sender;
     nodeMessage.application_id = message.application_id;
     nodeMessage.text = message.content?.original_str || "";
     nodeMessage.blocks = this.setBlocks(message.content);
-    nodeMessage.context = message.hidden_data;
-    nodeMessage.edited = this.setMessageEditedObject(message.modification_date);
+    nodeMessage.context = message.hidden_data || {};
+    nodeMessage.edited = this.setMessageEditedObject(message);
     nodeMessage.pinned_info = this.setMessagePinnedObject(message);
     nodeMessage.reactions = this.setMessageReactionsObject(message.reactions);
     nodeMessage.override = this.setMessageOverrideObject(message);
+
+    nodeMessage.context._front_id = message.id;
 
     // Create nodeMessage then add it to thread
     return await this.nodeMessageService.messages.save(
