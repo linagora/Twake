@@ -294,8 +294,8 @@ class MessageSystem
         $array = $phpMessage->getAsArray();
 
         if($message["ephemeral"]){
-            $array["front_id"] = $message["ephemeral"]["id"] . $message["ephemeral"]["version"];
-            $array["ephemeral_id"] = $message["ephemeral"]["id"];
+            $array["front_id"] = $message["id"];
+            $array["ephemeral_id"] = $message["id"];
             $array["ephemeral_message_recipients"] =[ $message["ephemeral"]["recipient"]];
             $array["_user_ephemeral"] = true;
         }
