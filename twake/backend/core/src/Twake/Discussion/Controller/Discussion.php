@@ -71,7 +71,7 @@ class Discussion extends BaseController
         $participant = $request->request->get("participant");
 
         $channel_id = $participant["id"];
-        $parent_message_id = $context["thread_id"] === $entity["id"] ? "" : $context["thread_id"];
+        $parent_message_id = $entity["thread_id"] === $entity["id"] ? "" : $entity["thread_id"];
         $removed = $entity["subtype"] == "deleted";
 
         $array = $this->get("app.messages")->convertFromNode($entity, [

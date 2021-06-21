@@ -10,7 +10,7 @@ import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/f
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
-import { Message, TYPE as MessageTableName } from "../../entities/messages";
+import { getInstance, Message, TYPE as MessageTableName } from "../../entities/messages";
 import {
   BookmarkOperation,
   MessageLocalEvent,
@@ -95,17 +95,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         created = true;
       }
 
-      if (messageToUpdate) {
-        messageToUpdate.edited = {
-          edited_at: new Date().getTime(),
-        };
+      if (serverRequest) {
+        message = _.assign(messageToUpdate || message, message);
+      } else {
+        if (messageToUpdate) {
+          messageToUpdate.edited = {
+            edited_at: new Date().getTime(),
+          };
 
-        message = _.assign(messageToUpdate, _.pick(message, "text", "blocks", "files", "context"));
-        if (context?.user?.application_id || serverRequest) {
-          message = _.assign(message, _.pick(message, "override"));
+          let updatedMessage = _.assign(
+            messageToUpdate,
+            _.pick(message, "text", "blocks", "files", "context"),
+          );
+          if (context?.user?.application_id) {
+            updatedMessage = _.assign(updatedMessage, _.pick(message, "override"));
+          }
+
+          message = updatedMessage;
         }
-      } else if (serverRequest) {
-        message.id = item.id;
       }
     }
 
@@ -197,8 +204,18 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     });
 
     if (!message) {
-      logger.error(`This message doesn't exists`);
-      throw Error("Can't delete this message.");
+      logger.error(
+        `This message does not exists, only remove it on websockets (ephemeral message)`,
+      );
+
+      const msg = getInstance({
+        subtype: "deleted",
+        ...pk,
+      });
+
+      this.onSaved(msg, { created: false }, context);
+
+      return new DeleteResult<Message>("message", msg, true);
     }
 
     if (
