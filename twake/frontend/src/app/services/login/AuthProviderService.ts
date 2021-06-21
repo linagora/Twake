@@ -8,6 +8,7 @@ import Observable from '../Observable/Observable';
 import LoginService from './login';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../utils/URLUtils';
+import AlertManager from 'services/AlertManager/AlertManager';
 
 type AuthProviderConfiguration = AuthProviderProps;
 
@@ -53,26 +54,34 @@ class AuthProviderService extends Observable {
       });
 
       //This manage the initial sign-in when loading the app
-      const authProviderUserManager = this.authProviderUserManager;
-      (async () => {
-        try {
-          await authProviderUserManager.signinRedirectCallback();
-          authProviderUserManager.getUser();
-        } catch (e) {
-          //There is no sign-in response, so we can try to silent login and use refresh token
+      const frontUrl = (
+        ((environment.front_root_url || '').split('//').pop() || '').split('/').shift() || ''
+      ).toLocaleLowerCase();
+      if (frontUrl && document.location.host.toLocaleLowerCase() != frontUrl) {
+        //Redirect to valid frontend url to make sure oidc will work as expected
+        document.location.replace(environment.front_root_url);
+      } else {
+        const authProviderUserManager = this.authProviderUserManager;
+        (async () => {
           try {
-            const user = await authProviderUserManager.getUser();
-            if (user) {
-              const user = await authProviderUserManager.signinSilent();
-              this.getJWTFromOidcToken(user);
-            } else {
-              authProviderUserManager.signinRedirect();
-            }
+            await authProviderUserManager.signinRedirectCallback();
+            authProviderUserManager.getUser();
           } catch (e) {
-            authProviderUserManager?.signinRedirect();
+            //There is no sign-in response, so we can try to silent login and use refresh token
+            try {
+              let user = await authProviderUserManager.getUser();
+              if (user) {
+                user = await authProviderUserManager.signinSilent();
+                this.getJWTFromOidcToken(user);
+              } else {
+                authProviderUserManager.signinRedirect();
+              }
+            } catch (e) {
+              authProviderUserManager?.signinRedirect();
+            }
           }
-        }
-      })();
+        })();
+      }
     }
 
     return {
@@ -103,6 +112,21 @@ class AuthProviderService extends Observable {
     const response = (await Api.post('users/console/token', {
       access_token: user.access_token,
     })) as { access_token: JWTDataType };
+    if (!response.access_token) {
+      AlertManager.confirm(
+        () => {
+          this.signOut();
+        },
+        () => {
+          this.signOut();
+        },
+        {
+          title: 'We are unable to open your account.',
+          text: (response as any).error,
+        },
+      );
+      return;
+    }
     JWTStorage.updateJWT(response.access_token);
     LoginService.updateUser(() => {});
   }
