@@ -24,9 +24,7 @@ export default class LocalConnectorService implements StorageConnectorAPI {
       });
     }
 
-    console.log(directory, stream);
-
-    createWriteStream(path).write(stream);
+    stream.pipe(createWriteStream(path));
   }
 
   async read(path: string): Promise<Readable> {
