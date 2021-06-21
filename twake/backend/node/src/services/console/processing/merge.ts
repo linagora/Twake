@@ -337,6 +337,7 @@ export class MergeProcess {
       }
     } catch (err) {
       logger.warn("Error while creating the user %o", companyUser.user_id);
+      console.log(err);
       error = err;
     }
 
