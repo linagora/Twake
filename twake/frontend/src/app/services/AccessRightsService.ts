@@ -1,7 +1,7 @@
 import Observable from './Observable/Observable';
 
 type Rights = 'guest' | 'member' | 'administrator';
-type RightsOrNone = Rights | 'none';
+export type RightsOrNone = Rights | 'none';
 
 const rightLevels = {
   none: 0,
