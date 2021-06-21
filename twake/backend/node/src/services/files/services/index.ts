@@ -111,13 +111,15 @@ class Service implements FileServiceAPI {
       const chunk_number = options.chunkNumber;
       const path = `${getFilePath(entity)}/chunk${chunk_number}`;
 
-      this.storage.write(path, newReadStream).then(res => {
-        //When we get chunk size after on, we need to update the file entity
-        if (res.size && entity.upload_data?.chunks === 1) {
-          entity.upload_data.size = res.size;
-          this.repository.save(entity);
-        }
-      });
+      const res = await this.storage.write(path, newReadStream);
+
+      console.log("end size: ", res);
+
+      //When we get chunk size after on, we need to update the file entity
+      if (res.size && entity.upload_data?.chunks === 1) {
+        entity.upload_data.size = res.size;
+        this.repository.save(entity);
+      }
     }
     return entity;
   }
