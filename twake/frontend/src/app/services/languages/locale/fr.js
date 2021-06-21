@@ -2063,4 +2063,13 @@ export default {
   'components.on_boarding.company_billing_banner.guest_or_member_text':
     "Il y a un problème avec l'abonnement de votre entreprise. Veuillez contacter le propriétaire ou l'administrateur de l'entreprise!",
   'components.on_boarding.company_billing_banner.link': "plan d'abonnement d'entreprise",
+  'components.on_boarding.popups.blocked_company.title':
+    "Votre entreprise est bloquée à cause d'un problème de paiement",
+  'components.on_boarding.popups.blocked_company.description':
+    "Votre abonnement à Twake a expiré. Veuillez contacter le propriétaire ou l'administrateur de votre entreprise pour le renouveler et pouvoir à nouveau communiquer avec votre équipe !",
+  'components.on_boarding.popups.blocked_company.learn_more_text':
+    "Envie d'en savoir plus sur l'abonnement entreprise ?",
+  'components.on_boarding.popups.blocked_company.company_subscription_plan_button': 'Cliquez ici',
+  'components.on_boarding.popups.blocked_company.or': 'Ou',
+  'components.on_boarding.popups.blocked_company.company_selector': "Changer d'entreprise",
 };

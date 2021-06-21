@@ -1990,4 +1990,13 @@ export default {
   'components.on_boarding.company_billing_banner.guest_or_member_text':
     'There is an issue with your company subscription. Please contact the owner or administrator of the company!',
   'components.on_boarding.company_billing_banner.link': 'company subscription plan',
+  'components.on_boarding.popups.blocked_company.title':
+    'Your company is locked because of a payment issue',
+  'components.on_boarding.popups.blocked_company.description':
+    'Your subscription to Twake has expired. Please contact the owner or administrator of your company to renew it and be able to communicate with your team again !',
+  'components.on_boarding.popups.blocked_company.learn_more_text':
+    'Want to learn more about companies subscription plan ?',
+  'components.on_boarding.popups.blocked_company.company_subscription_plan_button': 'Click here',
+  'components.on_boarding.popups.blocked_company.or': 'Or',
+  'components.on_boarding.popups.blocked_company.company_selector': 'Switch to another company',
 };
