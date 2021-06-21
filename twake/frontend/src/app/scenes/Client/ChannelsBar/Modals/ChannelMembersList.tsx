@@ -10,7 +10,7 @@ import Strings from 'services/utils/strings.js';
 import Languages from 'services/languages/languages.js';
 import UsersService from 'services/user/UserService';
 import Collections from 'services/CollectionsReact/Collections';
-import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow.tsx';
+import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow';
 
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import { useUsersListener } from 'app/components/Member/UserParts';
