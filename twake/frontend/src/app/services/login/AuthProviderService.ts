@@ -53,26 +53,34 @@ class AuthProviderService extends Observable {
       });
 
       //This manage the initial sign-in when loading the app
-      const authProviderUserManager = this.authProviderUserManager;
-      (async () => {
-        try {
-          await authProviderUserManager.signinRedirectCallback();
-          authProviderUserManager.getUser();
-        } catch (e) {
-          //There is no sign-in response, so we can try to silent login and use refresh token
+      const frontUrl = (
+        ((environment.front_root_url || '').split('//').pop() || '').split('/').shift() || ''
+      ).toLocaleLowerCase();
+      if (frontUrl && document.location.host.toLocaleLowerCase() != frontUrl) {
+        //Redirect to valid frontend url to make sure oidc will work as expected
+        document.location.replace(environment.front_root_url);
+      } else {
+        const authProviderUserManager = this.authProviderUserManager;
+        (async () => {
           try {
-            let user = await authProviderUserManager.getUser();
-            if (user) {
-              user = await authProviderUserManager.signinSilent();
-              this.getJWTFromOidcToken(user);
-            } else {
-              authProviderUserManager.signinRedirect();
-            }
+            await authProviderUserManager.signinRedirectCallback();
+            authProviderUserManager.getUser();
           } catch (e) {
-            authProviderUserManager?.signinRedirect();
+            //There is no sign-in response, so we can try to silent login and use refresh token
+            try {
+              let user = await authProviderUserManager.getUser();
+              if (user) {
+                user = await authProviderUserManager.signinSilent();
+                this.getJWTFromOidcToken(user);
+              } else {
+                authProviderUserManager.signinRedirect();
+              }
+            } catch (e) {
+              authProviderUserManager?.signinRedirect();
+            }
           }
-        }
-      })();
+        })();
+      }
     }
 
     return {
