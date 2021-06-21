@@ -40,7 +40,7 @@ export default (props: Props) => {
             {Languages.t(
               'scenes.apps.messages.message.types.first_channel_message_text',
               [channel.data.name],
-              "C'est le premier message du canal",
+              "This is the first message of the channel",
             )}
           </div>
         </div>
