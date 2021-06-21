@@ -28,7 +28,9 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
       return new S3ConnectorService(this.configuration.get<S3Configuration>("S3"));
     }
     logger.info(
-      "Using 'local' connector for storage (no other connector recognized from configuration type: '%s').",
+      `Using 'local' connector for storage${
+        type === "local" ? "" : " (no other connector recognized from configuration type: '%s')"
+      }.`,
       type,
     );
     return new LocalConnectorService(this.configuration.get<LocalConfiguration>("local"));
@@ -44,7 +46,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
         );
         stream = stream.pipe(cipher);
       } catch (err) {
-        logger.error("Unable to createDecipheriv: %s", err);
+        logger.error("Unable to createCipheriv: %s", err);
       }
     }
     this.getConnector().write(path, stream);

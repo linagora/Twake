@@ -1,6 +1,7 @@
 import { Readable } from "stream";
-import { createWriteStream, createReadStream } from "fs";
+import { createWriteStream, createReadStream, existsSync, mkdirSync } from "fs";
 import { StorageConnectorAPI } from "../../provider";
+import p from "path";
 
 export type LocalConfiguration = {
   path: string;
@@ -14,6 +15,13 @@ export default class LocalConnectorService implements StorageConnectorAPI {
   }
 
   write(path: string, stream: Readable): void {
+    const directory = p.dirname(path);
+    if (!existsSync(directory)) {
+      mkdirSync(directory, {
+        recursive: true,
+      });
+    }
+
     createWriteStream(this.getFullPath(path)).write(stream);
   }
 
