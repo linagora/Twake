@@ -97,6 +97,11 @@ class MessageSystem
 
     public function remove($object, $options, $current_user = null)
     {
+        $channel = $this->getInfosFromChannel($object["channel_id"]);   
+        if(!$channel){
+            return;
+        }
+
         $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/delete", null, $current_user, $application ? $application->getId() : null);
         return $this->convertFromNode($response["resource"], $channel);
     }
