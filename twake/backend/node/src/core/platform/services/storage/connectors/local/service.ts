@@ -14,7 +14,9 @@ export default class LocalConnectorService implements StorageConnectorAPI {
     this.configuration = localConfiguration;
   }
 
-  write(path: string, stream: Readable): void {
+  write(relativePath: string, stream: Readable): void {
+    const path = this.getFullPath(relativePath);
+
     const directory = p.dirname(path);
     if (!existsSync(directory)) {
       mkdirSync(directory, {
@@ -22,7 +24,9 @@ export default class LocalConnectorService implements StorageConnectorAPI {
       });
     }
 
-    createWriteStream(this.getFullPath(path)).write(stream);
+    console.log(directory);
+
+    createWriteStream(path).write(stream);
   }
 
   async read(path: string): Promise<Readable> {
