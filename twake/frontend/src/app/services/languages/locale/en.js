@@ -1975,7 +1975,7 @@ export default {
   'components.locked_features.locked_history_banner.title':
     'You have just reached the message limit',
   'components.locked_features.locked_history_banner.description':
-    "Your company has over 10000 messages. That's a lot! Upgrade now to access all your message history.",
+    'Your company has a lot of messages! Upgrade now to access all your message history.',
   'components.locked_features.locked_history_banner.button': 'Learn more',
   'components.locked_features.locked_guests_popup.title': 'Guests feature is locked',
   'components.locked_features.locked_guests_popup.subtitle':
