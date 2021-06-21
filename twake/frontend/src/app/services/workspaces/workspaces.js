@@ -44,7 +44,7 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId) {
-    if (this.currentWorkspaceId != workspaceId && workspaceId && loginService.state === 'app') {
+    if (this.currentWorkspaceId !== workspaceId && workspaceId && loginService.state === 'app') {
       this.currentWorkspaceId = workspaceId;
       const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
       if (workspace) this.currentWorkspaceIdByGroup[workspace.group.id] = workspaceId;
@@ -70,7 +70,7 @@ class Workspaces extends Observable {
   }
 
   updateCurrentCompanyId(companyId) {
-    if (this.currentGroupId != companyId && companyId) {
+    if (this.currentGroupId !== companyId && companyId) {
       this.currentGroupId = companyId;
       UserNotifications.subscribeToCurrentCompanyNotifications(companyId);
     }
@@ -206,7 +206,7 @@ class Workspaces extends Observable {
     var id = workspace.id || workspace;
     delete this.user_workspaces[id];
 
-    if (id == this.currentWorkspaceId) {
+    if (id === this.currentWorkspaceId) {
       this.initSelection(Groups.currentGroupId);
     }
   }
@@ -221,7 +221,7 @@ class Workspaces extends Observable {
       })
       .forEach(e => {
         var e = this.user_workspaces[e];
-        if (!group_id || e?.group?.id == group_id) {
+        if (!group_id || e?.group?.id === group_id) {
           object.push(e);
         }
       });
@@ -239,16 +239,13 @@ class Workspaces extends Observable {
     };
     that.loading = true;
     that.notify();
-    var that = this;
     Api.post('workspace/create', data, function (res) {
-      var group_id = undefined;
       var workspace = undefined;
       if (res.data && res.data.workspace) {
         //Update rights and more
         loginService.updateUser();
 
         that.addToUser(res.data.workspace);
-        group_id = res.data.workspace.group.id;
         workspace = res.data.workspace;
         if (wsMembers.length > 0) {
           if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
@@ -305,7 +302,7 @@ class Workspaces extends Observable {
       'workspace/data/name',
       { workspaceId: this.currentWorkspaceId, name: name },
       function (res) {
-        if (res.errors.length == 0) {
+        if (res.errors.length === 0) {
           var update = {
             id: that.currentWorkspaceId,
             name: name,
@@ -347,7 +344,7 @@ class Workspaces extends Observable {
       xhr: function () {
         var myXhr = $.ajaxSettings.xhr();
         myXhr.onreadystatechange = function () {
-          if (myXhr.readyState == XMLHttpRequest.DONE) {
+          if (myXhr.readyState === XMLHttpRequest.DONE) {
             that.loading = false;
             var resp = JSON.parse(myXhr.responseText);
             if (resp.errors.indexOf('badimage') > -1) {
@@ -387,5 +384,4 @@ class Workspaces extends Observable {
   }
 }
 
-const workspaces = new Workspaces();
-export default workspaces;
+export default new Workspaces();
