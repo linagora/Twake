@@ -281,11 +281,6 @@ export class WorkspaceUsersCrudController
   ): Promise<WorkspaceUserInvitationResponse> {
     const context = getExecutionContext(request);
 
-    const allUsers = this.companyService.getCompanyUser(
-      { id: context.company_id },
-      { id: context.user.id },
-    );
-
     const usersInTwake: Map<string, User> = new Map(
       await this.usersService
         .getByEmails(request.body.invitations.map(a => a.email))
@@ -333,7 +328,8 @@ export class WorkspaceUsersCrudController
           { id: user.id },
         );
         if (!userInCompany) {
-          // TODO: call console API
+          // TODO: for console — call console API
+          // TODO: for non-console — create an account directly
         }
 
         const userInWorkspace = await this.workspaceService.getUser({
