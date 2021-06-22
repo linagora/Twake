@@ -37,7 +37,7 @@ class Login extends Observable {
       branding: {},
       ready: {},
       auth: {},
-      help_link: false,
+      help_url: false,
     };
 
     Globals.window.login = this;

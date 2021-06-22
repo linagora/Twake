@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 
-import {
-  ChannelMemberType,
-  ChannelResource,
-  ChannelMemberResource,
-} from 'app/models/Channel';
+import { ChannelMemberType, ChannelResource, ChannelMemberResource } from 'app/models/Channel';
 import ChannelMembersList from 'scenes/Client/ChannelsBar/Modals/ChannelMembersList';
 import Icon from 'components/Icon/Icon';
 import Menu from 'components/Menus/Menu';
@@ -21,6 +17,9 @@ import { NotificationResource } from 'app/models/Notification';
 import RouterServices from 'app/services/RouterService';
 import GuestManagement from 'app/scenes/Client/ChannelsBar/Modals/GuestManagement';
 import { getChannelMembers, getMine } from 'app/services/channels/ChannelCollectionPath';
+import { useFeatureToggles } from 'app/components/LockedFeaturesComponents/FeatureTogglesHooks';
+import LockedGuestsPopup from 'app/components/LockedFeaturesComponents/LockedGuestsPopup/LockedGuestsPopup';
+import InitService from 'app/services/InitService';
 
 type Props = {
   channel: ChannelResource;
@@ -33,9 +32,16 @@ export default (props: Props): JSX.Element => {
   const companyId = props.channel.data.company_id;
   const channelWorkspaceId = props.channel.data.workspace_id;
   const { workspaceId } = RouterServices.getStateFromRoute();
-  const channelMembersCollection = Collections.get(getChannelMembers(companyId, channelWorkspaceId, props.channel.data.id), ChannelMemberResource);
-  const channelsCollection = Collection.get(getMine(companyId, channelWorkspaceId), ChannelResource);
+  const channelMembersCollection = Collections.get(
+    getChannelMembers(companyId, channelWorkspaceId, props.channel.data.id),
+    ChannelMemberResource,
+  );
+  const channelsCollection = Collection.get(
+    getMine(companyId, channelWorkspaceId),
+    ChannelResource,
+  );
   const isDirectChannel = props.channel.data.visibility === 'direct';
+  const { FeatureToggles, Feature, activeFeatureNames, FeatureNames } = useFeatureToggles();
 
   Languages.useListener(useState);
 
@@ -67,10 +73,26 @@ export default (props: Props): JSX.Element => {
   };
 
   const displayGuestManagement = () => {
-    return ModalManager.open(<GuestManagement channel={props.channel} />, {
-      position: 'center',
-      size: { width: '600px', minHeight: '329px' },
-    });
+    return ModalManager.open(
+      <FeatureToggles features={activeFeatureNames}>
+        <Feature
+          name={FeatureNames.GUESTS}
+          inactiveComponent={() => (
+            <LockedGuestsPopup
+              companySubscriptionUrl={
+                InitService.server_infos?.configuration?.accounts?.console
+                  ?.company_subscription_url || ''
+              }
+            />
+          )}
+          activeComponent={() => <GuestManagement channel={props.channel} />}
+        />
+      </FeatureToggles>,
+      {
+        position: 'center',
+        size: { width: '600px', minHeight: '329px' },
+      },
+    );
   };
 
   const leaveChannel = async () => {

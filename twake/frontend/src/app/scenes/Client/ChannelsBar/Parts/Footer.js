@@ -35,9 +35,9 @@ export default class Footer extends Component {
       <FooterUI
         planName={group?.plan}
         onClickHelp={
-          InitService.server_infos?.configuration?.help_link &&
+          InitService.server_infos?.configuration?.help_url &&
           (() => {
-            window.open(InitService.server_infos?.configuration?.help_link);
+            window.open(InitService.server_infos?.configuration?.help_url);
           })
         }
         onClickDocumentation={() => {

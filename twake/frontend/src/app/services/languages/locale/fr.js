@@ -2045,4 +2045,31 @@ export default {
   'components.richtexteditor.toolbar.ordered-list': 'List ordonnée',
   'components.richtexteditor.toolbar.blockquote': 'Citation',
   'components.richtexteditor.toolbar.code-block': 'Bloc de code',
+  'components.locked_features.locked_history_banner.title':
+    "Vous venez d'atteindre la limite de messages",
+  'components.locked_features.locked_history_banner.description':
+    "Votre entreprise a beaucoup de messages! Mettez à niveau maintenant pour accéder à tout l'historique de vos messages.",
+  'components.locked_features.locked_history_banner.button': 'Voir plus',
+  'components.locked_features.locked_guests_popup.title': 'La fonctionnalité est verrouillée',
+  'components.locked_features.locked_guests_popup.subtitle':
+    "Cette fonctionnalité n'est pas disponible dans la version gratuite",
+  'components.locked_features.locked_guests_popup.description':
+    'Oups !! Il semble que vous souhaitiez inviter des utilisateurs externes dans votre espace de travail. Vous pouvez envisager de mettre à niveau votre plan si vous souhaitez collaborer avec des invités et des partenaires externes. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe.',
+  'components.locked_features.locked_guests_popup.learn_more_button': 'Voir plus',
+  'components.locked_features.locked_guests_popup.skip_for_now_button': 'Ignorer',
+  'components.locked_features.locked_guests_popup.or': 'Ou',
+  'components.on_boarding.company_billing_banner.admin_or_owner_text':
+    "Il y a un problème avec l'abonnement de votre entreprise. Veuillez consulter votre ",
+  'components.on_boarding.company_billing_banner.guest_or_member_text':
+    "Il y a un problème avec l'abonnement de votre entreprise. Veuillez contacter le propriétaire ou l'administrateur de l'entreprise!",
+  'components.on_boarding.company_billing_banner.link': "plan d'abonnement d'entreprise",
+  'components.on_boarding.popups.blocked_company.title':
+    "Votre entreprise est bloquée à cause d'un problème de paiement",
+  'components.on_boarding.popups.blocked_company.description':
+    "Votre abonnement à Twake a expiré. Veuillez contacter le propriétaire ou l'administrateur de votre entreprise pour le renouveler et pouvoir à nouveau communiquer avec votre équipe !",
+  'components.on_boarding.popups.blocked_company.learn_more_text':
+    "Envie d'en savoir plus sur l'abonnement entreprise ?",
+  'components.on_boarding.popups.blocked_company.company_subscription_plan_button': 'Cliquez ici',
+  'components.on_boarding.popups.blocked_company.or': 'Ou',
+  'components.on_boarding.popups.blocked_company.company_selector': "Changer d'entreprise",
 };
