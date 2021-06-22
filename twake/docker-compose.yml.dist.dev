@@ -10,7 +10,6 @@ services:
       - ./docker-data/scylladb:/var/lib/scylla
   rabbitmq:
     image: rabbitmq:3
-    mem_limit: 300m
     environment:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
@@ -62,7 +61,6 @@ services:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-    mem_limit: 1g
     ulimits:
       memlock:
         soft: -1
