@@ -57,7 +57,11 @@ const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
   let list: any[] = [];
   replacements.forEach((replacement, i) => {
     let split = temp.split(`{${i}}`);
-    list.push(<Typography.Text key={i} type="secondary">{split[0]}</Typography.Text>);
+    list.push(
+      <Typography.Text key={i} type="secondary">
+        {split[0]}
+      </Typography.Text>,
+    );
     list.push(replacement);
     temp = split[1];
   });
@@ -73,14 +77,7 @@ export default (props: PropsType): JSX.Element => {
       const resource = activity.context.array[0]?.resource as ChannelMemberType;
 
       if (activity.actor.id === resource.user_id) {
-        return translateUsingReactNode(
-          'scenes.apps.messages.message.activity_message.a_join_the_channel',
-          [
-            <span style={{ marginRight: 5, lineHeight: 0 }}>
-              {generateTypographyName(activity.actor.id)}
-            </span>,
-          ],
-        );
+        return [<></>]; //Do not show this information to not polute the chat
       }
 
       if (activity.actor.id !== resource.user_id) {
@@ -103,14 +100,7 @@ export default (props: PropsType): JSX.Element => {
     if (activity.context.array) {
       const resource = activity.context.array[0]?.resource as ChannelMemberType;
       if (activity.actor.id === resource.user_id) {
-        return translateUsingReactNode(
-          'scenes.apps.messages.message.activity_message.a_left_the_channel',
-          [
-            <span style={{ marginRight: 5, lineHeight: 0 }}>
-              {generateTypographyName(activity.actor.id)}
-            </span>,
-          ],
-        );
+        return [<></>]; //Do not show this information to not polute the chat
       }
 
       if (activity.actor.id !== resource.user_id) {
