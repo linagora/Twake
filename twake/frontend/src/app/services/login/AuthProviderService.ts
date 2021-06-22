@@ -53,12 +53,18 @@ class AuthProviderService extends Observable {
       });
 
       //This manage the initial sign-in when loading the app
-      const frontUrl = (
-        ((environment.front_root_url || '').split('//').pop() || '').split('/').shift() || ''
-      ).toLocaleLowerCase();
+      const frontUrl = (getDomain(environment.front_root_url || '') || '').toLocaleLowerCase();
       if (frontUrl && document.location.host.toLocaleLowerCase() != frontUrl) {
         //Redirect to valid frontend url to make sure oidc will work as expected
-        document.location.replace(environment.front_root_url);
+        document.location.replace(
+          document.location.protocol +
+            '//' +
+            getDomain(environment.front_root_url) +
+            '/' +
+            document.location.pathname +
+            document.location.search +
+            document.location.hash,
+        );
       } else {
         const authProviderUserManager = this.authProviderUserManager;
         (async () => {
@@ -133,3 +139,7 @@ class AuthProviderService extends Observable {
 
 const authProviderService = new AuthProviderService();
 export default authProviderService;
+
+function getDomain(str: string): string {
+  return ((str || '').split('//').pop() || '').split('/').shift() || '';
+}
