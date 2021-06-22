@@ -1857,7 +1857,7 @@ export default {
   'scenes.client.channelbar.channelmemberseditor.title': 'Add members in $1',
   'scenes.client.channelbar.channelmemberslist.title': 'Members in $1',
   'scenes.client.channelbar.channelmemberslist.loader': 'Load more',
-  'scenes.client.channelbar.channelmemberslist.autocomplete': 'Search users',
+  'scenes.client.channelbar.channelmemberslist.autocomplete': 'Add or search people',
   'scenes.client.channelbar.channelmemberslist.invitebtn': 'Add users',
   'scenes.client.channelbar.channelmemberslist.menu.option_1': 'Send a direct message',
   'scenes.client.channelbar.channelmemberslist.menu.option_2': 'Remove from channel',
