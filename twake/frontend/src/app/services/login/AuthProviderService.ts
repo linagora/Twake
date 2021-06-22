@@ -27,7 +27,7 @@ class AuthProviderService extends Observable {
         redirect_uri: environment.front_root_url + '/oidccallback',
         response_type: 'code',
         scope: 'openid profile email address phone offline_access',
-        post_logout_redirect_uri: environment.front_root_url + '/logout',
+        post_logout_redirect_uri: environment.front_root_url + '/signout',
         silent_redirect_uri: environment.front_root_url + '/oidcsilientrenew',
         automaticSilentRenew: true,
         loadUserInfo: true,
