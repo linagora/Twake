@@ -10,7 +10,7 @@ import {
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 import { MentionNotification } from "../../../../types";
 import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
-import { ResourceEventsPayload } from "../../../../../../utils/types";
+import { ChannelType, ResourceEventsPayload } from "../../../../../../utils/types";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
@@ -46,13 +46,17 @@ export class NewChannelMessageProcessor
     logger.debug(`${this.name} - Notification message ${JSON.stringify(message)}`);
 
     try {
+      if (message.workspace_id === ChannelType.DIRECT) {
+        //Fixme: Monkey fix until we find a way to add user to channel BEFORE to add the badge to this channel
+        await new Promise(r => setTimeout(r, 2000));
+      }
+
       const usersToNotify = await this.getUsersToNotify(message);
 
       if (!usersToNotify?.length) {
         logger.info(
           `${this.name} - No users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
         );
-
         return;
       }
 
