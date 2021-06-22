@@ -81,6 +81,8 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
   private collection: Collection;
 
+  private messagesCount: number = 0;
+
   static getKey(channel: ChannelResource, collectionKey: string, threadId?: string): string {
     return `channel:${channel.data.id}/collection:${collectionKey}/thread:${threadId}`;
   }
@@ -144,6 +146,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
           this.logger.debug('Initial messages', messages);
           this.updateCursors(messages);
           this.httpLoading = false;
+          this.messagesCount = this.pageSize;
 
           // loading a thread
           if (this.threadId) {
@@ -194,7 +197,10 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     const loadUp = params.direction === 'up';
     this.logger.debug('nextPage - ', params);
 
-    if (loadUp && MessageHistoryService.shouldLimitMessages(this.firstMessageId)) {
+    if (
+      loadUp &&
+      MessageHistoryService.shouldLimitMessages(this.firstMessageId, this.messagesCount)
+    ) {
       const limitChannelMessage = MessageHistoryService.getLimitChannelMessageObject();
 
       this.setTopIsComplete();
@@ -232,6 +238,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         },
         (messages: Message[]) => {
           this.nbCalls++;
+          this.messagesCount += messages.length;
           this.httpLoading = false;
           this.logger.debug('nextPage - messages', messages);
           this.updateCursors(messages);
