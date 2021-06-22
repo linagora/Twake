@@ -5,31 +5,36 @@ import {
   EntityDefinition,
 } from "../database/services/orm/types";
 
-import { TwakeService, logger, ServiceName } from "../../framework";
+import { TwakeService, logger, ServiceName, Consumes } from "../../framework";
 import { SearchAdapter, SearchConfiguration, SearchServiceAPI } from "./api";
 import ElasticsearchService from "./adapters/elasticsearch";
 import MongosearchService from "./adapters/mongosearch";
 import { localEventBus } from "../../framework/pubsub";
+import { DatabaseServiceAPI } from "../database/api";
 
 @ServiceName("search")
+@Consumes(["database"])
 export default class Search extends TwakeService<SearchServiceAPI> {
   version = "1";
   name = "search";
   service: SearchAdapter;
+  database: DatabaseServiceAPI;
 
   constructor() {
     super();
 
     const type = this.configuration.get("type") as SearchConfiguration["type"];
+    this.database = this.context.getProvider<DatabaseServiceAPI>("database");
 
     if (type === "elasticsearch") {
       logger.info("Loaded Elasticsearch adapter for search.");
       this.service = new ElasticsearchService(
+        this.database,
         this.configuration.get("elasticsearch") as SearchConfiguration["elasticsearch"],
       );
     } else {
       logger.info("Loaded Mongo adapter for search.");
-      this.service = new MongosearchService();
+      this.service = new MongosearchService(this.database);
     }
   }
 

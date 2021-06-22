@@ -7,6 +7,7 @@ import { logger } from "../../../framework";
 import _ from "lodash";
 import streamToIterator from "stream-to-iterator";
 import { SearchAdapter, SearchConfiguration } from "../api";
+import { DatabaseServiceAPI } from "../../database/api";
 
 type Operation = {
   index: string;
@@ -19,7 +20,10 @@ export default class Search implements SearchAdapter {
   private client: Client;
   private buffer: Readable;
 
-  constructor(readonly configuration: SearchConfiguration["elasticsearch"]) {}
+  constructor(
+    readonly database: DatabaseServiceAPI,
+    readonly configuration: SearchConfiguration["elasticsearch"],
+  ) {}
 
   public async connect() {
     try {
@@ -40,7 +44,7 @@ export default class Search implements SearchAdapter {
     }
 
     const name = entity.options?.search?.index || entity.name;
-    const mapping = entity.options?.search?.mapping;
+    const mapping = entity.options?.search?.esMapping;
     logger.info(`Create index ${name} with mapping %o`, mapping);
     await this.client.indices.create(
       {

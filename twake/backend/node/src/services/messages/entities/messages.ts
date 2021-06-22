@@ -9,7 +9,10 @@ export const TYPE = "messages";
   type: TYPE,
   search: {
     index: "messages",
-    mapping: {
+    mongoMapping: {
+      text: "text",
+    },
+    esMapping: {
       properties: {
         text: { type: "text" },
       },

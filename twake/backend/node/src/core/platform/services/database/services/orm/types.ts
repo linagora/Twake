@@ -9,7 +9,8 @@ export type EntityDefinition = {
     search?: {
       source: <Entity>(entity: Entity) => any; //Should return an object that will be indexed
       index?: string; //Index name
-      mapping?: any; //Used for elasticsearch mappings
+      esMapping?: any; //Used for elasticsearch / mongodb mappings
+      mongoMapping?: any; //Used for elasticsearch / mongodb mappings
     };
   };
 };
