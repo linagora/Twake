@@ -92,8 +92,7 @@ export default class Group extends Component {
         text: Languages.t('scenes.app.workspacesbar.components.create_company_menu'),
         icon: 'plus',
         onClick: () => {
-          //popupManager.open(<CreateCompanyView />);
-          console.log(Groups.user_groups);
+          popupManager.open(<CreateCompanyView />);
         },
       });
 

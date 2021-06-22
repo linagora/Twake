@@ -268,33 +268,31 @@ class Login extends Observable {
 
     const that = this;
 
-    Globals.getDevice(device => {
-      Api.post(
-        'users/login',
-        {
-          username: username,
-          password: password,
-          remember_me: rememberme,
-          device: device,
-        },
-        function (res) {
-          if (res && res.data && res.data.status === 'connected') {
-            if (that.waitForVerificationTimeout) {
-              clearTimeout(that.waitForVerificationTimeout);
-            }
-            that.login_loading = false;
-            that.init();
-            return RouterServices.replace(RouterServices.pathnames.LOGIN);
-          } else {
-            that.login_error = true;
-            that.login_loading = false;
-            that.notify();
+    Api.post(
+      'users/login',
+      {
+        username: username,
+        password: password,
+        remember_me: rememberme,
+        device: {},
+      },
+      function (res) {
+        if (res && res.data && res.data.status === 'connected') {
+          if (that.waitForVerificationTimeout) {
+            clearTimeout(that.waitForVerificationTimeout);
           }
-        },
-        false,
-        { disableJWTAuthentication: true },
-      );
-    });
+          that.login_loading = false;
+          that.init();
+          return RouterServices.replace(RouterServices.pathnames.LOGIN);
+        } else {
+          that.login_error = true;
+          that.login_loading = false;
+          that.notify();
+        }
+      },
+      false,
+      { disableJWTAuthentication: true },
+    );
   }
 
   clearLogin() {
