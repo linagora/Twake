@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService, uuid } from "../utils.prepare.db";
-import { v4 as uuidv4 } from "uuid";
+import { v1 as uuidv1 } from "uuid";
 
 describe("The /workspace users API", () => {
   const url = "/internal/services/workspaces/v1";
@@ -48,10 +48,10 @@ describe("The /workspace users API", () => {
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
-    const ws0pk = { id: uuidv4(), group_id: companyId };
-    const ws1pk = { id: uuidv4(), group_id: companyId };
-    const ws2pk = { id: uuidv4(), group_id: companyId };
-    const ws3pk = { id: uuidv4(), group_id: companyId };
+    const ws0pk = { id: uuidv1(), group_id: companyId };
+    const ws1pk = { id: uuidv1(), group_id: companyId };
+    const ws2pk = { id: uuidv1(), group_id: companyId };
+    const ws3pk = { id: uuidv1(), group_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createWorkspace(ws2pk);
@@ -182,12 +182,13 @@ describe("The /workspace users API", () => {
     it("should 403 user is not workspace admin", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
+      const workspaceId = testDbService.workspaces[0].workspace.id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users`,
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
@@ -285,12 +286,13 @@ describe("The /workspace users API", () => {
     it("should 403 user is not workspace admin", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
+      const workspaceId = testDbService.workspaces[0].workspace.id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/${userId}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/${userId}`,
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
@@ -368,12 +370,13 @@ describe("The /workspace users API", () => {
     it("should 403 user is not workspace admin", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
+      const workspaceId = testDbService.workspaces[0].workspace.id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/${anotherUserId}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/${anotherUserId}`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
       expect(response.statusCode).toBe(403);

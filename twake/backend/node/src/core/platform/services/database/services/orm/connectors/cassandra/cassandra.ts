@@ -296,9 +296,9 @@ export class CassandraConnector extends AbstractConnector<
         const indexName = globalIndex.join("_");
         const indexDbName = `index_${md5(indexName)}`;
 
-        let query = `CREATE INDEX ${this.options.keyspace}.${indexDbName} 
-                      ON ${this.options.keyspace}.${entity.name} 
-                      (${globalIndex.join(", ")})`;
+        const query = `CREATE INDEX IF NOT EXISTS ${indexDbName} ON ${this.options.keyspace}."${
+          entity.name
+        }" (${globalIndex.join(", ")})`;
 
         try {
           logger.debug(

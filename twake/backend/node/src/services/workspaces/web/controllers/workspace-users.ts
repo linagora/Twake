@@ -8,9 +8,15 @@ import {
 } from "../../../../utils/types";
 import { WorkspaceServiceAPI } from "../../api";
 import {
+  WorkspacePendingUserRequest,
+  WorkspaceRequest,
+  WorkspaceUserInvitationResponse,
+  WorkspaceUserInvitationResponseItem,
   WorkspaceUserObject,
   WorkspaceUsersAddBody,
   WorkspaceUsersBaseRequest,
+  WorkspaceUsersInvitationItem,
+  WorkspaceUsersInvitationRequestBody,
   WorkspaceUsersRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
@@ -24,6 +30,7 @@ import { CompanyShort, CompanyUserRole, CompanyUserStatus } from "../../../user/
 import Company from "../../../user/entities/company";
 import { chain } from "lodash";
 import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
+import WorkspacePendingUser from "../../entities/workspace_pending_users";
 
 export class WorkspaceUsersCrudController
   implements
@@ -113,15 +120,15 @@ export class WorkspaceUsersCrudController
 
     const allUsersMap = new Map(
       (
-        await Promise.all(allWorkspaceUsers.map(wu => this.usersService.get({ id: wu.userId })))
+        await Promise.all(
+          allWorkspaceUsers.map(wu => this.usersService.get({ id: wu.userId })),
+        ).then(users => users.filter(a => a))
       ).map(user => [user.id, user]),
     );
 
     const allCompanyUsers: CompanyUser[] = [].concat(
       ...(await Promise.all(
-        allWorkspaceUsers.map(wu =>
-          this.usersService.getUserCompanies({ id: wu.userId }).then(a => a.getEntities()),
-        ),
+        allWorkspaceUsers.map(wu => this.usersService.getUserCompanies({ id: wu.userId })),
       )),
     );
 
@@ -166,9 +173,7 @@ export class WorkspaceUsersCrudController
       throw CrudExeption.badRequest("User entity not found");
     }
 
-    const userCompanies: CompanyUser[] = await this.usersService
-      .getUserCompanies({ id: userId })
-      .then(a => a.getEntities());
+    const userCompanies: CompanyUser[] = await this.usersService.getUserCompanies({ id: userId });
 
     const companiesMap = await this.getCompaniesMap(userCompanies);
 
@@ -266,6 +271,145 @@ export class WorkspaceUsersCrudController
     reply.status(204);
     return {
       status: "success",
+    };
+  }
+
+  async invite(
+    request: FastifyRequest<{
+      Body: WorkspaceUsersInvitationRequestBody;
+      Params: WorkspaceUsersRequest;
+    }>,
+    reply: FastifyReply,
+  ): Promise<WorkspaceUserInvitationResponse> {
+    const context = getExecutionContext(request);
+
+    const usersInTwake: Map<string, User> = new Map(
+      await this.usersService
+        .getByEmails(request.body.invitations.map(a => a.email))
+        .then(users => users.map(user => [user.email_canonical, user])),
+    );
+
+    const workspacePendingUsers: Map<string, WorkspacePendingUser> = new Map(
+      await this.workspaceService
+        .getPendingUsers({
+          workspace_id: context.workspace_id,
+        })
+        .then(pendingUsers => pendingUsers.map(pendingUser => [pendingUser.email, pendingUser])),
+    );
+
+    const responses: WorkspaceUserInvitationResponseItem[] = [];
+
+    const putUserToPending = async (invitation: WorkspaceUsersInvitationItem) => {
+      await this.workspaceService.addPendingUser(
+        {
+          workspace_id: context.workspace_id,
+          email: invitation.email,
+        },
+        invitation.role,
+        invitation.company_role,
+      );
+      responses.push({ email: invitation.email, status: "ok" });
+    };
+
+    const usersToProcessImmediately = [];
+
+    for (const invitation of request.body.invitations) {
+      if (workspacePendingUsers.has(invitation.email)) {
+        responses.push({
+          email: invitation.email,
+          status: "error",
+          message: "Pending user already exists",
+        });
+        continue;
+      }
+
+      if (usersInTwake.has(invitation.email)) {
+        const user = usersInTwake.get(invitation.email);
+        const userInCompany = await this.companyService.getCompanyUser(
+          { id: context.company_id },
+          { id: user.id },
+        );
+        if (!userInCompany) {
+          // TODO: for console — call console API
+          // TODO: for non-console — create an account directly
+        }
+
+        const userInWorkspace = await this.workspaceService.getUser({
+          workspaceId: context.workspace_id,
+          userId: user.id,
+        });
+
+        if (userInWorkspace) {
+          responses.push({
+            email: invitation.email,
+            status: "error",
+            message: "User is already in workspace",
+          });
+          continue;
+        }
+        usersToProcessImmediately.push(user);
+      }
+      await putUserToPending(invitation);
+    }
+
+    await Promise.all(usersToProcessImmediately.map(user => this.processPendingUser(user)));
+
+    return {
+      resources: responses,
+    };
+  }
+
+  async processPendingUser(user: User): Promise<void> {
+    const userCompanies = await this.companyService.getAllForUser(user.id);
+    for (const userCompany of userCompanies) {
+      const workspaces = await this.workspaceService.getAllForCompany(userCompany.group_id);
+      for (const workspace of workspaces) {
+        const pendingUserPk = {
+          workspace_id: workspace.id,
+          email: user.email_canonical,
+        };
+        const pendingUser = await this.workspaceService.getPendingUser(pendingUserPk);
+
+        if (pendingUser) {
+          await this.workspaceService.removePendingUser(pendingUserPk);
+          await this.workspaceService.addUser(
+            { id: workspace.id },
+            { id: user.id },
+            pendingUser.role,
+          );
+        }
+      }
+    }
+  }
+
+  async deletePending(
+    request: FastifyRequest<{ Params: WorkspacePendingUserRequest }>,
+    reply: FastifyReply,
+  ): Promise<ResourceDeleteResponse> {
+    try {
+      await this.workspaceService.removePendingUser({
+        workspace_id: request.params.workspace_id,
+        email: request.params.email,
+      });
+
+      return { status: "success" };
+    } catch (e) {
+      return {
+        status: "error",
+      };
+    }
+  }
+
+  async listPending(
+    request: FastifyRequest<{ Params: WorkspacePendingUserRequest }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<WorkspaceUsersInvitationItem>> {
+    const resources = await this.workspaceService.getPendingUsers({
+      workspace_id: request.params.workspace_id,
+    });
+
+    return {
+      resources,
     };
   }
 }

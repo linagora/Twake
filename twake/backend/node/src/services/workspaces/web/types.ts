@@ -15,8 +15,13 @@ export interface WorkspaceUsersBaseRequest extends WorkspaceBaseRequest {
 }
 
 export interface WorkspacesListRequest extends WorkspaceBaseRequest, PaginationQueryParameters {}
+
 export interface WorkspaceUsersRequest extends WorkspaceUsersBaseRequest {
   user_id: uuid;
+}
+
+export interface WorkspacePendingUserRequest extends WorkspaceUsersBaseRequest {
+  email: string;
 }
 
 export interface WorkspaceUsersAddBody {
@@ -26,24 +31,24 @@ export interface WorkspaceUsersAddBody {
   };
 }
 
-export interface WorkspaceUsersInvitationRequestItem {
+export interface WorkspaceUsersInvitationItem {
   email: string;
   role: WorkspaceUserRole;
   company_role: CompanyUserRole;
 }
 
-export interface WorkspaceUsersInvitationRequest {
-  invitations: WorkspaceUsersInvitationRequestItem[];
+export interface WorkspaceUsersInvitationRequestBody {
+  invitations: WorkspaceUsersInvitationItem[];
 }
 
 export interface WorkspaceUserInvitationResponseItem {
   email: string;
   status: "ok" | "error";
-  message: string;
+  message?: string;
 }
 
 export interface WorkspaceUserInvitationResponse {
-  result: WorkspaceUserInvitationResponseItem[];
+  resources: WorkspaceUserInvitationResponseItem[];
 }
 
 export type WorkspaceCreateResource = Pick<WorkspaceObject, "name" | "logo" | "default">;

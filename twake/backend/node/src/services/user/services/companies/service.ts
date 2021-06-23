@@ -1,4 +1,4 @@
-import { v1 as uuid } from "uuid";
+import { v1 as uuidv1 } from "uuid";
 import {
   DeleteResult,
   ExecutionContext,
@@ -21,6 +21,7 @@ import CompanyUser, {
 } from "../../entities/company_user";
 import { ListUserOptions } from "../users/types";
 import { CompanyUserRole } from "../../web/types";
+import { uuid } from "../../../../utils/types";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -59,8 +60,8 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.companyUserRepository.findOne({ group_id: company.id, user_id: user.id });
   }
 
-  getAllForUser(user: Pick<CompanyUser, "user_id">): Promise<ListResult<CompanyUser>> {
-    return this.companyUserRepository.find({ user_id: user.user_id });
+  async getAllForUser(userId: uuid): Promise<CompanyUser[]> {
+    return this.companyUserRepository.find({ user_id: userId }).then(a => a.getEntities());
   }
 
   getCompanies(pagination?: Pagination): Promise<ListResult<Company>> {
@@ -74,7 +75,7 @@ export class CompanyService implements CompaniesServiceAPI {
     const userInCompany = getCompanyUserInstance({
       group_id: companyPk.id,
       user_id: userPk.id,
-      id: uuid(),
+      id: uuidv1(),
       dateAdded: Date.now(),
     });
 
