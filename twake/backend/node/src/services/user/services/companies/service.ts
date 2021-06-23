@@ -60,7 +60,7 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.companyUserRepository.findOne({ group_id: company.id, user_id: user.id });
   }
 
-  getAllForUser(userId: uuid): Promise<CompanyUser[]> {
+  async getAllForUser(userId: uuid): Promise<CompanyUser[]> {
     return this.companyUserRepository.find({ user_id: userId }).then(a => a.getEntities());
   }
 

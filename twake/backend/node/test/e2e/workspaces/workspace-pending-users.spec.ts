@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService, uuid } from "../utils.prepare.db";
-import { v4 as uuidv4 } from "uuid";
+import { v1 as uuidv1 } from "uuid";
 
 describe("The /workspace/pending users API", () => {
   const url = "/internal/services/workspaces/v1";
@@ -9,8 +9,8 @@ describe("The /workspace/pending users API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
-  const companyId = "21111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
+  const companyId = uuidv1();
 
   const firstEmail = "first@test-user.com";
   const secondEmail = "second@test-user.com";
@@ -28,8 +28,8 @@ describe("The /workspace/pending users API", () => {
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
-    const ws0pk = { id: uuidv4(), group_id: companyId };
-    const ws1pk = { id: uuidv4(), group_id: companyId };
+    const ws0pk = { id: uuidv1(), group_id: companyId };
+    const ws1pk = { id: uuidv1(), group_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createUser([ws0pk], "member", "admin");

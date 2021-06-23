@@ -81,9 +81,9 @@ export class UserService implements UsersServiceAPI {
   }
 
   getByEmails(emails: string[]): Promise<User[]> {
-    return this.repository
-      .find({}, { $in: [["email_canonical", emails]] })
-      .then(a => a.getEntities());
+    return Promise.all(
+      emails.map(email => this.repository.findOne({ email_canonical: email })),
+    ).then(emails => emails.filter(a => a));
   }
 
   async get(pk: UserPrimaryKey): Promise<User> {

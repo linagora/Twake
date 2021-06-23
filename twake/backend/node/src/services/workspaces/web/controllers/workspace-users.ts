@@ -120,7 +120,9 @@ export class WorkspaceUsersCrudController
 
     const allUsersMap = new Map(
       (
-        await Promise.all(allWorkspaceUsers.map(wu => this.usersService.get({ id: wu.userId })))
+        await Promise.all(
+          allWorkspaceUsers.map(wu => this.usersService.get({ id: wu.userId })),
+        ).then(users => users.filter(a => a))
       ).map(user => [user.id, user]),
     );
 
