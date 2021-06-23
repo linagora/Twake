@@ -182,12 +182,13 @@ describe("The /workspace users API", () => {
     it("should 403 user is not workspace admin", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
+      const workspaceId = testDbService.workspaces[0].workspace.id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users`,
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
@@ -285,12 +286,13 @@ describe("The /workspace users API", () => {
     it("should 403 user is not workspace admin", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
+      const workspaceId = testDbService.workspaces[0].workspace.id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/${userId}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/${userId}`,
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
@@ -368,12 +370,13 @@ describe("The /workspace users API", () => {
     it("should 403 user is not workspace admin", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
+      const workspaceId = testDbService.workspaces[0].workspace.id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/${anotherUserId}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/${anotherUserId}`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
       expect(response.statusCode).toBe(403);
