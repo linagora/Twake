@@ -1,6 +1,6 @@
 import React from "react";
 import { MentionSuggestionType } from "./index";
-import UsersService from 'services/user/user';
+import UsersService from 'services/user/UserService';
 import User from 'components/User/User';
 
 export default (props: MentionSuggestionType): JSX.Element => {
@@ -15,4 +15,4 @@ export default (props: MentionSuggestionType): JSX.Element => {
       </div>
     </>
   );
-}
+};

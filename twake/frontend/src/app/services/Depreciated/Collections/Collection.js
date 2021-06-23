@@ -7,7 +7,7 @@ import LocalStorage from 'app/services/LocalStorage';
 /** Collection
  * Act like a doctrine repository and try to be allways in sync with server in realtime
  */
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 export default class Collection extends Observable {
   constructor(options) {

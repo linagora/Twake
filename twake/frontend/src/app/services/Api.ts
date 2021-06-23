@@ -1,17 +1,5 @@
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Requests from 'services/Requests';
-
-//@ts-ignore old code
-Globals.window.addApiUrlIfNeeded = url => {
-  if (!url) {
-    return url;
-  }
-  if (/^http/.test(url)) {
-    return url;
-  }
-  //@ts-ignore old code
-  return Globals.window.api_root_url + url;
-};
 
 class GroupedQueryApi {
   private groupedQueryBuffer: any;
@@ -65,7 +53,7 @@ export default class Api {
       //@ts-ignore old code to fix
       route =
         //@ts-ignore old code to fix
-        Globals.window.api_root_url +
+        Globals.api_root_url +
         (route.indexOf('://') < 0 && route.indexOf('/internal/') < 0 ? '/ajax/' : '') +
         route;
 
@@ -102,7 +90,7 @@ export default class Api {
 
       route =
         //@ts-ignore old code to fix
-        Globals.window.api_root_url +
+        Globals.api_root_url +
         (route.indexOf('://') < 0 && route.indexOf('/internal/') < 0 ? '/ajax/' : '') +
         route;
 

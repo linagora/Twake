@@ -7,6 +7,7 @@ import JWTStorage, { JWTDataType } from '../JWTStorage';
 import Observable from '../Observable/Observable';
 import LoginService from './login';
 import Logger from 'app/services/Logger';
+import { getAsFrontUrl } from '../utils/URLUtils';
 
 type AuthProviderConfiguration = AuthProviderProps;
 
@@ -23,11 +24,11 @@ class AuthProviderService extends Observable {
         userStore: new Oidc.WebStorageStateStore({ store: localStorage }),
         authority: consoleConfiguration?.authority || environment.api_root_url,
         client_id: consoleConfiguration?.client_id || 'twake',
-        redirect_uri: environment.front_root_url + '/oidccallback',
+        redirect_uri: getAsFrontUrl('/oidccallback'),
         response_type: 'code',
         scope: 'openid profile email address phone offline_access',
-        post_logout_redirect_uri: environment.front_root_url + '/logout',
-        silent_redirect_uri: environment.front_root_url + '/oidcsilientrenew',
+        post_logout_redirect_uri: getAsFrontUrl('/logout'),
+        silent_redirect_uri: getAsFrontUrl('/oidcsilientrenew'),
         automaticSilentRenew: true,
         loadUserInfo: true,
         accessTokenExpiringNotificationTime: 60,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Search from 'services/search/search.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import './SearchPopup.scss';
 import InputIcon from 'components/Inputs/InputIcon.js';
 import QuickResult from './Parts/QuickResult.js';

@@ -5,17 +5,17 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 import loginService from 'services/login/login.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import userService from 'services/user/user.js';
-import currentUserService from 'services/user/current_user.js';
+import userService from 'services/user/UserService';
+import currentUserService from 'app/services/user/CurrentUser';
 import WorkspaceIdentity from './Pages/WorkspaceIdentity.js';
 import WorkspacePartner from './Pages/WorkspacePartner.js';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
 import WorkspaceApps from './Pages/WorkspaceApps.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import MenuList from 'components/Menus/MenuComponent.js';
 import InitService from 'app/services/InitService';
-import ConsoleService from 'app/services/ConsoleService';
+import ConsoleService from 'app/services/Console/ConsoleService';
 import './WorkspaceParameter.scss';
 
 export default class WorkspaceParameter extends Component {

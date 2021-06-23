@@ -5,6 +5,7 @@ export type EntityDefinition = {
   type: string;
   options: {
     primaryKey: (string | string[])[];
+    globalIndexes?: string[][];
     ttl?: number;
     search?: {
       source: <Entity>(entity: Entity) => any; //Should return an object that will be indexed

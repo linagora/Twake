@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Avatar, Badge, Tag } from 'antd';
 import { DashOutlined } from '@ant-design/icons';
+import { isArray } from 'lodash';
 import { User } from 'react-feather';
 import Languages from 'services/languages/languages.js';
 import RouterServices from 'services/RouterService';
 import { UserType } from 'app/models/User';
-import UserService from 'services/user/user.js';
-import UserListenerService from 'services/user/listen_users';
+import UserService from 'services/user/UserService';
+import UserListenerService from 'app/services/user/ListenUsers';
 import OldCollections from 'services/Depreciated/Collections/Collections';
-import UsersService from 'services/user/user.js';
-import { isArray } from 'lodash';
+import UsersService from 'services/user/UserService';
 
 type UserPartsType = {
   avatar: JSX.Element;
@@ -120,10 +120,9 @@ export const getUserParts = (props: PropsType): UserPartsType => {
     ) : (
       <></>
     );
-  const name = channelName.join(', ');
   return {
     avatar,
-    name,
+    name: channelName.join(', '),
     users,
     companyRole,
   };

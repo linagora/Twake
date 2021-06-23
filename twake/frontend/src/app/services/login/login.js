@@ -7,10 +7,10 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Collections from 'app/services/Collections/Collections';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Groups from 'services/workspaces/groups.js';
-import Notifications from 'services/user/notifications';
-import CurrentUser from 'services/user/current_user.js';
+import UserNotifications from 'app/services/user/UserNotifications';
+import CurrentUser from 'app/services/user/CurrentUser';
 import ws from 'services/websocket.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
@@ -37,7 +37,7 @@ class Login extends Observable {
       branding: {},
       ready: {},
       auth: {},
-      help_link: false,
+      help_url: false,
     };
 
     Globals.window.login = this;
@@ -356,7 +356,7 @@ class Login extends Observable {
     this.notify();
     RouterServices.push(RouterServices.generateRouteFromState({}));
 
-    Notifications.start();
+    UserNotifications.start();
     CurrentUser.start();
     Languages.setLanguage(user.language);
   }
@@ -367,7 +367,7 @@ class Login extends Observable {
         storageKey: this.currentUserId,
         transport: {
           socket: {
-            url: Globals.window.websocket_url,
+            url: Globals.environment.websocket_url,
             authenticate: async () => {
               let token = JWTStorage.getJWT();
               if (JWTStorage.isAccessExpired()) {
@@ -382,7 +382,7 @@ class Login extends Observable {
             },
           },
           rest: {
-            url: Globals.window.api_root_url + '/internal/services',
+            url: Globals.api_root_url + '/internal/services',
             headers: {
               Authorization: JWTStorage.getAutorizationHeader(),
             },

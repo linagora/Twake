@@ -1,4 +1,4 @@
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Electron {
   constructor() {

@@ -8,9 +8,9 @@ import { UserType } from 'app/models/User';
 
 import Strings from 'services/utils/strings.js';
 import Languages from 'services/languages/languages.js';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import Collections from 'services/CollectionsReact/Collections';
-import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow.tsx';
+import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow';
 
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import { useUsersListener } from 'app/components/Member/UserParts';
@@ -65,7 +65,7 @@ const ChannelMembersList: FC<Props> = props => {
       userA = DepreciatedCollections.get('users').find(a.id);
       userB = DepreciatedCollections.get('users').find(b.id);
     }
-    return UsersService.getFullName(userA).localeCompare(UsersService.getFullName(userB));
+    return UsersService.getFullName(userA as UserType).localeCompare(UsersService.getFullName(userB as UserType));
   };
 
   const onSearchMembers = (text: string) => {
@@ -74,7 +74,8 @@ const ChannelMembersList: FC<Props> = props => {
       Strings.removeAccents(text),
       {
         scope: 'workspace',
-        workspace_id: workspace_id,
+        workspace_id: workspace_id || '',
+        group_id: '',
       },
       filterSearch,
     );

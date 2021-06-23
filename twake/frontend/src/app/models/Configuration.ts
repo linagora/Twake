@@ -11,13 +11,14 @@ export type ConfigurationType = {
       max_unverified_days: number;
       account_management_url: string;
       collaborators_management_url: string;
+      company_subscription_url: string;
       company_management_url: string;
       use: boolean;
     };
   };
   auth_mode?: string[];
   elastic_search_available?: boolean;
-  help_link?: string;
+  help_url?: string;
   ready?: boolean;
   version?: {
     current?: string;

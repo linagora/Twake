@@ -1,7 +1,7 @@
 import Collection from './Collection.js';
 /** Collections
  */
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Collections {
   constructor() {

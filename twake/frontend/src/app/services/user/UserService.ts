@@ -1,98 +1,116 @@
-import React from 'react';
-import Login from 'services/login/login.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Login from 'services/login/login';
+import Collections from 'app/services/Depreciated/Collections/Collections';
 import Api from 'services/Api';
-import Globals from 'services/Globals.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
+import { UserType } from 'app/models/User';
+import { TwakeService } from 'services/Decorators/TwakeService';
+import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/services/utils/URLUtils';
 
+type SearchQueryType = {
+  searching: boolean;
+  previous: string;
+  current: string;
+  timeout_search?: ReturnType<typeof setTimeout>;
+};
+
+@TwakeService('UserService')
 class User {
-  constructor() {
-    if (Collections) {
-      this.users_repository = Collections.get('users');
-      Collections.updateOptions('users', { base_url: 'users', use_cache: true });
-      this.waiting_async_get = {};
-      this.stop_async_get = {};
+  private users_repository: typeof Collections;
+  private stop_async_get: { [key: string]: boolean };
+  private nextUsersGetBulk: { id: string, callback: (arg?: any) => any }[];
+  private searchQueries: SearchQueryType;
 
-      Globals.window.userService = this;
-    }
+  constructor() {
+    this.users_repository = Collections.get('users');
+    Collections.updateOptions('users', { base_url: 'users', use_cache: true });
+    this.nextUsersGetBulk = [];
+    this.stop_async_get = {};
+    this.searchQueries = {
+      searching: false,
+      previous: '',
+      current: '',
+    };
   }
 
-  getCurrentUser() {
+  getCurrentUser(): UserType & { id: string } {
     return Collections.get('users').find(Login.currentUserId);
   }
 
-  getCurrentUserId() {
+  getCurrentUserId(): string {
     return Login.currentUserId;
   }
 
-  getFullName(user) {
-    user = user || {};
-    var name = user.username;
+  getFullName(user: Pick<UserType, "username" | "firstname" | "lastname" | "_deleted">): string {
+    let name: string = user.username;
 
-    if (user.deleted) {
-      name = Languages.t('general.user.deleted');
-    }
-
-    if (user.firstname && user.firstname != '') {
-      name = user.firstname;
-    }
-    if (user.firstname && user.firstname != '' && user.lastname && user.lastname != '') {
-      name = user.firstname + ' ' + user.lastname;
-    }
     if (!name) {
       return '';
     }
+
+    if (user._deleted) {
+      name = Languages.t('general.user.deleted');
+    }
+
+    if (user.firstname?.length) {
+      name = user.firstname;
+    }
+
+    if (user.firstname?.length && user.lastname?.length) {
+      name = `${user.firstname} ${user.lastname}`;
+    }
+
     return name.charAt(0).toUpperCase() + name.slice(1);
   }
 
-  getThumbnail(user) {
-    user = user || {};
-    var thumbnail = '';
-    if (!user.thumbnail || user.thumbnail == '') {
-      var output = 0;
-      var string = user.id || '';
+  getThumbnail(user: UserType) {
+    let thumbnail = '';
+
+    if (!user.thumbnail || user.thumbnail === '') {
+      let output = 0;
+      const string = user.id || '';
       for (let i = 0; i < string.length; i++) {
         output += string[i].charCodeAt(0);
       }
-      var i = output % 100;
-      thumbnail = (Globals.window.front_root_url || '') + '/public/identicon/' + i + '.png';
-      //        Globals.window.api_root_url + '/ajax/users/current/identicon?username=' + user.username;
+      const i = output % 100;
+      thumbnail = getAsFrontUrl(`/public/identicon/${i}.png`);
     } else {
-      thumbnail = Globals.window.addApiUrlIfNeeded(user.thumbnail);
+      thumbnail = addApiUrlIfNeeded(user.thumbnail);
     }
 
-    if (user.deleted) {
+    if (user._deleted) {
       thumbnail = '';
     }
 
     return thumbnail;
   }
 
-  search(query, options, callback, noHttp = undefined, didTimeout = undefined) {
-    callback = callback || (() => {});
-
-    query = query || '';
-
+  search(
+    query: string = '',
+    options: { scope: string; workspace_id: string; group_id: string },
+    callback: (users: UserType[]) => void = () => {},
+    noHttp?: boolean,
+    didTimeout?: boolean,
+  ) {
     const scope = options.scope;
 
-    if (query == 'me') {
+    if (query === 'me') {
       query = this.getCurrentUser().username;
     }
 
-    this.query = query;
+    this.searchQueries.current = query;
 
-    if (query.length == 0) {
+    if (query.length === 0) {
       callback([]);
       return;
     }
 
     //First search with known data
-    var res = [];
+    const res: UserType[] = [];
     Collections.get('users')
       .findBy({})
-      .forEach(user => {
+      .forEach((user: UserType) => {
         if (
-          (user.username + ' ' + user.firstname + ' ' + user.lastname + ' ' + user.email)
+          (`${user.username} ${user.firstname} ${user.lastname} ${user.email}`)
             .toLocaleLowerCase()
             .indexOf(query.toLocaleLowerCase()) >= 0
         ) {
@@ -119,23 +137,23 @@ class User {
     }
 
     //Then search on server
-    if (noHttp || query.length < 2 || (this.old_search_query || '').startsWith(query)) {
-      this.old_search_query = query;
+    if (noHttp || query.length < 2 || (this.searchQueries.previous || '').startsWith(query)) {
+      this.searchQueries.previous = query;
       return;
     }
-    this.old_search_query = query;
+    this.searchQueries.previous = query;
 
-    if (this.timeout_search) {
-      clearTimeout(this.timeout_search);
+    if (this.searchQueries.timeout_search) {
+      clearTimeout(this.searchQueries.timeout_search);
     }
-    if (this.searching) {
-      this.timeout_search = setTimeout(() => {
+    if (this.searchQueries.searching) {
+      this.searchQueries.timeout_search = setTimeout(() => {
         this.search(query, options, callback, false, true);
       }, 1000);
       return;
     }
 
-    this.searching = true;
+    this.searchQueries.searching = true;
     setTimeout(
       () => {
         Api.post(
@@ -149,10 +167,10 @@ class User {
               language_preference: this.getCurrentUser().language,
             },
           },
-          res => {
-            this.searching = false;
+          (res: { [key: string]: any }) => {
+            this.searchQueries.searching = false;
             if (res.data && res.data.users) {
-              res.data.users.forEach(item => {
+              res.data.users.forEach((item: any) => {
                 this.users_repository.updateObject(item[0]);
               });
               this.search(query, options, callback, true, true);
@@ -164,9 +182,7 @@ class User {
     );
   }
 
-  nextUsersGetBulk = [];
-
-  asyncGet(id, callback = undefined) {
+  asyncGet(id: string, callback: (user: UserType) => void = () => {}) {
     if (
       this.users_repository.known_objects_by_id[id] &&
       new Date(this.users_repository.known_objects_by_id[id]?._last_modified || 0).getTime() >
@@ -178,11 +194,11 @@ class User {
     if (this.nextUsersGetBulk.length === 0) {
       setTimeout(() => {
         const ids = this.nextUsersGetBulk.map(e => e.id);
-        const callbacks = {};
+        const callbacks: { [key: string]: (arg?: any) => any } = {};
         this.nextUsersGetBulk.forEach(e => (callbacks[e.id] = e.callback));
         this.nextUsersGetBulk = [];
 
-        Api.post('users/all/get', { id: ids }, res => {
+        Api.post('users/all/get', { id: ids }, (res: { data?: UserType[] }) => {
           if (res.data) {
             res.data.forEach((user, index) => {
               if (!user || !user.id) {
@@ -204,14 +220,13 @@ class User {
   }
 
   // member - guest - admin - unknown
-  getUserRole(user, company_id) {
+  getUserRole(user: any, companyId?: string) {
     const currentUserCompany = (user?.companies || []).filter(
-      item => item.company.id === company_id,
+      (item: any) => item.company.id === companyId,
     )[0];
 
     return currentUserCompany?.role || 'unknown';
   }
 }
 
-const user = new User();
-export default user;
+export default new User();

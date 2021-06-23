@@ -4,7 +4,7 @@ import Observable from 'app/services/Depreciated/observable.js';
 import Workspace from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ChannelsService from 'services/channels/channels.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Api from 'services/Api';
 import Strings from 'services/utils/strings.js';
@@ -13,7 +13,7 @@ import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class SearchService extends Observable {
   constructor() {

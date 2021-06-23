@@ -28,12 +28,10 @@ import UnconfiguredTab from './UnconfiguredTab.js';
 import Viewer from './Viewer/Viewer.js';
 
 import MainPlus from 'components/MainPlus/MainPlus.js';
-import Globals from 'services/Globals.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 
 import DriveList from './Lists/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import RouterServices from 'app/services/RouterService';
 
 import { NewFolderInput, NewLinkInput, NewFileInput } from './DriveEditors';
 

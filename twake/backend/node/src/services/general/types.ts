@@ -13,7 +13,8 @@ export type ServerConfiguration = {
     };
   };
   configuration: {
-    help_link: string | null;
+    help_url: string | null;
+    pricing_plan_url: string | null;
     accounts: {
       type: "console" | "internal";
       console: null | {
@@ -21,6 +22,7 @@ export type ServerConfiguration = {
         client_id: string;
         account_management_url: string;
         company_management_url: string;
+        company_subscription_url: string;
         collaborators_management_url: string;
       };
       internal: null | {

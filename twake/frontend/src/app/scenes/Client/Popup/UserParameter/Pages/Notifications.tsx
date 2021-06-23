@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { Input } from 'antd';
-import _ from 'lodash';
+import { isEqual } from 'lodash';
 
 import Languages from 'services/languages/languages.js';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import { Collection } from 'services/CollectionsReact/Collections';
-import NotificationParametersService from 'services/user/notificationParameters';
+import NotificationPreferences from 'app/services/user/NotificationPreferences';
 
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Attribute from 'components/Parameters/Attribute.js';
@@ -33,7 +33,7 @@ export default () => {
   const saveNewPreferences = async (preferences: preferencesType) => {
     const newPreferences: any = Object.entries(preferences).map(([key, value]) => ({ key, value }));
 
-    NotificationParametersService.save(newPreferences);
+    NotificationPreferences.save(newPreferences);
   };
 
   const generateTimeOptions = () => {
@@ -275,7 +275,7 @@ export default () => {
       <div style={{ textAlign: 'right' }}>
         <ButtonWithTimeout
           className="small buttonValidation"
-          disabled={_.isEqual(newPreferences, notificationPreferences[0].data.preferences)}
+          disabled={isEqual(newPreferences, notificationPreferences[0].data.preferences)}
           onClick={() => saveNewPreferences(newPreferences)}
           value={Languages.t('general.update')}
         />

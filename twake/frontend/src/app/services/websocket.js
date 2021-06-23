@@ -5,7 +5,7 @@ import DepreciatedCollections from 'services/Depreciated/Collections/Collections
 import Collections from 'services/Collections/Collections';
 import LoginService from 'services/login/login';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Websocket extends Observable {
   constructor() {

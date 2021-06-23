@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import groupService from 'services/workspaces/groups.js';
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Attribute from 'components/Parameters/Attribute.js';
-import uploadService from 'services/uploadManager/uploadManager.js';
-import Input from 'components/Inputs/Input.js';
+import Languages from 'services/languages/languages';
+import Collections from 'app/services/Depreciated/Collections/Collections';
+import groupService from 'services/workspaces/groups';
+import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout';
+import Attribute from 'components/Parameters/Attribute';
+import uploadService from 'services/uploadManager/uploadManager';
+import Input from 'components/Inputs/Input';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 
 import './Pages.scss';
 
@@ -127,7 +128,7 @@ export default class CompanyIdendity extends Component {
                 ref={ref => (this.groupLogo = ref)}
                 className={'image thumbnail ' + (this.state.groupLogo ? 'has_image ' : '')}
                 style={{
-                  backgroundImage: "url('" + window.addApiUrlIfNeeded(this.state.groupLogo) + "')",
+                  backgroundImage: addApiUrlIfNeeded(this.state.groupLogo, true),
                 }}
               >
                 {((group.mininame || group.name) + '-')[0].toUpperCase()}

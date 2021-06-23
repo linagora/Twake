@@ -1,11 +1,12 @@
 import React, { useMemo, useState } from 'react';
+import { Col, Row, Typography } from 'antd';
 
 import Api from 'services/Api';
 import Banner from 'app/components/Banner/Banner';
 import Emojione from 'app/components/Emojione/Emojione';
 import { ConfigurationResource } from 'app/models/Configuration';
-import { Col, Row, Typography } from 'antd';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
+import Globals from 'services/Globals';
 import ModalManager from 'app/components/Modal/ModalManager';
 import NewVersionModal from './NewVersionModal';
 
@@ -29,7 +30,7 @@ const NewVersionComponent = (): JSX.Element => {
     lastScrape = new Date().getTime();
 
     const config = (await Api.get('core/version')) as ConfigurationResource;
-    const currentVersion: string = (window as any).version_detail;
+    const currentVersion: string = Globals.version.version_detail;
     const newestVersion: string = config.data.version?.current || '';
     const minimalWebVersion: string = config.data.version?.minimal?.web || '';
 

@@ -8,7 +8,7 @@ import ListenGroups from './listen_groups.js';
 import $ from 'jquery';
 import JWTStorage from 'services/JWTStorage';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Groups extends Observable {
   constructor() {
@@ -74,7 +74,7 @@ class Groups extends Observable {
   updateLogo(logo) {
     this.loading = true;
     this.notify();
-    var route = Globals.window.api_root_url + '/ajax/' + 'workspace/group/data/logo';
+    var route = Globals.api_root_url + '/ajax/' + 'workspace/group/data/logo';
 
     var data = new FormData();
     if (logo !== false) {

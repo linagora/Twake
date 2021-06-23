@@ -1946,6 +1946,8 @@ export default {
     'First of all, you have to verify your mail address. We’ve sent a verification link to',
   'components.verify_mail.paragraph':
     'You can do it later if you want but unverified accounts have access to only a limited version of Twake',
+  'services.console_services.toaster.add_emails_error': 'Error while adding email(s)',
+  'services.console_services.toaster.add_email_error_message': 'Error while adding $1',
   'services.console_services.toaster.success_verify_email':
     'A verification link has been sent to your email account',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Edit from Console',
@@ -1972,4 +1974,31 @@ export default {
   'components.richtexteditor.toolbar.ordered-list': 'Ordered list',
   'components.richtexteditor.toolbar.blockquote': 'Blockquote',
   'components.richtexteditor.toolbar.code-block': 'Code Block',
+  'components.locked_features.locked_history_banner.title':
+    'You have just reached the message limit',
+  'components.locked_features.locked_history_banner.description':
+    'Your company has a lot of messages! Upgrade now to access all your message history.',
+  'components.locked_features.locked_history_banner.button': 'Learn more',
+  'components.locked_features.locked_guests_popup.title': 'Guests feature is locked',
+  'components.locked_features.locked_guests_popup.subtitle':
+    'This feature is not available in the Twake free version',
+  'components.locked_features.locked_guests_popup.description':
+    'Whoops!! Seems like you want to invite external users to your workspace. You might want to consider upgrading your plan if you want to collaborate with guests and external partners. Explore our pricing options and select the best option for your team collaboration needs.',
+  'components.locked_features.locked_guests_popup.learn_more_button': 'Learn more',
+  'components.locked_features.locked_guests_popup.skip_for_now_button': 'Skip for Now',
+  'components.locked_features.locked_guests_popup.or': 'Or',
+  'components.on_boarding.company_billing_banner.admin_or_owner_text':
+    'There is an issue with your company subscription. Please, take a look at your',
+  'components.on_boarding.company_billing_banner.guest_or_member_text':
+    'There is an issue with your company subscription. Please contact the owner or administrator of the company!',
+  'components.on_boarding.company_billing_banner.link': 'company subscription plan',
+  'components.on_boarding.popups.blocked_company.title':
+    'Your company is locked because of a payment issue',
+  'components.on_boarding.popups.blocked_company.description':
+    'Your subscription to Twake has expired. Please contact the owner or administrator of your company to renew it and be able to communicate with your team again !',
+  'components.on_boarding.popups.blocked_company.learn_more_text':
+    'Want to learn more about companies subscription plan ?',
+  'components.on_boarding.popups.blocked_company.company_subscription_plan_button': 'Click here',
+  'components.on_boarding.popups.blocked_company.or': 'Or',
+  'components.on_boarding.popups.blocked_company.company_selector': 'Switch to another company',
 };

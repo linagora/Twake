@@ -6,7 +6,7 @@ import sha256 from 'crypto-js/sha256';
 /** SecuredConnection
  * Create websockets encrypted connection
  */
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 export default class SecuredConnection {
   constructor(route, options, callback, http_options, collectionId) {

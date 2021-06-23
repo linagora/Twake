@@ -2,7 +2,7 @@ import React, { Component, useState } from 'react';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import './Calendar.scss';
 import LocalStorage from 'app/services/LocalStorage';
@@ -24,7 +24,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import Select from 'components/Select/Select.js';

@@ -10,6 +10,7 @@ import NoApp from './NoApp';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import { useWatcher } from 'app/services/Observable/Observable';
 import AccountStatusComponent from 'app/components/OnBoarding/AccountStatusComponent';
+import CompanyBillingBanner from 'app/components/OnBoarding/CompanyBillingBanner';
 
 const MainView: FC = () => {
   const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
@@ -36,6 +37,7 @@ const MainView: FC = () => {
       {!!channelId && ready && (
         <>
           <AccountStatusComponent />
+          {companyId && <CompanyBillingBanner companyId={companyId} />}
           <MainHeader />
           <MainContent />
         </>

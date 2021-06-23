@@ -1,6 +1,6 @@
 import { Message } from "./Message";
 import { MessageLoader } from "./MessageLoader";
-import Notifications from 'services/user/notifications';
+import UserNotifications from 'app/services/user/UserNotifications';
 import Collections from 'app/services/CollectionsReact/Collections';
 import logger from "app/services/Logger";
 import { ChannelResource } from "app/models/Channel";
@@ -100,7 +100,7 @@ export class MessageListService {
       const channel = collection.findOne({ id: this.channel.id }, { withoutBackend: true });
 
       this.lastReadMessage = this.loader.getLastItem();
-      Notifications.read(channel);
+      UserNotifications.read(channel);
     }, 500);
   }
 }

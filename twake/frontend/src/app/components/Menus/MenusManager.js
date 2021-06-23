@@ -5,7 +5,7 @@ import Number from 'services/utils/Numbers.js';
 /*
   Menus manager service, choose where to generate menu
 */
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class MenusManager extends Observable {
   constructor() {

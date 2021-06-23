@@ -1,0 +1,1 @@
+export type ConsoleMemberRole = 'admin' | 'member' | 'guest';

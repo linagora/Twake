@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import Groups from 'services/workspaces/groups.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'services/InitService';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 
 import FooterUI from 'app/scenes/Client/ChannelsBar/Parts/Footer/Footer.js';
 
@@ -35,9 +35,9 @@ export default class Footer extends Component {
       <FooterUI
         planName={group?.plan}
         onClickHelp={
-          InitService.server_infos?.configuration?.help_link &&
+          InitService.server_infos?.configuration?.help_url &&
           (() => {
-            window.open(InitService.server_infos?.configuration?.help_link);
+            window.open(InitService.server_infos?.configuration?.help_url);
           })
         }
         onClickDocumentation={() => {
