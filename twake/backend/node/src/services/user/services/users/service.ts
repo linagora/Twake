@@ -81,7 +81,6 @@ export class UserService implements UsersServiceAPI {
   }
 
   getByEmails(emails: string[]): Promise<User[]> {
-    // return this.repository.findOne({}, { $in: [["email_canonical", [email]]] });
     return this.repository
       .find({}, { $in: [["email_canonical", emails]] })
       .then(a => a.getEntities());

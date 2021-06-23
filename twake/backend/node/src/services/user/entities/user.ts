@@ -5,7 +5,7 @@ export const TYPE = "user";
 
 @Entity(TYPE, {
   primaryKey: [["id"]],
-  globalIndexes: [["email"]],
+  globalIndexes: [["email_canonical"]],
   type: TYPE,
 })
 export default class User {
