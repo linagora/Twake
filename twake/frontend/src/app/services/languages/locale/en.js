@@ -343,8 +343,8 @@ export default {
   'scenes.apps.calendar.calendar_modal.shared_with': 'Shared with',
   'scenes.apps.calendar.calendar_modal.delete_message': 'Delete calendar and all events in it.',
   'scenes.apps.calendar.calendar_modal.participants': 'Participants',
-  'scenes.apps.calendar.calendar_modal.importation': 'Import',
-  'scenes.apps.calendar.calendar_modal.importation_message': 'Import an ics file',
+  'scenes.apps.calendar.calendar_modal.importation': 'Upload',
+  'scenes.apps.calendar.calendar_modal.importation_message': 'Upload an ics file',
   'scenes.apps.calendar.calendar_modal.placeholder': 'Name',
   'scenes.apps.calendar.left.no_calendar': 'You have no calendars yet',
   'scenes.apps.calendar.left.my_calendar': 'My calendar',
@@ -1078,7 +1078,7 @@ export default {
   'scenes.app.workspaces.create_company.group_data.title':
     " We'll be quick — we just need some statistical information.",
   'scenes.app.workspaces.create_company.importations.title_1':
-    'Already working with digital tools? Import or integrate your tools now!',
+    'Already working with digital tools? Upload or integrate your tools now!',
   'scenes.app.workspaces.create_company.importations.title_2': 'No worries, you can do this later!',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
     'The number of fields increases when you press enter.',
@@ -1212,7 +1212,7 @@ export default {
   'scenes.app.channelsbar.channel_leaving': 'Leave channel',
   'scenes.app.channelsbar.channel_removing': 'Delete channel',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
-    'You can import these channels into your business to stay organized by clicking on this frame.',
+    'You can upload these channels into your business to stay organized by clicking on this frame.',
   'scenes.app.channelsbar.company_invitation_alert_title': 'You are invited to the company',
   'scenes.app.channelsbar.initial_instructions_tutorial':
     'Choose a first name, a name and a profile picture.',
@@ -1547,7 +1547,7 @@ export default {
   'scenes.apps.drive.folder_subtitle': 'Folders',
   'scenes.apps.drive.go_out_trash_menu': 'Leave trash',
   'scenes.apps.drive.go_trash_menu': 'Go to trash',
-  'scenes.apps.drive.import_from_computer_menu': 'Import from computer',
+  'scenes.apps.drive.import_from_computer_menu': 'Upload from computer',
   'scenes.apps.drive.move_text': 'Move',
   'scenes.apps.drive.new_file_menu': 'New file',
   'scenes.apps.drive.new_file_title': 'New file',
@@ -1668,8 +1668,8 @@ export default {
   'scenes.apps.calendar.empty_date_information': 'This is an empty date!',
   'scenes.apps.calendar.unconfigured_tab': 'This tab is not configured yet.',
   'scenes.apps.calendar.tab.choose_calendar_button': 'Choose calendars',
-  'scenes.apps.drive.import_image': 'Import an image from device',
-  'scenes.apps.drive.import_document': 'Import a document from device',
+  'scenes.apps.drive.import_image': 'Upload an image from device',
+  'scenes.apps.drive.import_document': 'Upload a document from device',
   'scenes.apps.drive.no_more': 'There is nothing left to display.',
   'scenes.apps.drive.trash': 'Trash',
   'scenes.apps.drive.top_menu_more': 'More',
@@ -1756,7 +1756,7 @@ export default {
   'scenes.app.mainview.create_account': 'Create your workspace for free on ',
   'scenes.apps.calendar.modals.reminder_add': 'Add a reminder',
   'scenes.apps.drive.drive_tour.left_bar.not_in_ws': 'User not in current workspace',
-  'scenes.apps.drive.drive_tour.left_bar.imported': 'Imported from another workspace',
+  'scenes.apps.drive.drive_tour.left_bar.imported': 'Uploaded from another workspace',
   'scenes.apps.parameters.workspace_sections.members.invite_all': 'Invite all',
   'scenes.app.taskpicker.select': 'Select',
   'components.listmanager.filter': 'Filter',

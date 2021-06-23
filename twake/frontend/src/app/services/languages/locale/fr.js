@@ -355,8 +355,8 @@ export default {
   'scenes.apps.calendar.calendar_modal.delete_message':
     'Supprimer le calendrier et tous les événements de celui-ci.',
   'scenes.apps.calendar.calendar_modal.participants': 'Participants',
-  'scenes.apps.calendar.calendar_modal.importation': 'Importation',
-  'scenes.apps.calendar.calendar_modal.importation_message': 'Importer un fichier ics',
+  'scenes.apps.calendar.calendar_modal.importation': 'Télécharger',
+  'scenes.apps.calendar.calendar_modal.importation_message': 'Télécharger un fichier ics',
   'scenes.apps.calendar.calendar_modal.placeholder': 'Nom',
   'scenes.apps.calendar.left.no_calendar': "Vous n'avez pas encore de calendrier",
   'scenes.apps.calendar.left.my_calendar': 'Mon calendrier',
@@ -1131,7 +1131,7 @@ export default {
   'scenes.app.workspaces.create_company.group_data.title':
     'Faisons vite, nous avons juste besoin de quelques informations statistiques',
   'scenes.app.workspaces.create_company.importations.title_1':
-    'Vous travaillez déjà avec des outils numériques ? Importez ou intégrez vos outils dès maintenant !',
+    'Vous travaillez déjà avec des outils numériques ? Téléchargez ou intégrez vos outils dès maintenant !',
   'scenes.app.workspaces.create_company.importations.title_2':
     'Pas d’inquiétude, vous pourrez y revenir plus tard !',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
@@ -1270,7 +1270,7 @@ export default {
   'scenes.app.channelsbar.channel_leaving': 'Quitter la chaîne',
   'scenes.app.channelsbar.channel_removing': 'Supprimer la chaîne',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
-    'Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.',
+    'Vous pouvez Télécharger ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.',
   'scenes.app.channelsbar.company_invitation_alert_title': "Vous êtes invité dans l'entreprise ",
   'scenes.app.channelsbar.initial_instructions_tutorial':
     'Choisissez un prénom, un nom et une image de profil.',
@@ -1616,7 +1616,7 @@ export default {
   'scenes.apps.drive.folder_subtitle': 'Dossiers',
   'scenes.apps.drive.go_out_trash_menu': 'Sortir de la corbeille',
   'scenes.apps.drive.go_trash_menu': 'Accéder à la corbeille',
-  'scenes.apps.drive.import_from_computer_menu': "Importer depuis l'ordinateur",
+  'scenes.apps.drive.import_from_computer_menu': "Télécharger depuis l'ordinateur",
   'scenes.apps.drive.move_text': 'Déplacer',
   'scenes.apps.drive.new_file_menu': 'Nouveau fichier',
   'scenes.apps.drive.new_file_title': 'Nouveau fichier',
@@ -1738,8 +1738,8 @@ export default {
   'scenes.apps.calendar.add_event': 'Ajouter un événement',
   'scenes.apps.calendar.empty_date_information': "C'est une date libre !",
   'scenes.apps.calendar.unconfigured_tab': "Cet onglet n'est pas encore configuré",
-  'scenes.apps.drive.import_image': "Importer une image depuis l'appareil",
-  'scenes.apps.drive.import_document': "Importer un document depuis l'appareil",
+  'scenes.apps.drive.import_image': "Télécharger une image depuis l'appareil",
+  'scenes.apps.drive.import_document': "Télécharger un document depuis l'appareil",
   'scenes.apps.drive.no_more': "Il n'y a plus rien à afficher.",
   'scenes.apps.drive.trash': 'Corbeille',
   'scenes.apps.drive.top_menu_more': 'Plus',
@@ -1829,7 +1829,7 @@ export default {
   'scenes.apps.calendar.modals.reminder_add': 'Ajouter un rappel',
   'scenes.apps.drive.drive_tour.left_bar.not_in_ws':
     "L'utilisateur n'est pas dans l'espace de travail courant",
-  'scenes.apps.drive.drive_tour.left_bar.imported': 'Importé depuis un autre espace de travail',
+  'scenes.apps.drive.drive_tour.left_bar.imported': 'Téléchargé depuis un autre espace de travail',
   'scenes.apps.parameters.workspace_sections.members.invite_all': 'Inviter tous',
   'scenes.app.taskpicker.select': 'Sélectionner',
   'components.listmanager.filter': 'Filtrer',
