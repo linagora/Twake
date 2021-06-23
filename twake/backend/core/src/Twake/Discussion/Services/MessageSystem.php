@@ -67,19 +67,19 @@ class MessageSystem
             }
         }
 
-        if(count($messages) < abs($limit)
-            && !$options["id"]
+        $nonSystemMessages = 0;
+        foreach($messages as $message){
+            if($message["hidden_data"]["type"] === "init_channel" || $message["message_type"] == 0 || $message["message_type"] == 1){
+                $nonSystemMessages++;
+            }
+        }
+
+        if($nonSystemMessages === 0
+            && count($messages) < abs($limit)
             && !$options["id"]
             && !$offset
             && $limit > 0
             && !$parent_message_id ){
-
-            $found = false;
-            foreach($messages as $message){
-                if($message["hidden_data"]["type"] === "init_channel"){
-                    $found = true;
-                }
-            }
 
             if(!$found){
                 $init_message = Array(
@@ -102,8 +102,11 @@ class MessageSystem
             return;
         }
 
-        $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/delete", null, $current_user, $application ? $application->getId() : null);
-        return $this->convertFromNode($response["resource"], $channel);
+        if($object["id"]){
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/delete", null, $current_user, $application ? $application->getId() : null);
+            return $this->convertFromNode($response["resource"], $channel);
+        }
+        return null;
     }
 
     public function save($object, $options, $current_user = null, $application = null)
