@@ -2,10 +2,18 @@ import _ from "lodash";
 import { Db } from "mongodb";
 import { logger } from "../../../framework";
 import { DatabaseServiceAPI } from "../../database/api";
-import { MongoConnector } from "../../database/services/orm/connectors";
-import { DatabaseTableCreatedEvent, EntityDefinition } from "../../database/services/orm/types";
-import { getEntityDefinition, unwrapPrimarykey } from "../../database/services/orm/utils";
+import {
+  getEntityDefinition,
+  unwrapPrimarykey,
+  DatabaseTableCreatedEvent,
+  FindFilter,
+  FindOptions,
+  EntityTarget,
+} from "../api";
 import { SearchAdapter } from "../api";
+import { ListResult, Pagination } from "../../../framework/api/crud-service";
+
+import { MongoConnector } from "../../database/services/orm/connectors";
 
 const searchPrefix = "search__";
 
@@ -124,5 +132,17 @@ export default class Search implements SearchAdapter {
         { upsert: true },
       );
     }
+  }
+
+  public async search<EntityType>(
+    table: string,
+    entityType: EntityTarget<EntityType>,
+    filters: FindFilter,
+    options: FindOptions = {},
+  ) {
+    const instance = new (entityType as any)();
+    const { entityDefinition } = getEntityDefinition(instance);
+
+    return new ListResult(entityDefinition.type, [], new Pagination());
   }
 }

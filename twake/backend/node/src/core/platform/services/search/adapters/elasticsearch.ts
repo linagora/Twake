@@ -1,13 +1,12 @@
-import { getEntityDefinition, unwrapPrimarykey } from "../../database/services/orm/utils";
-import { DatabaseTableCreatedEvent } from "../../database/services/orm/types";
-
 import { Client } from "@elastic/elasticsearch";
 import { Readable } from "stream";
 import { logger } from "../../../framework";
 import _ from "lodash";
 import streamToIterator from "stream-to-iterator";
-import { SearchAdapter, SearchConfiguration } from "../api";
+import { EntityTarget, FindFilter, FindOptions, SearchAdapter, SearchConfiguration } from "../api";
 import { DatabaseServiceAPI } from "../../database/api";
+import { getEntityDefinition, unwrapPrimarykey, DatabaseTableCreatedEvent } from "../api";
+import { ListResult, Pagination } from "../../../framework/api/crud-service";
 
 type Operation = {
   index: string;
@@ -145,5 +144,17 @@ export default class Search implements SearchAdapter {
         );
       },
     });
+  }
+
+  public async search<EntityType>(
+    table: string,
+    entityType: EntityTarget<EntityType>,
+    filters: FindFilter,
+    options: FindOptions = {},
+  ) {
+    const instance = new (entityType as any)();
+    const { entityDefinition } = getEntityDefinition(instance);
+
+    return new ListResult(entityDefinition.type, [], new Pagination());
   }
 }

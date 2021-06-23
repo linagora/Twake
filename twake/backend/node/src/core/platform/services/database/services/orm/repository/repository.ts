@@ -18,12 +18,6 @@ type inType = [string, Array<any>];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type likeType = [string, any];
 
-type textType = {
-  $search: string;
-  $caseSensitive: boolean; //Default false
-  $diacriticSensitive: boolean; //Default false
-};
-
 export type FindOptions = {
   pagination?: Pagination;
   $lt?: comparisonType[];
@@ -35,7 +29,6 @@ export type FindOptions = {
    */
   $in?: inType[];
   $like?: likeType[];
-  $text?: textType;
 };
 
 /**
