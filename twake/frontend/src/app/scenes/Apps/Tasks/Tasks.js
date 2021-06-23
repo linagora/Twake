@@ -4,7 +4,6 @@ import UnconfiguredTab from './UnconfiguredTab.js';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
-import User from 'components/User/User.js';
 import Loader from 'components/Loader/Loader.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
@@ -20,7 +19,7 @@ import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsLi
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 
 import Board from './Board/Board.js';
 

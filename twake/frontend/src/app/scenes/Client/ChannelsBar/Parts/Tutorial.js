@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Emojione from 'components/Emojione/Emojione';
 import UserService from 'services/user/UserService';
 import CurrentUserService from 'app/services/user/CurrentUser';

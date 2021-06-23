@@ -6,4 +6,4 @@ export const Mention = (props : any): JSX.Element => {
       {props.children}
     </span>
   );
-}
+};

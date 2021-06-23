@@ -24,7 +24,7 @@ export default (props: Props) => {
         {Languages.t(
           'scenes.apps.messages.message.types.first_message_text',
           [],
-          "C'est le premier message",
+          "This is the first message",
         )}
       </div>
     </div>

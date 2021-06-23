@@ -4,7 +4,16 @@ import WorkspacesUser from 'services/workspaces/workspaces_users';
 import { Mention } from "./Mention";
 import MentionSuggestion from "./MentionSuggestion";
 import { EditorSuggestionPlugin, SelectOrInsertOptions } from "../";
+import AccessRightsService from "app/services/AccessRightsService";
+import WorkspaceService from 'services/workspaces/workspaces';
+import Collections from 'services/CollectionsReact/Collections';
+import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+import { getChannelMembers } from 'app/services/channels/ChannelCollectionPath';
+import { UserType } from 'app/models/User';
+
 import "./style.scss";
+import { ChannelMemberResource } from "app/models/Channel";
+import RouterService from "app/services/RouterService";
 
 export const MENTION_TYPE = "MENTION";
 const MENTION_CHAR = "@";
@@ -22,18 +31,33 @@ const findSuggestionEntities = (contentBlock: ContentBlock, callback: (start: nu
         contentState.getEntity(entityKey).getType() === MENTION_TYPE
       );
     }, callback);
-}
+};
 
 const resolver = (text: string, max: number, callback: (mentions: MentionSuggestionType[]) => void) => {
-  WorkspacesUser.searchUserInWorkspace(text, (users: Array<any>) => {
-    const result: Array<MentionSuggestionType & { autocomplete_id: number }> = [];
+  const result: Array<MentionSuggestionType & { autocomplete_id: number }> = [];
+
+  if (AccessRightsService.getCompanyLevel(WorkspaceService.currentGroupId) === 'guest') {
+    // user is guest, lookup for channel members only
+    const { companyId, workspaceId, channelId } = RouterService.getStateFromRoute();
+    const channelMembersCollection = Collections.get(getChannelMembers(companyId, workspaceId, channelId), ChannelMemberResource);
+    const users = channelMembersCollection.find({})
+      .map(member => DepreciatedCollections.get('users').find(member.id))
+      .filter((user: UserType) => `${user.username} ${user.firstname} ${user.lastname} ${user.email}`.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) >= 0);
 
     for (let j = 0; j < Math.min(max, users.length); j++) {
       result[j] = {...users[j], ...{ autocomplete_id: j }};
     }
+
     callback(result);
-  });
-}
+  } else {
+    WorkspacesUser.searchUserInWorkspace(text, (users: Array<any>) => {
+      for (let j = 0; j < Math.min(max, users.length); j++) {
+        result[j] = {...users[j], ...{ autocomplete_id: j }};
+      }
+      callback(result);
+    });
+  }
+};
 
 const addMention = (mention: MentionSuggestionType, editorState: EditorState, options: SelectOrInsertOptions): EditorState => {
   let spaceAlreadyPresent = false;
@@ -84,7 +108,7 @@ const addMention = (mention: MentionSuggestionType, editorState: EditorState, op
   }
 
   return EditorState.push(newEditorState, contentState, 'insert-characters');
-}
+};
 
 export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): EditorSuggestionPlugin<MentionSuggestionType>  => ({
   resolver: (text, callback) => resolver(text, options.maxSuggestions, callback),

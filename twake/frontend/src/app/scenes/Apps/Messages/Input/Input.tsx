@@ -43,7 +43,7 @@ export default (props: Props) => {
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
   const [loading, setLoading] = useState(false);
   const messageEditorService = MessageEditorsManager.get(props.channelId);
-  const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(editorId, { plugins: editorPlugins }))
+  const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(editorId, { plugins: editorPlugins }));
   const disable_app: any = {};
 
   messageEditorService.useListener(useState);
@@ -67,12 +67,14 @@ export default (props: Props) => {
         );
       }
     })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (props.editorState && props.editorState !== editorState) {
       setEditorState(props.editorState);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.editorState]);
 
 
@@ -139,16 +141,16 @@ export default (props: Props) => {
 
   const focusEditor = () => {
     requestAnimationFrame(() => editorRef.current?.focus());
-  }
+  };
 
   const setRichTextEditorState = (editorState: EditorState): void => {
     setEditorState(editorState);
     RichTextEditorStateService.set(editorId, editorState);
-  }
+  };
 
   const isEmpty = (): boolean => {
     return ((editorState.getCurrentContent().getPlainText().trim().length === 0) && !messageEditorService.hasAttachments(props.threadId)); 
-  }
+  };
 
   const onUpArrow = (e: any): void => {
     if (isEmpty()) {
@@ -157,7 +159,7 @@ export default (props: Props) => {
         parent_message_id: props.threadId,
       });
     }
-  }
+  };
 
   const onChange = async (editorState: EditorState) => {
     await messageEditorService.setContent(props.threadId, props.messageId || '', getContentOutput(editorState));

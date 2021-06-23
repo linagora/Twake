@@ -1,7 +1,6 @@
 import Login from 'services/login/login';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import Api from 'services/Api';
-import Globals from 'services/Globals';
 import Languages from 'services/languages/languages';
 import { UserType } from 'app/models/User';
 import { TwakeService } from 'services/Decorators/TwakeService';
@@ -100,7 +99,7 @@ class User {
 
     this.searchQueries.current = query;
 
-    if (query.length == 0) {
+    if (query.length === 0) {
       callback([]);
       return;
     }
@@ -111,7 +110,7 @@ class User {
       .findBy({})
       .forEach((user: UserType) => {
         if (
-          (user.username + ' ' + user.firstname + ' ' + user.lastname + ' ' + user.email)
+          (`${user.username} ${user.firstname} ${user.lastname} ${user.email}`)
             .toLocaleLowerCase()
             .indexOf(query.toLocaleLowerCase()) >= 0
         ) {

@@ -15,4 +15,4 @@ export default (props: MentionSuggestionType): JSX.Element => {
       </div>
     </>
   );
-}
+};

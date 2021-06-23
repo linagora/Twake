@@ -2018,6 +2018,8 @@ export default {
     "Tout d'abord, vous devez vérifier votre adresse e-mail. Nous avons envoyé un lien de vérification à",
   'components.verify_mail.paragraph':
     "Vous pouvez le faire plus tard si vous le souhaitez, mais les comptes non vérifiés n'ont accès qu'à une version limitée de Twake",
+  'services.console_services.toaster.add_emails_error': 'Une erreur s\'est produite pendant l\'ajout de(s) email(s)',
+  'services.console_services.toaster.add_email_error_message': 'Une erreur s\'est produite lors de l\'ajout de $1',  
   'services.console_services.toaster.success_verify_email':
     'Un lien de vérification a été envoyé à votre compte de messagerie',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Modifier à partir de la console',

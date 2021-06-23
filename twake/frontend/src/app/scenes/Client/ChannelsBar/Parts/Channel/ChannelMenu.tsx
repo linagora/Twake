@@ -159,12 +159,12 @@ export default (props: Props): JSX.Element => {
       },
     },
     {
-      hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
+      hide: !AccessRightsService.hasLevel(workspaceId, 'member'),
       type: 'separator',
     },
     {
       type: 'menu',
-      hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
+      hide: !AccessRightsService.hasLevel(workspaceId, 'member'),
       text: Languages.t(
         isDirectChannel
           ? 'scenes.app.channelsbar.hide_discussion_leaving.menu'
@@ -228,7 +228,7 @@ export default (props: Props): JSX.Element => {
       0,
       {
         type: 'menu',
-        hide: !AccessRightsService.hasLevel(workspaceId || '', 'member'),
+        hide: !AccessRightsService.hasLevel(workspaceId, 'member'),
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
         onClick: () => editChannel(),
       },
@@ -240,7 +240,7 @@ export default (props: Props): JSX.Element => {
       {
         type: 'menu',
         text: Languages.t('scenes.app.channelsbar.guest_management'),
-        hide: AccessRightsService.getCompanyLevel(companyId || '') === 'guest',
+        hide: AccessRightsService.getCompanyLevel(companyId) === 'guest',
         onClick: () => displayGuestManagement(),
       },
     );
@@ -251,7 +251,7 @@ export default (props: Props): JSX.Element => {
       type: 'menu',
       hide:
         currentUser.id !== props.channel.data.owner &&
-        !AccessRightsService.hasLevel(workspaceId || '', 'administrator'),
+        !AccessRightsService.hasLevel(workspaceId, 'administrator'),
       text: Languages.t('scenes.app.channelsbar.channel_removing'),
       className: 'danger',
       onClick: () => {

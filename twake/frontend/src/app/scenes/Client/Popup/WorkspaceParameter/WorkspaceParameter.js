@@ -11,7 +11,7 @@ import WorkspaceIdentity from './Pages/WorkspaceIdentity.js';
 import WorkspacePartner from './Pages/WorkspacePartner.js';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
 import WorkspaceApps from './Pages/WorkspaceApps.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import MenuList from 'components/Menus/MenuComponent.js';
 import InitService from 'app/services/InitService';

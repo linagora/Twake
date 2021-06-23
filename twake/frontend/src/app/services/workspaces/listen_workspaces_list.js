@@ -2,7 +2,7 @@ import React from 'react';
 import ws from 'services/websocket.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import User from 'services/user/UserService';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import LoginService from 'services/login/login';
 
 class ListenWorkspacesList {

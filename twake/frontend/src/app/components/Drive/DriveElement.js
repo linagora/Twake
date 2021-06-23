@@ -12,7 +12,7 @@ import Input from 'components/Inputs/Input.js';
 import VersionDetails from './VersionDetails.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Languages from 'services/languages/languages.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';

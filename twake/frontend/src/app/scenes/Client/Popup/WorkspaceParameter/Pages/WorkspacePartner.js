@@ -9,7 +9,7 @@ import Menu from 'components/Menus/Menu.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch.js';
-import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
+import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import UserService from 'services/user/UserService';
 import CreateCompanyAccount from './CreateCompanyAccount.js';
 import MediumPopupManager from 'app/components/Modal/ModalManager';

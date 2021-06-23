@@ -1,7 +1,7 @@
 import Observable from './Observable/Observable';
 
 type Rights = 'guest' | 'member' | 'administrator';
-type RightsOrNone = Rights | 'none';
+export type RightsOrNone = Rights | 'none';
 
 const rightLevels = {
   none: 0,
@@ -19,14 +19,33 @@ class AccessRightsService extends Observable {
     (window as any).AccessRightsService = this;
   }
 
-  public hasLevel(workspaceId: string, right: RightsOrNone) {
+  /**
+   * Check if the user has at least the given right in the workspace
+   *
+   * @param workspaceId 
+   * @param right 
+   * @returns 
+   */
+  public hasLevel(workspaceId: string = '', right: RightsOrNone): boolean {
     return rightLevels[this.workspaceLevels[workspaceId] || 'none'] >= rightLevels[right];
   }
 
-  public getLevel(workspaceId: string): RightsOrNone {
+  /**
+   * Get the user level in the given workspace
+   *
+   * @param workspaceId
+   * @returns 
+   */
+  public getLevel(workspaceId: string = ''): RightsOrNone {
     return this.workspaceLevels[workspaceId] || 'none';
   }
 
+  /**
+   * Update the workspace level
+   *
+   * @param workspaceId
+   * @param right 
+   */
   public updateLevel(workspaceId: string, right: RightsOrNone) {
     delete this.workspaceLevels[workspaceId];
     if (right !== 'none') this.workspaceLevels[workspaceId] = right;
@@ -39,16 +58,35 @@ class AccessRightsService extends Observable {
     this.notify();
   }
 
+  /**
+   * Update the company level
+   *
+   * @param companyId
+   * @param right 
+   */
   public updateCompanyLevel(companyId: string, right: RightsOrNone) {
     delete this.companyLevels[companyId];
     if (right !== 'none') this.companyLevels[companyId] = right;
     this.notify();
   }
 
+  /**
+   * Check if the level is at least the given one in the company
+   *
+   * @param companyId
+   * @param right 
+   * @returns 
+   */
   public hasCompanyLevel(companyId: string = '', right: RightsOrNone) {
     return rightLevels[this.companyLevels[companyId] || 'none'] >= rightLevels[right];
   }
 
+  /**
+   * Get the company level
+   *
+   * @param companyId
+   * @returns 
+   */
   public getCompanyLevel(companyId: string = ''): RightsOrNone {
     return this.companyLevels[companyId] || 'none';
   }
