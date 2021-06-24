@@ -5,9 +5,13 @@ import { getService as getWorkspaceService } from "./workspace";
 import { getService as getCompaniesService } from "../../user/services/companies";
 import { getService as getUsersService } from "../../user/services/users";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
+import { ConsoleServiceAPI } from "../../console/api";
 
-export function getService(databaseService: DatabaseServiceAPI): WorkspaceServicesAPI {
-  return new Service(databaseService);
+export function getService(
+  databaseService: DatabaseServiceAPI,
+  consoleService: ConsoleServiceAPI,
+): WorkspaceServicesAPI {
+  return new Service(databaseService, consoleService);
 }
 
 class Service implements WorkspaceServicesAPI {
@@ -15,11 +19,13 @@ class Service implements WorkspaceServicesAPI {
   workspaces: WorkspaceServiceAPI;
   companies: CompaniesServiceAPI;
   users: UsersServiceAPI;
+  console: ConsoleServiceAPI;
 
-  constructor(databaseService: DatabaseServiceAPI) {
+  constructor(databaseService: DatabaseServiceAPI, consoleService: ConsoleServiceAPI) {
     this.workspaces = getWorkspaceService(databaseService);
     this.companies = getCompaniesService(databaseService);
     this.users = getUsersService(databaseService);
+    this.console = consoleService;
   }
 
   async init(context: TwakeContext): Promise<this> {

@@ -39,6 +39,11 @@ export interface CreateConsoleUser {
   skipInvite: boolean;
 }
 
+export interface CreateInternalUser {
+  email: string;
+  password: string;
+}
+
 export type CreatedConsoleUser = Partial<CreateConsoleUser> & { _id: string };
 
 export type UpdateConsoleUserRole = Pick<CreateConsoleUser, "role"> & { id: string };
@@ -111,4 +116,13 @@ export type ConsoleClientParameters = {
   url: string;
   client: string;
   secret: string;
+};
+
+export type ConsoleType = "remote" | "internal";
+
+export type ConsoleOptions = {
+  provider: string;
+  client: string;
+  secret: string;
+  url: string;
 };

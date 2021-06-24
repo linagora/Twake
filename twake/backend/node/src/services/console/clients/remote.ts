@@ -10,7 +10,10 @@ import {
   UpdatedConsoleUserRole,
 } from "../types";
 
-export class ConsoleHTTPClient implements ConsoleServiceClient {
+import { v1 as uuidv1 } from "uuid";
+import User from "../../user/entities/user";
+
+export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
   client: AxiosInstance;
 
@@ -25,10 +28,13 @@ export class ConsoleHTTPClient implements ConsoleServiceClient {
     this.client = axios.create({ baseURL: infos.url });
   }
 
-  async addUser(company: ConsoleCompany, user: CreateConsoleUser): Promise<CreatedConsoleUser> {
+  async addUserToCompany(
+    company: ConsoleCompany,
+    user: CreateConsoleUser,
+  ): Promise<CreatedConsoleUser> {
     if (this.dryRun) {
       return {
-        _id: user.email,
+        _id: uuidv1(),
       };
     }
 
@@ -92,5 +98,10 @@ export class ConsoleHTTPClient implements ConsoleServiceClient {
         },
       })
       .then(({ data }) => data);
+  }
+
+  addUserToTwake(user: CreateConsoleUser): Promise<User> {
+    //should do noting for real console
+    return Promise.resolve(undefined);
   }
 }

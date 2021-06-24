@@ -13,7 +13,7 @@ import {
   toArray,
 } from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
-import { Paginable, Pagination } from "../../../core/platform/framework/api/crud-service";
+import { Paginable } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
 import User from "../../user/entities/user";
 import UserServiceAPI from "../../user/api";
@@ -32,7 +32,7 @@ import {
 import { getInstance as getExternalUserInstance } from "../../user/entities/external_user";
 import { getInstance as getExternalGroupInstance } from "../../user/entities/external_company";
 import CompanyUser from "../../user/entities/company_user";
-import { ConsoleHTTPClient } from "../clients/http-client";
+import { ConsoleRemoteClient } from "../clients/remote";
 import { ConsoleServiceClient } from "../client-interface";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 
@@ -49,7 +49,7 @@ export class MergeProcess {
     private linkExternal: boolean = true,
     consoleClientParameters: ConsoleClientParameters,
   ) {
-    this.client = new ConsoleHTTPClient(consoleClientParameters, dryRun);
+    this.client = new ConsoleRemoteClient(consoleClientParameters, dryRun);
   }
 
   merge(concurrent: number = 1): MergeProgress {
@@ -301,7 +301,7 @@ export class MergeProcess {
         });
       }
 
-      result = await this.client.addUser(
+      result = await this.client.addUserToCompany(
         { code: company.id },
         {
           email: user.email_canonical,

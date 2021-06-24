@@ -1,30 +1,23 @@
-import {
-  CassandraConnectionOptions,
-  CassandraConnector,
-  ConnectionOptions,
-  Connector,
-  MongoConnectionOptions,
-  MongoConnector,
-} from "../../core/platform/services/database/services/orm/connectors";
-import { ConsoleHTTPClient } from "./clients/http-client";
+import { ConsoleRemoteClient } from "./clients/remote";
 import { ConsoleServiceClient } from "./client-interface";
-import { ConsoleClientParameters } from "./types";
+import { ConsoleClientParameters, ConsoleType } from "./types";
+import { ConsoleInternalClient } from "./clients/internal";
 
-declare type ConsoleType = "real" | "fake";
-
-export class ClientFactory {
-  public create(
+class StaticConsoleClientFactory {
+  create(
     type: ConsoleType,
     consoleParameters: ConsoleClientParameters,
-    dryRun = true,
+    dryRun: boolean,
   ): ConsoleServiceClient {
     switch (type) {
-      case "real":
-        return new ConsoleHTTPClient(consoleParameters, dryRun);
-      case "fake":
-        throw new Error(`Console type ${type} is not implemented yet`);
+      case "remote":
+        return new ConsoleRemoteClient(consoleParameters, dryRun);
+      case "internal":
+        return new ConsoleInternalClient(consoleParameters, dryRun);
       default:
         throw new Error(`${type} is not supported`);
     }
   }
 }
+
+export const ConsoleClientFactory = new StaticConsoleClientFactory();

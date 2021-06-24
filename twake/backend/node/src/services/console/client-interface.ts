@@ -4,9 +4,11 @@ import {
   CreateConsoleUser,
   CreatedConsoleCompany,
   CreatedConsoleUser,
+  CreateInternalUser,
   UpdateConsoleUserRole,
   UpdatedConsoleUserRole,
 } from "./types";
+import User from "../user/entities/user";
 
 export interface ConsoleServiceClient {
   /**
@@ -22,7 +24,14 @@ export interface ConsoleServiceClient {
    * @param company
    * @param user
    */
-  addUser(company: ConsoleCompany, user: CreateConsoleUser): Promise<CreatedConsoleUser>;
+  addUserToCompany(company: ConsoleCompany, user: CreateConsoleUser): Promise<CreatedConsoleUser>;
+
+  /**
+   * Add user to twake in general (for non-console version)
+   *
+   * @param user
+   */
+  addUserToTwake(user: CreateInternalUser): Promise<User>;
 
   /**
    * Update user role
