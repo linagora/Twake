@@ -36,6 +36,11 @@ class AuthProviderService extends Observable {
         filterProtocolClaims: true,
       });
 
+      //For logout if signout or logout endpoint called
+      if (['/signout', '/logout'].includes(document.location.pathname)) {
+        this.signOut();
+      }
+
       Oidc.Log.logger = Logger;
       Oidc.Log.level = Oidc.Log.WARN;
 
