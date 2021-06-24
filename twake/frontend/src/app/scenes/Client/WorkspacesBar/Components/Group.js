@@ -71,14 +71,18 @@ export default class Group extends Component {
     var group = this.group;
 
     this.change_group_menu = [];
-    this.change_group_menu.push({
-      type: 'title',
-      text: Languages.t(
-        'scenes.app.workspacesbar.components.change_company_title',
-        [],
-        'Change company',
-      ),
-    });
+
+    if (Groups.getOrderedGroups().length > 1) {
+      this.change_group_menu.push({
+        type: 'title',
+        text: Languages.t(
+          'scenes.app.workspacesbar.components.change_company_title',
+          [],
+          'Change company',
+        ),
+      });
+    }
+
     Groups.getOrderedGroups().map(item => {
       this.change_group_menu.push(this.renderGroupInMenu(item));
     });
