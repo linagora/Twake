@@ -16,17 +16,21 @@ import Repository, {
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
-import { ListUserOptions } from "./types";
+import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
+import { SearchServiceAPI } from "../../../../core/platform/services/search/api";
+import SearchRepository from "../../../../core/platform/services/search/repository";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
   repository: Repository<User>;
+  searchRepository: SearchRepository<User>;
   companyUserRepository: Repository<CompanyUser>;
 
-  constructor(private database: DatabaseServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private searchService: SearchServiceAPI) {}
 
   async init(): Promise<this> {
+    this.searchRepository = await this.searchService.getRepository<User>("user", User);
     this.repository = await this.database.getRepository<User>("user", User);
     this.companyUserRepository = await this.database.getRepository<CompanyUser>(
       "group_user",
@@ -60,6 +64,21 @@ export class UserService implements UsersServiceAPI {
     const instance = await this.repository.findOne(pk);
     if (instance) await this.repository.remove(instance);
     return new DeleteResult<User>("user", instance, !!instance);
+  }
+
+  async search(
+    pagination: Pagination,
+    options?: SearchUserOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<User>> {
+    const findFilter: FindFilter = {};
+    const findOptions: FindOptions = {
+      pagination,
+    };
+
+    //TODO
+
+    return this.searchRepository.search(findFilter, findOptions);
   }
 
   async list(

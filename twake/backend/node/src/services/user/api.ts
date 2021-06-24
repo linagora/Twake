@@ -28,6 +28,12 @@ export interface UsersServiceAPI
     Initializable,
     CRUDService<User, UserPrimaryKey, ExecutionContext> {
   getUserCompanies(pk: UserPrimaryKey, pagination?: Pagination): Promise<ListResult<CompanyUser>>;
+
+  search<ListOptions>(
+    pagination: Paginable,
+    options?: ListOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<User>>;
 }
 
 /**
