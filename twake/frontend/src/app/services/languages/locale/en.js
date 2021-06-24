@@ -34,9 +34,9 @@ export default {
   twake_not_on_device_mobile: 'You can download our mobile app on the Android and Apple stores.',
   twake_not_on_device_browser: 'You must use an updated browser or download Twake desktop.',
   'tutorial.start_to_add_workspaces':
-    'Start to add a shared workspace or ask people to invite you in a shared workspace.',
+    'Start to add a shared workspace or ask users to invite you in a shared workspace.',
   'ads.workspace_is_free_version':
-    'Need more features? Upgrade and get more people, multiple workspaces, unlimited storage, and more.',
+    'Need more features? Upgrade and get more users, multiple workspaces, unlimited storage, and more.',
   'ads.activate_premium_to_add_workspaces': 'Upgrade to add more workspaces.',
   'ads.two_month_offer': 'Try Twake Premium for free without any conditions during 2 months.',
   'ads.two_month_offer_confirmation':
@@ -80,14 +80,14 @@ export default {
     'Society, club or charity',
   'scenes.app.workspaces.create_company.group_data.group_type.other_group': 'Other',
   'scenes.app.workspaces.create_company.group_data.group_size': 'Group size',
-  'scenes.app.workspaces.create_company.group_data.group_size.less_3': 'Less than 4 people',
-  'scenes.app.workspaces.create_company.group_data.group_size.4_10': '4 - 10 people',
-  'scenes.app.workspaces.create_company.group_data.group_size.10_50': '11 - 49 people',
-  'scenes.app.workspaces.create_company.group_data.group_size.50_100': '50 - 99 people',
-  'scenes.app.workspaces.create_company.group_data.group_size.100_500': '100 - 499 people',
-  'scenes.app.workspaces.create_company.group_data.group_size.500_1000': '500 - 999 people',
-  'scenes.app.workspaces.create_company.group_data.group_size.1000_5000': '1000 - 4999 people',
-  'scenes.app.workspaces.create_company.group_data.group_size.5000_more': 'More than 5000 people',
+  'scenes.app.workspaces.create_company.group_data.group_size.less_3': 'Less than 4 users',
+  'scenes.app.workspaces.create_company.group_data.group_size.4_10': '4 - 10 users',
+  'scenes.app.workspaces.create_company.group_data.group_size.10_50': '11 - 49 users',
+  'scenes.app.workspaces.create_company.group_data.group_size.50_100': '50 - 99 users',
+  'scenes.app.workspaces.create_company.group_data.group_size.100_500': '100 - 499 users',
+  'scenes.app.workspaces.create_company.group_data.group_size.500_1000': '500 - 999 users',
+  'scenes.app.workspaces.create_company.group_data.group_size.1000_5000': '1000 - 4999 users',
+  'scenes.app.workspaces.create_company.group_data.group_size.5000_more': 'More than 5000 users',
   'scenes.app.workspaces.create_company.group_data.group_main_activity': 'Main activity',
   'scenes.app.workspaces.create_company.group_data.group_main_activity.food': 'Food',
   'scenes.app.workspaces.create_company.group_data.group_main_activity.bank': 'Bank / Insurance',
@@ -138,7 +138,7 @@ export default {
     'Do not upload in Drive. The file will not be accessible from the Drive.',
   'components.drive_dropzone.detached_modal.drive_title': 'Drive',
   'components.drive_dropzone.detached_modal.drive_text':
-    'Upload in the Drive of the current workspace in a choosen directory. Other people will have access to this file using the Drive.',
+    'Upload in the Drive of the current workspace in a choosen directory. Other users will have access to this file using the Drive.',
   'components.ending.text': 'Thank you!',
   'components.event_picker.modal_search_event': 'Search an event',
   'components.event_picker.modal_no_result': 'No corresponding event found',
@@ -156,7 +156,7 @@ export default {
   'components.filepicker.create_here': 'Create here',
   'components.filepicker.choose': 'Choose',
   'components.group.private_workspace_title': 'Private workspace',
-  'components.group.members': '$1 people',
+  'components.group.members': '$1 user(s)',
   'components.labels.label_editor_title': 'Edit labels',
   'components.labels.label_editor_text': 'Pick the labels you want to use and save to go back.',
   'components.labels.label_editor_no_label': 'No labels.',
@@ -185,11 +185,11 @@ export default {
   'components.welcome_in_new_workspace.message':
     'Click the icon in your workspace to access the settings.',
   'components.welcome_in_new_workspace.text':
-    'We will accompany you during the configuration of your workspace. Click on continue to invite people in your workspace.',
+    'We will accompany you during the configuration of your workspace. Click on continue to invite users in your workspace.',
   'scenes.app.workspaces.create_company.invitations.title': 'Configure your workspace.',
-  'scenes.app.workspaces.create_company.invitations.text': 'Invite people to your workspace.',
-  'scenes.app.workspaces.create_company.invitations.input_placeholder': 'People e-mail',
-  'scenes.app.workspaces.create_company.invitations.continue_with': 'Continue with $1 people',
+  'scenes.app.workspaces.create_company.invitations.text': 'Invite users to your workspace.',
+  'scenes.app.workspaces.create_company.invitations.input_placeholder': 'User e-mail',
+  'scenes.app.workspaces.create_company.invitations.continue_with': 'Continue with $1 user(s)',
   'components.welcome_in_new_workspace.apps.title': 'Configure your workspace.',
   'components.welcome_in_new_workspace.apps.text':
     'Choose wich apps you want to use in your workspace.',
@@ -470,7 +470,7 @@ export default {
   'scenes.apps.drive.right_preview.public_link.get': 'Get',
   'scenes.apps.drive.right_preview.public_link.remove': 'Remove',
   'scenes.apps.drive.right_preview.public_link.message':
-    'If you remove this link, people with this link will no longer have access.',
+    'If you remove this link, users with this link will no longer have access.',
   'scenes.apps.drive.right_preview.public_link.no_access':
     'Sorry, you do not have access to this location. Either your link is broken, or the requested element does not exist anymore.',
   'scenes.apps.drive.right_users_picker.title': 'Subscribed users',
@@ -537,7 +537,7 @@ export default {
   'scenes.apps.messages.services.messages.untitled': 'Untitled',
   'scenes.apps.parameters.workspace_sections.title': 'Workspace parameters.',
   'scenes.apps.parameters.workspace_sections.workspace': 'Workspace',
-  'scenes.apps.parameters.workspace_sections.members': 'People',
+  'scenes.apps.parameters.workspace_sections.members': 'Users',
   'scenes.apps.parameters.workspace_sections.rights': 'Rights',
   'scenes.apps.parameters.workspace_sections.apps': 'Apps',
   'scenes.apps.parameters.group_sections.title': 'Group parameters',
@@ -546,7 +546,7 @@ export default {
   'scenes.apps.parameters.group_sections.general': 'General',
   'scenes.apps.parameters.group_sections.workspaces': 'Workspaces',
   'scenes.apps.parameters.group_sections.managers': 'Managers',
-  'scenes.apps.parameters.group_sections.members': 'People',
+  'scenes.apps.parameters.group_sections.members': 'Users',
   'scenes.apps.parameters.group_sections.apps': 'Apps',
   'scenes.apps.parameters.group_sections.payment': 'Subscription',
   'scenes.apps.parameters.go_to_account.title': 'Account',
@@ -662,7 +662,7 @@ export default {
   'scenes.apps.account.notifications.mail_option_never': 'Never send e-mail notifications',
   'scenes.apps.account.notifications.sound': 'Sound notification',
   'scenes.apps.account.workspaces.workspace_name': 'Workspace name',
-  'scenes.apps.account.workspaces.members_number': 'Number of People',
+  'scenes.apps.account.workspaces.members_number': 'Number of users',
   'scenes.apps.account.workspaces.favorite_workspace': 'Favorite workspaces',
   'scenes.apps.account.workspaces.archived_workspace_btn': 'Archived workspace',
   'scenes.apps.account.workspaces.display_mode': 'Display mode',
@@ -776,15 +776,15 @@ export default {
   'scenes.apps.parameters.group_sections.payment.untils': 'until',
   'scenes.apps.parameters.group_sections.users.workspaces': 'Teams',
   'scenes.apps.parameters.group_sections.users.remove_member_message': 'Do you want to remove $1?',
-  'scenes.apps.parameters.group_sections.users.title': "Manage group's people",
+  'scenes.apps.parameters.group_sections.users.title': "Manage group's users",
   'scenes.apps.parameters.group_sections.users.title_text':
-    'You can see and manage people in the group.',
+    'You can see and manage users in the group.',
   'scenes.apps.parameters.group_sections.users.number':
     'There are currently $1 member(s) in the group.',
-  'scenes.apps.parameters.group_sections.users.onlyclient': 'Show external people only',
+  'scenes.apps.parameters.group_sections.users.onlyclient': 'Show external users only',
   'scenes.apps.parameters.group_sections.users.modal_edit.title': 'Edit $1',
   'scenes.apps.parameters.group_sections.workspaces.workspace_name': 'Workspace name',
-  'scenes.apps.parameters.group_sections.workspaces.members_number': 'Number of people',
+  'scenes.apps.parameters.group_sections.workspaces.members_number': 'Number of users',
   'scenes.apps.parameters.group_sections.workspaces.archive_or_unarchive': 'Archive or unarchive',
   'scenes.apps.parameters.group_sections.workspaces.unarchive_message':
     'You are going to unarchive this workspace including all messages, files and data in it!',
@@ -827,24 +827,24 @@ export default {
   'scenes.apps.parameters.workspace_sections.members.quit_workspace_btn': 'Quit workspace',
   'scenes.apps.parameters.workspace_sections.members.remove_mail':
     'Do you want to remove this e-mail?',
-  'scenes.apps.parameters.workspace_sections.members.title': 'Workspace people',
-  'scenes.apps.parameters.workspace_sections.members.members': 'People',
+  'scenes.apps.parameters.workspace_sections.members.title': 'Workspace users',
+  'scenes.apps.parameters.workspace_sections.members.members': 'Users',
   'scenes.apps.parameters.workspace_sections.members.members_text':
-    'You can remove people or change people rights.',
+    'You can remove or change users rights.',
   'scenes.apps.parameters.workspace_sections.members.guests': 'Guests',
-  'scenes.apps.parameters.workspace_sections.members.pending': 'Pending people',
+  'scenes.apps.parameters.workspace_sections.members.pending': 'Pending users',
   'scenes.apps.parameters.workspace_sections.members.pending_text':
-    'No people are using the e-mails bellow.',
-  'scenes.apps.parameters.workspace_sections.members.invite': 'Invite new people',
+    'No user are using the e-mails bellow.',
+  'scenes.apps.parameters.workspace_sections.members.invite': 'Invite new user',
   'scenes.apps.parameters.workspace_sections.members.invite_text':
-    'You can add people using an e-mail address or a username. You can add multiple e-mails separated by commas or spaces.',
+    'You can add user using an e-mail address or a username. You can add multiple e-mails separated by commas or spaces.',
   'scenes.apps.parameters.workspace_sections.members.invite_placeholder': 'Usernames or e-mails',
-  'scenes.apps.parameters.workspace_sections.members.invite_btn': 'Add people',
+  'scenes.apps.parameters.workspace_sections.members.invite_btn': 'Add user',
   'scenes.apps.parameters.workspace_sections.members.invite_btn_message':
-    'Do you want to add this list of people?',
+    'Do you want to add this list of users?',
   'scenes.apps.parameters.workspace_sections.members.external': 'External',
   'scenes.apps.parameters.workspace_sections.members.isexternal':
-    'You are external in this group, people you add are going to be external as well.',
+    'You are external in this group, users you add are going to be external as well.',
   'scenes.apps.parameters.workspace_sections.members.inform_max_user':
     'You have reached the maximum number of users ($1) for your subscription.',
   'scenes.apps.parameters.workspace_sections.members.modal_added.title': 'Add new co-workers',
@@ -910,13 +910,13 @@ export default {
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.name': 'Workspace name',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.show_advanced':
     'Show advanced settings',
-  'scenes.apps.parameters.workspace_sections.workspace.duplicate.members': 'People',
+  'scenes.apps.parameters.workspace_sections.workspace.duplicate.members': 'Users',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.members_text':
-    'Choose which people you want to copy to the new workspace.',
+    'Choose which users you want to copy to the new workspace.',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.members.me': 'Me only',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.members.admins': 'Administrators',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.members.all':
-    'All people of this workspace',
+    'All users of this workspace',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure': 'Structure',
   'scenes.apps.parameters.workspace_sections.workspace.duplicate.structure_text':
     'Choose the structures you want to copy.',
@@ -956,7 +956,7 @@ export default {
   'scenes.apps.tasks.new_board.remove_msg': "Type '$1' to delete this board",
   'scenes.apps.tasks.new_board.remove_msg_confirm': 'Remove board and all tasks.',
   'scenes.apps.tasks.filter': 'Filter @username label:name or in name',
-  'scenes.apps.tasks.members': 'people',
+  'scenes.apps.tasks.members': 'users',
   'scenes.apps.tasks.task': 'Task',
   'scenes.apps.tasks.task.add': 'Add',
   'scenes.apps.tasks.no_tasks': 'No task',
@@ -1016,7 +1016,7 @@ export default {
   'scenes.login.create_account.data_line_1':
     '- If your first name and your name are given, they will be public ;',
   'scenes.login.create_account.data_line_2':
-    '- All data entered into a workspace is visible only to people with access ;',
+    '- All data entered into a workspace is visible only to users with access ;',
   'scenes.login.create_account.data_line_3':
     '- We do not use personal data for advertising or commercial purposes ;',
   'scenes.login.create_account.data_line_4':
@@ -1063,7 +1063,7 @@ export default {
   'scenes.login.create_account.step_1_subtitle':
     "It couldn't be simpler — we just need some information.",
   'scenes.login.create_account.step_2_subtitle_a':
-    'Add your full name for your people to recognize you.',
+    'Add your full name for other users to recognize you.',
   'scenes.login.create_account.step_2_subtitle_b': 'Your phone number remains private.',
   'scenes.login.create_account.step_3_cgu_link': 'Twake Terms of Use',
   'scenes.login.create_account.step_3_cgu_text': 'By clicking on create an account, you accept our',
@@ -1083,8 +1083,8 @@ export default {
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
     'The number of fields increases when you press enter.',
   'scenes.app.workspaces.create_company.invitations.title_1':
-    'Before you finish, you can add people to your company.',
-  'scenes.app.workspaces.create_company.invitations.title_2': 'Add your team people.',
+    'Before you finish, you can add users to your company.',
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Add your team users.',
   'scenes.app.workspaces.create_company.title': 'Create my company',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Add a secondary email',
   'scenes.app.workspaces.welcome_page.added_to_company': 'You have been invited to ',
@@ -1155,7 +1155,7 @@ export default {
   'scenes.app.channelsbar.currentuser.add_apps': 'Search applications',
   'scenes.app.channelsbar.currentuser.add_collaboraters_menu': '',
   'scenes.app.channelsbar.currentuser.change_my_status': 'Change my status',
-  'scenes.app.channelsbar.currentuser.collaborateurs': 'People',
+  'scenes.app.channelsbar.currentuser.collaborateurs': 'Users',
   'scenes.app.channelsbar.currentuser.create_company_page': 'Create a company',
   'scenes.app.channelsbar.currentuser.create_workspace_page': 'Create a workspace',
   'scenes.app.channelsbar.currentuser.invited_status': 'You are a guest.',
@@ -1181,10 +1181,10 @@ export default {
   'scenes.app.channelsbar.access_private_channel_title': 'Access to the private channel',
   'scenes.app.channelsbar.channel_removing_confirmation': 'Delete channel',
   'scenes.app.channelsbar.channelsapps.apps': 'APPLICATIONS',
-  'scenes.app.channelsbar.channelsuser.invite_collaborators': 'Invite people',
+  'scenes.app.channelsbar.channelsuser.invite_collaborators': 'Invite users',
   'scenes.app.channelsbar.channelsuser.new_private_discussion': 'New private discussion',
   'scenes.app.channelsbar.channelsuser.no_private_message_invite_collaboraters':
-    'No private messages. Invite your people!',
+    'No private messages. Invite users!',
   'scenes.app.channelsbar.channelsuser.private_messages': 'Direct messages',
   'scenes.app.channelsbar.channelsworkspace.channel_title': 'CHANNELS',
   'scenes.app.channelsbar.channelsworkspace.channel_title.favorite': 'FAVORITES',
@@ -1192,11 +1192,11 @@ export default {
   'scenes.app.channelsbar.channelsworkspace.group_name': 'Name of the group',
   'scenes.app.channelsbar.channelsworkspace.no_channel': 'You did not join any channel yet',
   'scenes.app.channelsbar.channelsworkspace.remove_group': 'Remove the group',
-  'scenes.app.channelsbar.currentuser.add_collaborators_menu': 'Add people',
+  'scenes.app.channelsbar.currentuser.add_collaborators_menu': 'Add users',
   'scenes.app.channelsbar.currentuser.desactivated_notifiations_information_no_choice':
     'Your notifications are disabled until 9 A.M. tomorrow',
-  'scenes.app.channelsbar.extern_members_management_menu': 'Manage external people',
-  'scenes.app.channelsbar.extern_members_title': 'External people',
+  'scenes.app.channelsbar.extern_members_management_menu': 'Manage external users',
+  'scenes.app.channelsbar.extern_members_title': 'External user',
   'scenes.app.channelsbar.invated_access_right': 'You can invite external users to your workspace.',
   'scenes.app.channelsbar.modify_channel_menu': 'Edit channel',
   'scenes.app.channelsbar.guest_management': 'Guest management',
@@ -1217,8 +1217,7 @@ export default {
   'scenes.app.channelsbar.initial_instructions_tutorial':
     'Choose a first name, a name and a profile picture.',
   'scenes.app.channelsbar.installation_desktop_tutorial': 'Install the desktop application',
-  'scenes.app.channelsbar.invitation_collaboraors_tutorial':
-    'Invite your people into your workspace.',
+  'scenes.app.channelsbar.invitation_collaboraors_tutorial': 'Invite users into your workspace.',
   'scenes.app.channelsbar.public_channel_label': 'Public',
   'scenes.app.channelsbar.private_channel_label': 'Private',
   'scenes.app.channelsbar.private_channel_message':
@@ -1241,7 +1240,7 @@ export default {
   'scenes.app.mainview.tabs.rename': 'Rename',
   'scenes.app.mainview.tabs.save_tab': 'Save',
   'scenes.app.mainview.tabs.searching_connectors': 'Search connectors...',
-  'scenes.app.popup.adduser.adding_several_people': 'Add multiple people at once',
+  'scenes.app.popup.adduser.adding_several_people': 'Add multiple users at once',
   'scenes.app.popup.adduser.adresses_message':
     'Please separate the addresses with a comma or space. Remember that Twake can limit the number of invitations based on your subscription.',
   'scenes.app.popup.adduser.message_instruction': 'Use the classic form',
@@ -1409,10 +1408,10 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.back_to_search_button': 'Return to the search',
   'scenes.app.popup.workspaceparameter.pages.cancel_invitation_button':
     'Cancel the invitation by e-mail.',
-  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Add people',
+  'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button': 'Add user',
   'scenes.app.popup.workspaceparameter.pages.collaboraters_small_text':
-    'People in this workspace $1',
-  'scenes.app.popup.workspaceparameter.pages.collaborateurs': 'People',
+    'Users in this workspace $1',
+  'scenes.app.popup.workspaceparameter.pages.collaborateurs': 'Users',
   'scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle':
     'Applications developed by the company',
   'scenes.app.popup.workspaceparameter.pages.company_identity_title': 'Identity of the company',
@@ -1430,9 +1429,9 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle':
     'Display preferences',
   'scenes.app.popup.workspaceparameter.pages.edit_level_administrater_text':
-    'An admin can configure the workspace (name, apps, people of the workspace).',
+    'An admin can configure the workspace (name, apps, users of the workspace).',
   'scenes.app.popup.workspaceparameter.pages.edit_level_user_text':
-    'A company manager user can access the full administration of the company (payments, company people, company identity).',
+    'A company manager user can access the full administration of the company (payments, company users, company identity).',
   'scenes.app.popup.workspaceparameter.pages.extern': 'Extern',
   'scenes.app.popup.workspaceparameter.pages.extern_guest': 'Guest user',
   'scenes.app.popup.workspaceparameter.pages.forced_apps_text': 'Force throughout the company',
@@ -1446,10 +1445,10 @@ export default {
     'Applications installed in other areas of the company $1',
   'scenes.app.popup.workspaceparameter.pages.installed_apps_subtitle': 'Installed applications',
   'scenes.app.popup.workspaceparameter.pages.invitation_error':
-    'An error occurred while inviting the following people: ',
+    'An error occurred while inviting the following users: ',
   'scenes.app.popup.workspaceparameter.pages.invite_button': 'Invite in this space',
   'scenes.app.popup.workspaceparameter.pages.invited_collaboraters_by_mail':
-    'People invited by e-mail',
+    'Users invited by e-mail',
   'scenes.app.popup.workspaceparameter.pages.invited_guest_check_message':
     'Check that the username or e-mail used is valid.',
   'scenes.app.popup.workspaceparameter.pages.logo_modify_description':
@@ -1463,7 +1462,7 @@ export default {
   'scenes.app.popup.workspaceparameter.pages.no_app_information':
     'You have no applications in this workspace',
   'scenes.app.popup.workspaceparameter.pages.other_collaboraters-small_text':
-    'Other people in this company ($1)',
+    'Other users in this company ($1)',
   'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu': 'Leave this workspace',
   'scenes.app.popup.workspaceparameter.pages.read_access_subtitle': 'Read access',
   'scenes.app.popup.workspaceparameter.pages.remove_button': 'Delete',
@@ -1849,13 +1848,13 @@ export default {
   'scenes.app.mainview.channel_description': 'Describe the channel',
   'scenes.app.popup.adduser.current_mail_state': '$1 mail(s) will be added',
   'scenes.app.popup.adduser.add_another_mail': 'Add another email',
-  'scenes.app.popup.adduser.placeholder_input': 'People email',
+  'scenes.app.popup.adduser.placeholder_input': 'User email',
   'scenes.client.channelbar.channeltemplateeditor.checkbox':
-    'Automatically invite all workspace people to this channel',
-  'scenes.client.channelbar.channelmemberseditor.title': 'Add people in $1',
-  'scenes.client.channelbar.channelmemberslist.title': 'People in $1',
+    'Automatically invite all workspace users to this channel',
+  'scenes.client.channelbar.channelmemberseditor.title': 'Add users in $1',
+  'scenes.client.channelbar.channelmemberslist.title': 'Users in $1',
   'scenes.client.channelbar.channelmemberslist.loader': 'Load more',
-  'scenes.client.channelbar.channelmemberslist.autocomplete': 'Add or search people',
+  'scenes.client.channelbar.channelmemberslist.autocomplete': 'Add or search user',
   'scenes.client.channelbar.channelmemberslist.invitebtn': 'Add users',
   'scenes.client.channelbar.channelmemberslist.menu.option_1': 'Send a direct message',
   'scenes.client.channelbar.channelmemberslist.menu.option_2': 'Remove from channel',
@@ -1872,7 +1871,7 @@ export default {
   'components.notifications.hidden_notifications_button.children': 'New messages',
   'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder': 'Application',
   'scenes.client.channelbar.channelmemberslist.no_members':
-    'There is no people in this channel, you can invite them by clicking on Add users.',
+    'There is no user in this channel, you can invite them by clicking on Add users.',
   'scenes.app.channelsbar.hide_discussion_leaving.menu': 'Hide discussion',
   'scenes.app.channelsbar.hide_discussion_leaving.title': 'Hide discussion?',
   'scenes.app.channelsbar.hide_discussion_leaving.content':
@@ -1931,15 +1930,15 @@ export default {
   'components.blocked_account.trial_period_over':
     'Your trial period is over. To unblock your account and get access to all functionality, please, verify your account via email confirmation',
   'components.add_mails_workspace.button': 'Start using Twake',
-  'components.add_mails_workspace.title_1': 'Add some people',
+  'components.add_mails_workspace.title_1': 'Add some users',
   'components.add_mails_workspace.title_2':
-    'Twake is a team collaboration tool, so invite some people of yours to test a workspace we created for you.',
-  'components.add_mails_workspace.text_area_placeholder': 'Enter emails of your people*',
+    'Twake is a team collaboration tool, so invite some users to test a workspace we created for you.',
+  'components.add_mails_workspace.text_area_placeholder': 'Enter emails of your users*',
   'components.add_mails_workspace.text_secondary':
     'Please, enter emails separated by comma. You can invite up to 5 members for now and add more after email verification.',
   'components.verify_mail.title_1': 'Congratulations',
   'components.verify_mail.title_2': 'You are an official Twake user now!',
-  'components.verify_mail.button': 'Add people',
+  'components.verify_mail.button': 'Add user',
   'components.verify_mail.text':
     'First of all, you have to verify your mail address. We’ve sent a verification link to',
   'components.verify_mail.paragraph':
