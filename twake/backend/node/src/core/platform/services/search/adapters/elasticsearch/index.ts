@@ -1,12 +1,22 @@
 import { Client } from "@elastic/elasticsearch";
 import { Readable } from "stream";
-import { logger } from "../../../framework";
+import { logger } from "../../../../framework";
 import _ from "lodash";
 import streamToIterator from "stream-to-iterator";
-import { EntityTarget, FindFilter, FindOptions, SearchAdapter, SearchConfiguration } from "../api";
-import { DatabaseServiceAPI } from "../../database/api";
-import { getEntityDefinition, unwrapPrimarykey, DatabaseTableCreatedEvent } from "../api";
-import { ListResult, Pagination } from "../../../framework/api/crud-service";
+import {
+  ColumnDefinition,
+  EntityDefinition,
+  EntityTarget,
+  FindFilter,
+  FindOptions,
+  SearchAdapterInterface,
+  SearchConfiguration,
+} from "../../api";
+import { SearchAdapter } from "../abstract";
+import { DatabaseServiceAPI } from "../../../database/api";
+import { getEntityDefinition, unwrapPrimarykey } from "../../api";
+import { ListResult, Pagination } from "../../../../framework/api/crud-service";
+import { stringifyPrimaryKey } from "../utils";
 
 type Operation = {
   index: string;
@@ -15,14 +25,16 @@ type Operation = {
   body?: any;
 };
 
-export default class Search implements SearchAdapter {
+export default class ElasticSearch extends SearchAdapter implements SearchAdapterInterface {
   private client: Client;
   private buffer: Readable;
 
   constructor(
     readonly database: DatabaseServiceAPI,
     readonly configuration: SearchConfiguration["elasticsearch"],
-  ) {}
+  ) {
+    super();
+  }
 
   public async connect() {
     try {
@@ -35,9 +47,10 @@ export default class Search implements SearchAdapter {
     this.startBulkReader();
   }
 
-  public async createIndex(event: DatabaseTableCreatedEvent) {
-    const entity = event.definition.entity;
-
+  private async createIndex(
+    entity: EntityDefinition,
+    columns: { [name: string]: ColumnDefinition },
+  ) {
     if (!entity.options?.search) {
       return;
     }
@@ -45,6 +58,7 @@ export default class Search implements SearchAdapter {
     const name = entity.options?.search?.index || entity.name;
     const mapping = entity.options?.search?.esMapping;
     logger.info(`Create index ${name} with mapping %o`, mapping);
+
     await this.client.indices.create(
       {
         index: name,
@@ -58,8 +72,10 @@ export default class Search implements SearchAdapter {
 
   public async upsert(entities: any[]) {
     entities.forEach(entity => {
-      const { entityDefinition } = getEntityDefinition(entity);
+      const { entityDefinition, columnsDefinition } = getEntityDefinition(entity);
       const pkColumns = unwrapPrimarykey(entityDefinition);
+
+      this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
 
       if (!entityDefinition.options?.search) {
         return;
@@ -77,7 +93,7 @@ export default class Search implements SearchAdapter {
 
       const record: Operation = {
         index: entityDefinition.options?.search?.index || entityDefinition.name,
-        id: JSON.stringify(pkColumns.map(c => entity[c])),
+        id: stringifyPrimaryKey(entity),
         action: "upsert",
         body,
       };
@@ -90,8 +106,9 @@ export default class Search implements SearchAdapter {
 
   public async remove(entities: any[]) {
     entities.forEach(entity => {
-      const { entityDefinition } = getEntityDefinition(entity);
-      const pkColumns = unwrapPrimarykey(entityDefinition);
+      const { entityDefinition, columnsDefinition } = getEntityDefinition(entity);
+
+      this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
 
       if (!entityDefinition.options?.search) {
         return;
@@ -99,7 +116,7 @@ export default class Search implements SearchAdapter {
 
       const record: Operation = {
         index: entityDefinition.options?.search?.index || entityDefinition.name,
-        id: JSON.stringify(pkColumns.map(c => entity[c])),
+        id: stringifyPrimaryKey(entity),
         action: "remove",
       };
 

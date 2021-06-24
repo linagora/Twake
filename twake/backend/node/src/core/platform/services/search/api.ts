@@ -4,13 +4,14 @@ import {
   FindFilter as ormFindFilter,
   FindOptions as ormFindOptions,
 } from "../database/services/orm/repository/repository";
-import { DatabaseTableCreatedEvent, EntityTarget } from "../database/services/orm/types";
+import { EntityTarget } from "../database/services/orm/types";
+import SearchRepository from "./repository";
 export { getEntityDefinition, unwrapPrimarykey } from "../database/services/orm/utils";
 export {
   DatabaseEntitiesRemovedEvent,
   DatabaseEntitiesSavedEvent,
-  DatabaseTableCreatedEvent,
   EntityDefinition,
+  ColumnDefinition,
   EntityTarget,
 } from "../database/services/orm/types";
 
@@ -32,9 +33,8 @@ export type IndexedEntity = {
   score: number;
 };
 
-export interface SearchAdapter {
+export interface SearchAdapterInterface {
   connect(): Promise<void>;
-  createIndex(event: DatabaseTableCreatedEvent): Promise<void>;
   upsert(entities: any[]): Promise<void>;
   remove(entities: any[]): Promise<void>;
 
@@ -47,12 +47,7 @@ export interface SearchAdapter {
 }
 
 export interface SearchServiceAPI extends TwakeServiceProvider {
-  search<Entity>(
-    table: string,
-    entityType: EntityTarget<Entity>,
-    filters: FindFilter,
-    options: FindOptions,
-  ): Promise<ListResult<Entity>>;
+  getRepository<Entity>(table: string, entityType: EntityTarget<Entity>): SearchRepository<Entity>;
 }
 
 export type SearchConfiguration = {

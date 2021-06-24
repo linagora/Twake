@@ -58,12 +58,6 @@ export default class Repository<EntityType> {
     if (this.checkEntityDefinition()) {
       const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
       await this.connector.createTable(entityDefinition, columnsDefinition);
-      localEventBus.publish("database:table:saved", {
-        definition: {
-          entity: entityDefinition,
-          columns: columnsDefinition,
-        },
-      } as DatabaseTableCreatedEvent);
     }
 
     return this;

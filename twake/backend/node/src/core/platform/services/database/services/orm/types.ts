@@ -49,13 +49,6 @@ export type ObjectType<T> = { new (): T } | Function;
 
 /** Local Event bus */
 
-export type DatabaseTableCreatedEvent = {
-  definition: {
-    entity: EntityDefinition;
-    columns: { [name: string]: ColumnDefinition };
-  };
-};
-
 export type DatabaseEntitiesSavedEvent = {
   entities: any[];
 };

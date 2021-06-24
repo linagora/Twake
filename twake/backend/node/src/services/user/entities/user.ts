@@ -6,6 +6,30 @@ export const TYPE = "user";
 @Entity(TYPE, {
   primaryKey: [["id"]],
   type: TYPE,
+  search: {
+    index: "user",
+    mongoMapping: {
+      text: {
+        first_name: "text",
+        last_name: "text",
+        email_canonical: "text",
+      },
+    },
+    esMapping: {
+      properties: {
+        first_name: { type: "text" },
+        last_name: { type: "text" },
+        email_canonical: { type: "text" },
+      },
+    },
+    source: (entity: User) => {
+      return {
+        first_name: entity.first_name,
+        last_name: entity.last_name,
+        email_canonical: entity.email_canonical,
+      };
+    },
+  },
 })
 export default class User {
   @Column("id", "timeuuid")
@@ -26,7 +50,7 @@ export default class User {
   public get status_icon(): string {
     if (this._status_icon && this._status_icon.startsWith("[\\")) {
       try {
-        const parsed = JSON.parse(this._status_icon.replace(/\\"/g, "\"").replace(/\\\\/g, "\\"));
+        const parsed = JSON.parse(this._status_icon.replace(/\\"/g, '"').replace(/\\\\/g, "\\"));
         return `${parsed[0]} ${parsed[1]}`;
       } catch (e) {
         return "";
