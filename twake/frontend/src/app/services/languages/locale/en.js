@@ -34,7 +34,7 @@ export default {
   twake_not_on_device_mobile: 'You can download our mobile app on the Android and Apple stores.',
   twake_not_on_device_browser: 'You must use an updated browser or download Twake desktop.',
   'tutorial.start_to_add_workspaces':
-    'Start to add a shared workspace or ask users to invite you in a shared workspace.',
+    'Start to add a shared workspace or ask someone to invite you in a shared workspace.',
   'ads.workspace_is_free_version':
     'Need more features? Upgrade and get more users, multiple workspaces, unlimited storage, and more.',
   'ads.activate_premium_to_add_workspaces': 'Upgrade to add more workspaces.',
@@ -343,7 +343,7 @@ export default {
   'scenes.apps.calendar.calendar_modal.shared_with': 'Shared with',
   'scenes.apps.calendar.calendar_modal.delete_message': 'Delete calendar and all events in it.',
   'scenes.apps.calendar.calendar_modal.participants': 'Participants',
-  'scenes.apps.calendar.calendar_modal.importation': 'Upload',
+  'scenes.apps.calendar.calendar_modal.importation': 'Import',
   'scenes.apps.calendar.calendar_modal.importation_message': 'Upload an ics file',
   'scenes.apps.calendar.calendar_modal.placeholder': 'Name',
   'scenes.apps.calendar.left.no_calendar': 'You have no calendars yet',
@@ -1078,13 +1078,13 @@ export default {
   'scenes.app.workspaces.create_company.group_data.title':
     " We'll be quick — we just need some statistical information.",
   'scenes.app.workspaces.create_company.importations.title_1':
-    'Already working with digital tools? Upload or integrate your tools now!',
+    'Already working with digital tools? Import or integrate your tools now!',
   'scenes.app.workspaces.create_company.importations.title_2': 'No worries, you can do this later!',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
     'The number of fields increases when you press enter.',
   'scenes.app.workspaces.create_company.invitations.title_1':
     'Before you finish, you can add users to your company.',
-  'scenes.app.workspaces.create_company.invitations.title_2': 'Add your team users.',
+  'scenes.app.workspaces.create_company.invitations.title_2': 'Add users to your team.',
   'scenes.app.workspaces.create_company.title': 'Create my company',
   'scenes.app.workspaces.welcome_page.add_secondary_emails': 'Add a secondary email',
   'scenes.app.workspaces.welcome_page.added_to_company': 'You have been invited to ',
@@ -1212,7 +1212,7 @@ export default {
   'scenes.app.channelsbar.channel_leaving': 'Leave channel',
   'scenes.app.channelsbar.channel_removing': 'Delete channel',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
-    'You can upload these channels into your business to stay organized by clicking on this frame.',
+    'You can import these channels into your business to stay organized by clicking on this frame.',
   'scenes.app.channelsbar.company_invitation_alert_title': 'You are invited to the company',
   'scenes.app.channelsbar.initial_instructions_tutorial':
     'Choose a first name, a name and a profile picture.',
@@ -1755,7 +1755,7 @@ export default {
   'scenes.app.mainview.create_account': 'Create your workspace for free on ',
   'scenes.apps.calendar.modals.reminder_add': 'Add a reminder',
   'scenes.apps.drive.drive_tour.left_bar.not_in_ws': 'User not in current workspace',
-  'scenes.apps.drive.drive_tour.left_bar.imported': 'Uploaded from another workspace',
+  'scenes.apps.drive.drive_tour.left_bar.imported': 'Imported from another workspace',
   'scenes.apps.parameters.workspace_sections.members.invite_all': 'Invite all',
   'scenes.app.taskpicker.select': 'Select',
   'components.listmanager.filter': 'Filter',

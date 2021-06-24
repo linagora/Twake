@@ -43,7 +43,7 @@ export default {
   'ads.two_month_offer_confirmation':
     'Utiliser la version complète de Twake avec ce groupe gratuitement pendant deux mois.',
   'tutorial.start_to_add_workspaces':
-    'Commencez par ajouter un espace de travail partagé ou demander à un utilisateur de vous inviter dans un espace existant.',
+    "Commencez par ajouter un espace de travail partagé ou demander à quelqu'un de vous inviter dans un espace existant.",
   'components.add_app.title': 'Ajouter de nouvelles applications',
   'components.add_url.modal_title': 'Ajouter un lien collaboratif',
   'components.add_url.view_title': 'Nom du document',
@@ -358,7 +358,7 @@ export default {
   'scenes.apps.calendar.calendar_modal.delete_message':
     'Supprimer le calendrier et tous les événements de celui-ci.',
   'scenes.apps.calendar.calendar_modal.participants': 'Participants',
-  'scenes.apps.calendar.calendar_modal.importation': 'Télécharger',
+  'scenes.apps.calendar.calendar_modal.importation': 'Importation',
   'scenes.apps.calendar.calendar_modal.importation_message': 'Télécharger un fichier ics',
   'scenes.apps.calendar.calendar_modal.placeholder': 'Nom',
   'scenes.apps.calendar.left.no_calendar': "Vous n'avez pas encore de calendrier",
@@ -1134,7 +1134,7 @@ export default {
   'scenes.app.workspaces.create_company.group_data.title':
     'Faisons vite, nous avons juste besoin de quelques informations statistiques',
   'scenes.app.workspaces.create_company.importations.title_1':
-    'Vous travaillez déjà avec des outils numériques ? Téléchargez ou intégrez vos outils dès maintenant !',
+    'Vous travaillez déjà avec des outils numériques ? Importez ou intégrez vos outils dès maintenant !',
   'scenes.app.workspaces.create_company.importations.title_2':
     'Pas d’inquiétude, vous pourrez y revenir plus tard !',
   'scenes.app.workspaces.create_company.invitations.auto_add_inputs_info':
@@ -1273,7 +1273,7 @@ export default {
   'scenes.app.channelsbar.channel_leaving': 'Quitter la chaîne',
   'scenes.app.channelsbar.channel_removing': 'Supprimer la chaîne',
   'scenes.app.channelsbar.company_invitation_alert_subtitle':
-    'Vous pouvez Télécharger ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.',
+    'Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.',
   'scenes.app.channelsbar.company_invitation_alert_title': "Vous êtes invité dans l'entreprise ",
   'scenes.app.channelsbar.initial_instructions_tutorial':
     'Choisissez un prénom, un nom et une image de profil.',
@@ -1833,7 +1833,7 @@ export default {
   'scenes.apps.calendar.modals.reminder_add': 'Ajouter un rappel',
   'scenes.apps.drive.drive_tour.left_bar.not_in_ws':
     "L'utilisateur n'est pas dans l'espace de travail courant",
-  'scenes.apps.drive.drive_tour.left_bar.imported': 'Téléchargé depuis un autre espace de travail',
+  'scenes.apps.drive.drive_tour.left_bar.imported': 'Importé depuis un autre espace de travail',
   'scenes.apps.parameters.workspace_sections.members.invite_all': 'Inviter tous',
   'scenes.app.taskpicker.select': 'Sélectionner',
   'components.listmanager.filter': 'Filtrer',
