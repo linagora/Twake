@@ -56,7 +56,7 @@ class Service implements FileServiceAPI {
     const userId = context.user?.id;
     const applicationId: string | null = context.user.application_id || null;
 
-    let entity = null;
+    let entity: File = null;
     if (id) {
       entity = await this.repository.findOne({
         company_id: context.company.id,

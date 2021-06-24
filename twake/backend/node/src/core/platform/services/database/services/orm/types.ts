@@ -40,7 +40,8 @@ export type ColumnType =
   | "boolean"
   // backward compatibility
   | "twake_boolean"
-  | "twake_int";
+  | "twake_int"
+  | "twake_datetime";
 
 export type EntityTarget<Entity> = ObjectType<Entity>;
 

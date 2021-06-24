@@ -8,6 +8,7 @@ import Observable from '../Observable/Observable';
 import LoginService from './login';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../utils/URLUtils';
+import AlertManager from 'services/AlertManager/AlertManager';
 
 type AuthProviderConfiguration = AuthProviderProps;
 
@@ -27,7 +28,7 @@ class AuthProviderService extends Observable {
         redirect_uri: getAsFrontUrl('/oidccallback'),
         response_type: 'code',
         scope: 'openid profile email address phone offline_access',
-        post_logout_redirect_uri: getAsFrontUrl('/logout'),
+        post_logout_redirect_uri: getAsFrontUrl('/signout'),
         silent_redirect_uri: getAsFrontUrl('/oidcsilientrenew'),
         automaticSilentRenew: true,
         loadUserInfo: true,
@@ -53,26 +54,40 @@ class AuthProviderService extends Observable {
       });
 
       //This manage the initial sign-in when loading the app
-      const authProviderUserManager = this.authProviderUserManager;
-      (async () => {
-        try {
-          await authProviderUserManager.signinRedirectCallback();
-          authProviderUserManager.getUser();
-        } catch (e) {
-          //There is no sign-in response, so we can try to silent login and use refresh token
+      const frontUrl = (getDomain(environment.front_root_url || '') || '').toLocaleLowerCase();
+      if (frontUrl && document.location.host.toLocaleLowerCase() != frontUrl) {
+        //Redirect to valid frontend url to make sure oidc will work as expected
+        document.location.replace(
+          document.location.protocol +
+            '//' +
+            getDomain(environment.front_root_url) +
+            '/' +
+            document.location.pathname +
+            document.location.search +
+            document.location.hash,
+        );
+      } else {
+        const authProviderUserManager = this.authProviderUserManager;
+        (async () => {
           try {
-            const user = await authProviderUserManager.getUser();
-            if (user) {
-              const user = await authProviderUserManager.signinSilent();
-              this.getJWTFromOidcToken(user);
-            } else {
-              authProviderUserManager.signinRedirect();
-            }
+            await authProviderUserManager.signinRedirectCallback();
+            authProviderUserManager.getUser();
           } catch (e) {
-            authProviderUserManager?.signinRedirect();
+            //There is no sign-in response, so we can try to silent login and use refresh token
+            try {
+              let user = await authProviderUserManager.getUser();
+              if (user) {
+                user = await authProviderUserManager.signinSilent();
+                this.getJWTFromOidcToken(user);
+              } else {
+                authProviderUserManager.signinRedirect();
+              }
+            } catch (e) {
+              authProviderUserManager?.signinRedirect();
+            }
           }
-        }
-      })();
+        })();
+      }
     }
 
     return {
@@ -103,6 +118,21 @@ class AuthProviderService extends Observable {
     const response = (await Api.post('users/console/token', {
       access_token: user.access_token,
     })) as { access_token: JWTDataType };
+    if (!response.access_token) {
+      AlertManager.confirm(
+        () => {
+          this.signOut();
+        },
+        () => {
+          this.signOut();
+        },
+        {
+          title: 'We are unable to open your account.',
+          text: (response as any).error,
+        },
+      );
+      return;
+    }
     JWTStorage.updateJWT(response.access_token);
     LoginService.updateUser(() => {});
   }
@@ -110,3 +140,7 @@ class AuthProviderService extends Observable {
 
 const authProviderService = new AuthProviderService();
 export default authProviderService;
+
+function getDomain(str: string): string {
+  return ((str || '').split('//').pop() || '').split('/').shift() || '';
+}
