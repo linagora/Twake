@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages.js';
 import LoginService from 'services/login/login.js';
 import AccountService from 'services/login/account';
 import Emojione from 'components/Emojione/Emojione';
-import WindowState from 'services/utils/window.js';
+import WindowState from 'services/utils/window';
 
 export default class VerifyMail extends Component {
   constructor() {
@@ -25,7 +25,7 @@ export default class VerifyMail extends Component {
       WindowState.findGetParameter('token'),
       () => {
         this.setState({ status: 'success' });
-        WindowState.setUrl('/', true);
+        document.location.replace('/');
         LoginService.init();
       },
       () => {
@@ -83,7 +83,7 @@ export default class VerifyMail extends Component {
               <a
                 onClick={() => {
                   LoginService.changeState('signin');
-                  WindowState.setUrl('/', true);
+                  document.location.replace('/');
                 }}
                 className="blue_link"
               >

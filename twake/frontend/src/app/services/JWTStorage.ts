@@ -1,6 +1,6 @@
 import LocalStorage from 'services/LocalStorage';
 import LoginService from 'services/login/login';
-import WindowService from 'services/utils/window.js';
+import WindowService from 'services/utils/window';
 
 export type JWTDataType = {
   time: 0;

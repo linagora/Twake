@@ -2,7 +2,7 @@ import Logger from 'app/services/Logger';
 import Observable from 'app/services/Depreciated/observable.js';
 import Api from 'services/Api';
 import Languages from 'services/languages/languages.js';
-import WindowState from 'services/utils/window.js';
+import WindowState from 'services/utils/window';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/Collections/Collections';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -17,7 +17,6 @@ import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
-import WindowService from 'services/utils/window.js';
 import authProviderService from './AuthProviderService';
 
 class Login extends Observable {
@@ -219,7 +218,8 @@ class Login extends Observable {
           that.state = 'logged_out';
           that.notify();
 
-          WindowState.setTitle();
+          WindowState.setPrefix();
+          WindowState.setSuffix();
           RouterServices.push(
             RouterServices.addRedirection(
               `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
@@ -393,13 +393,13 @@ class Login extends Observable {
 
   getIsPublicAccess() {
     let publicAccess = false;
-    const viewParameter = WindowService.findGetParameter('view') || '';
+    const viewParameter = WindowState.findGetParameter('view') || '';
     if (
       (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
       Globals.store_publicAccess_get_data
     ) {
       publicAccess = true;
-      Globals.store_publicAccess_get_data = WindowService.allGetParameter();
+      Globals.store_publicAccess_get_data = WindowState.allGetParameter();
     }
     return publicAccess;
   }

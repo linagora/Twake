@@ -10,7 +10,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Groups from 'services/workspaces/groups.js';
 import LocalStorage from 'app/services/LocalStorage';
 import workspacesUsers from './workspaces_users.js';
-import WindowService from 'services/utils/window.js';
+import WindowService from 'services/utils/window';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
 import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
