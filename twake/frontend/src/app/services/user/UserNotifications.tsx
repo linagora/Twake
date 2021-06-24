@@ -31,9 +31,9 @@ type DesktopNotification = {
 let inAppNotificationKey = 0;
 
 const openNotification = (
-  notification: { title: string, text: string },
+  notification: { title: string; text: string },
   newNotification: DesktopNotification | null,
-  callback: (desktopNotification: DesktopNotification | null, id: string) => void
+  callback: (desktopNotification: DesktopNotification | null, id: string) => void,
 ) => {
   antNotification.close(inAppNotificationKey.toString());
   inAppNotificationKey++;
@@ -43,7 +43,8 @@ const openNotification = (
     message: emojione.shortnameToUnicode(notification.title),
     description: PseudoMarkdownCompiler.compileToSimpleHTML(
       PseudoMarkdownCompiler.compileToJSON(
-        (notification.text || '').substr(0, 120) + ((notification.text || '').length > 120 ? '...' : ''),
+        (notification.text || '').substr(0, 120) +
+          ((notification.text || '').length > 120 ? '...' : ''),
       ),
     ),
     onClick: () => callback(newNotification, notificationKey),
@@ -59,9 +60,8 @@ class Notifications extends Observable {
     super();
     this.newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
 
-    this.triggerUnreadMessagesPushNotification = this.triggerUnreadMessagesPushNotification.bind(
-      this,
-    );
+    this.triggerUnreadMessagesPushNotification =
+      this.triggerUnreadMessagesPushNotification.bind(this);
   }
 
   start() {
@@ -263,7 +263,7 @@ class Notifications extends Observable {
   }
 
   updateAppBadge(notifications = 0) {
-    windowState.setNotificationsInTitle(notifications);
+    windowState.setPrefix(notifications);
 
     if (notifications > 0) {
       ElectronService.setBadge('' + notifications);

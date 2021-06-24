@@ -1,6 +1,6 @@
 import Observable from 'app/services/Depreciated/observable.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
-import WindowService from 'services/utils/window.js';
+import WindowService from 'services/utils/window';
 import ChannelsService from 'services/channels/channels.js';
 
 import Globals from 'services/Globals';
@@ -17,10 +17,10 @@ class PopupService extends Observable {
     if (this.component[this.component.length - 1]?.key === key) {
       return;
     }
-    if (key != 'no-key') {
+    if (key !== 'no-key') {
       delete this.popupStates[key];
     }
-    WindowService.setTitle();
+    WindowService.setSuffix();
     MenusManager.closeMenu();
 
     this.component.push({ component: component, key: key, canClose: canClose !== false });
