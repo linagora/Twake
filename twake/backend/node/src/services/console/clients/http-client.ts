@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { ConsoleServiceClient } from "./api";
+import { ConsoleServiceClient } from "../client-interface";
 import {
   ConsoleCompany,
   CreateConsoleCompany,
@@ -8,7 +8,7 @@ import {
   CreatedConsoleUser,
   UpdateConsoleUserRole,
   UpdatedConsoleUserRole,
-} from "./types";
+} from "../types";
 
 export class ConsoleHTTPClient implements ConsoleServiceClient {
   version: "1";

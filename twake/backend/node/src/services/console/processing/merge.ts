@@ -20,6 +20,7 @@ import UserServiceAPI from "../../user/api";
 import {
   CompanyCreatedStreamObject,
   CompanyReport,
+  ConsoleClientParameters,
   CreatedConsoleCompany,
   CreatedConsoleUser,
   MergeProgress,
@@ -31,8 +32,8 @@ import {
 import { getInstance as getExternalUserInstance } from "../../user/entities/external_user";
 import { getInstance as getExternalGroupInstance } from "../../user/entities/external_company";
 import CompanyUser from "../../user/entities/company_user";
-import { ConsoleHTTPClient } from "../client";
-import { ConsoleServiceClient } from "../api";
+import { ConsoleHTTPClient } from "../clients/http-client";
+import { ConsoleServiceClient } from "../client-interface";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 
 const logger = getLogger("console.process.merge");
@@ -46,11 +47,7 @@ export class MergeProcess {
     private dryRun: boolean,
     private consoleId: string = "console",
     private linkExternal: boolean = true,
-    consoleClientParameters: {
-      url: string;
-      client: string;
-      secret: string;
-    },
+    consoleClientParameters: ConsoleClientParameters,
   ) {
     this.client = new ConsoleHTTPClient(consoleClientParameters, dryRun);
   }

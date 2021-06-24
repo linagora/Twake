@@ -106,3 +106,9 @@ export type ProcessReport = {
   message?: string;
   data?: UserReport | CompanyReport | Error | Company[];
 };
+
+export type ConsoleClientParameters = {
+  url: string;
+  client: string;
+  secret: string;
+};
