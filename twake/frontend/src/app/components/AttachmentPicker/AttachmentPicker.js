@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import File from 'components/Drive/File.js';
+import File from 'components/Drive/File';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import TaskPicker from 'components/TaskPicker/TaskPicker.js';
 import Menu from 'components/Menus/Menu.js';

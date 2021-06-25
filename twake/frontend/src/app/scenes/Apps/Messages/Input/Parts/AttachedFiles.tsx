@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
-import File from 'components/Drive/File.js';
+import File from 'components/Drive/File';
 import '../Input.scss';
 
 export default (props: { channelId: string; threadId: string }) => {
