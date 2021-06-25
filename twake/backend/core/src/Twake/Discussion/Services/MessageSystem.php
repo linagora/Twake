@@ -88,7 +88,7 @@ class MessageSystem
                     "created_at" => 0
                 );
                 $init_message = $this->save($init_message, Array());
-                array_merge([$init_message], $messages);
+                $messages = array_merge([$init_message], $messages);
             }
         }
 
