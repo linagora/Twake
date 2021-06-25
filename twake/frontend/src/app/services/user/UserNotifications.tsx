@@ -55,6 +55,7 @@ const openNotification = (
 class Notifications extends Observable {
   private newNotificationAudio: HTMLAudioElement;
   private started: boolean = false;
+  private processed: string[] = [];
 
   constructor() {
     super();
@@ -177,6 +178,22 @@ class Notifications extends Observable {
     ) {
       return;
     }
+
+    //Fixme: Hack to resolve #1374 Duplicate notification of coming messages
+    const identifier =
+      newNotification?.message_id ||
+      newNotification?.thread_id ||
+      newNotification?.title ||
+      newNotification?.text ||
+      '';
+    if (this.processed.includes(identifier)) {
+      return;
+    }
+    this.processed.push(identifier);
+    setTimeout(() => {
+      this.processed = this.processed.filter(e => e != identifier);
+    }, 5000);
+    //End Hack fix
 
     if (newNotification) {
       let title = '';
