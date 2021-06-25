@@ -57,9 +57,7 @@ export default class File extends DriveElement {
           this.props.className
         }
         refDraggable={node => (this.node = node)}
-        onClick={evt => {
-          if (!this.props.removeIcon) this.clickElement(evt);
-        }}
+        onClick={evt => this.clickElement(evt)}
         onDoubleClick={this.props.onDoubleClick}
         parentClassOnDrag="drive_view list"
         onDragStart={evt => {
@@ -74,7 +72,11 @@ export default class File extends DriveElement {
           menu={!this.props.removeIcon && this.common_menu}
           details={true}
           removeIcon={this.props.removeIcon}
-          removeOnClick={() => this.props.removeOnClick()}
+          removeOnClick={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.props.removeOnClick();
+          }}
         />
       </Draggable>
     );
