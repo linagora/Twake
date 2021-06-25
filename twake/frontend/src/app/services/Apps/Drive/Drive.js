@@ -500,8 +500,9 @@ class Drive extends Observable {
     return 'other';
   }
 
-  viewDocument(file) {
+  viewDocument(file, previewonly = false) {
     this.viewed_document = file;
+    this.previewonly = previewonly;
     this.notify();
   }
 

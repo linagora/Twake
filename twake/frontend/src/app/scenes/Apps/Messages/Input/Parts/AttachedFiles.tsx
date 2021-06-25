@@ -14,6 +14,7 @@ export default (props: { channelId: string; threadId: string }) => {
           return (
             <File
               mini
+              previewonly
               key={id}
               data={{ id: id }}
               notInDrive={true}

@@ -103,7 +103,7 @@ export default class Viewer extends Component {
           <div className="view_header">
             <div className="title">{current.name}</div>
 
-            {editor_candidate.length == 1 && (
+            {DriveService.previewonly === false && editor_candidate.length == 1 && (
               <Button
                 className="small open-with"
                 onClick={() => this.openFile(editor_candidate[0])}
@@ -115,7 +115,7 @@ export default class Viewer extends Component {
                 )}
               </Button>
             )}
-            {editor_candidate.length > 1 && (
+            {DriveService.previewonly === false && editor_candidate.length > 1 && (
               <Menu
                 menu={editor_candidate.map(editor => {
                   return {
@@ -138,20 +138,22 @@ export default class Viewer extends Component {
               <CloseIcon class="m-icon-small" />
             </div>
 
-            <div
-              className="download"
-              onClick={() => {
-                var link = DriveService.getLink(current, null, true);
-                if (current.url) {
-                  window.open(link, '_blank');
-                } else {
-                  window.open(link);
-                }
-              }}
-            >
-              {current.url && <OpenInNewIcon class="m-icon-small" />}
-              {!current.url && <DownloadIcon class="m-icon-small" />}
-            </div>
+            {DriveService.previewonly === false && (
+              <div
+                className="download"
+                onClick={() => {
+                  var link = DriveService.getLink(current, null, true);
+                  if (current.url) {
+                    window.open(link, '_blank');
+                  } else {
+                    window.open(link);
+                  }
+                }}
+              >
+                {current.url && <OpenInNewIcon class="m-icon-small" />}
+                {!current.url && <DownloadIcon class="m-icon-small" />}
+              </div>
+            )}
           </div>
         )}
 

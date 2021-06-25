@@ -7,7 +7,7 @@ import Loader from 'components/Loader/Loader.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Languages from 'services/languages/languages.js';
 
-type PropsType = any;
+type PropsType = { [key: string]: any };
 
 type StateType = any;
 
@@ -65,7 +65,7 @@ export default class File extends DriveElement {
           this.props.className
         }
         refDraggable={(node: NodeType) => (this.node = node)}
-        onClick={(evt: any) => this.clickElement(evt)}
+        onClick={(evt: any) => this.clickElement(evt, this.props.previewonly)}
         onDoubleClick={this.props.onDoubleClick}
         parentClassOnDrag="drive_view list"
         onDragStart={(evt: any) => {
