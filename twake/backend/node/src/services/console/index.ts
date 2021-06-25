@@ -15,6 +15,8 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
     const type = this.configuration.get<ConsoleType>("type");
     const options: ConsoleOptions = this.configuration.get<ConsoleOptions>(type);
 
+    const x = this.context.getProvider<UserServiceAPI>("user");
+
     this.service = getService(
       this.context.getProvider<DatabaseServiceAPI>("database"),
       this.context.getProvider<UserServiceAPI>("user"),

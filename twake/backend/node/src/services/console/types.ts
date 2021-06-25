@@ -112,16 +112,10 @@ export type ProcessReport = {
   data?: UserReport | CompanyReport | Error | Company[];
 };
 
-export type ConsoleClientParameters = {
-  url: string;
-  client: string;
-  secret: string;
-};
-
 export type ConsoleType = "remote" | "internal";
 
 export type ConsoleOptions = {
-  provider: string;
+  provider?: string;
   client: string;
   secret: string;
   url: string;

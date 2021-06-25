@@ -335,7 +335,7 @@ export class WorkspaceUsersCrudController
       let userInCompany = false;
       let user: User = null;
 
-      const consoleClient = this.consoleService.getClient(true);
+      const consoleClient = this.consoleService.getClient();
 
       if (usersInTwake.has(invitation.email)) {
         user = usersInTwake.get(invitation.email);

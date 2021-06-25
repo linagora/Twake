@@ -14,7 +14,7 @@ describe("The /workspaces API", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth"],
+      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth", "console"],
     });
 
     await platform.database.getConnector().init();

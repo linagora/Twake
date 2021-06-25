@@ -1,19 +1,17 @@
 import { ConsoleRemoteClient } from "./clients/remote";
 import { ConsoleServiceClient } from "./client-interface";
-import { ConsoleClientParameters, ConsoleType } from "./types";
+import { ConsoleOptions, ConsoleType } from "./types";
 import { ConsoleInternalClient } from "./clients/internal";
+import { ConsoleServiceAPI } from "./api";
 
 class StaticConsoleClientFactory {
-  create(
-    type: ConsoleType,
-    consoleParameters: ConsoleClientParameters,
-    dryRun: boolean,
-  ): ConsoleServiceClient {
+  create(consoleInstance: ConsoleServiceAPI): ConsoleServiceClient {
+    const type: ConsoleType = consoleInstance.consoleType;
     switch (type) {
       case "remote":
-        return new ConsoleRemoteClient(consoleParameters, dryRun);
+        return new ConsoleRemoteClient(consoleInstance.consoleOptions, false);
       case "internal":
-        return new ConsoleInternalClient(consoleParameters, dryRun);
+        return new ConsoleInternalClient(consoleInstance);
       default:
         throw new Error(`${type} is not supported`);
     }

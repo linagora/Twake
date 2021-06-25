@@ -11,13 +11,13 @@
     }
   },
   "console": {
-    "type": "remote",
-    "internal": {},
+    "type": "internal",
     "remote": {
       "client": "",
       "secret": "",
       "url": "url"
-    }
+    },
+    "internal": {}
   },
   "sentry": {
     "dsn": ""

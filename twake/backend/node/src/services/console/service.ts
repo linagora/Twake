@@ -9,12 +9,26 @@ import { ConsoleClientFactory } from "./client-factory";
 class ConsoleService implements ConsoleServiceAPI {
   version: "1";
 
+  consoleType: ConsoleType;
+  consoleOptions: ConsoleOptions;
+  services: {
+    database: DatabaseServiceAPI;
+    userService: UserServiceAPI;
+  };
+
   constructor(
-    private database: DatabaseServiceAPI,
-    private userService: UserServiceAPI,
-    private type: ConsoleType,
-    private options: ConsoleOptions,
-  ) {}
+    database: DatabaseServiceAPI,
+    userService: UserServiceAPI,
+    type: ConsoleType,
+    options: ConsoleOptions,
+  ) {
+    this.consoleType = type;
+    this.consoleOptions = options;
+    this.services = {
+      database,
+      userService,
+    };
+  }
 
   merge(
     baseUrl: string,
@@ -25,15 +39,22 @@ class ConsoleService implements ConsoleServiceAPI {
     client: string,
     secret: string,
   ): MergeProgress {
-    return new MergeProcess(this.database, this.userService, dryRun, console, link, {
-      client,
-      secret,
-      url: baseUrl,
-    }).merge(concurrent);
+    return new MergeProcess(
+      this.services.database,
+      this.services.userService,
+      dryRun,
+      console,
+      link,
+      {
+        client,
+        secret,
+        url: baseUrl,
+      },
+    ).merge(concurrent);
   }
 
-  getClient(dryRun: boolean): ConsoleServiceClient {
-    return ConsoleClientFactory.create(this.type, this.options, dryRun);
+  getClient(): ConsoleServiceClient {
+    return ConsoleClientFactory.create(this);
   }
 }
 

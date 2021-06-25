@@ -1,6 +1,8 @@
 import { TwakeServiceProvider } from "../../core/platform/framework";
-import { MergeProgress } from "./types";
+import { ConsoleOptions, ConsoleType, MergeProgress } from "./types";
 import { ConsoleServiceClient } from "./client-interface";
+import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
+import UserServiceAPI from "../user/api";
 
 export interface ConsoleServiceAPI extends TwakeServiceProvider {
   merge(
@@ -13,5 +15,12 @@ export interface ConsoleServiceAPI extends TwakeServiceProvider {
     secret: string,
   ): MergeProgress;
 
-  getClient(dryRun: boolean): ConsoleServiceClient;
+  getClient(): ConsoleServiceClient;
+
+  consoleType: ConsoleType;
+  consoleOptions: ConsoleOptions;
+  services: {
+    database: DatabaseServiceAPI;
+    userService: UserServiceAPI;
+  };
 }

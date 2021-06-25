@@ -20,7 +20,7 @@ import UserServiceAPI from "../../user/api";
 import {
   CompanyCreatedStreamObject,
   CompanyReport,
-  ConsoleClientParameters,
+  ConsoleOptions,
   CreatedConsoleCompany,
   CreatedConsoleUser,
   MergeProgress,
@@ -47,9 +47,9 @@ export class MergeProcess {
     private dryRun: boolean,
     private consoleId: string = "console",
     private linkExternal: boolean = true,
-    consoleClientParameters: ConsoleClientParameters,
+    consoleClientOptions: ConsoleOptions,
   ) {
-    this.client = new ConsoleRemoteClient(consoleClientParameters, dryRun);
+    this.client = new ConsoleRemoteClient(consoleClientOptions, dryRun);
   }
 
   merge(concurrent: number = 1): MergeProgress {
