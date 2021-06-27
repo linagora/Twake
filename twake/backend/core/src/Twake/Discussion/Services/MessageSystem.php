@@ -53,6 +53,10 @@ class MessageSystem
             }
             $response = $this->forwardToNode("GET", $uri, [], $current_user);
         }
+        
+        if(!is_array($response["resources"])){
+         return [];
+        }
 
         $messages = [];
         foreach($response["resources"] as $message){
