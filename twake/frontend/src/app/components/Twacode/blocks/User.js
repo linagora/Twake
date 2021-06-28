@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import UserService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard.js';
+import userAsyncGet from 'services/user/AsyncGet';
 export default class User extends React.Component {
   constructor() {
     super();
@@ -43,11 +44,11 @@ export default class User extends React.Component {
 
   render() {
     const highlighted =
-      this.props.id == UserService.getCurrentUserId() ||
-      this.props.username == 'here' ||
-      this.props.username == 'everyone' ||
-      this.props.username == 'channel' ||
-      this.props.username == 'all';
+      this.props.id === UserService.getCurrentUserId() ||
+      this.props.username === 'here' ||
+      this.props.username === 'everyone' ||
+      this.props.username === 'channel' ||
+      this.props.username === 'all';
     if (!this.props.id) {
       return (
         <span className={'user_twacode ' + (highlighted ? 'highlighted' : '')}>
@@ -83,7 +84,7 @@ export default class User extends React.Component {
         </div>
       );
     } else {
-      UserService.asyncGet(id);
+      userAsyncGet(id);
       return (
         <span className={'user_twacode ' + (highlighted ? 'highlighted' : '')}>
           @{this.props.username}

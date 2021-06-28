@@ -41,7 +41,7 @@ class User {
   }
 
   getFullName(user: Pick<UserType, "username" | "firstname" | "lastname" | "_deleted">): string {
-    let name: string = user.username;
+    let name: string = user?.username;
 
     if (!name) {
       return '';
@@ -65,9 +65,13 @@ class User {
   getThumbnail(user: UserType) {
     let thumbnail = '';
 
-    if (!user.thumbnail || user.thumbnail === '') {
+    if (!user) {
+      return thumbnail;
+    }
+
+    if (!user || !user.thumbnail || user.thumbnail === '') {
       let output = 0;
-      const string = user.id || '';
+      const string = user?.id || '';
       for (let i = 0; i < string.length; i++) {
         output += string[i].charCodeAt(0);
       }
@@ -180,43 +184,6 @@ class User {
       },
       didTimeout ? 0 : 1000,
     );
-  }
-
-  asyncGet(id: string, callback: (user: UserType) => void = () => {}) {
-    if (
-      this.users_repository.known_objects_by_id[id] &&
-      new Date(this.users_repository.known_objects_by_id[id]?._last_modified || 0).getTime() >
-        new Date().getTime() - 1000 * 60 * 60
-    ) {
-      return;
-    }
-
-    if (this.nextUsersGetBulk.length === 0) {
-      setTimeout(() => {
-        const ids = this.nextUsersGetBulk.map(e => e.id);
-        const callbacks: { [key: string]: (arg?: any) => any } = {};
-        this.nextUsersGetBulk.forEach(e => (callbacks[e.id] = e.callback));
-        this.nextUsersGetBulk = [];
-
-        Api.post('users/all/get', { id: ids }, (res: { data?: UserType[] }) => {
-          if (res.data) {
-            res.data.forEach((user, index) => {
-              if (!user || !user.id) {
-                this.stop_async_get[ids[index]] = true;
-              } else {
-                callback && callback(user);
-                this.users_repository.updateObject(user);
-                callbacks[user.id] && callbacks[user.id]();
-              }
-            });
-          }
-        });
-      }, 500);
-    }
-
-    if (this.nextUsersGetBulk.map(e => e.id).indexOf(id) < 0 && !this.stop_async_get[id]) {
-      this.nextUsersGetBulk.push({ id, callback });
-    }
   }
 
   // member - guest - admin - unknown

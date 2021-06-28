@@ -8,8 +8,9 @@ import RouterServices from 'services/RouterService';
 import { UserType } from 'app/models/User';
 import UserService from 'services/user/UserService';
 import UserListenerService from 'app/services/user/ListenUsers';
-import OldCollections from 'services/Depreciated/Collections/Collections';
+import Collections from 'services/Depreciated/Collections/Collections';
 import UsersService from 'services/user/UserService';
+import userAsyncGet from 'services/user/AsyncGet';
 
 type UserPartsType = {
   avatar: JSX.Element;
@@ -29,20 +30,20 @@ export const useUsersListener = (usersIds: string[]) => {
   const users = (isArray(usersIds) ? usersIds : []).filter(
     e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
   );
-  OldCollections.get('users').useListener(useState, users);
+  Collections.get('users').useListener(useState, users);
 
   useEffect(() => {
-    users?.map(userId => {
+    users.forEach(userId => {
       UserListenerService.listenUser(userId);
-      UserService.asyncGet(userId);
+      userAsyncGet(userId);
     });
 
     return () => {
-      users?.map(userId => {
+      users.forEach(userId => {
         UserListenerService.cancelListenUser(userId);
       });
     };
-  }, []);
+  }, [users]);
 
   return users;
 };
@@ -65,7 +66,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
 
   let users: UserType[] = [];
 
-  channelMembers?.map(userId => users.push(OldCollections.get('users').find(userId)));
+  channelMembers?.map(userId => users.push(Collections.get('users').find(userId)));
 
   if (channelMembers?.length === 1) {
     avatar = (

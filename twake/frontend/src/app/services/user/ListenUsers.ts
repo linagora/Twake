@@ -2,6 +2,7 @@ import ws from 'services/websocket';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import UserService from './UserService';
 import Globals from 'services/Globals';
+import userAsyncGet from 'services/user/AsyncGet';
 
 type Timeout = ReturnType<typeof setTimeout>;
 
@@ -71,7 +72,7 @@ class ListenUsers {
     this.listenerCount[idUser] += 1;
 
     const that = this;
-    if (this.listenerCount[idUser] == 1) {
+    if (this.listenerCount[idUser] === 1) {
       ws.subscribe(`users/${idUser}`, (_uri: string, data: any) => {
         /*if (idUser == UserService.getCurrentUserId()) {
           if (data.ping) {
@@ -88,17 +89,17 @@ class ListenUsers {
             if (
               data.user.username ||
               data.user.notifications_preferences ||
-              data.user.connected != that.users_repository.find(data.user.id).connected
+              data.user.connected !== that.users_repository.find(data.user.id).connected
             ) {
               that.users_repository.updateObject(data.user);
             }
           } else if (data.user.id) {
-            UserService.asyncGet(data.user.id);
+            userAsyncGet(data.user.id);
           }
         }
       }, null);
 
-      if (idUser != UserService.getCurrentUserId()) {
+      if (idUser !== UserService.getCurrentUserId()) {
         /*setTimeout(() => {
           if (idUser != UserService.getCurrentUserId()) {
             this.setUserPingTimeout(idUser);

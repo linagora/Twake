@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './elements.scss';
 import { Avatar, Col, Typography } from 'antd';
 import UsersService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import userAsyncGet from 'services/user/AsyncGet';
 
 const { Text } = Typography;
 export default class UserOrMail extends React.Component {
@@ -30,7 +31,7 @@ export default class UserOrMail extends React.Component {
     } else {
       var item = Collections.get('users').find(id);
       if (!item) {
-        UsersService.asyncGet(id);
+        userAsyncGet(id);
         return '';
       } else {
         Collections.get('users').listenOnly(this, [item.front_id]);

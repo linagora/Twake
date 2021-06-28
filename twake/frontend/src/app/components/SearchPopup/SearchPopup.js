@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Search from 'services/search/search.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/UserService';
@@ -14,7 +14,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import moment from 'moment';
 import Languages from 'services/languages/languages.js';
-import InitService from 'services/InitService';
+import userAsyncGet from 'services/user/AsyncGet';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -250,7 +250,7 @@ export default class SearchPopup extends React.Component {
                             if (user) {
                               users.push(user);
                             } else {
-                              UserService.asyncGet(id);
+                              userAsyncGet(id);
                             }
                           }
                         });

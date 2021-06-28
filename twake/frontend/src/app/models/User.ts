@@ -1,3 +1,5 @@
+import { Resource } from 'services/CollectionsReact/Collections';
+
 export type UserType = {
   connected?: boolean;
   email: string;
@@ -36,3 +38,7 @@ export type UserType = {
   _persisted?: boolean;
   _updating?: boolean;
 };
+
+export class UserResource extends Resource<UserType> {
+  _type = 'user';
+}
