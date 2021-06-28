@@ -6,6 +6,7 @@ import MessagesService from 'services/Apps/Messages/Messages.js';
 import Emojione from 'components/Emojione/Emojione';
 import { Message } from 'app/services/Apps/Messages/Message';
 import { Tooltip } from 'antd';
+import classNames from 'classnames';
 
 type PropsType = {
   message: Message;
@@ -35,13 +36,6 @@ export default ({ message, collectionKey }: PropsType) => {
       );
     });
 
-  const setReactionClassname = (reaction: ReactionType): string => {
-    const isSelected =
-      message?._user_reaction === reaction.name || reaction.users.includes(User.getCurrentUserId());
-
-    return `reaction ${isSelected ? 'is_selected' : ''}`;
-  };
-
   const onClickReaction = (name: ReactionType['name']): void =>
     MessagesService.react(message, name, collectionKey);
 
@@ -51,6 +45,12 @@ export default ({ message, collectionKey }: PropsType) => {
 
     if (noReactions) return <></>;
 
+    const reactionClassName = classNames('reaction', {
+      is_selected:
+        message?._user_reaction === reaction.name ||
+        reaction.users.includes(User.getCurrentUserId()),
+    });
+
     return (
       <Tooltip
         className="reaction_container"
@@ -58,10 +58,7 @@ export default ({ message, collectionKey }: PropsType) => {
         placement="top"
         title={getReactionTooltip(users)}
       >
-        <div
-          className={setReactionClassname(reaction)}
-          onClick={() => onClickReaction(reaction.name)}
-        >
+        <div className={reactionClassName} onClick={() => onClickReaction(reaction.name)}>
           <Emojione type={reaction.name} />
           {reaction.count}
         </div>
