@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { UserType } from 'app/models/User';
 import userGetAsync from '../AsyncGet';
 
-const useUser = (userId: string): { user: UserType | undefined } => {
+const useUser = (userId: string): UserType | undefined => {
   const [user, setUser] = useState<UserType>();
 
   const fetchUser = useCallback(async () => {
@@ -15,9 +15,7 @@ const useUser = (userId: string): { user: UserType | undefined } => {
     fetchUser();
   }, [fetchUser]);
 
-  return {
-    user,
-  };
+  return user;
 };
 
 export default useUser;
