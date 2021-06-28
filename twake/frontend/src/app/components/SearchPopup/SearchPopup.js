@@ -246,11 +246,9 @@ export default class SearchPopup extends React.Component {
                         users = [];
                         item.channel.members.forEach(id => {
                           if (id !== UserService.getCurrentUserId()) {
-                            const user = Collections.get('users').find(id);
+                            const user = Collections.get('users').find(id, () => userAsyncGet(id));
                             if (user) {
                               users.push(user);
-                            } else {
-                              userAsyncGet(id);
                             }
                           }
                         });

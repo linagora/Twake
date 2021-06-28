@@ -10,9 +10,13 @@ export const getSender = (message: Message | undefined) => {
 
   if (message) {
     if (message.sender) {
-      senderData = DepreciatedCollections.get('users').find(message.sender);
+      senderData = DepreciatedCollections.get('users').find(message.sender, () => {
+        if (message.sender) {
+          userAsyncGet(message.sender);
+        }
+      });
+
       if (!senderData) {
-        userAsyncGet(message.sender);
         senderData = {
           type: 'user',
           id: message.sender,
@@ -21,6 +25,7 @@ export const getSender = (message: Message | undefined) => {
         senderData.type = 'user';
       }
     }
+
     if (message.message_type === 1) {
       //App message
       var app = DepreciatedCollections.get('applications').find(message.application_id) || {};

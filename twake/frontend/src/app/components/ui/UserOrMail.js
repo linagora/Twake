@@ -1,9 +1,9 @@
 import React from 'react';
-import './elements.scss';
 import { Avatar, Col, Typography } from 'antd';
 import UsersService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import userAsyncGet from 'services/user/AsyncGet';
+import './elements.scss';
 
 const { Text } = Typography;
 export default class UserOrMail extends React.Component {
@@ -19,19 +19,18 @@ export default class UserOrMail extends React.Component {
     var item = this.props.item;
     var id = this.props.item.id || this.props.item;
 
-    if (typeof item == 'string' && (item.indexOf('@') >= 0 || item.indexOf('+') == 0)) {
+    if (typeof item == 'string' && (item.indexOf('@') >= 0 || item.indexOf('+') === 0)) {
       text = [
         <div className="icon">
-          <div className="user_head email">{item.indexOf('+') == 0 ? item : '@'}</div>
+          <div className="user_head email">{item.indexOf('+') === 0 ? item : '@'}</div>
         </div>,
         <div className="text" style={{ fontStyle: 'italic' }}>
           {item}
         </div>,
       ];
     } else {
-      var item = Collections.get('users').find(id);
+      item = Collections.get('users').find(id, () => userAsyncGet(id));
       if (!item) {
-        userAsyncGet(id);
         return '';
       } else {
         Collections.get('users').listenOnly(this, [item.front_id]);
