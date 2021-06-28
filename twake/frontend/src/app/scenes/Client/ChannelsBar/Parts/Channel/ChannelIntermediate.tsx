@@ -4,8 +4,9 @@ import ChannelUI from './Channel';
 import ChannelMenu from './ChannelMenu';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
-import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
+import { getUserParts } from 'app/components/Member/UserParts';
 import { NotificationResource } from 'app/models/Notification';
+import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
 
 type Props = {
   channel: ChannelType;
@@ -37,7 +38,7 @@ export default (props: Props): JSX.Element => {
     props.collection.reload('ontime');
   }
 
-  useUsersListener(props.channel.members || []);
+  useUsersListener(props.channel.members);
 
   const notifications = Collection.get('/notifications/v1/badges/', NotificationResource).useWatcher({ channel_id: props.channel.id });
   const { avatar, name } = isDirectChannel

@@ -2,14 +2,15 @@ import React from 'react';
 import Languages from 'services/languages/languages.js';
 import './FirstMessage.scss';
 import { ChannelType } from 'app/models/Channel';
-import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
+import { getUserParts } from 'app/components/Member/UserParts';
+import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
 
 type Props = {
   channel: ChannelType;
 };
 
 export default (props: Props) => {
-  useUsersListener(props.channel.members || []);
+  useUsersListener(props.channel.members);
   const { avatar, name } = getUserParts({
     usersIds: props.channel.members || [],
     max: 6,

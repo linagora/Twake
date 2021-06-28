@@ -13,8 +13,8 @@ import Collections from 'services/CollectionsReact/Collections';
 import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow';
 
 import ObjectModal from 'components/ObjectModal/ObjectModal';
-import { useUsersListener } from 'app/components/Member/UserParts';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
 
 type Props = {
   closable?: boolean;
@@ -36,7 +36,7 @@ const ChannelMembersList: FC<Props> = props => {
   const channelMembers = channelMembersCollection.useWatcher({}, { limit: limit });
   const channelMembersUid = channelMembers.map(member => member.data.user_id || '');
 
-  useUsersListener(channelMembersUid || []);
+  useUsersListener(channelMembersUid);
 
   const filterSearch = (res: UserType[]) => {
     const addedUsers: string[] = res

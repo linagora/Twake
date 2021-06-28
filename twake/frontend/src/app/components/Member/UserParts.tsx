@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Avatar, Badge, Tag } from 'antd';
 import { DashOutlined } from '@ant-design/icons';
-import { isArray } from 'lodash';
 import { User } from 'react-feather';
 import Languages from 'services/languages/languages.js';
 import RouterServices from 'services/RouterService';
 import { UserType } from 'app/models/User';
 import UserService from 'services/user/UserService';
-import UserListenerService from 'app/services/user/ListenUsers';
 import Collections from 'services/Depreciated/Collections/Collections';
 import UsersService from 'services/user/UserService';
-import userAsyncGet from 'services/user/AsyncGet';
 
 type UserPartsType = {
   avatar: JSX.Element;
@@ -24,28 +21,6 @@ type PropsType = {
   keepMyself?: boolean;
   max?: number;
   size?: number;
-};
-
-export const useUsersListener = (usersIds: string[]) => {
-  const users = (isArray(usersIds) ? usersIds : []).filter(
-    e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
-  );
-  Collections.get('users').useListener(useState, users);
-
-  useEffect(() => {
-    users.forEach(userId => {
-      UserListenerService.listenUser(userId);
-      userAsyncGet(userId);
-    });
-
-    return () => {
-      users.forEach(userId => {
-        UserListenerService.cancelListenUser(userId);
-      });
-    };
-  }, [users]);
-
-  return users;
 };
 
 export const getUserParts = (props: PropsType): UserPartsType => {
