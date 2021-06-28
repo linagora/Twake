@@ -50,13 +50,13 @@ class CurrentUser extends Observable {
       'updates/' + Login.currentUserId,
       { type: 'updates' },
       (type: string, data: any) => {
-        if (type == 'event' && data.action == 'configure') {
-          if (data.connection_id == this.unique_connection_id) {
+        if (type === 'event' && data.action === 'configure') {
+          if (data.connection_id === this.unique_connection_id) {
             ConfiguratorsManager.openConfigurator(data.application, data.form, data.hidden_data);
           }
         }
-        if (type == 'event' && data.action == 'close_configure') {
-          if (data.connection_id == this.unique_connection_id) {
+        if (type === 'event' && data.action === 'close_configure') {
+          if (data.connection_id === this.unique_connection_id) {
             ConfiguratorsManager.closeConfigurator(data.application);
           }
         }
@@ -87,10 +87,10 @@ class CurrentUser extends Observable {
     if (!user) {
       return;
     }
-    if (!user.tutorial_status || user.tutorial_status.length == 0) {
+    if (!user.tutorial_status || user.tutorial_status.length === 0) {
       user.tutorial_status = {};
     }
-    if (user.tutorial_status[key] == (set_false ? false : true)) {
+    if (user.tutorial_status[key] === (set_false ? false : true)) {
       return;
     }
     user.tutorial_status[key] = set_false ? false : true;
@@ -117,7 +117,7 @@ class CurrentUser extends Observable {
     that.notify();
     Api.post('users/account/username', { username }, (res: any) => {
       that.loading = false;
-      if (res.errors.length == 0) {
+      if (res.errors.length === 0) {
         ws.publish('users/' + Login.currentUserId, { user: update });
         that.errorUsernameExist = false;
       } else {
@@ -161,7 +161,7 @@ class CurrentUser extends Observable {
       xhr: function () {
         const myXhr = $.ajaxSettings.xhr();
         myXhr.onreadystatechange = function () {
-          if (myXhr.readyState == XMLHttpRequest.DONE) {
+          if (myXhr.readyState === XMLHttpRequest.DONE) {
             that.loading = false;
             const resp = JSON.parse(myXhr.responseText);
             if (resp.errors.indexOf('badimage') > -1) {
@@ -192,7 +192,7 @@ class CurrentUser extends Observable {
     oldPassword = oldPassword || '';
     password = password || '';
     password1 = password1 || '';
-    if (password != password1 || password.length < 8) {
+    if (password !== password1 || password.length < 8) {
       this.badNewPassword = true;
       this.notify();
       return;
@@ -202,7 +202,7 @@ class CurrentUser extends Observable {
     that.notify();
     Api.post('users/account/password', { old_password: oldPassword, password: password }, (res: any) => {
       that.loading = false;
-      if (res.errors.length == 0) {
+      if (res.errors.length === 0) {
         that.badNewPassword = false;
         that.badOldPassword = false;
 
@@ -246,11 +246,11 @@ class CurrentUser extends Observable {
     that.loading = true;
     that.notify();
     Api.post('users/account/mainmail', { mail: mailId }, (res: any) => {
-      if (res.errors.length == 0) {
+      if (res.errors.length === 0) {
         const mails = Collections.get('users').find(Login.currentUserId).mails;
         for (let i = 0; i < mails.length; i++) {
           mails[i].main = false;
-          if (mails[i].id == mailId) {
+          if (mails[i].id === mailId) {
             mails[i].main = true;
           }
         }
@@ -270,11 +270,11 @@ class CurrentUser extends Observable {
     that.loading = true;
     that.notify();
     Api.post('users/account/removemail', { mail: mailId }, (res: any) => {
-      if (res.errors.length == 0) {
+      if (res.errors.length === 0) {
         const mails = Collections.get('users').find(Login.currentUserId).mails;
         const newMails = [];
         for (let i = 0; i < mails.length; i++) {
-          if (mails[i].id != mailId) {
+          if (mails[i].id !== mailId) {
             newMails.push(mails[i]);
           }
         }
