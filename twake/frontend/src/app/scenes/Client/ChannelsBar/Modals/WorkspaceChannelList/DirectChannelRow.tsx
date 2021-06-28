@@ -1,9 +1,9 @@
-import { Tag, Col, Row, Tooltip, Typography } from 'antd';
+import React, { createRef, useEffect } from 'react';
+import { Col, Row, Typography } from 'antd';
 import { getUserParts } from 'app/components/Member/UserParts';
 import './ChannelRow.scss';
 import ChannelsService from 'services/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
-import React, { createRef, useEffect } from 'react';
 import ModalManager from 'app/components/Modal/ModalManager';
 import UserServices from 'services/user/UserService';
 
