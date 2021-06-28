@@ -21,7 +21,7 @@ export class MessageChannelRefReversed {
   channel_id: string;
 
   @Type(() => String)
-  @Column("thread_id", "timeuuid")
+  @Column("thread_id", "timeuuid", { order: "DESC" })
   thread_id: string;
 
   @Type(() => String)

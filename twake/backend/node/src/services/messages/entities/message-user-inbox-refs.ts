@@ -17,11 +17,11 @@ export class MessageUserInboxRef {
   user_id: string;
 
   @Type(() => Number)
-  @Column("last_activity", "number")
+  @Column("last_activity", "number", { order: "DESC" })
   last_activity: number;
 
   @Type(() => String)
-  @Column("thread_id", "timeuuid")
+  @Column("thread_id", "timeuuid", { order: "DESC" })
   thread_id: string;
 
   @Type(() => String)

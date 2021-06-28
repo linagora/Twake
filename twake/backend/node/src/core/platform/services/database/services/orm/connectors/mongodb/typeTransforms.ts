@@ -1,9 +1,20 @@
-import { ColumnType } from "../../types";
+import { ColumnOptions, ColumnType } from "../../types";
 import { decrypt, encrypt } from "../../../../../../../crypto";
 import _, { isNull } from "lodash";
 import { fromMongoDbOrderable, toMongoDbOrderable } from "../../utils";
 
-export const transformValueToDbString = (v: any, type: ColumnType, options: any = {}): any => {
+type TransformOptions = {
+  secret?: any;
+  disableSalts?: boolean;
+  columns?: ColumnOptions;
+  column?: any;
+};
+
+export const transformValueToDbString = (
+  v: any,
+  type: ColumnType,
+  options: TransformOptions = {},
+): any => {
   if (type === "timeuuid") {
     if (isNull(v) || !v) {
       return null;
@@ -20,7 +31,7 @@ export const transformValueToDbString = (v: any, type: ColumnType, options: any 
       }
     }
     if (v !== undefined) {
-      v = encrypt(v, options.secret).data;
+      v = encrypt(v, options.secret, { disableSalts: options.disableSalts }).data;
     }
     return v;
   }

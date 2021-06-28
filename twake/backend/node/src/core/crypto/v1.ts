@@ -6,10 +6,14 @@ export default {
   decrypt,
 };
 
-function encrypt(data: any, encryptionKey: any): CryptoResult {
+function encrypt(
+  data: any,
+  encryptionKey: any,
+  options: { disableSalts?: boolean } = {},
+): CryptoResult {
   const key = createHash("sha256").update(String(encryptionKey)).digest("base64").substr(0, 32);
   try {
-    const iv = randomBytes(16);
+    const iv = options.disableSalts ? "0000000000000000" : randomBytes(16);
     const cipher = createCipheriv("aes-256-cbc", key, iv);
     const encrypted = Buffer.concat([cipher.update(JSON.stringify(data)), cipher.final()]).toString(
       "hex",
