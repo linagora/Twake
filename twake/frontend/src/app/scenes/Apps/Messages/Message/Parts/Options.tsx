@@ -2,7 +2,7 @@ import React from 'react';
 import 'moment-timezone';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
@@ -70,13 +70,11 @@ export default (props: Props) => {
           text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
           onClick: () => {
             const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
-            const url = `${document.location.origin}${
-              RouterServices.generateRouteFromState({
-                workspaceId: workspace.id,
-                channelId: props.message.channel_id,
-                messageId: props.message.parent_message_id || props.message.id,
-              })
-            }`;
+            const url = `${document.location.origin}${RouterServices.generateRouteFromState({
+              workspaceId: workspace.id,
+              channelId: props.message.channel_id,
+              messageId: props.message.parent_message_id || props.message.id,
+            })}`;
             const el = document.createElement('textarea');
             el.value = url;
             document.body.appendChild(el);

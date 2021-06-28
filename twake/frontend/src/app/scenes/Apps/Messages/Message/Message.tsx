@@ -5,7 +5,7 @@ import FirstMessage from './Parts/FirstMessage/FirstMessage';
 import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
 import MessageContent from './Parts/MessageContent';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 import UserService from 'services/user/UserService';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import { MessageEditorService } from 'app/services/Apps/Messages/MessageEditorService';
@@ -163,7 +163,7 @@ export default class MessageComponent extends Component<Props> {
               <div className="message-content">
                 <a
                   onClick={() => {
-                    MessagesService.showMessage(message.id);
+                    MessagesService.showMessage(message?.id);
                   }}
                   href="#"
                 >

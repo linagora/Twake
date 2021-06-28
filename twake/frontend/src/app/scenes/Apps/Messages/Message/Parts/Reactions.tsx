@@ -2,7 +2,7 @@ import React from 'react';
 import User from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 import Emojione from 'components/Emojione/Emojione';
 import { Message } from 'app/services/Apps/Messages/Message';
 import { Tooltip } from 'antd';
