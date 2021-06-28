@@ -259,7 +259,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
           thread_id: thread.id,
         },
         {
-          pagination: new Pagination("", `${options?.replies_per_thread || 3}`, true),
+          pagination: new Pagination("", `${options?.replies_per_thread || 3}`, false),
         },
       )
     ).getEntities();
@@ -275,7 +275,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         thread_id: thread.id,
       },
       {
-        pagination: new Pagination("", `1`, false),
+        pagination: new Pagination("", `1`, true),
       },
     );
 

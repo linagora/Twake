@@ -344,7 +344,11 @@ export class CassandraConnector extends AbstractConnector<
           `${transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            { columns: columnsDefinition[key].options, secret: this.secret },
+            {
+              columns: columnsDefinition[key].options,
+              secret: this.secret,
+              disableSalts: true,
+            },
           )}`,
         ]);
 
@@ -411,7 +415,11 @@ export class CassandraConnector extends AbstractConnector<
             `${key} = ${transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              { columns: columnsDefinition[key].options, secret: this.secret },
+              {
+                columns: columnsDefinition[key].options,
+                secret: this.secret,
+                disableSalts: true,
+              },
             )}`,
         );
 

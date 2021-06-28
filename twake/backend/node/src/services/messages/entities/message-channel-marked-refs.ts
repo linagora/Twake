@@ -25,11 +25,11 @@ export class MessageChannelMarkedRef {
   type: "pinned";
 
   @Type(() => String)
-  @Column("thread_id", "timeuuid")
+  @Column("thread_id", "timeuuid", { order: "DESC" })
   thread_id: string;
 
   @Type(() => String)
-  @Column("message_id", "timeuuid")
+  @Column("message_id", "timeuuid", { order: "DESC" })
   message_id: string;
 
   @Type(() => Number)
