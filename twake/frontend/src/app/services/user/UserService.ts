@@ -16,15 +16,11 @@ type SearchQueryType = {
 @TwakeService('UserService')
 class User {
   private users_repository: typeof Collections;
-  private stop_async_get: { [key: string]: boolean };
-  private nextUsersGetBulk: { id: string, callback: (arg?: any) => any }[];
   private searchQueries: SearchQueryType;
 
   constructor() {
     this.users_repository = Collections.get('users');
     Collections.updateOptions('users', { base_url: 'users', use_cache: true });
-    this.nextUsersGetBulk = [];
-    this.stop_async_get = {};
     this.searchQueries = {
       searching: false,
       previous: '',
