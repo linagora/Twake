@@ -35,9 +35,17 @@ class MessageSystem
         $message_id = isset($options["id"]) ? $options["id"] : "";
         $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : ($message_id ?: "");
 
-        $channel = $this->getInfosFromChannel($options["channel_id"]);   
-        if(!$channel){
-            return;
+        if($options["company_id"] && $options["workspace_id"]){
+            $channel = [
+                "company_id" => $options["company_id"],
+                "workspace_id" => $options["workspace_id"],
+                "channel_id" => $options["channel_id"],
+            ];
+        }else{
+            $channel = $this->getInfosFromChannel($options["channel_id"]);   
+            if(!$channel){
+                return;
+            }
         }
 
         if($message_id){
@@ -278,7 +286,7 @@ class MessageSystem
                     $prepared = $block["elements"];
                 }
                 if($block["type"] === "section" && count($prepared) === 0){
-                    $prepared = [["type" => "twacode", "content" => $block["text"]["mrkdwn"]["text"] ?: $block["text"]["plain_text"]["text"] ?: ""]];
+                    $prepared = [["type" => "twacode", "content" => $block["text"]["text"] || ""]];
                 }
             }
             

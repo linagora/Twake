@@ -19,7 +19,7 @@ export interface PhpMessageExecutionContext extends ExecutionContext {
 
 export class PhpMessagesService implements PhpMessagesServiceAPI {
   version: "1";
-  repository: Repository<PhpMessage>;
+  public repository: Repository<PhpMessage>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
@@ -28,7 +28,11 @@ export class PhpMessagesService implements PhpMessagesServiceAPI {
     return this;
   }
 
-  get(pk: Pick<PhpMessage, "parent_message_id" | "channel_id" | "id">): Promise<PhpMessage> {
+  get(pk: { parent_message_id?: string; channel_id?: string; id: string }): Promise<PhpMessage> {
+    if (pk.channel_id) {
+      pk.channel_id = `${pk.channel_id}`;
+      pk.channel_id.substring(0, 14) + "1" + pk.channel_id.substring(14 + 1);
+    }
     return this.repository.findOne(pk);
   }
 

@@ -23,11 +23,11 @@ export const TYPE = "messages";
 })
 export class Message {
   @Type(() => String)
-  @Column("thread_id", "timeuuid")
+  @Column("thread_id", "timeuuid", { order: "DESC" })
   thread_id: string;
 
   @Type(() => String)
-  @Column("id", "timeuuid", { generator: "timeuuid" })
+  @Column("id", "timeuuid", { generator: "timeuuid", order: "DESC" })
   id: string;
 
   @Type(() => String) //Not in database (obviousl y because it is ephemeral)

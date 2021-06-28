@@ -77,9 +77,9 @@ export class MessageToNotificationsProcessor {
           text = `${senderName}: ${text}`;
         }
 
-        const usersOutput = (messageResource.text || "").match(/@[^: ]+:([0-f-]{36})/m);
+        const usersOutput = (messageResource.text || "").match(/@[^: ]+:([0-f-]{36})/gm);
         const globalOutput = (messageResource.text || "").match(
-          /(^| )@(all|here|channel|everyone)([^a-z]|$)/m,
+          /(^| )@(all|here|channel|everyone)([^a-z]|$)/gm,
         );
 
         const mentions = {

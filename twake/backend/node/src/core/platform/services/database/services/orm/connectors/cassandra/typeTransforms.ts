@@ -27,6 +27,7 @@ export const cassandraType = {
 
 type TransformOptions = {
   secret?: any;
+  disableSalts?: boolean;
   columns?: ColumnOptions;
   column?: any;
 };
@@ -37,10 +38,10 @@ export const transformValueToDbString = (
   options: TransformOptions = {},
 ): string => {
   if (type === "twake_datetime") {
-    return moment.unix(v / 1000).format("YYYY-MM-DD HH:mm:ss");
+    return `'${moment.unix(v / 1000).format("YYYY-MM-DD HH:mm:ss")}'`;
   }
 
-  if (type === "number") {
+  if (type === "number" || type === "twake_int") {
     if (isNull(v)) {
       return "null";
     }
@@ -75,7 +76,7 @@ export const transformValueToDbString = (
         v = null;
       }
     }
-    const encrypted = encrypt(v, options.secret);
+    const encrypted = encrypt(v, options.secret, { disableSalts: options.disableSalts });
     return `'${(encrypted.data || "").toString().replace(/'/gm, "''")}'`;
   }
   if (type === "blob") {

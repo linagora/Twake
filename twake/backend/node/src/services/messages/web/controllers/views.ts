@@ -44,7 +44,7 @@ export class ViewsController
         new Pagination(
           request.query.page_token,
           request.query.limit,
-          request.query.direction === "history",
+          request.query.direction !== "history",
         ),
         { ...request.query },
         context,

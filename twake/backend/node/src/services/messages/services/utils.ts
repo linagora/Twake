@@ -9,7 +9,7 @@ export const buildMessageListPagination = (
   pagination = { ...pagination, page_token: null };
   return {
     pagination,
-    ...(!!offset && pagination.reversed && { $lte: [[messageIdKey, offset]] }),
-    ...(!!offset && !pagination.reversed && { $gte: [[messageIdKey, offset]] }),
+    ...(!!offset && pagination.reversed && { $gte: [[messageIdKey, offset]] }),
+    ...(!!offset && !pagination.reversed && { $lte: [[messageIdKey, offset]] }),
   };
 };
