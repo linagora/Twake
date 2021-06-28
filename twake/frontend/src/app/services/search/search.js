@@ -60,7 +60,7 @@ class SearchService extends Observable {
 
     ChannelsService.select(item.channel);
 
-    if (ChannelsService.currentChannelFrontId == item.channel.front_id) {
+    if (ChannelsService.currentChannelFrontId === item.channel.front_id) {
       if (!item.message.parent_message_id) {
         MessagesService.scrollToMessage(
           item.channel.id,
@@ -96,13 +96,13 @@ class SearchService extends Observable {
     }
     if (this.selectTimeout) clearTimeout(this.selectTimeout);
 
-    if (item.type == 'channel') {
+    if (item.type === 'channel') {
       if (item.workspace) {
         Workspace.select(item.workspace);
       }
       ChannelsService.select(item.channel);
     }
-    if (item.type == 'file') {
+    if (item.type === 'file') {
       if (item.workspace) {
         Workspace.select(item.workspace);
         if (
@@ -139,7 +139,7 @@ class SearchService extends Observable {
         }, 100);
       }
     }
-    if (item.type == 'event') {
+    if (item.type === 'event') {
       if (item.workspace) {
         Workspace.select(item.workspace);
         if (
@@ -166,7 +166,7 @@ class SearchService extends Observable {
         }, 100);
       }
     }
-    if (item.type == 'task') {
+    if (item.type === 'task') {
       if (item.workspace) {
         Workspace.select(item.workspace);
         if (
@@ -195,7 +195,7 @@ class SearchService extends Observable {
         }, 100);
       }
     }
-    if (item.type == 'message') {
+    if (item.type === 'message') {
       if (!item.workspace && (item.channel || {}).workspace_id) {
         item.workspace = Collections.get('workspaces').find((item.channel || {}).workspace_id);
       }
@@ -244,12 +244,12 @@ class SearchService extends Observable {
 
     var text = this.value.replace(/  +/, ' ');
     var words = text.split(' ');
-    if (http && (text || '').trim() == '' && JSON.stringify(this.options).length < 3) {
+    if (http && (text || '').trim() === '' && JSON.stringify(this.options).length < 3) {
       return this.search(false);
     }
     if (
-      this.previousSearchText == (text || '').trim() &&
-      JSON.stringify(this.options) + this.type == this.previousSearchTextOptions
+      this.previousSearchText === (text || '').trim() &&
+      JSON.stringify(this.options) + this.type === this.previousSearchTextOptions
     ) {
       this.search_loading = false;
       this.search_http_loading = false;
@@ -270,16 +270,16 @@ class SearchService extends Observable {
       var searchRoute = 'quicksearch';
 
       var options = {};
-      if (this.type == 'file') {
+      if (this.type === 'file') {
         options = this.options;
         searchRoute = 'advancedfile';
-      } else if (this.type == 'message') {
+      } else if (this.type === 'message') {
         options = this.options;
         searchRoute = 'advancedbloc';
-      } else if (this.type == 'event') {
+      } else if (this.type === 'event') {
         options = this.options;
         searchRoute = 'advancedevent';
-      } else if (this.type == 'task') {
+      } else if (this.type === 'task') {
         options = this.options;
         searchRoute = 'advancedtask';
       }
@@ -311,11 +311,11 @@ class SearchService extends Observable {
             this.scroll_id = ((res || {}).data || {}).scroll_id;
 
             results.forEach(item => {
-              if (item.type == 'channel') {
+              if (item.type === 'channel') {
                 this.completeItemSearchText(item.channel, words);
                 Collections.get('channels').completeObject(item.channel);
               }
-              if (item.type == 'file') {
+              if (item.type === 'file') {
                 this.completeItemSearchText(item.file, words);
                 Collections.get('drive').completeObject(item.file);
               }
@@ -408,6 +408,7 @@ class SearchService extends Observable {
         ) {
           return true;
         }
+        return false;
       });
     });
   }
