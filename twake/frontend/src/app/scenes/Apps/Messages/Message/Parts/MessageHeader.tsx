@@ -6,7 +6,7 @@ import User from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
-import UserCard from 'app/components/UserCard/UserCard.js';
+import UserCard from 'app/components/UserCard/UserCard';
 import { getSender } from 'services/Apps/Messages/MessagesUtils';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import Emojione from 'components/Emojione/Emojione';

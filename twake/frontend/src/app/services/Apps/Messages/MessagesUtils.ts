@@ -1,7 +1,7 @@
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import User from 'services/user/UserService';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import { Message } from './Message';
+import userAsyncGet from 'services/user/AsyncGet';
 
 export const getSender = (message: Message | undefined) => {
   var senderData: any = {
@@ -10,9 +10,13 @@ export const getSender = (message: Message | undefined) => {
 
   if (message) {
     if (message.sender) {
-      senderData = DepreciatedCollections.get('users').find(message.sender);
+      senderData = DepreciatedCollections.get('users').find(message.sender, () => {
+        if (message.sender) {
+          userAsyncGet(message.sender);
+        }
+      });
+
       if (!senderData) {
-        User.asyncGet(message.sender);
         senderData = {
           type: 'user',
           id: message.sender,
@@ -21,7 +25,8 @@ export const getSender = (message: Message | undefined) => {
         senderData.type = 'user';
       }
     }
-    if (message.message_type == 1) {
+
+    if (message.message_type === 1) {
       //App message
       var app = DepreciatedCollections.get('applications').find(message.application_id) || {};
       if (!app.id) {

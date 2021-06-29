@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Typography, Col } from 'antd';
 
 import { ChannelType } from 'app/models/Channel';
-import { getUserParts, useUsersListener } from 'app/components/Member/UserParts';
+import { getUserParts } from 'app/components/Member/UserParts';
+import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
 
 type Props = {
   channel: ChannelType;
 };
 
 export default (props: Props) => {
-  useUsersListener(props.channel.members || []);
+  useUsersListener(props.channel.members);
   const { avatar, name } = getUserParts({
     usersIds: props.channel.members || [],
   });

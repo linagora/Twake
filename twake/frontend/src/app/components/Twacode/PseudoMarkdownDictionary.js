@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import Emojione from 'components/Emojione/Emojione';
 import HighlightedCode from 'components/HighlightedCode/HighlightedCode.js';
+import User from './blocks/User';
+import Chan from './blocks/Chan';
 import File from 'components/Drive/File';
-import User from './blocks/User.js';
-import Chan from './blocks/Chan.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import UserService from 'services/user/UserService';
 import Button from 'components/Buttons/Button.js';
