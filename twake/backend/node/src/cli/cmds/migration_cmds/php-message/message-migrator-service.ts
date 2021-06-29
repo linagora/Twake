@@ -387,7 +387,7 @@ class MessageMigrator {
     const thread = new Thread();
 
     // Set nodeThread values
-    thread.id = message.id;
+    thread.id = message.parent_message_id || message.id;
     thread.created_at = message.creation_date;
     thread.last_activity = message.modification_date;
     thread.answers = 0;
@@ -546,7 +546,9 @@ class MessageMigrator {
     // Create nodeMessage then add it to thread
     return await this.nodeMessageService.messages.save(
       nodeMessage,
-      {},
+      {
+        enforceViewPropagation: true,
+      },
       {
         user: { id: null, server_request: true },
         thread: { id: threadId },
