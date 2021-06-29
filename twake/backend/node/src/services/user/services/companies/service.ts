@@ -71,12 +71,14 @@ export class CompanyService implements CompaniesServiceAPI {
   async addUserInCompany(
     companyPk: CompanyPrimaryKey,
     userPk: UserPrimaryKey,
+    role?: CompanyUserRole,
   ): Promise<CompanyUser> {
     const userInCompany = getCompanyUserInstance({
       group_id: companyPk.id,
       user_id: userPk.id,
       id: uuidv1(),
       dateAdded: Date.now(),
+      role: role,
     });
 
     await this.companyUserRepository.save(userInCompany);

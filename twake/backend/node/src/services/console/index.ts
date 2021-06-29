@@ -15,8 +15,6 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
     const type = this.configuration.get<ConsoleType>("type");
     const options: ConsoleOptions = this.configuration.get<ConsoleOptions>(type);
 
-    const x = this.context.getProvider<UserServiceAPI>("user");
-
     this.service = getService(
       this.context.getProvider<DatabaseServiceAPI>("database"),
       this.context.getProvider<UserServiceAPI>("user"),
@@ -24,6 +22,12 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
       options,
     );
 
+    return this;
+  }
+
+  async doStart(): Promise<this> {
+    // FixMe: reimplement (temp cause of circular dependency user -> console -> user)
+    this.service.services.userService = this.context.getProvider<UserServiceAPI>("user");
     return this;
   }
 

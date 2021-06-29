@@ -9,6 +9,7 @@ import {
   UpdatedConsoleUserRole,
 } from "./types";
 import User from "../user/entities/user";
+import Company from "../user/entities/company";
 
 export interface ConsoleServiceClient {
   /**

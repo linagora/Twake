@@ -1,7 +1,10 @@
 import axios, { AxiosInstance } from "axios";
+import { merge } from "lodash";
+
 import { ConsoleServiceClient } from "../client-interface";
 import {
   ConsoleCompany,
+  ConsoleUser,
   CreateConsoleCompany,
   CreateConsoleUser,
   CreatedConsoleCompany,
@@ -13,6 +16,7 @@ import {
 import { v1 as uuidv1 } from "uuid";
 import { ConsoleServiceAPI } from "../api";
 import User, { getInstance as getUserInstance } from "../../user/entities/user";
+import Company from "../../user/entities/company";
 
 export class ConsoleInternalClient implements ConsoleServiceClient {
   version: "1";
@@ -24,7 +28,12 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
     company: ConsoleCompany,
     user: CreateConsoleUser,
   ): Promise<CreatedConsoleUser> {
-    throw Error("ConsoleInternalClient.addUserToCompany is not implemented");
+    await this.consoleInstance.services.userService.companies.addUserInCompany(
+      { id: company.id },
+      { id: user.id },
+      user.role,
+    );
+    return merge(user, { _id: user.id });
   }
 
   async updateUserRole(

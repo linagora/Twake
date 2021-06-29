@@ -35,6 +35,7 @@ import CompanyUser from "../../user/entities/company_user";
 import { ConsoleRemoteClient } from "../clients/remote";
 import { ConsoleServiceClient } from "../client-interface";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
+import { CompanyUserRole } from "../../user/web/types";
 
 const logger = getLogger("console.process.merge");
 
@@ -327,7 +328,7 @@ export class MergeProcess {
         CompanyUser,
       );
       companyUser.role = role;
-      companyUserRepository.save(companyUser);
+      await companyUserRepository.save(companyUser);
 
       if (this.linkExternal) {
         await this.createUserLink(user, result, this.consoleId);
@@ -386,7 +387,7 @@ export class MergeProcess {
 
   private updateUserRole(
     user: UserCreatedStreamObject,
-    role: string,
+    role: CompanyUserRole,
   ): Promise<{
     source: UserCreatedStreamObject;
     result: UpdateConsoleUserRole & { error?: Error };

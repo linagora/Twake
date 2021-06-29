@@ -354,9 +354,10 @@ export class WorkspaceUsersCrudController
       }
 
       if (!userInCompany) {
-        const x = await consoleClient.addUserToCompany(
-          { code: companyCode },
+        await consoleClient.addUserToCompany(
+          { id: context.company_id, code: null },
           {
+            id: user.id,
             email: invitation.email,
             firstName: null,
             lastName: null,
