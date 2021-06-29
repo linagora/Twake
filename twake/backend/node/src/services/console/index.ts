@@ -1,8 +1,9 @@
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import { TwakeService, Consumes } from "../../core/platform/framework";
+import { Consumes, TwakeService } from "../../core/platform/framework";
 import UserServiceAPI from "../user/api";
 import { ConsoleServiceAPI } from "./api";
 import { getService } from "./service";
+import { ConsoleOptions, ConsoleType } from "./types";
 
 @Consumes(["user", "database"])
 export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
@@ -11,11 +12,22 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
   private service: ConsoleServiceAPI;
 
   async doInit(): Promise<this> {
+    const type = this.configuration.get<ConsoleType>("type");
+    const options: ConsoleOptions = this.configuration.get<ConsoleOptions>(type);
+
     this.service = getService(
       this.context.getProvider<DatabaseServiceAPI>("database"),
       this.context.getProvider<UserServiceAPI>("user"),
+      type,
+      options,
     );
 
+    return this;
+  }
+
+  async doStart(): Promise<this> {
+    // FixMe: reimplement (temp cause of circular dependency user -> console -> user)
+    this.service.services.userService = this.context.getProvider<UserServiceAPI>("user");
     return this;
   }
 

@@ -201,7 +201,7 @@ export default class DriveElement extends React.Component {
     SelectionsManager.select(this.state.element.id);
   }
 
-  clickElement(evt) {
+  clickElement(evt, previewonly = false) {
     evt.stopPropagation();
     evt.preventDefault();
 
@@ -209,7 +209,7 @@ export default class DriveElement extends React.Component {
       if (this.props.onClick) {
         this.props.onClick();
       } else {
-        DriveService.viewDocument(this.state.element);
+        DriveService.viewDocument(this.state.element, previewonly);
       }
     } else {
       SelectionsManager.setType(this.props.selectionType);
@@ -217,7 +217,7 @@ export default class DriveElement extends React.Component {
         if (this.props.onClick) {
           this.props.onClick();
         } else {
-          DriveService.viewDocument(this.state.element);
+          DriveService.viewDocument(this.state.element, previewonly);
         }
 
         var oldStatus =

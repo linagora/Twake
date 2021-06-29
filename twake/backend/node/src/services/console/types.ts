@@ -1,6 +1,7 @@
 import { Observable } from "rxjs";
 import Company from "../user/entities/company";
 import CompanyUser from "../user/entities/company_user";
+import { CompanyUserRole } from "../user/web/types";
 
 export interface CreateConsoleCompany {
   code: string;
@@ -26,6 +27,7 @@ export interface CreateConsoleCompany {
 export type CreatedConsoleCompany = Partial<CreateConsoleCompany>;
 
 export interface CreateConsoleUser {
+  id?: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -35,8 +37,13 @@ export interface CreateConsoleUser {
     value: string;
   };
   password: string;
-  role: string;
+  role: CompanyUserRole;
   skipInvite: boolean;
+}
+
+export interface CreateInternalUser {
+  email: string;
+  password: string;
 }
 
 export type CreatedConsoleUser = Partial<CreateConsoleUser> & { _id: string };
@@ -51,6 +58,7 @@ export type ConsoleUser = {
 };
 
 export type ConsoleCompany = {
+  id?: string;
   code: string;
 };
 
@@ -105,4 +113,13 @@ export type ProcessReport = {
   //error?: Error;
   message?: string;
   data?: UserReport | CompanyReport | Error | Company[];
+};
+
+export type ConsoleType = "remote" | "internal";
+
+export type ConsoleOptions = {
+  provider?: string;
+  client: string;
+  secret: string;
+  url: string;
 };

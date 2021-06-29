@@ -25,7 +25,7 @@ import PathElement from './PathElement.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 
 import UnconfiguredTab from './UnconfiguredTab.js';
-import Viewer from './Viewer/Viewer.js';
+import Viewer from './Viewer/Viewer';
 
 import MainPlus from 'components/MainPlus/MainPlus.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';

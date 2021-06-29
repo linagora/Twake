@@ -35,6 +35,7 @@ const routes: FastifyPluginCallback<{
     options.service.workspaces,
     options.service.companies,
     options.service.users,
+    options.service.console,
   );
 
   const accessControl = async (request: FastifyRequest) => {

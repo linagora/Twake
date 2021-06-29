@@ -85,7 +85,11 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    * @param user
    */
-  addUserInCompany(companyId: CompanyPrimaryKey, userId: UserPrimaryKey): Promise<CompanyUser>;
+  addUserInCompany(
+    companyId: CompanyPrimaryKey,
+    userId: UserPrimaryKey,
+    role?: CompanyUserRole,
+  ): Promise<CompanyUser>;
 
   /**
    * Add a user in a company

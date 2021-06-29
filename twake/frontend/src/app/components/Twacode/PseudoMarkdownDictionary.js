@@ -2,9 +2,9 @@ import React from 'react';
 
 import Emojione from 'components/Emojione/Emojione';
 import HighlightedCode from 'components/HighlightedCode/HighlightedCode.js';
-import File from 'components/Drive/File.js';
 import User from './blocks/User';
 import Chan from './blocks/Chan';
+import File from 'components/Drive/File';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import UserService from 'services/user/UserService';
 import Button from 'components/Buttons/Button.js';

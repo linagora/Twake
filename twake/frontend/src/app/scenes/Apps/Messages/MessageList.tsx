@@ -13,9 +13,9 @@ import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
 import { ChannelResource } from 'app/models/Channel';
-import RouterService from 'app/services/RouterService';
 import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
 import InitService from 'app/services/InitService';
+import _ from 'lodash';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
@@ -453,7 +453,7 @@ export default class MessagesList extends React.Component<Props, State> {
 
   setMessages(messages: MessageModel[] = []) {
     this.setState(() => ({
-      messages,
+      messages: _.uniqBy(messages, m => m.id || m.front_id),
     }));
   }
 

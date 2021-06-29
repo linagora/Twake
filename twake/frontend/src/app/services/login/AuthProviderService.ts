@@ -39,8 +39,17 @@ class AuthProviderService extends Observable {
       Oidc.Log.logger = Logger;
       Oidc.Log.level = Oidc.Log.WARN;
 
+      //For logout if signout or logout endpoint called
+      if (['/signout', '/logout'].includes(document.location.pathname)) {
+        this.signOut();
+      }
+
       this.authProviderUserManager.events.addUserLoaded(async user => {
         this.getJWTFromOidcToken(user);
+      });
+
+      this.authProviderUserManager.events.addAccessTokenExpired(() => {
+        this.silentLogin();
       });
 
       //This even listener is temporary disabled because of this issue: https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/-/issues/2358
@@ -49,50 +58,61 @@ class AuthProviderService extends Observable {
         //this.signOut();
       });
 
-      this.authProviderUserManager.events.addAccessTokenExpired(() => {
-        this.signOut();
-      });
-
       //This manage the initial sign-in when loading the app
-      const frontUrl = (getDomain(environment.front_root_url || '') || '').toLocaleLowerCase();
-      if (frontUrl && document.location.host.toLocaleLowerCase() != frontUrl) {
-        //Redirect to valid frontend url to make sure oidc will work as expected
-        document.location.replace(
-          document.location.protocol +
-            '//' +
-            getDomain(environment.front_root_url) +
-            '/' +
-            document.location.pathname +
-            document.location.search +
-            document.location.hash,
-        );
-      } else {
-        const authProviderUserManager = this.authProviderUserManager;
-        (async () => {
-          try {
-            await authProviderUserManager.signinRedirectCallback();
-            authProviderUserManager.getUser();
-          } catch (e) {
-            //There is no sign-in response, so we can try to silent login and use refresh token
-            try {
-              let user = await authProviderUserManager.getUser();
-              if (user) {
-                user = await authProviderUserManager.signinSilent();
-                this.getJWTFromOidcToken(user);
-              } else {
-                authProviderUserManager.signinRedirect();
-              }
-            } catch (e) {
-              authProviderUserManager?.signinRedirect();
-            }
-          }
-        })();
-      }
+      if (this.enforceFrontendUrl()) this.silentLogin();
     }
 
     return {
       userManager: this.authProviderUserManager,
     };
+  }
+
+  //Redirect to valid frontend url to make sure oidc will work as expected
+  enforceFrontendUrl() {
+    const frontUrl = (getDomain(environment.front_root_url || '') || '').toLocaleLowerCase();
+    if (frontUrl && document.location.host.toLocaleLowerCase() != frontUrl) {
+      document.location.replace(
+        document.location.protocol +
+          '//' +
+          getDomain(environment.front_root_url) +
+          '/' +
+          document.location.pathname +
+          document.location.search +
+          document.location.hash,
+      );
+      return false;
+    }
+    return true;
+  }
+
+  async silentLogin() {
+    const authProviderUserManager = this.authProviderUserManager;
+    if (authProviderUserManager) {
+      (async () => {
+        //Try to use the in-url sign-in response from oidc if exists
+        try {
+          await authProviderUserManager.signinRedirectCallback();
+          authProviderUserManager.getUser();
+        } catch (e) {
+          //There is no sign-in response, so we can try to silent login and use refresh token
+          try {
+            //First we try to see if we know this user
+            let user = await authProviderUserManager.getUser();
+            if (user) {
+              //If yes we try a silent signin
+              user = await authProviderUserManager.signinSilent();
+              this.getJWTFromOidcToken(user);
+            } else {
+              //If no we try a redirect signin
+              authProviderUserManager.signinRedirect();
+            }
+          } catch (e) {
+            //In any case if it doesn't work we do a redirect signin
+            authProviderUserManager?.signinRedirect();
+          }
+        }
+      })();
+    }
   }
 
   async signOut() {

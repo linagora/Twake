@@ -67,19 +67,19 @@ class MessageSystem
             }
         }
 
-        if(count($messages) < abs($limit)
-            && !$options["id"]
+        $nonSystemMessages = 0;
+        foreach($messages as $message){
+            if($message["hidden_data"]["type"] === "init_channel" || $message["message_type"] == 0 || $message["message_type"] == 1){
+                $nonSystemMessages++;
+            }
+        }
+
+        if($nonSystemMessages === 0
+            && count($messages) < abs($limit)
             && !$options["id"]
             && !$offset
             && $limit > 0
             && !$parent_message_id ){
-
-            $found = false;
-            foreach($messages as $message){
-                if($message["hidden_data"]["type"] === "init_channel"){
-                    $found = true;
-                }
-            }
 
             if(!$found){
                 $init_message = Array(
@@ -88,7 +88,7 @@ class MessageSystem
                     "created_at" => 0
                 );
                 $init_message = $this->save($init_message, Array());
-                array_merge([$init_message], $messages);
+                $messages = array_merge([$init_message], $messages);
             }
         }
 
@@ -102,8 +102,11 @@ class MessageSystem
             return;
         }
 
-        $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/delete", null, $current_user, $application ? $application->getId() : null);
-        return $this->convertFromNode($response["resource"], $channel);
+        if($object["id"]){
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/delete", null, $current_user, $application ? $application->getId() : null);
+            return $this->convertFromNode($response["resource"], $channel);
+        }
+        return null;
     }
 
     public function save($object, $options, $current_user = null, $application = null)
@@ -227,7 +230,7 @@ class MessageSystem
 
         return [
             "ephemeral" => $ephemeral ? [
-                "id" => $object["ephemeral_id"] ?: $object["front_id"] ?: $object["id"] ?: ("fake-" . date("U") . "-id"),
+                "id" => $object["ephemeral_id"] ?: $object["front_id"] ?: $object["id"] ?: $object["ephemeral_message_recipients"][0],
                 "version" => date("U"),
                 "recipient" => $object["ephemeral_message_recipients"][0],
                 "recipient_context_id" => "",
@@ -247,8 +250,8 @@ class MessageSystem
 
         $phpMessage = new Message($channel["channel_id"], $message["thread_id"]);
 
-        $phpMessage->setId($message["id"]);
-        $phpMessage->setFrontId($message["context"]["_front_id"] ?: $message["id"]);
+        $phpMessage->setId($message["id"] ?: $message["ephemeral"]["id"]);
+        $phpMessage->setFrontId($message["context"]["_front_id"] ?: $message["id"] ?: $message["ephemeral"]["id"]);
         $phpMessage->setSender($message["user_id"]);
         $phpMessage->setApplicationId($message["application_id"]);
         $phpMessage->setMessageType($message["subtype"] == "application" ? 1 : ($message["subtype"] == "system" ? 2 : 0));
@@ -295,7 +298,7 @@ class MessageSystem
 
         if($message["ephemeral"]){
             $array["front_id"] = $message["id"];
-            $array["ephemeral_id"] = $message["id"];
+            $array["ephemeral_id"] = $message["id"] ?: $message["ephemeral"]["id"];
             $array["ephemeral_message_recipients"] =[ $message["ephemeral"]["recipient"]];
             $array["_user_ephemeral"] = true;
         }
