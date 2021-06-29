@@ -8,7 +8,7 @@ import UserPicker from 'components/UserPicker/UserPicker.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 
 import Directory from 'components/Drive/Directory.js';
-import File from 'components/Drive/File.js';
+import File from 'components/Drive/File';
 import DriveMultiSelector from 'components/Drive/DriveMultiSelector.js';
 
 import Rounded from 'components/Inputs/Rounded.js';

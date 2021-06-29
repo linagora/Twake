@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Emojione from 'components/Emojione/Emojione';
 import HighlightedCode from 'components/HighlightedCode/HighlightedCode.js';
-import File from 'components/Drive/File.js';
+import File from 'components/Drive/File';
 import User from './blocks/User.js';
 import Chan from './blocks/Chan.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';

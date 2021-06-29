@@ -7,8 +7,16 @@ import Loader from 'components/Loader/Loader.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Languages from 'services/languages/languages.js';
 
+type PropsType = { [key: string]: any };
+
+type StateType = any;
+
+type NodeType = any;
+
 export default class File extends DriveElement {
-  constructor(props) {
+  node: NodeType;
+  state: StateType;
+  constructor(props: PropsType) {
     super();
     this.state = {
       loading: true,
@@ -56,13 +64,11 @@ export default class File extends DriveElement {
           (mini ? 'mini ' : '') +
           this.props.className
         }
-        refDraggable={node => (this.node = node)}
-        onClick={evt => {
-          if (!this.props.removeIcon) this.clickElement(evt);
-        }}
+        refDraggable={(node: NodeType) => (this.node = node)}
+        onClick={(evt: any) => this.clickElement(evt, this.props.previewonly)}
         onDoubleClick={this.props.onDoubleClick}
         parentClassOnDrag="drive_view list"
-        onDragStart={evt => {
+        onDragStart={(evt: any) => {
           this.dragElement(evt);
         }}
         minMove={10}
@@ -74,7 +80,11 @@ export default class File extends DriveElement {
           menu={!this.props.removeIcon && this.common_menu}
           details={true}
           removeIcon={this.props.removeIcon}
-          removeOnClick={() => this.props.removeOnClick()}
+          removeOnClick={(e: any) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.props.removeOnClick();
+          }}
         />
       </Draggable>
     );
