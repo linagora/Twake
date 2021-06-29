@@ -15,7 +15,7 @@ import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
 import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
 import UploadViewer from 'components/Uploads/UploadViewer.js';
 import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
-import Viewer from 'scenes/Apps/Drive/Viewer/Viewer.js';
+import Viewer from 'scenes/Apps/Drive/Viewer/Viewer';
 import ModalComponent from 'app/components/Modal/ModalComponent';
 import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
 

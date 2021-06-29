@@ -10,10 +10,18 @@ import DriveService from 'services/Apps/Drive/Drive.js';
 import Button from 'components/Buttons/Button.js';
 import ElectronService from 'services/electron/electron.js';
 import './Viewer.scss';
+import { Typography } from 'antd';
 
-export default class Viewer extends Component {
-  constructor() {
-    super();
+type PropsType = { [key: string]: any };
+type StateType = { [key: string]: any };
+type AppType = { [key: string]: any };
+
+export default class Viewer extends Component<PropsType, StateType> {
+  viewed_document: any;
+  last_viewed_id: any;
+
+  constructor(props: PropsType) {
+    super(props);
 
     this.state = {
       i18n: Languages,
@@ -25,9 +33,9 @@ export default class Viewer extends Component {
     Collections.get('drive').addListener(this);
     DriveService.addListener(this);
 
-    window.addEventListener('keydown', function (evt) {
+    window.addEventListener('keydown', (evt: any) => {
       evt = evt || window.event;
-      var isEscape = false;
+      let isEscape = false;
       if ('key' in evt) {
         isEscape = evt.key === 'Escape' || evt.key === 'Esc';
       } else {
@@ -38,9 +46,9 @@ export default class Viewer extends Component {
       }
     });
   }
-  componentWillUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps: any, nextState: any) {
     this.viewed_document = this.props.document || DriveService.viewed_document;
-    if (this.viewed_document && this.viewed_document.id != this.last_viewed_id) {
+    if (this.viewed_document && this.viewed_document.id !== this.last_viewed_id) {
       this.last_viewed_id = this.viewed_document.id;
       nextState.loading_preview = false;
       nextState.did_load_preview = false;
@@ -52,7 +60,7 @@ export default class Viewer extends Component {
     Collections.get('drive').removeListener(this);
     DriveService.removeListener(this);
   }
-  openFile(app) {
+  openFile(app: AppType) {
     if (app.url && app.is_url_file) {
       window.open(app.url);
     }
@@ -60,15 +68,13 @@ export default class Viewer extends Component {
       (((app.display || {}).drive_module || {}).can_open_files || {}).url,
       app,
       this.viewed_document.id,
-      url => {
-        window.open(url);
-      },
+      (url: string) => window.open(url),
     );
   }
-  previewFile(url, app) {
+  previewFile(url: string, app: AppType) {
     this.setState({ loading_preview: true });
 
-    DriveService.getFileUrlForEdition(url, app, this.viewed_document.id, url => {
+    DriveService.getFileUrlForEdition(url, app, this.viewed_document.id, (url: string) => {
       this.setState({ loading_preview: false, did_load_preview: true, url_formated: url });
     });
   }
@@ -80,11 +86,11 @@ export default class Viewer extends Component {
       return '';
     }
 
-    var current = this.viewed_document;
-    var candidates = DriveService.getEditorsCandidates(current);
+    const current = this.viewed_document;
+    const candidates = DriveService.getEditorsCandidates(current);
 
-    var preview_candidate = candidates.preview_candidate || [];
-    var editor_candidate = candidates.editor_candidate || [];
+    const preview_candidate: any = candidates.preview_candidate || [];
+    const editor_candidate: any = candidates.editor_candidate || [];
 
     if (
       !this.state.loading_preview &&
@@ -94,16 +100,15 @@ export default class Viewer extends Component {
       this.previewFile(preview_candidate[0].url, preview_candidate[0].app);
     }
 
-    var canPreviewWithElectron =
-      preview_candidate.length == 0 && current.url && ElectronService.isElectron();
+    const canPreviewWithElectron =
+      preview_candidate.length === 0 && current.url && ElectronService.isElectron();
 
     return (
       <div className={'drive_viewer fade_in ' + (this.props.inline ? 'inline ' : '')}>
         {!this.props.disableHeader && (
           <div className="view_header">
             <div className="title">{current.name}</div>
-
-            {DriveService.previewonly === false && editor_candidate.length == 1 && (
+            {!DriveService.previewonly && editor_candidate.length === 1 && (
               <Button
                 className="small open-with"
                 onClick={() => this.openFile(editor_candidate[0])}
@@ -115,9 +120,9 @@ export default class Viewer extends Component {
                 )}
               </Button>
             )}
-            {DriveService.previewonly === false && editor_candidate.length > 1 && (
+            {!DriveService.previewonly && editor_candidate.length > 1 && (
               <Menu
-                menu={editor_candidate.map(editor => {
+                menu={editor_candidate.map((editor: { [key: string]: any }) => {
                   return {
                     type: 'menu',
                     text: editor.name,
@@ -135,23 +140,19 @@ export default class Viewer extends Component {
             )}
 
             <div className="close" onClick={() => DriveService.viewDocument(null)}>
-              <CloseIcon class="m-icon-small" />
+              <CloseIcon className="m-icon-small" />
             </div>
 
-            {DriveService.previewonly === false && (
+            {!DriveService.previewonly && (
               <div
                 className="download"
                 onClick={() => {
-                  var link = DriveService.getLink(current, null, true);
-                  if (current.url) {
-                    window.open(link, '_blank');
-                  } else {
-                    window.open(link);
-                  }
+                  const link = DriveService.getLink(current, null, true, null);
+                  window.open(link, current.url ? 'blank' : undefined);
                 }}
               >
-                {current.url && <OpenInNewIcon class="m-icon-small" />}
-                {!current.url && <DownloadIcon class="m-icon-small" />}
+                {current.url && <OpenInNewIcon className="m-icon-small" />}
+                {!current.url && <DownloadIcon className="m-icon-small" />}
               </div>
             )}
           </div>
@@ -159,11 +160,14 @@ export default class Viewer extends Component {
 
         <div className="view_body">
           {this.state.did_load_preview && preview_candidate.length > 0 && (
-            <iframe src={this.state.url_formated || preview_candidate[0].url} />
+            <iframe
+              title={this.state.url_formated}
+              src={this.state.url_formated || preview_candidate[0].url}
+            />
           )}
           {canPreviewWithElectron && <webview src={current.url} />}
 
-          {preview_candidate.length == 0 && !canPreviewWithElectron && (
+          {preview_candidate.length === 0 && !canPreviewWithElectron && (
             <div className="no_preview_text">
               {!current.url && (
                 <span style={{ opacity: 0.5 }}>
@@ -177,18 +181,24 @@ export default class Viewer extends Component {
 
               {current.url && (
                 <div>
-                  <a href={current.url} target="_blank" style={{ fontSize: 14 }}>
+                  <Typography.Link
+                    onClick={() => window.open(current.url, 'blank')}
+                    style={{ fontSize: 14 }}
+                  >
                     {Languages.t('scenes.apps.drive.open_link', [], 'Open link in new window')}
-                  </a>
+                  </Typography.Link>
                   <br />
                   <br />
-                  <a href="https://twake.app/download" target="_blank" style={{ fontSize: 12 }}>
+                  <Typography.Link
+                    onClick={() => window.open('https://twake.app/download', 'blank')}
+                    style={{ fontSize: 12 }}
+                  >
                     {Languages.t(
                       'scenes.apps.drive.viewer.download_desktop',
                       [],
                       'Download Twake Desktop to preview in app',
                     )}
-                  </a>
+                  </Typography.Link>
                 </div>
               )}
             </div>
