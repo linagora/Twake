@@ -127,6 +127,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       await this.repository.save(message);
     }
 
+    if (options.enforceViewPropagation && serverRequest) {
+      created = true;
+    }
+
     this.onSaved(message, { created }, context);
 
     return new SaveResult<Message>(
