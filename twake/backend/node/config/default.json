@@ -11,7 +11,13 @@
     }
   },
   "console": {
-    "provider": "https://console.twake.app"
+    "type": "internal",
+    "remote": {
+      "client": "",
+      "secret": "",
+      "url": "url"
+    },
+    "internal": {}
   },
   "sentry": {
     "dsn": ""
@@ -66,7 +72,9 @@
       "database": "twake"
     },
     "cassandra": {
-      "contactPoints": ["scylladb:9042"],
+      "contactPoints": [
+        "scylladb:9042"
+      ],
       "localDataCenter": "datacenter1",
       "keyspace": "twake",
       "wait": false,
@@ -75,7 +83,9 @@
     }
   },
   "pubsub": {
-    "urls": ["amqp://guest:guest@localhost:5672"]
+    "urls": [
+      "amqp://guest:guest@localhost:5672"
+    ]
   },
   "search": {
     "type": false,

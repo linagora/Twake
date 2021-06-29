@@ -31,6 +31,8 @@ import Company from "../../../user/entities/company";
 import { chain } from "lodash";
 import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 import WorkspacePendingUser from "../../entities/workspace_pending_users";
+import { ConsoleServiceAPI } from "../../../console/api";
+import { CreateConsoleUser } from "../../../console/types";
 
 export class WorkspaceUsersCrudController
   implements
@@ -44,6 +46,7 @@ export class WorkspaceUsersCrudController
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
     protected usersService: UsersServiceAPI,
+    protected consoleService: ConsoleServiceAPI,
   ) {}
 
   private formatWorkspaceUser(
@@ -313,6 +316,12 @@ export class WorkspaceUsersCrudController
 
     const usersToProcessImmediately = [];
 
+    const company = await this.companyService.getCompany({ id: context.company_id });
+    const companyCode = company.identity_provider_id;
+    if (!companyCode) {
+      throw new Error(`Company ${context.company_id} has no identity_provider_id`);
+    }
+
     for (const invitation of request.body.invitations) {
       if (workspacePendingUsers.has(invitation.email)) {
         responses.push({
@@ -323,33 +332,64 @@ export class WorkspaceUsersCrudController
         continue;
       }
 
+      let userInCompany = false;
+      let user: User = null;
+
+      const consoleClient = this.consoleService.getClient();
+
       if (usersInTwake.has(invitation.email)) {
-        const user = usersInTwake.get(invitation.email);
-        const userInCompany = await this.companyService.getCompanyUser(
-          { id: context.company_id },
-          { id: user.id },
-        );
-        if (!userInCompany) {
-          // TODO: for console — call console API
-          // TODO: for non-console — create an account directly
-        }
-
-        const userInWorkspace = await this.workspaceService.getUser({
-          workspaceId: context.workspace_id,
-          userId: user.id,
-        });
-
-        if (userInWorkspace) {
-          responses.push({
-            email: invitation.email,
-            status: "error",
-            message: "User is already in workspace",
-          });
-          continue;
-        }
+        user = usersInTwake.get(invitation.email);
         usersToProcessImmediately.push(user);
+
+        if (user) {
+          userInCompany = Boolean(
+            await this.companyService.getCompanyUser({ id: context.company_id }, { id: user.id }),
+          );
+        }
+      } else {
+        user = await consoleClient.addUserToTwake({
+          email: invitation.email,
+          password: invitation.password,
+        });
       }
-      await putUserToPending(invitation);
+
+      if (!userInCompany) {
+        await consoleClient.addUserToCompany(
+          { id: context.company_id, code: null },
+          {
+            id: user.id,
+            email: invitation.email,
+            firstName: null,
+            lastName: null,
+            name: null,
+            avatar: {
+              type: null,
+              value: null,
+            },
+            password: invitation.password,
+            role: invitation.company_role,
+            skipInvite: false,
+          },
+        );
+      }
+
+      const userInWorkspace = Boolean(
+        user &&
+          (await this.workspaceService.getUser({
+            workspaceId: context.workspace_id,
+            userId: user.id,
+          })),
+      );
+
+      if (userInWorkspace) {
+        responses.push({
+          email: invitation.email,
+          status: "error",
+          message: "User is already in workspace",
+        });
+      } else {
+        await putUserToPending(invitation);
+      }
     }
 
     await Promise.all(usersToProcessImmediately.map(user => this.processPendingUser(user)));

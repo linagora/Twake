@@ -35,6 +35,7 @@ export interface WorkspaceUsersInvitationItem {
   email: string;
   role: WorkspaceUserRole;
   company_role: CompanyUserRole;
+  password?: string;
 }
 
 export interface WorkspaceUsersInvitationRequestBody {

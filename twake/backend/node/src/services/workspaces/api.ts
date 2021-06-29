@@ -18,11 +18,13 @@ import WorkspacePendingUser, {
 } from "./entities/workspace_pending_users";
 import { CompanyUserRole } from "../user/web/types";
 import { uuid } from "../../utils/types";
+import { ConsoleServiceAPI } from "../console/api";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
   workspaces: WorkspaceServiceAPI;
   companies: CompaniesServiceAPI;
   users: UsersServiceAPI;
+  console: ConsoleServiceAPI;
 }
 
 export interface WorkspaceServiceAPI

@@ -38,7 +38,7 @@ class Service implements UserServiceAPI {
         this.workspaces.init(context),
       ]);
     } catch (err) {
-      console.error("Error while initializing notification service", err);
+      console.error("Error while initializing user service", err);
     }
     return this;
   }
