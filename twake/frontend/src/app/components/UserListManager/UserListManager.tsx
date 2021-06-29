@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { Button, Col, Row, Typography } from 'antd';
+import classNames from 'classnames';
+import TrashIcon from '@material-ui/icons/DeleteOutlined';
 import Strings from 'app/services/utils/strings';
 import UsersService from 'services/user/UserService';
 import Languages from 'services/languages/languages.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import UserOrMail from '../ui/UserOrMail';
-import TrashIcon from '@material-ui/icons/DeleteOutlined';
-import { Button, Col, Row, Typography } from 'antd';
 import Icon from '../Icon/Icon';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 import AutoCompleteExtended from 'components/AutoCompleteExtended/AutoCompleteExtended';
@@ -24,6 +25,7 @@ const UserListManager = (props: PropsType) => {
 
   useEffect(() => {
     updateStateFromProps(props, true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateStateFromProps = (props: PropsType, force?: boolean) => {
@@ -82,9 +84,9 @@ const UserListManager = (props: PropsType) => {
     );
   };
 
-  const renderLine = (item: any, added?: boolean, nomenu?: any) => {
+  const renderLine = (item: any, added?: boolean): JSX.Element => {
     if (!item) {
-      return '';
+      return <></>;
     }
 
     if (item.email && !item.username) {
@@ -92,11 +94,7 @@ const UserListManager = (props: PropsType) => {
     }
 
     const id = item.id || item;
-
-    let text: JSX.Element;
-    let button: JSX.Element | string = '';
-
-    text = <UserOrMail item={item} />;
+    let button: JSX.Element = <></>;
 
     if (added && !props.readOnly) {
       if (id !== UsersService.getCurrentUserId() || props.canRemoveMyself) {
@@ -119,7 +117,12 @@ const UserListManager = (props: PropsType) => {
       }
     }
 
-    return [text, button];
+    return (
+      <>
+        <UserOrMail item={item} />
+        {button}
+      </>
+    );
   };
 
   const select = (id: string) => {
@@ -138,17 +141,21 @@ const UserListManager = (props: PropsType) => {
   return (
     <div
       className={
-        'userListManager menu-cancel-margin ' +
-        (props.collapsed ? ' collapsed' : '') +
-        (props.big ? ' big' : '') +
-        (props.medium ? ' medium' : '') +
-        (props.small ? ' small' : '')
+        classNames(
+          ['userListManager', 'menu-cancel-margin'],
+          {
+            collapsed: props.collapsed,
+            big: props.big,
+            medium: props.medium,
+            small: props.small,
+          }
+        )
       }
     >
       {usersIds.length > 0 && (
         <div className={'users-list no-background'}>
-          {usersIds.map((item: string) => (
-            <div key={item} style={props.collapsed ? { display: 'inline-block' } : {}}>
+          {usersIds.map((item: string, index: number) => (
+            <div key={index} style={props.collapsed ? { display: 'inline-block' } : {}}>
               <Row align="middle" gutter={[8, 8]}>
                 {renderLine(item, true)}
               </Row>
