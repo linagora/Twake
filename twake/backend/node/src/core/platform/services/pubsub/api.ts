@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { Initializable, logger, TwakeServiceProvider } from "../../framework";
 import { Processor } from "./processor";
 
+export type PubsubType = "local" | "amqp";
+
 export interface PubsubMessage<T> {
   /**
    * Optional message id, mainly used for logs
@@ -83,11 +85,17 @@ export interface PubsubServiceAPI extends TwakeServiceProvider {
   processor: Processor;
 }
 
+export type PubsubAdapter = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
+  type: string;
+  init?(): Promise<PubsubAdapter>;
+  start?(): Promise<PubsubAdapter>;
+};
+
 export type PubsubClient = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
   /**
    * Close the client
    */
-  close(): Promise<void>;
+  close?(): Promise<void>;
 };
 
 /**

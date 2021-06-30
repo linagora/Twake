@@ -99,7 +99,7 @@ export default class PubsubProxyService implements PubsubProxy {
    */
   async close(): Promise<void> {
     try {
-      this.client?.close();
+      this.client?.close?.();
     } catch (err) {
       logger.debug({ err }, `${LOG_PREFIX} Error on closing the pubsub layer`);
     }
@@ -142,7 +142,9 @@ export default class PubsubProxyService implements PubsubProxy {
     logger.debug(`${LOG_PREFIX} Subscriptions for topic ${topic}: ${subscriptions.size}`);
 
     const values = [...subscriptions];
-    const cachedListener = values.find(entry => listener === entry.listener && isEqual(options, entry.options));
+    const cachedListener = values.find(
+      entry => listener === entry.listener && isEqual(options, entry.options),
+    );
 
     if (!cachedListener) {
       logger.debug(`${LOG_PREFIX} Caching subscription to ${topic} topic: Yes`);
