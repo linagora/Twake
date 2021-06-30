@@ -103,7 +103,11 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
           where[key] = transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            { columns: columnsDefinition[key].options, secret: this.secret },
+            {
+              columns: columnsDefinition[key].options,
+              secret: this.secret,
+              disableSalts: true,
+            },
           );
         });
 
@@ -138,7 +142,11 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
           where[key] = transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            { columns: columnsDefinition[key].options, secret: this.secret },
+            {
+              columns: columnsDefinition[key].options,
+              secret: this.secret,
+              disableSalts: true,
+            },
           );
         });
 

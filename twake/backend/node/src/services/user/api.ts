@@ -13,8 +13,9 @@ import Company, { CompanyPrimaryKey } from "./entities/company";
 import ExternalUser from "./entities/external_user";
 import ExternalGroup from "./entities/external_company";
 import { ListUserOptions } from "./services/users/types";
-import { UserCompanyRole } from "./web/types";
+import { CompanyUserRole } from "./web/types";
 import { WorkspaceServiceAPI } from "../workspaces/api";
+import { uuid } from "../../utils/types";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
@@ -34,6 +35,8 @@ export interface UsersServiceAPI
     options?: ListOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<User>>;
+
+  getByEmails(email: string[]): Promise<User[]>;
 }
 
 /**
@@ -81,7 +84,7 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    * @param user
    */
-  getAllForUser(user: Pick<CompanyUser, "user_id">): Promise<ListResult<CompanyUser>>;
+  getAllForUser(userId: uuid): Promise<CompanyUser[]>;
 
   /**
    * Add a user in a company
@@ -89,7 +92,11 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    * @param user
    */
-  addUserInCompany(companyId: CompanyPrimaryKey, userId: UserPrimaryKey): Promise<CompanyUser>;
+  addUserInCompany(
+    companyId: CompanyPrimaryKey,
+    userId: UserPrimaryKey,
+    role?: CompanyUserRole,
+  ): Promise<CompanyUser>;
 
   /**
    * Add a user in a company
@@ -123,6 +130,6 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   setUserRole(
     companyPk: CompanyPrimaryKey,
     userPk: UserPrimaryKey,
-    role: UserCompanyRole,
+    role: CompanyUserRole,
   ): Promise<void>;
 }

@@ -21,7 +21,7 @@ export class MessageFileRef {
   target_id: string;
 
   @Type(() => String)
-  @Column("id", "timeuuid", { generator: "timeuuid" })
+  @Column("id", "timeuuid", { generator: "timeuuid", order: "DESC" })
   id: string;
 
   @Type(() => Number)

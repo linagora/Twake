@@ -1,21 +1,22 @@
 import React, { Component } from 'react';
-import User from 'services/user/user.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
-import Moment from 'react-moment';
 import moment from 'moment';
+import Moment from 'react-moment';
+import User from 'services/user/UserService';
+import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
-import UserCard from 'app/components/UserCard/UserCard.js';
+import UserCard from 'app/components/UserCard/UserCard';
 import { getSender } from 'services/Apps/Messages/MessagesUtils';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import Emojione from 'components/Emojione/Emojione';
-import ListenUsers from 'services/user/listen_users.js';
+import ListenUsers from 'services/user/ListenUsers';
 import Workspaces from 'services/workspaces/workspaces.js';
 import RouterServices from 'app/services/RouterService';
 import { Message } from 'app/services/Apps/Messages/Message';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
+import Languages from 'services/languages/languages';
 
 type Props = {
   message: Message;
@@ -150,7 +151,7 @@ export default class MessageHeader extends Component<Props, State> {
               {this.props.message.creation_date * 1000}
             </Moment>
 
-            {this.props.message.edited && ' - edited'}
+            {this.props.message.edited && (<span style={{textTransform: "lowercase"}}> - {Languages.t("scenes.apps.messages.input.edited", [], "Edited")}</span>)}
           </a>
         )}
       </div>

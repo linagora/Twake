@@ -13,7 +13,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import AppsParameters from 'app/scenes/Client/Popup/AppsParameters/AppsParameters.js';
 import Button from 'components/Buttons/Button.js';
 import WorkspaceAppsEditor from '../../AppsParameters/Pages/WorkspaceAppsEditor.js';

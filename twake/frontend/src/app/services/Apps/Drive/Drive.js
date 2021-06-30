@@ -1,8 +1,8 @@
 import React from 'react';
 import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
-import CurrentUser from 'services/user/current_user.js';
-import UserService from 'services/user/user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
+import UserService from 'services/user/UserService';
 import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
@@ -11,7 +11,7 @@ import AceModeList from './utils/ace_modelist.js';
 import ChannelsService from 'services/channels/channels.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Drive extends Observable {
   constructor() {
@@ -500,8 +500,9 @@ class Drive extends Observable {
     return 'other';
   }
 
-  viewDocument(file) {
+  viewDocument(file, previewonly = false) {
     this.viewed_document = file;
+    this.previewonly = previewonly;
     this.notify();
   }
 

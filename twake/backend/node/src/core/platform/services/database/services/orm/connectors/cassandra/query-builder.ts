@@ -38,6 +38,7 @@ export function buildSelectQuery<Entity>(
             `${transformValueToDbString(value, columnsDefinition[key].type, {
               columns: columnsDefinition[key].options,
               secret: options.secret || "",
+              disableSalts: true,
             })}`,
         );
 
@@ -46,6 +47,7 @@ export function buildSelectQuery<Entity>(
         result = `${key} = ${transformValueToDbString(filter, columnsDefinition[key].type, {
           columns: columnsDefinition[key].options,
           secret: options.secret || "",
+          disableSalts: true,
         })}`;
       }
 

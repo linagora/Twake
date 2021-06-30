@@ -58,6 +58,11 @@ class Board extends FrontObject
      */
     private $connectors = "[]";
 
+    /**
+     * @ORM\Column(name="deleted", type="twake_boolean")
+     */
+    private $deleted = false;
+
 
     public function __construct($workspace_id, $title)
     {
@@ -191,6 +196,16 @@ class Board extends FrontObject
     public function setViewMode($view_mode)
     {
         $this->view_mode = $view_mode;
+    }
+
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
+    
+    public function setDeleted($deleted)
+    {
+        $this->deleted = $deleted;
     }
 
     public function getAsArray()

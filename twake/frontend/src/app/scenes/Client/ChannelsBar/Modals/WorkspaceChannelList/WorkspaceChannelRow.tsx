@@ -8,7 +8,7 @@ import RouterServices, { ClientStateType } from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import Emojione from 'app/components/Emojione/Emojione';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import ModalManager from 'app/components/Modal/ModalManager';
 import './ChannelRow.scss';
 

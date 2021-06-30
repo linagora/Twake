@@ -3,12 +3,12 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import LocalStorage from 'app/services/LocalStorage';
-import WindowService from 'services/utils/window.js';
+import WindowService from 'services/utils/window';
 import MenusManager from 'app/components/Menus/MenusManager.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import { TabResource } from 'app/models/Tab';
 import { ChannelResource } from 'app/models/Channel';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import RouterService from 'app/services/RouterService';
 import _ from 'lodash';
 

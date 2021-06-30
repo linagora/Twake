@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Avatar, Badge, Tag } from 'antd';
 import { DashOutlined } from '@ant-design/icons';
 import { User } from 'react-feather';
 import Languages from 'services/languages/languages.js';
 import RouterServices from 'services/RouterService';
 import { UserType } from 'app/models/User';
-import UserService from 'services/user/user.js';
-import UserListenerService from 'services/user/listen_users';
-import OldCollections from 'services/Depreciated/Collections/Collections';
-import UsersService from 'services/user/user.js';
-import { isArray } from 'lodash';
+import UserService from 'services/user/UserService';
+import Collections from 'services/Depreciated/Collections/Collections';
+import UsersService from 'services/user/UserService';
 
 type UserPartsType = {
   avatar: JSX.Element;
@@ -23,28 +21,6 @@ type PropsType = {
   keepMyself?: boolean;
   max?: number;
   size?: number;
-};
-
-export const useUsersListener = (usersIds: string[]) => {
-  const users = (isArray(usersIds) ? usersIds : []).filter(
-    e => (usersIds.length || 0) === 1 || e !== UsersService.getCurrentUserId(),
-  );
-  OldCollections.get('users').useListener(useState, users);
-
-  useEffect(() => {
-    users?.map(userId => {
-      UserListenerService.listenUser(userId);
-      UserService.asyncGet(userId);
-    });
-
-    return () => {
-      users?.map(userId => {
-        UserListenerService.cancelListenUser(userId);
-      });
-    };
-  }, []);
-
-  return users;
 };
 
 export const getUserParts = (props: PropsType): UserPartsType => {
@@ -65,7 +41,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
 
   let users: UserType[] = [];
 
-  channelMembers?.map(userId => users.push(OldCollections.get('users').find(userId)));
+  channelMembers?.map(userId => users.push(Collections.get('users').find(userId)));
 
   if (channelMembers?.length === 1) {
     avatar = (
@@ -120,10 +96,9 @@ export const getUserParts = (props: PropsType): UserPartsType => {
     ) : (
       <></>
     );
-  const name = channelName.join(', ');
   return {
     avatar,
-    name,
+    name: channelName.join(', '),
     users,
     companyRole,
   };

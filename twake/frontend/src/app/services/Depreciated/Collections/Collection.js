@@ -7,7 +7,7 @@ import LocalStorage from 'app/services/LocalStorage';
 /** Collection
  * Act like a doctrine repository and try to be allways in sync with server in realtime
  */
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 export default class Collection extends Observable {
   constructor(options) {
@@ -224,11 +224,20 @@ export default class Collection extends Observable {
     );
   }
 
-  /** find
-    id
-  **/
-  find(id) {
-    return this.known_objects_by_id[id];
+  /**
+   *
+   * @param id resource identifier
+   * @param whenNotFound an optional function to be called when resource is not found
+   * @returns 
+   */
+  find(id, whenNotFound) {
+    const result = this.known_objects_by_id[id];
+
+    if (!result && whenNotFound) {
+      typeof whenNotFound === 'function' && whenNotFound(id);
+    }
+
+    return result;
   }
 
   findByFrontId(front_id) {

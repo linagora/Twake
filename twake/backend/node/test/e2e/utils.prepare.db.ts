@@ -36,6 +36,7 @@ export class TestDbService {
         id: id,
         name: name,
         displayName: name,
+        identity_provider_id: id,
       }),
     );
   }

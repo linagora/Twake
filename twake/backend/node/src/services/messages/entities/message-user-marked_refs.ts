@@ -21,7 +21,7 @@ export class MessageUserMarkedRef {
   bookmark_id: string;
 
   @Type(() => Number)
-  @Column("id", "timeuuid", { generator: "timeuuid" })
+  @Column("id", "timeuuid", { generator: "timeuuid", order: "DESC" })
   id: number;
 
   @Type(() => String)

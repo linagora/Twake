@@ -83,9 +83,9 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
 
   async listForUserPerCompanies(user_id: string): Promise<ListResult<UserNotificationBadge>> {
     //We remove all badge from current company as next block will create dupicates
-    const companies_ids = (await this.userService.companies.getAllForUser({ user_id }))
-      .getEntities()
-      .map(gu => gu.group_id);
+    const companies_ids = (await this.userService.companies.getAllForUser(user_id)).map(
+      gu => gu.group_id,
+    );
 
     let result: UserNotificationBadge[] = [];
     let type = "";

@@ -5,9 +5,9 @@ import 'moment/locale/de';
 import 'moment/locale/ja';
 import 'moment/locale/es';
 import Observable from 'app/services/Depreciated/observable.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class DateTime extends Observable {
   constructor() {

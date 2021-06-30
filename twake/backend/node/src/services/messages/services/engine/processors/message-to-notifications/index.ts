@@ -36,11 +36,15 @@ export class MessageToNotificationsProcessor {
 
       for (const participant of thread.participants) {
         if (participant.type !== "channel") {
-          return;
+          continue;
         }
 
         const channel: Channel = await this.channels.channels.get(
-          { id: messageResource.user_id },
+          {
+            id: participant.id,
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+          },
           {
             user: { server_request: true, id: null },
             workspace: {
@@ -73,14 +77,14 @@ export class MessageToNotificationsProcessor {
           text = `${senderName}: ${text}`;
         }
 
-        const usersOutput = (messageResource.text || "").match(/@[^: ]+:([0-f-]{36})/m);
+        const usersOutput = (messageResource.text || "").match(/@[^: ]+:([0-f-]{36})/gm);
         const globalOutput = (messageResource.text || "").match(
-          /(^| )@(all|here|channel|everyone)([^a-z]|$)/m,
+          /(^| )@(all|here|channel|everyone)([^a-z]|$)/gm,
         );
 
         const mentions = {
-          users: usersOutput.map(u => (u || "").trim()),
-          specials: globalOutput.map(g => (g || "").trim()) as specialMention[],
+          users: (usersOutput || []).map(u => (u || "").trim()),
+          specials: (globalOutput || []).map(g => (g || "").trim()) as specialMention[],
         };
 
         const messageEvent: MessageNotification = {
@@ -116,6 +120,10 @@ export class MessageToNotificationsProcessor {
         };
 
         if (messageResource.type === "message" && messageResource.subtype !== "system") {
+          logger.info(
+            `${this.name} - Forward message ${messageResource.id} to channel:activity and message:created / message:updated`,
+          );
+
           //Ignore system messages
           if (message.created) {
             await this.pubsub.publish<ChannelActivityNotification>("channel:activity", {
@@ -129,6 +137,8 @@ export class MessageToNotificationsProcessor {
               data: messageEvent,
             },
           );
+        } else {
+          logger.debug(`${this.name} - Cancel because this is system message`);
         }
       }
     } catch (err) {

@@ -19,9 +19,9 @@ import {
   CompanyObject,
   CompanyParameters,
   CompanyShort,
-  UserCompanyObject,
-  UserCompanyRole,
-  UserCompanyStatus,
+  CompanyUserObject,
+  CompanyUserRole,
+  CompanyUserStatus,
   UserListQueryParameters,
   UserObject,
   UserParameters,
@@ -56,22 +56,20 @@ export class UsersCrudController
     } as UserObject;
 
     if (includeCompanies) {
-      const userCompanies = await this.service
-        .getUserCompanies({ id: user.id })
-        .then(a => a.getEntities());
+      const userCompanies = await this.service.getUserCompanies({ id: user.id });
 
       const companies = await Promise.all(
         userCompanies.map(async uc => {
           const company = await this.companyService.getCompany({ id: uc.group_id });
           return {
-            role: uc.role as UserCompanyRole,
-            status: "active" as UserCompanyStatus, // FIXME: with real status
+            role: uc.role as CompanyUserRole,
+            status: "active" as CompanyUserStatus, // FIXME: with real status
             company: {
               id: uc.group_id,
               name: company.name,
               logo: company.logo,
             } as CompanyShort,
-          } as UserCompanyObject;
+          } as CompanyUserObject;
         }),
       );
 
@@ -91,7 +89,7 @@ export class UsersCrudController
 
   private formatCompany(
     companyEntity: Company,
-    userCompanyObject?: UserCompanyObject,
+    companyUserObject?: CompanyUserObject,
   ): CompanyObject {
     const res: CompanyObject = {
       id: companyEntity.id,
@@ -101,9 +99,9 @@ export class UsersCrudController
       stats: companyEntity.stats,
     };
 
-    if (userCompanyObject) {
+    if (companyUserObject) {
       res.status = "active"; // FIXME: with real status
-      res.role = userCompanyObject.role;
+      res.role = companyUserObject.role;
     }
 
     return res;
@@ -176,7 +174,7 @@ export class UsersCrudController
 
     const [currentUserCompanies, requestedUserCompanies] = (await Promise.all(
       [context.user.id, request.params.id].map(userId =>
-        this.service.getUserCompanies({ id: userId }).then(a => a.getEntities()),
+        this.service.getUserCompanies({ id: userId }),
       ),
     )) as [CompanyUser[], CompanyUser[]];
 
@@ -194,7 +192,7 @@ export class UsersCrudController
       requestedUserCompanies
         .filter(a => currentUserCompaniesIds.has(a.group_id))
         .map((uc: CompanyUser) => retrieveCompanyCached(uc.group_id).then((c: Company) => [c, uc])),
-    )) as [Company, UserCompanyObject][];
+    )) as [Company, CompanyUserObject][];
 
     return {
       resources: combos.map(combo => this.formatCompany(...combo)),

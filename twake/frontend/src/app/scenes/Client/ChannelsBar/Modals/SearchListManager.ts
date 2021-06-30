@@ -1,7 +1,7 @@
 import { ChannelResource } from 'app/models/Channel';
 import { UserType } from 'app/models/User';
 import Strings from 'app/services/utils/strings';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import Workspaces from 'services/workspaces/workspaces.js';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterService';
@@ -96,6 +96,7 @@ class SearchListManager {
           {
             scope: 'group',
             group_id: Workspaces.currentGroupId,
+            workspace_id: '',
           },
           (res: UserType[]) => users.push(...res.filter((el: UserType) => !!el)),
         );

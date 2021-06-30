@@ -3,7 +3,7 @@ import { Stream, Readable } from "stream";
 import { Consumes, logger, TwakeService } from "../../framework";
 import LocalConnectorService, { LocalConfiguration } from "./connectors/local/service";
 import S3ConnectorService, { S3Configuration } from "./connectors/S3/service";
-import StorageAPI, { StorageConnectorAPI } from "./provider";
+import StorageAPI, { StorageConnectorAPI, WriteMetadata } from "./provider";
 
 type EncryptionConfiguration = {
   secret: string | null;
@@ -28,13 +28,15 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
       return new S3ConnectorService(this.configuration.get<S3Configuration>("S3"));
     }
     logger.info(
-      "Using 'local' connector for storage (no other connector recognized from configuration type: '%s').",
+      `Using 'local' connector for storage${
+        type === "local" ? "" : " (no other connector recognized from configuration type: '%s')"
+      }.`,
       type,
     );
     return new LocalConnectorService(this.configuration.get<LocalConfiguration>("local"));
   }
 
-  write(path: string, stream: Stream): void {
+  async write(path: string, stream: Stream): Promise<WriteMetadata> {
     if (this.encryptionOptions.secret) {
       try {
         const cipher = createCipheriv(
@@ -44,10 +46,10 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
         );
         stream = stream.pipe(cipher);
       } catch (err) {
-        logger.error("Unable to createDecipheriv: %s", err);
+        logger.error("Unable to createCipheriv: %s", err);
       }
     }
-    this.getConnector().write(path, stream);
+    return await this.getConnector().write(path, stream);
   }
 
   async read(path: string): Promise<Readable> {

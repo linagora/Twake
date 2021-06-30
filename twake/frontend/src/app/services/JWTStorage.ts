@@ -1,5 +1,6 @@
 import LocalStorage from 'services/LocalStorage';
 import LoginService from 'services/login/login';
+import WindowService from 'services/utils/window';
 
 export type JWTDataType = {
   time: 0;
@@ -9,6 +10,11 @@ export type JWTDataType = {
   refresh: string;
   type: 'Bearer';
 };
+
+//Mobile temporary
+if ((WindowService.findGetParameter('mobile_login') as any) == '1') {
+  LocalStorage.setItem('mobile_login', '1');
+}
 
 class JWTStorageClass {
   private timeDelta = 5 * 60;
@@ -41,6 +47,17 @@ class JWTStorageClass {
     if (!jwtData) {
       return;
     }
+
+    //Mobile temporary
+    LocalStorage.getItem('mobile_login', (res: string) => {
+      LocalStorage.setItem('mobile_login', '0');
+      if (res == '1') {
+        document.location.replace(
+          '/internal/mobile/login/redirect?jwt=' + encodeURI(JSON.stringify(jwtData)),
+        );
+      }
+    });
+
     this.jwtData = jwtData;
     if (!options?.fromLocalStorage) {
       this.timeDelta = new Date().getTime() / 1000 - jwtData.time;

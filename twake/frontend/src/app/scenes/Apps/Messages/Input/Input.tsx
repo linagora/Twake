@@ -1,11 +1,17 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import classNames from 'classnames';
+import { Send } from 'react-feather';
+import { EditorState } from 'draft-js';
+import { Tooltip } from 'antd';
 import InputOptions from './Parts/InputOptions';
-import InputAutocomplete from './Parts/InputAutocomplete';
 import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
-import { MessageEditorService } from 'app/services/Apps/Messages/MessageEditorService';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 import AttachedFiles from './Parts/AttachedFiles';
+import RichTextEditorStateService from "app/components/RichTextEditor/EditorStateService";
+import { EditorView } from "app/components/RichTextEditor";
+import {fromString, toString} from "app/components/RichTextEditor/EditorDataParser";
+import Languages from 'app/services/languages/languages';
 import './Input.scss';
 
 type Props = {
@@ -18,49 +24,76 @@ type Props = {
   onFocus?: () => void;
   ref?: (node: any) => void;
   onSend?: (text: string) => void;
+  onChange?: (editorState: EditorState) => void;
   triggerApp?: (app: any, from_icon: any, evt: any) => void;
   localStorageIdentifier?: string;
   disableApps?: boolean;
   context?: string; //Main input or response input (empty string)
+  format?: "markdown" | "raw";
+  editorPlugins?: Array<string>;
+  editorState?: EditorState;
 };
 
 export default (props: Props) => {
+  const editorPlugins = props.editorPlugins || ["emoji", "mention", "channel", "command"];
+  const editorId = `channel:${props.channelId || ""}/thread:${props.threadId || ""}/message:${props.messageId || ""}`;
+  const format = props.format || "markdown";
+  const editorRef = useRef<EditorView>(null);
+  const submitRef = useRef<HTMLDivElement>(null);
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
-  const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
-  const refInput = useRef<any>(null);
-  const messageEditorService: MessageEditorService = MessageEditorsManager.get(props.channelId);
+  const messageEditorService = MessageEditorsManager.get(props.channelId);
+  const [editorState, setEditorState] = useState(() => RichTextEditorStateService.get(editorId, { plugins: editorPlugins }));
+  const disable_app: any = {};
+
   messageEditorService.useListener(useState);
 
-  let autocomplete: any = null;
-  let disable_app: any = {};
-  let hasFilesAttached: boolean = messageEditorService.filesAttachements[props.threadId || 'main']
-    ?.length
-    ? true
-    : false;
-  const onChange = (text: string) => {
-    setContent(text);
-  };
-  const onSend = async () => {
-    const content = await messageEditorService.getContent(props.threadId, props.messageId || '');
+  useEffect(() => {
+    focusEditor();
 
-    refInput?.current?.change('');
+    (async () => {
+      const initialMessage = await messageEditorService.getContent(props.threadId, props.messageId);
+
+      if (initialMessage && initialMessage.length) {
+        setEditorState(
+          RichTextEditorStateService.get(
+            editorId,
+            {
+              plugins: editorPlugins,
+              clearIfExists: true,
+              initialContent: fromString(initialMessage, format),
+            }
+          )
+        );
+      }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (props.editorState && props.editorState !== editorState) {
+      setEditorState(props.editorState);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.editorState]);
+
+
+  const getContentOutput = (editorState: EditorState) => {
+    return toString(editorState, format);
+  };
+
+  const onSend = () => {
+    const content = getContentOutput(editorState);
 
     if (props.onSend) {
       props.onSend(content);
       return;
     }
-    if (
-      content.trim() ||
-      messageEditorService.filesAttachements[props.threadId || 'main']?.length
-    ) {
-      sendMessage(content);
-      autocomplete.setContent('');
-      autocomplete.blur();
 
-      return true;
+    if (content || messageEditorService.hasAttachments(props.threadId)) {
+      sendMessage(content);
+      setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
     }
-    return false;
   };
 
   const triggerApp = (app: any, from_icon: any, evt: any) => {
@@ -71,11 +104,11 @@ export default (props: Props) => {
     MessagesService.triggerApp(props.channelId, props.threadId, app, from_icon, evt);
   };
 
-  const sendMessage = (val: string) => {
+  const sendMessage = (message: string) => {
     setLoading(true);
     MessagesService.iamWriting(props.channelId, props.threadId, false);
     MessagesService.sendMessage(
-      val,
+      message,
       {
         channel_id: props.channelId,
         parent_message_id: props.threadId || '',
@@ -89,7 +122,7 @@ export default (props: Props) => {
             messageEditorService.currentEditor ===
             messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
           ) {
-            autocomplete.focus();
+            focusEditor();
           }
           if (!message.parent_message_id) {
             messageEditorService.openEditor(message.id, props.messageId || '');
@@ -98,6 +131,7 @@ export default (props: Props) => {
       })
       .finally(() => {
         messageEditorService.clearAttachments(props.threadId);
+        messageEditorService.clearMessage(props.threadId, props.messageId || '');
       });
   };
 
@@ -105,15 +139,54 @@ export default (props: Props) => {
     messageEditorService.openEditor(props.threadId || '', props.messageId || '', props.context);
   };
 
+  const focusEditor = () => {
+    requestAnimationFrame(() => editorRef.current?.focus());
+  };
+
+  const setRichTextEditorState = (editorState: EditorState): void => {
+    setEditorState(editorState);
+    RichTextEditorStateService.set(editorId, editorState);
+  };
+
+  const isEmpty = (): boolean => {
+    return ((editorState.getCurrentContent().getPlainText().trim().length === 0) && !messageEditorService.hasAttachments(props.threadId)); 
+  };
+
+  const onUpArrow = (e: any): void => {
+    if (isEmpty()) {
+      MessagesService.startEditingLastMessage({
+        channel_id: props.channelId,
+        parent_message_id: props.threadId,
+      });
+    }
+  };
+
+  const onChange = async (editorState: EditorState) => {
+    await messageEditorService.setContent(props.threadId, props.messageId || '', getContentOutput(editorState));
+
+    if (props.onChange) {
+      props.onChange(editorState);
+      return;
+    }
+    setRichTextEditorState(editorState);
+    //props.onChange && props.onChange(editorState);
+  };
+
+  const onFilePaste = (files: Blob[]) => {
+    messageEditorService.getUploadZone(props.threadId).uploadFiles(files);
+  };
+
+  const isEditing = (): boolean => {
+    return !!(props.messageId && props.messageId === messageEditorService.currentEditorMessageId);
+  };
+
   return (
     <div
       className={
-        'message-input ' +
-        (loading ? 'loading ' : '') +
-        (messageEditorService.currentEditor !==
-        messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
-          ? 'unfocused '
-          : '')
+        classNames('message-input', {
+          loading,
+          unfocused: (messageEditorService.currentEditor !== messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context))
+        })
       }
       ref={props.ref}
       onClick={() => focus()}
@@ -133,47 +206,54 @@ export default (props: Props) => {
           }
         }}
       />
+
       <AttachedFiles channelId={props.channelId} threadId={props.threadId} />
+
       {!hasEphemeralMessage && (
-        <InputAutocomplete
-          ref={refInput}
-          messageId={props.messageId || ''}
-          onPaste={(evt: any) => messageEditorService.getUploadZone(props.threadId).paste(evt)}
-          channelId={props.channelId}
-          threadId={props.threadId}
-          onChange={(text: string) => {
-            onChange(text);
-          }}
-          onSend={() => onSend()}
-          onFocus={() => focus()}
-          autocompleteRef={node => {
-            autocomplete = node || autocomplete;
-          }}
-          onEditLastMessage={() => {
-            MessagesService.startEditingLastMessage({
-              channel_id: props.channelId,
-              parent_message_id: props.threadId,
-            });
-          }}
-        />
+        <div className="editorview-submit">
+          <EditorView
+            ref={editorRef}
+            onChange={(editorState) => onChange(editorState)}
+            clearOnSubmit={true}
+            outputFormat={format}
+            plugins={editorPlugins}
+            editorState={editorState}
+            onSubmit={() => onSend()}
+            onUpArrow={(e) => onUpArrow(e)}
+            onFilePaste={onFilePaste}
+            placeholder={Languages.t("scenes.apps.messages.input.placeholder", [], "Write a message. Use @ to quote a user.")}
+          />
+          { !isEditing() && (
+            <Tooltip title={Languages.t("scenes.apps.messages.input.send_message", [], "Send message")} placement="top">
+              <div
+                ref={submitRef}
+                className={
+                  classNames('submit-button', {
+                    'disabled': isEmpty(),
+                  })
+                }
+                onClick={() => {
+                  if (!isEmpty()) {
+                    onSend();
+                  }
+                }}>
+                <Send className="send-icon" size={20} />
+              </div>
+            </Tooltip>
+          )}
+       </div>
       )}
 
       {!hasEphemeralMessage && !props.messageId && (
         <InputOptions
-          inputValue={content}
-          isEmpty={!(content || hasFilesAttached)}
+          isEmpty={isEmpty()}
           channelId={props.channelId}
           threadId={props.threadId}
           onSend={() => onSend()}
           triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
-          onAddEmoji={emoji => {
-            if (autocomplete) {
-              autocomplete && autocomplete.putTextAtCursor(' ' + emoji.native + ' ');
-              setTimeout(() => {
-                autocomplete && autocomplete.focus();
-              }, 200);
-            }
-          }}
+          onAddEmoji={emoji => editorRef.current?.insertCommand("EMOJI", emoji)}
+          richTextEditorState={editorState}
+          onRichTextChange={(editorState) => setRichTextEditorState(editorState)}
         />
       )}
     </div>

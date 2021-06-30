@@ -56,7 +56,7 @@ class Version extends BaseController
                 ]
             ],
             "elastic_search_available" => !!$this->container->getParameter("es.host"),
-            "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161"
+            "help_url" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161"
         );
 
         if ($this->container->hasParameter("defaults.branding")) {

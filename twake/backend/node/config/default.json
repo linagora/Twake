@@ -1,6 +1,7 @@
 {
   "general": {
-    "help_link": false,
+    "help_url": false,
+    "pricing_plan_url": "",
     "accounts": {
       "type": "internal",
       "internal": {
@@ -10,7 +11,13 @@
     }
   },
   "console": {
-    "provider": "https://console.twake.app"
+    "type": "internal",
+    "remote": {
+      "client": "",
+      "secret": "",
+      "url": "url"
+    },
+    "internal": {}
   },
   "sentry": {
     "dsn": ""
@@ -65,7 +72,9 @@
       "database": "twake"
     },
     "cassandra": {
-      "contactPoints": ["scylladb:9042"],
+      "contactPoints": [
+        "scylladb:9042"
+      ],
       "localDataCenter": "datacenter1",
       "keyspace": "twake",
       "wait": false,
@@ -74,7 +83,9 @@
     }
   },
   "pubsub": {
-    "urls": ["amqp://guest:guest@localhost:5672"]
+    "urls": [
+      "amqp://guest:guest@localhost:5672"
+    ]
   },
   "search": {
     "type": false,
@@ -91,6 +102,7 @@
   },
   "storage": {
     "secret": "0ea28a329df23220fa814e005bfb671c",
+    "iv": "1234abcd00000000",
     "type": "local",
     "S3": {
       "endPoint": "play.min.io",

@@ -972,7 +972,7 @@ class OpenIDConnectClient
                 $verified = $this->verifyHMACJWTsignature($hashtype, $this->getClientSecret(), $payload, $signature);
                 break;
             case 'none':
-                $verified = false;
+                $verified = true;
                 break;
             default:
                 throw new OpenIDConnectClientException('No support for signature type: ' . $header->alg);

@@ -70,7 +70,7 @@ export class ChannelViewProcessor {
               ...pkPrefix,
               message_id: reversed.message_id,
             });
-            if (existingThreadRef.thread_id === message.resource.thread_id) {
+            if (existingThreadRef && existingThreadRef.thread_id === message.resource.thread_id) {
               reversed.message_id = message.resource.id;
               await this.repositoryReversed.save(reversed);
               await this.repository.remove(existingThreadRef);
@@ -87,22 +87,24 @@ export class ChannelViewProcessor {
         }
       }
 
-      logger.debug("Share with php realtime endpoint: " + config.get("phpnode.php_endpoint"));
-      //Monkey patch to remove as soon as nobody use php depreciated endpoints
-      if (config.get("phpnode.php_endpoint")) {
-        fetch(config.get("phpnode.php_endpoint") + "/ajax/discussion/noderealtime", {
-          method: "POST",
-          headers: {
-            Authorization: "Token " + config.get("phpnode.secret"),
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            entity: message.resource,
-            context: message.context,
-            participant: participant,
-          }),
-        });
+      if (process.env.NODE_ENV !== "cli") {
+        logger.debug("Share with php realtime endpoint: " + config.get("phpnode.php_endpoint"));
+        //Monkey patch to remove as soon as nobody use php depreciated endpoints
+        if (config.get("phpnode.php_endpoint")) {
+          fetch(config.get("phpnode.php_endpoint") + "/ajax/discussion/noderealtime", {
+            method: "POST",
+            headers: {
+              Authorization: "Token " + config.get("phpnode.secret"),
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              entity: message.resource,
+              context: message.context,
+              participant: participant,
+            }),
+          });
+        }
       }
 
       //Publish message in realtime

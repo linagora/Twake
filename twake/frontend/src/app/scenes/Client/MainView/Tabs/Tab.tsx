@@ -31,7 +31,7 @@ export default ({
   const { tabId, workspaceId } = RouterServices.getStateFromRoute();
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
-    AccessRightsService.hasLevel(workspaceId || '', 'administrator'),
+    AccessRightsService.hasLevel(workspaceId, 'administrator'),
   );
 
   if (selected && tabResource?.state?.persisted) {
@@ -61,7 +61,7 @@ export default ({
       <span style={{ maxWidth: '108px', marginBottom: 0 }} className="tab-name small-right-margin">
         {capitalize(tabResource.data.name)}
       </span>
-      {tabResource.data.id === tabId && AccessRightsService.hasLevel(workspaceId || '', 'member') && (
+      {tabResource.data.id === tabId && AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Menu
           style={{ lineHeight: 0 }}
           menu={[

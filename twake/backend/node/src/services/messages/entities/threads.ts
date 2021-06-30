@@ -9,7 +9,7 @@ export const TYPE = "threads";
 })
 export class Thread {
   @Type(() => String)
-  @Column("id", "timeuuid")
+  @Column("id", "timeuuid", { order: "DESC" })
   id: string;
 
   @Type(() => String)

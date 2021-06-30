@@ -11,7 +11,7 @@ import ChannelsService from 'services/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { UserType } from 'app/models/User';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cassandra from "cassandra-driver";
+import { md5 } from "../../../../../../../crypto";
 import { defer, Subject, throwError, timer } from "rxjs";
 import { concat, delayWhen, retryWhen, take, tap } from "rxjs/operators";
 import { UpsertOptions } from "..";
@@ -197,7 +198,7 @@ export class CassandraConnector extends AbstractConnector<
 
     if (primaryKey.length === 0) {
       logger.error(
-        "services.database.orm.cassandra - Primary key was not defined for table " + entity.name,
+        `services.database.orm.cassandra - Primary key was not defined for table ${entity.name}`,
       );
       return false;
     }
@@ -219,10 +220,10 @@ export class CassandraConnector extends AbstractConnector<
     });
     const clusteringOrderByString =
       clusteringOrderBy.length > 0
-        ? "WITH CLUSTERING ORDER BY (" + clusteringOrderBy.join(", ") + ")"
+        ? `WITH CLUSTERING ORDER BY (${clusteringOrderBy.join(", ")})`
         : "";
 
-    const allKeys = ["(" + partitionKey.join(", ") + ")", ...clusteringKeys];
+    const allKeys = [`(${partitionKey.join(", ")})`, ...clusteringKeys];
     const primaryKeyString = `(${allKeys.join(", ")})`;
 
     const columnsString = Object.keys(columns)
@@ -270,6 +271,31 @@ export class CassandraConnector extends AbstractConnector<
       result = false;
     }
 
+    // --- Create indexes --- //
+    if (entity.options.globalIndexes) {
+      for (const globalIndex of entity.options.globalIndexes) {
+        const indexName = globalIndex.join("_");
+        const indexDbName = `index_${md5(indexName)}`;
+
+        const query = `CREATE INDEX IF NOT EXISTS ${indexDbName} ON ${this.options.keyspace}."${
+          entity.name
+        }" (${globalIndex.join(", ")})`;
+
+        try {
+          logger.debug(
+            `service.database.orm.createTable - Creating index ${indexName} (${indexDbName}) : ${query}`,
+          );
+          await this.client.execute(query);
+        } catch (err) {
+          logger.warn(
+            { err },
+            `service.database.orm.createTable - creation error for index ${indexName} (${indexDbName}) : ${err.message}`,
+          );
+          result = false;
+        }
+      }
+    }
+
     return result;
   }
 
@@ -299,7 +325,11 @@ export class CassandraConnector extends AbstractConnector<
           `${transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            { columns: columnsDefinition[key].options, secret: this.secret },
+            {
+              columns: columnsDefinition[key].options,
+              secret: this.secret,
+              disableSalts: true,
+            },
           )}`,
         ]);
 
@@ -362,7 +392,11 @@ export class CassandraConnector extends AbstractConnector<
             `${key} = ${transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              { columns: columnsDefinition[key].options, secret: this.secret },
+              {
+                columns: columnsDefinition[key].options,
+                secret: this.secret,
+                disableSalts: true,
+              },
             )}`,
         );
 
@@ -403,14 +437,10 @@ export class CassandraConnector extends AbstractConnector<
     if (Object.keys(filters).some(key => pk.indexOf(key) < 0)) {
       //Filter not in primary key
       throw new Error(
-        "All filter parameters must be defined in entity primary key, got: " +
-          JSON.stringify(Object.keys(filters)) +
-          " on table " +
-          entityDefinition.name +
-          " but pk is " +
-          JSON.stringify(pk) +
-          ", instance was " +
-          JSON.stringify(instance),
+        `All filter parameters must be defined in entity primary key,
+          got: ${JSON.stringify(Object.keys(filters))}
+          on table ${entityDefinition.name} but pk is ${JSON.stringify(pk)},
+          instance was ${JSON.stringify(instance)}`,
       );
     }
 

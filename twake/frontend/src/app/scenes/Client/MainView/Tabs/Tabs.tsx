@@ -9,7 +9,7 @@ import RouterServices from 'app/services/RouterService';
 import { Plus } from 'react-feather';
 import DefaultChannelTab from 'app/scenes/Client/MainView/Tabs/DefaultChannelTab';
 import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import AccessRightsService from 'app/services/AccessRightsService';
 
 import './Tabs.scss';
@@ -60,7 +60,7 @@ export default (): JSX.Element => {
           })}
         </Tabs>
       )}
-      {AccessRightsService.hasLevel(workspaceId || '', 'member') && (
+      {AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Button
           className="add-tab-button"
           type="text"

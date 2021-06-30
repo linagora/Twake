@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Send, Smile, AlignLeft, Video, MoreHorizontal, Paperclip } from 'react-feather';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import CurrentUser from 'services/user/current_user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
 import MessageComponent from '../../Message/Message';
 import MessagesService from 'services/Apps/Messages/Messages.js';
 

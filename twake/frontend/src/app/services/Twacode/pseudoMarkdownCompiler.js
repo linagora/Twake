@@ -1,9 +1,9 @@
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionary.js';
 import anchorme from 'anchorme';
 import emojis_original_service from 'emojione';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import React, { Component } from 'react';
 
 class PseudoMarkdownCompiler {

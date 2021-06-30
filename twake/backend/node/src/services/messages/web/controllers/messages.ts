@@ -135,7 +135,11 @@ export class MessagesController
     const context = getThreadExecutionContext(request);
     try {
       const resources = await this.service.messages.list(
-        new Pagination(request.query.page_token, request.query.limit),
+        new Pagination(
+          request.query.page_token,
+          request.query.limit,
+          request.query.direction !== "history",
+        ),
         { ...request.query },
         context,
       );

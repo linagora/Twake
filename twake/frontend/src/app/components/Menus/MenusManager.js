@@ -1,12 +1,10 @@
-import React from 'react';
-
 import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
-/*
-  Menus manager service, choose where to generate menu
-*/
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
+/**
+ *  Menus manager service, choose where to generate menu
+*/
 class MenusManager extends Observable {
   constructor() {
     super();
@@ -37,7 +35,7 @@ class MenusManager extends Observable {
     this.openMenu.bind(this);
   }
   closeMenu() {
-    if (this.menus.length == 0) {
+    if (this.menus.length === 0) {
       this.willClose = false;
       return;
     }
@@ -145,10 +143,10 @@ class MenusManager extends Observable {
     var x = rect.right || rect.x;
     var y = rect.y;
 
-    if (position == 'top' || position == 'bottom' || position == 'center') {
+    if (position === 'top' || position === 'bottom' || position === 'center') {
       x = rect.x;
       y = rect.bottom || rect.y;
-      if (position == 'top') {
+      if (position === 'top') {
         y = rect.top || rect.y;
       }
 
@@ -177,5 +175,4 @@ class MenusManager extends Observable {
   }
 }
 
-const service = new MenusManager();
-export default service;
+export default new MenusManager();

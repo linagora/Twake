@@ -1,8 +1,8 @@
 import React from 'react';
 import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
-import CurrentUser from 'services/user/current_user.js';
-import UserService from 'services/user/user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
+import UserService from 'services/user/UserService';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
@@ -14,7 +14,7 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 
@@ -183,7 +183,7 @@ class Messages extends Observable {
         : [];
 
       val.files = preparedFiles;
-      val.prepared.push({ type: 'nop', content: [{ type: 'br' }, ...preparedFiles] });
+      val.prepared.push({ type: 'nop', content: preparedFiles });
       message.channel_id = options.channel_id;
       message.parent_message_id = options.parent_message_id || '';
       message.sender = CurrentUser.get().id;
@@ -398,7 +398,7 @@ class Messages extends Observable {
 
     let preparedFiles = this.editedMessage.content.files;
     if (preparedFiles) {
-      content.prepared.push({ type: 'nop', content: preparedFiles });
+      content.prepared.push({ type: 'br', content: preparedFiles });
     }
 
     this.editedMessage.content = Object.assign(this.editedMessage.content, content);

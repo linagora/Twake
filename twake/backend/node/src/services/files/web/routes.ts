@@ -28,7 +28,6 @@ const routes: FastifyPluginCallback<{ service: FileServiceAPI }> = (
   fastify.route({
     method: "GET",
     url: `${filesUrl}/:id/download`,
-    preValidation: [fastify.authenticate],
     handler: fileController.download.bind(fileController),
   });
 

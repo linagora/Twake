@@ -15,7 +15,7 @@ import Icon from 'components/Icon/Icon.js';
 import Tabs from 'components/Tabs/Tabs.js';
 import SearchService from 'services/search/search.js';
 import WorkspacesService from 'services/workspaces/workspaces.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 
 export default class EventDetails extends Component {
   constructor(props) {

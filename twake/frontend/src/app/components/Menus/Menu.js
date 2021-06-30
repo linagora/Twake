@@ -87,7 +87,16 @@ export default class Menu extends React.Component {
         ref={node => (this.container = node)}
         style={this.props.style}
         onClick={evt => {
-          this.openMenu(evt);
+          if (this.props.toggle) {
+            if (!this.open) {
+              this.openMenu(evt);
+            } else {
+              MenusManager.closeMenu();
+              this.props.onClose && this.props.onClose();
+            }
+          } else {
+            this.openMenu(evt);
+          }
         }}
         className={this.props.className}
       >

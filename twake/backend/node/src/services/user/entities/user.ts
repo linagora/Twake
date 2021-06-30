@@ -4,7 +4,8 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 export const TYPE = "user";
 
 @Entity(TYPE, {
-  primaryKey: [["id"]],
+  primaryKey: [["id"], "email_canonical"],
+  globalIndexes: [["email_canonical"]],
   type: TYPE,
   search: {
     index: "user",
@@ -32,7 +33,7 @@ export const TYPE = "user";
   },
 })
 export default class User {
-  @Column("id", "timeuuid")
+  @Column("id", "uuid")
   id: string;
 
   @Column("first_name", "encoded_string")

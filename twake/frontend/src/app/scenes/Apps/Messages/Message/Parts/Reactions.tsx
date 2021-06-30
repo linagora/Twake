@@ -1,5 +1,5 @@
 import React from 'react';
-import User from 'services/user/user.js';
+import User from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
 import Tooltip from 'components/Tooltip/Tooltip.js';

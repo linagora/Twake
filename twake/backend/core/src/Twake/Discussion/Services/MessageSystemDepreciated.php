@@ -145,11 +145,10 @@ class MessageSystemDepreciated
 
         if(count($messages) === 0
             && !$options["id"]
-            && !$options["id"]
             && !$offset
             && $limit > 0
             && !$parent_message_id ){
-                error_log($options["channel_id"]);
+            
             $init_message = Array(
                 "channel_id" => $options["channel_id"],
                 "hidden_data" => Array("type" => "init_channel"),

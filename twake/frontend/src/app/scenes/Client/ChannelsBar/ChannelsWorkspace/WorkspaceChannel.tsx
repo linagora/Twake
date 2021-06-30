@@ -53,7 +53,7 @@ export default (props: Props) => {
         suffix={
           !props.favorite &&
           !props.subgroup &&
-          AccessRightsService.hasLevel(workspaceId || '', 'member') && (
+          AccessRightsService.hasLevel(workspaceId, 'member') && (
             <Menu
               className="add"
               menu={[

@@ -32,19 +32,39 @@ class MessageSystem
     {
         $offset = isset($options["offset"]) ? $options["offset"] : null;
         $limit = isset($options["limit"]) ? $options["limit"] : 20;
-        $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : "";
+        $message_id = isset($options["id"]) ? $options["id"] : "";
+        $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : ($message_id ?: "");
 
-        $channel = $this->getInfosFromChannel($options["channel_id"]);   
-        if(!$channel){
-            return;
-        }
-
-        if(!$parent_message_id){
-            $uri = "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+        if($options["company_id"] && $options["workspace_id"]){
+            $channel = [
+                "company_id" => $options["company_id"],
+                "workspace_id" => $options["workspace_id"],
+                "channel_id" => $options["channel_id"],
+            ];
         }else{
-            $uri = "/companies/".$channel["company_id"]."/threads/".$parent_message_id."/messages?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+            $channel = $this->getInfosFromChannel($options["channel_id"]);   
+            if(!$channel){
+                return;
+            }
         }
-        $response = $this->forwardToNode("GET", $uri, [], $current_user);
+
+        if($message_id){
+            $uri = "/companies/".$channel["company_id"]."/threads/".$parent_message_id."/messages/".$message_id;
+            $singleResponse = $this->forwardToNode("GET", $uri, [], $current_user);
+            $response = [];
+            $response["resources"] = [ $singleResponse["resource"] ];
+        }else{
+            if(!$parent_message_id){
+                $uri = "/companies/".$channel["company_id"]."/workspaces/".$channel["workspace_id"]."/channels/".$channel["channel_id"]."/feed?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+            }else{
+                $uri = "/companies/".$channel["company_id"]."/threads/".$parent_message_id."/messages?replies_per_thread=5&limit=".abs($limit)."&page_token=".$offset."&direction=".($limit > 0?"history":"future");
+            }
+            $response = $this->forwardToNode("GET", $uri, [], $current_user);
+        }
+        
+        if(!is_array($response["resources"])){
+         return [];
+        }
 
         $messages = [];
         foreach($response["resources"] as $message){
@@ -59,19 +79,19 @@ class MessageSystem
             }
         }
 
-        if(count($messages) < abs($limit)
-            && !$options["id"]
+        $nonSystemMessages = 0;
+        foreach($messages as $message){
+            if($message["hidden_data"]["type"] === "init_channel" || $message["message_type"] == 0 || $message["message_type"] == 1){
+                $nonSystemMessages++;
+            }
+        }
+
+        if($nonSystemMessages === 0
+            && count($messages) < abs($limit)
             && !$options["id"]
             && !$offset
             && $limit > 0
             && !$parent_message_id ){
-
-            $found = false;
-            foreach($messages as $message){
-                if($message["hidden_data"]["type"] === "init_channel"){
-                    $found = true;
-                }
-            }
 
             if(!$found){
                 $init_message = Array(
@@ -80,7 +100,7 @@ class MessageSystem
                     "created_at" => 0
                 );
                 $init_message = $this->save($init_message, Array());
-                array_merge([$init_message], $messages);
+                $messages = array_merge([$init_message], $messages);
             }
         }
 
@@ -89,8 +109,16 @@ class MessageSystem
 
     public function remove($object, $options, $current_user = null)
     {
-        $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/delete", null, $current_user, $application ? $application->getId() : null);
-        return $this->convertFromNode($response["resource"], $channel);
+        $channel = $this->getInfosFromChannel($object["channel_id"]);   
+        if(!$channel){
+            return;
+        }
+
+        if($object["id"]){
+            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/delete", null, $current_user, $application ? $application->getId() : null);
+            return $this->convertFromNode($response["resource"], $channel);
+        }
+        return null;
     }
 
     public function save($object, $options, $current_user = null, $application = null)
@@ -210,7 +238,15 @@ class MessageSystem
             }
         }
 
+        $ephemeral = (isset($object["_once_ephemeral_message"]) && $object["_once_ephemeral_message"] || isset($object["ephemeral_id"]) && $object["ephemeral_id"]);
+
         return [
+            "ephemeral" => $ephemeral ? [
+                "id" => $object["ephemeral_id"] ?: $object["front_id"] ?: $object["id"] ?: $object["ephemeral_message_recipients"][0],
+                "version" => date("U"),
+                "recipient" => $object["ephemeral_message_recipients"][0],
+                "recipient_context_id" => "",
+            ] : null,
             "text" => $object["content"]["original_str"] ?: $object["content"]["fallback_string"],
             "blocks" => $blocks,
             "files" => $files,
@@ -226,8 +262,8 @@ class MessageSystem
 
         $phpMessage = new Message($channel["channel_id"], $message["thread_id"]);
 
-        $phpMessage->setId($message["id"]);
-        $phpMessage->setFrontId($message["context"]["_front_id"] ?: $message["id"]);
+        $phpMessage->setId($message["id"] ?: $message["ephemeral"]["id"]);
+        $phpMessage->setFrontId($message["context"]["_front_id"] ?: $message["id"] ?: $message["ephemeral"]["id"]);
         $phpMessage->setSender($message["user_id"]);
         $phpMessage->setApplicationId($message["application_id"]);
         $phpMessage->setMessageType($message["subtype"] == "application" ? 1 : ($message["subtype"] == "system" ? 2 : 0));
@@ -250,7 +286,7 @@ class MessageSystem
                     $prepared = $block["elements"];
                 }
                 if($block["type"] === "section" && count($prepared) === 0){
-                    $prepared = [["type" => "twacode", "content" => $block["text"]["mrkdwn"]["text"] ?: $block["text"]["plain_text"]["text"] ?: ""]];
+                    $prepared = [["type" => "twacode", "content" => $block["text"]["text"] || ""]];
                 }
             }
             
@@ -270,7 +306,16 @@ class MessageSystem
             "prepared" => $prepared
         ]);
 
-        return $phpMessage->getAsArray();
+        $array = $phpMessage->getAsArray();
+
+        if($message["ephemeral"]){
+            $array["front_id"] = $message["id"];
+            $array["ephemeral_id"] = $message["id"] ?: $message["ephemeral"]["id"];
+            $array["ephemeral_message_recipients"] =[ $message["ephemeral"]["recipient"]];
+            $array["_user_ephemeral"] = true;
+        }
+
+        return $array;
     }
 
     private function getInfosFromChannel($channelId){

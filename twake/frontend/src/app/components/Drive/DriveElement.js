@@ -12,12 +12,12 @@ import Input from 'components/Inputs/Input.js';
 import VersionDetails from './VersionDetails.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
-import Globals from 'services/Globals.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Languages from 'services/languages/languages.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import RouterServices from 'services/RouterService';
+import { getAsFrontUrl } from 'app/services/utils/URLUtils';
 
 const RenameInput = props => {
   const [value, setValue] = useState(props.value);
@@ -72,7 +72,7 @@ const PublicSharing = props => {
         <div>
           <InputWithClipBoard
             className={'bottom-margin full_width'}
-            value={Globals.window.front_root_url + sharedUrl}
+            value={getAsFrontUrl(sharedUrl)}
             disabled={false}
           />
           <br />
@@ -201,7 +201,7 @@ export default class DriveElement extends React.Component {
     SelectionsManager.select(this.state.element.id);
   }
 
-  clickElement(evt) {
+  clickElement(evt, previewonly = false) {
     evt.stopPropagation();
     evt.preventDefault();
 
@@ -209,7 +209,7 @@ export default class DriveElement extends React.Component {
       if (this.props.onClick) {
         this.props.onClick();
       } else {
-        DriveService.viewDocument(this.state.element);
+        DriveService.viewDocument(this.state.element, previewonly);
       }
     } else {
       SelectionsManager.setType(this.props.selectionType);
@@ -217,7 +217,7 @@ export default class DriveElement extends React.Component {
         if (this.props.onClick) {
           this.props.onClick();
         } else {
-          DriveService.viewDocument(this.state.element);
+          DriveService.viewDocument(this.state.element, previewonly);
         }
 
         var oldStatus =
