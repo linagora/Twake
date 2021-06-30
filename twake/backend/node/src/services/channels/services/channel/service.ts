@@ -410,7 +410,6 @@ export class Service implements ChannelService {
       );
 
       channels = await this.channelRepository.find(findFilters, {
-        pagination,
         $in: [["id", userChannels.getEntities().map(channelMember => channelMember.channel_id)]],
       });
 
@@ -457,7 +456,7 @@ export class Service implements ChannelService {
         },
       });
 
-      return channels;
+      return new ListResult(channels.type, channels.getEntities(), userChannels.nextPage);
     }
 
     channels = await this.channelRepository.find(findFilters, { pagination });
