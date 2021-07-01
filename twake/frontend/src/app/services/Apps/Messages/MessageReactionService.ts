@@ -20,10 +20,10 @@ class MessageReactionService {
    */
   public getUserReactions(message: Message, userId?: string): ReactionType[] {
     const { reactions } = message;
-    const userReactions: ReactionType[] = [];
+    let userReactions: ReactionType[] = [];
 
     if (reactions?.length && userId) {
-      reactions.forEach(r => (r.users.includes(userId) ? userReactions.push(r) : false));
+      userReactions = reactions.filter(r => r.users.includes(userId));
     }
 
     return userReactions;
