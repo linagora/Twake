@@ -30,7 +30,7 @@ export class UserService implements UsersServiceAPI {
   constructor(private database: DatabaseServiceAPI, private searchService: SearchServiceAPI) {}
 
   async init(): Promise<this> {
-    this.searchRepository = await this.searchService.getRepository<User>("user", User);
+    this.searchRepository = this.searchService.getRepository<User>("user", User);
     this.repository = await this.database.getRepository<User>("user", User);
     this.companyUserRepository = await this.database.getRepository<CompanyUser>(
       "group_user",
@@ -71,14 +71,17 @@ export class UserService implements UsersServiceAPI {
     options?: SearchUserOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<User>> {
-    const findFilter: FindFilter = {};
-    const findOptions: FindOptions = {
-      pagination,
-    };
-
-    //TODO
-
-    return this.searchRepository.search(findFilter, findOptions);
+    return await this.searchRepository.search(
+      {
+        ...(options.companyId ? { companies: [options.companyId] } : {}),
+      },
+      {
+        pagination,
+        $text: {
+          $search: options.search,
+        },
+      },
+    );
   }
 
   async list(

@@ -58,12 +58,15 @@ describe("The /users API", () => {
         },
       });
 
+      console.log("SEARCH RESULT 0: ");
+      console.log("SEARCH RESULT 1: ", response);
+
       expect(response.statusCode).toBe(200);
       const json = response.json();
       expect(json).toMatchObject({ resources: expect.any(Array) });
       const resources = json.resources;
 
-      console.log("SEARCH RESULT: ", resources);
+      console.log("SEARCH RESULT 2: ", resources);
 
       expect(resources.length).toBe(1);
 

@@ -7,6 +7,7 @@ type EntityOption = {
   globalIndexes?: string[][];
   search?: {
     source: (entity: any) => any; //Should return an object that will be indexed
+    shouldUpdate?: (entity: any) => any; //Should return an object that will be indexed
     index?: string; //Index name
     esMapping?: any; //Used for elasticsearch mappings
     mongoMapping?: any; //Used for elasticsearch mappings

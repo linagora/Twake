@@ -9,6 +9,7 @@ export type EntityDefinition = {
     ttl?: number;
     search?: {
       source: <Entity>(entity: Entity) => any; //Should return an object that will be indexed
+      shouldUpdate?: (entity: any) => any; //Should return an object that will be indexed
       index?: string; //Index name
       esMapping?: any; //Used for elasticsearch / mongodb mappings
       mongoMapping?: any; //Used for elasticsearch / mongodb mappings

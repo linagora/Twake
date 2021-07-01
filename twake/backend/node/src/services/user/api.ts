@@ -28,7 +28,7 @@ export interface UsersServiceAPI
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<User, UserPrimaryKey, ExecutionContext> {
-  getUserCompanies(pk: UserPrimaryKey, pagination?: Pagination): Promise<ListResult<CompanyUser>>;
+  getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]>;
 
   search<ListOptions>(
     pagination: Paginable,

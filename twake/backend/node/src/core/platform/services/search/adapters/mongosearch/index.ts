@@ -88,6 +88,13 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
         return;
       }
 
+      if (
+        entityDefinition.options.search.shouldUpdate &&
+        !entityDefinition.options.search.shouldUpdate(entity)
+      ) {
+        return;
+      }
+
       if (!entityDefinition.options?.search?.source) {
         logger.info(`Unable to do operation upsert to mongodb search for doc ${entity}`);
         return;
@@ -172,6 +179,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       .skip(Math.max(0, parseInt(options.pagination.page_token || "0")))
       .limit(Math.max(0, parseInt(options.pagination.limitStr || "100")));
 
+    console.log("Entities 2:");
+
     const entities: IndexedEntity[] = [];
     while (await cursor.hasNext()) {
       let row = await cursor.next();
@@ -182,6 +191,10 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
         score: row.score,
       });
     }
+
+    console.log("Entities:");
+
+    console.log(entities);
 
     const nextToken =
       entities.length === parseInt(options.pagination.limitStr) &&

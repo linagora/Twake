@@ -18,14 +18,14 @@ export {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FindFilter = ormFindFilter;
 
-type textType = {
+type TextType = {
   $search: string;
-  $caseSensitive: boolean; //Default false
-  $diacriticSensitive: boolean; //Default false
+  $caseSensitive?: boolean; //Default false
+  $diacriticSensitive?: boolean; //Default false
 };
 
 export type FindOptions = ormFindOptions & {
-  $text?: textType;
+  $text?: TextType;
 };
 
 export type IndexedEntity = {

@@ -81,6 +81,13 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         return;
       }
 
+      if (
+        entityDefinition.options.search.shouldUpdate &&
+        !entityDefinition.options.search.shouldUpdate(entity)
+      ) {
+        return;
+      }
+
       if (!entityDefinition.options?.search?.source) {
         logger.info(`Unable to do operation upsert to elasticsearch for doc ${entity}`);
         return;
@@ -171,6 +178,8 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
   ) {
     const instance = new (entityType as any)();
     const { entityDefinition } = getEntityDefinition(instance);
+
+    console.log("ES search not implemented");
 
     return new ListResult(entityDefinition.type, [], new Pagination());
   }
