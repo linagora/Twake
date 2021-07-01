@@ -52,11 +52,9 @@ class MessageReactionService {
     const reactionsArray: ReactionType[] = [...reactions];
     const alreadyInReactions = reactionsArray.map(r => r.name).includes(reaction.name);
 
-    if (alreadyInReactions) return reactionsArray.filter(r => r.name !== reaction.name);
-
-    if (!alreadyInReactions) return [...reactionsArray, reaction];
-
-    return reactionsArray;
+    return alreadyInReactions
+      ? reactionsArray.filter(r => r.name !== reaction.name)
+      : [...reactionsArray, reaction];
   }
 
   /**
