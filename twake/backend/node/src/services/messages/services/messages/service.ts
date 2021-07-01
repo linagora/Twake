@@ -64,7 +64,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     let created = !item.id;
-
     let message = getDefaultMessageInstance(item, context);
 
     //We try to update an existing message
@@ -74,29 +73,25 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         thread_id: context.thread.id,
       });
 
-      //Test if we can update this message. Can edit only:
-      // - Server itself
-      // - Message owner
-      // - Application owner
-      // Deleted messages cannot be edited except by server itself
+      //Test if we can update this message.
       if (
-        !serverRequest &&
-        (!messageToUpdate ||
-          (context?.user?.application_id !== messageToUpdate.application_id &&
-            context.user.id !== messageToUpdate.user_id) ||
-          messageToUpdate.subtype === "deleted")
+        //We have no right to do this
+        !(
+          serverRequest || // - Server itself
+          // - Message owner
+          (messageToUpdate && context.user.id === messageToUpdate.user_id) ||
+          // - Application owner
+          (messageToUpdate && context?.user?.application_id === messageToUpdate.application_id)
+        ) ||
+        //The message is deleted
+        (messageToUpdate && messageToUpdate.subtype === "deleted")
       ) {
         logger.error(`Unable to edit message in thread ${message.thread_id}`);
         throw Error("Can't edit this message.");
       }
 
-      //Created with forced id (server only)
-      if (!messageToUpdate && !options?.message_moved) {
-        created = true;
-      }
-
       if (serverRequest) {
-        message = _.assign(messageToUpdate || message, message);
+        message = _.assign(messageToUpdate || message, message); //TODO the problem is probably here
       } else {
         if (messageToUpdate) {
           messageToUpdate.edited = {
@@ -116,18 +111,18 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
     }
 
-    //Server request can edit more fields
-    if (serverRequest) {
-      message.created_at = item.created_at || message.created_at;
-    }
-
-    logger.info(`Saved message in thread ${message.thread_id}`);
-
     if (!message.ephemeral) {
+      if (options.threadInitialMessage) {
+        message.id = message.thread_id;
+      }
+
+      logger.info(`Saved message in thread ${message.thread_id}`);
       await this.repository.save(message);
+    } else {
+      logger.info(`Did not save ephemeral message in thread ${message.thread_id}`);
     }
 
-    if (options.enforceViewPropagation && serverRequest) {
+    if (options.enforceViewPropagation) {
       created = true;
     }
 
@@ -175,19 +170,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const messageInNewThread = _.cloneDeep(messageInOldThread);
     messageInNewThread.thread_id = context.thread.id;
 
-    await this.save(
-      messageInNewThread,
-      {
-        message_moved: true,
-      },
-      {
-        user: { id: null, server_request: true },
-        thread: context.thread,
-        company: context.company,
-      },
-    );
-
+    await this.repository.save(messageInNewThread);
     await this.repository.remove(messageInOldThread);
+
+    this.onSaved(messageInNewThread, { created: true }, context);
 
     logger.error(
       `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
