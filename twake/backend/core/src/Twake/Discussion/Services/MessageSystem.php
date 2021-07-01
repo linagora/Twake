@@ -137,7 +137,15 @@ class MessageSystem
 
         if(isset($object["_user_reaction"])){
             //Manage user reaction
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => $object["_user_reaction"] ? [$object["_user_reaction"]] : []], $current_user, $application ? $application->getId() : null);
+            $response = $this->forwardToNode(
+                "POST",
+                "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction",
+                [
+                    "reactions" => $object["_user_reaction"] ?
+                        (is_array($object["_user_reaction"]) ? $object["_user_reaction"] : [$object["_user_reaction"]])
+                        : []
+                ],
+                $current_user, $application ? $application->getId() : null);
         }else{
             //Manage message edition
 

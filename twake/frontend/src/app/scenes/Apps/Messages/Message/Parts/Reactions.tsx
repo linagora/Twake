@@ -4,7 +4,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
 import MessagesService from 'services/Apps/Messages/Messages';
 import Emojione from 'components/Emojione/Emojione';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message, ReactionType } from 'app/services/Apps/Messages/Message';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 
@@ -12,8 +12,6 @@ type PropsType = {
   message: Message;
   collectionKey: string;
 };
-
-type ReactionType = { name: string; count: number; users: string[] };
 
 export default ({ message, collectionKey }: PropsType) => {
   const has_reactions =
@@ -66,10 +64,9 @@ export default ({ message, collectionKey }: PropsType) => {
     );
   };
 
-  const sortReactions = (a: string, b: string): number =>
-    ((message?.reactions || {})[b]?.count || 0) - ((message?.reactions || {})[a]?.count || 0);
+  const sortReactions = (a: ReactionType, b: ReactionType): number => b.count || 0 - a.count;
 
   return (
-    <div className="reactions">{message?.reactions.sort(sortReactions).map(mapReactions)}</div>
+    <div className="reactions">{message?.reactions?.sort(sortReactions).map(mapReactions)}</div>
   );
 };
