@@ -56,6 +56,9 @@
     }
   },
   "pubsub": {
-    "urls": "PUBSUB_URLS"
+    "type": "PUBSUB_TYPE",
+    "amqp": {
+      "urls": "PUBSUB_URLS"
+    }
   }
 }
