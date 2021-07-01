@@ -9,7 +9,7 @@ import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEdition from './MessageEdition';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
 
 type Props = {
   message: Message;

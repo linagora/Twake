@@ -16,7 +16,7 @@ import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServic
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
-import { Message, ReactionType } from './Message';
+import { Message, ReactionType } from '../../../models/Message';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };

@@ -4,7 +4,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
 import MessagesService from 'services/Apps/Messages/Messages';
 import Emojione from 'components/Emojione/Emojione';
-import { Message, ReactionType } from 'app/services/Apps/Messages/Message';
+import { Message, ReactionType } from 'app/models/Message';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 

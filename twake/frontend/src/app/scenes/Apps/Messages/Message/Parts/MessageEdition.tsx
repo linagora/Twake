@@ -7,7 +7,7 @@ import Button from 'components/Buttons/Button.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import AlertManager from 'app/services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages.js';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
 import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import { fromString } from 'app/components/RichTextEditor/EditorDataParser';

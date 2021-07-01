@@ -15,7 +15,7 @@ import Input from '../Input/Input';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ActivityMessage, { ActivityType } from './Parts/ChannelActivity/ActivityMessage';
 import './Message.scss';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
 
 type Props = {
   fake?: boolean;
