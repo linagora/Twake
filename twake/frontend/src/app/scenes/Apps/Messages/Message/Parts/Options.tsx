@@ -17,6 +17,7 @@ import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import RouterServices from 'app/services/RouterService';
 import { Message } from 'app/models/Message';
+import MessageReactionService from 'app/services/Apps/Messages/MessageReactionService';
 
 type Props = {
   message: Message;
@@ -208,7 +209,11 @@ export default (props: Props) => {
                     onChange={(emoji: any) => {
                       MenusManager.closeMenu();
                       props.onClose && props.onClose();
-                      MessagesService.react(props.message, emoji.colons, props.collectionKey);
+                      MessageReactionService.react(
+                        props.message,
+                        emoji.colons,
+                        props.collectionKey,
+                      );
                     }}
                   />
                 );

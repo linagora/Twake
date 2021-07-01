@@ -16,7 +16,7 @@ import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServic
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
-import { Message, ReactionType } from '../../../models/Message';
+import { Message } from '../../../models/Message';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -358,61 +358,6 @@ class Messages extends Observable {
         this.collection.share(message);
       });
     }); //Call a notify
-  }
-
-  /**
-   * Get user reactions in a message
-   * @param message Message
-   * @param userId string
-   */
-  getUserReactions(message: Message, userId?: string): ReactionType[] {
-    const { reactions } = message;
-    const userReactions: ReactionType[] = [];
-
-    if (reactions?.length && userId) {
-      reactions.forEach(r => (r.users.includes(userId) ? userReactions.push(r) : false));
-    }
-
-    return userReactions;
-  }
-
-  /**
-   * Add user reaction
-   * @param reactions User ReactionType[]
-   * @param reaction ReactionType
-   */
-  setUserReactions(reactions: ReactionType[], reaction: ReactionType): string[] {
-    const reactionsNames: string[] = [...reactions.map(r => r.name)];
-    const alreadyInReactions = reactionsNames.includes(reaction.name);
-
-    if (alreadyInReactions) return reactionsNames.filter(name => name !== reaction.name);
-
-    if (!alreadyInReactions) return [...reactionsNames, reaction.name];
-
-    return reactionsNames;
-  }
-
-  /**
-   * Allow user to react a message
-   * @param message Message
-   * @param reaction string
-   * @param messagesCollectionKey string
-   */
-  react(message: Message, reaction: string, messagesCollectionKey: string): void {
-    const userId = UserService.getCurrentUserId();
-    const userReactions = this.getUserReactions(message, userId);
-
-    const currentReaction: ReactionType = {
-      name: reaction,
-      count: 1,
-      users: [userId],
-    };
-
-    const finalUserReactions = this.setUserReactions(userReactions, currentReaction);
-
-    this.collection.completeObject({ _user_reaction: finalUserReactions }, message.front_id);
-    this.collection.save(message, messagesCollectionKey);
-    MessageEditorManager.get(message?.channel_id || '').closeEditor();
   }
 
   pinMessage(message: Message, value: any, messagesCollectionKey: string) {

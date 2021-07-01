@@ -2,11 +2,11 @@ import React from 'react';
 import User from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
-import MessagesService from 'services/Apps/Messages/Messages';
 import Emojione from 'components/Emojione/Emojione';
 import { Message, ReactionType } from 'app/models/Message';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
+import MessageReactionService from 'app/services/Apps/Messages/MessageReactionService';
 
 type PropsType = {
   message: Message;
@@ -35,7 +35,7 @@ export default ({ message, collectionKey }: PropsType) => {
     });
 
   const onClickReaction = (name: ReactionType['name']): void =>
-    MessagesService.react(message, name, collectionKey);
+    MessageReactionService.react(message, name, collectionKey);
 
   const mapReactions = (reaction: ReactionType, index: number): JSX.Element => {
     const noReactions: boolean = (reaction.count || 0) <= 0;
