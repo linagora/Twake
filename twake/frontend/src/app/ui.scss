@@ -8,6 +8,10 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root {
+  position: fixed;
+}
+
 #app {
   background-color: var(--primary);
 }

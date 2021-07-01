@@ -104,6 +104,22 @@ class MessageSystem
             }
         }
 
+        //Fix additionnal init channel messages
+        $had_user_message_before = false;
+        $_messages = [];
+        foreach(array_reverse($messages) as $message){
+            if($message["message_type"] == 0){
+                $had_user_message_before = true;
+            }
+            if($message["hidden_data"]["type"] === "init_channel" && $had_user_message_before){
+                //Delete the additional init_channel:
+                //TODO Right now let's don't remove stuff in node
+            }else{
+                $_messages[] = $message;
+            }
+        }
+        $messages = array_reverse($_messages);
+
         return $messages;
     }
 
@@ -274,7 +290,7 @@ class MessageSystem
         $phpMessage->setReactions($message["reactions"]);
 
         $phpMessage->setCreationDate(new \DateTime("@" . intval($message["created_at"] / 1000)));
-        $phpMessage->setModificationDate(new \DateTime("@" . intval(($message["stats"]["last_activity"] ?: $message["created_at"]) / 1000)));
+        $phpMessage->setModificationDate(new \DateTime("@" . intval(($message["edited_at"] ?:  $message["stats"]["last_activity"] ?: $message["created_at"]) / 1000)));
 
         $phpMessage->setResponsesCount(max(0, $message["stats"]["replies"] - 1));
 
