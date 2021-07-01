@@ -42,6 +42,10 @@ export class ThreadsService
     options?: { participants?: ParticipantOperation; message?: Message },
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<Thread>> {
+    if (options.message) {
+      throw new Error("You must provide an initial message in the thread.");
+    }
+
     if (item.id) {
       //Update
       const participantsOperation: ParticipantOperation = options.participants || {
@@ -79,7 +83,7 @@ export class ThreadsService
         //Thread to edit does not exists
 
         if (!context.user?.server_request) {
-          throw new Error(`ThreadService: Unable to edit inexistant thread`);
+          throw new Error(`ThreadService: Unable to edit inexistent thread`);
         }
       }
     }
@@ -118,7 +122,9 @@ export class ThreadsService
     if (message) {
       await this.service.messages.save(
         message,
-        {},
+        {
+          threadInitialMessage: true,
+        },
         Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
       );
     }
@@ -137,7 +143,7 @@ export class ThreadsService
       thread.last_activity = new Date().getTime();
       await this.repository.save(thread);
     } else {
-      throw new Error("Try to add reply count to inexistant thread");
+      throw new Error("Try to add reply count to inexistent thread");
     }
   }
 
