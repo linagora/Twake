@@ -20,7 +20,7 @@ export class PubsubAdapterFactory {
       case "local":
         return new LocalPubsubService();
       case "amqp":
-        let urls: string[] = configuration.get<string[]>("urls", [DEFAULT_AMQP_URL]);
+        let urls: string[] = configuration.get<string[]>("amqp.urls", [DEFAULT_AMQP_URL]);
 
         //For environment variables
         if (typeof urls === "string") {
