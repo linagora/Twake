@@ -4,7 +4,7 @@ import Draggable from 'components/Draggable/Draggable.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
 
 type Props = {
   collectionKey?: string;

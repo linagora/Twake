@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import 'moment-timezone';
 import classNames from 'classnames';
 import Twacode from 'components/Twacode/Twacode';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 import Reactions from './Reactions';
 import Options from './Options';
 import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEdition from './MessageEdition';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
 
 type Props = {
   message: Message;
@@ -57,13 +57,11 @@ export default (props: Props) => {
 
   return (
     <div
-      className={
-        classNames('message-content', {
-          active,
-          'loading-interaction': loadingAction,
-          'link-to-thread': props.linkToThread,
-        })
-      }
+      className={classNames('message-content', {
+        active,
+        'loading-interaction': loadingAction,
+        'link-to-thread': props.linkToThread,
+      })}
       onClick={() => setActive(false)}
     >
       <MessageHeader
@@ -76,8 +74,8 @@ export default (props: Props) => {
           <MessageEdition
             message={props.message}
             collectionKey={props.collectionKey}
-            onDeleted={() => console.log("Message has been deleted")}
-            onEdited={() => console.log("Message has been edited")}
+            onDeleted={() => console.log('Message has been deleted')}
+            onEdited={() => console.log('Message has been edited')}
           />
         </div>
       )}

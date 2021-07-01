@@ -5,7 +5,7 @@ export type EnvironmentType = {
   websocket_url: string;
   socketio_url?: string;
   mixpanel_enabled?: boolean;
-  mixpanel_id?: boolean;
+  mixpanel_id?: string;
   sentry_dsn: boolean;
   version_detail: string;
 };

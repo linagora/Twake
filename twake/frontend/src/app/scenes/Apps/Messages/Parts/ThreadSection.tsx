@@ -6,7 +6,7 @@ import { getSender } from 'app/services/Apps/Messages/MessagesUtils';
 import Draggable from 'components/Draggable/Draggable.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Icon from 'components/Icon/Icon.js';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
 import './Threads.scss';
 
 type Props = {

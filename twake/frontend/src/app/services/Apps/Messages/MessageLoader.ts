@@ -3,7 +3,7 @@ import Collection from 'app/services/Depreciated/Collections/Collection';
 import Numbers from 'services/utils/Numbers';
 import Observable from 'app/services/Depreciated/observable';
 import Logger from 'app/services/Logger';
-import { Message } from './Message';
+import { Message } from '../../../models/Message';
 import {
   FeedLoader,
   NextParameters,

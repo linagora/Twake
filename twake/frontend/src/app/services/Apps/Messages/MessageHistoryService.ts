@@ -1,4 +1,4 @@
-import { Message } from './Message';
+import { Message } from '../../../models/Message';
 import Numbers from '../../utils/Numbers';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 
