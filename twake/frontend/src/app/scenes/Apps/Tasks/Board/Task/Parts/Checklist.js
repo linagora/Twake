@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Icon from 'components/Icon/Icon.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import InputEnter from 'components/Inputs/InputEnter.js';
 import Button from 'components/Buttons/Button.js';
 import Languages from 'services/languages/languages.js';
-import { lang } from 'moment';
-import { listLanguages } from 'highlight.js';
 
 export default class Checklist extends React.Component {
   constructor() {
@@ -39,72 +37,77 @@ export default class Checklist extends React.Component {
           </div>
         )}
 
-        {(checklist || []).map((item, i) => {
-          if (item) {
-            return (
-              <div className={'checklist-row ' + (this.state.checklist_edit == i ? 'edit' : '')}>
-                <div style={{ flex: 1, display: 'flex' }}>
-                  <Checkbox
-                    readOnly={this.props.readOnly}
-                    value={item.value}
-                    small
-                    onChange={v => {
-                      item.value = v;
-                      this.onChange(checklist);
-                    }}
-                  />
-                  {!(this.state.checklist_edit == i) && <span>{item.text}</span>}
-                  {this.state.checklist_edit == i && !this.props.readOnly && (
-                    <div className="checklist_element_editor">
-                      <InputEnter
-                        autoFocus
-                        style={{ flex: 1 }}
-                        small
-                        className={'full_width'}
-                        placeholder="-"
-                        value={item.text}
-                        onChange={v => {
-                          item.text = v.target.value;
+        {
+          // eslint-disable-next-line array-callback-return
+          (checklist || []).map((item, i) => {
+            if (item) {
+              return (
+                <div className={'checklist-row ' + (this.state.checklist_edit === i ? 'edit' : '')}>
+                  <div style={{ flex: 1, display: 'flex' }}>
+                    <Checkbox
+                      readOnly={this.props.readOnly}
+                      value={item.value}
+                      small
+                      onChange={v => {
+                        item.value = v;
+                        this.onChange(checklist);
+                      }}
+                    />
+                    {!(this.state.checklist_edit === i) && <span>{item.text}</span>}
+                    {this.state.checklist_edit === i && !this.props.readOnly && (
+                      <div className="checklist_element_editor">
+                        <InputEnter
+                          autoFocus
+                          style={{ flex: 1 }}
+                          small
+                          className={'full_width'}
+                          placeholder="-"
+                          value={item.text}
+                          onChange={v => {
+                            item.text = v.target.value;
+                            this.setState({});
+                          }}
+                          onEnter={() => {
+                            this.setState({ checklist_edit: -1 });
+                            this.onChange(checklist);
+                          }}
+                        />
+                      </div>
+                    )}
+                    {!this.props.readOnly && (
+                      <Icon
+                        className="edit-task"
+                        type="pen"
+                        onClick={() => {
+                          this.setState({
+                            checklist_edit: this.state.checklist_edit === i ? -1 : i,
+                          });
                           this.setState({});
                         }}
-                        onEnter={() => {
-                          this.state.checklist_edit = -1;
-                          this.onChange(checklist);
-                        }}
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
                   {!this.props.readOnly && (
                     <Icon
-                      className="edit-task"
-                      type="pen"
+                      className="trash m-icon-small"
+                      type="times"
                       onClick={() => {
-                        this.state.checklist_edit = this.state.checklist_edit == i ? -1 : i;
-                        this.setState({});
+                        checklist.splice(i, 1);
+                        this.onChange(checklist);
                       }}
                     />
                   )}
                 </div>
-                {!this.props.readOnly && (
-                  <Icon
-                    className="trash m-icon-small"
-                    type="times"
-                    onClick={() => {
-                      checklist.splice(i, 1);
-                      this.onChange(checklist);
-                    }}
-                  />
-                )}
-              </div>
-            );
-          }
-        })}
+              );
+            }
+          })
+        }
         {!this.props.readOnly && (
           <Button
             className="small secondary-text"
             onClick={() => {
               checklist.push({ text: '', value: false });
-              this.state.checklist_edit = checklist.length - 1;
+              this.setState({ checklist_edit: checklist.length - 1 });
               this.setState({});
             }}
           >
