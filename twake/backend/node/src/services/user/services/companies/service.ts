@@ -55,6 +55,10 @@ export class CompanyService implements CompaniesServiceAPI {
   getCompany(company: CompanyPrimaryKey): Promise<Company> {
     return this.companyRepository.findOne(company);
   }
+  async getCompanyByCode(code: string): Promise<Company> {
+    const allCompanies = await this.companyRepository.find({}).then(a => a.getEntities());
+    return allCompanies.find(company => (company.identity_provider_id = code));
+  }
 
   getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser> {
     return this.companyUserRepository.findOne({ group_id: company.id, user_id: user.id });

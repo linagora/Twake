@@ -122,4 +122,30 @@ export type ConsoleOptions = {
   client: string;
   secret: string;
   url: string;
+  public_key?: string;
 };
+
+export type ConsoleHookUser = {
+  _id: string;
+  roles: [{ targetCode: string; roleCode: CompanyUserRole }];
+};
+
+export type ConsoleHookBodyContent = {
+  company: { code: string };
+  user: ConsoleHookUser;
+};
+
+export type ConsoleHookBody = {
+  type: string;
+  content: ConsoleHookBodyContent;
+  signature: string;
+};
+
+export class ConsoleHookQueryString {
+  secret: string;
+}
+
+export class ConsoleHookResponse {
+  success?: boolean;
+  error?: string;
+}

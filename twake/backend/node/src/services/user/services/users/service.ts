@@ -19,6 +19,7 @@ import { UsersServiceAPI } from "../../api";
 import { ListUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
 import Company from "../../entities/company";
+import { Column } from "../../../../core/platform/services/database/services/orm/decorators";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -88,6 +89,12 @@ export class UserService implements UsersServiceAPI {
 
   async get(pk: UserPrimaryKey): Promise<User> {
     return await this.repository.findOne(pk);
+  }
+
+  async getByConsoleId(id: string): Promise<User> {
+    // TODO: improve using indexes
+    const allUsers = await this.repository.find({}).then(a => a.getEntities());
+    return allUsers.find(user => user.identity_provider_id == id);
   }
 
   async getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]> {

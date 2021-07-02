@@ -30,6 +30,7 @@ export interface UsersServiceAPI
     CRUDService<User, UserPrimaryKey, ExecutionContext> {
   getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]>;
   getByEmails(email: string[]): Promise<User[]>;
+  getByConsoleId(consoleUserId: string): Promise<User>;
 }
 
 /**
@@ -64,6 +65,7 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param companyId
    */
   getCompany(companyId: CompanyPrimaryKey): Promise<Company>;
+  getCompanyByCode(code: string): Promise<Company>;
 
   /**
    * Get the companies
