@@ -46,7 +46,7 @@ export default class WorkspaceAppsSearch extends Component {
       collection: 'applications',
       collection_filter: (item, query) => {
         var res =
-          (item.is_available_to_public || item.group_id == group.id) &&
+          (item.is_available_to_public || item.group_id === group.id) &&
           (item.name + ' ' + item.description + ' ' + (item.categories || []).join(' '))
             .toLocaleLowerCase()
             .indexOf(query.toLocaleLowerCase()) >= 0;
@@ -98,7 +98,7 @@ export default class WorkspaceAppsSearch extends Component {
     AlertManager.confirm(
       () => {
         WorkspacesApps.activateApp(this.state.current_app_id);
-        this.state.current_app_id = null;
+        this.setState({ current_app_id: null });
         this.props.exit();
       },
       () => {},
@@ -115,6 +115,7 @@ export default class WorkspaceAppsSearch extends Component {
   render() {
     var workspace_id = workspaceService.currentWorkspaceId;
     var workspace = Collections.get('workspaces').find(workspace_id);
+    // eslint-disable-next-line no-unused-vars
     var group = Collections.get('groups').find(workspace.group.id);
 
     if (this.state.current_app_id) {
@@ -137,6 +138,7 @@ export default class WorkspaceAppsSearch extends Component {
 
           <div className="group_section">
             <div className="text">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" key="goback" onClick={() => this.setState({ current_app_id: null })}>
                 {Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.back_to_search_button',
@@ -173,6 +175,7 @@ export default class WorkspaceAppsSearch extends Component {
             {application.website && [
               <br />,
               <div className="text">
+                {/* eslint-disable-next-line react/jsx-no-target-blank */}
                 <a href={application.website} target="_blank">
                   {application.website}
                 </a>
@@ -198,7 +201,7 @@ export default class WorkspaceAppsSearch extends Component {
               })}
             />
             {!application.capabilities ||
-              (application.capabilities.length == 0 && (
+              (application.capabilities.length === 0 && (
                 <div className="smalltext">
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
@@ -223,7 +226,7 @@ export default class WorkspaceAppsSearch extends Component {
               })}
             />
             {!application.privileges ||
-              (application.privileges.length == 0 && (
+              (application.privileges.length === 0 && (
                 <div className="smalltext">
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
@@ -248,7 +251,7 @@ export default class WorkspaceAppsSearch extends Component {
               })}
             />
             {!application.hooks ||
-              (application.hooks.length == 0 && (
+              (application.hooks.length === 0 && (
                 <div className="smalltext">
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.no_access',
@@ -295,6 +298,7 @@ export default class WorkspaceAppsSearch extends Component {
 
         <div className="group_section">
           <div className="text" style={{ marginBottom: 16 }}>
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a href="#" key="goback" onClick={() => this.props.exit()}>
               {Languages.t('general.back', [], 'Retour')}
             </a>
