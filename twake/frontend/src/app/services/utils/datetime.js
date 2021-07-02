@@ -169,7 +169,7 @@ class DateTime extends Observable {
   }
   isDateFirstInFormat() {
     var numbers = moment().format('L').split('/');
-    if (numbers[0] == new Date().getDate()) {
+    if (numbers[0] === new Date().getDate()) {
       return true;
     } else {
       return false;
