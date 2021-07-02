@@ -1,4 +1,3 @@
-import React from 'react';
 import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
 import User from 'services/user/UserService';
@@ -61,7 +60,7 @@ class WorkspacesUsers extends Observable {
   getLevel(idLevel) {
     var levels = Collections.get('workspaces').find(workspaceService.currentWorkspaceId).levels;
     for (var i = 0; i < levels.length; i++) {
-      if (idLevel == levels[i].id) {
+      if (idLevel === levels[i].id) {
         return levels[i];
       }
     }
@@ -143,7 +142,7 @@ class WorkspacesUsers extends Observable {
 
     var data = {
       workspaceId: workspace_id,
-      max: this.offset_by_workspace_id[workspace_id][0] == 0 ? 100 : 40,
+      max: this.offset_by_workspace_id[workspace_id][0] === 0 ? 100 : 40,
     };
 
     if (options.members) {
@@ -162,6 +161,7 @@ class WorkspacesUsers extends Observable {
       loadMembers(options.members || []);
     }
 
+    // eslint-disable-next-line no-unused-vars
     var loadGroupUsers = data => {
       data.users.forEach(item => {
         if (
@@ -205,7 +205,7 @@ class WorkspacesUsers extends Observable {
           let bothAreInChannel = 0; // if 1 : one of 2 users searched is in channel as chavite, 2 : both are in channel as chavite
           const extMembers = channelsInWorkspace[i].ext_members;
           for (var j = 0; j < extMembers.length; j++) {
-            if (extMembers[j] == member || extMembers[j] == CurrentUser.get().id) {
+            if (extMembers[j] === member || extMembers[j] === CurrentUser.get().id) {
               bothAreInChannel++;
               if (bothAreInChannel >= 2) {
                 return true;
@@ -223,7 +223,7 @@ class WorkspacesUsers extends Observable {
       LoginService.updateUser();
     }
 
-    if (res.type == 'add' || res.type == 'update_workspace_level') {
+    if (res.type === 'add' || res.type === 'update_workspace_level') {
       var userlink = {
         externe: res.workspace_user.externe,
         autoAddExterne: res.workspace_user.auto_add_externe,
@@ -232,12 +232,10 @@ class WorkspacesUsers extends Observable {
         user: res.workspace_user.user,
         groupLevel: res.workspace_user.groupLevel,
       };
-      this.users_by_workspace[res.workspace_user.workspace.id][
-        res.workspace_user.user.id
-      ] = userlink;
-      this.users_by_group[res.workspace_user.workspace.group.id][
-        res.workspace_user.user.id
-      ] = userlink;
+      this.users_by_workspace[res.workspace_user.workspace.id][res.workspace_user.user.id] =
+        userlink;
+      this.users_by_group[res.workspace_user.workspace.group.id][res.workspace_user.user.id] =
+        userlink;
       WorkspacesMembersTable.updateElement(
         res.workspace_user.workspace.id,
         'members',
@@ -245,7 +243,7 @@ class WorkspacesUsers extends Observable {
         res.workspace_user,
       );
       // Collections.get("users").completeObject(res.workspace_user.user, res.workspace_user.user.front_id);
-    } else if (res.type == 'remove') {
+    } else if (res.type === 'remove') {
       WorkspacesMembersTable.removeElement(
         res.workspace_user.workspace.id,
         'members',
@@ -267,7 +265,7 @@ class WorkspacesUsers extends Observable {
     this.notify();
 
     Api.post('workspace/members/remove', { ids: [id], workspaceId: workspaceId }, function (res) {
-      if (id == CurrentUser.get().id && openedWorkspaceId == workspaceId) {
+      if (id === CurrentUser.get().id && openedWorkspaceId === workspaceId) {
         Globals.window.location.reload();
       }
 
@@ -292,7 +290,7 @@ class WorkspacesUsers extends Observable {
         workspaceId: workspaceService.currentWorkspaceId,
       },
       function (res) {
-        if (res.errors.length == 0) {
+        if (res.errors.length === 0) {
           if (
             ((res.data.added || {}).pending || []).length +
               ((res.data.added || {}).user || []).length >
@@ -309,7 +307,7 @@ class WorkspacesUsers extends Observable {
           that.errorOnInvitation = false;
           that.errorUsersInvitation = [];
           if (res.data.not_added.length > 0) {
-            if (res.data.not_added[0] != '') {
+            if (res.data.not_added[0] !== '') {
               that.errorOnInvitation = true;
               that.errorUsersInvitation = res.data.not_added;
             }
@@ -333,9 +331,8 @@ class WorkspacesUsers extends Observable {
   }
   addUserFromGroup(id, externe, cb, thot) {
     if (this.users_by_group[groupService.currentGroupId][id]) {
-      this.users_by_workspace[workspaceService.currentWorkspaceId][id] = this.users_by_group[
-        groupService.currentGroupId
-      ][id];
+      this.users_by_workspace[workspaceService.currentWorkspaceId][id] =
+        this.users_by_group[groupService.currentGroupId][id];
       var username = (Collections.get('users').find(id) || {}).username || '';
       this.addUser([username + '|' + (externe ? 1 : 0)], cb, thot);
       this.notify();
@@ -350,6 +347,7 @@ class WorkspacesUsers extends Observable {
       })
       .indexOf(mail);
     if (index >= 0) {
+      // eslint-disable-next-line no-unused-vars
       var old = that.membersPending.splice(index, 1);
     }
     this.notify();
@@ -420,8 +418,10 @@ class WorkspacesUsers extends Observable {
         },
       );
     } else if (member && !this.updateRoleUserLoading[userId]) {
+      // eslint-disable-next-line no-redeclare
       var that = this;
       this.updateRoleUserLoading[userId] = true;
+      // eslint-disable-next-line no-redeclare
       var previousState = member.groupLevel;
       member.level = state ? 3 : -1;
       WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
@@ -447,7 +447,7 @@ class WorkspacesUsers extends Observable {
       var that = this;
       this.updateLevelUserLoading[userId] = true;
       var previousState = member.level;
-      if (previousState == this.getDefaultLevel().id) {
+      if (previousState === this.getDefaultLevel().id) {
         member.level = this.getAdminLevel().id;
       } else {
         member.level = this.getDefaultLevel().id;
@@ -462,7 +462,7 @@ class WorkspacesUsers extends Observable {
           levelId: member.level,
         },
         res => {
-          if (res.errors.length > 0 || res.data.updated == 0) {
+          if (res.errors.length > 0 || res.data.updated === 0) {
             member.level = previousState;
             WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
           }
@@ -492,8 +492,8 @@ class WorkspacesUsers extends Observable {
       var users = WorkspacesMembersTable.getList(workspaceService.currentWorkspaceId, 'members');
       Object.keys(users).forEach(id => {
         if (
-          id != User.getCurrentUserId() &&
-          users[id].level == users[User.getCurrentUserId()].level
+          id !== User.getCurrentUserId() &&
+          users[id].level === users[User.getCurrentUserId()].level
         ) {
           has_other_admin = true;
         }
@@ -522,7 +522,9 @@ class WorkspacesUsers extends Observable {
   }
 
   fullStringToEmails(str) {
-    const regex = /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
+    const regex =
+      // eslint-disable-next-line no-useless-escape
+      /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
     const mailToArray = [];
     const stringToArray = str.match(regex);
 

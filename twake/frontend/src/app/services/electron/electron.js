@@ -14,7 +14,7 @@ class Electron {
   }
 
   isElectron() {
-    return Globals.window.electron != undefined;
+    return Globals.window.electron !== undefined;
   }
 
   setBadge(value) {

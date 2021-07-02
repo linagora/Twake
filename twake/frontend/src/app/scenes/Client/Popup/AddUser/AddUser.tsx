@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import Strings from 'services/utils/strings.js';
@@ -10,6 +9,7 @@ import InputWithButton from 'components/Inputs/InputWithButton.js';
 import workspacesUsersService from 'services/workspaces/workspaces_users.js';
 import './AddUser.scss';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import { Typography } from 'antd';
 
 type Props = {
   standalone?: boolean;
@@ -63,10 +63,13 @@ export default class AddUser extends Component<Props, State> {
     if (Strings.verifyMail(str)) {
       return str;
     } else {
-      return str
-        .toLocaleLowerCase()
-        .replace(/[^a-zA-Z0-9-_\.]/g, '')
-        .replace(/^@*(.*)/, '@$1');
+      return (
+        str
+          .toLocaleLowerCase()
+          // eslint-disable-next-line no-useless-escape
+          .replace(/[^a-zA-Z0-9-_\.]/g, '')
+          .replace(/^@*(.*)/, '@$1')
+      );
     }
   }
 
@@ -194,14 +197,14 @@ export default class AddUser extends Component<Props, State> {
               {Languages.t('scenes.app.popup.adduser.adresses_message')}
             </div>
 
-            <a
+            <Typography.Link
               className="smalltext"
               onClick={() => {
                 this.setState({ multi: false });
               }}
             >
               {Languages.t('scenes.app.popup.adduser.message_instruction')}
-            </a>
+            </Typography.Link>
           </div>
         )}
         {!this.state.multi && (
@@ -211,9 +214,9 @@ export default class AddUser extends Component<Props, State> {
             <div className="adduser-container y-margin">
               <div className="smalltext">
                 {this.state.input_values.length < 5 ? (
-                  <a onClick={() => this.setTemporaryInputs(0, 'add')}>
+                  <Typography.Link onClick={() => this.setTemporaryInputs(0, 'add')}>
                     {Languages.t('scenes.app.popup.adduser.add_another_mail')}
-                  </a>
+                  </Typography.Link>
                 ) : (
                   ''
                 )}
@@ -232,25 +235,25 @@ export default class AddUser extends Component<Props, State> {
               )}
             </div>
 
-            <a
+            <Typography.Link
               className="smalltext"
               onClick={() => {
                 this.setState({ multi: true });
               }}
             >
               {Languages.t('scenes.app.popup.adduser.adding_several_people')}
-            </a>
+            </Typography.Link>
           </div>
         )}
 
         <div className="bottom">
           {this.props.inline && (
-            <a
+            <Typography.Link
               className="returnBtn blue_link"
               onClick={() => this.props.previous && this.props.previous()}
             >
               {this.state.i18n.t('general.back')}
-            </a>
+            </Typography.Link>
           )}
           <ButtonWithTimeout
             className="medium"

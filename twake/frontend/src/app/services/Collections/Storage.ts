@@ -48,6 +48,7 @@ export class CollectionStorage implements CollectionStore {
 
     if (!item._primaryKey) {
       logger.log('upsert: ', 'Every resources must contain an id', path, item);
+      // eslint-disable-next-line no-throw-literal
       throw 'Every resources must contain an id';
     }
 
@@ -98,7 +99,7 @@ export class CollectionStorage implements CollectionStore {
     const items = this.find(type, path, item);
     for (let item of items) {
       collection[item._primaryKey]._paths = item._paths.filter((p: string) => p !== path);
-      if (!path || collection[item._primaryKey]._paths.length == 0) {
+      if (!path || collection[item._primaryKey]._paths.length === 0) {
         item._primaryKey && collection[item._primaryKey] && delete collection[item._primaryKey];
       }
     }

@@ -63,22 +63,22 @@ class Languages extends Observable {
       language = this.language;
     }
 
-    if (language == 'fr') {
+    if (language === 'fr') {
       this.data = locale_fr;
     }
-    if (language == 'es') {
+    if (language === 'es') {
       this.data = locale_es;
     }
-    if (language == 'de') {
+    if (language === 'de') {
       this.data = locale_de;
     }
-    if (language == 'en') {
+    if (language === 'en') {
       this.data = locale_en;
     }
-    if (language == 'ja') {
+    if (language === 'ja') {
       this.data = locale_ja;
     }
-    if (language == 'ru') {
+    if (language === 'ru') {
       this.data = locale_ru;
     }
 
@@ -90,7 +90,7 @@ class Languages extends Observable {
 
     DateTime.setCurrentLanguage(this.language);
 
-    if (oldLanguage && language != oldLanguage) {
+    if (oldLanguage && language !== oldLanguage) {
       Api.post(
         'users/account/language',
         { language: language, sentByLanguageService: true },
@@ -104,7 +104,7 @@ class Languages extends Observable {
       return route;
     }
 
-    if (typeof parameters == 'string') {
+    if (typeof parameters === 'string') {
       parameters = [parameters];
     }
 
@@ -114,7 +114,7 @@ class Languages extends Observable {
 
     var translation = this.data[route] || this.default_data[route] || fallback || route;
 
-    if (translation == route) {
+    if (translation === route) {
       console.warn('Not translated:', route);
     }
 

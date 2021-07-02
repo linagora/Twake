@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import Loader from 'components/Loader/Loader.js';
 import Button from './Button.js';
@@ -40,7 +40,6 @@ export default class ButtonWithTimeout extends React.Component {
     }
   }
   render() {
-    var that = this;
     return (
       <div
         className={'buttonWithTimeout_container ' + (this.state.showLoader ? 'is_loading ' : '')}

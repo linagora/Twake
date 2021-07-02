@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './Buttons.scss';
 
 export default class Button extends React.Component {
   render() {
-    var that = this;
     var className = this.props.className || '';
 
     if (this.props.big) {

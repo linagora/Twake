@@ -76,12 +76,13 @@ export default class FullCalendar extends Component {
         that.cancelClickOut = true;
 
         //Create event
-        if (moment(event.end).diff(event.start) == 15 * 60 * 1000) {
+        if (moment(event.end).diff(event.start) === 15 * 60 * 1000) {
           that.api.unselect();
           that.props.onClickOut && that.props.onClickOut();
           return false;
         }
         if (that.props.onCreate) {
+          // eslint-disable-next-line no-unused-vars
           var created_event = that.props.onCreate(
             that.fcToCollection(event),
             that.event_dom_elements[event.id],
@@ -136,7 +137,7 @@ export default class FullCalendar extends Component {
             var calendar_id = cal.calendar_id;
             if (calendar_id && that.props.getCalendar) {
               var tmp = that.props.getCalendar(calendar_id);
-              if (tmp && tmp.workspace_id == WorkspaceService.currentWorkspaceId) {
+              if (tmp && tmp.workspace_id === WorkspaceService.currentWorkspaceId) {
                 calendar = tmp;
                 return true;
               }
@@ -150,7 +151,7 @@ export default class FullCalendar extends Component {
           event.el.style.backgroundColor = color;
         }
 
-        if (col_event.type == 'deadline' || col_event.type == 'remind') {
+        if (col_event.type === 'deadline' || col_event.type === 'remind') {
           event.el.classList.add('not_resizable');
         }
 
@@ -258,7 +259,7 @@ export default class FullCalendar extends Component {
   }
 
   view(view) {
-    if (view != this.api.type) {
+    if (view !== this.api.type) {
       this.willChangeView();
       this.api.changeView(view);
       this.props.onViewChange && this.props.onViewChange(view);
@@ -267,9 +268,8 @@ export default class FullCalendar extends Component {
   }
 
   willChangeView(forward) {
-    var old_effect = this.calendarRef.elRef.current.parentElement.getElementsByClassName(
-      'false_calendar',
-    )[0];
+    var old_effect =
+      this.calendarRef.elRef.current.parentElement.getElementsByClassName('false_calendar')[0];
     if (old_effect) {
       this.calendarRef.elRef.current.parentElement.removeChild(old_effect);
     }
@@ -287,7 +287,7 @@ export default class FullCalendar extends Component {
     calendar.classList.add('calendar_invisible');
     setTimeout(() => {
       this.calendarRef.elRef.current.classList.remove('calendar_invisible');
-      if (forward == undefined) {
+      if (forward === undefined) {
         this.calendarRef.elRef.current.classList.add('calendar_appear');
       } else if (forward) {
         this.calendarRef.elRef.current.classList.add('calendar_appear_right');
@@ -300,7 +300,7 @@ export default class FullCalendar extends Component {
     clone.classList.add('false_calendar');
     calendar.parentElement.append(clone);
     var scroller = clone.getElementsByClassName('fc-scroller')[0];
-    if (scroll_state != scroller.scrollTop) {
+    if (scroll_state !== scroller.scrollTop) {
       scroller.scrollTop = scroll_state;
     }
   }
@@ -335,10 +335,11 @@ export default class FullCalendar extends Component {
     var from = event.from;
     var to = event.to;
 
-    if (event.type == 'remind' || event.type == 'deadline') {
+    if (event.type === 'remind' || event.type === 'deadline') {
       to = parseInt(from) + 15 * 60;
     }
 
+    // eslint-disable-next-line no-redeclare
     var event = {
       id: event.front_id,
       real_id: event.id,

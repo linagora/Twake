@@ -269,6 +269,7 @@ class SearchService extends Observable {
     ) {
       var searchRoute = 'quicksearch';
 
+      // eslint-disable-next-line no-redeclare
       var options = {};
       if (this.type === 'file') {
         options = this.options;

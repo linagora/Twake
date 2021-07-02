@@ -42,6 +42,7 @@ export default class Numbers {
       return 0;
     }
     var uuid_arr = time_str.split('-'),
+      // eslint-disable-next-line no-redeclare
       time_str = [uuid_arr[2].substring(1), uuid_arr[1], uuid_arr[0]].join('');
     return parseInt(time_str, 16);
   }
@@ -90,11 +91,13 @@ export default class Numbers {
 
     while (wet >= dstBase) {
       var digitVal = wet % dstBase;
+      // eslint-disable-next-line no-redeclare
       var digit = dstAlphabet.charAt(digitVal);
       ret = digit + ret;
       wet /= dstBase;
     }
 
+    // eslint-disable-next-line no-redeclare
     var digit = dstAlphabet.charAt(wet);
     ret = digit + ret;
 

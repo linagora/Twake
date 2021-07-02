@@ -123,11 +123,11 @@ export default class MessageHeader extends Component<Props, State> {
 
         {this.props.linkToThread && (
           <span className="reply-text">
-            replied to{' '}
+            replied to {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a href="#" onClick={() => scrollToMessage()}>
               {PseudoMarkdownCompiler.compileToSimpleHTML(
                 parentMessage?.content,
-                parentMessage?.message_type == 1,
+                parentMessage?.message_type === 1,
               )}
             </a>
           </span>
@@ -136,6 +136,7 @@ export default class MessageHeader extends Component<Props, State> {
         {this.props.message.creation_date && (
           <a
             className="date"
+            // eslint-disable-next-line react/jsx-no-target-blank
             target="_BLANK"
             href={this.state.messageLink || '#'}
             onMouseEnter={() => updateMessageLink()}

@@ -49,7 +49,7 @@ export default class WorkspacePartner extends Component {
     Languages.addListener(this);
   }
   componentWillMount() {
-    this.state.workspaceLogo = false;
+    this.setState({ workspaceLogo: false });
   }
   componentWillUnmount() {
     Collections.get('workspaces').removeListener(this);
@@ -59,6 +59,7 @@ export default class WorkspacePartner extends Component {
     Languages.removeListener(this);
   }
   onChangeMail(e, member_index) {
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.members[member_index].mail = e.target.value;
 
     var that = this;
@@ -74,11 +75,11 @@ export default class WorkspacePartner extends Component {
     if (!notEmpty) {
       that.state.input_to_show = 1;
     }
-    this.state.input_to_show = Math.max(2, this.state.input_to_show + 1);
+    this.setState({ input_to_show: Math.max(2, this.state.input_to_show + 1) });
     this.setState({});
   }
   confirmIfMe(id, options, callback) {
-    if (id == UserService.getCurrentUserId()) {
+    if (id === UserService.getCurrentUserId()) {
       AlertManager.confirm(callback, () => {}, options);
     } else {
       callback();
@@ -86,7 +87,6 @@ export default class WorkspacePartner extends Component {
   }
   buildMenu(col, company) {
     var menu = [];
-    var subMenu = [];
     var adminLevelId = workspacesUsers.getAdminLevel().id;
 
     var bloc_edit_group_manager = (InitService.server_infos?.configuration?.accounts?.type !==
@@ -150,7 +150,7 @@ export default class WorkspacePartner extends Component {
             <Switch
               disabled={workspacesUsers.updateLevelUserLoading[col.user.id]}
               label={Languages.t('scenes.app.popup.workspaceparameter.pages.administrater_status')}
-              value={col.level == adminLevelId}
+              value={col.level === adminLevelId}
               onChange={state =>
                 this.confirmIfMe(
                   col.user.id,
@@ -206,7 +206,7 @@ export default class WorkspacePartner extends Component {
         </div>
       );
     } else {
-      if (col.user.id == UserService.getCurrentUserId()) {
+      if (col.user.id === UserService.getCurrentUserId()) {
         menu.push({
           type: 'menu',
           text: Languages.t(
@@ -249,8 +249,8 @@ export default class WorkspacePartner extends Component {
 
       if (
         workspaceUserRightsService.hasWorkspacePrivilege() &&
-        (col.user || {}).mail_verification_override != false &&
-        (col.user || {}).mail_verification_override ==
+        (col.user || {}).mail_verification_override !== false &&
+        (col.user || {}).mail_verification_override ===
           WorkspaceService.currentWorkspaceId + '_' + UserService.getCurrentUserId()
       ) {
         menu = [
@@ -282,10 +282,13 @@ export default class WorkspacePartner extends Component {
     }
   }
   render() {
+    // eslint-disable-next-line no-unused-vars
     var users = [];
     var usersInGroup = [];
+    // eslint-disable-next-line no-unused-vars
     var adminLevelId = workspacesUsers.getAdminLevel().id;
     Object.keys(this.state.workspacesUsers.users_by_group[groupService.currentGroupId] || {}).map(
+      // eslint-disable-next-line array-callback-return
       key => {
         var user = this.state.workspacesUsers.users_by_group[groupService.currentGroupId][key].user;
         if (

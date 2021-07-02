@@ -21,7 +21,7 @@ class ConfiguratorsManager extends Observable {
 
     var _new_order = [];
     this.configurator_order.forEach(id => {
-      if (app.id != id) {
+      if (app.id !== id) {
         _new_order.push(id);
       }
     });
@@ -36,7 +36,7 @@ class ConfiguratorsManager extends Observable {
 
     var _new_order = [];
     this.configurator_order.forEach(id => {
-      if (app.id != id) {
+      if (app.id !== id) {
         _new_order.push(id);
       }
     });

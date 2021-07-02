@@ -1,8 +1,7 @@
-import React, { Component, useState } from 'react';
+import React from 'react';
 import AppsIcon from '@material-ui/icons/Apps';
 import Popover from '@material-ui/core/Popover';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
 
 export default function Apps(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -39,6 +38,7 @@ export default function Apps(props) {
       >
         <div className="integration-apps">
           {props.apps.map(item => (
+            // eslint-disable-next-line react/jsx-no-target-blank
             <a className="app" target="_BLANK" href={item.url}>
               <div className="image" style={{ backgroundImage: 'url(' + item.icon + ')' }} />
               <div className="app-title">{item.name}</div>

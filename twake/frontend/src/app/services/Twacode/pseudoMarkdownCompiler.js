@@ -4,7 +4,6 @@ import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionar
 import anchorme from 'anchorme';
 import emojis_original_service from 'emojione';
 import Globals from 'services/Globals';
-import React, { Component } from 'react';
 
 class PseudoMarkdownCompiler {
   constructor() {
@@ -267,7 +266,7 @@ class PseudoMarkdownCompiler {
 
     var result = [];
 
-    if (link_found.length == 0) {
+    if (link_found.length === 0) {
       return [string];
     } else {
       var first_link = link_found[0];
@@ -295,8 +294,8 @@ class PseudoMarkdownCompiler {
       /(\B@)([a-z_.-A-Z0-9]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
       (full_match, match1, username, match3) => {
         var values = username.split(':');
-        if (values.length == 1) {
-          if (username == 'me') {
+        if (values.length === 1) {
+          if (username === 'me') {
             username = UserService.getCurrentUser().username;
           }
           var user_id = Collections.get('users').findBy({ username: username })[0];
@@ -316,12 +315,12 @@ class PseudoMarkdownCompiler {
       /(\B#)([a-z_.-A-Z0-9\u00C0-\u017F]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
       (full_match, match1, channel, match3) => {
         var values = channel.split(':');
-        if (values.length == 1) {
+        if (values.length === 1) {
           var channel_id = Collections.get('channels')
             .findBy({})
             .filter(
               item =>
-                (item.name || '').toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '') ==
+                (item.name || '').toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '') ===
                 channel,
             )[0];
           if (channel_id && channel_id.id) {
@@ -352,7 +351,7 @@ class PseudoMarkdownCompiler {
       var original_str = str;
       var _str = str.split('```'); //Priority to code
       _str.forEach((str, i) => {
-        if (i % 2 == 0) {
+        if (i % 2 === 0) {
           if (str) {
             str = this.transformChannelsUsers(str);
 
@@ -362,7 +361,7 @@ class PseudoMarkdownCompiler {
 
             var links = this.compileStringToLinkObject(str);
             links.forEach(item => {
-              if (typeof item == 'string') {
+              if (typeof item === 'string') {
                 result.push(this.compileToJSON(item, true));
               } else {
                 result.push(item);
@@ -389,8 +388,10 @@ class PseudoMarkdownCompiler {
       return all;
     }
 
+    // eslint-disable-next-line no-redeclare
     var original_str = str;
 
+    // eslint-disable-next-line no-redeclare
     var result = [];
 
     var min_index_of = -1;
@@ -400,7 +401,7 @@ class PseudoMarkdownCompiler {
     Object.keys(this.pseudo_markdown)
       .sort((a, b) => b.length - a.length)
       .forEach(starting_value => {
-        if (starting_value == 'text') {
+        if (starting_value === 'text') {
           return;
         }
 
@@ -441,7 +442,7 @@ class PseudoMarkdownCompiler {
       //Seach end of element in str_right
       var match = -1;
       var add_to_value = '';
-      while (match < 0 || (match && match[1][match[1].length - 1] == '\\')) {
+      while (match < 0 || (match && match[1][match[1].length - 1] === '\\')) {
         if (match && match !== -1) {
           //It mean we found an antislashed element
           add_to_value += match[0];
@@ -511,7 +512,7 @@ class PseudoMarkdownCompiler {
 
     if (json.formatted || json.prepared) json = json.formatted || json.prepared;
 
-    if (typeof json == 'string') {
+    if (typeof json === 'string') {
       json = [json];
     }
 
@@ -524,7 +525,7 @@ class PseudoMarkdownCompiler {
     var result = [];
     try {
       json.forEach(item => {
-        if (typeof item == 'string') {
+        if (typeof item === 'string') {
           result.push(
             this.pseudo_markdown['text'].object(item, is_app, event_container, text_transform),
           );
@@ -534,7 +535,7 @@ class PseudoMarkdownCompiler {
           result.push(el);
         } else {
           var type = this.pseudo_markdown[item.start];
-          if (item.type == 'compile' && is_app && typeof item.content == 'string') {
+          if (item.type === 'compile' && is_app && typeof item.content === 'string') {
             el = this.compileToHTML(
               this.compileToJSON(item.content),
               is_app,
@@ -615,7 +616,7 @@ class PseudoMarkdownCompiler {
 
     if (json.formatted || json.prepared) json = json.formatted || json.prepared;
 
-    if (typeof json == 'string') {
+    if (typeof json === 'string') {
       json = [json];
     }
 
@@ -626,7 +627,7 @@ class PseudoMarkdownCompiler {
     try {
       var result = [];
       json.forEach(item => {
-        if (typeof item == 'string') {
+        if (typeof item === 'string') {
           result_analysis.has_string = true;
           result.push(
             this.pseudo_markdown['text'].object(item, is_app, {}, text_transform, result_analysis),
@@ -639,7 +640,7 @@ class PseudoMarkdownCompiler {
             type = this.pseudo_markdown_types[item.type];
           }
           if (type) {
-            if (item.type == 'compile' && is_app && typeof item.content == 'string') {
+            if (item.type === 'compile' && is_app && typeof item.content === 'string') {
               result.push(
                 this.compileToSimpleHTML(
                   this.compileToJSON(item.content),
@@ -700,7 +701,7 @@ class PseudoMarkdownCompiler {
       return '';
     }
 
-    if (typeof json == 'string') {
+    if (typeof json === 'string') {
       json = [json];
     }
 
@@ -715,18 +716,19 @@ class PseudoMarkdownCompiler {
     var result = '';
     try {
       json.forEach(item => {
-        if (typeof item == 'string') {
+        if (typeof item === 'string') {
           var tmp = item;
           Object.keys(this.pseudo_markdown).forEach(starting_value => {
             var starting_value_reg = starting_value;
             var allowed_chars = this.pseudo_markdown[starting_value].allowed_chars;
-            if (starting_value == '*') {
+            if (starting_value === '*') {
               starting_value_reg = '\\*';
             }
             if (allowed_chars) {
               var reg = new RegExp(starting_value_reg, 'gm');
               tmp = tmp.replace(reg + '(' + allowed_chars + ')', '\\' + starting_value + '$1');
             } else {
+              // eslint-disable-next-line no-redeclare
               var reg = new RegExp(starting_value_reg, 'gm');
               tmp = tmp.replace(reg, '\\' + starting_value);
             }
@@ -758,7 +760,7 @@ class PseudoMarkdownCompiler {
       sel.text = myValue;
     }
     //MOZILLA and others
-    else if (myField.selectionStart || myField.selectionStart == '0') {
+    else if (myField.selectionStart || myField.selectionStart === '0') {
       var startPos = myField.selectionStart;
       var endPos = myField.selectionEnd;
       myField.value =
@@ -773,7 +775,7 @@ class PseudoMarkdownCompiler {
   //Call this function after each line break
   autoCompleteBulletList(input, didEnter) {
     var getCursorPos = input => {
-      if ('selectionStart' in input && document.activeElement == input) {
+      if ('selectionStart' in input && document.activeElement === input) {
         return {
           start: input.selectionStart,
           end: input.selectionEnd,

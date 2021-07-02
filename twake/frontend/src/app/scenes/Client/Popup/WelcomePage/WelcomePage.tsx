@@ -46,7 +46,7 @@ export default class WelcomePage extends Component {
   displayPage(page: number) {
     const auth = InitService.server_infos?.configuration?.accounts;
 
-    if (page == 1) {
+    if (page === 1) {
       return (
         <div className="">
           <div className="title">
@@ -68,6 +68,7 @@ export default class WelcomePage extends Component {
           )}
 
           <div className="retry">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a href="#" className="link" onClick={() => this.retry()}>
               {Languages.t('scenes.app.workspaces.welcome_page.try_again')}
             </a>
@@ -81,6 +82,7 @@ export default class WelcomePage extends Component {
                     'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails',
                   )}
                 </div>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a
                   className="blue_link"
                   onClick={() =>
@@ -101,6 +103,7 @@ export default class WelcomePage extends Component {
                 </a>
               </>
             )}
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a className="blue_link" onClick={() => LoginService.logout()}>
               {Languages.t('scenes.apps.account.account.logout')}
             </a>
@@ -108,7 +111,7 @@ export default class WelcomePage extends Component {
         </div>
       );
     }
-    if (page == 2) {
+    if (page === 2) {
       if (!Groups.currentGroupId || !Collections.get('groups').find(Groups.currentGroupId)) {
         popupManager.closeAll();
         return '';

@@ -77,12 +77,11 @@ export default class Tasks extends Component {
       current_board = Collections.get('boards').find(this.props.tab.configuration.board_id);
     } else if (TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId]) {
       if (
-        TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split('_')[0] ==
+        TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split('_')[0] ===
         'user'
       ) {
-        var user_id = TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split(
-          '_',
-        )[1];
+        var user_id =
+          TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split('_')[1];
         var user = Collections.get('users').find(user_id) || {};
         current_board = {
           id: TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId],
@@ -99,7 +98,7 @@ export default class Tasks extends Component {
     var boards = Collections.get('boards').findBy({ workspace_id: Workspaces.currentWorkspaceId });
     var loading =
       !Collections.get('boards').did_load_first_time[this.boards_collection_key] &&
-      boards.length == 0;
+      boards.length === 0;
 
     if (
       this.props.tab != null &&
@@ -353,7 +352,7 @@ export default class Tasks extends Component {
               key={current_board.id}
               channel={this.props.channel}
               mode={
-                current_board.id.split('_')[0] == 'user'
+                current_board.id.split('_')[0] === 'user'
                   ? 'list'
                   : current_board.view_mode || 'grid'
               }

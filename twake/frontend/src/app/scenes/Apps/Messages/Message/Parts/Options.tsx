@@ -132,12 +132,12 @@ export default (props: Props) => {
     }
 
     if (
-      props.message.sender == User.getCurrentUserId() ||
+      props.message.sender === User.getCurrentUserId() ||
       (props.message.application_id &&
-        (props.message.hidden_data || {}).allow_delete == 'everyone') ||
+        (props.message.hidden_data || {}).allow_delete === 'everyone') ||
       (props.message.application_id &&
         WorkspaceUserRights.hasWorkspacePrivilege() &&
-        (props.message.hidden_data || {}).allow_delete == 'administrators')
+        (props.message.hidden_data || {}).allow_delete === 'administrators')
     ) {
       if (menu.length > 0 && (!props.message.application_id || !props.message.responses_count)) {
         menu.push({ type: 'separator' });

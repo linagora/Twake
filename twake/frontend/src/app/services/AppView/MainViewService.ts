@@ -1,5 +1,3 @@
-import { ChannelResource } from 'app/models/Channel';
-import { Collection } from '../CollectionsReact/Collections';
 import RouterService from '../RouterService';
 import AppViewService, { ViewConfiguration } from './AppViewService';
 
@@ -14,7 +12,7 @@ class _MainViewService extends AppViewService {
   }
 
   public select(id: string, configuration?: ViewConfiguration) {
-    if (id != this.getId()) {
+    if (id !== this.getId()) {
       RouterService.push(RouterService.generateRouteFromState({ channelId: id, tabId: '' }));
     }
     super.select(id, configuration);
