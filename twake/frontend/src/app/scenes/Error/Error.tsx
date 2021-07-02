@@ -1,7 +1,6 @@
 import React from 'react';
 import Languages from 'services/languages/languages';
 import Emojione from 'components/Emojione/Emojione';
-import LoginService from 'services/login/login.js';
 import './Error.scss';
 import RouterServices from 'app/services/RouterService';
 import InitService from 'services/InitService';
@@ -54,6 +53,7 @@ export default () => {
               <span>
                 {Languages.t('scenes.tell_us', [], 'Please tell us what you were doing at :')}
                 <br />
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a
                   href="#"
                   onClick={() =>
