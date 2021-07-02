@@ -14,8 +14,6 @@ window.define =
   }),
   (window.define.amd = {}));
 
-const define = window.define;
-
 /*
  * MIT Licensed
  * http://www.23developer.com/opensource
@@ -177,12 +175,13 @@ const define = window.define;
       for (var i = 0; i < arguments.length; i++) args.push(arguments[i]);
       // Find event listeners, and support pseudo-event `catchAll`
       var event = args[0].toLowerCase();
+      // eslint-disable-next-line no-redeclare
       for (var i = 0; i <= $.events.length; i += 2) {
-        if ($.events[i] == event) $.events[i + 1].apply($, args.slice(1));
-        if ($.events[i] == 'catchall') $.events[i + 1].apply(null, args);
+        if ($.events[i] === event) $.events[i + 1].apply($, args.slice(1));
+        if ($.events[i] === 'catchall') $.events[i + 1].apply(null, args);
       }
-      if (event == 'fileerror') $.fire('error', args[2], args[1]);
-      if (event == 'fileprogress') $.fire('progress');
+      if (event === 'fileerror') $.fire('error', args[2], args[1]);
+      if (event === 'fileprogress') $.fire('progress');
     };
 
     // INTERNAL HELPER METHODS (handy, but ultimately not part of uploading)
@@ -217,7 +216,7 @@ const define = window.define;
         var result = false;
 
         $h.each(array, function (value) {
-          if (value == test) {
+          if (value === test) {
             result = true;
             return false;
           }
@@ -505,6 +504,7 @@ const define = window.define;
       // Callback when something happens within the chunk
       var chunkEvent = function (event, message) {
         // event can be 'progress', 'success', 'error' or 'retry'
+        // eslint-disable-next-line default-case
         switch (event) {
           case 'progress':
             $.resumableObj.fire('fileProgress', $, message);
@@ -535,7 +535,7 @@ const define = window.define;
         // Stop current uploads
         var abortCount = 0;
         $h.each($.chunks, function (c) {
-          if (c.status() == 'uploading') {
+          if (c.status() === 'uploading') {
             c.abort();
             abortCount++;
           }
@@ -548,7 +548,7 @@ const define = window.define;
         $.chunks = [];
         // Stop current uploads
         $h.each(_chunks, function (c) {
-          if (c.status() == 'uploading') {
+          if (c.status() === 'uploading') {
             c.abort();
             $.resumableObj.uploadNextChunk();
           }
@@ -590,7 +590,7 @@ const define = window.define;
         var ret = 0;
         var error = false;
         $h.each($.chunks, function (c) {
-          if (c.status() == 'error') error = true;
+          if (c.status() === 'error') error = true;
           ret += c.progress(true); // get chunk progress relative to entire file
         });
         ret = error ? 1 : ret > 0.99999 ? 1 : ret;
@@ -601,7 +601,7 @@ const define = window.define;
       $.isUploading = function () {
         var uploading = false;
         $h.each($.chunks, function (chunk) {
-          if (chunk.status() == 'uploading') {
+          if (chunk.status() === 'uploading') {
             uploading = true;
             return false;
           }
@@ -612,7 +612,7 @@ const define = window.define;
         var outstanding = false;
         $h.each($.chunks, function (chunk) {
           var status = chunk.status();
-          if (status == 'pending' || status == 'uploading' || chunk.preprocessState === 1) {
+          if (status === 'pending' || status === 'uploading' || chunk.preprocessState === 1) {
             outstanding = true;
             return false;
           }
@@ -671,7 +671,7 @@ const define = window.define;
         var testHandler = function (e) {
           $.tested = true;
           var status = $.status();
-          if (status == 'success') {
+          if (status === 'success') {
             $.callback(status, $.message());
             $.resumableObj.uploadNextChunk();
           } else {
@@ -742,6 +742,7 @@ const define = window.define;
       $.send = function () {
         var preprocess = $.getOpt('preprocess');
         if (typeof preprocess === 'function') {
+          // eslint-disable-next-line default-case
           switch ($.preprocessState) {
             case 0:
               $.preprocessState = 1;
@@ -783,7 +784,7 @@ const define = window.define;
         // Done (either done, failed or retry)
         var doneHandler = function (e) {
           var status = $.status();
-          if (status == 'success' || status == 'error') {
+          if (status === 'success' || status === 'error') {
             $.callback(status, $.message());
             $.resumableObj.uploadNextChunk();
           } else {
@@ -865,13 +866,13 @@ const define = window.define;
               [encodeURIComponent(parameterNamespace + k), encodeURIComponent(v)].join('='),
             );
           });
-          if ($.getOpt('chunkFormat') == 'blob') {
+          if ($.getOpt('chunkFormat') === 'blob') {
             data.append(
               parameterNamespace + $.getOpt('fileParameterName'),
               bytes,
               $.fileObj.fileName,
             );
-          } else if ($.getOpt('chunkFormat') == 'base64') {
+          } else if ($.getOpt('chunkFormat') === 'base64') {
             var fr = new FileReader();
             fr.onload = function (e) {
               data.append(parameterNamespace + $.getOpt('fileParameterName'), fr.result);
@@ -900,7 +901,7 @@ const define = window.define;
           $.xhr.setRequestHeader(k, v);
         });
 
-        if ($.getOpt('chunkFormat') == 'blob') {
+        if ($.getOpt('chunkFormat') === 'blob') {
           $.xhr.send(data);
         }
       };
@@ -921,7 +922,7 @@ const define = window.define;
           // Status is really 'OPENED', 'HEADERS_RECEIVED' or 'LOADING' - meaning that stuff is happening
           return 'uploading';
         } else {
-          if ($.xhr.status == 200 || $.xhr.status == 201) {
+          if ($.xhr.status === 200 || $.xhr.status === 201) {
             // HTTP 200, 201 (created)
             return 'success';
           } else if (
@@ -971,7 +972,7 @@ const define = window.define;
         $h.each($.files, function (file) {
           if (
             file.chunks.length &&
-            file.chunks[0].status() == 'pending' &&
+            file.chunks[0].status() === 'pending' &&
             file.chunks[0].preprocessState === 0
           ) {
             file.chunks[0].send();
@@ -980,7 +981,7 @@ const define = window.define;
           }
           if (
             file.chunks.length > 1 &&
-            file.chunks[file.chunks.length - 1].status() == 'pending' &&
+            file.chunks[file.chunks.length - 1].status() === 'pending' &&
             file.chunks[file.chunks.length - 1].preprocessState === 0
           ) {
             file.chunks[file.chunks.length - 1].send();
@@ -995,7 +996,7 @@ const define = window.define;
       $h.each($.files, function (file) {
         if (file.isPaused() === false) {
           $h.each(file.chunks, function (chunk) {
-            if (chunk.status() == 'pending' && chunk.preprocessState === 0) {
+            if (chunk.status() === 'pending' && chunk.preprocessState === 0) {
               chunk.send();
               found = true;
               return false;
@@ -1047,7 +1048,7 @@ const define = window.define;
           domNode.appendChild(input);
         }
         var maxFiles = $.getOpt('maxFiles');
-        if (typeof maxFiles === 'undefined' || maxFiles != 1) {
+        if (typeof maxFiles === 'undefined' || maxFiles !== 1) {
           input.setAttribute('multiple', 'multiple');
         } else {
           input.removeAttribute('multiple');
@@ -1161,7 +1162,7 @@ const define = window.define;
     $.getFromUniqueIdentifier = function (uniqueIdentifier) {
       var ret = false;
       $h.each($.files, function (f) {
-        if (f.uniqueIdentifier == uniqueIdentifier) ret = f;
+        if (f.uniqueIdentifier === uniqueIdentifier) ret = f;
       });
       return ret;
     };
