@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Send, Smile, AlignLeft, Video, MoreHorizontal, Paperclip } from 'react-feather';
+import React, { useState } from 'react';
 import Languages from 'services/languages/languages.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CurrentUser from 'app/services/user/CurrentUser';
@@ -15,8 +14,6 @@ type Props = {
 };
 
 export default (props: Props) => {
-  let savedList: any[] = [];
-
   const getEphemeralMessages = () => {
     return Collections.get('messages')
       .findBy({
