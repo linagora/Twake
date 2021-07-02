@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './CalendarSelector.scss';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Select from 'components/Select/Select.js';
@@ -87,7 +87,7 @@ export default class CalendarSelector extends React.Component {
             }
 
             var item = Collections.get('calendars').find(ws_cal_id.calendar_id);
-            if (!item || item.workspace_id != WorkspacesService.currentWorkspaceId) {
+            if (!item || item.workspace_id !== WorkspacesService.currentWorkspaceId) {
               return '';
             }
             nb_known_workspaces++;
@@ -103,7 +103,7 @@ export default class CalendarSelector extends React.Component {
             );
           })}
 
-          {(!this.props.value || this.props.value.length == 0) && (
+          {(!this.props.value || this.props.value.length === 0) && (
             <div className="smalltext right-margin" style={{ lineHeight: '40px' }}>
               {Languages.t(
                 'components.calendar.calendarselector.no_workspace_calendar',
@@ -113,7 +113,7 @@ export default class CalendarSelector extends React.Component {
             </div>
           )}
 
-          {nb_known_workspaces == 0 && this.props.value.length > 0 && !external_workspace && (
+          {nb_known_workspaces === 0 && this.props.value.length > 0 && !external_workspace && (
             <div className="smalltext right-margin" style={{ lineHeight: '40px' }}>
               {Languages.t(
                 'components.calendar.calendarselector.external_workspace',
@@ -122,9 +122,10 @@ export default class CalendarSelector extends React.Component {
               )}
             </div>
           )}
-          {nb_known_workspaces == 0 && this.props.value.length > 0 && external_workspace && (
+          {nb_known_workspaces === 0 && this.props.value.length > 0 && external_workspace && (
             <div className="smalltext right-margin" style={{ lineHeight: '40px' }}>
               {Languages.t('components.calendar.calendarselector.from', [], 'Depuis')}{' '}
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a
                 href="#"
                 onClick={() => {
@@ -166,8 +167,9 @@ export default class CalendarSelector extends React.Component {
               onChange={v => {
                 var list = this.props.value.map(item => item.calendar_id);
                 var existe = false;
+                // eslint-disable-next-line array-callback-return
                 list.map(id => {
-                  if (v == id) existe = true;
+                  if (v === id) existe = true;
                 });
 
                 if (!existe) {
