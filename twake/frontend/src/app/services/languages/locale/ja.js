@@ -736,7 +736,6 @@ export default {
   'scenes.apps.parameters.workspace_sections.members.modal_added.not_added': '追加されません',
   'scenes.apps.parameters.workspace_sections.members.tables_user': 'ユーザー',
   'scenes.apps.parameters.workspace_sections.members.tables_level': 'レベル',
-  'scenes.apps.parameters.workspace_sections.members.external': '新しいメンバーを外部に招待する',
   'scenes.apps.parameters.workspace_sections.members.administrator': '管理者',
   'scenes.apps.parameters.workspace_sections.members.2_administrator': '管理者',
   //---Rights
