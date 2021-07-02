@@ -22,9 +22,9 @@ export default class Tooltip extends Component {
   }
   componentWillUnmount() {}
   componentDidUpdate(prevProps, prevState) {
-    if (this.props.visible == true && prevProps.visible == false) {
+    if (this.props.visible === true && prevProps.visible === false) {
       this.open();
-    } else if (this.props.visible == false && prevProps.visible == true) {
+    } else if (this.props.visible === false && prevProps.visible === true) {
       this.close();
     }
   }
@@ -36,19 +36,19 @@ export default class Tooltip extends Component {
     }, timeout * 1000);
   }
   open() {
-    if (this.props.position == 'left') {
+    if (this.props.position === 'left') {
       this.setState({
         visible: true,
         left: (this.tooltip.clientWidth + 8) * -1 + 'px',
         right: 'unset',
       });
-    } else if (this.props.position == 'right') {
+    } else if (this.props.position === 'right') {
       this.setState({
         visible: true,
         right: (this.tooltip.clientWidth + 8) * -1 + 'px',
         left: 'unset',
       });
-    } else if (this.props.position == 'bottom') {
+    } else if (this.props.position === 'bottom') {
       this.setState({
         visible: true,
         bottom: (this.tooltip.clientHeight + 5) * -1 + 'px',
@@ -70,12 +70,12 @@ export default class Tooltip extends Component {
     if (this.parent && this.children) {
       window.tooltip = this.tooltip;
       this.parent.addEventListener('mouseenter', () => {
-        if (this.props.overable != false) {
+        if (this.props.overable !== false) {
           that.open();
         }
       });
       this.parent.addEventListener('mouseleave', () => {
-        if (this.props.overable != false) {
+        if (this.props.overable !== false) {
           that.close();
         }
       });
