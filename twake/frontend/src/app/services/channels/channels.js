@@ -91,7 +91,7 @@ class Channels extends Observable {
   }
 
   search(query, callback) {
-    if (query.length == 0) {
+    if (query.length === 0) {
       callback([]);
       return;
     }
@@ -108,7 +108,7 @@ class Channels extends Observable {
   select(channel, side = false, sideOptions = {}) {
     if (side) {
       if (
-        this.currentSideChannelFrontId != channel.front_id &&
+        this.currentSideChannelFrontId !== channel.front_id &&
         channel.id &&
         !channel.application
       ) {
@@ -135,7 +135,7 @@ class Channels extends Observable {
 
       this.reached_initial_channel = true;
 
-      if (this.currentChannelFrontId != channel.front_id && channel.id && !channel.application) {
+      if (this.currentChannelFrontId !== channel.front_id && channel.id && !channel.application) {
         this.readChannelIfNeeded(channel);
       }
 
@@ -181,7 +181,7 @@ class Channels extends Observable {
     if (!channel._user_last_quoted_message_id && channel._user_muted >= 1) {
       state = 0;
     }
-    if (state == old_state) {
+    if (state === old_state) {
       return;
     }
     this.old_channel_state[channel.id] = state;
