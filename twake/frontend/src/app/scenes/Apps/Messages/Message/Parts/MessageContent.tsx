@@ -43,7 +43,7 @@ export default (props: Props) => {
   };
 
   const onAction = (type: string, id: string, context: any, passives: any, evt: any) => {
-    if (type == 'interactive_action') {
+    if (type === 'interactive_action') {
       setLoadingAction(true);
       clearTimeout(loading_interaction_timeout);
       loading_interaction_timeout = setTimeout(() => {
@@ -87,10 +87,10 @@ export default (props: Props) => {
               props.message.content,
               props.message.user_specific_content,
             )}
-            isApp={props.message.message_type == 1}
+            isApp={props.message.message_type === 1}
             after={
               props.message.edited &&
-              props.message.message_type == 0 && <div className="edited">(edited)</div>
+              props.message.message_type === 0 && <div className="edited">(edited)</div>
             }
             simple={props.linkToThread}
             onAction={(type: string, id: string, context: any, passives: any, evt: any) =>
