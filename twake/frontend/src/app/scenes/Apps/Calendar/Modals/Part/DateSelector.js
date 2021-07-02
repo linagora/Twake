@@ -1,3 +1,4 @@
+/* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from 'react';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import TimeSelector from 'components/Calendar/TimeSelector.js';
@@ -17,16 +18,17 @@ export default class DateSelector extends Component {
     this.updateFromProps(props);
   }
   shouldComponentUpdate(nextProps) {
-    if (this.oldProps != JSON.stringify(nextProps.event)) {
+    if (this.oldProps !== JSON.stringify(nextProps.event)) {
       this.oldProps = JSON.stringify(nextProps.event);
       this.updateFromProps(nextProps);
     }
     return true;
   }
   change(key, value) {
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.data[key] = value;
 
-    if (key == 'from') {
+    if (key === 'from') {
       if (
         this.state.data.to < this.state.data.from ||
         (this.state.data.to - this.state.data.from > 60 * 60 * 24 * 2 && !this.state.data.all_day)
@@ -34,7 +36,7 @@ export default class DateSelector extends Component {
         this.state.data.to = this.state.data.from + (this.duration || 60 * 60);
       }
     }
-    if (key == 'to') {
+    if (key === 'to') {
       if (
         this.state.data.to < this.state.data.from ||
         (this.state.data.to - this.state.data.from > 60 * 60 * 24 * 2 && !this.state.data.all_day)
@@ -42,7 +44,7 @@ export default class DateSelector extends Component {
         this.state.data.from = this.state.data.to - (this.duration || 60 * 60);
       }
     }
-    if (key == 'all_day') {
+    if (key === 'all_day') {
       if (
         this.state.data.to - this.state.data.from > 60 * 60 * 24 * 2 &&
         !this.state.data.all_day
@@ -62,7 +64,7 @@ export default class DateSelector extends Component {
     var from = this.state.data.from;
     var to = this.state.data.to;
 
-    if (this.props.event.type == 'deadline' || this.props.event.type == 'remind') {
+    if (this.props.event.type === 'deadline' || this.props.event.type === 'remind') {
       to = from + 15 * 60;
     }
 
@@ -103,7 +105,7 @@ export default class DateSelector extends Component {
               />
             )}
           </div>
-          {(!event.type || event.type == 'event' || event.type == 'move') && [
+          {(!event.type || event.type === 'event' || event.type === 'move') && [
             <span className="middle">
               {Languages.t('scenes.apps.calendar.event_view.article_until')}
             </span>,
