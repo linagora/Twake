@@ -80,9 +80,8 @@ export default class Tasks extends Component {
         TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split('_')[0] ==
         'user'
       ) {
-        var user_id = TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split(
-          '_',
-        )[1];
+        var user_id =
+          TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split('_')[1];
         var user = Collections.get('users').find(user_id) || {};
         current_board = {
           id: TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId],
@@ -321,12 +320,8 @@ export default class Tasks extends Component {
                     users={[]}
                     buttonIcon={'enter'}
                     noPlaceholder
-                    buttonText={Languages.t(
-                      'scenes.apps.tasks.select_user_button',
-                      [],
-                      'View tasks for an other user',
-                    )}
-                    inputText={Languages.t('scenes.apps.tasks.select_user', [], 'Search user')}
+                    buttonText={Languages.t('scenes.apps.tasks.select_user_button')}
+                    inputText={Languages.t('scenes.apps.tasks.select_user')}
                     scope="workspace"
                     onUpdate={ids => TasksService.openBoard('user_' + ids[0])}
                   />

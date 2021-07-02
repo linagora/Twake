@@ -46,7 +46,7 @@ export const NewLinkInput = (props: {
   value: string;
   createLinkFile: (name: string, link: string) => void;
 }) => {
-  const [value, setValue] = useState('Untitled');
+  const [value, setValue] = useState(Languages.t('scenes.apps.drive.default_link_name'));
   const [link, setLink] = useState('');
   return (
     <div>
@@ -74,7 +74,7 @@ export const NewLinkInput = (props: {
         <Button
           disabled={(value || '').length <= 0}
           type="button"
-          value={Languages.t('scenes.apps.drive.add_button', [], 'Ajouter')}
+          value={Languages.t('scenes.apps.drive.add_button')}
           onClick={() => {
             props.createLinkFile(value, link);
           }}

@@ -411,12 +411,12 @@ export default class Drive extends Component {
     addableFilesMenu.push({
       type: 'menu',
       icon: 'link-alt',
-      text: Languages.t('scenes.apps.drive.new_link_title', [], 'New link'),
+      text: Languages.t('scenes.apps.drive.new_link_title'),
       submenu_replace: true,
       submenu: [
         {
           type: 'title',
-          text: Languages.t('scenes.apps.drive.new_link_title', [], 'New link'),
+          text: Languages.t('scenes.apps.drive.new_link_title'),
         },
         {
           type: 'react-element',
