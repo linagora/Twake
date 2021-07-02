@@ -7,6 +7,7 @@ import Emojione from 'components/Emojione/Emojione';
 import StepCounter from 'components/StepCounter/StepCounter.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Input from 'components/Inputs/Input.js';
+import { Typography } from 'antd';
 
 export default class ForgotPassword extends Component {
   constructor() {
@@ -43,7 +44,7 @@ export default class ForgotPassword extends Component {
     Languages.removeListener(this);
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.page == this.state.page - 1 || prevState.page == this.state.page + 1) {
+    if (prevState.page === this.state.page - 1 || prevState.page === this.state.page + 1) {
       if (this.input) {
         this.input.focus();
       }
@@ -56,7 +57,7 @@ export default class ForgotPassword extends Component {
     }
   }
   displayStep() {
-    if (this.state.page == 1) {
+    if (this.state.page === 1) {
       return (
         <div className="">
           <div className="subtitle">{this.state.i18n.t('scenes.login.forgot_password.text')}</div>
@@ -71,14 +72,13 @@ export default class ForgotPassword extends Component {
               (this.state.login.error_recover_nosuchmail ? 'error' : '')
             }
             onKeyDown={e => {
-              if (e.keyCode == 13 && this.checkForm() && !this.state.login.login_loading) {
+              if (e.keyCode === 13 && this.checkForm() && !this.state.login.login_loading) {
                 this.next();
               }
             }}
             value={this.state.email}
             id="email_to_recover"
             placeholder={this.state.i18n.t('scenes.login.forgot_password.email_to_recover')}
-            value={this.state.email}
             onChange={evt => this.setState({ email: evt.target.value })}
           />
 
@@ -89,9 +89,9 @@ export default class ForgotPassword extends Component {
           )}
 
           <div className="bottom">
-            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
+            <Typography.Link onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
-            </a>
+            </Typography.Link>
             <ButtonWithTimeout
               id="continue3_btn"
               className="medium"
@@ -105,7 +105,7 @@ export default class ForgotPassword extends Component {
         </div>
       );
     }
-    if (this.state.page == 2) {
+    if (this.state.page === 2) {
       return (
         <div className="">
           <div className="subtitle">
@@ -120,7 +120,7 @@ export default class ForgotPassword extends Component {
             type="text"
             onKeyDown={e => {
               if (
-                e.keyCode == 13 &&
+                e.keyCode === 13 &&
                 this.state.code.length > 0 &&
                 this.checkForm() &&
                 !this.state.login.login_loading
@@ -145,9 +145,9 @@ export default class ForgotPassword extends Component {
           )}
 
           <div className="bottom">
-            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
+            <Typography.Link onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
-            </a>
+            </Typography.Link>
             <ButtonWithTimeout
               id="continue4_btn"
               className="medium"
@@ -161,7 +161,7 @@ export default class ForgotPassword extends Component {
         </div>
       );
     }
-    if (this.state.page == 3) {
+    if (this.state.page === 3) {
       this.checkForm();
       return (
         <div className="">
@@ -173,7 +173,7 @@ export default class ForgotPassword extends Component {
             }}
             type="password"
             onKeyDown={e => {
-              if (e.keyCode == 13 && this.checkForm() && !this.state.login.login_loading) {
+              if (e.keyCode === 13 && this.checkForm() && !this.state.login.login_loading) {
                 this.next();
               }
             }}
@@ -192,7 +192,7 @@ export default class ForgotPassword extends Component {
           <Input
             type="password"
             onKeyDown={e => {
-              if (e.keyCode == 13 && this.checkForm() && !this.state.login.login_loading) {
+              if (e.keyCode === 13 && this.checkForm() && !this.state.login.login_loading) {
                 this.next();
               }
             }}
@@ -219,15 +219,15 @@ export default class ForgotPassword extends Component {
             )}
 
           <div className="bottom">
-            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
+            <Typography.Link onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
-            </a>
+            </Typography.Link>
             <ButtonWithTimeout
               className="medium"
               disabled={
                 this.state.errorPasswordDoesNotMatch ||
                 this.state.errorPassword ||
-                this.state.password1.length == 0 ||
+                this.state.password1.length === 0 ||
                 this.state.login.login_loading
               }
               onClick={() => this.next()}
@@ -239,7 +239,7 @@ export default class ForgotPassword extends Component {
         </div>
       );
     }
-    if (this.state.page == 4) {
+    if (this.state.page === 4) {
       return (
         <div className="">
           <div className="subtitle">
@@ -248,7 +248,6 @@ export default class ForgotPassword extends Component {
           </div>
 
           <div className="bottom">
-            <a href="#" className="returnBtn" />
             <ButtonWithTimeout
               className="medium"
               disabled={this.state.exiting}
@@ -267,15 +266,15 @@ export default class ForgotPassword extends Component {
   }
   checkForm() {
     if (this.state.password1.length < 8) {
-      this.state.errorPassword = true;
+      this.setState({ errorPassword: true });
     } else {
-      this.state.errorPassword = false;
+      this.setState({ errorPassword: false });
     }
 
-    if (this.state.password1 != this.state.password2) {
-      this.state.errorPasswordDoesNotMatch = true;
+    if (this.state.password1 !== this.state.password2) {
+      this.setState({ errorPasswordDoesNotMatch: true });
     } else {
-      this.state.errorPasswordDoesNotMatch = false;
+      this.setState({ errorPasswordDoesNotMatch: false });
     }
 
     return (
@@ -291,25 +290,25 @@ export default class ForgotPassword extends Component {
     }
   }
   next() {
-    if (this.state.page == 1) {
+    if (this.state.page === 1) {
       if (this.checkForm()) {
         AccountService.recover(this.state.email, () => {
           this.setState({ page: this.state.page + 1 });
         });
       }
-    } else if (this.state.page == 2) {
+    } else if (this.state.page === 2) {
       if (this.checkForm()) {
         AccountService.recoverCode(this.state.code, () => {
           this.setState({ page: this.state.page + 1 });
         });
       }
-    } else if (this.state.page == 3) {
+    } else if (this.state.page === 3) {
       if (this.checkForm()) {
         AccountService.recoverNewPassword(this.state.password1, this.state.password2, () => {
           this.setState({ page: this.state.page + 1 });
         });
       }
-    } else if (this.state.page == 4) {
+    } else if (this.state.page === 4) {
       this.state.login.init();
     } else {
       this.setState({ page: this.state.page + 1 });
