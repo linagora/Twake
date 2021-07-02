@@ -1,4 +1,3 @@
-import React from 'react';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
@@ -19,7 +18,7 @@ class ListenGroups {
     this.listenerCount[idGroup] += 1;
 
     var that = this;
-    if (this.listenerCount[idGroup] == 1) {
+    if (this.listenerCount[idGroup] === 1) {
       ws.subscribe('group/' + idGroup, function (uri, data) {
         data = data.data;
         if (data.group) {
@@ -38,7 +37,7 @@ class ListenGroups {
     if (this.listenerCount[idGroup]) {
       this.listenerCount[idGroup] += -1;
     }
-    if (!this.listenerCount[idGroup] || this.listenerCount[idGroup] == 0) {
+    if (!this.listenerCount[idGroup] || this.listenerCount[idGroup] === 0) {
       ws.unsubscribe('group/' + idGroup);
     }
   }
