@@ -1,4 +1,3 @@
-import React from 'react';
 import ws from 'services/websocket.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import User from 'services/user/UserService';
