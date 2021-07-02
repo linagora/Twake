@@ -159,6 +159,7 @@ export default class WorkspaceApps extends Component {
 
     var workspace_id = workspaceService.currentWorkspaceId;
     var workspace = Collections.get('workspaces').find(workspace_id);
+    // eslint-disable-next-line no-unused-vars
     var group = Collections.get('groups').find(workspace.group.id);
 
     var developed = Collections.get('applications')
@@ -175,6 +176,7 @@ export default class WorkspaceApps extends Component {
       .filter(id => workspaces_app_ids.indexOf(id) < 0)
       .map(id => WorkspacesApps.apps_by_group[workspaceService.currentGroupId][id]);
 
+    // eslint-disable-next-line no-unused-vars
     var all_apps = workspace_apps.concat(group_apps);
 
     return (
@@ -205,13 +207,13 @@ export default class WorkspaceApps extends Component {
               )}
             </div>
 
-            {developed.length == 0 && this.state.loading_developed && (
+            {developed.length === 0 && this.state.loading_developed && (
               <div className="smalltext">
-                Languages.t('scenes.app.popup.appsparameters.pages.loading', [], "Chargement...")
+                {Languages.t('scenes.app.popup.appsparameters.pages.loading')}
               </div>
             )}
 
-            {developed.length == 0 && !this.state.loading_developed && (
+            {developed.length === 0 && !this.state.loading_developed && (
               <div className="smalltext">
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.current_informations_apps_connectors',
