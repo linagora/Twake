@@ -136,11 +136,27 @@ export class ThreadsService
    * Add reply to thread: increase last_activity time and number of answers
    * @param threadId
    */
-  async addReply(threadId: string) {
+  async addReply(threadId: string, increment: number = 1) {
     const thread = await this.repository.findOne({ id: threadId });
     if (thread) {
-      thread.answers++;
-      thread.last_activity = new Date().getTime();
+      thread.answers = Math.max(0, thread.answers + increment);
+      if (increment > 0) {
+        thread.last_activity = new Date().getTime();
+      }
+      await this.repository.save(thread);
+    } else {
+      throw new Error("Try to add reply count to inexistent thread");
+    }
+  }
+
+  /**
+   * Add reply to thread: increase last_activity time and number of answers
+   * @param threadId
+   */
+  async setReplyCount(threadId: string, count: number) {
+    const thread = await this.repository.findOne({ id: threadId });
+    if (thread) {
+      thread.answers = count;
       await this.repository.save(thread);
     } else {
       throw new Error("Try to add reply count to inexistent thread");
