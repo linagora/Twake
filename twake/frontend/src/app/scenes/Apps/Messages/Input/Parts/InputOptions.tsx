@@ -119,7 +119,7 @@ export default (props: Props) => {
                   {
                     type: 'menu',
                     icon: 'desktop',
-                    text: 'From computer',
+                    text: Languages.t('scenes.apps.messages.input.attach_file.from_computer'),
                     onClick: (evt: any) => {
                       MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
                     },

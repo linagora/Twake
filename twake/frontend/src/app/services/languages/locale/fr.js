@@ -2020,8 +2020,10 @@ export default {
     "Tout d'abord, vous devez vérifier votre adresse e-mail. Nous avons envoyé un lien de vérification à",
   'components.verify_mail.paragraph':
     "Vous pouvez le faire plus tard si vous le souhaitez, mais les comptes non vérifiés n'ont accès qu'à une version limitée de Twake",
-  'services.console_services.toaster.add_emails_error': 'Une erreur s\'est produite pendant l\'ajout de(s) email(s)',
-  'services.console_services.toaster.add_email_error_message': 'Une erreur s\'est produite lors de l\'ajout de $1',  
+  'services.console_services.toaster.add_emails_error':
+    "Une erreur s'est produite pendant l'ajout de(s) email(s)",
+  'services.console_services.toaster.add_email_error_message':
+    "Une erreur s'est produite lors de l'ajout de $1",
   'services.console_services.toaster.success_verify_email':
     'Un lien de vérification a été envoyé à votre compte de messagerie',
   'scenes.app.popup.workspaceparameter.edit_from_console': 'Modifier à partir de la console',
@@ -2076,4 +2078,12 @@ export default {
   'components.on_boarding.popups.blocked_company.company_subscription_plan_button': 'Cliquez ici',
   'components.on_boarding.popups.blocked_company.or': 'Ou',
   'components.on_boarding.popups.blocked_company.company_selector': "Changer d'entreprise",
+  'scenes.apps.tasks.select_user_button': "Afficher les tâches d'un autre utilisateur",
+  'scenes.apps.tasks.select_user': 'Rechercher un utilisateur',
+  'scenes.apps.messages.input.attach_file.from_computer': 'Depuis mon ordinateur',
+  'scenes.app.popup.workspaceparameter.pages.table_title': 'Nom',
+  'scenes.client.main_view.main_header.search_input': 'Rechercher',
+  'scenes.apps.drive.new_link_title': 'Nouveau lien',
+  'scenes.apps.drive.default_link_name': 'Sans titre',
+  'components.emoji_picker.input_search_placeholder': 'Rechercher',
 };

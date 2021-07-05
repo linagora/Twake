@@ -320,12 +320,8 @@ export default class Tasks extends Component {
                     users={[]}
                     buttonIcon={'enter'}
                     noPlaceholder
-                    buttonText={Languages.t(
-                      'scenes.apps.tasks.select_user_button',
-                      [],
-                      'View tasks for an other user',
-                    )}
-                    inputText={Languages.t('scenes.apps.tasks.select_user', [], 'Search user')}
+                    buttonText={Languages.t('scenes.apps.tasks.select_user_button')}
+                    inputText={Languages.t('scenes.apps.tasks.select_user')}
                     scope="workspace"
                     onUpdate={ids => TasksService.openBoard('user_' + ids[0])}
                   />
