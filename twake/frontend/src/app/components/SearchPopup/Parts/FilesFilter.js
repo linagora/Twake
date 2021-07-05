@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+/* eslint-disable react/no-direct-mutation-state */
+import React from 'react';
 
 import { ObjectModalFormTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
@@ -78,7 +79,7 @@ export default class FilesFilter extends React.Component {
               item = item.replace(/\.+/, '.');
               this.state.options.type.push(item);
             });
-            if (list.length == 0 || (list.length == 1 && !list[0])) {
+            if (list.length === 0 || (list.length === 1 && !list[0])) {
               this.state.options.type = false;
             }
             this.setState({});

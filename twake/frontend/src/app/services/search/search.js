@@ -11,7 +11,7 @@ import Strings from 'services/utils/strings.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 
 import Globals from 'services/Globals';
 
@@ -269,6 +269,7 @@ class SearchService extends Observable {
     ) {
       var searchRoute = 'quicksearch';
 
+      // eslint-disable-next-line no-redeclare
       var options = {};
       if (this.type === 'file') {
         options = this.options;

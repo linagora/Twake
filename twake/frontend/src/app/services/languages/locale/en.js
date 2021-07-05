@@ -1998,4 +1998,12 @@ export default {
   'components.on_boarding.popups.blocked_company.company_subscription_plan_button': 'Click here',
   'components.on_boarding.popups.blocked_company.or': 'Or',
   'components.on_boarding.popups.blocked_company.company_selector': 'Switch to another company',
+  'scenes.apps.tasks.select_user_button': 'View tasks for an other user',
+  'scenes.apps.tasks.select_user': 'Search user',
+  'scenes.apps.messages.input.attach_file.from_computer': 'From computer',
+  'scenes.app.popup.workspaceparameter.pages.table_title': 'Name',
+  'scenes.client.main_view.main_header.search_input': 'Search',
+  'scenes.apps.drive.new_link_title': 'New link',
+  'scenes.apps.drive.default_link_name': 'Untitled',
+  'components.emoji_picker.input_search_placeholder': 'Search',
 };

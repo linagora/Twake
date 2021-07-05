@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import AutoComplete from 'components/AutoComplete/AutoComplete';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -32,8 +32,8 @@ export default class WorkspaceListManager extends React.Component {
         return here;
       });
 
-    if (force || JSON.stringify(workspace_ids) != this.savedUserProps) {
-      this.state.workspaces_ids = workspace_ids;
+    if (force || JSON.stringify(workspace_ids) !== this.savedUserProps) {
+      this.setState({ workspaces_ids: workspace_ids });
       if (nextState) {
         nextState.workspaces_ids = workspace_ids;
       }
@@ -41,7 +41,7 @@ export default class WorkspaceListManager extends React.Component {
     }
   }
   filter(text, callback) {
-    this.state.input = text;
+    this.setState({ input: text });
 
     text = (text || '').toLocaleLowerCase();
 
@@ -66,8 +66,8 @@ export default class WorkspaceListManager extends React.Component {
     result = result
       .filter(a => (this.state.workspaces_ids || []).indexOf(a.id) < 0)
       .sort((a, b) => {
-        if (a.group_id == b.group_id) {
-          if (a.group_id == a.id) {
+        if (a.group_id === b.group_id) {
+          if (a.group_id === a.id) {
             return -1;
           } else {
             return 1;
@@ -119,8 +119,9 @@ export default class WorkspaceListManager extends React.Component {
           <TrashIcon
             className="m-icon-small remove"
             onClick={() => {
+              // eslint-disable-next-line react/no-direct-mutation-state
               this.state.workspaces_ids = this.state.workspaces_ids.filter(id =>
-                typeof item == 'string' ? item != id : item.id != id,
+                typeof item === 'string' ? item !== id : item.id !== id,
               );
               this.setState({});
               if (this.props.onUpdate) this.props.onUpdate(this.state.workspaces_ids);
@@ -155,7 +156,7 @@ export default class WorkspaceListManager extends React.Component {
 
   render() {
     var all_workspaces =
-      this.state.workspaces_ids.length == 0 ||
+      this.state.workspaces_ids.length === 0 ||
       Object.keys(Workspaces.user_workspaces || {}).length <= this.state.workspaces_ids.length;
 
     return (

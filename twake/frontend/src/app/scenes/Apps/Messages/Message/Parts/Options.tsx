@@ -2,7 +2,7 @@ import React from 'react';
 import 'moment-timezone';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
@@ -16,7 +16,8 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import RouterServices from 'app/services/RouterService';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
+import MessageReactionService from 'app/services/Apps/Messages/MessageReactionService';
 
 type Props = {
   message: Message;
@@ -70,13 +71,11 @@ export default (props: Props) => {
           text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
           onClick: () => {
             const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
-            const url = `${document.location.origin}${
-              RouterServices.generateRouteFromState({
-                workspaceId: workspace.id,
-                channelId: props.message.channel_id,
-                messageId: props.message.parent_message_id || props.message.id,
-              })
-            }`;
+            const url = `${document.location.origin}${RouterServices.generateRouteFromState({
+              workspaceId: workspace.id,
+              channelId: props.message.channel_id,
+              messageId: props.message.parent_message_id || props.message.id,
+            })}`;
             const el = document.createElement('textarea');
             el.value = url;
             document.body.appendChild(el);
@@ -133,12 +132,12 @@ export default (props: Props) => {
     }
 
     if (
-      props.message.sender == User.getCurrentUserId() ||
+      props.message.sender === User.getCurrentUserId() ||
       (props.message.application_id &&
-        (props.message.hidden_data || {}).allow_delete == 'everyone') ||
+        (props.message.hidden_data || {}).allow_delete === 'everyone') ||
       (props.message.application_id &&
         WorkspaceUserRights.hasWorkspacePrivilege() &&
-        (props.message.hidden_data || {}).allow_delete == 'administrators')
+        (props.message.hidden_data || {}).allow_delete === 'administrators')
     ) {
       if (menu.length > 0 && (!props.message.application_id || !props.message.responses_count)) {
         menu.push({ type: 'separator' });
@@ -210,7 +209,11 @@ export default (props: Props) => {
                     onChange={(emoji: any) => {
                       MenusManager.closeMenu();
                       props.onClose && props.onClose();
-                      MessagesService.react(props.message, emoji.colons, props.collectionKey);
+                      MessageReactionService.react(
+                        props.message,
+                        emoji.colons,
+                        props.collectionKey,
+                      );
                     }}
                   />
                 );

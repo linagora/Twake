@@ -1,4 +1,3 @@
-import React from 'react';
 import api from 'services/Api';
 import ws from 'services/websocket.js';
 import CryptoJS from 'crypto-js';
@@ -161,7 +160,7 @@ export default class SecuredConnection {
     var lastKey = this.keys[this.keys.length - 1];
 
     try {
-      if (this.prepared_key_original != lastKey) {
+      if (this.prepared_key_original !== lastKey) {
         this.prepared_key_salt = CryptoJS.lib.WordArray.random(256);
         this.prepared_key_original = lastKey;
         this.prepared_key = CryptoJS.PBKDF2(lastKey.key, this.prepared_key_salt, {
@@ -187,6 +186,7 @@ export default class SecuredConnection {
 
     var encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), prepared_key, { iv: iv });
 
+    // eslint-disable-next-line no-redeclare
     var data = {
       encrypted: CryptoJS.enc.Base64.stringify(encrypted.ciphertext),
       iv: CryptoJS.enc.Hex.stringify(iv),

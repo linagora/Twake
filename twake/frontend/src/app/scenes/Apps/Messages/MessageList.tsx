@@ -6,7 +6,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import Logger from 'app/services/Logger';
 import Message from './Message/MessageAndTimeSeparator';
 import GoToBottom from './Parts/GoToBottom';
-import { Message as MessageModel } from 'app/services/Apps/Messages/Message';
+import { Message as MessageModel } from 'app/models/Message';
 import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
 import MessageComponent from './Message/Message';
 import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';

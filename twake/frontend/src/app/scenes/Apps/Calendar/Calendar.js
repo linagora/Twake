@@ -194,6 +194,7 @@ export default class Calendar extends Component {
       this.allowed_ids = nextProps.tab.configuration.calendars.map(c => c.calendar_id);
     }
 
+    // eslint-disable-next-line no-unused-vars
     var filter = nextState.filter;
     if (!this.loaded_date_range['both']) {
       this.loaded_date_range['both'] = {};
@@ -238,7 +239,7 @@ export default class Calendar extends Component {
     }
   }
   componentDidUpdate() {
-    if (this.date != CalendarService.date && this.calendar) {
+    if (this.date !== CalendarService.date && this.calendar) {
       this.calendar.setDate(CalendarService.date, true);
       this.date = CalendarService.date;
     }
@@ -411,7 +412,7 @@ export default class Calendar extends Component {
       mode = 'workspace';
     }
 
-    if (mode == 'both' || mode == 'workspace') {
+    if (mode === 'both' || mode === 'workspace') {
       calendar_list = Collections.get('calendars')
         .findBy({ workspace_id: this.props.channel.data.workspace_id })
         .map(cal => {
@@ -468,19 +469,19 @@ export default class Calendar extends Component {
 
         var not_mine =
           (event.participants || []).filter(
-            part => part.user_id_or_mail == UserService.getCurrentUserId(),
-          ).length == 0;
-        if (this.state.filter == 'mine') {
+            part => part.user_id_or_mail === UserService.getCurrentUserId(),
+          ).length === 0;
+        if (this.state.filter === 'mine') {
           if (not_mine) {
             event._user_transparent = true;
           }
           return true;
         }
-        if (this.state.filter == 'workspace' || this.state.filter == 'custom') {
+        if (this.state.filter === 'workspace' || this.state.filter === 'custom') {
           //Not in this workspace
           if (
             event.workspaces_calendars.filter(part => calendars.indexOf(part.calendar_id) >= 0)
-              .length == 0
+              .length === 0
           ) {
             if (!not_mine) {
               //Set transparent event
@@ -497,7 +498,7 @@ export default class Calendar extends Component {
     if (
       CalendarService.edited &&
       CalendarService.edited.from &&
-      CalendarService.edited.from != this.lastEditedFrom
+      CalendarService.edited.from !== this.lastEditedFrom
     ) {
       this.lastEditedFrom = CalendarService.edited.from;
       this.calendar.setDate(new Date(CalendarService.edited.from * 1000), true);
@@ -585,7 +586,7 @@ export default class Calendar extends Component {
 
     calendar_menu = calendar_menu.concat(this.renderCalendarList());
 
-    if (this.props.tab == null && WorkspaceUserRights.hasWorkspacePrivilege()) {
+    if (this.props.tab === null && WorkspaceUserRights.hasWorkspacePrivilege()) {
       calendar_menu = calendar_menu.concat([
         {
           type: 'menu',
@@ -639,7 +640,7 @@ export default class Calendar extends Component {
           </div>
 
           <div className="right">
-            {this.state.view != 'dayGridMonth' && (
+            {this.state.view !== 'dayGridMonth' && (
               <div className="week_number">
                 {Languages.t('scenes.apps.calendar.calendar.week_btn', [], 'Semaine')}{' '}
                 {moment(CalendarService.date).week()}
@@ -673,12 +674,12 @@ export default class Calendar extends Component {
               ]}
             >
               {CalendarService.date &&
-                (this.state.view == 'dayGridMonth' ||
-                  this.state.view == 'timeGridWeek' ||
-                  this.state.view == 'listYear') &&
+                (this.state.view === 'dayGridMonth' ||
+                  this.state.view === 'timeGridWeek' ||
+                  this.state.view === 'listYear') &&
                 moment(CalendarService.date).format('MMMM YYYY')}
               {CalendarService.date &&
-                this.state.view == 'timeGridDay' &&
+                this.state.view === 'timeGridDay' &&
                 moment(CalendarService.date).format('LL')}
             </Menu>
 
@@ -764,7 +765,7 @@ export default class Calendar extends Component {
             if (
               !CalendarService.fullSizeModal &&
               CalendarService.preview &&
-              CalendarService.preview.front_id == event.front_id
+              CalendarService.preview.front_id === event.front_id
             ) {
               var updated = CalendarService.preview;
               setTimeout(() => {
@@ -783,7 +784,7 @@ export default class Calendar extends Component {
             if (
               !ModalManager.isOpen() ||
               !CalendarService.preview ||
-              CalendarService.preview.front_id != event.front_id
+              CalendarService.preview.front_id !== event.front_id
             ) {
               CalendarService.fullSizeModal = false;
               CalendarService.startPreview(event);

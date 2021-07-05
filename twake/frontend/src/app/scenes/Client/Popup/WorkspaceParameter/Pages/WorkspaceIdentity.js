@@ -44,7 +44,7 @@ export default class WorkspaceIdentity extends Component {
     event.preventDefault();
     uploadService.getFilesTree(event, function (tree) {
       var first = tree[Object.keys(tree)[0]];
-      if (first.constructor.name != 'Object') {
+      if (first.constructor.name !== 'Object') {
         //A file
         var reader = new FileReader();
         reader.onload = function (e) {
@@ -98,7 +98,7 @@ export default class WorkspaceIdentity extends Component {
                 type="text"
                 value={this.state.workspaceName}
                 onKeyDown={e => {
-                  if (e.keyCode == 13) {
+                  if (e.keyCode === 13) {
                     workspaceService.updateWorkspaceName(this.state.workspaceName);
                   }
                 }}
@@ -162,6 +162,7 @@ export default class WorkspaceIdentity extends Component {
                 'Poids maximum 5 mo.',
               )}
               <br />
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a
                 className="red"
                 onClick={() => {
@@ -213,7 +214,7 @@ export default class WorkspaceIdentity extends Component {
                 className="small buttonValidation"
                 disabled={
                   this.state.workspaceService.loading ||
-                  workspace.name != this.state.deleteWorkspaceName
+                  workspace.name !== this.state.deleteWorkspaceName
                 }
                 onClick={() => {
                   AlertManager.confirm(() => {

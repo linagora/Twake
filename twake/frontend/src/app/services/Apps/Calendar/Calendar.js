@@ -1,4 +1,3 @@
-import React from 'react';
 import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
 import Globals from 'services/Globals';
@@ -23,7 +22,7 @@ class Calendar extends Observable {
     this.generateMenu();
     this.event_types_by_value = {};
     this.event_types.map(item => {
-      this.event_types_by_value[item.value] = item;
+      return (this.event_types_by_value[item.value] = item);
     });
   }
 
@@ -82,7 +81,7 @@ class Calendar extends Observable {
         });
       }
 
-      if (!this.edited.workspaces_calendars && this.filter_mode == 'workspace') {
+      if (!this.edited.workspaces_calendars && this.filter_mode === 'workspace') {
         if (!this.last_used_calendar[Workspaces.currentWorkspaceId]) {
           var tmp = Collections.get('calendars').findBy({
             workspace_id: Workspaces.currentWorkspaceId,
@@ -150,7 +149,7 @@ class Calendar extends Observable {
       this.last_used_calendar[Workspaces.currentWorkspaceId] = event.workspaces_calendars[0];
     }
 
-    if (!this.edited || event.front_id != this.edited.front_id) {
+    if (!this.edited || event.front_id !== this.edited.front_id) {
       Collections.get('events').save(event, collectionKey);
     } else {
       Collections.get('events').notify();
@@ -174,11 +173,11 @@ class Calendar extends Observable {
       return false;
     }
     var readonly = event.readonly;
-    if (event.owner && event.owner != UserService.getCurrentUserId()) {
+    if (event.owner && event.owner !== UserService.getCurrentUserId()) {
       readonly = true;
     }
     (event.workspaces_calendars || []).forEach(item => {
-      if (item.workspace_id != Workspaces.currentWorkspaceId) {
+      if (item.workspace_id !== Workspaces.currentWorkspaceId) {
         readonly = true;
       }
     });

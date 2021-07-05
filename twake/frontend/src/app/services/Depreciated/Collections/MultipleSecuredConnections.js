@@ -1,4 +1,3 @@
-import React from 'react';
 import SecuredConnection from './SecuredConnection.js';
 /** MultipleSecuredConnections
  * Manage multiple secured connections as one (multiple publish and centralized event manager)
@@ -30,9 +29,9 @@ export default class MultipleSecuredConnections {
     //Disable duplicates
     var string = JSON.stringify(data);
     if (
-      string == this.last_event &&
+      string === this.last_event &&
       this.disableDuplicates &&
-      !(event == 'close' || event == 'open' || event == 'init')
+      !(event === 'close' || event === 'open' || event === 'init')
     ) {
       return;
     }

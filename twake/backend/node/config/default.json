@@ -84,9 +84,13 @@
     }
   },
   "pubsub": {
-    "urls": [
-      "amqp://guest:guest@localhost:5672"
-    ]
+    "// possible 'type' values are": "'ampq' or 'local'",
+    "type": "amqp",
+    "amqp": {
+      "urls": [
+        "amqp://guest:guest@localhost:5672"
+      ]
+    }
   },
   "search": {
     "type": false,
@@ -134,6 +138,7 @@
     "notifications",
     "messages",
     "files",
-    "workspaces"
+    "workspaces",
+    "console"
   ]
 }

@@ -1,11 +1,9 @@
-import { UserType } from "app/models/User";
-import resolve from "resolve";
-import Api from "../Api";
-import { TwakeService } from "../Decorators/TwakeService";
+import { UserType } from 'app/models/User';
+import Api from '../Api';
+import { TwakeService } from '../Decorators/TwakeService';
 
 @TwakeService('UserAPIClientService')
 class UserAPIClient {
-
   /**
    * Get users from their ID
    *
@@ -17,7 +15,8 @@ class UserAPIClient {
         `/internal/services/users/v1/users?user_ids=${users.join(',')}`,
         (res: { resources: UserType[] }): void => {
           resolve(res.resources && res.resources.length ? res.resources : []);
-        });
+        },
+      );
     });
   }
 
@@ -31,7 +30,7 @@ class UserAPIClient {
   async _list(users: string[] = []): Promise<UserType[]> {
     return new Promise<UserType[]>(resolve => {
       Api.post('users/all/get', { id: users }, (res: { data?: UserType[] }) => {
-        resolve(res.data || []);
+        resolve(res.data || []);
       });
     });
   }

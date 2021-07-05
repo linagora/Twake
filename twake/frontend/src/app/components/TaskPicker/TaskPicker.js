@@ -88,7 +88,7 @@ export default class TaskPicker extends Component {
     this.setState({ taskSelected: task });
   }
   submit() {
-    if (this.props.mode == 'select_task' && this.state.taskSelected) {
+    if (this.props.mode === 'select_task' && this.state.taskSelected) {
       if (this.props.onChoose) {
         this.props.onChoose(this.state.taskSelected);
       }
@@ -98,7 +98,7 @@ export default class TaskPicker extends Component {
     var boards = Collections.get('boards').findBy({ workspace_id: Workspaces.currentWorkspaceId });
     var loading =
       !Collections.get('boards').did_load_first_time[this.tasks_collection_key] &&
-      boards.length == 0;
+      boards.length === 0;
     return (
       <div className="boardPicker">
         {loading && (
@@ -123,9 +123,10 @@ export default class TaskPicker extends Component {
     );
   }
   renderListPicker() {
-    var loading = !Collections.get('lists').did_load_first_time[
-      this.tasks_collection_key + '_' + this.state.currentBoard.id
-    ];
+    var loading =
+      !Collections.get('lists').did_load_first_time[
+        this.tasks_collection_key + '_' + this.state.currentBoard.id
+      ];
     var lists = Collections.get('lists').findBy({ board_id: this.state.currentBoard.id });
     return (
       <div className="">
@@ -158,9 +159,10 @@ export default class TaskPicker extends Component {
     );
   }
   renderTaskPicker() {
-    var loading = !Collections.get('tasks').did_load_first_time[
-      this.tasks_collection_key + '_' + this.state.currentBoard.id + '_tasks'
-    ];
+    var loading =
+      !Collections.get('tasks').did_load_first_time[
+        this.tasks_collection_key + '_' + this.state.currentBoard.id + '_tasks'
+      ];
     var tasks = Collections.get('tasks').findBy({
       board_id: this.state.currentBoard.id,
       list_id: this.state.currentList.id,
@@ -185,8 +187,8 @@ export default class TaskPicker extends Component {
                 className={
                   'picker_item ' +
                   (this.state.taskSelected &&
-                  this.props.mode == 'select_task' &&
-                  this.state.taskSelected.id == item.id
+                  this.props.mode === 'select_task' &&
+                  this.state.taskSelected.id === item.id
                     ? 'is_selected'
                     : '')
                 }
@@ -236,7 +238,7 @@ export default class TaskPicker extends Component {
           {this.state.currentBoard && this.state.currentList && this.renderTaskPicker()}
         </div>
         <div className="menu-buttons">
-          {this.props.mode == 'select_task' &&
+          {this.props.mode === 'select_task' &&
             this.state.taskSelected &&
             this.state.taskSelected.id && (
               <Button

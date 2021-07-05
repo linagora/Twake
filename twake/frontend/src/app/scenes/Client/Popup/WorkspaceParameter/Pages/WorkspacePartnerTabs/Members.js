@@ -33,8 +33,6 @@ export default class Members extends React.Component {
           }
           addText={Languages.t(
             'scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button',
-            [],
-            'Ajouter des collaborateurs',
           )}
           onRequestMore={refresh =>
             new Promise(async resolve => {
@@ -70,7 +68,7 @@ export default class Members extends React.Component {
           }}
           column={[
             {
-              title: 'Name',
+              title: Languages.t('scenes.app.popup.workspaceparameter.pages.table_title'),
               dataIndex: 'name',
               render: col => {
                 var tags = [];
@@ -81,8 +79,6 @@ export default class Members extends React.Component {
                     <Tag color="var(--warning)">
                       {Languages.t(
                         'scenes.app.popup.workspaceparameter.pages.administrater_status',
-                        [],
-                        'Administrateur',
                       )}
                     </Tag>,
                   );

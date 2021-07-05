@@ -1,4 +1,3 @@
-import React from 'react';
 import Observable from 'app/services/Depreciated/observable.js';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
@@ -21,7 +20,7 @@ class Groups extends Observable {
   }
 
   select(group) {
-    if (this.currentGroupId == group.id) {
+    if (this.currentGroupId === group.id) {
       return;
     }
 
@@ -62,7 +61,7 @@ class Groups extends Observable {
     this.loading = true;
     this.notify();
     Api.post('workspace/group/data/name', { groupId: this.currentGroupId, name: name }, res => {
-      if (res.errors.length == 0) {
+      if (res.errors.length === 0) {
         var group = { id: that.currentGroupId, name: name };
         Collections.get('groups').updateObject(group);
         ws.publish('group/' + group.id, { data: { group: group } });
@@ -74,7 +73,7 @@ class Groups extends Observable {
   updateLogo(logo) {
     this.loading = true;
     this.notify();
-    var route = Globals.api_root_url + '/ajax/' + 'workspace/group/data/logo';
+    var route = `${Globals.api_root_url}/ajax/workspace/group/data/logo`;
 
     var data = new FormData();
     if (logo !== false) {
@@ -100,7 +99,7 @@ class Groups extends Observable {
       xhr: function () {
         var myXhr = $.ajaxSettings.xhr();
         myXhr.onreadystatechange = function () {
-          if (myXhr.readyState == XMLHttpRequest.DONE) {
+          if (myXhr.readyState === XMLHttpRequest.DONE) {
             that.loading = false;
             var resp = JSON.parse(myXhr.responseText);
             if (resp.errors.indexOf('badimage') > -1) {

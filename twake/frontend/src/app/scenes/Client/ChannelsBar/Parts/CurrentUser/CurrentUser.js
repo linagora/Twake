@@ -66,13 +66,13 @@ export default class CurrentUser extends Component {
     if (!current_user.status_icon[0]) {
       current_user.status_icon[1] = '';
     }
-    this.state.new_status = current_user.status_icon;
+    this.setState({ new_status: current_user.status_icon });
   }
   updateStatus(value) {
     value = value || this.state.new_status;
     CurrentUserService.updateStatusIcon([
-      value[0] == 'trash' ? '' : value[0],
-      value[0] == 'trash' ? '' : value[1],
+      value[0] === 'trash' ? '' : value[0],
+      value[0] === 'trash' ? '' : value[1],
     ]);
     MenusManager.closeMenu();
     this.setState({ new_status: ['', ''] });
@@ -103,7 +103,7 @@ export default class CurrentUser extends Component {
             type: 'react-element',
             reactElement: level => {
               if (this.state.new_status[0].length <= 0) {
-                this.state.new_status = current_user.status_icon;
+                this.setState({ new_status: current_user.status_icon });
               }
               return (
                 <InputWithIcon
@@ -117,7 +117,7 @@ export default class CurrentUser extends Component {
                   )}
                   value={this.state.new_status}
                   onChange={value => {
-                    if (value[0] == 'trash') {
+                    if (value[0] === 'trash') {
                       this.updateStatus(value);
                     } else {
                       this.setState({ new_status: value });

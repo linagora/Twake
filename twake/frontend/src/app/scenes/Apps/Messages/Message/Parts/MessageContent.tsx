@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import 'moment-timezone';
 import classNames from 'classnames';
 import Twacode from 'components/Twacode/Twacode';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 import Reactions from './Reactions';
 import Options from './Options';
 import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEdition from './MessageEdition';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
 
 type Props = {
   message: Message;
@@ -43,7 +43,7 @@ export default (props: Props) => {
   };
 
   const onAction = (type: string, id: string, context: any, passives: any, evt: any) => {
-    if (type == 'interactive_action') {
+    if (type === 'interactive_action') {
       setLoadingAction(true);
       clearTimeout(loading_interaction_timeout);
       loading_interaction_timeout = setTimeout(() => {
@@ -57,13 +57,11 @@ export default (props: Props) => {
 
   return (
     <div
-      className={
-        classNames('message-content', {
-          active,
-          'loading-interaction': loadingAction,
-          'link-to-thread': props.linkToThread,
-        })
-      }
+      className={classNames('message-content', {
+        active,
+        'loading-interaction': loadingAction,
+        'link-to-thread': props.linkToThread,
+      })}
       onClick={() => setActive(false)}
     >
       <MessageHeader
@@ -76,8 +74,8 @@ export default (props: Props) => {
           <MessageEdition
             message={props.message}
             collectionKey={props.collectionKey}
-            onDeleted={() => console.log("Message has been deleted")}
-            onEdited={() => console.log("Message has been edited")}
+            onDeleted={() => console.log('Message has been deleted')}
+            onEdited={() => console.log('Message has been edited')}
           />
         </div>
       )}
@@ -89,10 +87,10 @@ export default (props: Props) => {
               props.message.content,
               props.message.user_specific_content,
             )}
-            isApp={props.message.message_type == 1}
+            isApp={props.message.message_type === 1}
             after={
               props.message.edited &&
-              props.message.message_type == 0 && <div className="edited">(edited)</div>
+              props.message.message_type === 0 && <div className="edited">(edited)</div>
             }
             simple={props.linkToThread}
             onAction={(type: string, id: string, context: any, passives: any, evt: any) =>
