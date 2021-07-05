@@ -42,7 +42,7 @@ export class ThreadsService
     options?: { participants?: ParticipantOperation; message?: Message },
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<Thread>> {
-    if (options.message) {
+    if (!options.message) {
       throw new Error("You must provide an initial message in the thread.");
     }
 
