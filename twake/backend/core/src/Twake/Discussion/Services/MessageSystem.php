@@ -182,9 +182,7 @@ class MessageSystem
                             ]
                         ]
                     ],
-                    "options" => [
-                        
-                    ]
+                    "options" => []
                 ];
 
                 $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads", $data, $current_user, $application ? $application->getId() : null);

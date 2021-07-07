@@ -90,7 +90,10 @@ export class ViewsService implements MessageViewsServiceAPI {
         });
 
         if (extendedThread?.last_replies?.length === 0) {
-          await this.service.threads.delete({ id: extendedThread.thread_id });
+          await this.service.threads.delete(
+            { id: extendedThread.thread_id },
+            { user: { id: null, server_request: true } },
+          );
         } else if (extendedThread) {
           threadWithLastMessages.push(extendedThread);
         }
