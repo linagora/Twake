@@ -60,6 +60,7 @@ export class MessagesController
         {},
         context,
       );
+
       return {
         resource: result.entity,
       };

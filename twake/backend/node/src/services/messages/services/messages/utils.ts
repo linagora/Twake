@@ -55,25 +55,28 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
       (context?.user?.application_id || context?.user?.server_request) && item.ephemeral
         ? item.ephemeral
         : null,
-    thread_id: context.thread.id,
+    thread_id: (context?.user?.server_request ? item.thread_id : null) || context.thread.id,
     type: context?.user?.server_request && item.type === "event" ? "event" : "message",
     subtype: getSubtype({ subtype: item?.subtype || null }, context),
-    created_at: new Date().getTime(),
-    user_id: context.user.id,
-    application_id: context?.user?.application_id || null,
+    created_at: (context?.user?.server_request ? item.created_at : null) || new Date().getTime(),
+    user_id: (context?.user?.server_request ? item.user_id : null) || context.user.id,
+    application_id:
+      (context?.user?.server_request ? item.application_id : null) ||
+      context?.user?.application_id ||
+      null,
     text: item.text || "",
     blocks: item.blocks || [],
     files: item.files || null,
     context: item.context || null,
-    edited: null, //Message cannot be created with edition status
+    edited: (context?.user?.server_request ? item.edited : null) || null, //Message cannot be created with edition status
     pinned_info: item.pinned_info
       ? {
           pinned_at: new Date().getTime(),
           pinned_by: context.user.id,
         }
       : null,
-    reactions: null, // Reactions cannot be set on creation
-    bookmarks: null,
+    reactions: (context?.user?.server_request ? item.reactions : null) || null, // Reactions cannot be set on creation
+    bookmarks: (context?.user?.server_request ? item.bookmarks : null) || null,
     override:
       (context?.user?.application_id || context?.user?.server_request) && item.override
         ? {

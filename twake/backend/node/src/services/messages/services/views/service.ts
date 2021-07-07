@@ -12,7 +12,7 @@ import {
 } from "../../types";
 import { MessageChannelRef } from "../../entities/message-channel-refs";
 import { buildMessageListPagination } from "../utils";
-import _ from "lodash";
+import _, { extend } from "lodash";
 import { option } from "yargs";
 
 export class ViewsService implements MessageViewsServiceAPI {
@@ -88,7 +88,15 @@ export class ViewsService implements MessageViewsServiceAPI {
         const extendedThread = await this.service.messages.getThread(thread, {
           replies_per_thread: options.replies_per_thread || 3,
         });
-        if (extendedThread) threadWithLastMessages.push(extendedThread);
+
+        if (extendedThread?.last_replies?.length === 0) {
+          await this.service.threads.delete(
+            { id: extendedThread.thread_id },
+            { user: { id: null, server_request: true } },
+          );
+        } else if (extendedThread) {
+          threadWithLastMessages.push(extendedThread);
+        }
       }),
     );
     threadWithLastMessages.sort((a, b) => a.stats.last_activity - b.stats.last_activity);

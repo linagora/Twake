@@ -134,7 +134,14 @@ describe("The Messages Threads feature", () => {
             },
           ],
         },
-        {},
+        {
+          message: createMessage(
+            {
+              text: "Hello!",
+            },
+            platform,
+          ),
+        },
         getContext(platform),
       );
 
@@ -192,7 +199,14 @@ describe("The Messages Threads feature", () => {
             },
           ],
         },
-        {},
+        {
+          message: createMessage(
+            {
+              text: "Hello!",
+            },
+            platform,
+          ),
+        },
         getContext(platform),
       );
 
