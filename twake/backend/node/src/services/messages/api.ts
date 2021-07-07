@@ -48,7 +48,8 @@ export interface MessageThreadsServiceAPI
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<Thread, ThreadPrimaryKey, ExecutionContext> {
-  addReply(thread_id: string): Promise<void>;
+  addReply(thread_id: string, increment?: number): Promise<void>;
+  setReplyCount(thread_id: string, count: number): Promise<void>;
   save(
     item: Pick<Thread, "id"> & {
       participants: Pick<ParticipantObject, "id" | "type" | "workspace_id" | "company_id">[];
