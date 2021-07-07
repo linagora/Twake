@@ -125,10 +125,32 @@ describe("The Messages feature", () => {
       );
       const messageCAfterMove: Message = messageCAfterMoveResult.resource;
 
-      console.log(thread1Result, thread2Result, messageCResult, messageCAfterMoveResult);
-
+      //See if message was moved correctly to the new thread
       expect(messageCAfterMove.user_id).toBe(userC);
       expect(messageCAfterMove.thread_id).toBe(thread2.id);
+
+      const messageCAfterMove2Request = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${platform.workspace.company_id}/threads/${messageC.id}/messages/${messageC.id}`,
+        headers: {
+          authorization: `Bearer ${await platform.auth.getJWTToken({ sub: userA })}`,
+        },
+        payload: {
+          resource: messageC,
+          options: {
+            previous_thread: thread2.id,
+          },
+        },
+      });
+      const messageCAfterMove2Result: ResourceUpdateResponse<Message> = deserialize(
+        ResourceUpdateResponse,
+        messageCAfterMove2Request.body,
+      );
+      const messageCAfter2Move: Message = messageCAfterMove2Result.resource;
+
+      //See if message was moved correctly to new standalone thread
+      expect(messageCAfter2Move.user_id).toBe(userC);
+      expect(messageCAfter2Move.thread_id).toBe(messageCAfter2Move.id);
 
       //TODO check counts
     });

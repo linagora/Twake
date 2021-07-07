@@ -41,8 +41,6 @@ export class MessagesController
   ): Promise<ResourceUpdateResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      console.log("STEP 1");
-
       if (request.body.options?.previous_thread) {
         //First move the message to another thread, then edit it
         await this.service.messages.move(
@@ -54,8 +52,6 @@ export class MessagesController
         );
       }
 
-      console.log("STEP 2");
-
       const result = await this.service.messages.save(
         {
           id: request.params.message_id || undefined,
@@ -64,8 +60,6 @@ export class MessagesController
         {},
         context,
       );
-
-      console.log("STEP 3");
 
       return {
         resource: result.entity,

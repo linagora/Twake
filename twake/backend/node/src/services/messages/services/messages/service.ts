@@ -170,6 +170,29 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       throw Error("Can't move this message.");
     }
 
+    //Check new thread exists
+    let thread = await this.service.threads.get({ id: context.thread.id });
+    if (!thread && context.thread.id === messageInOldThread.id) {
+      logger.info(`Create empty thread for message moved out of thread`);
+      let oldThread = await this.service.threads.get({ id: options.previous_thread });
+      let upgradedContext = _.cloneDeep(context);
+      upgradedContext.user.server_request = true;
+      thread = (
+        await this.service.threads.save(
+          {
+            id: messageInOldThread.id,
+            participants: oldThread.participants,
+          },
+          {},
+          upgradedContext,
+        )
+      )?.entity;
+      console.log("create thread: ", thread);
+    }
+    if (!thread) {
+      throw Error("Can't move this message to inexistent thread.");
+    }
+
     const messageInNewThread = _.cloneDeep(messageInOldThread);
     messageInNewThread.thread_id = context.thread.id;
 
@@ -270,12 +293,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         },
       )
     ).getEntities();
-
-    if (last_replies.length === 0) {
-      //Delete the thread because it is empty
-      this.service.threads.delete(thread, { user: { id: null, server_request: true } });
-      return null;
-    }
 
     const first_message = await this.repository.findOne({
       thread_id: thread.id,

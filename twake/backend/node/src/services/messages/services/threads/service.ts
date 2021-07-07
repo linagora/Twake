@@ -19,6 +19,7 @@ import _ from "lodash";
 export class ThreadsService
   implements MessageThreadsServiceAPI, CRUDService<Thread, ThreadPrimaryKey, ExecutionContext> {
   version: "1";
+  name: "ThreadsService";
   repository: Repository<Thread>;
 
   constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {}
@@ -39,7 +40,7 @@ export class ThreadsService
     item: Pick<Thread, "id"> & {
       participants: Pick<ParticipantObject, "id" | "type">[];
     },
-    options?: { participants?: ParticipantOperation; message?: Message },
+    options: { participants?: ParticipantOperation; message?: Message } = {},
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<Thread>> {
     if (item.id) {
@@ -90,7 +91,11 @@ export class ThreadsService
 
     //Creation of thread or server edition
     if (!options.message) {
-      throw new Error("You must provide an initial message in the thread.");
+      if (context.user?.server_request) {
+        logger.info(`${this.name} - Create empty thread by server itself`);
+      } else {
+        throw new Error("You must provide an initial message in the thread.");
+      }
     }
 
     //Enforce current user in the participants list and add the created_by information
@@ -217,14 +222,15 @@ export class ThreadsService
     pk: Pick<Thread, "id">,
     context?: ExecutionContext,
   ): Promise<Thread & { message: Message }> {
+    const thread = await this.get(pk);
     return {
-      ...(await this.get(pk)),
+      ...thread,
       message: await this.service.messages.get({ id: pk.id, thread_id: pk.id }, context),
     };
   }
 
   async delete(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<DeleteResult<Thread>> {
-    const thread = await this.repository.findOne(pk);
+    const thread = await this.repository.findOne({ id: pk.id });
     if (context.user.server_request) {
       await this.repository.remove(thread);
     }
