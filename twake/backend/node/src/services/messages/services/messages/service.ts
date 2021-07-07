@@ -67,6 +67,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const applicationRequest = context?.user?.application_id;
     let messageOwnerAndNotRemoved = true;
 
+    item.thread_id = (serverRequest ? item.thread_id : null) || context.thread.id;
     const pk = _.pick(item, "thread_id", "id");
 
     let messageCreated = !pk.id;
@@ -151,7 +152,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   ): Promise<void> {
     //Fixme: check user has access to both threads
 
-    logger.error(
+    logger.debug(
       `Try to move message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
     );
 
@@ -179,7 +180,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     await this.repository.remove(messageInOldThread);
     await this.service.threads.addReply(messageInOldThread.thread_id, -1);
 
-    logger.error(
+    logger.info(
+      `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
+    );
+
+    console.log(
       `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
     );
 

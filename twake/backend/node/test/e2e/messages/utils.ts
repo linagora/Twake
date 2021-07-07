@@ -47,7 +47,9 @@ export const e2e_createMessage = async (
   threadId: string,
   message: Message,
 ) => {
-  const jwtToken = await platform.auth.getJWTToken();
+  const jwtToken = await platform.auth.getJWTToken(
+    message.user_id ? { sub: message.user_id } : undefined,
+  );
   const res = await platform.app.inject({
     method: "POST",
     url: `${url}/companies/${platform.workspace.company_id}/threads/${threadId}/messages`,

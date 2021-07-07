@@ -42,10 +42,6 @@ export class ThreadsService
     options?: { participants?: ParticipantOperation; message?: Message },
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<Thread>> {
-    if (!options.message) {
-      throw new Error("You must provide an initial message in the thread.");
-    }
-
     if (item.id) {
       //Update
       const participantsOperation: ParticipantOperation = options.participants || {
@@ -74,11 +70,15 @@ export class ThreadsService
           p => p.id,
         ) as ParticipantObject[];
 
-        this.repository.save(thread);
+        await this.repository.save(thread);
 
         //TODO ensure the thread is in all participants views (and removed from deleted participants)
 
-        return new SaveResult("thread", thread, OperationType.UPDATE);
+        return new SaveResult(
+          "thread",
+          await this.getWithMessage({ id: thread.id }),
+          OperationType.UPDATE,
+        );
       } else {
         //Thread to edit does not exists
 
@@ -89,6 +89,9 @@ export class ThreadsService
     }
 
     //Creation of thread or server edition
+    if (!options.message) {
+      throw new Error("You must provide an initial message in the thread.");
+    }
 
     //Enforce current user in the participants list and add the created_by information
     const participants: ParticipantObject[] = [
@@ -129,7 +132,11 @@ export class ThreadsService
       );
     }
 
-    return new SaveResult("thread", thread, OperationType.CREATE);
+    return new SaveResult(
+      "thread",
+      await this.getWithMessage({ id: thread.id }),
+      OperationType.CREATE,
+    );
   }
 
   /**
@@ -139,7 +146,7 @@ export class ThreadsService
   async addReply(threadId: string, increment: number = 1) {
     const thread = await this.repository.findOne({ id: threadId });
     if (thread) {
-      thread.answers = Math.max(0, thread.answers + increment);
+      thread.answers = Math.max(0, (thread.answers || 0) + increment);
       if (increment > 0) {
         thread.last_activity = new Date().getTime();
       }
@@ -203,7 +210,17 @@ export class ThreadsService
   }
 
   get(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<Thread> {
-    throw new Error("CRUD method not used.");
+    return this.repository.findOne(pk);
+  }
+
+  async getWithMessage(
+    pk: Pick<Thread, "id">,
+    context?: ExecutionContext,
+  ): Promise<Thread & { message: Message }> {
+    return {
+      ...(await this.get(pk)),
+      message: await this.service.messages.get({ id: pk.id, thread_id: pk.id }, context),
+    };
   }
 
   async delete(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<DeleteResult<Thread>> {

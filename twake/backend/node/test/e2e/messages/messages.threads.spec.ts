@@ -134,7 +134,14 @@ describe("The Messages Threads feature", () => {
             },
           ],
         },
-        {},
+        {
+          message: createMessage(
+            {
+              text: "Hello!",
+            },
+            platform,
+          ),
+        },
         getContext(platform),
       );
 
@@ -165,6 +172,8 @@ describe("The Messages Threads feature", () => {
         response.body,
       );
 
+      console.log("1: ", result.resource.participants);
+
       expect(response.statusCode).toBe(200);
       expect(result.resource.participants.length).toBe(2);
 
@@ -192,7 +201,14 @@ describe("The Messages Threads feature", () => {
             },
           ],
         },
-        {},
+        {
+          message: createMessage(
+            {
+              text: "Hello!",
+            },
+            platform,
+          ),
+        },
         getContext(platform),
       );
 
@@ -222,6 +238,8 @@ describe("The Messages Threads feature", () => {
         ResourceUpdateResponse,
         response.body,
       );
+
+      console.log("2: ", thread.entity.participants, result.resource.participants);
 
       expect(response.statusCode).toBe(200);
       expect(result.resource.participants.length).toBe(1);
