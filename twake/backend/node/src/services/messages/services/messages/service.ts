@@ -172,7 +172,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     //Check new thread exists
     let thread = await this.service.threads.get({ id: context.thread.id });
-    if (!thread && context.thread.id === messageInOldThread.id) {
+    if (!thread && `${context.thread.id}` === `${pk.id}`) {
       logger.info(`Create empty thread for message moved out of thread`);
       let oldThread = await this.service.threads.get({ id: options.previous_thread });
       let upgradedContext = _.cloneDeep(context);
@@ -187,7 +187,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
           upgradedContext,
         )
       )?.entity;
-      console.log("create thread: ", thread);
     }
     if (!thread) {
       throw Error("Can't move this message to inexistent thread.");
@@ -204,10 +203,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     await this.service.threads.addReply(messageInOldThread.thread_id, -1);
 
     logger.info(
-      `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
-    );
-
-    console.log(
       `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
     );
 
