@@ -34,6 +34,7 @@ type Operation = {
 };
 export default class MongoSearch extends SearchAdapter implements SearchAdapterInterface {
   mongodb: Db;
+  private name = "MongoSearch";
 
   constructor(readonly database: DatabaseServiceAPI) {
     super();
@@ -170,31 +171,36 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
 
     const collection = this.mongodb.collection(`${searchPrefix}${index}`);
 
-    const query = {};
+    const query = {
+      $text: options.$text || undefined,
+    };
     const sort = {};
 
     const cursor = collection
-      .find({ ...query, ...{ score: { $meta: "textScore" } } })
+      .find({ ...query })
       .sort(sort)
+      .project({ score: { $meta: "textScore" } })
       .skip(Math.max(0, parseInt(options.pagination.page_token || "0")))
       .limit(Math.max(0, parseInt(options.pagination.limitStr || "100")));
-
-    console.log("Entities 2:");
 
     const entities: IndexedEntity[] = [];
     while (await cursor.hasNext()) {
       let row = await cursor.next();
       row = { ...row.set, ...row };
       console.log(row);
-      entities.push({
-        primaryKey: parsePrimaryKey(entityDefinition, row._docId),
-        score: row.score,
-      });
+      try {
+        entities.push({
+          primaryKey: parsePrimaryKey(entityDefinition, row._docId),
+          score: row.score,
+        });
+      } catch (err) {
+        logger.error(
+          `${this.name} failed to get entity from search result: ${JSON.stringify(
+            row._docId,
+          )}, ${JSON.stringify(err)}`,
+        );
+      }
     }
-
-    console.log("Entities:");
-
-    console.log(entities);
 
     const nextToken =
       entities.length === parseInt(options.pagination.limitStr) &&

@@ -24,7 +24,11 @@ type TextType = {
   $diacriticSensitive?: boolean; //Default false
 };
 
+//Field, regex, options
+type RegexType = [string, string, string];
+
 export type FindOptions = ormFindOptions & {
+  $regex?: RegexType[];
   $text?: TextType;
 };
 

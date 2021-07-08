@@ -26,6 +26,16 @@ describe("The /users API", () => {
       };
       await testDbService.createWorkspace(workspacePk);
       await testDbService.createUser([workspacePk], {
+        firstName: "Ha",
+        lastName: "Nguyen",
+        email: "hnguyen@twake.app",
+      });
+      await testDbService.createUser([workspacePk], {
+        firstName: "Harold",
+        lastName: "Georges",
+        email: "hgeorges@twake.app",
+      });
+      await testDbService.createUser([workspacePk], {
         firstName: "Bob",
         lastName: "Smith",
         email: "bob@twake.app",
@@ -54,19 +64,16 @@ describe("The /users API", () => {
           authorization: `Bearer ${jwtToken}`,
         },
         query: {
-          search: "alexis",
+          search: "ha",
         },
       });
-
-      console.log("SEARCH RESULT 0: ");
-      console.log("SEARCH RESULT 1: ", response);
 
       expect(response.statusCode).toBe(200);
       const json = response.json();
       expect(json).toMatchObject({ resources: expect.any(Array) });
       const resources = json.resources;
 
-      console.log("SEARCH RESULT 2: ", resources);
+      console.log(resources);
 
       expect(resources.length).toBe(1);
 

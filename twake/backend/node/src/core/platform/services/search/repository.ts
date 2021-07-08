@@ -27,8 +27,6 @@ export default class SearchRepository<EntityType> {
     let results: EntityType[] = [];
     let nextPage: Paginable = new Pagination();
     try {
-      console.log("A");
-
       //1. Get objects primary keys from search connector
       const searchResults = await this.service.service.search(
         this.table,
@@ -36,8 +34,6 @@ export default class SearchRepository<EntityType> {
         filters,
         options,
       );
-
-      console.log("B");
 
       //2. Get database original objects from theses primary keys
       for (const searchEntity of searchResults.getEntities()) {
@@ -54,11 +50,9 @@ export default class SearchRepository<EntityType> {
       }
       nextPage = searchResults.nextPage;
     } catch (err) {
-      console.log("C", err);
       logger.error(`${this.name} An error occurred while searching, returning zero results:`);
       logger.error(err);
     }
-    console.log("D");
 
     logger.debug(`${this.name} Found ${results.length} results for table ${this.table}`);
 
