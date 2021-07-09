@@ -4,19 +4,21 @@ import { PreviewServiceAPI } from "../../api";
 export class PreviewController {
   constructor(protected service: PreviewServiceAPI) {}
 
-  async save(
-    request: FastifyRequest<{
-      Params: { company_id: string; id: string };
-      Querystring: any;
-    }>,
+  async get(
+    request: FastifyRequest<{ Params: { id: string } }>,
     response: FastifyReply
-  ): Promise<any> {}
-
-  async get(request: FastifyRequest<{}>, response: FastifyReply): Promise<any> {
-    response.send("hello twake");
-  }
-
-  async delete(): Promise<void> {
-    throw new Error("Not implemented");
+  ): Promise<any> {
+    const inputPath =
+      "/Users/t_issarni/twake/Twake/twake/backend/preview/test_temp.pdf";
+    const mime = "pdf";
+    const outputPath = `${inputPath.split(".")[0]}_temp`;
+    const numberOfPages = 1;
+    const result = await this.service.get(
+      mime,
+      inputPath,
+      outputPath,
+      numberOfPages
+    );
+    response.send("computing");
   }
 }

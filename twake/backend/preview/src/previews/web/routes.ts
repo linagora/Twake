@@ -13,7 +13,7 @@ const routes: FastifyPluginCallback<{ service: PreviewServiceAPI }> = (
 
   fastify.route({
     method: "GET",
-    url: previewsUrl,
+    url: `${previewsUrl}`, ///:id`,
     preValidation: [], //[fastify.authenticate],
     handler: previewController.get.bind(previewController),
   });

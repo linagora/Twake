@@ -1,6 +1,7 @@
 import { PreviewServiceAPI } from "./api";
 import web from "./web/index";
 import { FastifyInstance } from "fastify";
+import { getService } from "./services";
 
 export default class PreviewService {
   version: 1;
@@ -12,11 +13,11 @@ export default class PreviewService {
   }
 
   public async init(fastify: FastifyInstance): Promise<this> {
+    this.service = getService();
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: "/", service: this.service });
       next();
     });
-
     return this;
   }
 }
