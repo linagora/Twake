@@ -18,6 +18,7 @@ import { ConsoleServiceAPI } from "../api";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
 import { CompanyUserRole } from "../../user/web/types";
+import { memoize } from "lodash";
 
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
@@ -134,45 +135,73 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company: Company,
     userDTO: ConsoleHookUser,
   ): Promise<void> {
-    const user = await this.consoleInstance.services.userService.users.getByConsoleId(
-      consoleUserId,
-    );
+    const roles = userDTO.roles;
+
+    let user = await this.consoleInstance.services.userService.users.getByConsoleId(userDTO._id);
 
     if (!user) {
-      // th
+      if (!userDTO.email) {
+        throw CrudExeption.badRequest("Email is required");
+      }
+
+      let username = userDTO.email
+        .split("@")[0]
+        .toLocaleLowerCase()
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .replace(/ +/g, "_");
+
+      if (
+        await this.consoleInstance.services.userService.users.isEmailAlreadyInUse(userDTO.email)
+      ) {
+        throw CrudExeption.badRequest("Console user not created because email already exists");
+      }
+
+      username = await this.consoleInstance.services.userService.users.getAvailableUsername(
+        username,
+      );
+      if (!username) {
+        throw CrudExeption.badRequest("Console user not created because username already exists");
+      }
+
+      user = new User();
+      user.username_canonical = username;
+      user.email_canonical = userDTO.email;
+      user.deleted = false;
     }
 
-    /*
+    user.email_canonical = userDTO.email;
+    user.phone = "";
+    user.first_name = userDTO.firstName ? userDTO.firstName : userDTO.name;
+    user.last_name = userDTO.lastName;
+    user.identity_provider = "console";
+    user.identity_provider_id = userDTO._id;
+    user.mail_verified = userDTO.isVerified;
+    user.language = userDTO.preference.locale;
+    user.timezone = userDTO.preference.timeZone;
 
-        if(!$user){
-            $this->updateUser($userId, $companyCode, $userDTO);
-            $user = (new Utils($this->app))->getUser($userId);
-        }
-        if(!$company){
-            $this->updateCompany($companyCode);
-            $company = (new Utils($this->app))->getCompany($companyCode);
-        }
+    const avatar = userDTO.avatar;
 
-        if(!$user || !$company){
-            return [
-                "success" => false
-            ];
-        }
+    const endpoint = this.consoleInstance.consoleOptions.url;
 
-        //Fixme, in the future there should be a better endpoint to get user role in a given company
-        if(!$userDTO){
-            $header = "Authorization: Basic " . $this->authB64;
-            $response = $this->api->get(rtrim($this->endpoint, "/") . "/users/" . $userId, array(CURLOPT_HTTPHEADER => [$header]));
-            $userDTO = json_decode($response->getContent(), 1);
-        }
-        $companyRole = null;
-        foreach($userDTO["roles"] as $role){
-            if($role["targetCode"] === $companyCode){
-                $companyRole = $role;
-            }
-        }
+    user.picture =
+      avatar.type && avatar.type !== "url"
+        ? endpoint.replace(/\/$/, "") + "/avatars/" + avatar.value
+        : "";
 
-        $result = (new ApplyUpdates($this->app))->addUser($user, $company, $companyRole);
-     */
+    await this.consoleInstance.services.userService.users.save(user);
+
+    // const companiesHash: Map<string, Company> = new Map();
+
+    const getCompanyByCode = memoize(companyCode =>
+      this.consoleInstance.services.userService.companies.getCompanyByCode(companyCode),
+    );
+
+    if (userDTO.roles) {
+      for (const role of roles) {
+        const companyConsoleCode = role.targetCode;
+        const roleName = role.roleCode;
+        company = await getCompanyByCode(companyConsoleCode);
+      }
+    }
   }
 }

@@ -5,6 +5,7 @@ import { ConsoleServiceClient } from "../client-interface";
 import {
   ConsoleCompany,
   ConsoleHookUser,
+  ConsoleOptions,
   ConsoleUser,
   CreateConsoleCompany,
   CreateConsoleUser,

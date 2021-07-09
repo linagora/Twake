@@ -1,5 +1,8 @@
 import { v1 as uuidv1 } from "uuid";
+import { merge } from "lodash";
+
 import {
+  CrudExeption,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -22,10 +25,13 @@ import CompanyUser, {
 import { ListUserOptions } from "../users/types";
 import { CompanyUserRole } from "../../web/types";
 import { uuid } from "../../../../utils/types";
+import ExternalGroup, { getInstance } from "../../entities/external_company";
+import { getInstance as getExternalGroupInstance } from "../../entities/external_company";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
   companyRepository: Repository<Company>;
+  externalCompanyRepository: Repository<ExternalGroup>;
   companyUserRepository: Repository<CompanyUser>;
 
   constructor(private database: DatabaseServiceAPI) {}
@@ -35,6 +41,10 @@ export class CompanyService implements CompaniesServiceAPI {
     this.companyUserRepository = await this.database.getRepository<CompanyUser>(
       "group_user",
       CompanyUser,
+    );
+    this.externalCompanyRepository = await this.database.getRepository<ExternalGroup>(
+      "external_group_repository",
+      ExternalGroup,
     );
 
     return this;
@@ -47,7 +57,26 @@ export class CompanyService implements CompaniesServiceAPI {
         dateAdded: Date.now(),
       },
     });
+
+    if (companyToCreate.identity_provider_id && !companyToCreate.identity_provider) {
+      companyToCreate.identity_provider = "console";
+    }
+
     await this.companyRepository.save(companyToCreate);
+
+    if (companyToCreate.identity_provider_id) {
+      const key = {
+        service_id: companyToCreate.identity_provider,
+        external_id: companyToCreate.identity_provider_id,
+      };
+
+      const extCompany =
+        (await this.externalCompanyRepository.findOne(key)) || getExternalGroupInstance(key);
+
+      extCompany.company_id = companyToCreate.id;
+
+      await this.externalCompanyRepository.save(extCompany);
+    }
 
     return companyToCreate;
   }
@@ -55,9 +84,17 @@ export class CompanyService implements CompaniesServiceAPI {
   getCompany(company: CompanyPrimaryKey): Promise<Company> {
     return this.companyRepository.findOne(company);
   }
-  async getCompanyByCode(code: string): Promise<Company> {
-    const allCompanies = await this.companyRepository.find({}).then(a => a.getEntities());
-    return allCompanies.find(company => (company.identity_provider_id = code));
+
+  async getCompanyByCode(code: string, service_id: string = "console"): Promise<Company> {
+    const extCompany = await this.externalCompanyRepository.findOne({
+      service_id,
+      external_id: code,
+    });
+    if (!extCompany) {
+      throw CrudExeption.notFound(`Company ${code} not found`);
+    }
+
+    return await this.companyRepository.findOne({ id: extCompany.company_id });
   }
 
   getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser> {

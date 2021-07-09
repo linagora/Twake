@@ -39,8 +39,7 @@ export class UserService implements UsersServiceAPI {
   }
 
   async create(user: User): Promise<CreateResult<User>> {
-    this.repository.save(user);
-
+    await this.repository.save(user);
     return new CreateResult("user", user);
   }
 
@@ -53,8 +52,9 @@ export class UserService implements UsersServiceAPI {
     options?: SaveOptions,
     context?: ExecutionContext,
   ): Promise<SaveResult<User>> {
+    item.email_canonical = item.email_canonical.toLocaleLowerCase();
+    item.username_canonical = item.username_canonical.toLocaleLowerCase();
     await this.repository.save(item);
-
     return new SaveResult("user", item, OperationType.UPDATE);
   }
 
@@ -99,5 +99,27 @@ export class UserService implements UsersServiceAPI {
 
   async getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]> {
     return await this.companyUserRepository.find({ user_id: pk.id }).then(a => a.getEntities());
+  }
+
+  async isEmailAlreadyInUse(email: string): Promise<boolean> {
+    return this.repository.findOne({ email_canonical: email }).then(user => Boolean(user));
+  }
+  async getAvailableUsername(username: string): Promise<string> {
+    const users = await this.repository.find({}).then(a => a.getEntities());
+
+    if (!users.find(user => user.username_canonical == username.toLocaleLowerCase())) {
+      return username;
+    }
+
+    let suitableUsername = null;
+
+    for (let i = 1; i < 1000; i++) {
+      const dynamicUsername = username + i;
+      if (!users.find(user => user.username_canonical == dynamicUsername.toLocaleLowerCase())) {
+        suitableUsername = dynamicUsername;
+        break;
+      }
+    }
+    return suitableUsername;
   }
 }

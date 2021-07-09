@@ -1,6 +1,7 @@
 import {
   ConsoleCompany,
   ConsoleHookUser,
+  ConsoleOptions,
   CreateConsoleCompany,
   CreateConsoleUser,
   CreatedConsoleCompany,

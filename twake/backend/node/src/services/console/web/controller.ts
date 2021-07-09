@@ -1,7 +1,14 @@
 import { ConsoleServiceAPI } from "../api";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ConsoleHookBody, ConsoleHookBodyContent, ConsoleHookResponse } from "../types";
+import {
+  ConsoleExecutionContext,
+  ConsoleHookBody,
+  ConsoleHookBodyContent,
+  ConsoleHookResponse,
+} from "../types";
 import Company from "../../user/entities/company";
+import { WorkspaceUsersBaseRequest } from "../../workspaces/web/types";
+import { WorkspaceUsersExecutionContext } from "../../workspaces/types";
 
 export class ConsoleController {
   constructor(protected consoleService: ConsoleServiceAPI) {}
@@ -18,6 +25,8 @@ export class ConsoleController {
     reply: FastifyReply,
   ): Promise<ConsoleHookResponse> {
     try {
+      const context = getExecutionContext(request, this.consoleService);
+
       switch (request.body.type) {
         case "company_user_added":
         case "company_user_activated":
@@ -84,4 +93,17 @@ export class ConsoleController {
   private async planUpdated(content: ConsoleHookBodyContent) {
     await this.updateCompany(content);
   }
+}
+
+function getExecutionContext(
+  request: FastifyRequest<{ Body: ConsoleHookBody }>,
+  service: ConsoleServiceAPI,
+): ConsoleExecutionContext {
+  return {
+    user: request.currentUser,
+    url: request.url,
+    method: request.routerMethod,
+    transport: "http",
+    options: service.consoleOptions,
+  };
 }

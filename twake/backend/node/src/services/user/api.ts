@@ -16,6 +16,7 @@ import { ListUserOptions } from "./services/users/types";
 import { CompanyUserRole } from "./web/types";
 import { WorkspaceServiceAPI } from "../workspaces/api";
 import { uuid } from "../../utils/types";
+import { ConsoleOptions } from "../console/types";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
@@ -31,6 +32,8 @@ export interface UsersServiceAPI
   getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]>;
   getByEmails(email: string[]): Promise<User[]>;
   getByConsoleId(consoleUserId: string): Promise<User>;
+  isEmailAlreadyInUse(email: string): Promise<boolean>;
+  getAvailableUsername(username: string): Promise<string>;
 }
 
 /**

@@ -9,6 +9,8 @@ import Workspace, {
   WorkspacePrimaryKey,
 } from "./../../src/services/workspaces/entities/workspace";
 
+import { v1 as uuidv1 } from "uuid";
+
 export type uuid = string;
 
 export class TestDbService {
@@ -74,12 +76,14 @@ export class TestDbService {
     companyRole?: "member" | "admin" | "guest",
     workspaceRole?: "member" | "admin",
     email?: string,
+    username?: string,
   ): Promise<User> {
     const user = new User();
     const random = this.rand();
-    user.username_canonical = `test${random}`;
+    user.username_canonical = username ? username : `test${random}`;
     user.first_name = `test${random}_first_name`;
     user.last_name = `test${random}_last_name`;
+    user.identity_provider_id = String(this.rand());
 
     if (email) {
       user.email_canonical = email;
@@ -106,5 +110,15 @@ export class TestDbService {
     }
 
     return createdUser.entity;
+  }
+
+  async getUserFromDb(user: Partial<Pick<User, "id" | "identity_provider_id">>): Promise<User> {
+    if (user.id) {
+      return this.userService.users.get({ id: user.id });
+    } else if (user.identity_provider_id) {
+      return this.userService.users.getByConsoleId(user.identity_provider_id);
+    } else {
+      throw new Error("getUserFromDb: Id not provided");
+    }
   }
 }

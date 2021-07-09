@@ -3,18 +3,50 @@ import { init, TestPlatform } from "../setup";
 import { TestDbService, uuid } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
 import crypto from "crypto";
+import { CompanyUserRole } from "../../../src/services/user/web/types";
+import UserServiceAPI from "../../../src/services/user/api";
+import { ConsoleServiceAPI } from "../../../src/services/console/api";
+import { ConsoleOptions } from "../../../src/services/console/types";
 
 describe("The console API hooks", () => {
   const url = "/internal/services/console/v1/hook";
 
   let platform: TestPlatform;
 
+  let testDbService: TestDbService;
+
+  const nonExistentId = uuidv1();
+  const companyId = uuidv1();
+
+  const firstEmail = "superman@email.com";
+  const secondEmail = "C.o.n.sole_created-user@email.com";
+  const thirdEmail = "superman@someogherservice.com";
+
   const secret = "12345678";
+
+  let consoleOptions: ConsoleOptions = null;
 
   beforeAll(async ends => {
     platform = await init({
       services: ["database", "pubsub", "webserver", "user", "workspaces", "auth", "console"],
     });
+
+    if ((platform.database as any).type == "mongodb") {
+      await platform.database.getConnector().drop();
+    }
+    await platform.database.getConnector().init();
+    testDbService = new TestDbService(platform);
+    await testDbService.createCompany(companyId);
+    const ws0pk = { id: uuidv1(), group_id: companyId };
+    // const ws1pk = { id: uuidv1(), group_id: companyId };
+    await testDbService.createWorkspace(ws0pk);
+    // await testDbService.createWorkspace(ws1pk);
+    await testDbService.createUser([ws0pk], "member", "admin", null, "superman");
+    // await testDbService.createUser([ws0pk], "member", "member");
+    // await testDbService.createUser([ws1pk], "member", "member", emailForExistedUser);
+
+    const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
+    consoleOptions = console.consoleOptions;
     ends();
   });
 
@@ -124,14 +156,171 @@ describe("The console API hooks", () => {
       });
     });
 
-    describe("User updated", () => {
-      it.only("should 200 when user added", async done => {
+    describe.only("User updated", () => {
+      it("should 200 when updated existing user", async done => {
+        const user = testDbService.users[0];
+
         const response = await platform.app.inject({
           method: "POST",
           url: `${url}?secret=${secret}`,
-          payload: getPayload("company_user_added", {}),
+          payload: getPayload("company_user_added", {
+            user: {
+              _id: user.identity_provider_id,
+              roles: [{ targetCode: companyId, roleCode: "admin" }],
+              email: firstEmail,
+              firstName: "firstName",
+              lastName: "lastName",
+              isVerified: true,
+              preference: {
+                locale: "en",
+                timeZone: 2,
+              },
+              avatar: {
+                type: "unknown",
+                value: "123456.jpg",
+              },
+            },
+          }),
         });
+
         expect(response.statusCode).toBe(200);
+
+        const updatedUser = await testDbService.getUserFromDb({
+          id: user.id,
+        });
+
+        expect(updatedUser).toMatchObject({
+          id: user.id,
+          email_canonical: firstEmail,
+          first_name: "firstName",
+          last_name: "lastName",
+          mail_verified: true,
+          timezone: 2,
+          language: "en",
+          picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/123456.jpg",
+        });
+
+        done();
+      });
+
+      it("should 200 when creating new user", async done => {
+        const newUserConsoleId = String(testDbService.rand());
+
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("company_user_added", {
+            user: {
+              _id: newUserConsoleId,
+              roles: [{ targetCode: companyId, roleCode: "member" }],
+              email: secondEmail,
+              firstName: "consoleFirst",
+              lastName: "consoleSecond",
+              isVerified: true,
+              preference: {
+                locale: "ru",
+                timeZone: 3,
+              },
+              avatar: {
+                type: "unknown",
+                value: "5678.jpg",
+              },
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(200);
+
+        const updatedUser = await testDbService.getUserFromDb({
+          identity_provider_id: newUserConsoleId,
+        });
+
+        expect(updatedUser).toMatchObject({
+          first_name: "consoleFirst",
+          last_name: "consoleSecond",
+          mail_verified: true,
+          timezone: 3,
+          language: "ru",
+          creation_date: expect.any(String),
+          deleted: false,
+          email_canonical: secondEmail.toLocaleLowerCase(),
+          identity_provider: "console",
+          identity_provider_id: newUserConsoleId,
+          username_canonical: "consolecreateduser",
+          picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/5678.jpg",
+        });
+
+        done();
+      });
+
+      it("should 200 when creating new user with same username (generating new one)", async done => {
+        const newUserConsoleId = String(testDbService.rand());
+
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("company_user_added", {
+            user: {
+              _id: newUserConsoleId,
+              // roles: [{ targetCode: string; roleCode: CompanyUserRole }];
+              email: thirdEmail,
+              firstName: "superman",
+              lastName: "superman-lastname",
+              isVerified: true,
+              preference: {
+                locale: "ru",
+                timeZone: 3,
+              },
+              avatar: {
+                type: "unknown",
+                value: "5679.jpg",
+              },
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(200);
+
+        const updatedUser = await testDbService.getUserFromDb({
+          identity_provider_id: newUserConsoleId,
+        });
+
+        expect(updatedUser).toMatchObject({
+          first_name: "superman",
+          last_name: "superman-lastname",
+          mail_verified: true,
+          timezone: 3,
+          language: "ru",
+          creation_date: expect.any(String),
+          deleted: false,
+          email_canonical: thirdEmail.toLocaleLowerCase(),
+          identity_provider: "console",
+          identity_provider_id: newUserConsoleId,
+          username_canonical: "superman1",
+          picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/5679.jpg",
+        });
+
+        done();
+      });
+
+      it("should 400 when creating user with email that already exists", async done => {
+        const newUserConsoleId = String(testDbService.rand());
+
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("company_user_added", {
+            user: {
+              _id: newUserConsoleId,
+              email: firstEmail,
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(response.json()).toMatchObject({
+          error: "Console user not created because email already exists",
+        });
         done();
       });
     });

@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 export const TYPE = "user";
 
 @Entity(TYPE, {
-  primaryKey: [["id"], "email_canonical"],
+  primaryKey: [["id"]],
   globalIndexes: [["email_canonical"]],
   type: TYPE,
 })
