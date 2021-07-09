@@ -109,24 +109,6 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.companyRepository.find({}, { pagination });
   }
 
-  async addUserInCompany(
-    companyPk: CompanyPrimaryKey,
-    userPk: UserPrimaryKey,
-    role?: CompanyUserRole,
-  ): Promise<CompanyUser> {
-    const userInCompany = getCompanyUserInstance({
-      group_id: companyPk.id,
-      user_id: userPk.id,
-      id: uuidv1(),
-      dateAdded: Date.now(),
-      role: role,
-    });
-
-    await this.companyUserRepository.save(userInCompany);
-
-    return userInCompany;
-  }
-
   async removeUserFromCompany(companyPk: CompanyPrimaryKey, userPk: UserPrimaryKey): Promise<void> {
     const entity = await this.companyUserRepository.findOne({
       group_id: companyPk.id,
@@ -160,17 +142,20 @@ export class CompanyService implements CompaniesServiceAPI {
   }
 
   async setUserRole(
-    companyPk: CompanyPrimaryKey,
-    userPk: UserPrimaryKey,
-    role: CompanyUserRole,
-  ): Promise<void> {
-    const entity = await this.companyUserRepository.findOne({
-      group_id: companyPk.id,
-      user_id: userPk.id,
-    });
-    if (entity) {
-      entity.role = role;
-      await this.companyUserRepository.save(entity);
-    }
+    companyId: uuid,
+    userId: uuid,
+    role: CompanyUserRole = "member",
+  ): Promise<CompanyUser> {
+    const key = {
+      group_id: companyId,
+      user_id: userId,
+    };
+    const entity =
+      (await this.companyUserRepository.findOne(key)) ||
+      getCompanyUserInstance(merge(key, { dateAdded: Date.now() }));
+
+    entity.role = role;
+    await this.companyUserRepository.save(entity);
+    return entity;
   }
 }

@@ -182,18 +182,19 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     const avatar = userDTO.avatar;
 
     const endpoint = this.consoleInstance.consoleOptions.url;
+    const services = this.consoleInstance.services.userService;
 
     user.picture =
       avatar.type && avatar.type !== "url"
         ? endpoint.replace(/\/$/, "") + "/avatars/" + avatar.value
         : "";
 
-    await this.consoleInstance.services.userService.users.save(user);
+    await services.users.save(user);
 
     // const companiesHash: Map<string, Company> = new Map();
 
     const getCompanyByCode = memoize(companyCode =>
-      this.consoleInstance.services.userService.companies.getCompanyByCode(companyCode),
+      services.companies.getCompanyByCode(companyCode),
     );
 
     if (userDTO.roles) {
@@ -201,6 +202,11 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         const companyConsoleCode = role.targetCode;
         const roleName = role.roleCode;
         company = await getCompanyByCode(companyConsoleCode);
+        if (!company) {
+          throw CrudExeption.notFound(`Company ${companyConsoleCode} not found`);
+        }
+        await services.companies.setUserRole(company.id, user.id, roleName);
+        // await services.companies.setUserRole(company.id, user.id, roleName);
       }
     }
   }

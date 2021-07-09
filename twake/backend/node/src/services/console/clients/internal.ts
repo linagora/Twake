@@ -31,9 +31,9 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
     company: ConsoleCompany,
     user: CreateConsoleUser,
   ): Promise<CreatedConsoleUser> {
-    await this.consoleInstance.services.userService.companies.addUserInCompany(
-      { id: company.id },
-      { id: user.id },
+    await this.consoleInstance.services.userService.companies.setUserRole(
+      company.id,
+      user.id,
       user.role,
     );
     return merge(user, { _id: user.id });

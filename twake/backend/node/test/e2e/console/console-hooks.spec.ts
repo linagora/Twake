@@ -166,7 +166,7 @@ describe("The console API hooks", () => {
           payload: getPayload("company_user_added", {
             user: {
               _id: user.identity_provider_id,
-              roles: [{ targetCode: companyId, roleCode: "admin" }],
+              roles: [{ targetCode: companyId, roleCode: "owner" }],
               email: firstEmail,
               firstName: "firstName",
               lastName: "lastName",
@@ -200,6 +200,14 @@ describe("The console API hooks", () => {
           picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/123456.jpg",
         });
 
+        const userRoles = await testDbService.getCompanyUser(companyId, updatedUser.id);
+
+        expect(userRoles).toEqual(
+          expect.objectContaining({
+            role: "owner",
+          }),
+        );
+
         done();
       });
 
@@ -212,7 +220,7 @@ describe("The console API hooks", () => {
           payload: getPayload("company_user_added", {
             user: {
               _id: newUserConsoleId,
-              roles: [{ targetCode: companyId, roleCode: "member" }],
+              roles: [{ targetCode: companyId, roleCode: "admin" }],
               email: secondEmail,
               firstName: "consoleFirst",
               lastName: "consoleSecond",
@@ -250,6 +258,13 @@ describe("The console API hooks", () => {
           picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/5678.jpg",
         });
 
+        const userRoles = await testDbService.getCompanyUser(companyId, updatedUser.id);
+
+        expect(userRoles).toEqual(
+          expect.objectContaining({
+            role: "admin",
+          }),
+        );
         done();
       });
 
@@ -262,7 +277,7 @@ describe("The console API hooks", () => {
           payload: getPayload("company_user_added", {
             user: {
               _id: newUserConsoleId,
-              // roles: [{ targetCode: string; roleCode: CompanyUserRole }];
+              roles: [{ targetCode: companyId, roleCode: "member" }],
               email: thirdEmail,
               firstName: "superman",
               lastName: "superman-lastname",
@@ -300,6 +315,13 @@ describe("The console API hooks", () => {
           picture: consoleOptions.url.replace(/\/$/, "") + "/avatars/5679.jpg",
         });
 
+        const userRoles = await testDbService.getCompanyUser(companyId, updatedUser.id);
+
+        expect(userRoles).toEqual(
+          expect.objectContaining({
+            role: "member",
+          }),
+        );
         done();
       });
 

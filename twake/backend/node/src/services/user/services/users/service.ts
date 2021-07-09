@@ -54,16 +54,15 @@ export class UserService implements UsersServiceAPI {
     }
   }
 
-  private assignDefaults(user: User): User {
+  private assignDefaults(user: User) {
     if (user.identity_provider_id && !user.identity_provider) user.identity_provider = "console";
     if (user.email_canonical) user.email_canonical = user.email_canonical.toLocaleLowerCase();
     if (user.username_canonical)
       user.username_canonical = user.username_canonical.toLocaleLowerCase();
-    return user;
   }
 
   async create(user: User): Promise<CreateResult<User>> {
-    user = this.assignDefaults(user);
+    this.assignDefaults(user);
     await this.repository.save(user);
     await this.updateExtRepository(user);
     return new CreateResult("user", user);
@@ -78,7 +77,7 @@ export class UserService implements UsersServiceAPI {
     options?: SaveOptions,
     context?: ExecutionContext,
   ): Promise<SaveResult<User>> {
-    user = this.assignDefaults(user);
+    this.assignDefaults(user);
     await this.repository.save(user);
     await this.updateExtRepository(user);
     return new SaveResult("user", user, OperationType.UPDATE);

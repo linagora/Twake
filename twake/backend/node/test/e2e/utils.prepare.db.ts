@@ -10,6 +10,7 @@ import Workspace, {
 } from "./../../src/services/workspaces/entities/workspace";
 
 import { v1 as uuidv1 } from "uuid";
+import CompanyUser from "../../src/services/user/entities/company_user";
 
 export type uuid = string;
 
@@ -92,10 +93,9 @@ export class TestDbService {
     }
     const createdUser = await this.userService.users.create(user);
     this.users.push(createdUser.entity);
-    await this.userService.companies.addUserInCompany(this.company, createdUser.entity);
     await this.userService.companies.setUserRole(
-      { id: this.company.id },
-      { id: createdUser.entity.id },
+      this.company.id,
+      createdUser.entity.id,
       companyRole ? companyRole : "member",
     );
 
@@ -122,5 +122,9 @@ export class TestDbService {
     } else {
       throw new Error("getUserFromDb: Id not provided");
     }
+  }
+
+  getCompanyUser(companyId: uuid, userId: uuid): Promise<CompanyUser> {
+    return this.userService.companies.getCompanyUser({ id: companyId }, { id: userId });
   }
 }
