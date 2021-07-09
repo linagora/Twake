@@ -8,6 +8,7 @@ import {
   UpdateResult,
   Pagination,
   OperationType,
+  CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
@@ -20,11 +21,14 @@ import { ListUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
 import Company from "../../entities/company";
 import { Column } from "../../../../core/platform/services/database/services/orm/decorators";
+import ExternalUser from "../../entities/external_user";
+import { getInstance as getExternalUserInstance } from "../../entities/external_user";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
   repository: Repository<User>;
   companyUserRepository: Repository<CompanyUser>;
+  extUserRepository: Repository<ExternalUser>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
@@ -34,12 +38,34 @@ export class UserService implements UsersServiceAPI {
       "group_user",
       CompanyUser,
     );
-
+    this.extUserRepository = await this.database.getRepository<ExternalUser>(
+      "external_user_repository",
+      ExternalUser,
+    );
     return this;
   }
 
+  private async updateExtRepository(user: User) {
+    if (user.identity_provider_id) {
+      const key = { service_id: user.identity_provider, external_id: user.identity_provider_id };
+      const extUser = (await this.extUserRepository.findOne(key)) || getExternalUserInstance(key);
+      extUser.user_id = user.id;
+      await this.extUserRepository.save(extUser);
+    }
+  }
+
+  private assignDefaults(user: User): User {
+    if (user.identity_provider_id && !user.identity_provider) user.identity_provider = "console";
+    if (user.email_canonical) user.email_canonical = user.email_canonical.toLocaleLowerCase();
+    if (user.username_canonical)
+      user.username_canonical = user.username_canonical.toLocaleLowerCase();
+    return user;
+  }
+
   async create(user: User): Promise<CreateResult<User>> {
+    user = this.assignDefaults(user);
     await this.repository.save(user);
+    await this.updateExtRepository(user);
     return new CreateResult("user", user);
   }
 
@@ -48,14 +74,14 @@ export class UserService implements UsersServiceAPI {
   }
 
   async save<SaveOptions>(
-    item: User,
+    user: User,
     options?: SaveOptions,
     context?: ExecutionContext,
   ): Promise<SaveResult<User>> {
-    item.email_canonical = item.email_canonical.toLocaleLowerCase();
-    item.username_canonical = item.username_canonical.toLocaleLowerCase();
-    await this.repository.save(item);
-    return new SaveResult("user", item, OperationType.UPDATE);
+    user = this.assignDefaults(user);
+    await this.repository.save(user);
+    await this.updateExtRepository(user);
+    return new SaveResult("user", user, OperationType.UPDATE);
   }
 
   async delete(pk: Partial<User>, context?: ExecutionContext): Promise<DeleteResult<User>> {
@@ -91,10 +117,12 @@ export class UserService implements UsersServiceAPI {
     return await this.repository.findOne(pk);
   }
 
-  async getByConsoleId(id: string): Promise<User> {
-    // TODO: improve using indexes
-    const allUsers = await this.repository.find({}).then(a => a.getEntities());
-    return allUsers.find(user => user.identity_provider_id == id);
+  async getByConsoleId(id: string, service_id: string = "console"): Promise<User> {
+    const extUser = await this.extUserRepository.findOne({ service_id, external_id: id });
+    if (!extUser) {
+      return null;
+    }
+    return this.repository.findOne({ id: extUser.user_id });
   }
 
   async getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]> {

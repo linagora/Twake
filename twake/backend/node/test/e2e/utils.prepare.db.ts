@@ -80,10 +80,12 @@ export class TestDbService {
   ): Promise<User> {
     const user = new User();
     const random = this.rand();
+    user.id = uuidv1();
     user.username_canonical = username ? username : `test${random}`;
     user.first_name = `test${random}_first_name`;
     user.last_name = `test${random}_last_name`;
-    user.identity_provider_id = String(this.rand());
+    // user.identity_provider_id = String(this.rand());
+    user.identity_provider_id = user.id;
 
     if (email) {
       user.email_canonical = email;
