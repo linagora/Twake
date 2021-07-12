@@ -55,4 +55,6 @@ export interface ConsoleServiceClient {
     company: Company,
     userDTO: ConsoleHookUser,
   ): Promise<void>;
+
+  removeCompanyUser(consoleUserId: string, company: Company): Promise<void>;
 }

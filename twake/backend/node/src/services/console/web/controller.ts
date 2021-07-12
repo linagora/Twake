@@ -7,13 +7,23 @@ import {
   ConsoleHookResponse,
 } from "../types";
 import Company from "../../user/entities/company";
-import { WorkspaceUsersBaseRequest } from "../../workspaces/web/types";
-import { WorkspaceUsersExecutionContext } from "../../workspaces/types";
+import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
 
 export class ConsoleController {
   constructor(protected consoleService: ConsoleServiceAPI) {}
 
   private async updateCompany(content: ConsoleHookBodyContent): Promise<Company> {
+    if (!content.company || !content.company.code) {
+      throw CrudExeption.badRequest("Company is required");
+    }
+    const company = await this.updateCompanyIfExists(content);
+    if (!company) {
+      throw CrudExeption.badRequest(`Company ${content.company.code} not found`);
+    }
+    return company;
+  }
+
+  private async updateCompanyIfExists(content: ConsoleHookBodyContent): Promise<Company> {
     if (content.company && content.company.code) {
       return this.consoleService.getClient().updateLocalCompanyFromConsole(content.company.code);
     }
@@ -67,14 +77,15 @@ export class ConsoleController {
   }
 
   private async userAdded(content: ConsoleHookBodyContent): Promise<void> {
-    const company = await this.updateCompany(content);
+    const company = await this.updateCompanyIfExists(content);
     await this.consoleService
       .getClient()
       .updateLocalUserFromConsole(content.user._id, company, content.user);
   }
 
   private async userRemoved(content: ConsoleHookBodyContent): Promise<void> {
-    await this.updateCompany(content);
+    const company = await this.updateCompany(content);
+    await this.consoleService.getClient().removeCompanyUser(content.user._id, company);
     // return new Response($service->removeUser($data["user"]["_id"], $data["company"]["code"] ?: null) ?: "");
   }
 

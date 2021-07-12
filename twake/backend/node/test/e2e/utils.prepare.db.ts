@@ -11,23 +11,44 @@ import Workspace, {
 
 import { v1 as uuidv1 } from "uuid";
 import CompanyUser from "../../src/services/user/entities/company_user";
+import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
+import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
+import { memoize } from "lodash";
 
 export type uuid = string;
 
 export class TestDbService {
+  public static async getInstance(testPlatform: TestPlatform): Promise<TestDbService> {
+    const instance = new this(testPlatform);
+    await instance.init();
+    return instance;
+  }
+
   public company: Company;
   public users: User[];
   private workspacesMap: Map<string, { workspace: Workspace; users: User[] }>;
   private userService;
 
   rand = () => Math.floor(Math.random() * 100000);
+  private database: DatabaseServiceAPI;
+
+  private companyUserRepository: Repository<CompanyUser>;
+  private userRepository: Repository<User>;
 
   constructor(protected testPlatform: TestPlatform) {
     this.userService = this.testPlatform.platform.getProvider<UserServiceAPI>("user");
+    this.database = this.testPlatform.platform.getProvider<DatabaseServiceAPI>("database");
     this.users = [];
     this.workspacesMap = new Map<string, { workspace: Workspace; users: User[] }>();
   }
 
+  private async init() {
+    this.userRepository = await this.database.getRepository<User>("user", User);
+    this.companyUserRepository = await this.database.getRepository<CompanyUser>(
+      "group_user",
+      CompanyUser,
+    );
+  }
   public get workspaces() {
     return [...this.workspacesMap.values()];
   }
@@ -122,6 +143,23 @@ export class TestDbService {
     } else {
       throw new Error("getUserFromDb: Id not provided");
     }
+  }
+
+  async getCompanyUsers(companyId: uuid): Promise<User[]> {
+    const allUsers = await this.userRepository.find({}).then(a => a.getEntities());
+
+    const companyUsers: User[] = [];
+
+    for (const user of allUsers) {
+      const userInCompany = await this.companyUserRepository.findOne({
+        user_id: user.id,
+        group_id: companyId,
+      });
+      if (userInCompany) {
+        companyUsers.push(user);
+      }
+    }
+    return companyUsers;
   }
 
   getCompanyUser(companyId: uuid, userId: uuid): Promise<CompanyUser> {

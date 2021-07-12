@@ -4,7 +4,6 @@ import {
   ExecutionContext,
   ListResult,
   Paginable,
-  Pagination,
 } from "../../core/platform/framework/api/crud-service";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import User, { UserPrimaryKey } from "./entities/user";
@@ -16,7 +15,6 @@ import { ListUserOptions } from "./services/users/types";
 import { CompanyUserRole } from "./web/types";
 import { WorkspaceServiceAPI } from "../workspaces/api";
 import { uuid } from "../../utils/types";
-import { ConsoleOptions } from "../console/types";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;

@@ -1,4 +1,3 @@
-import { v1 as uuidv1 } from "uuid";
 import { merge } from "lodash";
 
 import {
@@ -12,8 +11,8 @@ import { DatabaseServiceAPI } from "../../../../core/platform/services/database/
 import Repository, {
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
-import User, { UserPrimaryKey } from "../../entities/user";
-import UserServiceAPI, { CompaniesServiceAPI } from "../../api";
+import { UserPrimaryKey } from "../../entities/user";
+import { CompaniesServiceAPI } from "../../api";
 import Company, {
   CompanyPrimaryKey,
   getInstance as getCompanyInstance,
@@ -25,8 +24,9 @@ import CompanyUser, {
 import { ListUserOptions } from "../users/types";
 import { CompanyUserRole } from "../../web/types";
 import { uuid } from "../../../../utils/types";
-import ExternalGroup, { getInstance } from "../../entities/external_company";
-import { getInstance as getExternalGroupInstance } from "../../entities/external_company";
+import ExternalGroup, {
+  getInstance as getExternalGroupInstance,
+} from "../../entities/external_company";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";

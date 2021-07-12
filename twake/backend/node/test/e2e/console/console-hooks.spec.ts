@@ -1,10 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
-import { TestDbService, uuid } from "../utils.prepare.db";
+import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
 import crypto from "crypto";
-import { CompanyUserRole } from "../../../src/services/user/web/types";
-import UserServiceAPI from "../../../src/services/user/api";
 import { ConsoleServiceAPI } from "../../../src/services/console/api";
 import { ConsoleOptions } from "../../../src/services/console/types";
 
@@ -35,7 +33,7 @@ describe("The console API hooks", () => {
       await platform.database.getConnector().drop();
     }
     await platform.database.getConnector().init();
-    testDbService = new TestDbService(platform);
+    testDbService = await TestDbService.getInstance(platform);
     await testDbService.createCompany(companyId);
     const ws0pk = { id: uuidv1(), group_id: companyId };
     // const ws1pk = { id: uuidv1(), group_id: companyId };
@@ -150,13 +148,7 @@ describe("The console API hooks", () => {
   });
 
   describe("User related hooks", () => {
-    describe("User added", () => {
-      it("Mock", async done => {
-        done();
-      });
-    });
-
-    describe.only("User updated", () => {
+    describe("User created/updated", () => {
       it("should 200 when updated existing user", async done => {
         const user = testDbService.users[0];
 
@@ -348,7 +340,33 @@ describe("The console API hooks", () => {
     });
 
     describe("User removed", () => {
-      it("Mock", async done => {
+      it("should 200 when deleting", async done => {
+        const company = testDbService.company;
+        let users = await testDbService.getCompanyUsers(company.id);
+        let user = users.find(a => a.username_canonical == "consolecreateduser");
+        expect(user).toBeTruthy();
+
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("company_user_deactivated", {
+            company: { code: testDbService.company.identity_provider_id },
+            user: {
+              _id: user.identity_provider_id,
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(200);
+
+        users = await testDbService.getCompanyUsers(company.id);
+        user = users.find(a => a.username_canonical == "consolecreateduser");
+        expect(user).toBeFalsy();
+
+        done();
+      });
+
+      it("should 400 when user not found", async done => {
         done();
       });
     });
