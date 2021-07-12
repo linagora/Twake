@@ -1228,7 +1228,6 @@
     "scenes.app.popup.workspaceparameter.pages.worspace_notif": "workspace",
     "scenes.app.popup.workspaceparameter.pages.worspace_subtitle": "Espace de travail",
     "scenes.app.popup.workspaceparameter.pages.write_access_subtitle": "Accès en écriture",
-    "scenes.app.popup.workspaceparameter.pages.your_apps_description": "Créez et administrez vos applications et connecteurs.",
     "scenes.app.popup.workspaceparameter.pages.your_apps_label": "Vos applications",
     "scenes.app.popup.workspaceparameter.payments_subscriptions_title": "Paiements et abonnements",
     "scenes.app.workspacesbar.components.change_company_title": "Changer d'entreprise",
