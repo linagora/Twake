@@ -43,7 +43,7 @@
     "components.add_url.placeholder": "Название файла",
     "components.add_url.add_anyway_btn": "Выберите приложение",
     "components.add_url.add_unkown_btn": "Выберите приложение",
-    "components.add_url.no_support_app": " сожалению, на данный момент мы не полностью поддерживаем это приложение!",
+    "components.add_url.no_support_app": "сожалению, на данный момент мы не полностью поддерживаем это приложение!",
     "components.add_url.no_support_app_2": "Если вы думаете, что это приложение должно быть добавлено в Twake, дайте нам знать здесь:",
     "components.add_url.feedback": "Отзыв",
     "components.add_url.error": "Произошла ошибка, проверьте, что у вас есть право на добавление приложения",
