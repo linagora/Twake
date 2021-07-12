@@ -53,9 +53,10 @@ export class MessageToNotificationsProcessor {
             },
           },
         );
+
         const company = await this.user.companies.getCompany({ id: participant.company_id });
 
-        let companyName = company.name;
+        let companyName = company?.name || "";
         let workspaceName = "";
         let senderName = "Twake";
         if (messageResource.user_id) {
