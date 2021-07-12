@@ -112,8 +112,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       override: serverRequest || (messageOwnerAndNotRemoved && !!applicationRequest),
     };
     Object.keys(updatable).forEach(k => {
-      if ((updatable as any)[k] && (updatable as any)[k] !== undefined) {
-        (updatable as any)[k] = (updatable as any)[k];
+      if ((updatable as any)[k] && (item as any)[k] !== undefined) {
+        (message as any)[k] = (item as any)[k];
       }
     });
     message = _.assign(message, pk);
