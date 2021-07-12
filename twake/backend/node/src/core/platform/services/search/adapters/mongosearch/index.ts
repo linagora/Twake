@@ -18,6 +18,7 @@ import { ListResult, Paginable, Pagination } from "../../../../framework/api/cru
 
 import { MongoConnector } from "../../../database/services/orm/connectors";
 import { parsePrimaryKey, stringifyPrimaryKey } from "../utils";
+import { buildSearchQuery } from "./search";
 
 const searchPrefix = "search__";
 
@@ -160,26 +161,24 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
   }
 
   public async search<EntityType>(
-    table: string,
+    _table: string,
     entityType: EntityTarget<EntityType>,
     filters: FindFilter,
     options: FindOptions = {},
   ) {
     const instance = new (entityType as any)();
-    const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
+    const { entityDefinition } = getEntityDefinition(instance);
     const index = this.getIndex(entityDefinition);
 
     const collection = this.mongodb.collection(`${searchPrefix}${index}`);
 
-    const query = {
-      $text: options.$text || undefined,
-    };
-    const sort = {};
+    const { query, sort, project } = buildSearchQuery<EntityType>(entityType, filters, options);
 
-    const cursor = collection
-      .find({ ...query })
-      .sort(sort)
-      .project({ score: { $meta: "textScore" } })
+    let cursor = collection.find({ ...query }).sort(sort);
+    if (project) {
+      cursor = cursor.project(project);
+    }
+    cursor = cursor
       .skip(Math.max(0, parseInt(options.pagination.page_token || "0")))
       .limit(Math.max(0, parseInt(options.pagination.limitStr || "100")));
 

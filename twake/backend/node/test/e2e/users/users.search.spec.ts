@@ -1,6 +1,7 @@
-import { beforeAll, afterAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
+import { v1 as uuidv1 } from "uuid";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1";
@@ -56,28 +57,51 @@ describe("The /users API", () => {
         email: "alexis.goelans@twake.app",
       });
 
-      const jwtToken = await platform.auth.getJWTToken();
-      const response = await platform.app.inject({
-        method: "GET",
-        url: `${url}/users`,
-        headers: {
-          authorization: `Bearer ${jwtToken}`,
-        },
-        query: {
-          search: "ha",
-        },
-      });
-
-      expect(response.statusCode).toBe(200);
-      const json = response.json();
-      expect(json).toMatchObject({ resources: expect.any(Array) });
-      const resources = json.resources;
-
-      console.log(resources);
-
+      let resources = await search("ha");
       expect(resources.length).toBe(1);
+
+      resources = await search("bob rabiot");
+      expect(resources[0].email).toBe("rabiot.b@twake.app");
+      expect(resources[1].email).toBe("rbs@twake.app");
+      expect(resources[2].email).toBe("bob@twake.app");
+
+      resources = await search("alexis");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
+      resources = await search("rbs");
+      expect(resources[0].email).toBe("rbs@twake.app");
+
+      resources = await search("rbs@twake.app");
+      expect(resources[0].email).toBe("rbs@twake.app");
+
+      resources = await search("rbs@twake.app", platform.workspace.company_id);
+      expect(resources[0].email).toBe("rbs@twake.app");
+
+      resources = await search("rbs@twake.app", uuidv1());
+      expect(resources.length).toBe(0);
 
       done();
     });
   });
+
+  async function search(search: string, companyId?: string): Promise<any[]> {
+    const jwtToken = await platform.auth.getJWTToken();
+    const response = await platform.app.inject({
+      method: "GET",
+      url: `${url}/users`,
+      headers: {
+        authorization: `Bearer ${jwtToken}`,
+      },
+      query: {
+        search: search,
+        companyId,
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+    const json = response.json();
+    expect(json).toMatchObject({ resources: expect.any(Array) });
+    const resources = json.resources;
+    return resources;
+  }
 });

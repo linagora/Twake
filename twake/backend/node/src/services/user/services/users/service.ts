@@ -72,11 +72,10 @@ export class UserService implements UsersServiceAPI {
     context?: ExecutionContext,
   ): Promise<ListResult<User>> {
     return await this.searchRepository.search(
-      {
-        ...(options.companyId ? { companies: [options.companyId] } : {}),
-      },
+      {},
       {
         pagination,
+        ...(options.companyId ? { $in: [["companies", [options.companyId]]] } : {}),
         $text: {
           $search: options.search,
         },
