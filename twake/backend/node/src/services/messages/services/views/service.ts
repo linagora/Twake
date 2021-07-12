@@ -99,7 +99,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         }
       }),
     );
-    threadWithLastMessages
+    threadWithLastMessages = threadWithLastMessages
       .filter(m => m.id)
       .sort((a, b) => a.stats.last_activity - b.stats.last_activity);
 
