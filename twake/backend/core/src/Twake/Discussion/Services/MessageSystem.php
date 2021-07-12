@@ -63,7 +63,7 @@ class MessageSystem
         }
         
         if(!is_array($response["resources"])){
-         return [];
+            return [];
         }
 
         $messages = [];
@@ -298,7 +298,7 @@ class MessageSystem
         $phpMessage->setReactions($message["reactions"]);
 
         $phpMessage->setCreationDate(new \DateTime("@" . intval($message["created_at"] / 1000)));
-        $phpMessage->setModificationDate(new \DateTime("@" . intval(($message["edited_at"] ?:  $message["stats"]["last_activity"] ?: $message["created_at"]) / 1000)));
+        $phpMessage->setModificationDate(new \DateTime("@" . intval(($message["edited_at"] ?: $message["created_at"]) / 1000)));
 
         $phpMessage->setResponsesCount(max(0, $message["stats"]["replies"] - 1));
 
