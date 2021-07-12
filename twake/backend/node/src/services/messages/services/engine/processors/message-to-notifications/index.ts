@@ -62,7 +62,7 @@ export class MessageToNotificationsProcessor {
         if (messageResource.user_id) {
           const user = await this.user.users.get({ id: messageResource.user_id });
           senderName =
-            `${user.first_name} ${user.last_name}`.trim() || `@${user.username_canonical}`;
+            `${user?.first_name} ${user?.last_name}`.trim() || `@${user?.username_canonical}`;
         }
 
         let title = "";
