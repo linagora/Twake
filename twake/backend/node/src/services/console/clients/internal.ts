@@ -4,6 +4,7 @@ import { merge } from "lodash";
 import { ConsoleServiceClient } from "../client-interface";
 import {
   ConsoleCompany,
+  ConsoleHookCompany,
   ConsoleHookUser,
   ConsoleOptions,
   ConsoleUser,
@@ -18,7 +19,7 @@ import {
 import { v1 as uuidv1 } from "uuid";
 import { ConsoleServiceAPI } from "../api";
 import User, { getInstance as getUserInstance } from "../../user/entities/user";
-import Company from "../../user/entities/company";
+import Company, { CompanySearchKey } from "../../user/entities/company";
 import { CompanyUserRole } from "../../user/web/types";
 
 export class ConsoleInternalClient implements ConsoleServiceClient {
@@ -65,15 +66,19 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
       .then(result => result.entity);
   }
 
-  updateLocalCompanyFromConsole(code: string): Promise<Company> {
+  updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company> {
     throw new Error("Method should not be implemented.");
   }
 
-  updateLocalUserFromConsole(
-    consoleUserId: string,
-    company: Company,
-    userDTO: ConsoleHookUser,
-  ): Promise<void> {
+  updateLocalUserFromConsole(consoleUserId: string, userDTO: ConsoleHookUser): Promise<User> {
+    throw new Error("Method should not be implemented.");
+  }
+
+  removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
+    throw new Error("Method should not be implemented.");
+  }
+
+  removeCompanyUser(consoleUserId: string, company: Company): Promise<void> {
     throw new Error("Method should not be implemented.");
   }
 }

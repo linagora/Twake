@@ -4,30 +4,32 @@ import {
   ConsoleExecutionContext,
   ConsoleHookBody,
   ConsoleHookBodyContent,
+  ConsoleHookCompany,
   ConsoleHookResponse,
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
+import { ExternalGroupPrimaryKey } from "../../user/entities/external_company";
 
 export class ConsoleController {
   constructor(protected consoleService: ConsoleServiceAPI) {}
 
-  private async updateCompany(content: ConsoleHookBodyContent): Promise<Company> {
+  private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {
     if (!content.company || !content.company.code) {
       throw CrudExeption.badRequest("Company is required");
     }
-    const company = await this.updateCompanyIfExists(content);
-    if (!company) {
-      throw CrudExeption.badRequest(`Company ${content.company.code} not found`);
-    }
-    return company;
   }
 
-  private async updateCompanyIfExists(content: ConsoleHookBodyContent): Promise<Company> {
-    if (content.company && content.company.code) {
-      return this.consoleService.getClient().updateLocalCompanyFromConsole(content.company.code);
-    }
-    return Promise.resolve(null);
+  private async getCompanyDataFromConsole(
+    company: ConsoleHookCompany,
+  ): Promise<ConsoleHookCompany> {
+    // TODO: fetch data from console
+    return Promise.resolve(company);
+  }
+
+  private async updateCompany(company: ConsoleHookCompany): Promise<Company> {
+    const companyDTO = await this.getCompanyDataFromConsole(company);
+    return this.consoleService.getClient().updateLocalCompanyFromConsole(companyDTO);
   }
 
   async hook(
@@ -77,32 +79,43 @@ export class ConsoleController {
   }
 
   private async userAdded(content: ConsoleHookBodyContent): Promise<void> {
-    const company = await this.updateCompanyIfExists(content);
-    await this.consoleService
-      .getClient()
-      .updateLocalUserFromConsole(content.user._id, company, content.user);
+    throw new Error("Not implemented");
+
+    // await this.consoleService
+    //   .getClient()
+    //   .addLocalUserFromConsole(content.user._id, company, content.user);
   }
 
   private async userRemoved(content: ConsoleHookBodyContent): Promise<void> {
-    const company = await this.updateCompany(content);
+    await this.validateCompany(content);
+    const company = await this.updateCompany(content.company);
     await this.consoleService.getClient().removeCompanyUser(content.user._id, company);
-    // return new Response($service->removeUser($data["user"]["_id"], $data["company"]["code"] ?: null) ?: "");
   }
 
   private async userUpdated(content: ConsoleHookBodyContent) {
-    // return new Response($service->updateUser($data["user"]["_id"], $data["company"]["code"] ?: null, $data["user"]) ?: "");
+    const user = await this.consoleService
+      .getClient()
+      .updateLocalUserFromConsole(content.user._id, content.user);
+
+    await this.consoleService.processPendingUser(user);
   }
 
   private async companyRemoved(content: ConsoleHookBodyContent) {
-    // return new Response($service->removeCompany($data["company"]["code"]) ?: "");
+    await this.validateCompany(content);
+    await this.consoleService.getClient().removeCompany({
+      identity_provider: "console",
+      identity_provider_id: content.company.code,
+    });
   }
 
   private async companyUpdated(content: ConsoleHookBodyContent) {
-    await this.updateCompany(content);
+    await this.validateCompany(content);
+    await this.updateCompany(content.company);
   }
 
   private async planUpdated(content: ConsoleHookBodyContent) {
-    await this.updateCompany(content);
+    await this.validateCompany(content);
+    await this.updateCompany(content.company);
   }
 }
 

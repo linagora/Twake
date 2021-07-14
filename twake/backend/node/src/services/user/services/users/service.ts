@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  SaveResult,
-  DeleteResult,
-  ListResult,
   CreateResult,
+  DeleteResult,
   ExecutionContext,
-  UpdateResult,
-  Pagination,
+  ListResult,
   OperationType,
-  CrudExeption,
+  Pagination,
+  SaveResult,
+  UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
@@ -19,10 +18,7 @@ import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
 import { ListUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
-import Company from "../../entities/company";
-import { Column } from "../../../../core/platform/services/database/services/orm/decorators";
-import ExternalUser from "../../entities/external_user";
-import { getInstance as getExternalUserInstance } from "../../entities/external_user";
+import ExternalUser, { getInstance as getExternalUserInstance } from "../../entities/external_user";
 
 export class UserService implements UsersServiceAPI {
   version: "1";

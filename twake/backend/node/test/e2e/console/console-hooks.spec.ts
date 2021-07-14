@@ -1,10 +1,27 @@
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it as _it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
 import crypto from "crypto";
 import { ConsoleServiceAPI } from "../../../src/services/console/api";
-import { ConsoleOptions } from "../../../src/services/console/types";
+import { ConsoleOptions, ConsoleType } from "../../../src/services/console/types";
+
+/*
+ THIS TESTS RUNS ONLY FOR THE CONSOLE-MODE (CONSOLE TYPE: REMOTE)
+*/
+
+let consoleType: ConsoleType = null;
+
+export const it = (name: string, cb: (a: any) => void) => {
+  _it(name, async done => {
+    if (consoleType === "remote") {
+      cb(done);
+    } else {
+      console.warn(`[skipped]: ${name} (console-mode only)`);
+      done();
+    }
+  });
+};
 
 describe("The console API hooks", () => {
   const url = "/internal/services/console/v1/hook";
@@ -12,8 +29,6 @@ describe("The console API hooks", () => {
   let platform: TestPlatform;
 
   let testDbService: TestDbService;
-
-  const nonExistentId = uuidv1();
   const companyId = uuidv1();
 
   const firstEmail = "superman@email.com";
@@ -45,6 +60,8 @@ describe("The console API hooks", () => {
 
     const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
     consoleOptions = console.consoleOptions;
+    consoleType = console.consoleType;
+
     ends();
   });
 
@@ -70,80 +87,54 @@ describe("The console API hooks", () => {
     return data;
   };
 
-  describe("Company related hooks", () => {
-    describe("Common checks", () => {
-      it("should 404 when not POST ", async done => {
-        const response = await platform.app.inject({
-          method: "GET",
-          url: `${url}`,
-        });
-        expect(response.statusCode).toBe(404);
-        done();
+  describe("Common checks", () => {
+    it("should 404 when not POST ", async done => {
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}`,
       });
-
-      it("should 400 when secret key is missing", async done => {
-        const response = await platform.app.inject({
-          method: "POST",
-          url: `${url}`,
-          payload: getPayload("a", {}),
-        });
-        expect(response.statusCode).toBe(400);
-        expect(response.json()).toMatchObject({
-          statusCode: 400,
-          error: "Bad Request",
-          message: "querystring should have required property 'secret'",
-        });
-        done();
-      });
-
-      it("should 403 when secret key is not valid ", async done => {
-        const response = await platform.app.inject({
-          method: "POST",
-          url: `${url}?secret=wrongOne`,
-          payload: getPayload("a", {}),
-        });
-        expect(response.statusCode).toBe(403);
-        expect(response.json()).toMatchObject({
-          statusCode: 403,
-          error: "Forbidden",
-          message: "Wrong secret",
-        });
-        done();
-      });
-
-      it("should 501 when type is not implemented", async done => {
-        const response = await platform.app.inject({
-          method: "POST",
-          url: `${url}?secret=${secret}`,
-          payload: getPayload("unknown_type", {}),
-        });
-        expect(response.statusCode).toBe(501);
-        done();
-      });
+      expect(response.statusCode).toBe(404);
+      done();
     });
 
-    describe("Company added", () => {
-      it("Mock", async done => {
-        done();
+    it("should 400 when secret key is missing", async done => {
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}`,
+        payload: getPayload("a", {}),
       });
+      expect(response.statusCode).toBe(400);
+      expect(response.json()).toMatchObject({
+        statusCode: 400,
+        error: "Bad Request",
+        message: "querystring should have required property 'secret'",
+      });
+      done();
     });
 
-    describe("Company updated", () => {
-      it("Mock", async done => {
-        done();
+    it("should 403 when secret key is not valid ", async done => {
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}?secret=wrongOne`,
+        payload: getPayload("a", {}),
       });
+      expect(response.statusCode).toBe(403);
+      expect(response.json()).toMatchObject({
+        statusCode: 403,
+        error: "Forbidden",
+        message: "Wrong secret",
+      });
+      done();
     });
 
-    describe("Company removed", () => {
-      it("Mock", async done => {
-        done();
+    it("should 501 when type is not implemented", async done => {
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}?secret=${secret}`,
+        payload: getPayload("unknown_type", {}),
       });
-    });
-
-    describe("Plan updated", () => {
-      it("Mock", async done => {
-        done();
-      });
+      expect(response.statusCode).toBe(501);
+      done();
     });
   });
 
@@ -155,7 +146,7 @@ describe("The console API hooks", () => {
         const response = await platform.app.inject({
           method: "POST",
           url: `${url}?secret=${secret}`,
-          payload: getPayload("company_user_added", {
+          payload: getPayload("user_updated", {
             user: {
               _id: user.identity_provider_id,
               roles: [{ targetCode: companyId, roleCode: "owner" }],
@@ -209,7 +200,7 @@ describe("The console API hooks", () => {
         const response = await platform.app.inject({
           method: "POST",
           url: `${url}?secret=${secret}`,
-          payload: getPayload("company_user_added", {
+          payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
               roles: [{ targetCode: companyId, roleCode: "admin" }],
@@ -266,7 +257,7 @@ describe("The console API hooks", () => {
         const response = await platform.app.inject({
           method: "POST",
           url: `${url}?secret=${secret}`,
-          payload: getPayload("company_user_added", {
+          payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
               roles: [{ targetCode: companyId, roleCode: "member" }],
@@ -323,7 +314,7 @@ describe("The console API hooks", () => {
         const response = await platform.app.inject({
           method: "POST",
           url: `${url}?secret=${secret}`,
-          payload: getPayload("company_user_added", {
+          payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
               email: firstEmail,
@@ -338,7 +329,6 @@ describe("The console API hooks", () => {
         done();
       });
     });
-
     describe("User removed", () => {
       it("should 200 when deleting", async done => {
         const company = testDbService.company;
@@ -350,7 +340,7 @@ describe("The console API hooks", () => {
           method: "POST",
           url: `${url}?secret=${secret}`,
           payload: getPayload("company_user_deactivated", {
-            company: { code: testDbService.company.identity_provider_id },
+            company: { code: company.identity_provider_id },
             user: {
               _id: user.identity_provider_id,
             },
@@ -367,6 +357,174 @@ describe("The console API hooks", () => {
       });
 
       it("should 400 when user not found", async done => {
+        const company = testDbService.company;
+
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("company_user_deactivated", {
+            company: { code: company.identity_provider_id },
+            user: {
+              _id: 123456789,
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(400);
+
+        done();
+      });
+    });
+  });
+
+  describe("Company related hooks", () => {
+    describe("Company added", () => {
+      it("should 200 when company created", async done => {
+        const newCompanyCode = String(testDbService.rand());
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("company_created", {
+            company: {
+              code: newCompanyCode,
+              stats: "stats",
+              plan: { name: "plan name", limits: {} },
+              value: "value",
+              details: {
+                logo: "logo",
+                avatar: {
+                  value: "avatar.jpg",
+                  type: "type",
+                },
+                name: "company name",
+              },
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(200);
+
+        const createdCompany = await testDbService.getCompanyFromDbByCode(newCompanyCode);
+        expect(createdCompany).toEqual(
+          expect.objectContaining({
+            id: expect.any(String),
+            name: "company name",
+            plan: { name: "plan name", limits: {} },
+            stats: "stats",
+            logo: "logo",
+            dateAdded: expect.any(Number),
+            identity_provider: "console",
+            identity_provider_id: newCompanyCode,
+            // details:
+          }),
+        );
+
+        done();
+      });
+    });
+    describe("Company updated", () => {
+      it("should 200 when company updated", async done => {
+        const company = testDbService.company;
+        expect(company).toBeTruthy();
+        expect(company.identity_provider_id).toBeTruthy();
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("company_updated", {
+            company: {
+              code: company.identity_provider_id,
+              stats: "stats",
+              plan: { name: "plan name", limits: {} },
+              value: "value",
+              details: {
+                logo: "logo",
+                avatar: {
+                  value: "avatar.jpg",
+                  type: "type",
+                },
+                name: "new company name",
+              },
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(200);
+
+        const createdCompany = await testDbService.getCompanyFromDb(company.id);
+        expect(createdCompany).toEqual(
+          expect.objectContaining({
+            id: company.id,
+            name: "new company name",
+            plan: { name: "plan name", limits: {} },
+            stats: "stats",
+            logo: "logo",
+            dateAdded: expect.any(Number),
+            identity_provider: "console",
+            identity_provider_id: company.identity_provider_id,
+            // details:
+          }),
+        );
+
+        done();
+      });
+    });
+    describe("Plan updated", () => {
+      it("should 200 when plan updated", async done => {
+        const company = testDbService.company;
+        expect(company).toBeTruthy();
+        expect(company.identity_provider_id).toBeTruthy();
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("plan_updated", {
+            company: {
+              code: company.identity_provider_id,
+              plan: { name: "another plan name", limits: {} },
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(200);
+
+        const createdCompany = await testDbService.getCompanyFromDb(company.id);
+        expect(createdCompany).toEqual(
+          expect.objectContaining({
+            id: company.id,
+            name: "new company name",
+            plan: { name: "another plan name", limits: {} },
+            stats: "stats",
+            logo: "logo",
+            dateAdded: expect.any(Number),
+            identity_provider: "console",
+            identity_provider_id: company.identity_provider_id,
+            // details:
+          }),
+        );
+
+        done();
+      });
+    });
+
+    describe("Company removed", () => {
+      it("should 200 when company removed", async done => {
+        const company = testDbService.company;
+        expect(company).toBeTruthy();
+        expect(company.identity_provider_id).toBeTruthy();
+
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}?secret=${secret}`,
+          payload: getPayload("company_deleted", {
+            company: {
+              code: company.identity_provider_id,
+            },
+          }),
+        });
+
+        expect(response.statusCode).toBe(200);
+        const deletedCompany = await testDbService.getCompanyFromDb(company.id);
+        expect(deletedCompany).toBeFalsy();
+
         done();
       });
     });

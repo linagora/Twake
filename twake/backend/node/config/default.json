@@ -11,7 +11,7 @@
     }
   },
   "console": {
-    "type": "remote",
+    "type": "internal",
     "remote": {
       "client": "",
       "secret": "12345678",

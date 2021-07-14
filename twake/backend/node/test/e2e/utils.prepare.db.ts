@@ -145,6 +145,14 @@ export class TestDbService {
     }
   }
 
+  getCompanyFromDb(companyId: uuid) {
+    return this.userService.companies.getCompany({ id: companyId });
+  }
+
+  getCompanyFromDbByCode(code: uuid) {
+    return this.userService.companies.getCompany({ identity_provider_id: code });
+  }
+
   async getCompanyUsers(companyId: uuid): Promise<User[]> {
     const allUsers = await this.userRepository.find({}).then(a => a.getEntities());
 

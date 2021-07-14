@@ -15,6 +15,7 @@ import { UserPrimaryKey } from "../../entities/user";
 import { CompaniesServiceAPI } from "../../api";
 import Company, {
   CompanyPrimaryKey,
+  CompanySearchKey,
   getInstance as getCompanyInstance,
 } from "../../entities/company";
 import CompanyUser, {
@@ -25,8 +26,10 @@ import { ListUserOptions } from "../users/types";
 import { CompanyUserRole } from "../../web/types";
 import { uuid } from "../../../../utils/types";
 import ExternalGroup, {
+  ExternalGroupPrimaryKey,
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
+import { pick } from "lodash";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -50,6 +53,33 @@ export class CompanyService implements CompaniesServiceAPI {
     return this;
   }
 
+  private getExtCompany(pk: ExternalGroupPrimaryKey) {
+    return this.externalCompanyRepository.findOne(pk);
+  }
+
+  async updateCompany(company: Company): Promise<Company> {
+    if (company.identity_provider_id && !company.identity_provider) {
+      company.identity_provider = "console";
+    }
+
+    await this.companyRepository.save(company);
+
+    if (company.identity_provider_id) {
+      const key = {
+        service_id: company.identity_provider,
+        external_id: company.identity_provider_id,
+      };
+
+      const extCompany = (await this.getExtCompany(key)) || getExternalGroupInstance(key);
+
+      extCompany.company_id = company.id;
+
+      await this.externalCompanyRepository.save(extCompany);
+    }
+
+    return company;
+  }
+
   async createCompany(company: Company): Promise<Company> {
     const companyToCreate: Company = getCompanyInstance({
       ...company,
@@ -58,43 +88,22 @@ export class CompanyService implements CompaniesServiceAPI {
       },
     });
 
-    if (companyToCreate.identity_provider_id && !companyToCreate.identity_provider) {
-      companyToCreate.identity_provider = "console";
-    }
-
-    await this.companyRepository.save(companyToCreate);
-
-    if (companyToCreate.identity_provider_id) {
-      const key = {
-        service_id: companyToCreate.identity_provider,
-        external_id: companyToCreate.identity_provider_id,
-      };
-
-      const extCompany =
-        (await this.externalCompanyRepository.findOne(key)) || getExternalGroupInstance(key);
-
-      extCompany.company_id = companyToCreate.id;
-
-      await this.externalCompanyRepository.save(extCompany);
-    }
-
-    return companyToCreate;
+    return this.updateCompany(companyToCreate);
   }
 
-  getCompany(company: CompanyPrimaryKey): Promise<Company> {
-    return this.companyRepository.findOne(company);
-  }
-
-  async getCompanyByCode(code: string, service_id: string = "console"): Promise<Company> {
-    const extCompany = await this.externalCompanyRepository.findOne({
-      service_id,
-      external_id: code,
-    });
-    if (!extCompany) {
-      throw CrudExeption.notFound(`Company ${code} not found`);
+  async getCompany(companySearchKey: CompanySearchKey): Promise<Company> {
+    if (companySearchKey.id) {
+      return this.companyRepository.findOne(companySearchKey);
+    } else if (companySearchKey.identity_provider_id) {
+      const extCompany = await this.getExtCompany({
+        external_id: companySearchKey.identity_provider_id,
+        service_id: companySearchKey.identity_provider || "console",
+      });
+      if (!extCompany) {
+        return null;
+      }
+      return await this.companyRepository.findOne({ id: extCompany.company_id });
     }
-
-    return await this.companyRepository.findOne({ id: extCompany.company_id });
   }
 
   getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser> {
@@ -157,5 +166,28 @@ export class CompanyService implements CompaniesServiceAPI {
     entity.role = role;
     await this.companyUserRepository.save(entity);
     return entity;
+  }
+
+  async removeCompany(searchKey: CompanySearchKey): Promise<void> {
+    if (searchKey.identity_provider_id) {
+      const extCompany = await this.getExtCompany({
+        service_id: searchKey.identity_provider,
+        external_id: searchKey.identity_provider_id,
+      });
+      if (!extCompany) {
+        throw CrudExeption.notFound(`Company ${searchKey.identity_provider_id} not found`);
+      }
+      await this.externalCompanyRepository.remove(extCompany);
+      searchKey.id = extCompany.company_id;
+    }
+
+    const company = await this.getCompany({ id: searchKey.id });
+    if (!company) {
+      throw CrudExeption.notFound(`Company ${searchKey.id} not found`);
+    }
+
+    await this.companyRepository.remove(company);
+
+    return Promise.resolve(null);
   }
 }

@@ -2,6 +2,7 @@ import axios, { AxiosInstance } from "axios";
 import { ConsoleServiceClient } from "../client-interface";
 import {
   ConsoleCompany,
+  ConsoleHookCompany,
   ConsoleHookUser,
   ConsoleOptions,
   CreateConsoleCompany,
@@ -15,10 +16,16 @@ import {
 import { v1 as uuidv1 } from "uuid";
 import User from "../../user/entities/user";
 import { ConsoleServiceAPI } from "../api";
-import Company from "../../user/entities/company";
+import Company, {
+  CompanyPrimaryKey,
+  CompanySearchKey,
+  getInstance as getCompanyInstance,
+} from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
 import { memoize } from "lodash";
 import UserServiceAPI from "../../user/api";
+import { ExternalGroupPrimaryKey } from "../../user/entities/external_company";
+import coalesce from "../../../utils/coalesce";
 
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
@@ -110,31 +117,42 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     return Promise.resolve(undefined);
   }
 
-  async updateLocalCompanyFromConsole(code: string): Promise<Company> {
-    const company = await this.userService.companies.getCompanyByCode(code);
-    if (!company) throw CrudExeption.notFound(`Company code ${code} not found`);
+  async updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company> {
+    let company = await this.userService.companies.getCompany({
+      identity_provider_id: companyDTO.code,
+    });
 
-    // this.client
-    //   .get(`/api/companies/${code}`, {
-    //     auth: {
-    //       username: this.infos.client,
-    //       password: this.infos.secret,
-    //     },
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   })
-    //   .then(({ data }) => data);
+    if (!company) {
+      const newCompany = getCompanyInstance({
+        id: uuidv1(),
+        identity_provider: "console",
+        identity_provider_id: companyDTO.code,
+      });
+      company = await this.userService.companies.createCompany(newCompany);
+    }
 
-    // ToDo: implement fetch data
+    if (companyDTO.details) {
+      company.name = coalesce(companyDTO.details.name, company.name);
+      company.displayName = coalesce(companyDTO.details.name, company.displayName);
+
+      const avatar = companyDTO.details.avatar;
+
+      company.logo =
+        companyDTO.details.logo ||
+        (avatar.type && avatar.type !== "url"
+          ? this.infos.url.replace(/\/$/, "") + "/avatars/" + avatar.value
+          : companyDTO.value || "");
+    }
+
+    company.plan = companyDTO.plan;
+    company.stats = coalesce(companyDTO.stats, company.stats);
+
+    await this.userService.companies.updateCompany(company);
+
     return company;
   }
 
-  async updateLocalUserFromConsole(
-    consoleUserId: string,
-    company: Company,
-    userDTO: ConsoleHookUser,
-  ): Promise<void> {
+  async updateLocalUserFromConsole(consoleUserId: string, userDTO: ConsoleHookUser): Promise<User> {
     const roles = userDTO.roles;
 
     let user = await this.userService.users.getByConsoleId(userDTO._id);
@@ -165,38 +183,38 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       user.deleted = false;
     }
 
-    user.email_canonical = userDTO.email;
+    user.email_canonical = coalesce(userDTO.email, user.email_canonical);
     user.phone = "";
-    user.first_name = userDTO.firstName ? userDTO.firstName : userDTO.name;
-    user.last_name = userDTO.lastName;
+    user.first_name = userDTO.firstName
+      ? userDTO.firstName
+      : coalesce(userDTO.name, user.first_name);
+    user.last_name = coalesce(userDTO.lastName, user.last_name);
     user.identity_provider = "console";
     user.identity_provider_id = userDTO._id;
-    user.mail_verified = userDTO.isVerified;
-    user.language = userDTO.preference.locale;
-    user.timezone = userDTO.preference.timeZone;
+    user.mail_verified = coalesce(userDTO.isVerified, user.mail_verified);
+    if (userDTO.preference) {
+      user.language = coalesce(userDTO.preference.locale, user.language);
+      user.timezone = coalesce(userDTO.preference.timeZone, user.timezone);
+    }
 
     const avatar = userDTO.avatar;
 
-    const endpoint = this.infos.url;
-
     user.picture =
-      avatar.type && avatar.type !== "url"
-        ? endpoint.replace(/\/$/, "") + "/avatars/" + avatar.value
+      avatar && avatar.type && avatar.type !== "url"
+        ? this.infos.url.replace(/\/$/, "") + "/avatars/" + avatar.value
         : "";
 
     await this.userService.users.save(user);
 
-    // const companiesHash: Map<string, Company> = new Map();
-
     const getCompanyByCode = memoize(companyCode =>
-      this.userService.companies.getCompanyByCode(companyCode),
+      this.userService.companies.getCompany({ identity_provider_id: companyCode }),
     );
 
     if (userDTO.roles) {
       for (const role of roles) {
         const companyConsoleCode = role.targetCode;
         const roleName = role.roleCode;
-        company = await getCompanyByCode(companyConsoleCode);
+        const company = await getCompanyByCode(companyConsoleCode);
         if (!company) {
           throw CrudExeption.notFound(`Company ${companyConsoleCode} not found`);
         }
@@ -204,6 +222,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         // await services.companies.setUserRole(company.id, user.id, roleName);
       }
     }
+
+    return user;
   }
 
   async removeCompanyUser(consoleUserId: string, company: Company): Promise<void> {
@@ -212,5 +232,9 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       throw CrudExeption.notFound(`User ${consoleUserId} doesn't exists`);
     }
     await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
+  }
+
+  async removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
+    await this.userService.companies.removeCompany(companySearchKey);
   }
 }

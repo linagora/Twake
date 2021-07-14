@@ -126,6 +126,21 @@ export type ConsoleOptions = {
   public_key?: string;
 };
 
+export type ConsoleHookCompany = {
+  stats: string;
+  plan: { name: string; limits: any };
+  value: string;
+  details: {
+    logo: string;
+    avatar: {
+      value: string;
+      type: string;
+    };
+    name: string;
+  };
+  code: string;
+};
+
 export type ConsoleHookUser = {
   _id: string;
   roles: [{ targetCode: string; roleCode: CompanyUserRole }];
@@ -145,7 +160,7 @@ export type ConsoleHookUser = {
 };
 
 export type ConsoleHookBodyContent = {
-  company: { code: string };
+  company: ConsoleHookCompany;
   user: ConsoleHookUser;
 };
 

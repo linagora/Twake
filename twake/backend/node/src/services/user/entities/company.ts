@@ -60,6 +60,9 @@ export default class Company {
 }
 
 export type CompanyPrimaryKey = Pick<Company, "id">;
+export type CompanySearchKey = Partial<
+  Pick<Company, "id" | "identity_provider_id" | "identity_provider">
+>;
 
 export function getInstance(company: Partial<Company> & CompanyPrimaryKey): Company {
   return merge(new Company(), company);

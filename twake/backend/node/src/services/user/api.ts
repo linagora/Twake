@@ -8,9 +8,9 @@ import {
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import User, { UserPrimaryKey } from "./entities/user";
 import CompanyUser, { CompanyUserPrimaryKey } from "./entities/company_user";
-import Company, { CompanyPrimaryKey } from "./entities/company";
+import Company, { CompanyPrimaryKey, CompanySearchKey } from "./entities/company";
 import ExternalUser from "./entities/external_user";
-import ExternalGroup from "./entities/external_company";
+import ExternalGroup, { ExternalGroupPrimaryKey } from "./entities/external_company";
 import { ListUserOptions } from "./services/users/types";
 import { CompanyUserRole } from "./web/types";
 import { WorkspaceServiceAPI } from "../workspaces/api";
@@ -59,14 +59,14 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    */
   createCompany(company: Company): Promise<Company>;
+  updateCompany(company: Company): Promise<Company>;
 
   /**
-   * Get a company from its id
+   * Get a company from its id or identity
    *
-   * @param companyId
+   * @param companySearchKey
    */
-  getCompany(companyId: CompanyPrimaryKey): Promise<Company>;
-  getCompanyByCode(code: string): Promise<Company>;
+  getCompany(companySearchKey: CompanySearchKey): Promise<Company>;
 
   /**
    * Get the companies
@@ -112,4 +112,6 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>>;
 
   setUserRole(companyId: uuid, userId: uuid, role?: CompanyUserRole): Promise<CompanyUser>;
+
+  removeCompany(searchKey: CompanySearchKey): Promise<void>;
 }
