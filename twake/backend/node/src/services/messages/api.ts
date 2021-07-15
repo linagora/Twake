@@ -1,5 +1,6 @@
 import {
   CRUDService,
+  DeleteResult,
   ExecutionContext,
   ListResult,
   Paginable,
@@ -88,6 +89,11 @@ export interface MessageThreadMessagesServiceAPI
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
+
+  forceDelete(
+    pk: Pick<Message, "thread_id" | "id">,
+    context?: ThreadExecutionContext,
+  ): Promise<DeleteResult<Message>>;
 
   getThread(thread: Thread, options: MessagesGetThreadOptions): Promise<MessageWithReplies>;
 

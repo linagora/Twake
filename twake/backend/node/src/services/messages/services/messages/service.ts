@@ -209,7 +209,15 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return;
   }
 
-  async delete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
+  async forceDelete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
+    return this.delete(pk, context, true);
+  }
+
+  async delete(
+    pk: Message,
+    context?: ThreadExecutionContext,
+    forceDelete: boolean = false,
+  ): Promise<DeleteResult<Message>> {
     if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
@@ -254,8 +262,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     await this.repository.save(message);
     this.onSaved(message, { created: false }, context);
 
-    //Server and application can definively remove a message
-    if (context.user.server_request || context.user.application_id || message.application_id) {
+    //Only server and application can definively remove a message
+    if (
+      forceDelete &&
+      (context.user.server_request || context.user.application_id || message.application_id)
+    ) {
       await this.repository.remove(message);
     }
 
@@ -313,6 +324,26 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       { thread_id: context.thread.id },
       buildMessageListPagination(pagination, "id"),
     );
+
+    //Get complete details about initial message
+    if (
+      list
+        .getEntities()
+        .map(m => `${m.id}`)
+        .includes(`${context.thread.id}`)
+    ) {
+      const initialMessage = await this.get(
+        { thread_id: context.thread.id, id: context.thread.id },
+        context,
+      );
+      list.mapEntities((m: any) => {
+        if (`${m.id}` === `${initialMessage.id}`) {
+          return initialMessage;
+        }
+        return m;
+      });
+    }
+
     return list;
   }
 

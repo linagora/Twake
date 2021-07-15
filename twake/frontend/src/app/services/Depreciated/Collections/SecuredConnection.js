@@ -204,6 +204,10 @@ export default class SecuredConnection {
     let res = '';
     let str = '';
     try {
+      if (data.public) {
+        return JSON.parse(data.public);
+      }
+
       var encrypted_data = data.encrypted;
 
       var key = this.keys_by_version[data.key_version];
