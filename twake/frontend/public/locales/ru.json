@@ -1502,17 +1502,10 @@
     "scenes.apps.messages.select_twake": "Выбрать в Twake Документы",
     "scenes.apps.tasks.active_tasks": "активные(х) задачи(ь)",
     "scenes.apps.drive.right_preview.versions": "Версии",
-    "components.searchpopup.enter_member_name": "",
     "scenes.client.channelbar.channelmemberslist.no_members": "",
-    "scenes.app.popup.appsparameters.pages.icon": "",
     "login.login_error": "",
-    "components.calendar.repetition.on": "",
     "login.login_btn": "",
-    "scenes.app.popup.appsparameters.pages.smalltext_user_id": "",
     "scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email": "",
-    "scenes.client.channels_bar.modals.parts.channel_member_row.menu.re_send_invitation": "",
     "scenes.apps.messages.message.activity_message.a_updated_channel_description": "",
-    "scenes.client.main_view.main_header.search_input": "",
-    "subscribe.back": "",
-    "scenes.app.channelsbar.hide_discussion_leaving.menu": ""
+    "subscribe.back": ""
 }
