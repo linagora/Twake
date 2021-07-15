@@ -97,6 +97,13 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
   });
 
   fastify.route({
+    method: "DELETE",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.forceDelete.bind(messagesController),
+  });
+
+  fastify.route({
     method: "POST",
     url: "/companies/:company_id/threads/:thread_id/messages/:message_id/reaction",
     preValidation: [fastify.authenticate],

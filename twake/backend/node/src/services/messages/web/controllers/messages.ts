@@ -69,6 +69,33 @@ export class MessagesController
     }
   }
 
+  async forceDelete(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        thread_id: string;
+        message_id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const context = getThreadExecutionContext(request);
+    try {
+      await this.service.messages.forceDelete(
+        {
+          thread_id: request.params.thread_id,
+          id: request.params.message_id,
+        },
+        context,
+      );
+      return {
+        status: "success",
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
+  }
+
   async delete(
     request: FastifyRequest<{
       Params: {
