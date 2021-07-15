@@ -1,4 +1,4 @@
-import React, { PureComponent, useEffect, useState } from 'react';
+import React from 'react';
 import './Threads.scss';
 import Draggable from 'components/Draggable/Draggable.js';
 import UploadZone from 'components/Uploads/UploadZone.js';
