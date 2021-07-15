@@ -59,22 +59,21 @@ class Languages extends Observable {
 
   t(route: string, parameters: any[] = [], fallback?: string) {
     let replace: any = {};
-
-    let translation = '';
-
-    if (this.i18nt) {
-      translation = this.i18nt!(route, fallback, { replace });
-    }
-
-    if (typeof parameters === 'object' && parameters.forEach) {
-      for (var i = 1; i <= parameters.length; i++) {
-        var find = '\\$' + i;
-        var re = new RegExp(find, 'g');
-        translation = translation.replace(re, parameters[i - 1]);
+    try {
+      if (typeof parameters === 'object' && parameters.forEach) {
+        (parameters || []).forEach((r, i) => {
+          replace[`$${i + 1}`] = r;
+        });
+      } else if (typeof parameters === 'object') {
+        replace = parameters;
       }
+    } catch (e) {
+      console.log(e);
     }
-
-    return translation;
+    if (this.i18nt) {
+      return this.i18nt(route, fallback, { replace });
+    }
+    return '';
   }
 }
 
