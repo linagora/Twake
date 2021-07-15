@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import UserService from 'services/user/UserService';

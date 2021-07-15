@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './RepetitionPopup.scss';
 import Input from 'components/Inputs/Input.js';
 import Select from 'components/Select/Select.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import { RRule } from 'rrule';
 import moment from 'moment';
 import Radio from 'components/Inputs/Radio.js';

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Input } from 'antd';
 import { isEqual } from 'lodash';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import { Collection } from 'services/CollectionsReact/Collections';
 import NotificationPreferences from 'app/services/user/NotificationPreferences';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import Menu from 'components/Menus/Menu.js';
 import ChannelsService from 'services/channels/channels.js';

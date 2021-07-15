@@ -3,7 +3,7 @@ import Input from 'components/Inputs/Input.js';
 import Tooltip from 'components/Tooltip/Tooltip.js';
 import moment from 'moment';
 import DateTimeUtils from 'services/utils/datetime.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class TimeSelector extends React.Component {
   constructor(props) {

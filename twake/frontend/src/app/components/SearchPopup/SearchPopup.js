@@ -13,7 +13,7 @@ import Tabs from 'components/Tabs/Tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import moment from 'moment';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import userAsyncGet from 'services/user/AsyncGet';
 
 export default class SearchPopup extends React.Component {

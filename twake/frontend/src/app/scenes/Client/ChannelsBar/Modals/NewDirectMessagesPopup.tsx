@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import MediumPopupComponent from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import UserListManager from 'components/UserListManager/UserListManager';

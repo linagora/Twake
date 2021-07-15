@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default (props: { force?: boolean; children: React.ReactNode }): JSX.Element => {
   if (!props.force && ((window as any).screen.width < 300 || (window as any).screen.height < 400)) {

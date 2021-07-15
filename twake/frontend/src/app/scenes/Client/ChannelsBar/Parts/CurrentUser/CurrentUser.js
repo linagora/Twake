@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/UserService';
 import CurrentUserService from 'app/services/user/CurrentUser';

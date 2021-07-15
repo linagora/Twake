@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import Workspace from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';

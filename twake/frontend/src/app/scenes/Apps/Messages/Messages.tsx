@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import MessagesService from 'services/Apps/Messages/Messages';
 import ChannelsService from 'services/channels/channels.js';
 import MessageList from './MessageList';

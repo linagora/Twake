@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default () => {
   return (

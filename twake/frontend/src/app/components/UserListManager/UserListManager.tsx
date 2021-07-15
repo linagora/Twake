@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
 import Strings from 'app/services/utils/strings';
 import UsersService from 'services/user/UserService';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import UserOrMail from '../ui/UserOrMail';
 import Icon from '../Icon/Icon';
@@ -25,7 +25,7 @@ const UserListManager = (props: PropsType) => {
 
   useEffect(() => {
     updateStateFromProps(props, true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateStateFromProps = (props: PropsType, force?: boolean) => {
@@ -140,17 +140,12 @@ const UserListManager = (props: PropsType) => {
 
   return (
     <div
-      className={
-        classNames(
-          ['userListManager', 'menu-cancel-margin'],
-          {
-            collapsed: props.collapsed,
-            big: props.big,
-            medium: props.medium,
-            small: props.small,
-          }
-        )
-      }
+      className={classNames(['userListManager', 'menu-cancel-margin'], {
+        collapsed: props.collapsed,
+        big: props.big,
+        medium: props.medium,
+        small: props.small,
+      })}
     >
       {usersIds.length > 0 && (
         <div className={'users-list no-background'}>

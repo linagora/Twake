@@ -1,12 +1,18 @@
-import React, { ReactNode } from "react";
-import classNames from "classnames";
-import { EditorState, RichUtils } from "draft-js";
-import { Bold, Underline, Italic, Code } from "react-feather";
-import { Button, Tooltip } from "antd";
-import { StrikethroughOutlined, OrderedListOutlined, UnorderedListOutlined, MenuUnfoldOutlined, CodeOutlined } from '@ant-design/icons';
-import Languages from "services/languages/languages";
-import DefaultToolbarConfig, { GroupName, StyleConfig, ToolbarConfig } from "./EditorToolbarConfig";
-import "./EditorToolbar.scss";
+import React, { ReactNode } from 'react';
+import classNames from 'classnames';
+import { EditorState, RichUtils } from 'draft-js';
+import { Bold, Underline, Italic, Code } from 'react-feather';
+import { Button, Tooltip } from 'antd';
+import {
+  StrikethroughOutlined,
+  OrderedListOutlined,
+  UnorderedListOutlined,
+  MenuUnfoldOutlined,
+  CodeOutlined,
+} from '@ant-design/icons';
+import Languages from 'services/languages/languages';
+import DefaultToolbarConfig, { GroupName, StyleConfig, ToolbarConfig } from './EditorToolbarConfig';
+import './EditorToolbar.scss';
 
 // Todo: Check this https://github.com/sstur/react-rte/blob/master/src/lib/EditorToolbar.js
 // https://dev.to/rose/rich-text-editing-on-the-web-formatting-text-and-keyboard-shortcuts-in-draft-js-4g9f
@@ -34,11 +40,7 @@ export default (props: EditorToolbarProps) => {
     }
   });
 
-  return (
-    <div className="editor-toolbar">
-      {buttonGroups}
-    </div>
-  );
+  return <div className="editor-toolbar">{buttonGroups}</div>;
 
   function _renderBlockTypeButtons(groupName: GroupName, config: ToolbarConfig) {
     const { editorState } = props;
@@ -48,21 +50,20 @@ export default (props: EditorToolbarProps) => {
       .getBlockForKey(selection.getStartKey())
       .getType();
     const buttons = (config.BLOCK_TYPE_BUTTONS || []).map((type, index) => (
-      <Tooltip placement="top" title={Languages.t(type.i18n, [], type.label)} key={`${index}`}>
+      <Tooltip
+        placement="top"
+        title={Languages.t(type.i18n || '', [], type.label)}
+        key={`${index}`}
+      >
         <Button
           key={`${index}`}
           size="small"
           type="text"
           onMouseDown={e => {
             e.preventDefault();
-            _toggleBlockType(type.style)
+            _toggleBlockType(type.style);
           }}
-          className={
-            classNames(
-              'block',
-              { active: type.style === blockType }
-            )
-          }
+          className={classNames('block', { active: type.style === blockType })}
           icon={getBlockIcon(type)}
         />
       </Tooltip>
@@ -73,29 +74,30 @@ export default (props: EditorToolbarProps) => {
         {buttons}
       </div>
     );
-
   }
 
   function _renderInlineStyleButtons(groupName: GroupName, config: ToolbarConfig) {
     const { editorState } = props;
     const currentStyle = editorState.getCurrentInlineStyle();
     const buttons = (config.INLINE_STYLE_BUTTONS || []).map((type, index) => (
-      <Tooltip placement="top" title={Languages.t(type.i18n, [], type.label)} key={`${index}`}>
+      <Tooltip
+        placement="top"
+        title={Languages.t(type.i18n || '', [], type.label)}
+        key={`${index}`}
+      >
         <Button
           key={`${index}`}
           size="small"
           type="text"
           onMouseDown={e => {
             e.preventDefault();
-            _toggleInlineStyle(type.style)
+            _toggleInlineStyle(type.style);
           }}
-          className={
-            classNames(
-              'inline',
-              { active: currentStyle.has(type.style) },
-              { 'not-active': !currentStyle.has(type.style),
-            })
-          }
+          className={classNames(
+            'inline',
+            { active: currentStyle.has(type.style) },
+            { 'not-active': !currentStyle.has(type.style) },
+          )}
           icon={getIcon(type)}
         />
       </Tooltip>
@@ -110,16 +112,16 @@ export default (props: EditorToolbarProps) => {
 
   function getIcon(style: StyleConfig): ReactNode {
     switch (style.style) {
-      case "BOLD":
-        return <Bold size={buttonSize}/>;
-      case "ITALIC":
-        return <Italic size={buttonSize}/>;
-      case "UNDERLINE":
-        return <Underline size={buttonSize}/>;
-      case "STRIKETHROUGH":
-        return <StrikethroughOutlined style={{fontSize: buttonSize}}/>;
-      case "CODE":
-        return <Code size={buttonSize}/>;
+      case 'BOLD':
+        return <Bold size={buttonSize} />;
+      case 'ITALIC':
+        return <Italic size={buttonSize} />;
+      case 'UNDERLINE':
+        return <Underline size={buttonSize} />;
+      case 'STRIKETHROUGH':
+        return <StrikethroughOutlined style={{ fontSize: buttonSize }} />;
+      case 'CODE':
+        return <Code size={buttonSize} />;
       default:
         return <></>;
     }
@@ -127,14 +129,14 @@ export default (props: EditorToolbarProps) => {
 
   function getBlockIcon(style: StyleConfig): ReactNode {
     switch (style.style) {
-      case "unordered-list-item":
-        return <UnorderedListOutlined style={{fontSize: buttonSize}}/>;
-      case "ordered-list-item":
-        return <OrderedListOutlined style={{fontSize: buttonSize}}/>;
-      case "blockquote":
-        return <MenuUnfoldOutlined style={{fontSize: buttonSize}}/>;
-      case "code-block":
-        return <CodeOutlined style={{fontSize: buttonSize}}/>;
+      case 'unordered-list-item':
+        return <UnorderedListOutlined style={{ fontSize: buttonSize }} />;
+      case 'ordered-list-item':
+        return <OrderedListOutlined style={{ fontSize: buttonSize }} />;
+      case 'blockquote':
+        return <MenuUnfoldOutlined style={{ fontSize: buttonSize }} />;
+      case 'code-block':
+        return <CodeOutlined style={{ fontSize: buttonSize }} />;
       default:
         return <></>;
     }

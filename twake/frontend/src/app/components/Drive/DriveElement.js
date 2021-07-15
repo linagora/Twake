@@ -14,7 +14,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import RouterServices from 'services/RouterService';
 import { getAsFrontUrl } from 'app/services/utils/URLUtils';

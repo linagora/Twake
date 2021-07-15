@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from 'components/Icon/Icon.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './AddUserButton.scss';
 import popupManager from 'services/popupManager/popupManager.js';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';

@@ -5,7 +5,7 @@ import TimeSelector from 'components/Calendar/TimeSelector.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import Icon from 'components/Icon/Icon.js';
 import './DateSelector.scss';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class DateSelector extends Component {
   constructor(props) {

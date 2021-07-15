@@ -1,5 +1,5 @@
 import Api from 'services/Api';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Login from './login';
 

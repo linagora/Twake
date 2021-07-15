@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';

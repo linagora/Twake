@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Typography } from 'antd';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import popupManager from 'services/popupManager/popupManager.js';
 import AutoHeight from 'app/components/AutoHeight/AutoHeight';
 import ConsoleService from 'app/services/Console/ConsoleService';

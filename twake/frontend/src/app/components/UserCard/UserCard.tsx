@@ -9,7 +9,7 @@ import './UserCard.scss';
 
 type PropsType = {
   user: UserType;
-  onClick: (evt: any) => {}
+  onClick: (evt: any) => {};
 };
 
 export default (props: PropsType): JSX.Element => {
@@ -21,7 +21,7 @@ export default (props: PropsType): JSX.Element => {
         </div>
         <div className="texts">
           <div className="text-ellipsis title">{UserService.getFullName(props.user)}</div>
-          <div className="text-ellipsis">{`@${(props.user || {}).username || ''}`}</div>
+          <div className="text-ellipsis">{`@${(props.user || {}).username || ''}`}</div>
         </div>
       </div>
       <div className="mail-container small-y-margin">
@@ -31,7 +31,7 @@ export default (props: PropsType): JSX.Element => {
       <div className="footer">
         <Button
           type="button"
-          value={Languages.t('general.send', 'Save')}
+          value={Languages.t('general.send', [], 'Save')}
           onClick={props.onClick}
         />
       </div>
