@@ -620,8 +620,6 @@
     "scenes.login.home.lost_password": "Se te olvidó tu contraseña",
     "scenes.login.home.create_account": "Crea una cuenta",
     "scenes.app.popup.appsparameters.pages.icon": "icono",
-    "scenes.app.popup.appsparameters.pages.error_check_needed": "",
     "scenes.apps.tasks.boards": "",
-    "scenes.apps.messages.left_bar.stream.mark_as_read": "",
     "scenes.apps.calendar.event_view.description": ""
 }

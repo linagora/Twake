@@ -1314,6 +1314,5 @@
     "services.user.notification_parameters_update_alert": "Die Benachrichtigungseinstellungen wurden aktualisiert.",
     "services.user.update_password_alert": "Dein Passwort wurde aktualisiert.",
     "services.workspaces.not_added": "Die folgenden Benutzer wurden nicht hinzugefügt :",
-    "scenes.app.popup.appsparameters.pages.icon": "Symbol",
-    "workspace.activity": ""
+    "scenes.app.popup.appsparameters.pages.icon": "Symbol"
 }
