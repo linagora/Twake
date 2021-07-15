@@ -90,6 +90,7 @@ class Service implements FileServiceAPI {
       // Users alone can only write an empty file.
       if (applicationId || !entity.upload_data?.size || context.user.server_request) {
         if (
+          //If there was any change to the file
           entity.upload_data?.size !== options.totalSize ||
           entity.metadata?.name !== options.filename
         ) {
@@ -99,11 +100,16 @@ class Service implements FileServiceAPI {
           };
           entity.upload_data = {
             size: options.totalSize,
-            chunks: options.totalChunks,
+            chunks: options.totalChunks || 1,
           };
           this.repository.save(entity);
         }
       }
+
+      let totalUploadedSize = 0;
+      file.file.on("data", function (chunk) {
+        totalUploadedSize += chunk.length;
+      });
 
       const [key, iv] = entity.encryption_key.split(".");
       const cipher = createCipheriv(this.algorithm, key, iv);
@@ -111,7 +117,12 @@ class Service implements FileServiceAPI {
       const chunk_number = options.chunkNumber;
       const path = `${getFilePath(entity)}/chunk${chunk_number}`;
 
-      this.storage.write(path, newReadStream);
+      await this.storage.write(path, newReadStream);
+
+      if (entity.upload_data.chunks === 1) {
+        entity.upload_data.size = totalUploadedSize;
+        this.repository.save(entity);
+      }
     }
     return entity;
   }
