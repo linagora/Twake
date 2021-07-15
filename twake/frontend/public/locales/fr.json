@@ -1651,19 +1651,11 @@
     "scenes.apps.parameters.workspace_sections.members.guests": "Invités",
     "scenes.apps.messages.left_bar.stream.unmute": "Désactiver la sourdine",
     "scenes.apps.messages.left_bar.stream.mute": "Activer la sourdine",
-    "subscribe.lastname": "",
     "scenes.apps.tasks.left_bar.list_modal.actions": "",
-    "scenes.apps.messages.message.elementsmessage.hide_me": "",
     "scenes.app._channelsbar.currentuser.parts.show_last_notifications": "",
-    "scenes.app._channelsbar.currentuser.parts.desactivate_until_button": "",
     "workspace.last_files": "",
-    "login.create_account": "",
     "client.app.services.languages.locale.fr._1561453218646": "",
-    "subscribe.error_no_username": "",
     "login.welcome_sub": "",
-    "subscribe.email": "",
     "scenes.app.channelsbar.currentuser.add_collaboraters_menu": "",
-    "scenes.app.popup.workspaceparameter.membership_information": "",
-    "subscribe.error_mail_used": "",
-    "scenes.app.mainview.tabs.placeholder": ""
+    "subscribe.error_mail_used": ""
 }
