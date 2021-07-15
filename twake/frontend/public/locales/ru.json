@@ -1502,7 +1502,5 @@
     "scenes.apps.messages.select_twake": "Выбрать в Twake Документы",
     "scenes.apps.tasks.active_tasks": "активные(х) задачи(ь)",
     "scenes.apps.drive.right_preview.versions": "Версии",
-    "scenes.app.popup.adduser.placeholder_input": "",
-    "components.connectorslistmanager.add_connectors": "",
-    "components.calendar.repetition.on": ""
+    "components.connectorslistmanager.add_connectors": ""
 }
