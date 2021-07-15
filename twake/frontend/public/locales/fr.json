@@ -1651,11 +1651,7 @@
     "scenes.apps.parameters.workspace_sections.members.guests": "Invités",
     "scenes.apps.messages.left_bar.stream.unmute": "Désactiver la sourdine",
     "scenes.apps.messages.left_bar.stream.mute": "Activer la sourdine",
-    "scenes.apps.tasks.left_bar.list_modal.actions": "",
     "scenes.app._channelsbar.currentuser.parts.show_last_notifications": "",
-    "workspace.last_files": "",
     "client.app.services.languages.locale.fr._1561453218646": "",
-    "login.welcome_sub": "",
-    "scenes.app.channelsbar.currentuser.add_collaboraters_menu": "",
-    "subscribe.error_mail_used": ""
+    "scenes.app.channelsbar.currentuser.add_collaboraters_menu": ""
 }
