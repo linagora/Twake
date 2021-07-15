@@ -616,12 +616,8 @@
     "scenes.login.home.lost_password": "パスワードをお忘れですか",
     "scenes.login.home.create_account": "アカウントを作成する",
     "scenes.app.popup.appsparameters.pages.icon": "アイコン",
-    "scenes.login.welcome": "",
     "scenes.app.workspaces.welcome_page.welcome_header": "",
-    "scenes.apps.tasks.task.edit.weight": "",
     "scenes.apps.messages.open_menu_information": "",
-    "services.user.notification_parameters_update_alert": "",
     "scenes.apps.messages.message.pinned": "",
-    "scenes.apps.messages.left_bar.stream.notifications.me": "",
     "components.calendar.repetition.does_not_repeat": ""
 }

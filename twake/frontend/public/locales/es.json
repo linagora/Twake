@@ -620,12 +620,8 @@
     "scenes.login.home.lost_password": "Se te olvidó tu contraseña",
     "scenes.login.home.create_account": "Crea una cuenta",
     "scenes.app.popup.appsparameters.pages.icon": "icono",
-    "scenes.app.popup.appsparameters.pages.app_modification_right": "",
     "scenes.app.popup.appsparameters.pages.grp_section_surname_label": "",
-    "scenes.app.popup.workspaceparameter.pages.edit_level_user_text": "",
     "scenes.app.channelsbar.welcome": "",
-    "scenes.app.channelsbar.installation_desktop_tutorial": "",
     "components.event_picker.modal_search_event": "",
-    "subscribe.error_unknown_subscribe": "",
     "services.apps.messages.no_command_possible": ""
 }
