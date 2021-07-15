@@ -1502,10 +1502,7 @@
     "scenes.apps.messages.select_twake": "Выбрать в Twake Документы",
     "scenes.apps.tasks.active_tasks": "активные(х) задачи(ь)",
     "scenes.apps.drive.right_preview.versions": "Версии",
-    "scenes.app.popup.adduserfromtwakeconsole.description": "",
     "scenes.app.popup.adduser.placeholder_input": "",
-    "workspace.last_files": "",
     "components.connectorslistmanager.add_connectors": "",
-    "general.next": "",
     "components.calendar.repetition.on": ""
 }
