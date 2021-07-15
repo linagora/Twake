@@ -1315,16 +1315,10 @@
     "services.user.update_password_alert": "Dein Passwort wurde aktualisiert.",
     "services.workspaces.not_added": "Die folgenden Benutzer wurden nicht hinzugefügt :",
     "scenes.app.popup.appsparameters.pages.icon": "Symbol",
-    "components.channelworkspacelist.title": "",
     "subscribe.title": "",
-    "components.richtexteditor.toolbar.strikethrough": "",
     "components.task_user.placeholder_name": "",
-    "scenes.apps.tasks.select_user": "",
     "login.welcome": "",
-    "scenes.apps.messages.message.answer": "",
     "components.account_verication_status_unverified": "",
-    "scenes.apps.messages.message.activity_message.a_created_channel_tab": "",
     "components.notifications.hidden_notifications_button.children": "",
-    "scenes.apps.tasks.board.starts": "",
     "general.re_send": ""
 }

@@ -1650,6 +1650,5 @@
     "scenes.apps.calendar.modals.more": "Plus",
     "scenes.apps.parameters.workspace_sections.members.guests": "Invités",
     "scenes.apps.messages.left_bar.stream.unmute": "Désactiver la sourdine",
-    "scenes.apps.messages.left_bar.stream.mute": "Activer la sourdine",
-    "client.app.services.languages.locale.fr._1561453218646": ""
+    "scenes.apps.messages.left_bar.stream.mute": "Activer la sourdine"
 }

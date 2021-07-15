@@ -1502,10 +1502,7 @@
     "scenes.apps.messages.select_twake": "Выбрать в Twake Документы",
     "scenes.apps.tasks.active_tasks": "активные(х) задачи(ь)",
     "scenes.apps.drive.right_preview.versions": "Версии",
-    "scenes.client.channelbar.channelmemberslist.no_members": "",
     "login.login_error": "",
-    "login.login_btn": "",
     "scenes.client.channels_bar.modals.parts.channel_member_row.label.pending_email": "",
-    "scenes.apps.messages.message.activity_message.a_updated_channel_description": "",
     "subscribe.back": ""
 }
