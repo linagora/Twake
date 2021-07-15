@@ -165,6 +165,8 @@ class Websockets
         );
 
         $this->pusher->push(Array(
+            "route" => $route,
+            "public" => $event,
             "encrypted" => $encrypted,
             "iv" => bin2hex($iv),
             "salt" => bin2hex($salt),
