@@ -616,6 +616,5 @@
     "scenes.login.home.lost_password": "パスワードをお忘れですか",
     "scenes.login.home.create_account": "アカウントを作成する",
     "scenes.app.popup.appsparameters.pages.icon": "アイコン",
-    "scenes.apps.messages.open_menu_information": "",
     "components.calendar.repetition.does_not_repeat": ""
 }
