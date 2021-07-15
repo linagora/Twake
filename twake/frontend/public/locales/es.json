@@ -619,6 +619,5 @@
     "scenes.login.home.login_btn": "Iniciar sesión",
     "scenes.login.home.lost_password": "Se te olvidó tu contraseña",
     "scenes.login.home.create_account": "Crea una cuenta",
-    "scenes.app.popup.appsparameters.pages.icon": "icono",
-    "services.apps.messages.no_command_possible": ""
+    "scenes.app.popup.appsparameters.pages.icon": "icono"
 }
