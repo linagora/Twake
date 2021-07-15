@@ -63,11 +63,15 @@ class WorkspacesApps
 
                     $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
 
-                    $workspace_app = $groupapp->getAsArray();
-                    $workspace_app["workspace_id"] = $workspace->getId();
-                    $workspace_app["app"] = $app->getAsArray();
+                    if($groupapp){
 
-                    $apps[] = $workspace_app;
+                        $workspace_app = $groupapp->getAsArray();
+                        $workspace_app["workspace_id"] = $workspace->getId();
+                        $workspace_app["app"] = $app->getAsArray();
+
+                        $apps[] = $workspace_app;
+
+                    }
 
                 }
             }
