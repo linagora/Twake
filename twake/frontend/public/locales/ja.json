@@ -615,6 +615,5 @@
     "scenes.login.home.login_btn": "ログイン",
     "scenes.login.home.lost_password": "パスワードをお忘れですか",
     "scenes.login.home.create_account": "アカウントを作成する",
-    "scenes.app.popup.appsparameters.pages.icon": "アイコン",
-    "scenes.app.popup.workspaceparameter.pages.title": ""
+    "scenes.app.popup.appsparameters.pages.icon": "アイコン"
 }
