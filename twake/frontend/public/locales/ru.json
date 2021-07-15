@@ -1502,17 +1502,10 @@
     "scenes.apps.messages.select_twake": "Выбрать в Twake Документы",
     "scenes.apps.tasks.active_tasks": "активные(х) задачи(ь)",
     "scenes.apps.drive.right_preview.versions": "Версии",
-    "scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder": "",
     "scenes.app.popup.adduserfromtwakeconsole.description": "",
-    "components.blocked_account.trial_period_over": "",
     "scenes.app.popup.adduser.placeholder_input": "",
-    "components.unverified_account.verification_details": "",
     "workspace.last_files": "",
-    "components.richtexteditor.toolbar.ordered-list": "",
     "components.connectorslistmanager.add_connectors": "",
-    "components.verify_mail.title_2": "",
     "general.next": "",
-    "general.user.deleted": "",
-    "components.calendar.repetition.on": "",
-    "components.emoji_picker.input_search_placeholder": ""
+    "components.calendar.repetition.on": ""
 }

@@ -1651,7 +1651,5 @@
     "scenes.apps.parameters.workspace_sections.members.guests": "Invités",
     "scenes.apps.messages.left_bar.stream.unmute": "Désactiver la sourdine",
     "scenes.apps.messages.left_bar.stream.mute": "Activer la sourdine",
-    "subscribe.error_no_username": "",
-    "components.task_picker.modal_search_task": "",
-    "login.login_error": ""
+    "components.task_picker.modal_search_task": ""
 }
