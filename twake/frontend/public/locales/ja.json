@@ -616,12 +616,8 @@
     "scenes.login.home.lost_password": "パスワードをお忘れですか",
     "scenes.login.home.create_account": "アカウントを作成する",
     "scenes.app.popup.appsparameters.pages.icon": "アイコン",
-    "scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder": "",
     "components.searchpopup.show_filters": "",
-    "scenes.apps.tasks.connectors_menu": "",
     "components.newversion.new_version_component.row.part_2": "",
-    "scenes.app.popup.workspaceparameter.pages.no_app_information": "",
     "scenes.apps.tasks.select_user_button": "",
-    "scenes.client.channels_bar.modals.guest_management.title": "",
     "scenes.app.popup.workspaceparameter.pages.title": ""
 }

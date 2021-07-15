@@ -1315,7 +1315,5 @@
     "services.user.update_password_alert": "Dein Passwort wurde aktualisiert.",
     "services.workspaces.not_added": "Die folgenden Benutzer wurden nicht hinzugefügt :",
     "scenes.app.popup.appsparameters.pages.icon": "Symbol",
-    "scenes.apps.drive.choose_file_button": "",
-    "workspace.activity": "",
-    "scenes.app.workspaces.new_workspace": ""
+    "workspace.activity": ""
 }

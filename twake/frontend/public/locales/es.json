@@ -620,12 +620,8 @@
     "scenes.login.home.lost_password": "Se te olvidó tu contraseña",
     "scenes.login.home.create_account": "Crea una cuenta",
     "scenes.app.popup.appsparameters.pages.icon": "icono",
-    "scenes.app.popup.userparameter.pages.frequency_notif_subtitle": "",
     "scenes.app.popup.appsparameters.pages.error_check_needed": "",
-    "scenes.apps.drive.right_preview.public_link.remove": "",
     "scenes.apps.tasks.boards": "",
-    "scenes.app.workspaces.create_company.invitations.title_2": "",
     "scenes.apps.messages.left_bar.stream.mark_as_read": "",
-    "scenes.apps.drive.right_preview.public": "",
     "scenes.apps.calendar.event_view.description": ""
 }
