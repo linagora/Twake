@@ -1315,10 +1315,7 @@
     "services.user.update_password_alert": "Dein Passwort wurde aktualisiert.",
     "services.workspaces.not_added": "Die folgenden Benutzer wurden nicht hinzugefügt :",
     "scenes.app.popup.appsparameters.pages.icon": "Symbol",
-    "subscribe.title": "",
     "components.task_user.placeholder_name": "",
-    "login.welcome": "",
     "components.account_verication_status_unverified": "",
-    "components.notifications.hidden_notifications_button.children": "",
     "general.re_send": ""
 }

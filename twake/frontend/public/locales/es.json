@@ -620,21 +620,12 @@
     "scenes.login.home.lost_password": "Se te olvidó tu contraseña",
     "scenes.login.home.create_account": "Crea una cuenta",
     "scenes.app.popup.appsparameters.pages.icon": "icono",
-    "scenes.app.popup.workspaceparameter.admin_manager_current_status": "",
     "scenes.app.popup.appsparameters.pages.app_modification_right": "",
-    "components.unverified_account.typography_text_danger": "",
     "scenes.app.popup.appsparameters.pages.grp_section_surname_label": "",
-    "services.console_services.toaster.add_email_error_message": "",
     "scenes.app.popup.workspaceparameter.pages.edit_level_user_text": "",
-    "scenes.apps.messages.message.answer": "",
     "scenes.app.channelsbar.welcome": "",
-    "components.reminder.hours_bef": "",
     "scenes.app.channelsbar.installation_desktop_tutorial": "",
-    "scenes.app.mainview.tabs.no_connected_connectors_for_channel": "",
     "components.event_picker.modal_search_event": "",
-    "scenes.apps.tasks.left.team": "",
     "subscribe.error_unknown_subscribe": "",
-    "scenes.apps.drive.new_folder_title": "",
-    "services.apps.messages.no_command_possible": "",
-    "scenes.app.workspaces.create_company.invitations.title": ""
+    "services.apps.messages.no_command_possible": ""
 }
