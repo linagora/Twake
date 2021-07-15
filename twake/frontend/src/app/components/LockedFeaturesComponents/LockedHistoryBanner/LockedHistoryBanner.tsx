@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, Button } from 'antd';
 import Banner from 'app/components/Banner/Banner';
 import Emojione from 'app/components/Emojione/Emojione';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './LockedHistoryBanner.scss';
 
 type PropsType = {

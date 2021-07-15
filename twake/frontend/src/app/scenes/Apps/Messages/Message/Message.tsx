@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { CornerDownRight } from 'react-feather';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import FirstMessage from './Parts/FirstMessage/FirstMessage';
 import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';

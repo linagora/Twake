@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Button from 'components/Buttons/Button.js';
 import ReminderSelector from 'components/ReminderSelector/ReminderSelector.js';

@@ -2,7 +2,7 @@ import React from 'react';
 
 import UploadManager from './UploadManager.js';
 import './Uploads.scss';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 let sharedFileInput = null;
 export default class UploadZone extends React.Component {

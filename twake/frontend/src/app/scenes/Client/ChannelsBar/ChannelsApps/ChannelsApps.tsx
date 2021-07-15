@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import UserService from 'services/user/UserService';

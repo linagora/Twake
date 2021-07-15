@@ -4,7 +4,7 @@ import './Footer.scss';
 
 import Icon from 'components/Icon/Icon.js';
 import InitService from 'services/InitService';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Globals from 'services/Globals';
 import Menu from 'components/Menus/Menu.js';
 

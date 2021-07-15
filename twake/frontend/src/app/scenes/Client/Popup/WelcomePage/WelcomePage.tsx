@@ -4,7 +4,7 @@ import Emojione from 'components/Emojione/Emojione';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Groups from 'services/workspaces/groups.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
@@ -96,10 +96,7 @@ export default class WelcomePage extends Component {
                     )
                   }
                 >
-                  {Languages.t(
-                    'scenes.app.workspaces.welcome_page.add_secondary_emails',
-                    'workspace_parameters',
-                  )}
+                  {Languages.t('scenes.app.workspaces.welcome_page.add_secondary_emails')}
                 </a>
               </>
             )}

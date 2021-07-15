@@ -6,7 +6,7 @@ import MessagesService from 'services/Apps/Messages/Messages';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -91,6 +91,7 @@ export default (props: Props) => {
             !props.message.pinned
               ? 'scenes.apps.messages.message.pin_button'
               : 'scenes.apps.messages.message.unpin_button',
+            [],
             'Pin message',
           ),
           className: 'option_button',

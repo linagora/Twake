@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Button from 'components/Buttons/Button.js';
 import InputIcon from 'components/Inputs/InputIcon.js';
 import './Table.scss';
@@ -148,7 +148,7 @@ export default class Table extends Component<Props, State> {
               <InputIcon
                 icon="search"
                 small
-                placeholder={Languages.t('components.listmanager.filter', 'Search')}
+                placeholder={Languages.t('components.listmanager.filter', [], 'Search')}
                 onChange={(event: any) => {
                   const q = event.target.value;
                   this.searchFieldValue = q;

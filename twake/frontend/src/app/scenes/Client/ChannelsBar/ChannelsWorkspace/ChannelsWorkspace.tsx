@@ -4,7 +4,7 @@ import { ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import WorkspaceChannels from './WorkspaceChannel';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import { getDirectChannels, getMine } from 'app/services/channels/ChannelCollectionPath';
 
@@ -23,8 +23,14 @@ export default () => {
     inGroup: [],
     direct: [],
   };
-  const channelsCollection = Collection.get(getMine(companyId, workspaceId), ChannelResource).setOptions({ reloadStrategy: 'delayed', queryParameters: { mine: true } });
-  const directChannelsCollection = Collection.get(getDirectChannels(companyId), ChannelResource).setOptions({ reloadStrategy: 'delayed' });
+  const channelsCollection = Collection.get(
+    getMine(companyId, workspaceId),
+    ChannelResource,
+  ).setOptions({ reloadStrategy: 'delayed', queryParameters: { mine: true } });
+  const directChannelsCollection = Collection.get(
+    getDirectChannels(companyId),
+    ChannelResource,
+  ).setOptions({ reloadStrategy: 'delayed' });
   const channels = channelsCollection.useWatcher(
     {},
     { observedFields: ['id', 'channel_group', 'user_member.favorite'], query: { mine: true } },

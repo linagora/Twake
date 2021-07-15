@@ -7,7 +7,7 @@ import DriveService from 'services/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class PathElement extends DriveElement {
   dropFile(data, directory) {

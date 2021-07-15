@@ -7,7 +7,7 @@ import Button from 'components/Buttons/Button.js';
 import Icon from 'components/Icon/Icon.js';
 import OutsideClickHandler from 'react-outside-click-handler';
 import './WorkspaceListManager.scss';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class WorkspaceListManager extends React.Component {
   constructor(props) {

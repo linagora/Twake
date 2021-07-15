@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import Input from 'components/Inputs/Input.js';
 import InputIcon from 'components/Inputs/InputIcon.js';

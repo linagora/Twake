@@ -2,7 +2,7 @@ import React, { createRef, useEffect } from 'react';
 
 import { Col, Row, Tag, Typography } from 'antd';
 import { capitalize } from 'lodash';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Icon from 'components/Icon/Icon';
 import RouterServices, { ClientStateType } from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
