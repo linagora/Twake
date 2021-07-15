@@ -4,14 +4,13 @@ import {
   ExecutionContext,
   ListResult,
   Paginable,
-  Pagination,
 } from "../../core/platform/framework/api/crud-service";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import User, { UserPrimaryKey } from "./entities/user";
 import CompanyUser, { CompanyUserPrimaryKey } from "./entities/company_user";
-import Company, { CompanyPrimaryKey } from "./entities/company";
+import Company, { CompanyPrimaryKey, CompanySearchKey } from "./entities/company";
 import ExternalUser from "./entities/external_user";
-import ExternalGroup from "./entities/external_company";
+import ExternalGroup, { ExternalGroupPrimaryKey } from "./entities/external_company";
 import { ListUserOptions } from "./services/users/types";
 import { CompanyUserRole } from "./web/types";
 import { WorkspaceServiceAPI } from "../workspaces/api";
@@ -30,6 +29,9 @@ export interface UsersServiceAPI
     CRUDService<User, UserPrimaryKey, ExecutionContext> {
   getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]>;
   getByEmails(email: string[]): Promise<User[]>;
+  getByConsoleId(consoleUserId: string): Promise<User>;
+  isEmailAlreadyInUse(email: string): Promise<boolean>;
+  getAvailableUsername(username: string): Promise<string>;
 }
 
 /**
@@ -57,13 +59,14 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    */
   createCompany(company: Company): Promise<Company>;
+  updateCompany(company: Company): Promise<Company>;
 
   /**
-   * Get a company from its id
+   * Get a company from its id or identity
    *
-   * @param companyId
+   * @param companySearchKey
    */
-  getCompany(companyId: CompanyPrimaryKey): Promise<Company>;
+  getCompany(companySearchKey: CompanySearchKey): Promise<Company>;
 
   /**
    * Get the companies
@@ -78,18 +81,6 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param user
    */
   getAllForUser(userId: uuid): Promise<CompanyUser[]>;
-
-  /**
-   * Add a user in a company
-   *
-   * @param company
-   * @param user
-   */
-  addUserInCompany(
-    companyId: CompanyPrimaryKey,
-    userId: UserPrimaryKey,
-    role?: CompanyUserRole,
-  ): Promise<CompanyUser>;
 
   /**
    * Add a user in a company
@@ -120,9 +111,7 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
 
   delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>>;
 
-  setUserRole(
-    companyPk: CompanyPrimaryKey,
-    userPk: UserPrimaryKey,
-    role: CompanyUserRole,
-  ): Promise<void>;
+  setUserRole(companyId: uuid, userId: uuid, role?: CompanyUserRole): Promise<CompanyUser>;
+
+  removeCompany(searchKey: CompanySearchKey): Promise<void>;
 }

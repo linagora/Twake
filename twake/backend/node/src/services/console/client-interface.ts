@@ -1,5 +1,8 @@
 import {
   ConsoleCompany,
+  ConsoleHookCompany,
+  ConsoleHookUser,
+  ConsoleOptions,
   CreateConsoleCompany,
   CreateConsoleUser,
   CreatedConsoleCompany,
@@ -9,7 +12,9 @@ import {
   UpdatedConsoleUserRole,
 } from "./types";
 import User from "../user/entities/user";
-import Company from "../user/entities/company";
+import Company, { CompanyPrimaryKey, CompanySearchKey } from "../user/entities/company";
+import { CompanyUserRole } from "../user/web/types";
+import { ExternalGroupPrimaryKey } from "../user/entities/external_company";
 
 export interface ConsoleServiceClient {
   /**
@@ -44,4 +49,12 @@ export interface ConsoleServiceClient {
     company: ConsoleCompany,
     user: UpdateConsoleUserRole,
   ): Promise<UpdatedConsoleUserRole>;
+
+  updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company>;
+
+  updateLocalUserFromConsole(consoleUserId: string, userDTO: ConsoleHookUser): Promise<User>;
+
+  removeCompanyUser(consoleUserId: string, company: Company): Promise<void>;
+
+  removeCompany(companySearchKey: CompanySearchKey): Promise<void>;
 }

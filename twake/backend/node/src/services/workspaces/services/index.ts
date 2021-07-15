@@ -6,6 +6,7 @@ import { getService as getCompaniesService } from "../../user/services/companies
 import { getService as getUsersService } from "../../user/services/users";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
 import { ConsoleServiceAPI } from "../../console/api";
+import User from "../../user/entities/user";
 
 export function getService(
   databaseService: DatabaseServiceAPI,

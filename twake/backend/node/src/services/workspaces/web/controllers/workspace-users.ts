@@ -32,7 +32,7 @@ import { chain } from "lodash";
 import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 import WorkspacePendingUser from "../../entities/workspace_pending_users";
 import { ConsoleServiceAPI } from "../../../console/api";
-import { CreateConsoleUser } from "../../../console/types";
+import { ConsoleCompany, CreateConsoleUser } from "../../../console/types";
 
 export class WorkspaceUsersCrudController
   implements
@@ -354,23 +354,22 @@ export class WorkspaceUsersCrudController
       }
 
       if (!userInCompany) {
-        await consoleClient.addUserToCompany(
-          { id: context.company_id, code: null },
-          {
-            id: user.id,
-            email: invitation.email,
-            firstName: null,
-            lastName: null,
-            name: null,
-            avatar: {
-              type: null,
-              value: null,
-            },
-            password: invitation.password,
-            role: invitation.company_role,
-            skipInvite: false,
+        const company = { id: context.company_id, code: null } as ConsoleCompany;
+        const createUser = {
+          id: user ? user.id : null,
+          email: invitation.email,
+          firstName: null,
+          lastName: null,
+          name: null,
+          avatar: {
+            type: null,
+            value: null,
           },
-        );
+          password: invitation.password,
+          role: invitation.company_role,
+          skipInvite: false,
+        } as CreateConsoleUser;
+        await consoleClient.addUserToCompany(company, createUser);
       }
 
       const userInWorkspace = Boolean(
@@ -392,34 +391,13 @@ export class WorkspaceUsersCrudController
       }
     }
 
-    await Promise.all(usersToProcessImmediately.map(user => this.processPendingUser(user)));
+    await Promise.all(
+      usersToProcessImmediately.map(user => this.consoleService.processPendingUser(user)),
+    );
 
     return {
       resources: responses,
     };
-  }
-
-  async processPendingUser(user: User): Promise<void> {
-    const userCompanies = await this.companyService.getAllForUser(user.id);
-    for (const userCompany of userCompanies) {
-      const workspaces = await this.workspaceService.getAllForCompany(userCompany.group_id);
-      for (const workspace of workspaces) {
-        const pendingUserPk = {
-          workspace_id: workspace.id,
-          email: user.email_canonical,
-        };
-        const pendingUser = await this.workspaceService.getPendingUser(pendingUserPk);
-
-        if (pendingUser) {
-          await this.workspaceService.removePendingUser(pendingUserPk);
-          await this.workspaceService.addUser(
-            { id: workspace.id },
-            { id: user.id },
-            pendingUser.role,
-          );
-        }
-      }
-    }
   }
 
   async deletePending(
