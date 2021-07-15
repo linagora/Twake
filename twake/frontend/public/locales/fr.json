@@ -1650,5 +1650,7 @@
     "scenes.apps.calendar.modals.more": "Plus",
     "scenes.apps.parameters.workspace_sections.members.guests": "Invités",
     "scenes.apps.messages.left_bar.stream.unmute": "Désactiver la sourdine",
-    "scenes.apps.messages.left_bar.stream.mute": "Activer la sourdine"
+    "scenes.apps.messages.left_bar.stream.mute": "Activer la sourdine",
+    "services.apps.messages.message_editor_service.upload_error_toaster":
+    "{{$1}} - Vous ne pouvez pas ajouter plus de {{$2}} fichiers dans un message"
 }
