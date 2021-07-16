@@ -118,8 +118,8 @@ export class TestDbService {
     const createdUser = await this.userService.users.create(user);
     this.users.push(createdUser.entity);
     await this.userService.companies.setUserRole(
-      { id: this.company.id },
-      { id: createdUser.entity.id },
+      this.company.id,
+      createdUser.entity.id,
       options.companyRole ? options.companyRole : "member",
     );
 
