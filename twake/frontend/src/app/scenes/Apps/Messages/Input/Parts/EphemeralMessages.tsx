@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import MessageComponent from '../../Message/Message';

@@ -10,7 +10,7 @@ import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import Select from 'components/Select/Select.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ChannelsService from 'services/channels/channels.js';
 
 export default class EventsFilter extends React.Component {

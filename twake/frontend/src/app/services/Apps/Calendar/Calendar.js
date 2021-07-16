@@ -1,4 +1,4 @@
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import Globals from 'services/Globals';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';

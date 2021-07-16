@@ -7,7 +7,7 @@ import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import { UserType } from 'app/models/User';
 
 import Strings from 'services/utils/strings.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import UsersService from 'services/user/UserService';
 import Collections from 'services/CollectionsReact/Collections';
 import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChannelRow';
@@ -65,7 +65,9 @@ const ChannelMembersList: FC<Props> = props => {
       userA = DepreciatedCollections.get('users').find(a.id);
       userB = DepreciatedCollections.get('users').find(b.id);
     }
-    return UsersService.getFullName(userA as UserType).localeCompare(UsersService.getFullName(userB as UserType));
+    return UsersService.getFullName(userA as UserType).localeCompare(
+      UsersService.getFullName(userB as UserType),
+    );
   };
 
   const onSearchMembers = (text: string) => {

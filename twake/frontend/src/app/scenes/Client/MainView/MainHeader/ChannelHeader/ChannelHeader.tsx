@@ -13,7 +13,7 @@ import { ChannelResource } from 'app/models/Channel';
 import ChannelAvatars from './ChannelAvatars';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
 

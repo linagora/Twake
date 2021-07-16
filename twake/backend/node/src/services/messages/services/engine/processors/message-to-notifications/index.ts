@@ -53,15 +53,16 @@ export class MessageToNotificationsProcessor {
             },
           },
         );
+
         const company = await this.user.companies.getCompany({ id: participant.company_id });
 
-        let companyName = company.name;
+        let companyName = company?.name || "";
         let workspaceName = "";
         let senderName = "Twake";
         if (messageResource.user_id) {
           const user = await this.user.users.get({ id: messageResource.user_id });
           senderName =
-            `${user.first_name} ${user.last_name}`.trim() || `@${user.username_canonical}`;
+            `${user?.first_name} ${user?.last_name}`.trim() || `@${user?.username_canonical}`;
         }
 
         let title = "";
@@ -83,8 +84,10 @@ export class MessageToNotificationsProcessor {
         );
 
         const mentions = {
-          users: (usersOutput || []).map(u => (u || "").trim()),
-          specials: (globalOutput || []).map(g => (g || "").trim()) as specialMention[],
+          users: (usersOutput || []).map(u => (u || "").trim().split(":").pop()),
+          specials: (globalOutput || []).map(g =>
+            (g || "").trim().split("@").pop(),
+          ) as specialMention[],
         };
 
         const messageEvent: MessageNotification = {

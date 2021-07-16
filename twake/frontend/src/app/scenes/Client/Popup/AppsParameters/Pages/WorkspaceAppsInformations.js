@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import userService from 'services/user/UserService';

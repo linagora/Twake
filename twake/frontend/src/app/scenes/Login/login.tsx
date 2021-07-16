@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import Globals from 'services/Globals';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import InitService from 'services/InitService';
 import LoginService from 'services/login/login.js';
 import Icon from 'components/Icon/Icon.js';

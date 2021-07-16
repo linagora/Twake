@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import UserService from 'services/user/UserService';
@@ -376,6 +376,8 @@ class Messages extends Observable {
       this.collection.share(parent);
     }
 
+    message.subtype = 'deleted';
+
     this.collection.remove(message, messagesCollectionKey);
   }
 
@@ -471,7 +473,7 @@ class Messages extends Observable {
 
     SideViewService.select(channel.id, {
       collection: this.getCollection(message.channel_id),
-      app: 'messages',
+      app: { simple_name: 'messages' },
       context: {
         viewType: 'channel_thread',
         threadId: id,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import UnconfiguredTab from './UnconfiguredTab.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
 import Loader from 'components/Loader/Loader.js';
@@ -163,6 +163,7 @@ export default class Tasks extends Component {
                                   type: 'title',
                                   text: Languages.t(
                                     'scenes.apps.tasks.new_board.edit_title',
+                                    [],
                                     'Edit board',
                                   ),
                                 },

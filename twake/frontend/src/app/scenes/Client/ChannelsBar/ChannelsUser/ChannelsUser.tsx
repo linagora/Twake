@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import RouterServices from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
@@ -50,6 +50,7 @@ export default () => {
         }}
         text={Languages.t(
           'scenes.app.channelsbar.channelsuser.private_messages',
+          [],
           'Direct messages',
         )}
         onAdd={() => openConv()}

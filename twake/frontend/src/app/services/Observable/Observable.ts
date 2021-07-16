@@ -34,13 +34,15 @@ export const useWatcher = <G>(
     savedObservable.current.removeWatcher(forceRender);
     observable.addWatcher(forceRender, observedScope, options);
     savedObservable.current = observable;
-  }, [observable, observedScope, options]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, options?.memoizedFilters || []);
 
   useEffect(() => {
     savedObservable.current.removeWatcher(savedForceRender.current);
     observable.addWatcher(savedForceRender.current, observedScope, options);
     savedObservable.current = observable;
-  }, [observable, observedScope, options]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [observable]);
 
   useEffect(() => {
     const watcher = savedObservable.current.addWatcher(
@@ -59,7 +61,8 @@ export const useWatcher = <G>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
       savedObservable.current.removeWatcher(savedForceRender.current);
     };
-  }, [observedScope, options]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return value as G;
 };

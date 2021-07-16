@@ -7,7 +7,7 @@ import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import Input from 'components/Inputs/Input.js';
 import WorkspaceListManager from 'components/WorkspaceListManager/WorkspaceListManager.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class FilesFilter extends React.Component {
   constructor(props) {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Icon from 'components/Icon/Icon.js';
 import Tooltip from 'components/Tooltip/Tooltip.js';
 import Input from 'components/Inputs/Input.js';

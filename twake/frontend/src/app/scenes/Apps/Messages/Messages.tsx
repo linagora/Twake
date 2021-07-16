@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import MessagesService from 'services/Apps/Messages/Messages';
 import ChannelsService from 'services/channels/channels.js';
 import MessageList from './MessageList';
@@ -11,11 +11,12 @@ import { MessageListService } from 'app/services/Apps/Messages/MessageListServic
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import RouterServices from 'app/services/RouterService';
 import './Messages.scss';
+import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 
 type Props = {
   channel: ChannelResource;
   tab?: any;
-  options: any;
+  options: ViewConfiguration;
 };
 
 type State = {

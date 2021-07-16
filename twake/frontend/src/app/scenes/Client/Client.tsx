@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import popupService from 'services/popupManager/popupManager.js';
 import ListenWorkspacesList from 'services/workspaces/listen_workspaces_list.js';

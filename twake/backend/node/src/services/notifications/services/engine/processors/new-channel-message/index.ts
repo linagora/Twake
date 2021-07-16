@@ -92,7 +92,7 @@ export class NewChannelMessageProcessor
   async getUsersToNotify(message: MessageNotification): Promise<string[]> {
     let channelPreferencesForUsers: ChannelMemberNotificationPreference[];
     const threadId = message.thread_id || message.id;
-    const isNewThread = !message.thread_id;
+    const isNewThread = !message.thread_id || `${message.thread_id}` === `${message.id}`;
     const isDirect = isDirectChannel({ workspace_id: message.workspace_id });
     const isAllOrHereMention = this.isAllOrHereMention(message);
 

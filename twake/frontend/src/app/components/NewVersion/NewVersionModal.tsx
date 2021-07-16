@@ -1,6 +1,6 @@
 import React from 'react';
 import ObjectModal from '../ObjectModal/ObjectModal';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Emojione from '../Emojione/Emojione';
 import { Button } from 'antd';
 

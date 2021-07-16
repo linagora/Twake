@@ -5,7 +5,7 @@ import AddIcon from '@material-ui/icons/AddOutlined';
 import GearIcon from '@material-ui/icons/BuildOutlined';
 import Input from 'components/Inputs/Input.js';
 import './ConnectorsListManager.scss';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
 export default class ConnectorsListManager extends React.Component {

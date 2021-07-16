@@ -4,7 +4,7 @@ import Banner from '../Banner/Banner';
 import { CompanyType } from 'app/models/Company';
 import Groups from 'services/workspaces/groups.js';
 import InitService from 'app/services/InitService';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import { AlertTriangle } from 'react-feather';
 
 type PropsType = {
