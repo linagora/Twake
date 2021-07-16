@@ -1,22 +1,36 @@
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
-import UploadManager from './UploadManager.js';
-import './Uploads.scss';
+import UploadManager from './UploadManager';
 import Languages from 'services/languages/languages';
+import classNames from 'classnames';
+import './Uploads.scss';
 
-let sharedFileInput = null;
-export default class UploadZone extends React.Component {
-  constructor(props) {
-    super();
+type PropsType = { [key: string]: any };
+
+type StateType = { [key: string]: any };
+
+type FileInputType = any;
+
+let sharedFileInput: any = null;
+export default class UploadZone extends React.Component<PropsType, StateType> {
+  file_input: FileInputType = {};
+  stopHoverTimeout: ReturnType<typeof setTimeout> | undefined;
+  node: HTMLDivElement | null | undefined;
+
+  constructor(props: PropsType) {
+    super(props);
     this.state = {
       upload_manager: UploadManager,
     };
     UploadManager.addListener(this);
     this.paste = this.paste.bind(this);
   }
+
   componentWillUnmount() {
     UploadManager.removeListener(this);
   }
+
   componentDidMount() {
     this.watch(this.node);
 
@@ -38,11 +52,13 @@ export default class UploadZone extends React.Component {
       this.file_input = sharedFileInput;
     }
   }
+
   setCallback() {
-    this.file_input.onchange = e => {
+    this.file_input.onchange = (e: any) => {
       this.change(e);
     };
   }
+
   open() {
     if (this.props.disabled) {
       return;
@@ -52,12 +68,19 @@ export default class UploadZone extends React.Component {
 
     this.file_input.click();
   }
-  upload(tree, nb, totalSize) {
+
+  /**
+   *
+   * @param tree
+   * @param nb
+   * @param totalSize
+   */
+  upload(tree: any, nb?: number, totalSize?: number) {
     if (this.props.multiple === false) {
       nb = 1;
-      var file = null;
+      let file: any = null;
       Object.keys(tree).every(i => {
-        var element = tree[i];
+        const element = tree[i];
         if (element.size) {
           file = {};
           file[i] = element;
@@ -80,7 +103,12 @@ export default class UploadZone extends React.Component {
       this.props.onUploaded,
     );
   }
-  change(event) {
+
+  /**
+   *
+   * @param event
+   */
+  change(event: any) {
     if (this.props.disabled) {
       return;
     }
@@ -89,17 +117,23 @@ export default class UploadZone extends React.Component {
 
     this.hover(false);
 
-    UploadManager.getFilesTree(event, (tree, nb, totalSize) => {
+    UploadManager.getFilesTree(event, (tree: any, nb: any, totalSize: any) => {
       this.file_input.value = '';
       this.upload(tree, nb, totalSize);
     });
   }
-  watch(node, cb) {
-    node.addEventListener('dragover', e => {
+
+  /**
+   *
+   * @param node
+   * @param cb
+   */
+  watch(node: any, cb?: any) {
+    node.addEventListener('dragover', (e: any) => {
       e.preventDefault();
       this.hover(true, e);
     });
-    node.addEventListener('dragenter', e => {
+    node.addEventListener('dragenter', (e: any) => {
       if (!this.props.disabled && this.props.onDragEnter) {
         this.props.onDragEnter();
       }
@@ -108,27 +142,27 @@ export default class UploadZone extends React.Component {
 
       this.setCallback();
     });
-    node.addEventListener('dragleave', e => {
+    node.addEventListener('dragleave', (e: any) => {
       if (this.props.onDragLeave) {
         this.props.onDragLeave();
       }
       this.hover(false);
     });
-    node.addEventListener('drop', e => this.change(e));
+    node.addEventListener('drop', (e: any) => this.change(e));
   }
 
   /**
    * @param {Blob[]} files
    * @returns
    */
-  uploadFiles(files = []) {
+  uploadFiles(files: any = []) {
     if (!this.props.allowPaste || !files.length) {
       return;
     }
 
-    const filesToUpload = {};
+    const filesToUpload: any = {};
 
-    files.forEach((file, number) => {
+    files.forEach((file: any, number: any) => {
       const filename = file.name
         ? file.name.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '')
         : `file-${number}`;
@@ -139,19 +173,23 @@ export default class UploadZone extends React.Component {
     this.upload(filesToUpload);
   }
 
-  paste(event) {
+  /**
+   *
+   * @param event
+   */
+  paste(event: any) {
     if (this.props.allowPaste) {
-      var clipboardData = event.clipboardData || event.originalEvent.clipboardData;
-      var items = clipboardData.items;
-      var filename = (clipboardData.getData('Text') || 'image').split('\n')[0];
+      const clipboardData: any = event.clipboardData || event.originalEvent.clipboardData;
+      const items: any = clipboardData.items;
+      let filename: any = (clipboardData.getData('Text') || 'image').split('\n')[0];
       filename = filename.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '');
-      var types = [],
-        hasImage = false,
-        imageBlob = false,
-        imageType = false;
+      const types: any = [];
+      let hasImage: any = false;
+      let imageBlob: any = false;
+      let imageType: any = false;
 
-      for (var index in items) {
-        var item = items[index];
+      for (const index in items) {
+        const item: any = items[index];
         if (item.kind === 'file' && item.type.startsWith('image/')) {
           hasImage = true;
           imageBlob = item.getAsFile();
@@ -163,16 +201,22 @@ export default class UploadZone extends React.Component {
         event.preventDefault();
         event.stopPropagation();
 
-        var blob = imageBlob;
+        const blob: any = imageBlob;
         filename = filename + '.' + (imageType.split('/')[1] || 'png');
-        var file = new File([blob], filename, { type: imageType });
-        var list = {};
+        const file: any = new File([blob], filename, { type: imageType });
+        const list: any = {};
         list[filename] = file;
         this.upload(list, 1, file.size);
       }
     }
   }
-  hover(state, event) {
+
+  /**
+   *
+   * @param state
+   * @param event
+   */
+  hover(state: any, event?: any) {
     if (
       !this.state.dragover &&
       (!event || !event.dataTransfer || (event.dataTransfer.types || []).indexOf('Files') < 0)
@@ -190,22 +234,25 @@ export default class UploadZone extends React.Component {
       this.setState({ dragover: state });
     }
   }
+
   render() {
     return (
       <div
-        style={this.props.style}
-        className={'upload_drop_zone ' + this.props.className}
         ref={node => (this.node = node)}
-        onClick={event => {
+        style={this.props.style}
+        className={classNames('upload_drop_zone', this.props.className)}
+        onClick={() => {
           if (!this.props.disableClick) {
             this.open();
           }
         }}
       >
         {!this.props.disabled && (
-          <div className={'onDragOverBackground ' + (this.state.dragover ? 'dragover ' : '')}>
+          <div className={classNames('on_drag_over_background', { dragover: this.state.dragover })}>
             <div className="dashed">
-              <div className={'centered ' + (this.state.dragover ? 'skew_in_top_nobounce ' : '')}>
+              <div
+                className={classNames('centered', { skew_in_top_nobounce: !!this.state.dragover })}
+              >
                 <div className="subtitle">{Languages.t('components.upload.drop_files')}</div>
               </div>
             </div>

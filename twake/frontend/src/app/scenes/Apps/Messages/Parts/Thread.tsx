@@ -1,7 +1,7 @@
 import React from 'react';
 import './Threads.scss';
 import Draggable from 'components/Draggable/Draggable.js';
-import UploadZone from 'components/Uploads/UploadZone.js';
+import UploadZone from 'components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import { Message } from 'app/models/Message';
