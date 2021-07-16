@@ -102,6 +102,7 @@ export class TestDbService {
       lastName?: string;
       email?: string;
       username?: string;
+      cache?: User["cache"];
     } = {},
   ): Promise<User> {
     const user = new User();
@@ -112,6 +113,7 @@ export class TestDbService {
     user.last_name = options.lastName || `test${random}_last_name`;
     user.email_canonical = options.email || `test${random}@twake.app`;
     user.identity_provider_id = user.id;
+    user.cache = options.cache || user.cache;
 
     const createdUser = await this.userService.users.create(user);
     this.users.push(createdUser.entity);
