@@ -23,8 +23,10 @@ export class ConsoleController {
   private async getCompanyDataFromConsole(
     company: ConsoleHookCompany,
   ): Promise<ConsoleHookCompany> {
-    // TODO: fetch data from console
-    return Promise.resolve(company);
+    const consoleResponse = this.consoleService.getClient().fetchCompanyInfo(company.code);
+    console.info("CONSOLE RESPONSE:");
+    console.info(consoleResponse);
+    return consoleResponse;
   }
 
   private async updateCompany(company: ConsoleHookCompany): Promise<Company> {

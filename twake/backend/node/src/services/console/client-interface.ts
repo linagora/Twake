@@ -57,4 +57,6 @@ export interface ConsoleServiceClient {
   removeCompanyUser(consoleUserId: string, company: Company): Promise<void>;
 
   removeCompany(companySearchKey: CompanySearchKey): Promise<void>;
+
+  fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany>;
 }

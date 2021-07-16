@@ -237,4 +237,18 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   async removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
     await this.userService.companies.removeCompany(companySearchKey);
   }
+
+  fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
+    return this.client
+      .get(`/api/companies/${consoleCompanyCode}`, {
+        auth: {
+          username: this.infos.client,
+          password: this.infos.secret,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(({ data }) => data);
+  }
 }
