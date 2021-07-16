@@ -41,7 +41,7 @@ describe("The console API hooks", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth", "console"],
+      services: ["database", "pubsub", "webserver", "search", "user", "workspaces", "auth", "console"],
     });
 
     if ((platform.database as any).type == "mongodb") {
