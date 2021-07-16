@@ -1,5 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ExecutionContext, Pagination } from "../../../core/platform/framework/api/crud-service";
+import {
+  CrudExeption,
+  ExecutionContext,
+  Pagination,
+} from "../../../core/platform/framework/api/crud-service";
 
 import { CrudController } from "../../../core/platform/services/webserver/types";
 import {
@@ -18,12 +22,16 @@ import {
   CompanyUserObject,
   CompanyUserRole,
   CompanyUserStatus,
+  DeregisterDeviceParams,
+  RegisterDeviceBody,
+  RegisterDeviceParams,
   UserListQueryParameters,
   UserObject,
   UserParameters,
 } from "./types";
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
+import { WorkspaceUsersRequest } from "../../workspaces/web/types";
 
 export class UsersCrudController
   implements
@@ -201,6 +209,31 @@ export class UsersCrudController
     return {
       resource: this.formatCompany(company),
       websocket: undefined, // empty for now
+    };
+  }
+
+  async registerUserDevice(
+    request: FastifyRequest<{ Body: RegisterDeviceBody }>,
+    reply: FastifyReply,
+  ): Promise<ResourceGetResponse<RegisterDeviceParams>> {
+    const resource = request.body.resource;
+    if (resource.type !== "FCM") {
+      throw CrudExeption.badRequest("Type should be FCM only");
+    }
+    return {
+      resource: request.body.resource,
+    };
+  }
+
+  async deregisterUserDevice(
+    request: FastifyRequest<{ Params: DeregisterDeviceParams }>,
+    reply: FastifyReply,
+  ): Promise<ResourceDeleteResponse> {
+    const context = getExecutionContext(request);
+
+    reply.status(204);
+    return {
+      status: "success",
     };
   }
 }

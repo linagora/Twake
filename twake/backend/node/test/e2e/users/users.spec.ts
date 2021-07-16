@@ -334,4 +334,87 @@ describe("The /users API", () => {
       done();
     });
   });
+
+  describe("User's device management", () => {
+    const device = "myDevice";
+
+    describe("Register device (POST)", () => {
+      it("should 400 when type is not FCM", async done => {
+        const myId = testDbService.users[0].id;
+
+        const jwtToken = await platform.auth.getJWTToken({ sub: myId });
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}/devices`,
+          headers: {
+            authorization: `Bearer ${jwtToken}`,
+          },
+          payload: {
+            resource: {
+              type: "another",
+              value: "value",
+              version: "version",
+            },
+          },
+        });
+
+        const resp = response.json();
+        expect(response.statusCode).toBe(400);
+        expect(resp).toMatchObject({
+          statusCode: 400,
+          error: "Bad Request",
+          message: "Type should be FCM only",
+        });
+        done();
+      });
+
+      it("should 200 when ok", async done => {
+        const myId = testDbService.users[0].id;
+
+        const jwtToken = await platform.auth.getJWTToken({ sub: myId });
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}/devices`,
+          headers: {
+            authorization: `Bearer ${jwtToken}`,
+          },
+          payload: {
+            resource: {
+              type: "FCM",
+              value: "value",
+              version: "version",
+            },
+          },
+        });
+
+        const resp = response.json();
+        expect(response.statusCode).toBe(200);
+
+        expect(resp.resource).toMatchObject({
+          type: "FCM",
+          value: "value",
+          version: "version",
+        });
+
+        done();
+      });
+    });
+
+    describe.only("De-register device (DELETE)", () => {
+      it("should 200 when ok", async done => {
+        const myId = testDbService.users[0].id;
+
+        const jwtToken = await platform.auth.getJWTToken({ sub: myId });
+        const response = await platform.app.inject({
+          method: "DELETE",
+          url: `${url}/devices/${device}`,
+          headers: {
+            authorization: `Bearer ${jwtToken}`,
+          },
+        });
+        expect(response.statusCode).toBe(204);
+        done();
+      });
+    });
+  });
 });
