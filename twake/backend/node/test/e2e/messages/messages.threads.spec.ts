@@ -22,6 +22,7 @@ describe("The Messages Threads feature", () => {
       services: [
         "pubsub",
         "user",
+        "search",
         "websocket",
         "webserver",
         "messages",

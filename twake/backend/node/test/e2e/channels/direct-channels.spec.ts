@@ -19,7 +19,16 @@ describe("The direct channels API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["pubsub", "user", "websocket", "webserver", "channels", "auth", "database"],
+      services: [
+        "pubsub",
+        "user",
+        "search",
+        "websocket",
+        "webserver",
+        "channels",
+        "auth",
+        "database",
+      ],
     });
     channelUtils = getChannelUtils(platform);
   });

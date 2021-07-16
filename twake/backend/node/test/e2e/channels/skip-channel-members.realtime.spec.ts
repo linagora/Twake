@@ -21,6 +21,7 @@ describe.skip("The Channels Members Realtime feature", () => {
       services: [
         "pubsub",
         "user",
+        "search",
         "websocket",
         "webserver",
         "channels",

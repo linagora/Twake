@@ -39,7 +39,16 @@ describe("The /workspace users API", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth", "console"],
+      services: [
+        "database",
+        "pubsub",
+        "search",
+        "webserver",
+        "user",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
 
     if ((platform.database as any).type == "mongodb") {
