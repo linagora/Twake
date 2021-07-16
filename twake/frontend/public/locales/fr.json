@@ -1329,7 +1329,7 @@
     "scenes.apps.messages.message.show_button": "Afficher",
     "scenes.apps.messages.message.show_responses_button": "Afficher toutes les réponses",
     "scenes.apps.messages.message.starred": "Étoilé",
-    "scenes.apps.messages.message.types.first_channel_message_text": "C'est le premier message du canal",
+    "scenes.apps.messages.message.types.first_channel_message_text": "Ceci est le premier message de la chaîne",
     "scenes.apps.messages.message.types.first_message_text": "C'est le premier message",
     "scenes.apps.messages.messageslist.connected_to": "Connecté à : ",
     "scenes.apps.messages.messageslist.current_visible_id": "Identifiant actuel visible : ",
@@ -1653,4 +1653,7 @@
     "scenes.apps.messages.left_bar.stream.mute": "Activer la sourdine",
     "services.apps.messages.message_editor_service.upload_error_toaster":
     "{{$1}} - Vous ne pouvez pas ajouter plus de {{$2}} fichiers dans un message"
+    "scenes.apps.messages.message.parts.deleted_content.text.current_user":
+    "Vous avez supprimé ce message",
+    "scenes.apps.messages.message.parts.deleted_content.text": "{{$1}} a supprimé son message"
 }

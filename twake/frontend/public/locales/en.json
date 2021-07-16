@@ -1716,4 +1716,6 @@
     "components.emoji_picker.input_search_placeholder": "Search",
     "services.apps.messages.message_editor_service.upload_error_toaster":
     "{{$1}} - You can not add more than {{$2}} files in a message"
+    "scenes.apps.messages.message.parts.deleted_content.text.current_user": "You deleted this message",
+    "scenes.apps.messages.message.parts.deleted_content.text": "{{$1}} deleted his message"
 }
