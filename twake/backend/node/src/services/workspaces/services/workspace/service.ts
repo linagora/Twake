@@ -34,7 +34,9 @@ import WorkspacePendingUser, {
   TYPE as WorkspacePendingUserType,
 } from "../../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../../user/web/types";
-import { User, uuid } from "../../../../utils/types";
+import { uuid } from "../../../../utils/types";
+import _ from "lodash";
+import { UsersServiceAPI } from "../../../user/api";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -42,7 +44,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   private workspaceRepository: Repository<Workspace>;
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
 
-  constructor(private database: DatabaseServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private users: UsersServiceAPI) {}
 
   async init(): Promise<this> {
     this.workspaceUserRepository = await this.database.getRepository<WorkspaceUser>(
@@ -128,6 +130,13 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     userPk: UserPrimaryKey,
     role: WorkspaceUserRole,
   ): Promise<void> {
+    const user = await this.users.get(userPk);
+    user.cache = Object.assign(user.cache || {}, {
+      companies: _.uniq([...(user.cache?.companies || []), workspacePk.group_id]),
+      workspaces: _.uniq([...(user.cache?.workspaces || []), workspacePk.id]),
+    });
+    await this.users.save(user, {}, { user: { id: user.id, server_request: true } });
+
     await this.workspaceUserRepository.save(
       getWorkspaceUserInstance({
         workspaceId: workspacePk.id,

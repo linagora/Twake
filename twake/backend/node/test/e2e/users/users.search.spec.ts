@@ -50,10 +50,6 @@ describe("The /users API", () => {
         firstName: "Bob",
         lastName: "Smith-Rabiot",
         email: "rbs@twake.app",
-        cache: {
-          companies: [platform.workspace.company_id, uuidv1()],
-          workspaces: [platform.workspace.workspace_id, uuidv1()],
-        },
       });
 
       await testDbService.createUser([workspacePk], {

@@ -4,15 +4,16 @@ import WorkspaceServicesAPI, { WorkspaceServiceAPI } from "../api";
 import { getService as getWorkspaceService } from "./workspace";
 import { getService as getCompaniesService } from "../../user/services/companies";
 import { getService as getUsersService } from "../../user/services/users";
-import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
+import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
 import { ConsoleServiceAPI } from "../../console/api";
-import User from "../../user/entities/user";
+import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   consoleService: ConsoleServiceAPI,
+  searchService: SearchServiceAPI,
 ): WorkspaceServicesAPI {
-  return new Service(databaseService, consoleService);
+  return new Service(databaseService, consoleService, searchService);
 }
 
 class Service implements WorkspaceServicesAPI {
@@ -22,10 +23,15 @@ class Service implements WorkspaceServicesAPI {
   users: UsersServiceAPI;
   console: ConsoleServiceAPI;
 
-  constructor(databaseService: DatabaseServiceAPI, consoleService: ConsoleServiceAPI) {
-    this.workspaces = getWorkspaceService(databaseService);
+  constructor(
+    databaseService: DatabaseServiceAPI,
+    consoleService: ConsoleServiceAPI,
+    searchService: SearchServiceAPI,
+  ) {
     this.companies = getCompaniesService(databaseService);
-    this.users = getUsersService(databaseService);
+    this.users = getUsersService(databaseService, searchService);
+    console.log(this.users);
+    this.workspaces = getWorkspaceService(databaseService, this.users);
     this.console = consoleService;
   }
 
