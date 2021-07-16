@@ -36,7 +36,7 @@ export default class SearchRepository<EntityType> {
       );
 
       //2. Get database original objects from theses primary keys
-      for (const searchEntity of searchResults.getEntities()) {
+      for (const searchEntity of searchResults.getEntities().sort((a, b) => b.score - a.score)) {
         const sourceEntity = await repository.findOne(searchEntity.primaryKey);
         if (sourceEntity) {
           results.push(sourceEntity);

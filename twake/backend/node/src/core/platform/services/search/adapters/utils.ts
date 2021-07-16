@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { getEntityDefinition, unwrapPrimarykey, EntityDefinition } from "../api";
 
 export function stringifyPrimaryKey(entity: any): string {
@@ -21,8 +22,8 @@ export function parsePrimaryKey(
 
 export function expandStringForPrefix(str: string, minimalSize: number = 3) {
   let expanded: string[] = [];
-  str.split(" ").map(w => {
-    for (let i = minimalSize; i < w.length; i++) expanded.push(w.slice(0, i));
+  [...str.split(" "), ...str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").split(" ")].map(w => {
+    for (let i = minimalSize; i <= w.length; i++) expanded.push(w.slice(0, i));
   });
-  return expanded.join(" ");
+  return _.uniq(expanded).join(" ");
 }

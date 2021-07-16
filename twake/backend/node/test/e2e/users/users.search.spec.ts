@@ -61,9 +61,10 @@ describe("The /users API", () => {
       expect(resources.length).toBe(1);
 
       resources = await search("bob rabiot");
+
       expect(resources[0].email).toBe("rabiot.b@twake.app");
-      expect(resources[1].email).toBe("rbs@twake.app");
-      expect(resources[2].email).toBe("bob@twake.app");
+      expect(resources.map(e => e.email).includes("rbs@twake.app")).toBe(true);
+      expect(resources.map(e => e.email).includes("bob@twake.app")).toBe(true);
 
       resources = await search("alexis");
       expect(resources[0].email).toBe("alexis.goelans@twake.app");
@@ -94,7 +95,7 @@ describe("The /users API", () => {
       },
       query: {
         search: search,
-        companyId,
+        ...(companyId ? { search_company_id: companyId } : {}),
       },
     });
 

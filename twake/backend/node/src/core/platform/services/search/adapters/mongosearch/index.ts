@@ -186,7 +186,6 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
     while (await cursor.hasNext()) {
       let row = await cursor.next();
       row = { ...row.set, ...row };
-      console.log(row);
       try {
         entities.push({
           primaryKey: parsePrimaryKey(entityDefinition, row._docId),

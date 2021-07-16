@@ -61,18 +61,20 @@ export function secureOperators<Entity>(
       key == "$like"
     ) {
       findOptions[key].forEach(element => {
-        if (_.isArray(element[1])) {
-          element[1] = element[1].map((e: any) =>
-            transformValueToDbString(e, columnsDefinition[element[0]].type, {
+        if (columnsDefinition[element[0]]) {
+          if (_.isArray(element[1])) {
+            element[1] = element[1].map((e: any) =>
+              transformValueToDbString(e, columnsDefinition[element[0]].type, {
+                columns: columnsDefinition[element[0]].options,
+                secret: options.secret || "",
+              }),
+            );
+          } else {
+            element[1] = transformValueToDbString(element[1], columnsDefinition[element[0]].type, {
               columns: columnsDefinition[element[0]].options,
               secret: options.secret || "",
-            }),
-          );
-        } else {
-          element[1] = transformValueToDbString(element[1], columnsDefinition[element[0]].type, {
-            columns: columnsDefinition[element[0]].options,
-            secret: options.secret || "",
-          });
+            });
+          }
         }
       });
     }

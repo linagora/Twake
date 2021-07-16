@@ -1,8 +1,8 @@
 import { TwakeServiceProvider } from "../../framework";
 import { ListResult, Pagination } from "../../framework/api/crud-service";
 import {
-  FindFilter as ormFindFilter,
-  FindOptions as ormFindOptions,
+  FindFilter as OrmFindFilter,
+  FindOptions as OrmFindOptions,
 } from "../database/services/orm/repository/repository";
 import { EntityTarget } from "../database/services/orm/types";
 import SearchRepository from "./repository";
@@ -16,7 +16,7 @@ export {
 } from "../database/services/orm/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type FindFilter = ormFindFilter;
+export type FindFilter = OrmFindFilter;
 
 type TextType = {
   $search: string;
@@ -27,7 +27,7 @@ type TextType = {
 //Field, regex, options
 type RegexType = [string, string, string];
 
-export type FindOptions = ormFindOptions & {
+export type FindOptions = OrmFindOptions & {
   $regex?: RegexType[];
   $text?: TextType;
 };
