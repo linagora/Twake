@@ -16,7 +16,7 @@ export default (props: { channelId: string; threadId: string }) => {
               mini
               previewonly
               key={id}
-              data={{ id: id }}
+              data={{ id }}
               notInDrive={true}
               className="attached-file"
               removeIcon

@@ -9,6 +9,7 @@ import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
+import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 
 type Props = {
   channelId: string;
@@ -262,6 +263,9 @@ export default (props: Props) => {
           <div className="richtext-toolbar">
             <RichTextToolbar />
           </div>
+        )}
+        {TextCountService.shouldDisplayTextCountComponent(props.richTextEditorState) && (
+          <TextCount editorState={props.richTextEditorState} />
         )}
       </div>
     </div>

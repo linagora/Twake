@@ -12,6 +12,8 @@ import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStat
 import { EditorView } from 'app/components/RichTextEditor';
 import { fromString, toString } from 'app/components/RichTextEditor/EditorDataParser';
 import Languages from 'app/services/languages/languages';
+import { TextCountService } from 'app/components/RichTextEditor/TextCount/';
+
 import './Input.scss';
 
 type Props = {
@@ -242,10 +244,10 @@ export default (props: Props) => {
               <div
                 ref={submitRef}
                 className={classNames('submit-button', {
-                  disabled: isEmpty(),
+                  disabled: isEmpty() || TextCountService.textIsTooLong(editorState),
                 })}
                 onClick={() => {
-                  if (!isEmpty()) {
+                  if (!isEmpty() && !TextCountService.textIsTooLong(editorState)) {
                     onSend();
                   }
                 }}
