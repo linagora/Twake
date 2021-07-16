@@ -1,5 +1,4 @@
-import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import ws from 'services/websocket.js';
 import Api from 'services/Api';
@@ -59,7 +58,7 @@ class NotificationParameters extends Observable {
       return;
     }
 
-    if (!keys || keys.length == 0) {
+    if (!keys || keys.length === 0) {
       this.original_preferences = JSON.parse(JSON.stringify(this.preferences));
     }
 
@@ -73,7 +72,6 @@ class NotificationParameters extends Observable {
     });
     this.original_preferences = data.preferences;
 
-    var that = this;
     this.saveElements(data.preferences, no_notif);
   }
 
@@ -200,6 +198,7 @@ class NotificationParameters extends Observable {
           a += -24;
         } else {
           a += -24;
+          // eslint-disable-next-line no-redeclare
           var c = a;
           a = b;
           b = c;

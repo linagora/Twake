@@ -46,7 +46,7 @@ export default (): JSX.Element => {
                   tab={
                     <Tab
                       currentUserId={currentUser.id}
-                      selected={tabId == tab.data.id}
+                      selected={tabId === tab.data.id}
                       key={tab.data.id}
                       tabResource={tab}
                       upsertTab={upsertTab}

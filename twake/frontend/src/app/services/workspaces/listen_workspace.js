@@ -1,4 +1,3 @@
-import React from 'react';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 
@@ -19,7 +18,7 @@ class ListenWorkspace {
     this.listenerCount[idWorkspace] += 1;
 
     var that = this;
-    if (this.listenerCount[idWorkspace] == 1) {
+    if (this.listenerCount[idWorkspace] === 1) {
       ws.subscribe('workspace/' + idWorkspace, function (uri, data) {
         if (data.workspace) {
           data.workspace.id = idWorkspace;
@@ -37,7 +36,7 @@ class ListenWorkspace {
     if (this.listenerCount[idWorkspace]) {
       this.listenerCount[idWorkspace] += -1;
     }
-    if (!this.listenerCount[idWorkspace] || this.listenerCount[idWorkspace] == 0) {
+    if (!this.listenerCount[idWorkspace] || this.listenerCount[idWorkspace] === 0) {
       ws.unsubscribe('workspace/' + idWorkspace);
     }
   }

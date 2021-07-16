@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/UserService';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 
 type Props = {
   channelId: string;
@@ -57,7 +57,7 @@ export default class WritingUsers extends Component<Props> {
     return [
       <div className="writing_message">
         {writing_users
-          .map(id => {
+          .map((id: string) => {
             return UserService.getFullName(Collections.get('users').find(id));
           })
           .join(', ')}{' '}

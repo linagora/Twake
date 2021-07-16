@@ -5,7 +5,7 @@ import { defer, Subject, throwError, timer } from "rxjs";
 import { concat, delayWhen, retryWhen, take, tap } from "rxjs/operators";
 import { UpsertOptions } from "..";
 import { logger } from "../../../../../../framework";
-import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
+import { getEntityDefinition, unwrapIndexes, unwrapPrimarykey } from "../../utils";
 import { EntityDefinition, ColumnDefinition, ObjectType } from "../../types";
 import { AbstractConnector } from "../abstract-connector";
 import {
@@ -434,7 +434,12 @@ export class CassandraConnector extends AbstractConnector<
     const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
 
     const pk = unwrapPrimarykey(entityDefinition);
-    if (Object.keys(filters).some(key => pk.indexOf(key) < 0)) {
+    const indexes = unwrapIndexes(entityDefinition);
+
+    if (
+      Object.keys(filters).some(key => pk.indexOf(key) < 0) &&
+      Object.keys(filters).some(key => indexes.indexOf(key) < 0)
+    ) {
       //Filter not in primary key
       throw new Error(
         `All filter parameters must be defined in entity primary key,

@@ -83,7 +83,7 @@ export default class Api {
     options: { disableJWTAuthentication?: boolean } = {},
   ) {
     return new Promise((resolve, reject) => {
-      if (data && data._grouped && route == 'core/collections/init') {
+      if (data && data._grouped && route === 'core/collections/init') {
         GroupedQueryApiInstance.post(route, data, callback);
         return;
       }

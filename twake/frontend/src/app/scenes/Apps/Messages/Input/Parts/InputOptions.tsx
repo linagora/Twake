@@ -9,6 +9,7 @@ import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
+import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 
 type Props = {
   channelId: string;
@@ -27,7 +28,7 @@ type MenuItem = {
   icon?: any;
   text?: string;
   onClick?: (event: Event) => void;
-}
+};
 
 export default (props: Props) => {
   const [displayRichTextOptions, setDisplayRichTextOptions] = useState(false);
@@ -45,6 +46,7 @@ export default (props: Props) => {
 
   if (props.triggerApp) {
     if (apps.length > 0) {
+      // eslint-disable-next-line array-callback-return
       apps.map(app => {
         if (app) {
           let icon = WorkspacesApps.getAppIcon(app);
@@ -88,22 +90,23 @@ export default (props: Props) => {
       editorState={props.richTextEditorState}
       onChange={editorState => props.onRichTextChange(editorState)}
     />
-  )
+  );
 
   const displayToolbar = () => {
     return displayRichTextOptions;
-  }
+  };
 
   return (
     <div className="input-toolbar">
       <div className="input-options">
-        <div className="files"
+        <div
+          className="files"
           onMouseEnter={() => setDisplayFileMenuTooltip(true)}
           onMouseLeave={() => setDisplayFileMenuTooltip(false)}
         >
           <Tooltip
             placement="top"
-            title={Languages.t("scenes.apps.messages.input.attach_file", [], "Attach file(s)")}
+            title={Languages.t('scenes.apps.messages.input.attach_file', [], 'Attach file(s)')}
             visible={displayFileMenuTooltip && !displayFileMenu}
           >
             <Button type="text" size="small" className="ant-btn-icon-only">
@@ -117,7 +120,7 @@ export default (props: Props) => {
                   {
                     type: 'menu',
                     icon: 'desktop',
-                    text: 'From computer',
+                    text: Languages.t('scenes.apps.messages.input.attach_file.from_computer'),
                     onClick: (evt: any) => {
                       MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
                     },
@@ -132,13 +135,14 @@ export default (props: Props) => {
         </div>
 
         {props.onAddEmoji && (
-          <div className="emojis"
+          <div
+            className="emojis"
             onMouseEnter={() => setDisplayEmojiMenuTooltip(true)}
             onMouseLeave={() => setDisplayEmojiMenuTooltip(false)}
           >
             <Tooltip
               placement="top"
-              title={Languages.t("scenes.apps.messages.input.emoji", [], "Emoji")}
+              title={Languages.t('scenes.apps.messages.input.emoji', [], 'Emoji')}
               visible={displayEmojiMenuTooltip && !displayEmojiMenu}
             >
               <Button type="text" size="small">
@@ -173,7 +177,10 @@ export default (props: Props) => {
         )}
 
         {addon_calls.length > 1 && (
-          <Tooltip placement="top" title={Languages.t("scenes.apps.messages.input.start_call", [], "Start a call")}>
+          <Tooltip
+            placement="top"
+            title={Languages.t('scenes.apps.messages.input.start_call', [], 'Start a call')}
+          >
             <Button type="text" size="small" className="ant-btn-icon-only">
               <Menu className="option" position="top" menu={addon_calls}>
                 <Video size={16} />
@@ -183,7 +190,10 @@ export default (props: Props) => {
         )}
 
         {addon_calls.length === 1 && (
-          <Tooltip placement="top" title={Languages.t("scenes.apps.messages.input.start_call", [], "Start a call")}>
+          <Tooltip
+            placement="top"
+            title={Languages.t('scenes.apps.messages.input.start_call', [], 'Start a call')}
+          >
             <Button type="text" size="small" className="ant-btn-icon-only">
               <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
                 <Video size={16} />
@@ -192,16 +202,23 @@ export default (props: Props) => {
           </Tooltip>
         )}
 
-        <Tooltip placement="top"
-          title={displayRichTextOptions
-            ? Languages.t("scenes.apps.messages.input.hide_formatting", [], "Hide formatting")
-            : Languages.t("scenes.apps.messages.input.show_formatting", [], "Show formatting")
-          }>
-          <Button type="text" size="small" className={`ant-btn-icon-only richtext ${displayRichTextOptions ? "selected" : ""}`}>
+        <Tooltip
+          placement="top"
+          title={
+            displayRichTextOptions
+              ? Languages.t('scenes.apps.messages.input.hide_formatting', [], 'Hide formatting')
+              : Languages.t('scenes.apps.messages.input.show_formatting', [], 'Show formatting')
+          }
+        >
+          <Button
+            type="text"
+            size="small"
+            className={`ant-btn-icon-only richtext ${displayRichTextOptions ? 'selected' : ''}`}
+          >
             <Type
               size={16}
               className="option"
-              onMouseDown={(e) => {
+              onMouseDown={e => {
                 e.preventDefault();
                 setDisplayRichTextOptions(!displayRichTextOptions);
               }}
@@ -222,14 +239,16 @@ export default (props: Props) => {
                   className="messages-input-app-icon"
                   style={{
                     backgroundImage:
-                      'url(' + (app.display.messages_module.right_icon.icon_url || app.icon_url) + ')',
+                      'url(' +
+                      (app.display.messages_module.right_icon.icon_url || app.icon_url) +
+                      ')',
                   }}
                 />
               </div>
             </Button>
           );
         })}
-        
+
         {addon_menu.length > 0 && (
           <Button type="text" size="small">
             <Menu className="option" position="top" menu={addon_menu}>
@@ -240,11 +259,13 @@ export default (props: Props) => {
       </div>
 
       <div className="input-options-toolbar">
-        {
-          displayToolbar() && (
+        {displayToolbar() && (
           <div className="richtext-toolbar">
             <RichTextToolbar />
           </div>
+        )}
+        {TextCountService.shouldDisplayTextCountComponent(props.richTextEditorState) && (
+          <TextCount editorState={props.richTextEditorState} />
         )}
       </div>
     </div>

@@ -4,7 +4,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import Button from 'components/Buttons/Button.js';
 import Menu from 'components/Menus/Menu.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class CalendarEditor extends Component {
   constructor(props) {

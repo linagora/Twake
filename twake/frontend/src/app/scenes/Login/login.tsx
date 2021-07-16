@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import Globals from 'services/Globals';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import InitService from 'services/InitService';
 import LoginService from 'services/login/login.js';
 import Icon from 'components/Icon/Icon.js';
@@ -13,6 +13,7 @@ import Signin from './Signin/Signin.js';
 import VerifyMail from './VerifyMail/VerifyMail.js';
 import ForgotPassword from './ForgotPassword/ForgotPassword.js';
 import Error from './Error/Error';
+import { Typography } from 'antd';
 
 export default () => {
   LoginService.useListener(useState);
@@ -40,15 +41,15 @@ export default () => {
         <div className="twake_logo" />
       )}
 
-      {['logged_out', 'signin', 'forgot_password'].indexOf(LoginService.state) != -1 && (
+      {['logged_out', 'signin', 'forgot_password'].indexOf(LoginService.state) !== -1 && (
         <InteractiveLoginBackground />
       )}
 
-      {LoginService.state == 'error' && <Error />}
-      {LoginService.state == 'logged_out' && <LoginView />}
-      {LoginService.state == 'signin' && <Signin />}
-      {LoginService.state == 'verify_mail' && <VerifyMail />}
-      {LoginService.state == 'forgot_password' && <ForgotPassword />}
+      {LoginService.state === 'error' && <Error />}
+      {LoginService.state === 'logged_out' && <LoginView />}
+      {LoginService.state === 'signin' && <Signin />}
+      {LoginService.state === 'verify_mail' && <VerifyMail />}
+      {LoginService.state === 'forgot_password' && <ForgotPassword />}
 
       <div className="white_background light_background" />
       <div className={'app_version_footer '}>
@@ -61,29 +62,33 @@ export default () => {
                   server_infos?.configuration?.branding?.name,
                   server_infos?.configuration?.branding.link || 'twake.app',
                 ])}
-              <a target="_BLANK" href="https://twakeapp.com">
+              <Typography.Link onClick={() => window.open('https://twakeapp.com', 'blank')}>
                 {Languages.t('scenes.login.footer.go_to_twake')}
-              </a>
+              </Typography.Link>
               {' - ' + Globals.version.version}
             </div>
           )}
           {server_infos_loaded && !server_infos?.configuration?.branding?.name && (
-            <a className="fade_in" target="_BLANK" href="https://twakeapp.com">
+            <Typography.Link
+              className="fade_in"
+              onClick={() => window.open('https://twakeapp.com', 'blank')}
+            >
               {Languages.t('scenes.login.footer.go_to_twake')}
-            </a>
+            </Typography.Link>
           )}
         </div>
       </div>
 
       <div className={'help_footer'}>
         {server_infos_loaded && server_infos?.configuration?.help_url && (
-          <a
-            href={'' + InitService.server_infos?.configuration?.help_url}
-            target="_BLANK"
+          <Typography.Link
+            onClick={() =>
+              window.open(InitService.server_infos?.configuration?.help_url || '', 'blank')
+            }
             className="blue_link fade_in"
           >
             <Icon type="question-circle" /> {Languages.t('general.help')}
-          </a>
+          </Typography.Link>
         )}
       </div>
     </div>

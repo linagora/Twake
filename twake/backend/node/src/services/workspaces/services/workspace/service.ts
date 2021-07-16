@@ -32,10 +32,9 @@ import { merge } from "lodash";
 import WorkspacePendingUser, {
   WorkspacePendingUserPrimaryKey,
   TYPE as WorkspacePendingUserType,
-  getInstance as getWorkspacePendingUserInstance,
 } from "../../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../../user/web/types";
-import { uuid } from "../../../../utils/types";
+import { User, uuid } from "../../../../utils/types";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";

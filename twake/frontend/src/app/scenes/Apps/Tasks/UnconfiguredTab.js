@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import BoardPicker from './BoardPicker/BoardPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import ChannelsService from 'services/channels/channels.js';

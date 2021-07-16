@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Input } from 'antd';
 import { isEqual } from 'lodash';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import { Collection } from 'services/CollectionsReact/Collections';
 import NotificationPreferences from 'app/services/user/NotificationPreferences';
@@ -39,7 +39,7 @@ export default () => {
   const generateTimeOptions = () => {
     const options = [];
     for (let value = 0; value < 24; value += 0.5) {
-      const text = ~~value + ':' + ((value * 2) % 2 == 0 ? '00' : '30');
+      const text = ~~value + ':' + ((value * 2) % 2 === 0 ? '00' : '30');
       options.push(
         <option key={value} value={value}>
           {text}
@@ -175,7 +175,7 @@ export default () => {
             <Radio
               small
               label={Languages.t('scenes.apps.account.notifications.devices_option_ever')}
-              value={newPreferences.mobile_notifications == 'always'}
+              value={newPreferences.mobile_notifications === 'always'}
               onChange={() => {
                 setNewPreferences({
                   ...newPreferences,
@@ -188,7 +188,7 @@ export default () => {
             <Radio
               small
               label={Languages.t('scenes.apps.account.notifications.devices_option_inactive')}
-              value={newPreferences.mobile_notifications == 'when_inactive'}
+              value={newPreferences.mobile_notifications === 'when_inactive'}
               onChange={() => {
                 setNewPreferences({
                   ...newPreferences,
@@ -201,7 +201,7 @@ export default () => {
             <Radio
               small
               label={Languages.t('scenes.apps.account.notifications.devices_option_never')}
-              value={newPreferences.mobile_notifications == 'never'}
+              value={newPreferences.mobile_notifications === 'never'}
               onChange={() => {
                 setNewPreferences({
                   ...newPreferences,

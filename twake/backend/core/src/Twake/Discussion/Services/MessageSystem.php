@@ -63,44 +63,19 @@ class MessageSystem
         }
         
         if(!is_array($response["resources"])){
-         return [];
+            return [];
         }
 
         $messages = [];
         foreach($response["resources"] as $message){
-            if($message["subtype"] != "deleted"){
+            if($message["id"]){
                 $messages[] = $this->convertFromNode($message, $channel);
                 if($message["last_replies"]){
                     foreach($message["last_replies"] as $reply){
-                        if($reply["id"] !== $message["id"] && $reply["subtype"] != "deleted")
+                        if($reply["id"] !== $message["id"])
                             $messages[] = $this->convertFromNode($reply, $channel);
                     }
                 }
-            }
-        }
-
-        $nonSystemMessages = 0;
-        foreach($messages as $message){
-            if($message["hidden_data"]["type"] === "init_channel" || $message["message_type"] == 0 || $message["message_type"] == 1){
-                $nonSystemMessages++;
-            }
-        }
-
-        if($nonSystemMessages === 0
-            && count($messages) < abs($limit)
-            && !$options["id"]
-            && !$offset
-            && $limit > 0
-            && !$parent_message_id ){
-
-            if(!$found){
-                $init_message = Array(
-                    "channel_id" => $options["channel_id"],
-                    "hidden_data" => Array("type" => "init_channel"),
-                    "created_at" => 0
-                );
-                $init_message = $this->save($init_message, Array());
-                $messages = array_merge([$init_message], $messages);
             }
         }
 
@@ -137,7 +112,15 @@ class MessageSystem
 
         if(isset($object["_user_reaction"])){
             //Manage user reaction
-            $response = $this->forwardToNode("POST", "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction", ["reactions" => $object["_user_reaction"] ? [$object["_user_reaction"]] : []], $current_user, $application ? $application->getId() : null);
+            $response = $this->forwardToNode(
+                "POST",
+                "/companies/".$channel["company_id"]."/threads/".($object["parent_message_id"] ?: $object["id"])."/messages/".$object["id"]."/reaction",
+                [
+                    "reactions" => $object["_user_reaction"] ?
+                        (is_array($object["_user_reaction"]) ? $object["_user_reaction"] : [$object["_user_reaction"]])
+                        : []
+                ],
+                $current_user, $application ? $application->getId() : null);
         }else{
             //Manage message edition
 
@@ -274,7 +257,7 @@ class MessageSystem
         $phpMessage->setReactions($message["reactions"]);
 
         $phpMessage->setCreationDate(new \DateTime("@" . intval($message["created_at"] / 1000)));
-        $phpMessage->setModificationDate(new \DateTime("@" . intval(($message["stats"]["last_activity"] ?: $message["created_at"]) / 1000)));
+        $phpMessage->setModificationDate(new \DateTime("@" . intval(($message["edited_at"] ?: $message["created_at"]) / 1000)));
 
         $phpMessage->setResponsesCount(max(0, $message["stats"]["replies"] - 1));
 

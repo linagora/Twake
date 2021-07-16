@@ -1,6 +1,6 @@
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import { Message } from './Message';
+import { Message } from '../../../models/Message';
 import userAsyncGet from 'services/user/AsyncGet';
 
 export const getSender = (message: Message | undefined) => {

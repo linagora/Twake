@@ -4,6 +4,7 @@ import { Search } from 'react-feather';
 import SearchService from 'services/search/search.js';
 import RouterServices from 'services/RouterService';
 import AccessRightsService from 'app/services/AccessRightsService';
+import Languages from 'services/languages/languages';
 
 export default (): JSX.Element => {
   const { workspaceId } = RouterServices.getStateFromRoute();
@@ -21,7 +22,7 @@ export default (): JSX.Element => {
               width={200}
               maxLength={0}
               suffix={<Search size={16} style={{ color: 'var(--grey-dark)' }} />}
-              placeholder={'Search'}
+              placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
               onClick={() => SearchService.open()}
             />
           </Col>

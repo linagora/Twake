@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import Languages from 'services/languages/languages.js';
+import React from 'react';
+import Languages from 'services/languages/languages';
 
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
@@ -30,7 +30,7 @@ export default class Board extends React.Component {
 
     this.board_collection_key = 'board_' + this.props.board.id;
 
-    this.user_mode = this.props.board.id.split('_')[0] == 'user';
+    this.user_mode = this.props.board.id.split('_')[0] === 'user';
 
     //Lists (only in board mode, not in user mode)
     if (!this.user_mode) {
@@ -95,7 +95,7 @@ export default class Board extends React.Component {
       return;
     }
 
-    if (event.type == 'board') {
+    if (event.type === 'board') {
       var element_front_id = event.draggableId.split('_')[1];
       var new_index = event.destination.index;
       var list = Collections.get('lists').findByFrontId(element_front_id);
@@ -117,13 +117,15 @@ export default class Board extends React.Component {
       }
     }
 
-    if (event.type == 'list') {
+    if (event.type === 'list') {
+      // eslint-disable-next-line no-redeclare
       var element_front_id = event.draggableId.split('_')[1];
       var source_list_front_id = event.source.droppableId;
       var destination_list_front_id = event.destination.droppableId;
       var destination_index = event.destination.index;
 
       var source_list = Collections.get('lists').findByFrontId(source_list_front_id);
+      // eslint-disable-next-line no-redeclare
       var list = Collections.get('lists').findByFrontId(destination_list_front_id);
       var task = Collections.get('tasks').findByFrontId(element_front_id);
 
@@ -135,7 +137,7 @@ export default class Board extends React.Component {
               'tasks_' + list.id,
               destination_index -
                 (destination_index < event.source.index ||
-                destination_list_front_id != source_list_front_id
+                destination_list_front_id !== source_list_front_id
                   ? 1
                   : 0),
             ),
@@ -193,7 +195,7 @@ export default class Board extends React.Component {
               id:
                 'workspaceusertasks_' + this.props.board.id.split('_')[1] + '_' + task.workspace_id,
               title:
-                (group.id != Workspaces.currentGroupId ? group.name + ' • ' : '') + workspace.name,
+                (group.id !== Workspaces.currentGroupId ? group.name + ' • ' : '') + workspace.name,
               other_group: true,
             });
           }
@@ -234,6 +236,7 @@ export default class Board extends React.Component {
       Collections.get('lists').findBy({ board_id: this.props.board.id }),
     );
 
+    // eslint-disable-next-line no-redeclare
     var lists = lists.sort(
       (a, b) =>
         TasksService.getElementIndex(a, 'lists_' + a.board_id) -
@@ -321,8 +324,8 @@ export default class Board extends React.Component {
                     },
                     {
                       type: 'menu',
-                      icon: current_board.view_mode == 'grid' ? 'check' : ' ',
-                      className: current_board.view_mode == 'grid' ? 'primary' : ' ',
+                      icon: current_board.view_mode === 'grid' ? 'check' : ' ',
+                      className: current_board.view_mode === 'grid' ? 'primary' : ' ',
                       rightIcon: 'window-restore',
                       text: Languages.t('scenes.apps.board.kanban', [], 'Kanban'),
                       onClick: () => {
@@ -335,8 +338,8 @@ export default class Board extends React.Component {
                     },
                     {
                       type: 'menu',
-                      icon: current_board.view_mode == 'list' ? 'check' : ' ',
-                      className: current_board.view_mode == 'list' ? 'primary' : ' ',
+                      icon: current_board.view_mode === 'list' ? 'check' : ' ',
+                      className: current_board.view_mode === 'list' ? 'primary' : ' ',
                       rightIcon: 'list-ul',
                       text: Languages.t('scenes.apps.calendar.calendar.list_btn', [], 'Liste'),
                       onClick: () => {
@@ -351,8 +354,8 @@ export default class Board extends React.Component {
                     { type: 'separator' },
                     {
                       type: 'menu',
-                      icon: this.state.archived == false ? 'check' : ' ',
-                      className: this.state.archived == false ? 'primary' : ' ',
+                      icon: this.state.archived === false ? 'check' : ' ',
+                      className: this.state.archived === false ? 'primary' : ' ',
                       text: Languages.t('scenes.apps.board.active_tasks', [], 'Tâches actives'),
                       onClick: () => {
                         this.setState({ archived: false });
@@ -392,20 +395,20 @@ export default class Board extends React.Component {
           className={
             'board ' +
             (this.props.inline ? 'inline ' : '') +
-            (this.props.mode == 'list' ? 'mode_list ' : 'mode_grid ')
+            (this.props.mode === 'list' ? 'mode_list ' : 'mode_grid ')
           }
         >
           <div className="lists_before">
-            {this.props.mode == 'list' && (
+            {this.props.mode === 'list' && (
               <Tabs
                 tabs={lists
                   .map((item, index) => {
                     return {
                       id: item.front_id || item.id,
-                      titleClassName: item.id == 'add_list' ? 'no-selection-border' : '',
+                      titleClassName: item.id === 'add_list' ? 'no-selection-border' : '',
                       titleStyle: { borderBottomColor: item.color },
                       title: () => {
-                        if (item.id == 'add_list') {
+                        if (item.id === 'add_list') {
                           return item.render;
                         }
                         return (
@@ -420,7 +423,7 @@ export default class Board extends React.Component {
                         );
                       },
                       render: () => {
-                        if (item.id == 'add_list') {
+                        if (item.id === 'add_list') {
                           return '';
                         }
                         return (
@@ -444,7 +447,7 @@ export default class Board extends React.Component {
               />
             )}
 
-            {this.props.mode == 'grid' && (
+            {this.props.mode === 'grid' && (
               <PerfectScrollbar className="lists_scrollable" options={{ suppressScrollX: false }}>
                 <Droppable
                   droppableId={'lists'}
@@ -463,7 +466,7 @@ export default class Board extends React.Component {
                       }}
                     >
                       {lists
-                        .filter(a => a.id != 'add_list')
+                        .filter(a => a.id !== 'add_list')
                         .map((item, index) => {
                           return (
                             <List

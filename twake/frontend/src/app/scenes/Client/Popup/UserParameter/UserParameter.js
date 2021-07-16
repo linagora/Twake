@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 import loginService from 'services/login/login.js';
@@ -42,7 +42,7 @@ export default class UserParameter extends Component {
     currentUserService.addListener(this);
   }
   componentWillMount() {
-    this.state.thumbnail = false;
+    this.setState({ thumbnail: false });
   }
   componentWillUnmount() {
     LoginService.removeListener(this);
@@ -58,7 +58,7 @@ export default class UserParameter extends Component {
     event.preventDefault();
     uploadService.getFilesTree(event, function (tree) {
       var first = tree[Object.keys(tree)[0]];
-      if (first.constructor.name != 'Object') {
+      if (first.constructor.name !== 'Object') {
         //A file
         var reader = new FileReader();
         reader.onload = function (e) {
@@ -71,12 +71,12 @@ export default class UserParameter extends Component {
   }
   canEditAccount() {
     return (
-      this.state.currentUserService.get().identity_provider != 'openid' &&
-      this.state.currentUserService.get().identity_provider != 'cas'
+      this.state.currentUserService.get().identity_provider !== 'openid' &&
+      this.state.currentUserService.get().identity_provider !== 'cas'
     );
   }
   displayScene() {
-    if (this.state.page == 1) {
+    if (this.state.page === 1) {
       return (
         <form className="" autocomplete="off">
           <div className="title">{this.state.i18n.t('scenes.apps.account.title')}</div>
@@ -122,6 +122,7 @@ export default class UserParameter extends Component {
                   <div className="smalltext">
                     {this.state.i18n.t('scenes.apps.account.thumbnail.max_weight')}
                     <br />
+                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                     <a
                       className="red"
                       href="#"
@@ -147,7 +148,7 @@ export default class UserParameter extends Component {
                     type="text"
                     value={this.state.firstname}
                     onKeyDown={e => {
-                      if (e.keyCode == 13) {
+                      if (e.keyCode === 13) {
                         currentUserService.updateidentity(
                           this.state.lastname,
                           this.state.firstname,
@@ -165,7 +166,7 @@ export default class UserParameter extends Component {
                     type="text"
                     value={this.state.lastname}
                     onKeyDown={e => {
-                      if (e.keyCode == 13) {
+                      if (e.keyCode === 13) {
                         currentUserService.updateidentity(
                           this.state.lastname,
                           this.state.firstname,
@@ -233,7 +234,7 @@ export default class UserParameter extends Component {
                     type="text"
                     value={this.state.username}
                     onKeyDown={e => {
-                      if (e.keyCode == 13) {
+                      if (e.keyCode === 13) {
                         currentUserService.updateUserName(this.state.username);
                       }
                     }}
@@ -274,6 +275,7 @@ export default class UserParameter extends Component {
                             </div>
                           )}
                           {!mail.main && (
+                            // eslint-disable-next-line jsx-a11y/anchor-is-valid
                             <a
                               className={currentUserService.loading ? 'isDisabled' : ''}
                               onClick={() => currentUserService.makeMainMail(mail.id)}
@@ -282,6 +284,7 @@ export default class UserParameter extends Component {
                             </a>
                           )}
                           {!mail.main && (
+                            // eslint-disable-next-line jsx-a11y/anchor-is-valid
                             <a
                               className={'red ' + (currentUserService.loading ? 'isDisabled' : '')}
                               onClick={() => currentUserService.removeMail(mail.id)}
@@ -294,6 +297,7 @@ export default class UserParameter extends Component {
                     })}
 
                   {this.state.subMenuOpened < 1 && (
+                    // eslint-disable-next-line jsx-a11y/anchor-is-valid
                     <a href="#" onClick={() => this.setState({ subMenuOpened: 1 })}>
                       {this.state.i18n.t('scenes.app.workspaces.welcome_page.add_secondary_emails')}
                     </a>
@@ -302,17 +306,17 @@ export default class UserParameter extends Component {
                   {this.state.subMenuOpened >= 1 && (
                     <div className="parameters_form new_secondary_mail">
                       <Input
-                        disabled={this.state.subMenuOpened == 2}
+                        disabled={this.state.subMenuOpened === 2}
                         className={
                           'new_mail_input' +
-                          (this.state.subMenuOpened == 1 &&
+                          (this.state.subMenuOpened === 1 &&
                           this.state.loginService.error_secondary_mail_already
                             ? 'error'
                             : '')
                         }
                         type="text"
                         onKeyDown={e => {
-                          if (e.keyCode == 13 && this.state.mail.length > 0) {
+                          if (e.keyCode === 13 && this.state.mail.length > 0) {
                             this.state.loginService.addNewMail(
                               this.state.mail,
                               thot => thot.setState({ subMenuOpened: 2 }),
@@ -326,18 +330,18 @@ export default class UserParameter extends Component {
                         value={this.state.mail}
                         onChange={evt => this.setState({ mail: evt.target.value })}
                       />
-                      {this.state.subMenuOpened == 1 &&
+                      {this.state.subMenuOpened === 1 &&
                         this.state.loginService.error_secondary_mail_already && (
                           <span id="errorUsernameExist" className={'text error'}>
                             {this.state.i18n.t('scenes.login.create_account.email_used')}
                           </span>
                         )}
 
-                      {this.state.subMenuOpened == 2 && (
+                      {this.state.subMenuOpened === 2 && (
                         <Input
                           type="text"
                           onKeyDown={e => {
-                            if (e.keyCode == 13 && this.state.code.length > 0) {
+                            if (e.keyCode === 13 && this.state.code.length > 0) {
                               this.state.loginService.verifySecondMail(
                                 this.state.mail,
                                 this.state.code,
@@ -359,7 +363,7 @@ export default class UserParameter extends Component {
                           style={{ maxWidth: '200px', textAlign: 'center', marginTop: 10 }}
                         />
                       )}
-                      {this.state.subMenuOpened == 2 &&
+                      {this.state.subMenuOpened === 2 &&
                         (this.state.loginService.error_code || this.state.error_code) && (
                           <span
                             id="errorUsernameExist"
@@ -372,8 +376,9 @@ export default class UserParameter extends Component {
                           </span>
                         )}
 
-                      {this.state.subMenuOpened == 1 && (
+                      {this.state.subMenuOpened === 1 && (
                         <div className="form_bottom">
+                          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                           <a
                             href="#"
                             className="cancel"
@@ -400,8 +405,9 @@ export default class UserParameter extends Component {
                           />
                         </div>
                       )}
-                      {this.state.subMenuOpened == 2 && (
+                      {this.state.subMenuOpened === 2 && (
                         <div className="form_bottom">
+                          {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                           <a
                             href="#"
                             className="cancel"
@@ -456,7 +462,7 @@ export default class UserParameter extends Component {
                     type="password"
                     value={this.state.oldPassword}
                     onKeyDown={e => {
-                      if (e.keyCode == 13) {
+                      if (e.keyCode === 13) {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
@@ -483,7 +489,7 @@ export default class UserParameter extends Component {
                     type="password"
                     value={this.state.password}
                     onKeyDown={e => {
-                      if (e.keyCode == 13) {
+                      if (e.keyCode === 13) {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
@@ -503,7 +509,7 @@ export default class UserParameter extends Component {
                     type="password"
                     value={this.state.password1}
                     onKeyDown={e => {
-                      if (e.keyCode == 13) {
+                      if (e.keyCode === 13) {
                         currentUserService.updatePassword(
                           this.state.oldPassword,
                           this.state.password,
@@ -540,7 +546,7 @@ export default class UserParameter extends Component {
         </form>
       );
     }
-    if (this.state.page == 2) {
+    if (this.state.page === 2) {
       return (
         <div className="">
           <div className="title">
@@ -555,7 +561,7 @@ export default class UserParameter extends Component {
         </div>
       );
     }
-    if (this.state.page == 3) {
+    if (this.state.page === 3) {
       return <Notifications />;
     }
   }
@@ -575,7 +581,7 @@ export default class UserParameter extends Component {
                   type: 'menu',
                   text: this.state.i18n.t('scenes.apps.account.title'),
                   emoji: ':dark_sunglasses:',
-                  selected: this.state.page == 1 ? 'selected' : '',
+                  selected: this.state.page === 1 ? 'selected' : '',
                   onClick: () => {
                     this.setPage(1);
                   },
@@ -584,7 +590,7 @@ export default class UserParameter extends Component {
                   type: 'menu',
                   text: this.state.i18n.t('scenes.apps.account.notifications.title'),
                   emoji: ':bell:',
-                  selected: this.state.page == 3 ? 'selected' : '',
+                  selected: this.state.page === 3 ? 'selected' : '',
                   onClick: () => {
                     this.setPage(3);
                   },

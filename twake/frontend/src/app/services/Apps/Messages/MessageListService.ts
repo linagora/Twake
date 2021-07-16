@@ -1,12 +1,12 @@
-import { Message } from "./Message";
-import { MessageLoader } from "./MessageLoader";
+import { Message } from '../../../models/Message';
+import { MessageLoader } from './MessageLoader';
 import UserNotifications from 'app/services/user/UserNotifications';
 import Collections from 'app/services/CollectionsReact/Collections';
-import logger from "app/services/Logger";
-import { ChannelResource } from "app/models/Channel";
-import MessageLoaderFactory from "./MessageLoaderFactory";
+import logger from 'app/services/Logger';
+import { ChannelResource } from 'app/models/Channel';
+import MessageLoaderFactory from './MessageLoaderFactory';
 
-type Scroller = (align: "start" | "center" | "end", message?: Message) => boolean;
+type Scroller = (align: 'start' | 'center' | 'end', message?: Message) => boolean;
 
 export class MessageListService {
   /**
@@ -18,10 +18,10 @@ export class MessageListService {
    * The id of the message to highlight
    */
 
-  hightlight: string | undefined;
+  hightlight: string | undefined;
 
   /**
-   * The scroller to message function 
+   * The scroller to message function
    */
   scroller: Scroller | undefined;
 
@@ -29,11 +29,11 @@ export class MessageListService {
    * Id returned by setTimeout when delaying the "read channel action"
    */
   readChannelTimeout: any;
-  
+
   /**
    * Last read message id
    */
-  lastReadMessage = "";
+  lastReadMessage = '';
 
   constructor(readonly key: string, private channel: ChannelResource) {
     this.loader = MessageLoaderFactory.get(this.key, channel);
@@ -47,7 +47,7 @@ export class MessageListService {
 
   /**
    * @param threadId
-   * @returns 
+   * @returns
    */
   getLoader(threadId?: string): MessageLoader {
     if (threadId) {
@@ -63,18 +63,18 @@ export class MessageListService {
 
   async scrollTo(message: Message): Promise<void> {
     // TODO: When the message is not available in the list, we should be able to open the stream at a given position with offset
-    logger.debug("Scroll to message", message);
+    logger.debug('Scroll to message', message);
     if (message.id) {
       this.hightlight = message.id;
     }
 
-    this.scroller && this.scroller("start", message);
+    this.scroller && this.scroller('start', message);
   }
 
   isLastMessageRead(): boolean {
     const lastMessage = this.loader.getLastItem();
 
-    if (lastMessage && this.lastReadMessage && (this.lastReadMessage === lastMessage)) {
+    if (lastMessage && this.lastReadMessage && this.lastReadMessage === lastMessage) {
       return true;
     }
 
@@ -93,7 +93,7 @@ export class MessageListService {
     if (this.readChannelTimeout) {
       clearTimeout(this.readChannelTimeout);
     }
-  
+
     this.readChannelTimeout = setTimeout(() => {
       const path = `/channels/v1/companies/${this.channel.data.company_id}/workspaces/${this.channel.data.workspace_id}/channels/::mine`;
       const collection = Collections.get(path, ChannelResource);

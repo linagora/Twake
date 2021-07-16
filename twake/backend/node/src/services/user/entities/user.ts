@@ -1,18 +1,19 @@
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import search from "./user.search";
+import { uuid } from "../../../utils/types";
 
 export const TYPE = "user";
 
 @Entity(TYPE, {
-  primaryKey: [["id"], "email_canonical"],
+  primaryKey: [["id"]],
   globalIndexes: [["email_canonical"]],
   type: TYPE,
   search,
 })
 export default class User {
   @Column("id", "uuid")
-  id: string;
+  id: uuid;
 
   @Column("first_name", "encoded_string")
   first_name: string;

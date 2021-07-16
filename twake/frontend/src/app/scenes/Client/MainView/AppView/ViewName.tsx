@@ -1,12 +1,6 @@
-import React, { FC, useState } from 'react';
-import Messages from 'scenes/Apps/Messages/Messages';
-import Drive from 'scenes/Apps/Drive/Drive.js';
-import Calendar from 'scenes/Apps/Calendar/Calendar.js';
-import Tasks from 'scenes/Apps/Tasks/Tasks.js';
-import NoApp from '../NoApp';
-import { ViewConfiguration } from 'app/services/AppView/AppViewService';
+import React, { FC } from 'react';
 import AppViewService from 'app/services/AppView/AppViewService';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import { ChannelResource } from 'app/models/Channel';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 
@@ -35,9 +29,10 @@ const ViewName: FC<PropsType> = props => {
     const workspace = DepreciatedCollections.get('workspaces').find(
       (channel as ChannelResource).data.workspace_id,
     );
-    text = (workspace ? workspace.name + ' • ' : '') + ((channel as ChannelResource).data.name || "");
+    text =
+      (workspace ? workspace.name + ' • ' : '') + ((channel as ChannelResource).data.name || '');
   }
 
-  return <span>{Languages.t('scenes.app.side_app.messages_thread_title', [text ])}</span>;
+  return <span>{Languages.t('scenes.app.side_app.messages_thread_title', [text])}</span>;
 };
 export default ViewName;

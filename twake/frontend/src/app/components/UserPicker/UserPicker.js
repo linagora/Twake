@@ -4,7 +4,7 @@ import Icon from 'components/Icon/Icon.js';
 import './UserPicker.scss';
 import User from 'components/ui/User.js';
 import UsersService from 'services/user/UserService';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class UserPicker extends React.Component {
   /*

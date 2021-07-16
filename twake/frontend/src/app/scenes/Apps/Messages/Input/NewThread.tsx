@@ -3,7 +3,7 @@ import { PlusCircle } from 'react-feather';
 import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
 import Input from './Input';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import './Input.scss';
 
@@ -35,9 +35,10 @@ export default (props: Props) => {
       >
         <ThreadSection
           noSenderSpace
-          onClick={ () => messageEditorService.openEditor(props.threadId, '', 'main') }
+          onClick={() => messageEditorService.openEditor(props.threadId, '', 'main')}
         >
-          <PlusCircle size={16} className="plus-icon" /> { Languages.t('scenes.apps.messages.new_thread', [], "Start a new discussion") }
+          <PlusCircle size={16} className="plus-icon" />{' '}
+          {Languages.t('scenes.apps.messages.new_thread', [], 'Start a new discussion')}
         </ThreadSection>
       </Thread>
     );

@@ -3,7 +3,7 @@ import Collection from 'app/services/Depreciated/Collections/Collection';
 import Numbers from 'services/utils/Numbers';
 import Observable from 'app/services/Depreciated/observable';
 import Logger from 'app/services/Logger';
-import { Message } from './Message';
+import { Message } from '../../../models/Message';
 import {
   FeedLoader,
   NextParameters,
@@ -314,6 +314,8 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       )
       // remove ephemeral messages
       .filter(message => !message._user_ephemeral)
+      // remove init_channel messages
+      .filter(message => message.hidden_data.type !== 'init_channel')
       // sort them by creation date
       .sort((a, b) => (a?.creation_date || 0) - (b?.creation_date || 0));
 
@@ -331,6 +333,17 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         }
         return true;
       });
+    }
+
+    if (this.threadId) {
+      const initThreadMessage = MessageHistoryService.getInitThreadMessageObject({
+        thread_id: this.threadId,
+        channel_id: this.channel.id,
+      });
+      messages = [initThreadMessage, ...messages];
+    } else {
+      const initChannelMessage = MessageHistoryService.getInitChannelMessageObject(this.channel.id);
+      messages = [...(this.topHasBeenReached ? [initChannelMessage] : []), ...messages];
     }
 
     return messages;

@@ -14,9 +14,17 @@ class GuestManagementService {
 
   bind({ search, channel_id }: { search: string; channel_id: string }): void {
     const { workspaceId, companyId } = RouterServices.getStateFromRoute();
-    const channelMembersCollection = this.getChannelMembersCollection(companyId, workspaceId, channel_id);
+    const channelMembersCollection = this.getChannelMembersCollection(
+      companyId,
+      workspaceId,
+      channel_id,
+    );
     const channelMembers = channelMembersCollection.find({}, { query: { company_role: 'guest' } });
-    const pendingEmailsCollection = this.getPendingEmailCollection(companyId, workspaceId, channel_id);
+    const pendingEmailsCollection = this.getPendingEmailCollection(
+      companyId,
+      workspaceId,
+      channel_id,
+    );
     const pendingEmails = pendingEmailsCollection.find({});
 
     this.setList(pendingEmails, channelMembers);
@@ -31,7 +39,7 @@ class GuestManagementService {
           (filterString || '').toUpperCase().indexOf((search || '').toUpperCase()) > -1,
       );
     }
-    
+
     return this.list;
   }
 
@@ -39,7 +47,9 @@ class GuestManagementService {
     return (this.guests = members.map((member: ChannelMemberResource) => {
       return {
         type: 'guest',
-        filterString: UserServices.getFullName(DepreciatedCollections.get('users').find(member.data.user_id || '')),
+        filterString: UserServices.getFullName(
+          DepreciatedCollections.get('users').find(member.data.user_id || ''),
+        ),
         resource: member,
         key: member.data.id || '',
       };
@@ -74,7 +84,11 @@ class GuestManagementService {
     channel_id,
     email,
   }: PendingEmail): Promise<PendingEmailResource> {
-    const pendingEmailCollection = this.getPendingEmailCollection(company_id, workspace_id, channel_id);
+    const pendingEmailCollection = this.getPendingEmailCollection(
+      company_id,
+      workspace_id,
+      channel_id,
+    );
     const resourceToAdd = new PendingEmailResource({ company_id, workspace_id, channel_id, email });
 
     ConsoleService.addMailsInWorkspace({
@@ -88,32 +102,52 @@ class GuestManagementService {
   }
 
   deletePendingEmail(data: PendingEmail): Promise<void> {
-    return this.getPendingEmailCollection(data.company_id, data.workspace_id, data.channel_id).remove(data);
+    return this.getPendingEmailCollection(
+      data.company_id,
+      data.workspace_id,
+      data.channel_id,
+    ).remove(data);
   }
 
   destroyList(): void {
     this.list = [];
   }
 
-  private getPendingEmailCollection(companyId: string = '', workspaceId: string = '', channelId: string = ''): Collection<PendingEmailResource> {
+  private getPendingEmailCollection(
+    companyId: string = '',
+    workspaceId: string = '',
+    channelId: string = '',
+  ): Collection<PendingEmailResource> {
     return Collections.get(
       this.getPendingEmailsRoute(companyId, workspaceId, channelId),
       PendingEmailResource,
     );
   }
 
-  private getChannelMembersCollection(companyId: string = '', workspaceId: string = '', channelId: string = ''): Collection<ChannelMemberResource> {
+  private getChannelMembersCollection(
+    companyId: string = '',
+    workspaceId: string = '',
+    channelId: string = '',
+  ): Collection<ChannelMemberResource> {
     return Collections.get(
       this.getGuestMembersRoute(companyId, workspaceId, channelId),
       ChannelMemberResource,
-    )
+    );
   }
 
-  private getPendingEmailsRoute(companyId: string = '', workspaceId: string = '', channelId: string = ''): string {
+  private getPendingEmailsRoute(
+    companyId: string = '',
+    workspaceId: string = '',
+    channelId: string = '',
+  ): string {
     return `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/pending_emails/`;
   }
 
-  private getGuestMembersRoute(companyId: string = '', workspaceId: string = '', channelId: string = ''): string {
+  private getGuestMembersRoute(
+    companyId: string = '',
+    workspaceId: string = '',
+    channelId: string = '',
+  ): string {
     return `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/::guests`;
   }
 }

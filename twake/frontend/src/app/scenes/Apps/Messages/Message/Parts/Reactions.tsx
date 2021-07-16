@@ -2,75 +2,71 @@ import React from 'react';
 import User from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
-import Tooltip from 'components/Tooltip/Tooltip.js';
-import MessagesService from 'services/Apps/Messages/Messages.js';
 import Emojione from 'components/Emojione/Emojione';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message, ReactionType } from 'app/models/Message';
+import { Tooltip } from 'antd';
+import classNames from 'classnames';
+import MessageReactionService from 'app/services/Apps/Messages/MessageReactionService';
 
-type Props = {
+type PropsType = {
   message: Message;
   collectionKey: string;
 };
 
-export default (props: Props) => {
+export default ({ message, collectionKey }: PropsType) => {
   const has_reactions =
-    !props.message?.hidden_data?.disable_reactions &&
-    props.message?.reactions &&
-    props.message?.reactions.length > 0;
-  if (!has_reactions) {
-    return <span />;
-  }
-  return (
-    <div className="reactions">
-      {props.message?.reactions
-        .sort(
-          (a: string, b: string) =>
-            ((props.message?.reactions || {})[b]?.count || 0) -
-            ((props.message?.reactions || {})[a]?.count || 0),
-        )
-        .map((reaction: { name: string; count: number; users: string[] }, index: number) => {
-          const value = reaction.count || 0;
-          const members: string[] = reaction.users || [];
+    !message?.hidden_data?.disable_reactions && message?.reactions && message?.reactions.length > 0;
 
-          if (value <= 0) {
-            return '';
-          }
-          return (
-            <Tooltip
-              position="top"
-              className="reaction_container"
-              key={index}
-              tooltip={members.map(id => {
-                const user = Collections.get('users').find(id);
-                if (!user) {
-                  return '';
-                }
-                const name = User.getFullName(user);
-                return (
-                  <div key={id} style={{ whiteSpace: 'nowrap' }}>
-                    {name}
-                  </div>
-                );
-              })}
-            >
-              <div
-                className={
-                  'reaction ' +
-                  (props.message?._user_reaction == reaction.name ||
-                  members.includes(User.getCurrentUserId())
-                    ? 'is_selected '
-                    : '')
-                }
-                onClick={() => {
-                  MessagesService.react(props.message, reaction.name, props.collectionKey);
-                }}
-              >
-                <Emojione type={reaction.name} />
-                {reaction.count}
-              </div>
-            </Tooltip>
-          );
-        })}
-    </div>
+  if (!has_reactions) return <></>;
+
+  const getReactionTooltip = (users: ReactionType['users']): JSX.Element[] =>
+    users.map(id => {
+      const user = Collections.get('users').find(id);
+
+      if (!user) return <></>;
+
+      const name = User.getFullName(user);
+
+      return (
+        <div key={id} style={{ whiteSpace: 'nowrap' }}>
+          {name}
+        </div>
+      );
+    });
+
+  const onClickReaction = (name: ReactionType['name']): void =>
+    MessageReactionService.react(message, name, collectionKey);
+
+  const mapReactions = (reaction: ReactionType, index: number): JSX.Element => {
+    const noReactions: boolean = (reaction.count || 0) <= 0;
+    const users: ReactionType['users'] = reaction.users || [];
+
+    if (noReactions) return <></>;
+
+    const reactionClassName = classNames('reaction', {
+      is_selected:
+        message?._user_reaction === reaction.name ||
+        reaction.users.includes(User.getCurrentUserId()),
+    });
+
+    return (
+      <Tooltip
+        className="reaction_container"
+        key={index}
+        placement="top"
+        title={getReactionTooltip(users)}
+      >
+        <div className={reactionClassName} onClick={() => onClickReaction(reaction.name)}>
+          <Emojione type={reaction.name} />
+          {reaction.count}
+        </div>
+      </Tooltip>
+    );
+  };
+
+  const sortReactions = (a: ReactionType, b: ReactionType): number => b.count || 0 - a.count;
+
+  return (
+    <div className="reactions">{message?.reactions?.sort(sortReactions).map(mapReactions)}</div>
   );
 };

@@ -14,10 +14,11 @@
     margin-right: 8px !important;
   }
 
-  .ant-tabs-tab-active > .ant-tabs-tab-btn > span > .tab-name,
-  .tab-name:hover {
-    opacity: 0.8;
-    color: var(--primary);
+  .tab-name {
+    &:hover {
+      opacity: 0.8;
+      color: var(--primary);
+    }
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;

@@ -1,5 +1,6 @@
 import {
   CRUDService,
+  DeleteResult,
   ExecutionContext,
   ListResult,
   Paginable,
@@ -48,7 +49,8 @@ export interface MessageThreadsServiceAPI
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<Thread, ThreadPrimaryKey, ExecutionContext> {
-  addReply(thread_id: string): Promise<void>;
+  addReply(thread_id: string, increment?: number): Promise<void>;
+  setReplyCount(thread_id: string, count: number): Promise<void>;
   save(
     item: Pick<Thread, "id"> & {
       participants: Pick<ParticipantObject, "id" | "type" | "workspace_id" | "company_id">[];
@@ -87,6 +89,11 @@ export interface MessageThreadMessagesServiceAPI
     options: {},
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
+
+  forceDelete(
+    pk: Pick<Message, "thread_id" | "id">,
+    context?: ThreadExecutionContext,
+  ): Promise<DeleteResult<Message>>;
 
   getThread(thread: Thread, options: MessagesGetThreadOptions): Promise<MessageWithReplies>;
 

@@ -19,6 +19,7 @@ import _ from "lodash";
 export class ThreadsService
   implements MessageThreadsServiceAPI, CRUDService<Thread, ThreadPrimaryKey, ExecutionContext> {
   version: "1";
+  name: "ThreadsService";
   repository: Repository<Thread>;
 
   constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {}
@@ -39,7 +40,7 @@ export class ThreadsService
     item: Pick<Thread, "id"> & {
       participants: Pick<ParticipantObject, "id" | "type">[];
     },
-    options?: { participants?: ParticipantOperation; message?: Message },
+    options: { participants?: ParticipantOperation; message?: Message } = {},
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<Thread>> {
     if (item.id) {
@@ -70,21 +71,32 @@ export class ThreadsService
           p => p.id,
         ) as ParticipantObject[];
 
-        this.repository.save(thread);
+        await this.repository.save(thread);
 
         //TODO ensure the thread is in all participants views (and removed from deleted participants)
 
-        return new SaveResult("thread", thread, OperationType.UPDATE);
+        return new SaveResult(
+          "thread",
+          await this.getWithMessage({ id: thread.id }),
+          OperationType.UPDATE,
+        );
       } else {
         //Thread to edit does not exists
 
         if (!context.user?.server_request) {
-          throw new Error(`ThreadService: Unable to edit inexistant thread`);
+          throw new Error(`ThreadService: Unable to edit inexistent thread`);
         }
       }
     }
 
     //Creation of thread or server edition
+    if (!options.message) {
+      if (context.user?.server_request) {
+        logger.info(`${this.name} - Create empty thread by server itself`);
+      } else {
+        throw new Error("You must provide an initial message in the thread.");
+      }
+    }
 
     //Enforce current user in the participants list and add the created_by information
     const participants: ParticipantObject[] = [
@@ -118,26 +130,48 @@ export class ThreadsService
     if (message) {
       await this.service.messages.save(
         message,
-        {},
+        {
+          threadInitialMessage: true,
+        },
         Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
       );
     }
 
-    return new SaveResult("thread", thread, OperationType.CREATE);
+    return new SaveResult(
+      "thread",
+      await this.getWithMessage({ id: thread.id }),
+      OperationType.CREATE,
+    );
   }
 
   /**
    * Add reply to thread: increase last_activity time and number of answers
    * @param threadId
    */
-  async addReply(threadId: string) {
+  async addReply(threadId: string, increment: number = 1) {
     const thread = await this.repository.findOne({ id: threadId });
     if (thread) {
-      thread.answers++;
-      thread.last_activity = new Date().getTime();
+      thread.answers = Math.max(0, (thread.answers || 0) + increment);
+      if (increment > 0) {
+        thread.last_activity = new Date().getTime();
+      }
       await this.repository.save(thread);
     } else {
-      throw new Error("Try to add reply count to inexistant thread");
+      throw new Error("Try to add reply count to inexistent thread");
+    }
+  }
+
+  /**
+   * Add reply to thread: increase last_activity time and number of answers
+   * @param threadId
+   */
+  async setReplyCount(threadId: string, count: number) {
+    const thread = await this.repository.findOne({ id: threadId });
+    if (thread) {
+      thread.answers = count;
+      await this.repository.save(thread);
+    } else {
+      throw new Error("Try to add reply count to inexistent thread");
     }
   }
 
@@ -181,11 +215,22 @@ export class ThreadsService
   }
 
   get(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<Thread> {
-    throw new Error("CRUD method not used.");
+    return this.repository.findOne(pk);
+  }
+
+  async getWithMessage(
+    pk: Pick<Thread, "id">,
+    context?: ExecutionContext,
+  ): Promise<Thread & { message: Message }> {
+    const thread = await this.get(pk);
+    return {
+      ...thread,
+      message: await this.service.messages.get({ id: pk.id, thread_id: pk.id }, context),
+    };
   }
 
   async delete(pk: Pick<Thread, "id">, context?: ExecutionContext): Promise<DeleteResult<Thread>> {
-    const thread = await this.repository.findOne(pk);
+    const thread = await this.repository.findOne({ id: pk.id });
     if (context.user.server_request) {
       await this.repository.remove(thread);
     }

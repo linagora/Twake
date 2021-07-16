@@ -4,7 +4,7 @@ import WebsocketsManager from 'services/websocket.js';
 import ErrorOutlinedIcon from '@material-ui/icons/ErrorOutlined';
 import HourglassEmpty from '@material-ui/icons/HourglassEmpty';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class ConnectionIndicator extends React.Component {
   constructor(props) {

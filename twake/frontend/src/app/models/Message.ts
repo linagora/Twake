@@ -1,3 +1,5 @@
+export type ReactionType = { name: string; count: number; users: string[] };
+
 export type Message = {
   id?: string;
   application_id?: string | null;
@@ -12,11 +14,16 @@ export type Message = {
   modification_date?: number;
   parent_message_id?: string | null;
   pinned?: boolean;
-  reactions?: any;
+  reactions?: ReactionType[];
   responses_count?: number | null;
   sender?: string | null;
   user_specific_content?: any;
   _user_ephemeral?: any;
   _last_modified?: string;
   _user_reaction?: any;
+  subtype?:
+    | null
+    | 'application' //Message from a connector
+    | 'deleted' //Message deleted by user
+    | 'system';
 };

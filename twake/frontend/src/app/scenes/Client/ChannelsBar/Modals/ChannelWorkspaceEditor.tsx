@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
@@ -46,7 +46,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
         name: newChannel.name || channel.data.name,
         description: newChannel.description || channel.data.description,
         icon: newChannel.icon || channel.data.icon,
-        is_default: newChannel.is_default || false,
+        is_default: newChannel.is_default || false,
         visibility:
           newChannel.visibility !== undefined ? newChannel.visibility : channel.data.visibility,
         channel_group:

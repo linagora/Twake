@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './InputWithButton.scss';
 import Icon from 'components/Icon/Icon.js';
 import Input from './Input.js';

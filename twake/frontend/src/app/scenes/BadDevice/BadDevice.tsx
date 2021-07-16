@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default (props: { force?: boolean; children: React.ReactNode }): JSX.Element => {
   if (!props.force && ((window as any).screen.width < 300 || (window as any).screen.height < 400)) {
@@ -26,6 +26,7 @@ export default (props: { force?: boolean; children: React.ReactNode }): JSX.Elem
           {valid_browser && (
             <div>
               <img
+                alt={'App store logo'}
                 className="store_img"
                 src="/public/img/appstore.png"
                 onClick={() => {
@@ -35,6 +36,7 @@ export default (props: { force?: boolean; children: React.ReactNode }): JSX.Elem
               />
               {!ios && (
                 <img
+                  alt={'Google store logo'}
                   className="store_img"
                   src="/public/img/googleplay.png"
                   onClick={() => {

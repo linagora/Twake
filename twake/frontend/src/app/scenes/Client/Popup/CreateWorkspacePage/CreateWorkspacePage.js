@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import GroupService from 'services/workspaces/groups.js';
 import popupManager from 'services/popupManager/popupManager.js';
@@ -37,7 +37,7 @@ export default class CreateWorkspacePage extends Component {
     WorkspaceService.removeListener(this);
   }
   displayStep() {
-    if (this.state.page == 1) {
+    if (this.state.page === 1) {
       return (
         <div className="">
           <div className="subtitle">
@@ -56,7 +56,7 @@ export default class CreateWorkspacePage extends Component {
             className="full_width"
             big
             onKeyDown={e => {
-              if (e.keyCode == 13 && this.state.name.length > 0) {
+              if (e.keyCode === 13 && this.state.name.length > 0) {
                 this.next();
               }
             }}
@@ -69,6 +69,7 @@ export default class CreateWorkspacePage extends Component {
             onChange={evt => this.setState({ name: evt.target.value })}
           />
           <div className="bottom">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
@@ -83,13 +84,13 @@ export default class CreateWorkspacePage extends Component {
         </div>
       );
     }
-    if (this.state.page == 2) {
+    if (this.state.page === 2) {
       if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
         return (
           <AddUserFromTwakeConsole
             inline
             onChange={members => {
-              this.state.members = members;
+              this.setState({ members });
               this.setState({});
             }}
             previous={() => this.previous()}

@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import UploadManager from './UploadManager.js';
-import Emojione from 'components/Emojione/Emojione';
 import './Uploads.scss';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 let sharedFileInput = null;
 export default class UploadZone extends React.Component {
@@ -119,18 +118,20 @@ export default class UploadZone extends React.Component {
   }
 
   /**
-   * @param {Blob[]} files 
-   * @returns 
+   * @param {Blob[]} files
+   * @returns
    */
   uploadFiles(files = []) {
-    if (!this.props.allowPaste || !files.length) {
+    if (!this.props.allowPaste || !files.length) {
       return;
     }
 
     const filesToUpload = {};
-    
+
     files.forEach((file, number) => {
-      const filename = file.name ? file.name.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '') : `file-${number}`;
+      const filename = file.name
+        ? file.name.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '')
+        : `file-${number}`;
 
       filesToUpload[filename] = file;
     });
@@ -185,7 +186,7 @@ export default class UploadZone extends React.Component {
       return;
     }
     if (this.stopHoverTimeout) clearTimeout(this.stopHoverTimeout);
-    if(this.state.dragover != state){
+    if (this.state.dragover !== state) {
       this.setState({ dragover: state });
     }
   }

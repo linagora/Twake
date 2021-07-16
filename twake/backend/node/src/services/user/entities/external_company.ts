@@ -18,7 +18,7 @@ export default class ExternalGroup {
   company_id: string;
 }
 
-export type ExternalGroupPrimaryKey = Pick<ExternalGroup, "service_id">;
+export type ExternalGroupPrimaryKey = Pick<ExternalGroup, "service_id" | "external_id">;
 
 export function getInstance(
   group: Partial<ExternalGroup> & ExternalGroupPrimaryKey,

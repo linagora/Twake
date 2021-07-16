@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import Languages from 'services/languages/languages';
+import MessagesService from 'services/Apps/Messages/Messages';
 import ChannelsService from 'services/channels/channels.js';
 import MessageList from './MessageList';
 import NewThread from './Input/NewThread';
@@ -11,11 +11,12 @@ import { MessageListService } from 'app/services/Apps/Messages/MessageListServic
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import RouterServices from 'app/services/RouterService';
 import './Messages.scss';
+import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 
 type Props = {
   channel: ChannelResource;
   tab?: any;
-  options: any;
+  options: ViewConfiguration;
 };
 
 type State = {
@@ -63,7 +64,7 @@ export default class MainView extends Component<Props, State> {
       // this is something quite weird but there are no way to do it another way...
       RouterServices.history.replace({ search: '' });
     }
-    this.setState({ ready: true});
+    this.setState({ ready: true });
   }
 
   componentWillUnmount() {
@@ -76,12 +77,8 @@ export default class MainView extends Component<Props, State> {
   render() {
     const unreadAfter = this.props.channel.data.user_member?.last_access || new Date().getTime();
 
-    return this.state.ready
-      ? (
-      <div
-        className="messages-view"
-        onClick={() => this.messageService.markChannelAsRead()}
-      >
+    return this.state.ready ? (
+      <div className="messages-view" onClick={() => this.messageService.markChannelAsRead()}>
         <MessageList
           startAt={this.startAtOffset}
           threadId={this.threadId}
@@ -103,7 +100,8 @@ export default class MainView extends Component<Props, State> {
           />
         </DroppableZone>
       </div>
-    )
-    : (<></>);
+    ) : (
+      <></>
+    );
   }
 }

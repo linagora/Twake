@@ -70,7 +70,7 @@ class AuthProviderService extends Observable {
   //Redirect to valid frontend url to make sure oidc will work as expected
   enforceFrontendUrl() {
     const frontUrl = (getDomain(environment.front_root_url || '') || '').toLocaleLowerCase();
-    if (frontUrl && document.location.host.toLocaleLowerCase() != frontUrl) {
+    if (frontUrl && document.location.host.toLocaleLowerCase() !== frontUrl) {
       document.location.replace(
         document.location.protocol +
           '//' +
