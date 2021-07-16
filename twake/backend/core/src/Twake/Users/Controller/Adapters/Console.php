@@ -12,12 +12,52 @@ use Twake\Users\Controller\Adapters\Console\ApplyUpdates;
 class Console extends BaseController
 {
 
-    
+    /*
     function hook(Request $request)
     {
         if(!$this->isServiceEnabled()){
             return new Response(["error" => "unauthorized"], 401);
         }
+
+        $handler = new Hooks($this->app);
+        $res = $handler->handle($request);
+        error_log(json_encode($res->getContent()));
+        return $res;
+    }
+    */
+
+    //Redirect hook to the console
+    function hook(Request $request)
+    {
+        if(!$this->isServiceEnabled()){
+            return new Response(["error" => "unauthorized"], 401);
+        }
+
+        $api = $this->app->getServices()->get("app.restclient");
+
+        $secret = $request->query->get("secret_key");
+        $uri = str_replace("/private", "/internal/services/console/v1", $this->app->getContainer()->getParameter("node.api")) . 
+            ltrim("/hook?secret_key=".$secret, "/");
+
+        $opt = [
+            CURLOPT_HTTPHEADER => Array(
+                "Authorization: Bearer " . $jwt,
+                "Content-Type: application/json"
+            ),
+            CURLOPT_CONNECTTIMEOUT => 1,
+            CURLOPT_TIMEOUT => 1
+        ];
+
+        $data = [
+            "content" => $request->request->get("content"),
+            "type" => $request->request->get("type")
+        ];
+
+        $res = $api->request("POST", $uri, json_encode($data), $opt);
+
+        error_log(json_encode($res));
+
+        return new Response([], 200);
 
         $handler = new Hooks($this->app);
         $res = $handler->handle($request);
