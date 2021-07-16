@@ -119,11 +119,13 @@ export type ProcessReport = {
 export type ConsoleType = "remote" | "internal";
 
 export type ConsoleOptions = {
-  provider?: string;
-  client: string;
-  secret: string;
+  username: string;
+  password: string;
   url: string;
-  public_key?: string;
+  hook: {
+    token: string;
+    public_key?: string;
+  };
 };
 
 export type ConsoleHookCompany = {
