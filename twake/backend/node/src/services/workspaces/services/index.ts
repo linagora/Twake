@@ -30,7 +30,6 @@ class Service implements WorkspaceServicesAPI {
   ) {
     this.companies = getCompaniesService(databaseService);
     this.users = getUsersService(databaseService, searchService);
-    console.log(this.users);
     this.workspaces = getWorkspaceService(databaseService, this.users);
     this.console = consoleService;
   }

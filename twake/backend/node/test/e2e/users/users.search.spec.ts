@@ -13,7 +13,10 @@ describe("The /users API", () => {
     });
     ends();
   });
+
   afterEach(async ends => {
+    platform && (await platform.tearDown());
+    platform = null;
     ends();
   });
 
