@@ -173,7 +173,7 @@ export type ConsoleHookBody = {
 };
 
 export class ConsoleHookQueryString {
-  secret: string;
+  secret_key: string;
 }
 
 export class ConsoleHookResponse {

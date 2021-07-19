@@ -2,9 +2,9 @@ export const consoleHookSchema = {
   querystring: {
     type: "object",
     properties: {
-      secret: { type: "string" },
+      secret_key: { type: "string" },
     },
-    required: ["secret"],
+    required: ["secret_key"],
   },
   body: {
     type: "object",

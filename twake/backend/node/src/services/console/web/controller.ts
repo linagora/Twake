@@ -9,7 +9,6 @@ import {
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
-import { ExternalGroupPrimaryKey } from "../../user/entities/external_company";
 
 export class ConsoleController {
   constructor(protected consoleService: ConsoleServiceAPI) {}
