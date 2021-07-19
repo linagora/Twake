@@ -116,16 +116,22 @@ export class UsersCrudController
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<UserObject>> {
     const context = getExecutionContext(request);
-    const user = await this.service.get({ id: request.params.id }, getExecutionContext(request));
+
+    let id = request.params.id;
+    if (request.params.id === "me") {
+      id = context.user.id;
+    }
+
+    const user = await this.service.get({ id: id }, getExecutionContext(request));
 
     if (!user) {
-      reply.notFound(`User ${request.params.id} not found`);
+      reply.notFound(`User ${id} not found`);
 
       return;
     }
 
     return {
-      resource: await this.formatUser(user, context.user.id === request.params.id),
+      resource: await this.formatUser(user, context.user.id === id),
       websocket: undefined, // empty for now
     };
   }
