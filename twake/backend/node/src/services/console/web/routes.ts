@@ -18,7 +18,9 @@ const routes: FastifyPluginCallback<{
     request: FastifyRequest<{ Body: ConsoleHookBody; Querystring: ConsoleHookQueryString }>,
   ) => {
     if (options.service.consoleType != "remote") {
-      console.error("Console hook: Hook service is only for the remote console");
+      console.error(
+        `Console hook: Hook service is only for the remote console (not it's ${options.service.consoleType})`,
+      );
       throw fastify.httpErrors.notImplemented("Hook service is only for the remote console");
     }
 
