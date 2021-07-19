@@ -104,7 +104,9 @@ export class WorkspaceUsersCrudController
             .value()
             .map(companyId => this.companyService.getCompany({ id: companyId })),
         )
-      ).map(c => [c.id, c]),
+      )
+        .filter(c => c)
+        .map(c => [c.id, c]),
     );
     return companiesMap;
   }
