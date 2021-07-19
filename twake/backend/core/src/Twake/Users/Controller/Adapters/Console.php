@@ -53,8 +53,13 @@ class Console extends BaseController
             "type" => $request->request->get("type")
         ];
 
+        error_log("Request to node:");
+        error_log($uri);
+        error_log(json_encode($data));
+
         $res = $api->request("POST", $uri, json_encode($data), $opt);
 
+        error_log("Reply from node:");
         error_log(json_encode($res));
 
         return new Response([], 200);
