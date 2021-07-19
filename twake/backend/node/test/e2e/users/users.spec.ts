@@ -29,7 +29,10 @@ describe("The /users API", () => {
       services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
 
-    testDbService = new TestDbService(platform);
+    if ((platform.database as any).type == "mongodb") {
+      await platform.database.getConnector().drop();
+    }
+    testDbService = await TestDbService.getInstance(platform);
     await testDbService.createCompany(companyId);
     const workspacePk = { id: workspaceId, group_id: companyId };
     await testDbService.createWorkspace(workspacePk);
@@ -336,7 +339,7 @@ describe("The /users API", () => {
   });
 
   describe("User's device management", () => {
-    const device = "myDevice";
+    const deviceToken = "testDeviceToken";
 
     describe("Register device (POST)", () => {
       it("should 400 when type is not FCM", async done => {
@@ -369,9 +372,9 @@ describe("The /users API", () => {
       });
 
       it("should 200 when ok", async done => {
-        const myId = testDbService.users[0].id;
+        const firstId = testDbService.users[0].id;
 
-        const jwtToken = await platform.auth.getJWTToken({ sub: myId });
+        const jwtToken = await platform.auth.getJWTToken({ sub: firstId });
         const response = await platform.app.inject({
           method: "POST",
           url: `${url}/devices`,
@@ -381,8 +384,8 @@ describe("The /users API", () => {
           payload: {
             resource: {
               type: "FCM",
-              value: "value",
-              version: "version",
+              value: deviceToken,
+              version: "1",
             },
           },
         });
@@ -392,27 +395,117 @@ describe("The /users API", () => {
 
         expect(resp.resource).toMatchObject({
           type: "FCM",
-          value: "value",
-          version: "version",
+          value: deviceToken,
+          version: "1",
         });
+
+        const user = await testDbService.getUserFromDb({ id: firstId });
+        expect(user.devices).toMatchObject([deviceToken]);
+        const device = await testDbService.getDeviceFromDb(deviceToken);
+        expect(device).toMatchObject({
+          token: deviceToken,
+          user_id: firstId,
+          type: "FCM",
+          version: "1",
+        });
+
+        done();
+      });
+
+      it("should 200 when register token to another person", async done => {
+        const firstId = testDbService.users[0].id;
+        const secondId = testDbService.users[1].id;
+
+        const jwtToken = await platform.auth.getJWTToken({ sub: secondId });
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${url}/devices`,
+          headers: {
+            authorization: `Bearer ${jwtToken}`,
+          },
+          payload: {
+            resource: {
+              type: "FCM",
+              value: deviceToken,
+              version: "1",
+            },
+          },
+        });
+
+        const resp = response.json();
+        expect(response.statusCode).toBe(200);
+
+        expect(resp.resource).toMatchObject({
+          type: "FCM",
+          value: deviceToken,
+          version: "1",
+        });
+
+        // second user should have now this token
+        let user = await testDbService.getUserFromDb({ id: secondId });
+        expect(user.devices).toMatchObject([deviceToken]);
+        const device = await testDbService.getDeviceFromDb(deviceToken);
+        expect(device).toMatchObject({
+          token: deviceToken,
+          user_id: secondId,
+          type: "FCM",
+          version: "1",
+        });
+
+        // and first — not
+
+        user = await testDbService.getUserFromDb({ id: firstId });
+        expect(user.devices).toMatchObject([]);
 
         done();
       });
     });
 
-    describe.only("De-register device (DELETE)", () => {
-      it("should 200 when ok", async done => {
-        const myId = testDbService.users[0].id;
+    describe("De-register device (DELETE)", () => {
+      it("should 200 when device not found for the user", async done => {
+        const myId = testDbService.users[1].id;
 
         const jwtToken = await platform.auth.getJWTToken({ sub: myId });
         const response = await platform.app.inject({
           method: "DELETE",
-          url: `${url}/devices/${device}`,
+          url: `${url}/devices/somethingRandom`,
           headers: {
             authorization: `Bearer ${jwtToken}`,
           },
         });
         expect(response.statusCode).toBe(204);
+
+        const user = await testDbService.getUserFromDb({ id: myId });
+        expect(user.devices).toMatchObject([deviceToken]);
+        const device = await testDbService.getDeviceFromDb(deviceToken);
+        expect(device).toMatchObject({
+          token: deviceToken,
+          user_id: myId,
+          type: "FCM",
+          version: "1",
+        });
+
+        done();
+      });
+
+      it("should 200 when device found and device should be removed", async done => {
+        const myId = testDbService.users[1].id;
+
+        const jwtToken = await platform.auth.getJWTToken({ sub: myId });
+        const response = await platform.app.inject({
+          method: "DELETE",
+          url: `${url}/devices/${deviceToken}`,
+          headers: {
+            authorization: `Bearer ${jwtToken}`,
+          },
+        });
+        expect(response.statusCode).toBe(204);
+
+        const user = await testDbService.getUserFromDb({ id: myId });
+        expect(user.devices).toMatchObject([]);
+        const device = await testDbService.getDeviceFromDb(deviceToken);
+        expect(device).toBeFalsy();
+
         done();
       });
     });

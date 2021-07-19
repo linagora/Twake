@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   CreateResult,
+  CrudExeption,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -19,12 +20,17 @@ import { UsersServiceAPI } from "../../api";
 import { ListUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
 import ExternalUser, { getInstance as getExternalUserInstance } from "../../entities/external_user";
+import Device, {
+  getInstance as getDeviceInstance,
+  TYPE as DeviceType,
+} from "../../entities/device";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
   repository: Repository<User>;
   companyUserRepository: Repository<CompanyUser>;
   extUserRepository: Repository<ExternalUser>;
+  private deviceRepository: Repository<Device>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
@@ -38,6 +44,9 @@ export class UserService implements UsersServiceAPI {
       "external_user_repository",
       ExternalUser,
     );
+
+    this.deviceRepository = await this.database.getRepository<Device>(DeviceType, Device);
+
     return this;
   }
 
@@ -144,5 +153,49 @@ export class UserService implements UsersServiceAPI {
       }
     }
     return suitableUsername;
+  }
+
+  async getUserDevices(userPrimaryKey: UserPrimaryKey): Promise<Device[]> {
+    const user = await this.get(userPrimaryKey);
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+    }
+    if (!user.devices || user.devices.length == 0) {
+      return [];
+    }
+    return Promise.all(
+      user.devices.map(token => this.deviceRepository.findOne({ token })),
+    ).then(a => a.filter(a => a));
+  }
+
+  async registerUserDevice(
+    userPrimaryKey: UserPrimaryKey,
+    token: string,
+    type: string,
+    version: string,
+  ): Promise<void> {
+    await this.deregisterUserDevice(token);
+
+    const user = await this.get(userPrimaryKey);
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+    }
+    user.devices = user.devices || [];
+    user.devices.push(token);
+
+    await Promise.all([
+      this.repository.save(user),
+      this.deviceRepository.save(getDeviceInstance({ token, type, version, user_id: user.id })),
+    ]);
+  }
+
+  async deregisterUserDevice(token: string): Promise<void> {
+    const existedDevice = await this.deviceRepository.findOne({ token });
+
+    if (existedDevice) {
+      const user = await this.get({ id: existedDevice.user_id });
+      user.devices = (user.devices || []).filter(d => d !== token);
+      await Promise.all([this.deviceRepository.remove(existedDevice), this.repository.save(user)]);
+    }
   }
 }
