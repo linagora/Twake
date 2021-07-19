@@ -14,10 +14,12 @@ import CompanyUser from "../../src/services/user/entities/company_user";
 import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
 import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
 import { memoize } from "lodash";
+import Device from "../../src/services/user/entities/device";
 
 export type uuid = string;
 
 export class TestDbService {
+  private deviceRepository: Repository<Device>;
   public static async getInstance(testPlatform: TestPlatform): Promise<TestDbService> {
     const instance = new this(testPlatform);
     await instance.init();
@@ -48,6 +50,7 @@ export class TestDbService {
       "group_user",
       CompanyUser,
     );
+    this.deviceRepository = await this.database.getRepository<Device>("device", Device);
   }
   public get workspaces() {
     return [...this.workspacesMap.values()];
@@ -143,6 +146,10 @@ export class TestDbService {
     } else {
       throw new Error("getUserFromDb: Id not provided");
     }
+  }
+
+  async getDeviceFromDb(token: string): Promise<Device> {
+    return this.deviceRepository.findOne({ token });
   }
 
   getCompanyFromDb(companyId: uuid) {
