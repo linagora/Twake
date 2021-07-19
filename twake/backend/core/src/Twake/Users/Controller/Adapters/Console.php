@@ -60,7 +60,7 @@ class Console extends BaseController
         $res = $api->request("POST", $uri, json_encode($data), $opt);
 
         error_log("Reply from node:");
-        error_log(json_encode($res));
+        error_log($res->getContent());
 
         return new Response([], 200);
 
