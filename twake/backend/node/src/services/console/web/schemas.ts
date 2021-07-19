@@ -13,7 +13,7 @@ export const consoleHookSchema = {
       content: { type: "object" },
       signature: { type: "string" },
     },
-    required: ["type", "content", "signature"],
+    required: ["type", "content"],
   },
   response: {
     "2xx": {
