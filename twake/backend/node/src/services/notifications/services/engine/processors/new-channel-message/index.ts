@@ -66,6 +66,11 @@ export class NewChannelMessageProcessor
         } : ['${usersToNotify.join("', '")}']`,
       );
 
+      //Fixme Add user full names if known, need to import microservice
+      const users_names = {};
+      //Fixme add channel full names, need to import microservice
+      const channels_names = {};
+
       return {
         channel_id: message.channel_id,
         company_id: message.company_id,
@@ -75,6 +80,10 @@ export class NewChannelMessageProcessor
         creation_date: message.creation_date,
         mentions: {
           users: usersToNotify || [],
+        },
+        object_names: {
+          users: users_names,
+          channels: channels_names,
         },
 
         //Temp: should not be used like this when migrating messages to node

@@ -6,6 +6,7 @@ export const userObjectSchema = {
     provider_id: { type: "string" },
 
     email: { type: "string" },
+    username: { type: "string" },
     is_verified: { type: "boolean" },
     picture: { type: "string" },
     first_name: { type: "string" },

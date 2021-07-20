@@ -28,6 +28,10 @@ export type MentionNotification = {
     users: uuid[];
     specials?: specialMention[];
   };
+  object_names?: {
+    users: { [id: string]: string };
+    channels: { [id: string]: string };
+  };
   title: string;
   text: string;
 };

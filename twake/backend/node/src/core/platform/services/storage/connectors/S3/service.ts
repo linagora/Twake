@@ -13,22 +13,20 @@ export default class S3ConnectorService implements StorageConnectorAPI {
     this.minioConfiguration = S3Configuration;
   }
 
-  async write(path: string, stream: Readable): Promise<WriteMetadata> {
+  write(path: string, stream: Readable): Promise<WriteMetadata> {
     let totalSize = 0;
     return new Promise(resolve => {
-      this.client.putObject(
-        this.minioConfiguration.bucket,
-        path,
-        stream
-          .on("data", function (chunk) {
-            totalSize += chunk.length;
-          })
-          .on("end", () => {
-            resolve({
-              size: totalSize,
-            });
-          }),
-      );
+      stream
+        .on("data", function (chunk) {
+          totalSize += chunk.length;
+        })
+        .on("end", () => {
+          resolve({
+            size: totalSize,
+          });
+        });
+
+      this.client.putObject(this.minioConfiguration.bucket, path, stream);
     });
   }
 
