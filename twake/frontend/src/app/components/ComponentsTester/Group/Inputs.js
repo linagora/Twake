@@ -6,7 +6,7 @@ import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
 
 import StepCounter from 'components/StepCounter/StepCounter.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import { lang } from 'moment';
 
 export default class GroupInputs extends React.Component {

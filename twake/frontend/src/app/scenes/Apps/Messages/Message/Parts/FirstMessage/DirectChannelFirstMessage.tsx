@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './FirstMessage.scss';
 import { ChannelType } from 'app/models/Channel';
 import { getUserParts } from 'app/components/Member/UserParts';
@@ -25,7 +25,7 @@ export default (props: Props) => {
         {Languages.t(
           'scenes.apps.messages.message.types.first_message_text',
           [],
-          "This is the first message",
+          'This is the first message',
         )}
       </div>
     </div>

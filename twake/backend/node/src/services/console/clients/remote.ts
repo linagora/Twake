@@ -40,6 +40,10 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     this.userService = consoleInstance.services.userService;
   }
 
+  private auth() {
+    return { username: this.infos.username, password: this.infos.password };
+  }
+
   async addUserToCompany(
     company: ConsoleCompany,
     user: CreateConsoleUser,
@@ -52,10 +56,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     return this.client
       .post(`/api/companies/${company.code}/users`, user, {
-        auth: {
-          username: this.infos.client,
-          password: this.infos.secret,
-        },
+        auth: this.auth(),
         headers: {
           "Content-Type": "application/json",
         },
@@ -82,10 +83,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         `/api/companies/${company.code}/users/${user.id}`,
         { role: user.role },
         {
-          auth: {
-            username: this.infos.client,
-            password: this.infos.secret,
-          },
+          auth: this.auth(),
           headers: {
             "Content-Type": "application/json",
           },
@@ -101,10 +99,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     return this.client
       .post("/api/companies", company, {
-        auth: {
-          username: this.infos.client,
-          password: this.infos.secret,
-        },
+        auth: this.auth(),
         headers: {
           "Content-Type": "application/json",
         },
@@ -236,5 +231,16 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
   async removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
     await this.userService.companies.removeCompany(companySearchKey);
+  }
+
+  fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
+    return this.client
+      .get(`/api/companies/${consoleCompanyCode}`, {
+        auth: this.auth(),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(({ data }) => data);
   }
 }

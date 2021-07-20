@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Button from 'components/Buttons/Button.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
 import Loader from 'components/Loader/Loader.js';

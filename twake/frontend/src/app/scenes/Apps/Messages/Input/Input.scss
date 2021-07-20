@@ -76,17 +76,17 @@
       opacity: 50%;
       padding-right: 10px;
       cursor: not-allowed;
-      
+
       &:not(.disabled):hover {
         color: var(--primary-hover);
       }
-      
+
       &:not(.disabled) {
         cursor: pointer;
         color: var(--primary);
         opacity: unset;
       }
-      
+
       .send-icon {
         transform: rotate(45deg);
       }
@@ -96,7 +96,7 @@
   .input-toolbar {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     flex-direction: row;
     border-top: var(--grey-background);

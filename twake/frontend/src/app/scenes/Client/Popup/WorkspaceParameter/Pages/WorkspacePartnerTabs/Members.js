@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Table from 'components/Table/Table.tsx';
 import UserService from 'services/user/UserService';
 import Workspaces from 'services/workspaces/workspaces.js';

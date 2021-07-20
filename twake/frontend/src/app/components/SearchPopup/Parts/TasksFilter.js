@@ -6,7 +6,7 @@ import UserListManager from 'components/UserListManager/UserListManager';
 import Button from 'components/Buttons/Button.js';
 import DateSelectorInput from 'components/Calendar/DatePicker.js';
 import WorkspaceListManager from 'components/WorkspaceListManager/WorkspaceListManager.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class EventsFilter extends React.Component {
   constructor(props) {

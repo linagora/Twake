@@ -43,7 +43,7 @@ class TwakeApp {
     this.environment = environment;
     this.version = version;
     this.window = window;
-    this.api_root_url = this.environment.api_root_url || "";
+    this.api_root_url = this.environment.api_root_url || '';
 
     // FIXME: Deprecated, need to check all the places where the values are used
     Object.keys(environment).forEach(key => {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Groups from 'services/workspaces/groups.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'services/InitService';

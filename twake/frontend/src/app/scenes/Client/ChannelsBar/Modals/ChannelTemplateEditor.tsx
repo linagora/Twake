@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import { Select, Typography, Checkbox, Input } from 'antd';
@@ -57,7 +57,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
     const editable =
       (channel &&
         channel.id &&
-        (AccessRightsService.hasLevel(workspaceId, 'administrator') ||
+        (AccessRightsService.hasLevel(workspaceId || '', 'administrator') ||
           currentUserId === channel.owner)) ||
       false;
     return isNewChannel || editable ? true : false;
@@ -70,6 +70,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
           focusOnDidMount
           placeholder={Languages.t(
             'scenes.apps.messages.left_bar.stream_modal.placeholder_name',
+            [],
             'Name',
           )}
           value={[icon, name]}
@@ -88,12 +89,16 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
       <div style={{ padding: '16px 0' }} />
       <div className="x-margin">
         <Title level={5}>
-          {Languages.t('scenes.app.popup.appsparameters.pages.description_label', 'Description')}
+          {Languages.t(
+            'scenes.app.popup.appsparameters.pages.description_label',
+            [],
+            'Description',
+          )}
         </Title>
         <TextArea
           size={'large'}
           autoSize={{ minRows: 1, maxRows: 4 }}
-          placeholder={Languages.t('scenes.app.mainview.channel_description', 'Description')}
+          placeholder={Languages.t('scenes.app.mainview.channel_description', [], 'Description')}
           value={description}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
           rows={1}
@@ -106,6 +111,7 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
             <Title level={5}>
               {Languages.t(
                 'scenes.apps.calendar.event_edition.title_confidentiality',
+                [],
                 'Confidentiality',
               )}
             </Title>
@@ -115,10 +121,10 @@ const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) 
               onChange={(value: string) => setVisibility(value)}
             >
               <Option value="private">
-                {Languages.t('scenes.app.channelsbar.private_channel_label', 'Private channel')}
+                {Languages.t('scenes.app.channelsbar.private_channel_label', [], 'Private channel')}
               </Option>
               <Option value="public">
-                {Languages.t('scenes.app.channelsbar.public_channel_label', 'Public channel')}
+                {Languages.t('scenes.app.channelsbar.public_channel_label', [], 'Public channel')}
               </Option>
             </Select>
           </div>

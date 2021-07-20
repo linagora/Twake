@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import LoginService from 'services/login/login.js';
 import popupManager from 'services/popupManager/popupManager.js';

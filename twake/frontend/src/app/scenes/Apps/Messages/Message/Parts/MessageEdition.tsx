@@ -6,7 +6,7 @@ import MessageInput from '../../Input/Input';
 import Button from 'components/Buttons/Button.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import AlertManager from 'app/services/AlertManager/AlertManager';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import { Message } from 'app/models/Message';
 import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';

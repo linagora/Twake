@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';

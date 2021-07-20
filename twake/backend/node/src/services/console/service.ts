@@ -47,10 +47,10 @@ class ConsoleService implements ConsoleServiceAPI {
       console,
       link,
       {
-        client,
-        secret,
+        username: client,
+        password: secret,
         url: baseUrl,
-      },
+      } as ConsoleOptions,
     ).merge(concurrent);
   }
 

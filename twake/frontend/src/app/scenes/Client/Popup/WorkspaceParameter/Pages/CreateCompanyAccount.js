@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Input from 'components/Inputs/Input.js';
 import Button from 'components/Buttons/Button.js';

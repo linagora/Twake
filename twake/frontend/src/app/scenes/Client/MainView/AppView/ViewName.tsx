@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import AppViewService from 'app/services/AppView/AppViewService';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import { ChannelResource } from 'app/models/Channel';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 
