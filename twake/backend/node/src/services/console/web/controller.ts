@@ -8,17 +8,25 @@ import {
   ConsoleHookBodyContent,
   ConsoleHookCompany,
   ConsoleHookResponse,
+  ConsoleHookUser,
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
 import PasswordEncoder from "../../../utils/password-encoder";
 import { AccessToken } from "../../../utils/types";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
+import UserServiceAPI from "../../user/api";
+import User from "../../user/entities/user";
+import assert from "assert";
 
 export class ConsoleController {
   private passwordEncoder: PasswordEncoder;
 
-  constructor(protected consoleService: ConsoleServiceAPI, protected authService: AuthServiceAPI) {
+  constructor(
+    protected consoleService: ConsoleServiceAPI,
+    protected authService: AuthServiceAPI,
+    protected userService: UserServiceAPI,
+  ) {
     this.passwordEncoder = new PasswordEncoder();
   }
 
@@ -27,18 +35,16 @@ export class ConsoleController {
     reply: FastifyReply,
   ): Promise<AuthResponse> {
     if (request.body.access_token) {
-      throw CrudExeption.badRequest("Not implemented");
+      return { access_token: await this.authByToken(request.body.access_token) };
     } else if (request.body.email && request.body.password) {
-      return {
-        access_token: await this.authByPassword(request.body.email, request.body.password),
-      };
+      return { access_token: await this.authByPassword(request.body.email, request.body.password) };
     } else {
       throw CrudExeption.badRequest("access_token or email+password are required");
     }
   }
 
   private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {
-    if (!content.company || !content.company.code) {
+    if (!content.company || !content.company.details || !content.company.details.code) {
       throw CrudExeption.badRequest("Company is required");
     }
   }
@@ -46,8 +52,9 @@ export class ConsoleController {
   private async getCompanyDataFromConsole(
     company: ConsoleHookCompany,
   ): Promise<ConsoleHookCompany> {
-    const consoleResponse = this.consoleService.getClient().fetchCompanyInfo(company.code);
-    return consoleResponse;
+    assert(company.details, "getCompanyDataFromConsole: company details is missing");
+    assert(company.details.code, "getCompanyDataFromConsole: company.details.code is missing");
+    return this.consoleService.getClient().fetchCompanyInfo(company.details.code);
   }
 
   private async updateCompany(company: ConsoleHookCompany): Promise<Company> {
@@ -115,18 +122,21 @@ export class ConsoleController {
   }
 
   private async userUpdated(content: ConsoleHookBodyContent) {
-    const user = await this.consoleService
-      .getClient()
-      .updateLocalUserFromConsole(content.user._id, content.user);
+    const user = await this.consoleService.getClient().updateLocalUserFromConsole(content.user);
 
     await this.consoleService.processPendingUser(user);
   }
 
   private async companyRemoved(content: ConsoleHookBodyContent) {
     await this.validateCompany(content);
+
+    assert(content.company, "content.company is missing");
+    assert(content.company.details, "content.company.details is missing");
+    assert(content.company.details.code, "content.company.details.code is missing");
+
     await this.consoleService.getClient().removeCompany({
       identity_provider: "console",
-      identity_provider_id: content.company.code,
+      identity_provider_id: content.company.details.code,
     });
   }
 
@@ -141,19 +151,24 @@ export class ConsoleController {
   }
 
   private async authByPassword(email: string, password: string): Promise<AccessToken> {
-    const usersApi = this.consoleService.services.userService.users;
-    const user = await usersApi.getByEmail(email);
-
+    const user = await this.userService.users.getByEmail(email);
     if (user == null) {
       throw CrudExeption.forbidden("User doesn't exists");
     }
-
-    const [storedPassword, salt] = await usersApi.getPassword({ id: user.id });
-
+    const [storedPassword, salt] = await this.userService.users.getPassword({ id: user.id });
     if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
       throw CrudExeption.forbidden("Password doesn't match");
     }
+    return this.authService.generateJWT(user.id, user.email_canonical);
+  }
 
+  private async authByToken(accessToken: string): Promise<AccessToken> {
+    const client = this.consoleService.getClient();
+    const userDTO = await client.getUserByAccessToken(accessToken);
+    const user = await client.updateLocalUserFromConsole(userDTO);
+    if (!user) {
+      throw CrudExeption.notFound(`User details not found for access token ${accessToken}`);
+    }
     return this.authService.generateJWT(user.id, user.email_canonical);
   }
 }

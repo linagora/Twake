@@ -35,7 +35,7 @@ describe("The console API hooks", () => {
   const secondEmail = "C.o.n.sole_created-user@email.com";
   const thirdEmail = "superman@someogherservice.com";
 
-  const secret = "12345678";
+  const secret = "ohquoo1fohzeigitochaJeepoowug4Yuqueite6etojieg1oowaeraeshiW8ku8g";
 
   let consoleOptions: ConsoleOptions = null;
 
@@ -107,7 +107,7 @@ describe("The console API hooks", () => {
       expect(response.json()).toMatchObject({
         statusCode: 400,
         error: "Bad Request",
-        message: "querystring should have required property 'secret'",
+        message: "querystring should have required property 'secret_key'",
       });
       done();
     });
@@ -347,6 +347,7 @@ describe("The console API hooks", () => {
           }),
         });
 
+        console.log(response.json());
         expect(response.statusCode).toBe(200);
 
         users = await testDbService.getCompanyUsers(company.id);

@@ -32,12 +32,18 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
   async doStart(): Promise<this> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
 
-    // FixMe: reimplement (temp cause of circular dependency user -> console -> user)
-    this.service.services.userService = this.context.getProvider<UserServiceAPI>("user");
     const authService = this.context.getProvider<AuthServiceAPI>("auth");
+    const userService = this.context.getProvider<UserServiceAPI>("user");
+    // FixMe: reimplement (temp cause of circular dependency user -> console -> user)
+    this.service.services.userService = userService;
 
     fastify.register((instance, _opts, next) => {
-      web(instance, { prefix: this.prefix, service: this.service, authService: authService });
+      web(instance, {
+        prefix: this.prefix,
+        service: this.service,
+        authService: authService,
+        userService: userService,
+      });
       next();
     });
     return this;

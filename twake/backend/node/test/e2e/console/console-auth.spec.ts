@@ -93,19 +93,22 @@ describe("The console API auth", () => {
       done();
     });
   });
-  describe.skip("Auth using token", () => {
+  describe.only("Auth using token", () => {
     it("should 403 when token is invalid", async done => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${url}`,
         payload: {
-          email: "",
-          password: "",
-          access_token: "",
+          access_token: "12345",
         },
       });
-      expect(response.json()).toMatchObject({ mock: true });
-      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        error: "Forbidden",
+        message: "Bad access token credentials",
+        statusCode: 403,
+      });
+      expect(response.statusCode).toBe(403);
+
       done();
     });
 
@@ -116,10 +119,19 @@ describe("The console API auth", () => {
         payload: {
           email: "",
           password: "",
-          access_token: "",
+          access_token: "a550c8b8b942bd92e447271343ac6b29",
         },
       });
-      expect(response.json()).toMatchObject({ mock: true });
+      expect(response.json()).toMatchObject({
+        access_token: {
+          time: expect.any(Number),
+          expiration: expect.any(Number),
+          refresh_expiration: expect.any(Number),
+          value: expect.any(String),
+          refresh: expect.any(String),
+          type: "Bearer",
+        },
+      });
       expect(response.statusCode).toBe(200);
       done();
     });

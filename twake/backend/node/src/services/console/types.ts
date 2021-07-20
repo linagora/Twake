@@ -134,14 +134,16 @@ export type ConsoleHookCompany = {
   plan: { name: string; limits: any };
   value: string;
   details: {
+    code: string;
     logo: string;
     avatar: {
       value: string;
       type: string;
     };
     name: string;
+    country: string;
+    address: string;
   };
-  code: string;
 };
 
 export type ConsoleHookUser = {

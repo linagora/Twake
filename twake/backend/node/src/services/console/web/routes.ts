@@ -14,8 +14,13 @@ const hookUrl = "/hook";
 const routes: FastifyPluginCallback<{
   service: ConsoleServiceAPI;
   authService: AuthServiceAPI;
+  userService: UserServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
-  const controller = new ConsoleController(options.service, options.authService);
+  const controller = new ConsoleController(
+    options.service,
+    options.authService,
+    options.userService,
+  );
 
   const accessControl = async (
     request: FastifyRequest<{ Body: ConsoleHookBody; Querystring: ConsoleHookQueryString }>,
