@@ -14,13 +14,6 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-  redis:
-    image: "redis:alpine"
-    command: redis-server --requirepass some_password
-    ports:
-      - "6379:6379"
-    environment:
-      - REDIS_REPLICATION_MODE=master
   node:
     image: twaketech/twake-node:test
     build:
@@ -32,25 +25,16 @@ services:
       - NODE_ENV=test
       - DB_DRIVER
       - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
-    depends_on:
-      - scylladb
-      - rabbitmq
-      - elasticsearch
-    links:
-      - scylladb
-      - rabbitmq
-  php:
-    image: twaketech/twake-php
     volumes:
-      - ./backend/core/:/twake-core:cached
-      - ./docker-data/drive/:/twake-core/drive/
-      - ./docker-data/fpm/:/etc/docker-data/fpm/
+      - ./backend/node:/usr/src/app
+      - ./docker-data/documents/:/storage/
     depends_on:
       - scylladb
       - rabbitmq
       - elasticsearch
     links:
       - scylladb
+      - rabbitmq
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
     environment:
@@ -66,13 +50,3 @@ services:
       - ./docker-data/es_twake:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-  nginx:
-    image: twaketech/twake-nginx
-    ports:
-      - 8000:80
-    links:
-      - php
-    volumes:
-      - ./docker-data/logs/nginx/:/var/log/nginx
-      - ./docker-data/letsencrypt/:/etc/letsencrypt/
-      - ./frontend/:/twake-react/
