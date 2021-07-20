@@ -9,7 +9,6 @@ import {
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
-import { ExternalGroupPrimaryKey } from "../../user/entities/external_company";
 
 export class ConsoleController {
   constructor(protected consoleService: ConsoleServiceAPI) {}
@@ -23,8 +22,8 @@ export class ConsoleController {
   private async getCompanyDataFromConsole(
     company: ConsoleHookCompany,
   ): Promise<ConsoleHookCompany> {
-    // TODO: fetch data from console
-    return Promise.resolve(company);
+    const consoleResponse = this.consoleService.getClient().fetchCompanyInfo(company.code);
+    return consoleResponse;
   }
 
   private async updateCompany(company: ConsoleHookCompany): Promise<Company> {
@@ -66,7 +65,6 @@ export class ConsoleController {
           return;
       }
     } catch (e) {
-      console.log(e);
       reply.status(400);
       return {
         error: e.message,

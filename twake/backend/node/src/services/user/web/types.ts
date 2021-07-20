@@ -52,6 +52,7 @@ export interface UserObject {
   provider: string;
   provider_id: string;
   email: string;
+  username: string;
   is_verified: boolean;
   picture: string;
   first_name: string;

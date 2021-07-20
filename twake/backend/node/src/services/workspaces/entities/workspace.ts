@@ -17,7 +17,7 @@ export default class Workspace {
   @Column("name", "encoded_string")
   name: string;
 
-  @Column("logo", "string")
+  @Column("logo", "encoded_string")
   logo: string;
 
   @Column("stats", "encoded_string")

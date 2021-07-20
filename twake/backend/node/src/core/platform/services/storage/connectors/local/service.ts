@@ -24,18 +24,19 @@ export default class LocalConnectorService implements StorageConnectorAPI {
       });
     }
 
-    let totalSize = 0;
-    return new Promise(resolve => {
-      stream
-        .pipe(createWriteStream(path))
-        .on("data", function (chunk) {
-          totalSize += chunk.length;
+    return new Promise((resolve, reject) => {
+      const file = createWriteStream(path);
+      file
+        .on("error", function (err) {
+          reject(err);
         })
-        .on("end", () => {
+        .on("finish", () => {
+          const stats = statSync(path);
           resolve({
-            size: totalSize,
+            size: stats.size,
           });
         });
+      stream.pipe(file);
     });
   }
 

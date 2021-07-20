@@ -45,6 +45,7 @@ export class UsersCrudController
       provider: user.identity_provider,
       provider_id: user.identity_provider_id,
       email: user.email_canonical,
+      username: user.username_canonical,
       is_verified: Boolean(user.mail_verified),
       picture: user.picture,
       first_name: user.first_name,
