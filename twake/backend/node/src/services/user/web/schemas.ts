@@ -135,20 +135,22 @@ export const getCompanySchema = {
   },
 };
 
+const deviceSchema = {
+  type: "object",
+  properties: {
+    type: { type: "string" },
+    value: { type: "string" },
+    version: { type: "string" },
+  },
+  required: ["type", "value", "version"],
+};
+
 export const postDevicesSchema = {
   type: "object",
   body: {
     type: "object",
     properties: {
-      resource: {
-        type: "object",
-        properties: {
-          type: { type: "string" },
-          value: { type: "string" },
-          version: { type: "string" },
-        },
-        required: ["type", "value", "version"],
-      },
+      resource: deviceSchema,
     },
   },
   required: ["resource"],
@@ -156,16 +158,20 @@ export const postDevicesSchema = {
     "2xx": {
       type: "object",
       properties: {
-        resource: {
-          type: "object",
-          properties: {
-            type: { type: "string" },
-            value: { type: "string" },
-            version: { type: "string" },
-          },
-        },
+        resource: deviceSchema,
       },
       required: ["resource"],
+    },
+  },
+};
+
+export const getDevicesSchema = {
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resources: { type: "array", items: deviceSchema },
+      },
     },
   },
 };

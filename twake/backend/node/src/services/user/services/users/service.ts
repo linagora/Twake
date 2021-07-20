@@ -163,38 +163,38 @@ export class UserService implements UsersServiceAPI {
     if (!user.devices || user.devices.length == 0) {
       return [];
     }
-    return Promise.all(
-      user.devices.map(token => this.deviceRepository.findOne({ token })),
-    ).then(a => a.filter(a => a));
+    return Promise.all(user.devices.map(id => this.deviceRepository.findOne({ id }))).then(a =>
+      a.filter(a => a),
+    );
   }
 
   async registerUserDevice(
     userPrimaryKey: UserPrimaryKey,
-    token: string,
+    id: string,
     type: string,
     version: string,
   ): Promise<void> {
-    await this.deregisterUserDevice(token);
+    await this.deregisterUserDevice(id);
 
     const user = await this.get(userPrimaryKey);
     if (!user) {
       throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
     }
     user.devices = user.devices || [];
-    user.devices.push(token);
+    user.devices.push(id);
 
     await Promise.all([
       this.repository.save(user),
-      this.deviceRepository.save(getDeviceInstance({ token, type, version, user_id: user.id })),
+      this.deviceRepository.save(getDeviceInstance({ id, type, version, user_id: user.id })),
     ]);
   }
 
-  async deregisterUserDevice(token: string): Promise<void> {
-    const existedDevice = await this.deviceRepository.findOne({ token });
+  async deregisterUserDevice(id: string): Promise<void> {
+    const existedDevice = await this.deviceRepository.findOne({ id });
 
     if (existedDevice) {
       const user = await this.get({ id: existedDevice.user_id });
-      user.devices = (user.devices || []).filter(d => d !== token);
+      user.devices = (user.devices || []).filter(d => d !== id);
       await Promise.all([this.deviceRepository.remove(existedDevice), this.repository.save(user)]);
     }
   }

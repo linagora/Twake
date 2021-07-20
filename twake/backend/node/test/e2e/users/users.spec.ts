@@ -403,7 +403,7 @@ describe("The /users API", () => {
         expect(user.devices).toMatchObject([deviceToken]);
         const device = await testDbService.getDeviceFromDb(deviceToken);
         expect(device).toMatchObject({
-          token: deviceToken,
+          id: deviceToken,
           user_id: firstId,
           type: "FCM",
           version: "1",
@@ -446,7 +446,7 @@ describe("The /users API", () => {
         expect(user.devices).toMatchObject([deviceToken]);
         const device = await testDbService.getDeviceFromDb(deviceToken);
         expect(device).toMatchObject({
-          token: deviceToken,
+          id: deviceToken,
           user_id: secondId,
           type: "FCM",
           version: "1",
@@ -457,6 +457,33 @@ describe("The /users API", () => {
         user = await testDbService.getUserFromDb({ id: firstId });
         expect(user.devices).toMatchObject([]);
 
+        done();
+      });
+    });
+    describe("List registered devices (GET)", () => {
+      it("should 200 when request devices", async done => {
+        const myId = testDbService.users[1].id;
+
+        const jwtToken = await platform.auth.getJWTToken({ sub: myId });
+        const response = await platform.app.inject({
+          method: "GET",
+          url: `${url}/devices`,
+          headers: {
+            authorization: `Bearer ${jwtToken}`,
+          },
+        });
+
+        const resp = response.json();
+        expect(response.statusCode).toBe(200);
+        expect(resp).toMatchObject({
+          resources: [
+            {
+              type: "FCM",
+              value: "testDeviceToken",
+              version: "1",
+            },
+          ],
+        });
         done();
       });
     });
@@ -479,7 +506,7 @@ describe("The /users API", () => {
         expect(user.devices).toMatchObject([deviceToken]);
         const device = await testDbService.getDeviceFromDb(deviceToken);
         expect(device).toMatchObject({
-          token: deviceToken,
+          id: deviceToken,
           user_id: myId,
           type: "FCM",
           version: "1",

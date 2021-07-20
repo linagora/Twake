@@ -220,7 +220,6 @@ export class UsersCrudController
     if (resource.type !== "FCM") {
       throw CrudExeption.badRequest("Type should be FCM only");
     }
-
     const context = getExecutionContext(request);
 
     await this.service.registerUserDevice(
@@ -235,15 +234,30 @@ export class UsersCrudController
     };
   }
 
+  async getRegisteredDevices(
+    request: FastifyRequest<{ Params: UserParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<RegisterDeviceParams>> {
+    const context = getExecutionContext(request);
+
+    const userDevices = await this.service.getUserDevices({ id: context.user.id });
+
+    return {
+      resources: userDevices.map(
+        ud => ({ type: ud.type, value: ud.id, version: ud.version } as RegisterDeviceParams),
+      ),
+    };
+  }
+
   async deregisterUserDevice(
     request: FastifyRequest<{ Params: DeregisterDeviceParams }>,
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
     const userDevices = await this.service.getUserDevices({ id: context.user.id });
-    const device = await userDevices.find(ud => ud.token == request.params.value);
+    const device = await userDevices.find(ud => ud.id == request.params.value);
     if (device) {
-      await this.service.deregisterUserDevice(device.token);
+      await this.service.deregisterUserDevice(device.id);
     }
     reply.status(204);
     return {

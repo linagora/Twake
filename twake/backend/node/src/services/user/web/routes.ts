@@ -4,6 +4,7 @@ import UserServiceAPI from "../api";
 import {
   deleteDeviceSchema,
   getCompanySchema,
+  getDevicesSchema,
   getUserCompaniesSchema,
   getUserSchema,
   getUsersSchema,
@@ -68,6 +69,15 @@ const routes: FastifyPluginCallback<{
     preValidation: [fastify.authenticate],
     schema: postDevicesSchema,
     handler: usersController.registerUserDevice.bind(usersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/devices",
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: getDevicesSchema,
+    handler: usersController.getRegisteredDevices.bind(usersController),
   });
 
   fastify.route({

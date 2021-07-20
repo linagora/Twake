@@ -148,8 +148,8 @@ export class TestDbService {
     }
   }
 
-  async getDeviceFromDb(token: string): Promise<Device> {
-    return this.deviceRepository.findOne({ token });
+  async getDeviceFromDb(id: string): Promise<Device> {
+    return this.deviceRepository.findOne({ id });
   }
 
   getCompanyFromDb(companyId: uuid) {

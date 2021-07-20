@@ -5,12 +5,12 @@ import { uuid } from "../../../utils/types";
 export const TYPE = "device";
 
 @Entity(TYPE, {
-  primaryKey: [["token"]],
+  primaryKey: [["id"]],
   type: TYPE,
 })
 export default class Device {
-  @Column("token", "string")
-  token: string;
+  @Column("id", "string")
+  id: string;
 
   @Column("user_id", "uuid")
   user_id: uuid;
@@ -22,7 +22,7 @@ export default class Device {
   version: string;
 }
 
-export type UserDevicePrimaryKey = Pick<Device, "token">;
+export type UserDevicePrimaryKey = Pick<Device, "id">;
 
 export function getInstance(userDevice: Partial<Device> & UserDevicePrimaryKey): Device {
   return merge(new Device(), userDevice);
