@@ -1437,7 +1437,7 @@
   "components.drive.modify_uslist": "Изменить список пользователей",
   "components.tagpicker.tag_name": "Название метки",
   "components.upload.upload_doc": "Загрузить документы",
-  "components.upload.drop_files": "Бросьте файлы, чтобы загрузить их",
+  "components.upload.drop_files": "Перетащите сюда свои файлы",
   "components.workspace.list_manager.no_workspace": "Нет рабочего пространства",
   "components.workspace.list_manager.add": "Добавить рабочие пространства",
   "components.workspace.list_manager.current_space": "Текущая рабочая область",
