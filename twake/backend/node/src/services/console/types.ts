@@ -189,13 +189,15 @@ export interface AuthRequest {
   access_token?: string;
 }
 
+export interface AccessToken {
+  time: number;
+  expiration: number;
+  refresh_expiration: number;
+  value: string;
+  refresh: string;
+  type: "Bearer";
+}
+
 export interface AuthResponse {
-  access_token: {
-    time: number;
-    expiration: number;
-    refresh_expiration: number;
-    value: string;
-    refresh: string;
-    type: "Bearer";
-  };
+  access_token: AccessToken;
 }

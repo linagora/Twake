@@ -111,10 +111,14 @@ export class UserService implements UsersServiceAPI {
     return this.repository.find(findFilter, findOptions);
   }
 
+  getByEmail(email: string): Promise<User> {
+    return this.repository.findOne({ email_canonical: email });
+  }
+
   getByEmails(emails: string[]): Promise<User[]> {
-    return Promise.all(
-      emails.map(email => this.repository.findOne({ email_canonical: email })),
-    ).then(emails => emails.filter(a => a));
+    return Promise.all(emails.map(email => this.getByEmail(email))).then(emails =>
+      emails.filter(a => a),
+    );
   }
 
   async get(pk: UserPrimaryKey): Promise<User> {

@@ -102,6 +102,7 @@ export class TestDbService {
     workspaceRole?: "member" | "admin",
     email?: string,
     username?: string,
+    password?: string,
   ): Promise<User> {
     const user = new User();
     const random = this.rand();
@@ -111,7 +112,7 @@ export class TestDbService {
     user.last_name = `test${random}_last_name`;
     // user.identity_provider_id = String(this.rand());
     user.identity_provider_id = user.id;
-
+    user.password = password;
     if (email) {
       user.email_canonical = email;
     }

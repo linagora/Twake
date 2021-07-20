@@ -50,7 +50,14 @@ describe("The console API auth", () => {
     // const ws1pk = { id: uuidv1(), group_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     // await testDbService.createWorkspace(ws1pk);
-    await testDbService.createUser([ws0pk], "member", "admin", null, "superman");
+    await testDbService.createUser(
+      [ws0pk],
+      "member",
+      "admin",
+      firstEmail,
+      "superman",
+      "superPassw0rd",
+    );
     // await testDbService.createUser([ws0pk], "member", "member");
     // await testDbService.createUser([ws1pk], "member", "member", emailForExistedUser);
 
@@ -123,28 +130,42 @@ describe("The console API auth", () => {
         method: "POST",
         url: `${url}`,
         payload: {
-          email: "",
-          password: "",
-          access_token: "",
+          email: "randomEmail",
+          password: "randomPass",
         },
       });
-      expect(response.json()).toMatchObject({ mock: true });
       expect(response.statusCode).toBe(403);
+      expect(response.json()).toMatchObject({
+        error: "Forbidden",
+        message: "User or password doesn't match",
+        statusCode: 403,
+      });
       done();
     });
 
     it("should 200 when credentials is valid", async done => {
+      const user = testDbService.users[0];
+
       const response = await platform.app.inject({
         method: "POST",
         url: `${url}`,
         payload: {
-          email: "",
-          password: "",
-          access_token: "",
+          email: user.email_canonical,
+          password: user.password,
         },
       });
-      expect(response.json()).toMatchObject({ mock: true });
       expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        access_token: {
+          time: 0,
+          expiration: 0,
+          refresh_expiration: 9,
+          value: "value",
+          refresh: "refresh",
+          type: "Bearer",
+        },
+      });
+
       done();
     });
   });

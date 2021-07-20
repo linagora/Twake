@@ -6,6 +6,7 @@ import { ConsoleServiceAPI } from "../api";
 // import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { ConsoleController } from "./controller";
 import { ConsoleHookBody, ConsoleHookQueryString } from "../types";
+import UserServiceAPI from "../../user/api";
 
 const hookUrl = "/hook";
 

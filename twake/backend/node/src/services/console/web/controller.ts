@@ -1,6 +1,7 @@
 import { ConsoleServiceAPI } from "../api";
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
+  AccessToken,
   AuthRequest,
   AuthResponse,
   ConsoleExecutionContext,
@@ -11,7 +12,6 @@ import {
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
-import { ExternalGroupPrimaryKey } from "../../user/entities/external_company";
 
 export class ConsoleController {
   constructor(protected consoleService: ConsoleServiceAPI) {}
@@ -21,23 +21,14 @@ export class ConsoleController {
     reply: FastifyReply,
   ): Promise<AuthResponse> {
     if (request.body.access_token) {
-      // token auth
+      throw CrudExeption.badRequest("Not implemented");
     } else if (request.body.email && request.body.password) {
-      // password auth
+      return {
+        access_token: await this.authByPassword(request.body.email, request.body.password),
+      };
     } else {
       throw CrudExeption.badRequest("access_token or email+password are required");
     }
-
-    return {
-      access_token: {
-        time: 1626364376,
-        expiration: 1626367976,
-        refresh_expiration: 1629042776,
-        value: "...",
-        refresh: "...",
-        type: "Bearer",
-      },
-    } as AuthResponse;
   }
 
   private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {
@@ -142,6 +133,23 @@ export class ConsoleController {
   private async planUpdated(content: ConsoleHookBodyContent) {
     await this.validateCompany(content);
     await this.updateCompany(content.company);
+  }
+
+  private async authByPassword(email: string, password: string): Promise<AccessToken> {
+    const user = await this.consoleService.services.userService.users.getByEmail(email);
+
+    if (user == null || user.password != password) {
+      throw CrudExeption.forbidden("User or password doesn't match");
+    }
+
+    return {
+      time: 0,
+      expiration: 0,
+      refresh_expiration: 9,
+      value: "value",
+      refresh: "refresh",
+      type: "Bearer",
+    };
   }
 }
 

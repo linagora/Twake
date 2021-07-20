@@ -29,6 +29,7 @@ export interface UsersServiceAPI
     Initializable,
     CRUDService<User, UserPrimaryKey, ExecutionContext> {
   getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]>;
+  getByEmail(email: string): Promise<User>;
   getByEmails(email: string[]): Promise<User[]>;
   getByConsoleId(consoleUserId: string): Promise<User>;
   isEmailAlreadyInUse(email: string): Promise<boolean>;
