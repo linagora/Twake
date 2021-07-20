@@ -178,14 +178,14 @@ export class PushNotificationToUsersMessageProcessor
 function formatNotificationMessage(message: MentionNotification): string {
   let text = message.text;
   // Clean the message text to remove @userName:id-id-id
-  (text || "").match(/@[^: ]+:([0-f-]{36})/gm).forEach(match => {
+  ((text || "").match(/@[^: ]+:([0-f-]{36})/gm) || []).forEach(match => {
     const string = (match || "").trim();
     const id = string.split(":").pop();
     const fallback = string.split(":").shift();
     text = text.replace(string, message.object_names?.users[id] || fallback);
   });
   // Clean the message text to remove #channelName:id-id-id
-  (text || "").match(/#[^: ]+:([0-f-]{36})/gm).forEach(match => {
+  ((text || "").match(/#[^: ]+:([0-f-]{36})/gm) || []).forEach(match => {
     const string = (match || "").trim();
     const id = string.split(":").pop();
     const fallback = string.split(":").shift();
