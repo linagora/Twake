@@ -3,8 +3,10 @@ import React, { createRef } from 'react';
 
 import UploadManager from './UploadManager';
 import Languages from 'services/languages/languages';
+import { Upload } from 'react-feather';
 import classNames from 'classnames';
 import './Uploads.scss';
+import { Typography } from 'antd';
 
 type PropsType = { [key: string]: any };
 
@@ -294,7 +296,12 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
               <div
                 className={classNames('centered', { skew_in_top_nobounce: !!this.state.dragover })}
               >
-                <div className="subtitle">{Languages.t('components.upload.drop_files')}</div>
+                <div className="subtitle">
+                  <Upload size={18} className="small-right-margin" />
+                  <Typography.Text strong style={{ color: 'var(--primary)' }}>
+                    {Languages.t('components.upload.drop_files')}
+                  </Typography.Text>
+                </div>
               </div>
             </div>
           </div>
