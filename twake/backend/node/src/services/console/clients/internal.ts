@@ -81,4 +81,8 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
   removeCompanyUser(consoleUserId: string, company: Company): Promise<void> {
     throw new Error("Method should not be implemented.");
   }
+
+  fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
+    throw new Error("Method should not be implemented.");
+  }
 }

@@ -115,7 +115,7 @@ describe("The console API hooks", () => {
     it("should 403 when secret key is not valid ", async done => {
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}?secret=wrongOne`,
+        url: `${url}?secret_key=wrongOne`,
         payload: getPayload("a", {}),
       });
       expect(response.statusCode).toBe(403);
@@ -130,7 +130,7 @@ describe("The console API hooks", () => {
     it("should 501 when type is not implemented", async done => {
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}?secret=${secret}`,
+        url: `${url}?secret_key=${secret}`,
         payload: getPayload("unknown_type", {}),
       });
       expect(response.statusCode).toBe(501);
@@ -145,7 +145,7 @@ describe("The console API hooks", () => {
 
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("user_updated", {
             user: {
               _id: user.identity_provider_id,
@@ -199,7 +199,7 @@ describe("The console API hooks", () => {
 
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
@@ -256,7 +256,7 @@ describe("The console API hooks", () => {
 
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
@@ -313,7 +313,7 @@ describe("The console API hooks", () => {
 
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
@@ -338,7 +338,7 @@ describe("The console API hooks", () => {
 
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("company_user_deactivated", {
             company: { code: company.identity_provider_id },
             user: {
@@ -361,7 +361,7 @@ describe("The console API hooks", () => {
 
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("company_user_deactivated", {
             company: { code: company.identity_provider_id },
             user: {
@@ -383,7 +383,7 @@ describe("The console API hooks", () => {
         const newCompanyCode = String(testDbService.rand());
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("company_created", {
             company: {
               code: newCompanyCode,
@@ -429,7 +429,7 @@ describe("The console API hooks", () => {
         expect(company.identity_provider_id).toBeTruthy();
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("company_updated", {
             company: {
               code: company.identity_provider_id,
@@ -475,7 +475,7 @@ describe("The console API hooks", () => {
         expect(company.identity_provider_id).toBeTruthy();
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("plan_updated", {
             company: {
               code: company.identity_provider_id,
@@ -513,7 +513,7 @@ describe("The console API hooks", () => {
 
         const response = await platform.app.inject({
           method: "POST",
-          url: `${url}?secret=${secret}`,
+          url: `${url}?secret_key=${secret}`,
           payload: getPayload("company_deleted", {
             company: {
               code: company.identity_provider_id,

@@ -21,11 +21,11 @@ const routes: FastifyPluginCallback<{
       throw fastify.httpErrors.notImplemented("Hook service is only for the remote console");
     }
 
-    if (request.query.secret != options.service.consoleOptions.secret) {
+    if (request.query.secret_key != options.service.consoleOptions.hook.token) {
       throw fastify.httpErrors.forbidden("Wrong secret");
     }
 
-    const publicKey = options.service.consoleOptions.public_key;
+    const publicKey = options.service.consoleOptions.hook.public_key;
 
     if (publicKey) {
       const input = JSON.stringify({ content: request.body.content, type: request.body.type });

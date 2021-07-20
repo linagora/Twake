@@ -2,9 +2,9 @@ export const consoleHookSchema = {
   querystring: {
     type: "object",
     properties: {
-      secret: { type: "string" },
+      secret_key: { type: "string" },
     },
-    required: ["secret"],
+    required: ["secret_key"],
   },
   body: {
     type: "object",
@@ -13,7 +13,7 @@ export const consoleHookSchema = {
       content: { type: "object" },
       signature: { type: "string" },
     },
-    required: ["type", "content", "signature"],
+    required: ["type", "content"],
   },
   response: {
     "2xx": {
