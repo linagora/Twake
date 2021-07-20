@@ -1,6 +1,8 @@
 import { ConsoleServiceAPI } from "../api";
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
+  AuthRequest,
+  AuthResponse,
   ConsoleExecutionContext,
   ConsoleHookBody,
   ConsoleHookBodyContent,
@@ -13,6 +15,30 @@ import { ExternalGroupPrimaryKey } from "../../user/entities/external_company";
 
 export class ConsoleController {
   constructor(protected consoleService: ConsoleServiceAPI) {}
+
+  async auth(
+    request: FastifyRequest<{ Body: AuthRequest }>,
+    reply: FastifyReply,
+  ): Promise<AuthResponse> {
+    if (request.body.access_token) {
+      // token auth
+    } else if (request.body.email && request.body.password) {
+      // password auth
+    } else {
+      throw CrudExeption.badRequest("access_token or email+password are required");
+    }
+
+    return {
+      access_token: {
+        time: 1626364376,
+        expiration: 1626367976,
+        refresh_expiration: 1629042776,
+        value: "...",
+        refresh: "...",
+        type: "Bearer",
+      },
+    } as AuthResponse;
+  }
 
   private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {
     if (!content.company || !content.company.code) {

@@ -182,3 +182,20 @@ export class ConsoleHookResponse {
 export interface ConsoleExecutionContext extends ExecutionContext {
   options: ConsoleOptions;
 }
+
+export interface AuthRequest {
+  email?: string;
+  password?: string;
+  access_token?: string;
+}
+
+export interface AuthResponse {
+  access_token: {
+    time: number;
+    expiration: number;
+    refresh_expiration: number;
+    value: string;
+    refresh: string;
+    type: "Bearer";
+  };
+}
