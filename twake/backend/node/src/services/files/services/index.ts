@@ -119,9 +119,11 @@ class Service implements FileServiceAPI {
 
       await this.storage.write(path, newReadStream);
 
-      if (entity.upload_data.chunks === 1) {
+      console.log(totalUploadedSize);
+
+      if (entity.upload_data.chunks === 1 && totalUploadedSize) {
         entity.upload_data.size = totalUploadedSize;
-        this.repository.save(entity);
+        await this.repository.save(entity);
       }
     }
     return entity;
