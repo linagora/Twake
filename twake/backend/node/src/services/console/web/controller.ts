@@ -23,9 +23,6 @@ export class ConsoleController {
     company: ConsoleHookCompany,
   ): Promise<ConsoleHookCompany> {
     const consoleResponse = this.consoleService.getClient().fetchCompanyInfo(company.code);
-    console.info("CONSOLE RESPONSE:");
-    console.info(consoleResponse);
-    // return company;
     return consoleResponse;
   }
 
@@ -68,7 +65,6 @@ export class ConsoleController {
           return;
       }
     } catch (e) {
-      console.log(e);
       reply.status(400);
       return {
         error: e.message,

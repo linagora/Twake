@@ -18,14 +18,10 @@ const routes: FastifyPluginCallback<{
     request: FastifyRequest<{ Body: ConsoleHookBody; Querystring: ConsoleHookQueryString }>,
   ) => {
     if (options.service.consoleType != "remote") {
-      console.error(
-        `Console hook: Hook service is only for the remote console (not it's ${options.service.consoleType})`,
-      );
       throw fastify.httpErrors.notImplemented("Hook service is only for the remote console");
     }
 
     if (request.query.secret_key != options.service.consoleOptions.hook.token) {
-      console.error("Console hook: wrong secret");
       throw fastify.httpErrors.forbidden("Wrong secret");
     }
 
@@ -36,7 +32,6 @@ const routes: FastifyPluginCallback<{
       const signatureBase64 = request.body.signature;
       const verifier = crypto.createVerify("RSA-SHA512").update(input);
       if (!verifier.verify(publicKey, signatureBase64, "base64")) {
-        console.error("Console hook: Signature verification failed");
         throw fastify.httpErrors.forbidden("Signature verification failed");
       }
     }
