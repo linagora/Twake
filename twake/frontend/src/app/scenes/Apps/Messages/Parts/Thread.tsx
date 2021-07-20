@@ -76,6 +76,7 @@ export default (props: PropsType) => {
       onClick={props.onClick}
     >
       {!props.loading ? (
+        // FIX ME should remove UploadZone component
         <UploadZone
           className="thread-centerer"
           ref={setUploadZoneRef}
@@ -87,7 +88,7 @@ export default (props: PropsType) => {
           onDragEnter={onDragEnter}
           multiple={true}
           allowPaste={true}
-          disabled={disabledUpload}
+          disabled={true}
         >
           <Draggable
             className={classNames('thread', { 'with-block': props.withBlock })}

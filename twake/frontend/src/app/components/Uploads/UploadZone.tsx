@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React from 'react';
+import React, { createRef } from 'react';
 
 import UploadManager from './UploadManager';
 import Languages from 'services/languages/languages';
@@ -16,7 +16,7 @@ let sharedFileInput: any = null;
 export default class UploadZone extends React.Component<PropsType, StateType> {
   file_input: FileInputType = {};
   stopHoverTimeout: ReturnType<typeof setTimeout> | undefined;
-  node: HTMLDivElement | null | undefined;
+  node: HTMLDivElement | null = null;
 
   constructor(props: PropsType) {
     super(props);
@@ -32,7 +32,7 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
   }
 
   componentDidMount() {
-    this.watch(this.node);
+    this.node && this.watch(this.node, document.body);
 
     if (!sharedFileInput) {
       this.file_input = document.createElement('input');
@@ -108,7 +108,7 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
    *
    * @param event
    */
-  change(event: any) {
+  change(event: DragEvent) {
     if (this.props.disabled) {
       return;
     }
@@ -125,30 +125,71 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
 
   /**
    *
-   * @param node
-   * @param cb
+   * @param currentNode
+   * @param body
    */
-  watch(node: any, cb?: any) {
-    node.addEventListener('dragover', (e: any) => {
-      e.preventDefault();
+  watch(currentNode: HTMLElement, body: HTMLElement) {
+    /**
+     * DRAGOVER EVENT
+     */
+    currentNode.addEventListener('dragover', (e: DragEvent) =>
+      currentNode.classList.add('input-drag-focus'),
+    );
+
+    body.addEventListener('dragover', (e: DragEvent) => {
+      body.classList.add('body-drag-focus');
       this.hover(true, e);
+
+      e.preventDefault();
     });
-    node.addEventListener('dragenter', (e: any) => {
+
+    /**
+     * DRAGLEAVE EVENT
+     */
+    currentNode.addEventListener('dragleave', (e: DragEvent) =>
+      currentNode.classList.remove('input-drag-focus'),
+    );
+
+    body.addEventListener('dragleave', (e: DragEvent) => {
+      body.classList.remove('body-drag-focus');
+
+      if (this.props.onDragLeave) {
+        this.props.onDragLeave();
+      }
+
+      this.hover(false, e);
+
+      e.preventDefault();
+    });
+
+    /**
+     * DROP EVENT
+     */
+
+    currentNode.addEventListener('drop', (e: DragEvent) => {
+      currentNode.classList.contains('input-drag-focus') && this.change(e);
+
+      e.preventDefault();
+    });
+
+    body.addEventListener('drop', (e: DragEvent) => {
+      this.hover(false, e);
+      e.preventDefault();
+    });
+
+    /**
+     * DRAGENTER EVENT
+     */
+    body.addEventListener('dragenter', (e: DragEvent) => {
       if (!this.props.disabled && this.props.onDragEnter) {
         this.props.onDragEnter();
       }
+
       this.hover(true, e);
       e.preventDefault();
 
       this.setCallback();
     });
-    node.addEventListener('dragleave', (e: any) => {
-      if (this.props.onDragLeave) {
-        this.props.onDragLeave();
-      }
-      this.hover(false);
-    });
-    node.addEventListener('drop', (e: any) => this.change(e));
   }
 
   /**
@@ -238,7 +279,7 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
   render() {
     return (
       <div
-        ref={node => (this.node = node)}
+        ref={node => node && (this.node = node)}
         style={this.props.style}
         className={classNames('upload_drop_zone', this.props.className)}
         onClick={() => {
