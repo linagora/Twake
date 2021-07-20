@@ -1,7 +1,6 @@
 import { ConsoleServiceAPI } from "../api";
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
-  AccessToken,
   AuthRequest,
   AuthResponse,
   ConsoleExecutionContext,
@@ -12,9 +11,16 @@ import {
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
+import PasswordEncoder from "../../../utils/password-encoder";
+import { AccessToken } from "../../../utils/types";
+import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 
 export class ConsoleController {
-  constructor(protected consoleService: ConsoleServiceAPI) {}
+  private passwordEncoder: PasswordEncoder;
+
+  constructor(protected consoleService: ConsoleServiceAPI, protected authService: AuthServiceAPI) {
+    this.passwordEncoder = new PasswordEncoder();
+  }
 
   async auth(
     request: FastifyRequest<{ Body: AuthRequest }>,
@@ -135,20 +141,20 @@ export class ConsoleController {
   }
 
   private async authByPassword(email: string, password: string): Promise<AccessToken> {
-    const user = await this.consoleService.services.userService.users.getByEmail(email);
+    const usersApi = this.consoleService.services.userService.users;
+    const user = await usersApi.getByEmail(email);
 
-    if (user == null || user.password != password) {
-      throw CrudExeption.forbidden("User or password doesn't match");
+    if (user == null) {
+      throw CrudExeption.forbidden("User doesn't exists");
     }
 
-    return {
-      time: 0,
-      expiration: 0,
-      refresh_expiration: 9,
-      value: "value",
-      refresh: "refresh",
-      type: "Bearer",
-    };
+    const [storedPassword, salt] = await usersApi.getPassword({ id: user.id });
+
+    if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
+      throw CrudExeption.forbidden("Password doesn't match");
+    }
+
+    return this.authService.generateJWT(user.id, user.email_canonical);
   }
 }
 

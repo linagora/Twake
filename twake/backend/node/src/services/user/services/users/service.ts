@@ -24,6 +24,8 @@ import Device, {
   getInstance as getDeviceInstance,
   TYPE as DeviceType,
 } from "../../entities/device";
+import crypto from "crypto";
+import PasswordEncoder from "../../../../utils/password-encoder";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -201,5 +203,29 @@ export class UserService implements UsersServiceAPI {
       user.devices = (user.devices || []).filter(d => d !== id);
       await Promise.all([this.deviceRepository.remove(existedDevice), this.repository.save(user)]);
     }
+  }
+
+  async setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void> {
+    const passwordEncoder = new PasswordEncoder();
+    const user = await this.get(userPrimaryKey);
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+    }
+    user.password = await passwordEncoder.encodePassword(password);
+    user.salt = null;
+    await this.repository.save(user);
+  }
+
+  async getPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
+    const user = await this.get(userPrimaryKey);
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+    }
+
+    if (user.salt) {
+      return [user.password, user.salt];
+    }
+
+    return [user.password, null];
   }
 }

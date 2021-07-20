@@ -112,15 +112,20 @@ export class TestDbService {
     user.last_name = `test${random}_last_name`;
     // user.identity_provider_id = String(this.rand());
     user.identity_provider_id = user.id;
-    user.password = password;
+
     if (email) {
       user.email_canonical = email;
     }
-    const createdUser = await this.userService.users.create(user);
-    this.users.push(createdUser.entity);
+    const createdUser = await this.userService.users.create(user).then(a => a.entity);
+
+    if (password) {
+      await this.userService.users.setPassword({ id: createdUser.id }, password);
+    }
+
+    this.users.push(createdUser);
     await this.userService.companies.setUserRole(
       this.company.id,
-      createdUser.entity.id,
+      createdUser.id,
       companyRole ? companyRole : "member",
     );
 
@@ -128,15 +133,15 @@ export class TestDbService {
       for (const workspacePk of workspacesPk) {
         await this.userService.workspaces.addUser(
           workspacePk,
-          { id: createdUser.entity.id },
+          { id: createdUser.id },
           workspaceRole ? workspaceRole : "member",
         );
         const wsContainer = this.workspacesMap.get(workspacePk.id);
-        wsContainer.users.push(createdUser.entity);
+        wsContainer.users.push(createdUser);
       }
     }
 
-    return createdUser.entity;
+    return createdUser;
   }
 
   async getUserFromDb(user: Partial<Pick<User, "id" | "identity_provider_id">>): Promise<User> {

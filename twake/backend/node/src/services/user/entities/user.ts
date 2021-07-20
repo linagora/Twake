@@ -92,6 +92,9 @@ export default class User {
   @Column("devices", "encoded_json")
   devices: Array<string>;
 
+  @Column("salt", "string")
+  salt: string;
+
   constructor(id?: string) {
     this.id = id;
   }

@@ -7,13 +7,15 @@ import { ConsoleServiceAPI } from "../api";
 import { ConsoleController } from "./controller";
 import { ConsoleHookBody, ConsoleHookQueryString } from "../types";
 import UserServiceAPI from "../../user/api";
+import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 
 const hookUrl = "/hook";
 
 const routes: FastifyPluginCallback<{
   service: ConsoleServiceAPI;
+  authService: AuthServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
-  const controller = new ConsoleController(options.service);
+  const controller = new ConsoleController(options.service, options.authService);
 
   const accessControl = async (
     request: FastifyRequest<{ Body: ConsoleHookBody; Querystring: ConsoleHookQueryString }>,

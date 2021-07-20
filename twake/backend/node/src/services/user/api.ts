@@ -42,6 +42,8 @@ export interface UsersServiceAPI
     version: string,
   ): Promise<void>;
   deregisterUserDevice(token: string): Promise<void>;
+  setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void>;
+  getPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]>;
 }
 
 /**

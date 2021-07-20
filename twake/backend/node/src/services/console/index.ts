@@ -6,6 +6,7 @@ import { getService } from "./service";
 import { ConsoleOptions, ConsoleType } from "./types";
 import web from "./web/index";
 import WebServerAPI from "../../core/platform/services/webserver/provider";
+import AuthServiceAPI from "../../core/platform/services/auth/provider";
 
 @Prefix("/internal/services/console/v1")
 @Consumes(["user", "database"])
@@ -15,8 +16,6 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
   private service: ConsoleServiceAPI;
 
   async doInit(): Promise<this> {
-    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
-
     const type = this.configuration.get<ConsoleType>("type");
     const options: ConsoleOptions = this.configuration.get<ConsoleOptions>(type);
 
@@ -27,17 +26,20 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
       options,
     );
 
-    fastify.register((instance, _opts, next) => {
-      web(instance, { prefix: this.prefix, service: this.service });
-      next();
-    });
-
     return this;
   }
 
   async doStart(): Promise<this> {
+    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
+
     // FixMe: reimplement (temp cause of circular dependency user -> console -> user)
     this.service.services.userService = this.context.getProvider<UserServiceAPI>("user");
+    const authService = this.context.getProvider<AuthServiceAPI>("auth");
+
+    fastify.register((instance, _opts, next) => {
+      web(instance, { prefix: this.prefix, service: this.service, authService: authService });
+      next();
+    });
     return this;
   }
 

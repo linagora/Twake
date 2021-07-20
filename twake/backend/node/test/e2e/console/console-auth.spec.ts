@@ -31,7 +31,7 @@ describe("The console API auth", () => {
   const secondEmail = "C.o.n.sole_created-user@email.com";
   const thirdEmail = "superman@someogherservice.com";
 
-  const secret = "12345678";
+  const firstUserPassword = "superPassw0rd";
 
   let consoleOptions: ConsoleOptions = null;
 
@@ -56,7 +56,7 @@ describe("The console API auth", () => {
       "admin",
       firstEmail,
       "superman",
-      "superPassw0rd",
+      firstUserPassword,
     );
     // await testDbService.createUser([ws0pk], "member", "member");
     // await testDbService.createUser([ws1pk], "member", "member", emailForExistedUser);
@@ -125,7 +125,7 @@ describe("The console API auth", () => {
     });
   });
   describe("Auth using email/password", () => {
-    it("should 403 when credentials is invalid", async done => {
+    it("should 403 when user doesn't exists", async done => {
       const response = await platform.app.inject({
         method: "POST",
         url: `${url}`,
@@ -137,7 +137,27 @@ describe("The console API auth", () => {
       expect(response.statusCode).toBe(403);
       expect(response.json()).toMatchObject({
         error: "Forbidden",
-        message: "User or password doesn't match",
+        message: "User doesn't exists",
+        statusCode: 403,
+      });
+      done();
+    });
+
+    it("should 403 when password doesn't match", async done => {
+      const user = testDbService.users[0];
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}`,
+        payload: {
+          email: user.email_canonical,
+          password: "randomPass",
+        },
+      });
+      expect(response.statusCode).toBe(403);
+      expect(response.json()).toMatchObject({
+        error: "Forbidden",
+        message: "Password doesn't match",
         statusCode: 403,
       });
       done();
@@ -151,17 +171,17 @@ describe("The console API auth", () => {
         url: `${url}`,
         payload: {
           email: user.email_canonical,
-          password: user.password,
+          password: firstUserPassword,
         },
       });
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
         access_token: {
-          time: 0,
-          expiration: 0,
-          refresh_expiration: 9,
-          value: "value",
-          refresh: "refresh",
+          time: expect.any(Number),
+          expiration: expect.any(Number),
+          refresh_expiration: expect.any(Number),
+          value: expect.any(String),
+          refresh: expect.any(String),
           type: "Bearer",
         },
       });

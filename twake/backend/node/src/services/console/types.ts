@@ -3,6 +3,7 @@ import Company from "../user/entities/company";
 import CompanyUser from "../user/entities/company_user";
 import { CompanyUserRole } from "../user/web/types";
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
+import { AccessToken } from "../../utils/types";
 
 export interface CreateConsoleCompany {
   code: string;
@@ -189,15 +190,6 @@ export interface AuthRequest {
   email?: string;
   password?: string;
   access_token?: string;
-}
-
-export interface AccessToken {
-  time: number;
-  expiration: number;
-  refresh_expiration: number;
-  value: string;
-  refresh: string;
-  type: "Bearer";
 }
 
 export interface AuthResponse {

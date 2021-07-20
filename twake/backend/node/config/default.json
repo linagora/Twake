@@ -62,7 +62,9 @@
   },
   "auth": {
     "jwt": {
-      "secret": "supersecret"
+      "secret": "supersecret",
+      "expiration": 3600000,
+      "refresh_expiration": 36000000
     }
   },
   "database": {
