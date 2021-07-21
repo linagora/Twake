@@ -4,7 +4,7 @@ import Icon from 'components/Icon/Icon.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
-import UploadZone from 'components/Uploads/UploadZone.js';
+import UploadZone from 'components/Uploads/UploadZone';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
 import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';

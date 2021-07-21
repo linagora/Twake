@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import Loader from 'components/Loader/Loader.js';
-import UploadZone from 'components/Uploads/UploadZone.js';
+import UploadZone from 'components/Uploads/UploadZone';
 
 import Numbers from 'services/utils/Numbers.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';

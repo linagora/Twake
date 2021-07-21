@@ -6,7 +6,7 @@ import TaskPicker from 'components/TaskPicker/TaskPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import Icon from 'components/Icon/Icon.js';
 import Button from 'components/Buttons/Button.js';
-import UploadZone from 'components/Uploads/UploadZone.js';
+import UploadZone from 'components/Uploads/UploadZone';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Languages from 'services/languages/languages';

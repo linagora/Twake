@@ -509,7 +509,7 @@ export default class MessagesList extends React.Component<Props, State> {
                 if (message?.hidden_data.type === 'init_thread')
                   return (
                     <MessageComponent
-                      noReplies={deleted}
+                      noReplies={true}
                       threadHeader={message?.hidden_data?.thread_id}
                       key={message?.hidden_data?.thread_id}
                       messageId={message?.hidden_data?.thread_id}

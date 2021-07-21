@@ -4,7 +4,7 @@ import UIDirectory from './UI/Directory.js';
 import Loader from 'components/Loader/Loader.js';
 
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
-import Draggable from 'components/Draggable/Draggable.js';
+import Draggable from 'components/Draggable/Draggable';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import Languages from 'services/languages/languages';
 import './Drive.scss';

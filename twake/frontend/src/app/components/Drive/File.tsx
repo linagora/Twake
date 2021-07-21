@@ -1,5 +1,5 @@
 import React from 'react';
-import Draggable from 'components/Draggable/Draggable.js';
+import Draggable from 'components/Draggable/Draggable';
 import DriveElement from './DriveElement.js';
 import './Drive.scss';
 import UIFile from './UI/File.js';
