@@ -77,18 +77,20 @@ export class WorkspaceUsersCrudController
         deleted: Boolean(user.deleted),
         status: user.status_icon,
         last_activity: user.last_activity,
-        companies: userCompanies.map(cu => {
-          const company = companiesMap.get(cu.group_id);
-          return {
-            role: cu.role as CompanyUserRole,
-            status: "active" as CompanyUserStatus, // FIXME: with real status
-            company: {
-              id: company.id,
-              name: company.name,
-              logo: company.logo,
-            } as CompanyShort,
-          };
-        }),
+        companies: userCompanies
+          .filter(cu => companiesMap.get(cu.group_id))
+          .map(cu => {
+            const company = companiesMap.get(cu.group_id);
+            return {
+              role: cu.role as CompanyUserRole,
+              status: "active" as CompanyUserStatus, // FIXME: with real status
+              company: {
+                id: company.id,
+                name: company.name,
+                logo: company.logo,
+              } as CompanyShort,
+            };
+          }),
       },
     };
 
