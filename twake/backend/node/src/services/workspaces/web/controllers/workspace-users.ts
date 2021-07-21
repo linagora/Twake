@@ -156,7 +156,7 @@ export class WorkspaceUsersCrudController
         wu,
         context.company_id,
         allUsersMap.get(wu.userId),
-        Array.from(companyUsersMap.get(wu.userId)),
+        Array.from(companyUsersMap.get(wu.userId) || []),
         companiesMap,
       ),
     );
