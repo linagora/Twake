@@ -59,6 +59,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
     environment:
       - cluster.name=docker-cluster
+      - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:

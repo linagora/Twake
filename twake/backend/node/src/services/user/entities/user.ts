@@ -12,7 +12,7 @@ export const TYPE = "user";
   search,
 })
 export default class User {
-  @Column("id", "uuid")
+  @Column("id", "timeuuid")
   id: uuid;
 
   @Column("first_name", "encoded_string")
