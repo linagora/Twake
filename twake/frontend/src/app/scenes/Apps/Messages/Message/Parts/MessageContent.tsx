@@ -86,9 +86,7 @@ export default (props: Props) => {
       {!showEdition && (
         <div className="content-parent dont-break-out">
           {props?.deleted === true ? (
-            <div className="content-parent dont-break-out">
-              <DeletedContent userId={props.message.sender || ''} />
-            </div>
+            <DeletedContent userId={props.message.sender || ''} />
           ) : (
             <>
               <Twacode
