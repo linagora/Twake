@@ -54,6 +54,10 @@ export class MessageToNotificationsProcessor {
           },
         );
 
+        if (!channel) {
+          continue;
+        }
+
         const company = await this.user.companies.getCompany({ id: participant.company_id });
 
         let companyName = company?.name || "";
