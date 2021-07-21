@@ -1,7 +1,7 @@
 import React from 'react';
 import './Threads.scss';
-import Draggable from 'components/Draggable/Draggable.js';
-import UploadZone from 'components/Uploads/UploadZone.js';
+import Draggable from 'components/Draggable/Draggable';
+import UploadZone from 'components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import { Message } from 'app/models/Message';
@@ -44,65 +44,36 @@ const LoadingComponent = (
   </div>
 );
 
-export default (props: PropsType) => {
-  const disabledUpload = !(
-    props.allowUpload ||
-    (props.message && !props.message?.parent_message_id && props.collectionKey)
-  );
-
-  const messageEditorService = MessageEditorsManager.get(
-    props.message?.channel_id || props.channelId || '',
-  );
-  const setUploadZoneRef = (node: UploadZone): void =>
-    messageEditorService.setUploadZone(props.message?.id || '', node);
-
-  const onDragEnter = (): void =>
-    messageEditorService.openEditor(
-      props.threadId || '',
-      '',
-      props.threadId ? '' : props.threadMain ? 'main' : '',
-    );
-
-  const onUploaded = (file: FileType) =>
-    messageEditorService.onAddAttachment(props.message?.id || '', file);
-
-  return (
-    <div
-      className={classNames(
-        'thread-container',
-        { loading: props.loading, hidden: props.hidden, highlighted: props.highlighted },
-        props.className,
-      )}
-      onClick={props.onClick}
-    >
-      {!props.loading ? (
-        <UploadZone
-          className="thread-centerer"
-          ref={setUploadZoneRef}
-          disableClick
-          parent={''}
-          driveCollectionKey={props.collectionKey}
-          uploadOptions={{ workspace_id: Workspaces.currentWorkspaceId, detached: true }}
-          onUploaded={onUploaded}
-          onDragEnter={onDragEnter}
-          multiple={true}
-          allowPaste={true}
-          disabled={disabledUpload}
+export default ({
+  message,
+  loading,
+  highlighted,
+  children,
+  hidden,
+  withBlock,
+  className,
+  onClick,
+  canDrag,
+}: PropsType) => (
+  <div
+    className={classNames('thread-container', { loading, hidden, highlighted }, className)}
+    onClick={onClick}
+  >
+    {!loading ? (
+      <div className="thread-centerer">
+        <Draggable
+          className={classNames('thread', { 'with-block': withBlock })}
+          dragHandler="js-drag-handler-message"
+          data={{ type: 'message', data: message }}
+          parentClassOnDrag="dragged"
+          minMove={10}
+          deactivated={!(canDrag && message)}
         >
-          <Draggable
-            className={classNames('thread', { 'with-block': props.withBlock })}
-            dragHandler="js-drag-handler-message"
-            data={{ type: 'message', data: props.message }}
-            parentClassOnDrag="dragged"
-            minMove={10}
-            deactivated={!(props.canDrag && props.message)}
-          >
-            {props.children}
-          </Draggable>
-        </UploadZone>
-      ) : (
-        LoadingComponent
-      )}
-    </div>
-  );
-};
+          {children}
+        </Draggable>
+      </div>
+    ) : (
+      LoadingComponent
+    )}
+  </div>
+);

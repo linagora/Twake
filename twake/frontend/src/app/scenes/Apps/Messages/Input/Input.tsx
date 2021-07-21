@@ -15,6 +15,10 @@ import Languages from 'app/services/languages/languages';
 import { TextCountService } from 'app/components/RichTextEditor/TextCount/';
 
 import './Input.scss';
+import UploadZone from 'app/components/Uploads/UploadZone';
+import Workspaces from 'services/workspaces/workspaces';
+
+type FileType = { [key: string]: any };
 
 type Props = {
   messageId?: string;
@@ -189,6 +193,16 @@ export default (props: Props) => {
     return !!(props.messageId && props.messageId === messageEditorService.currentEditorMessageId);
   };
 
+  const setUploadZoneRef = (node: UploadZone): void =>
+    messageEditorService.setUploadZone(props.messageId || '', node);
+
+  const onUploaded = (file: FileType) =>
+    messageEditorService.onAddAttachment(props.messageId || props.threadId, file);
+
+  const onDragEnter = (): void => {
+    const t = messageEditorService.getUploadZone(props.threadId);
+    //console.log(t);
+  };
   return (
     <div
       className={classNames('message-input', {
@@ -220,22 +234,35 @@ export default (props: Props) => {
 
       {!hasEphemeralMessage && (
         <div className="editorview-submit">
-          <EditorView
-            ref={editorRef}
-            onChange={editorState => onChange(editorState)}
-            clearOnSubmit={true}
-            outputFormat={format}
-            plugins={editorPlugins}
-            editorState={editorState}
-            onSubmit={() => onSend()}
-            onUpArrow={e => onUpArrow(e)}
-            onFilePaste={onFilePaste}
-            placeholder={Languages.t(
-              'scenes.apps.messages.input.placeholder',
-              [],
-              'Write a message. Use @ to quote a user.',
-            )}
-          />
+          <UploadZone
+            className="thread-centerer"
+            ref={setUploadZoneRef}
+            disableClick
+            parent={''}
+            driveCollectionKey={props.collectionKey}
+            uploadOptions={{ workspace_id: Workspaces.currentWorkspaceId, detached: true }}
+            onUploaded={onUploaded}
+            onDragEnter={onDragEnter}
+            multiple={true}
+            allowPaste={true}
+          >
+            <EditorView
+              ref={editorRef}
+              onChange={editorState => onChange(editorState)}
+              clearOnSubmit={true}
+              outputFormat={format}
+              plugins={editorPlugins}
+              editorState={editorState}
+              onSubmit={() => onSend()}
+              onUpArrow={e => onUpArrow(e)}
+              onFilePaste={onFilePaste}
+              placeholder={Languages.t(
+                'scenes.apps.messages.input.placeholder',
+                [],
+                'Write a message. Use @ to quote a user.',
+              )}
+            />
+          </UploadZone>
           {!isEditing() && (
             <Tooltip
               title={Languages.t('scenes.apps.messages.input.send_message', [], 'Send message')}

@@ -1450,7 +1450,7 @@
     "components.drive.modify_uslist": "Modifier la liste d'utilisateurs",
     "components.tagpicker.tag_name": "Nom du tag",
     "components.upload.upload_doc": "Envoyer des documents",
-    "components.upload.drop_files": "Relachez vos fichiers pour les télécharger.",
+    "components.upload.drop_files": "Déposez vos fichiers ici",
     "components.workspace.list_manager.no_workspace": "Pas d'espace de travail",
     "components.workspace.list_manager.add": "Ajouter des espaces de travail",
     "components.workspace.list_manager.current_space": "Espace de travail courant",

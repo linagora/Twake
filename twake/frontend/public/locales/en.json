@@ -1518,7 +1518,7 @@
     "components.drive.modify_uslist": "Modify user list",
     "components.tagpicker.tag_name": "Tag name",
     "components.upload.upload_doc": "Upload documents",
-    "components.upload.drop_files": "Drop your files to upload them",
+    "components.upload.drop_files": "Drop your files here",
     "components.workspace.list_manager.no_workspace": "No workspace",
     "components.workspace.list_manager.add": "Add workspaces",
     "components.workspace.list_manager.current_space": "Current workspace",
