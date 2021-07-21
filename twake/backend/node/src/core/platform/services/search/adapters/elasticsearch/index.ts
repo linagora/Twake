@@ -9,14 +9,22 @@ import {
   EntityTarget,
   FindFilter,
   FindOptions,
+  IndexedEntity,
   SearchAdapterInterface,
   SearchConfiguration,
 } from "../../api";
 import { SearchAdapter } from "../abstract";
 import { DatabaseServiceAPI } from "../../../database/api";
 import { getEntityDefinition, unwrapPrimarykey } from "../../api";
-import { ListResult, Pagination } from "../../../../framework/api/crud-service";
-import { stringifyPrimaryKey } from "../utils";
+import { ListResult, Paginable, Pagination } from "../../../../framework/api/crud-service";
+import { parsePrimaryKey, stringifyPrimaryKey } from "../utils";
+import {
+  ApiResponse,
+  TransportRequestCallback,
+  TransportRequestOptions,
+} from "@elastic/elasticsearch/lib/Transport";
+import { resolveSoa } from "node:dns";
+import { buildSearchQuery } from "./search";
 
 type Operation = {
   index: string;
@@ -28,6 +36,7 @@ type Operation = {
 export default class ElasticSearch extends SearchAdapter implements SearchAdapterInterface {
   private client: Client;
   private buffer: Readable;
+  private name = "ElasticSearch";
 
   constructor(
     readonly database: DatabaseServiceAPI,
@@ -179,8 +188,44 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     const instance = new (entityType as any)();
     const { entityDefinition } = getEntityDefinition(instance);
 
-    console.log("ES search not implemented");
+    const { esParams, esOptions } = buildSearchQuery<EntityType>(entityType, filters, options);
+    const esParamsWithScroll = {
+      ...esParams,
+      size: parseInt(options.pagination.limitStr || "100"),
+      scroll: "1m",
+    };
 
-    return new ListResult(entityDefinition.type, [], new Pagination());
+    let esResponse: ApiResponse;
+    if (options.pagination.page_token) {
+      esResponse = await this.client.scroll(
+        { scroll_id: options.pagination.page_token, ...esParamsWithScroll },
+        esOptions,
+      );
+    } else {
+      esResponse = await this.client.search(esParamsWithScroll, esOptions);
+    }
+
+    const nextToken = esResponse.body?._scroll_id || "";
+    const hits = esResponse.body?.hits?.hits || [];
+
+    const entities: IndexedEntity[] = [];
+    for await (const hit of hits) {
+      try {
+        entities.push({
+          primaryKey: parsePrimaryKey(entityDefinition, hit._id),
+          score: hit._score,
+        });
+      } catch (err) {
+        logger.error(
+          `${this.name} failed to get entity from search result: ${JSON.stringify(
+            hit._id,
+          )}, ${JSON.stringify(err)}`,
+        );
+      }
+    }
+
+    const nextPage: Paginable = new Pagination(nextToken, options.pagination.limitStr || "100");
+
+    return new ListResult(entityDefinition.type, entities, nextPage);
   }
 }

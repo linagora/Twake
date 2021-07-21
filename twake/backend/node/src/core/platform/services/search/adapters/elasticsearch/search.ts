@@ -1,3 +1,5 @@
+import { RequestParams } from "@elastic/elasticsearch";
+import { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
 import _ from "lodash";
 import { EntityTarget, FindFilter, FindOptions, getEntityDefinition } from "../../api";
 
@@ -5,15 +7,14 @@ export function buildSearchQuery<Entity>(
   entityType: EntityTarget<Entity>,
   filters: FindFilter,
   options: FindOptions = {},
-): { project: any; query: any; sort: any } {
+): { esParams: RequestParams.Search; esOptions: TransportRequestOptions } {
   const instance = new (entityType as any)();
   const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
 
   //TODO
 
   return {
-    project: { score: { $meta: "textScore" } } || false,
-    query: { $text: options.$text || undefined },
-    sort: {},
+    esParams: {},
+    esOptions: {},
   };
 }
