@@ -51,26 +51,28 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
     throw Error("ConsoleInternalClient.createCompany is not implemented");
   }
 
-  addUserToTwake(user: CreateConsoleUser): Promise<User> {
+  async addUserToTwake(user: CreateConsoleUser): Promise<User> {
+    const usersApi = this.consoleInstance.services.userService.users;
     const userToCreate = getUserInstance({
       id: uuidv1(),
       email_canonical: user.email,
       first_name: user.firstName,
       last_name: user.lastName,
-      password: user.password,
       creation_date: Date.now(),
     });
 
-    return this.consoleInstance.services.userService.users
-      .save(userToCreate)
-      .then(result => result.entity);
+    const createdUser = await usersApi.save(userToCreate).then(result => result.entity);
+    if (user.password) {
+      await usersApi.setPassword({ id: createdUser.id }, user.password);
+    }
+    return createdUser;
   }
 
   updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company> {
     throw new Error("Method should not be implemented.");
   }
 
-  updateLocalUserFromConsole(consoleUserId: string, userDTO: ConsoleHookUser): Promise<User> {
+  updateLocalUserFromConsole(userDTO: ConsoleHookUser): Promise<User> {
     throw new Error("Method should not be implemented.");
   }
 
@@ -83,6 +85,10 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
   }
 
   fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
+    throw new Error("Method should not be implemented.");
+  }
+
+  getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser> {
     throw new Error("Method should not be implemented.");
   }
 }

@@ -1,18 +1,26 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
-import { consoleHookSchema } from "./schemas";
+import { authenticationSchema, consoleHookSchema } from "./schemas";
 import crypto from "crypto";
 
 import { ConsoleServiceAPI } from "../api";
 // import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { ConsoleController } from "./controller";
 import { ConsoleHookBody, ConsoleHookQueryString } from "../types";
+import UserServiceAPI from "../../user/api";
+import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 
 const hookUrl = "/hook";
 
 const routes: FastifyPluginCallback<{
   service: ConsoleServiceAPI;
+  authService: AuthServiceAPI;
+  userService: UserServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
-  const controller = new ConsoleController(options.service);
+  const controller = new ConsoleController(
+    options.service,
+    options.authService,
+    options.userService,
+  );
 
   const accessControl = async (
     request: FastifyRequest<{ Body: ConsoleHookBody; Querystring: ConsoleHookQueryString }>,
@@ -43,6 +51,14 @@ const routes: FastifyPluginCallback<{
     preHandler: [accessControl],
     schema: consoleHookSchema,
     handler: controller.hook.bind(controller),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/token",
+    // preHandler: [accessControl],
+    schema: authenticationSchema,
+    handler: controller.auth.bind(controller),
   });
 
   next();

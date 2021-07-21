@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   ExecutionContext,
   ListResult,
+  CrudExeption,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
 
@@ -22,12 +23,16 @@ import {
   CompanyUserObject,
   CompanyUserRole,
   CompanyUserStatus,
+  DeregisterDeviceParams,
+  RegisterDeviceBody,
+  RegisterDeviceParams,
   UserListQueryParameters,
   UserObject,
   UserParameters,
 } from "./types";
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
+import { WorkspaceUsersRequest } from "../../workspaces/web/types";
 
 export class UsersCrudController
   implements
@@ -113,16 +118,22 @@ export class UsersCrudController
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<UserObject>> {
     const context = getExecutionContext(request);
-    const user = await this.service.get({ id: request.params.id }, getExecutionContext(request));
+
+    let id = request.params.id;
+    if (request.params.id === "me") {
+      id = context.user.id;
+    }
+
+    const user = await this.service.get({ id: id }, getExecutionContext(request));
 
     if (!user) {
-      reply.notFound(`User ${request.params.id} not found`);
+      reply.notFound(`User ${id} not found`);
 
       return;
     }
 
     return {
-      resource: await this.formatUser(user, context.user.id === request.params.id),
+      resource: await this.formatUser(user, context.user.id === id),
       websocket: undefined, // empty for now
     };
   }
@@ -215,6 +226,59 @@ export class UsersCrudController
     return {
       resource: this.formatCompany(company),
       websocket: undefined, // empty for now
+    };
+  }
+
+  async registerUserDevice(
+    request: FastifyRequest<{ Body: RegisterDeviceBody }>,
+    reply: FastifyReply,
+  ): Promise<ResourceGetResponse<RegisterDeviceParams>> {
+    const resource = request.body.resource;
+    if (resource.type !== "FCM") {
+      throw CrudExeption.badRequest("Type should be FCM only");
+    }
+    const context = getExecutionContext(request);
+
+    await this.service.registerUserDevice(
+      { id: context.user.id },
+      resource.value,
+      resource.type,
+      resource.version,
+    );
+
+    return {
+      resource: request.body.resource,
+    };
+  }
+
+  async getRegisteredDevices(
+    request: FastifyRequest<{ Params: UserParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<RegisterDeviceParams>> {
+    const context = getExecutionContext(request);
+
+    const userDevices = await this.service.getUserDevices({ id: context.user.id });
+
+    return {
+      resources: userDevices.map(
+        ud => ({ type: ud.type, value: ud.id, version: ud.version } as RegisterDeviceParams),
+      ),
+    };
+  }
+
+  async deregisterUserDevice(
+    request: FastifyRequest<{ Params: DeregisterDeviceParams }>,
+    reply: FastifyReply,
+  ): Promise<ResourceDeleteResponse> {
+    const context = getExecutionContext(request);
+    const userDevices = await this.service.getUserDevices({ id: context.user.id });
+    const device = await userDevices.find(ud => ud.id == request.params.value);
+    if (device) {
+      await this.service.deregisterUserDevice(device.id);
+    }
+    reply.status(204);
+    return {
+      status: "success",
     };
   }
 }

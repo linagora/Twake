@@ -114,27 +114,29 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
   async updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company> {
     let company = await this.userService.companies.getCompany({
-      identity_provider_id: companyDTO.code,
+      identity_provider_id: companyDTO.details.code,
     });
 
     if (!company) {
       const newCompany = getCompanyInstance({
         id: uuidv1(),
         identity_provider: "console",
-        identity_provider_id: companyDTO.code,
+        identity_provider_id: companyDTO.details.code,
       });
       company = await this.userService.companies.createCompany(newCompany);
     }
 
-    if (companyDTO.details) {
-      company.name = coalesce(companyDTO.details.name, company.name);
-      company.displayName = coalesce(companyDTO.details.name, company.displayName);
+    const details = companyDTO.details;
 
-      const avatar = companyDTO.details.avatar;
+    if (details) {
+      company.name = coalesce(details.name, company.name);
+      company.displayName = coalesce(details.name, company.displayName);
+
+      const avatar = details.avatar;
 
       company.logo =
-        companyDTO.details.logo ||
-        (avatar.type && avatar.type !== "url"
+        details.logo ||
+        (avatar && avatar.type && avatar.type !== "url"
           ? this.infos.url.replace(/\/$/, "") + "/avatars/" + avatar.value
           : companyDTO.value || "");
     }
@@ -147,7 +149,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     return company;
   }
 
-  async updateLocalUserFromConsole(consoleUserId: string, userDTO: ConsoleHookUser): Promise<User> {
+  async updateLocalUserFromConsole(userDTO: ConsoleHookUser): Promise<User> {
     const roles = userDTO.roles;
 
     let user = await this.userService.users.getByConsoleId(userDTO._id);
@@ -201,9 +203,19 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     await this.userService.users.save(user);
 
-    const getCompanyByCode = memoize(companyCode =>
-      this.userService.companies.getCompany({ identity_provider_id: companyCode }),
-    );
+    const getCompanyByCode = async (companyCode: string) => {
+      let company = await this.userService.companies.getCompany({
+        identity_provider_id: companyCode,
+      });
+      if (!company) {
+        const companyDTO = await this.fetchCompanyInfo(companyCode);
+        await this.updateLocalCompanyFromConsole(companyDTO);
+        company = await this.userService.companies.getCompany({
+          identity_provider_id: companyCode,
+        });
+      }
+      return company;
+    };
 
     if (userDTO.roles) {
       for (const role of roles) {
@@ -241,6 +253,31 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
           "Content-Type": "application/json",
         },
       })
-      .then(({ data }) => data);
+      .then(({ data }) => data.company)
+      .catch(e => {
+        if (e.response.status === 401) {
+          throw CrudExeption.forbidden("Bad console credentials");
+        }
+        throw e;
+      });
+  }
+
+  getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser> {
+    return this.client
+      .get("/api/users/profile", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+      })
+      .then(({ data }) => {
+        return data;
+      })
+      .catch(e => {
+        if (e.response.status === 401) {
+          throw CrudExeption.forbidden("Bad access token credentials");
+        }
+        throw e;
+      });
   }
 }

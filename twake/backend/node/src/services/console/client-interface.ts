@@ -52,11 +52,13 @@ export interface ConsoleServiceClient {
 
   updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company>;
 
-  updateLocalUserFromConsole(consoleUserId: string, userDTO: ConsoleHookUser): Promise<User>;
+  updateLocalUserFromConsole(userDTO: ConsoleHookUser): Promise<User>;
 
   removeCompanyUser(consoleUserId: string, company: Company): Promise<void>;
 
   removeCompany(companySearchKey: CompanySearchKey): Promise<void>;
 
   fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany>;
+
+  getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser>;
 }

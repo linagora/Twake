@@ -14,10 +14,12 @@ import CompanyUser from "../../src/services/user/entities/company_user";
 import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
 import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
 import { memoize } from "lodash";
+import Device from "../../src/services/user/entities/device";
 
 export type uuid = string;
 
 export class TestDbService {
+  private deviceRepository: Repository<Device>;
   public static async getInstance(testPlatform: TestPlatform): Promise<TestDbService> {
     const instance = new this(testPlatform);
     await instance.init();
@@ -48,6 +50,7 @@ export class TestDbService {
       "group_user",
       CompanyUser,
     );
+    this.deviceRepository = await this.database.getRepository<Device>("device", Device);
   }
   public get workspaces() {
     return [...this.workspacesMap.values()];
@@ -102,6 +105,7 @@ export class TestDbService {
       lastName?: string;
       email?: string;
       username?: string;
+      password?: string;
       cache?: User["cache"];
     } = {},
   ): Promise<User> {
@@ -115,11 +119,19 @@ export class TestDbService {
     user.identity_provider_id = user.id;
     user.cache = options.cache || user.cache;
 
-    const createdUser = await this.userService.users.create(user);
-    this.users.push(createdUser.entity);
+    if (options.email) {
+      user.email_canonical = options.email;
+    }
+    const createdUser = await this.userService.users.create(user).then(a => a.entity);
+
+    if (options.password) {
+      await this.userService.users.setPassword({ id: createdUser.id }, options.password);
+    }
+
+    this.users.push(createdUser);
     await this.userService.companies.setUserRole(
       this.company.id,
-      createdUser.entity.id,
+      createdUser.id,
       options.companyRole ? options.companyRole : "member",
     );
 
@@ -127,15 +139,15 @@ export class TestDbService {
       for (const workspacePk of workspacesPk) {
         await this.userService.workspaces.addUser(
           workspacePk,
-          { id: createdUser.entity.id },
+          { id: createdUser.id },
           options.workspaceRole ? options.workspaceRole : "member",
         );
         const wsContainer = this.workspacesMap.get(workspacePk.id);
-        wsContainer.users.push(createdUser.entity);
+        wsContainer.users.push(createdUser);
       }
     }
 
-    return createdUser.entity;
+    return createdUser;
   }
 
   async getUserFromDb(user: Partial<Pick<User, "id" | "identity_provider_id">>): Promise<User> {
@@ -146,6 +158,10 @@ export class TestDbService {
     } else {
       throw new Error("getUserFromDb: Id not provided");
     }
+  }
+
+  async getDeviceFromDb(id: string): Promise<Device> {
+    return this.deviceRepository.findOne({ id });
   }
 
   getCompanyFromDb(companyId: uuid) {

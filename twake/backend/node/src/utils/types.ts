@@ -114,3 +114,12 @@ export interface PaginationQueryParameters {
   limit?: string;
   websockets?: boolean;
 }
+
+export interface AccessToken {
+  time: number;
+  expiration: number;
+  refresh_expiration: number;
+  value: string;
+  refresh: string;
+  type: "Bearer";
+}

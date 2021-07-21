@@ -3,6 +3,7 @@ import Company from "../user/entities/company";
 import CompanyUser from "../user/entities/company_user";
 import { CompanyUserRole } from "../user/web/types";
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
+import { AccessToken } from "../../utils/types";
 
 export interface CreateConsoleCompany {
   code: string;
@@ -133,14 +134,16 @@ export type ConsoleHookCompany = {
   plan: { name: string; limits: any };
   value: string;
   details: {
+    code: string;
     logo: string;
     avatar: {
       value: string;
       type: string;
     };
     name: string;
+    country: string;
+    address: string;
   };
-  code: string;
 };
 
 export type ConsoleHookUser = {
@@ -183,4 +186,14 @@ export class ConsoleHookResponse {
 
 export interface ConsoleExecutionContext extends ExecutionContext {
   options: ConsoleOptions;
+}
+
+export interface AuthRequest {
+  email?: string;
+  password?: string;
+  access_token?: string;
+}
+
+export interface AuthResponse {
+  access_token: AccessToken;
 }

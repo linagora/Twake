@@ -291,6 +291,10 @@ class MessageSystem
 
         $array = $phpMessage->getAsArray();
 
+        if($message["subtype"] === "deleted"){
+            $array["subtype"] = "deleted";
+        }
+
         if($message["ephemeral"]){
             $array["front_id"] = $message["id"];
             $array["ephemeral_id"] = $message["id"] ?: $message["ephemeral"]["id"];

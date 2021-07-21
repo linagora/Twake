@@ -31,6 +31,10 @@ class ConsoleService implements ConsoleServiceAPI {
     };
   }
 
+  getUserByAccessToken(accessToken: string): User {
+    throw new Error("Method not implemented.");
+  }
+
   merge(
     baseUrl: string,
     concurrent: number = 1,
