@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   CreateResult,
+  CrudExeption,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -19,12 +20,20 @@ import { UsersServiceAPI } from "../../api";
 import { ListUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
 import ExternalUser, { getInstance as getExternalUserInstance } from "../../entities/external_user";
+import Device, {
+  getInstance as getDeviceInstance,
+  TYPE as DeviceType,
+} from "../../entities/device";
+import crypto from "crypto";
+import PasswordEncoder from "../../../../utils/password-encoder";
+import assert from "assert";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
   repository: Repository<User>;
   companyUserRepository: Repository<CompanyUser>;
   extUserRepository: Repository<ExternalUser>;
+  private deviceRepository: Repository<Device>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
@@ -38,6 +47,9 @@ export class UserService implements UsersServiceAPI {
       "external_user_repository",
       ExternalUser,
     );
+
+    this.deviceRepository = await this.database.getRepository<Device>(DeviceType, Device);
+
     return this;
   }
 
@@ -102,10 +114,14 @@ export class UserService implements UsersServiceAPI {
     return this.repository.find(findFilter, findOptions);
   }
 
+  getByEmail(email: string): Promise<User> {
+    return this.repository.findOne({ email_canonical: email });
+  }
+
   getByEmails(emails: string[]): Promise<User[]> {
-    return Promise.all(
-      emails.map(email => this.repository.findOne({ email_canonical: email })),
-    ).then(emails => emails.filter(a => a));
+    return Promise.all(emails.map(email => this.getByEmail(email))).then(emails =>
+      emails.filter(a => a),
+    );
   }
 
   async get(pk: UserPrimaryKey): Promise<User> {
@@ -144,5 +160,74 @@ export class UserService implements UsersServiceAPI {
       }
     }
     return suitableUsername;
+  }
+
+  async getUserDevices(userPrimaryKey: UserPrimaryKey): Promise<Device[]> {
+    const user = await this.get(userPrimaryKey);
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+    }
+    if (!user.devices || user.devices.length == 0) {
+      return [];
+    }
+    return Promise.all(user.devices.map(id => this.deviceRepository.findOne({ id }))).then(a =>
+      a.filter(a => a),
+    );
+  }
+
+  async registerUserDevice(
+    userPrimaryKey: UserPrimaryKey,
+    id: string,
+    type: string,
+    version: string,
+  ): Promise<void> {
+    await this.deregisterUserDevice(id);
+
+    const user = await this.get(userPrimaryKey);
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+    }
+    user.devices = user.devices || [];
+    user.devices.push(id);
+
+    await Promise.all([
+      this.repository.save(user),
+      this.deviceRepository.save(getDeviceInstance({ id, type, version, user_id: user.id })),
+    ]);
+  }
+
+  async deregisterUserDevice(id: string): Promise<void> {
+    const existedDevice = await this.deviceRepository.findOne({ id });
+
+    if (existedDevice) {
+      const user = await this.get({ id: existedDevice.user_id });
+      user.devices = (user.devices || []).filter(d => d !== id);
+      await Promise.all([this.deviceRepository.remove(existedDevice), this.repository.save(user)]);
+    }
+  }
+
+  async setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void> {
+    assert(password, "UserAPI.setPassword: Password is not defined");
+    const passwordEncoder = new PasswordEncoder();
+    const user = await this.get(userPrimaryKey);
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+    }
+    user.password = await passwordEncoder.encodePassword(password);
+    user.salt = null;
+    await this.repository.save(user);
+  }
+
+  async getPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
+    const user = await this.get(userPrimaryKey);
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+    }
+
+    if (user.salt) {
+      return [user.password, user.salt];
+    }
+
+    return [user.password, null];
   }
 }

@@ -89,6 +89,12 @@ export default class User {
   @Column("thumbnail_id", "timeuuid")
   thumbnail_id: string;
 
+  @Column("devices", "encoded_json")
+  devices: Array<string>;
+
+  @Column("salt", "string")
+  salt: string;
+
   constructor(id?: string) {
     this.id = id;
   }

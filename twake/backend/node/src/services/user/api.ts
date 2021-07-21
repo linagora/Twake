@@ -15,6 +15,7 @@ import { ListUserOptions } from "./services/users/types";
 import { CompanyUserRole } from "./web/types";
 import { WorkspaceServiceAPI } from "../workspaces/api";
 import { uuid } from "../../utils/types";
+import Device from "./entities/device";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
@@ -28,10 +29,21 @@ export interface UsersServiceAPI
     Initializable,
     CRUDService<User, UserPrimaryKey, ExecutionContext> {
   getUserCompanies(pk: UserPrimaryKey): Promise<CompanyUser[]>;
+  getByEmail(email: string): Promise<User>;
   getByEmails(email: string[]): Promise<User[]>;
   getByConsoleId(consoleUserId: string): Promise<User>;
   isEmailAlreadyInUse(email: string): Promise<boolean>;
   getAvailableUsername(username: string): Promise<string>;
+  getUserDevices(userPrimaryKey: UserPrimaryKey): Promise<Device[]>;
+  registerUserDevice(
+    userPrimaryKey: UserPrimaryKey,
+    token: string,
+    type: string,
+    version: string,
+  ): Promise<void>;
+  deregisterUserDevice(token: string): Promise<void>;
+  setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void>;
+  getPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]>;
 }
 
 /**

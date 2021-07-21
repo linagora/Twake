@@ -26,4 +26,6 @@ export interface ConsoleServiceAPI extends TwakeServiceProvider {
   };
 
   processPendingUser(user: User): Promise<void>;
+
+  getUserByAccessToken(accessToken: string): User;
 }

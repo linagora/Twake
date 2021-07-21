@@ -1,19 +1,19 @@
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import UserDevice, { TYPE as UserDeviceType } from "../../../../services/user/entities/user_device";
 import { PushNotificationMessage } from "../../types";
-import { logger } from "../../../../core/platform/framework/logger";
 import { PushServiceAPI } from "../../../../core/platform/services/push/api";
+import User, { TYPE as UserType } from "../../../user/entities/user";
+import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 
 export class MobilePushService {
   name: "MobilePushService";
   version: "1";
-  repository: Repository<UserDevice>;
+  userRepository: Repository<User>;
 
   constructor(private database: DatabaseServiceAPI, private pushService: PushServiceAPI) {}
 
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository<UserDevice>(UserDeviceType, UserDevice);
+    this.userRepository = await this.database.getRepository<User>(UserType, User);
     return this;
   }
 
@@ -21,9 +21,12 @@ export class MobilePushService {
   async push(message: PushNotificationMessage): Promise<void> {
     // Get devices and loop over devices
     const userId = message.user;
-    const devices = (await this.repository.find({ user_id: userId }))
-      .getEntities()
-      .map(d => d.value);
+
+    const user = await this.userRepository.findOne({ id: userId });
+
+    if (!user) {
+      throw CrudExeption.notFound(`User ${userId} not found`);
+    }
 
     const notification = {
       title: message.title,
@@ -43,6 +46,6 @@ export class MobilePushService {
       collapse_key: message.channel_id,
     };
 
-    await this.pushService.push(devices, notification, options);
+    await this.pushService.push(user.devices, notification, options);
   }
 }

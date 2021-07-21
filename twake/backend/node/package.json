@@ -100,6 +100,7 @@
     "amqplib": "^0.7.1",
     "analytics-node": "^3.5.0",
     "axios": "^0.21.1",
+    "bcrypt": "^5.0.1",
     "cassandra-driver": "^4.6.0",
     "class-transformer": "^0.3.1",
     "cli-table": "^0.3.6",

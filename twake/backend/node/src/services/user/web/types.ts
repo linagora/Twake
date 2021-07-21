@@ -1,14 +1,5 @@
 import { PaginationQueryParameters } from "../../../utils/types";
-
-export interface UserParams {
-  id?: string;
-}
-
-export interface CreateUserBody {
-  email: string;
-  firstname?: string;
-  lastname?: string;
-}
+import { ChannelMember } from "../../channels/entities";
 
 export interface UserListQueryParameters extends PaginationQueryParameters {
   user_ids?: string;
@@ -93,4 +84,18 @@ export interface CompanyObject {
   stats?: CompanyStatsObject;
   role?: CompanyUserRole;
   status?: CompanyUserStatus;
+}
+
+export interface RegisterDeviceBody {
+  resource: RegisterDeviceParams;
+}
+
+export interface RegisterDeviceParams {
+  type: "FCM";
+  value: string;
+  version: string;
+}
+
+export interface DeregisterDeviceParams {
+  value: "string";
 }
