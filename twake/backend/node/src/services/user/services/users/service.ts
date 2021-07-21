@@ -26,6 +26,7 @@ import Device, {
 } from "../../entities/device";
 import crypto from "crypto";
 import PasswordEncoder from "../../../../utils/password-encoder";
+import assert from "assert";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -206,6 +207,7 @@ export class UserService implements UsersServiceAPI {
   }
 
   async setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void> {
+    assert(password, "UserAPI.setPassword: Password is not defined");
     const passwordEncoder = new PasswordEncoder();
     const user = await this.get(userPrimaryKey);
     if (!user) {

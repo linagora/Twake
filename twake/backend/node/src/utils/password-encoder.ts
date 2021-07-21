@@ -26,6 +26,7 @@ export default class {
   }
 
   public encodePassword(password: string): Promise<string> {
+    assert(password, "Password is not defined for encodePassword");
     return bcrypt.hash(password, 10);
   }
 

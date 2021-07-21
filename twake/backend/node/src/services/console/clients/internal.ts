@@ -62,7 +62,9 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
     });
 
     const createdUser = await usersApi.save(userToCreate).then(result => result.entity);
-    await usersApi.setPassword({ id: createdUser.id }, user.password);
+    if (user.password) {
+      await usersApi.setPassword({ id: createdUser.id }, user.password);
+    }
     return createdUser;
   }
 
@@ -70,7 +72,7 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
     throw new Error("Method should not be implemented.");
   }
 
-  updateLocalUserFromConsole(consoleUserId: string, userDTO: ConsoleHookUser): Promise<User> {
+  updateLocalUserFromConsole(userDTO: ConsoleHookUser): Promise<User> {
     throw new Error("Method should not be implemented.");
   }
 
@@ -83,6 +85,10 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
   }
 
   fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
+    throw new Error("Method should not be implemented.");
+  }
+
+  getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser> {
     throw new Error("Method should not be implemented.");
   }
 }
