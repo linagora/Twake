@@ -51,6 +51,7 @@
     "@babel/preset-typescript": "^7.10.4",
     "@types/amqp-connection-manager": "^2.0.10",
     "@types/analytics-node": "^3.1.4",
+    "@types/bcrypt": "^5.0.0",
     "@types/busboy": "^0.2.3",
     "@types/chai": "^4.2.12",
     "@types/cli-table": "^0.3.0",
