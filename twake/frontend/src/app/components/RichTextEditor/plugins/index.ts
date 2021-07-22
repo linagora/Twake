@@ -1,4 +1,4 @@
-import { DraftDecorator, EditorState } from "draft-js";
+import { DraftDecorator, EditorState, Entity } from "draft-js";
 import mentionPlugin, { MentionSuggestionType } from "./mentions";
 import emojiPlugin, { EmojiSuggestionType } from "./emoji";
 import channelPlugin, { ChannelSuggestionType } from "./channel";
@@ -14,6 +14,15 @@ export type SelectOrInsertOptions = {
   addSpaceAfter: boolean;
 };
 
+export type DataSerializer = {
+  /**
+   * Replace patterns in the content string (whole string)
+   */
+  replace: (content: string) => string;
+  open: (entity?: Entity) => string;
+  close: (entity?: Entity) => string;
+};
+
 export type EditorSuggestionPlugin<T extends SupportedSuggestionTypes> = {
   resolver: (text: string, callback: (items: T[]) => void) => void;
   decorator: DraftDecorator;
@@ -23,6 +32,7 @@ export type EditorSuggestionPlugin<T extends SupportedSuggestionTypes> = {
   onSelected?: (item: T, editorState: EditorState, options?: SelectOrInsertOptions) => EditorState;
   insert?: (item: T, editorState: EditorState, options?: SelectOrInsertOptions) => EditorState;
   renderSuggestion?: (item: T) => JSX.Element;
+  serializer?: DataSerializer;
 };
 
 const plugins = new Map<EditorSuggestionPlugin<any>["resourceType"], EditorSuggestionPlugin<any>>();

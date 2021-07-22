@@ -11,7 +11,6 @@ export default (props: MentionSuggestionType): JSX.Element => {
       </div>
       <div className="text">
         {UsersService.getFullName(props)}{' '}
-        <span style={{ opacity: '0.5', textTransform: 'capitalize' }}>@{props.username}</span>
       </div>
     </>
   );
