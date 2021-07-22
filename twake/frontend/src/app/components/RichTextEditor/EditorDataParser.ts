@@ -6,6 +6,7 @@ import { EditorSuggestionPlugin } from "./plugins";
 
 export default class EditorDataParser {
   private entityItems: DraftToMarkdownOptions["entityItems"] = {};
+  private styleItems: DraftToMarkdownOptions["styleItems"] = {};
 
   constructor(private plugins: EditorSuggestionPlugin<any>[] = []) {
     this.plugins.forEach(plugin => {
@@ -16,6 +17,12 @@ export default class EditorDataParser {
         };
       }
     });
+
+    // adding custom support for underline since it is not natively available in markdown
+    this.styleItems!["UNDERLINE"] = {
+      open: () => "__",
+      close: () => "__"
+    };
   }
 
   toString(editorState: EditorState, format: EditorTextFormat): string {
@@ -25,6 +32,7 @@ export default class EditorDataParser {
       case "markdown": {
         let markdown = draftToMarkdown(convertToRaw(contentState), {
           entityItems: this.entityItems,
+          styleItems: this.styleItems,
           escapeMarkdownCharacters: false,
           // types definition are not up to date...
         } as DraftToMarkdownOptions).trim();
