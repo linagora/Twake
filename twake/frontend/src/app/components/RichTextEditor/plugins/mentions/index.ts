@@ -36,7 +36,6 @@ const findMentionEntities = (contentBlock: ContentBlock, callback: (start: numbe
 };
 
 const resolver = (text: string, max: number, callback: (mentions: MentionSuggestionType[]) => void) => {
-  console.log("RESOLVE", text);
   const result: Array<MentionSuggestionType & { autocomplete_id: number }> = [];
 
   if (AccessRightsService.getCompanyLevel(WorkspaceService.currentGroupId) === 'guest') {
