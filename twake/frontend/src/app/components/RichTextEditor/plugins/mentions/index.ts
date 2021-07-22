@@ -129,5 +129,8 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
     replace: content => content.replace(/<MENTION\|(.*?)>(.*?)<\/MENTION>/gm, (_match, mention) => mention),
     open: entity => `<${MENTION_TYPE}|@${(entity as any).data.username}>`,
     close: () => `</${MENTION_TYPE}>`,
-  }
+  },
+  returnFullTextForSuggestion: true,
+  // will skip suggestion when already in a MENTION block
+  skipSuggestionForTypes: [MENTION_TYPE],
 });

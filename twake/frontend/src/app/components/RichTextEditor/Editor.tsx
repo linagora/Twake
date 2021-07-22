@@ -11,6 +11,8 @@ import {
   ContentBlock,
   DraftStyleMap,
 } from 'draft-js';
+import { getSelectionEntity } from "draftjs-utils";
+
 import EditorDataParser from './EditorDataParser';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import { SuggestionList } from './plugins/suggestion/SuggestionList';
@@ -74,6 +76,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     new Map();
   customStyleMap: DraftStyleMap;
   editorDataParser: EditorDataParser;
+  returnFullTextForEntitiesTypes: Array<string>;
 
   constructor(props: EditorProps) {
     super(props);
@@ -92,6 +95,10 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       },
     };
 
+    this.returnFullTextForEntitiesTypes = Array
+      .from(this.plugins.values())
+      .filter(plugin => plugin.returnFullTextForSuggestion)
+      .map(plugin => plugin.resourceType);
     this.editorDataParser = RichTextEditorStateService.getDataParser(this.props.plugins);
     this.onChange = this.onChange.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
@@ -246,12 +253,26 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
 
   updateSuggestionsState(): void {
-    const textToMatch = getTextToMatch(this.props.editorState, ' ');
+    const currentEntityKey = getSelectionEntity(this.props.editorState);
+    const currentEntityType = currentEntityKey && this.props.editorState.getCurrentContent().getEntity(currentEntityKey).getType();
+
+    const textToMatch = getTextToMatch(this.props.editorState, ' ', this.returnFullTextForEntitiesTypes);
     if (!textToMatch) {
       return;
     }
 
     const triggered = Array.from(this.plugins.values()).some(plugin => {
+      // skip suggestion when current entity type is defined to be skipped
+      // for example, when in a mention entity, we do not want to show suggestion from text
+      // just because
+      // 1. A mention has been searched from `@doe`
+      // 2. It has been selected by the user and is now displayed as `@John Doe` in the editor
+      // 3. Moving cursor in the entity `@John Doe` of type `MENTION` will return a textToMatch = `@John Doe` (which is different from the first search)
+      // If not handled, it can lead to unpredictable state, where we can suggest other things than expected and also other suggestion types...
+      if (currentEntityType && (plugin.skipSuggestionForTypes || []).includes(currentEntityType)) {
+        return false;
+      }
+
       const trigger = isMatching(plugin.trigger, textToMatch);
 
       if (trigger && trigger.text) {

@@ -1,8 +1,8 @@
 import { ContentBlock, EditorState, Modifier } from "draft-js";
-import { getSelectedBlock } from "draftjs-utils";
+import { getSelectedBlock, getSelectionEntity, getEntityRange } from "draftjs-utils";
 
 export function getCurrentBlock(editorState: EditorState): ContentBlock {
-  return editorState.getCurrentContent().getBlockForKey(editorState.getSelection().getStartKey())
+  return editorState.getCurrentContent().getBlockForKey(editorState.getSelection().getStartKey());
 };
 
 /**
@@ -23,7 +23,7 @@ export const splitBlockWithType = (editorState: EditorState, type = "unstyled", 
   let newEditorState = EditorState.acceptSelection(editorState, updatedSelection);
 
   contentState = Modifier.splitBlock(contentState, updatedSelection);
-  newEditorState = EditorState.push(editorState, contentState, "split-block")
+  newEditorState = EditorState.push(editorState, contentState, "split-block");
   newEditorState = resetBlockWithType(newEditorState, type, "");
 
   if (deleteAfter) {
@@ -116,17 +116,22 @@ export function getTriggerRange(term: string, text: string) {
   };
 }
 
-export function getTextToMatch(editorState: EditorState, separator: string = " "): string | null {
+export function getTextToMatch(editorState: EditorState, separator: string = " ", returnFullTextForEntitiesTypes: Array<string> = []): string | null {
   let result: string | null = null;
   const selection = editorState.getSelection();
   const selectedBlock: ContentBlock = getSelectedBlock(editorState);
-  const selectedBlockText = selectedBlock.getText();
-  const focusOffset = selection.getFocusOffset();
-  const lastSeparator = (selectedBlockText.lastIndexOf(separator, focusOffset));
+  const entity = getSelectionEntity(editorState);
 
-  // check on first character or after last space
-  if ((lastSeparator === -1 && focusOffset > 1) || (lastSeparator >= 0 && lastSeparator <= focusOffset)) {
-    result = selectedBlockText.substring(lastSeparator === -1 ? 0 : lastSeparator, focusOffset);
+  if (entity && returnFullTextForEntitiesTypes.includes(editorState.getCurrentContent().getEntity(entity).getType())) {
+    result = getEntityRange(editorState, entity).text;
+  } else {
+    const selectedBlockText = selectedBlock.getText();
+    const focusOffset = selection.getFocusOffset();
+    const lastSeparator = (selectedBlockText.lastIndexOf(separator, focusOffset));
+    // check on first character or after last space
+    if ((lastSeparator === -1 && focusOffset > 1) || (lastSeparator >= 0 && lastSeparator <= focusOffset)) {
+      result = selectedBlockText.substring(lastSeparator === -1 ? 0 : lastSeparator, focusOffset);
+    }
   }
 
   return result;

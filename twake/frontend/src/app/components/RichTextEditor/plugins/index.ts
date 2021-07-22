@@ -33,6 +33,8 @@ export type EditorSuggestionPlugin<T extends SupportedSuggestionTypes> = {
   insert?: (item: T, editorState: EditorState, options?: SelectOrInsertOptions) => EditorState;
   renderSuggestion?: (item: T) => JSX.Element;
   serializer?: DataSerializer;
+  returnFullTextForSuggestion?: boolean;
+  skipSuggestionForTypes?: Array<EditorSuggestionPlugin<any>["resourceType"]>;
 };
 
 const plugins = new Map<EditorSuggestionPlugin<any>["resourceType"], EditorSuggestionPlugin<any>>();
