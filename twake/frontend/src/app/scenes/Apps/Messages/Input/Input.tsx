@@ -10,7 +10,6 @@ import MessagesService from 'services/Apps/Messages/Messages';
 import AttachedFiles from './Parts/AttachedFiles';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import { EditorView } from 'app/components/RichTextEditor';
-import { fromString, toString } from 'app/components/RichTextEditor/EditorDataParser';
 import Languages from 'app/services/languages/languages';
 import { TextCountService } from 'app/components/RichTextEditor/TextCount/';
 
@@ -65,7 +64,7 @@ export default (props: Props) => {
           RichTextEditorStateService.get(editorId, {
             plugins: editorPlugins,
             clearIfExists: true,
-            initialContent: fromString(initialMessage, format),
+            initialContent: RichTextEditorStateService.getDataParser(editorPlugins).fromString(initialMessage, format),
           }),
         );
       }
@@ -81,7 +80,7 @@ export default (props: Props) => {
   }, [props.editorState]);
 
   const getContentOutput = (editorState: EditorState) => {
-    return toString(editorState, format);
+    return RichTextEditorStateService.getDataParser(editorPlugins).toString(editorState, format);
   };
 
   const onSend = () => {

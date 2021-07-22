@@ -11,7 +11,8 @@ import {
   ContentBlock,
   DraftStyleMap,
 } from 'draft-js';
-import { toString } from './EditorDataParser';
+import EditorDataParser from './EditorDataParser';
+import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import { SuggestionList } from './plugins/suggestion/SuggestionList';
 import {
   getCaretCoordinates,
@@ -72,6 +73,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   plugins: Map<EditorSuggestionPlugin<any>['resourceType'], EditorSuggestionPlugin<any>> =
     new Map();
   customStyleMap: DraftStyleMap;
+  editorDataParser: EditorDataParser;
 
   constructor(props: EditorProps) {
     super(props);
@@ -90,6 +92,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       },
     };
 
+    this.editorDataParser = RichTextEditorStateService.getDataParser(this.props.plugins);
     this.onChange = this.onChange.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
     this.handleReturn = this.handleReturn.bind(this);
@@ -192,7 +195,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
 
   submit(editorState: EditorState): boolean {
-    this.props.onSubmit && this.props.onSubmit(toString(editorState, this.outputFormat));
+    this.props.onSubmit && this.props.onSubmit(this.editorDataParser.toString(editorState, this.outputFormat));
     if (this.props.clearOnSubmit) {
       this.resetStateAndFocus();
     }
