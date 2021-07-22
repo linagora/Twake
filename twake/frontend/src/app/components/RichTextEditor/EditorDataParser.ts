@@ -23,11 +23,11 @@ export default class EditorDataParser {
 
     switch (format) {
       case "markdown": {
-        let markdown = draftToMarkdown(
-          convertToRaw(contentState), {
-            entityItems: this.entityItems
-          }
-        ).trim();
+        let markdown = draftToMarkdown(convertToRaw(contentState), {
+          entityItems: this.entityItems,
+          escapeMarkdownCharacters: false,
+          // types definition are not up to date...
+        } as DraftToMarkdownOptions).trim();
 
         // when empty the stateToMarkdown lib returns a zero-width-space character in first position
         if (markdown.length === 1 && markdown.charCodeAt(0) === 8203) {
