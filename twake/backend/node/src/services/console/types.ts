@@ -191,7 +191,7 @@ export interface ConsoleExecutionContext extends ExecutionContext {
 export interface AuthRequest {
   email?: string;
   password?: string;
-  access_token?: string;
+  remote_access_token?: string;
 }
 
 export interface AuthResponse {

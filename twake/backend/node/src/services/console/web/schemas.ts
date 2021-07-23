@@ -32,9 +32,30 @@ export const authenticationSchema = {
     properties: {
       email: { type: "string" },
       password: { type: "string" },
-      access_token: { type: "string" },
+      remote_access_token: { type: "string" },
     },
   },
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        access_token: {
+          type: "object",
+          properties: {
+            time: { type: "number" },
+            expiration: { type: "number" },
+            refresh_expiration: { type: "number" },
+            value: { type: "string" },
+            refresh: { type: "string" },
+            type: { type: "string" },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const tokenRenewalSchema = {
   response: {
     "2xx": {
       type: "object",

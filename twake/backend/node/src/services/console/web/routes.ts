@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
-import { authenticationSchema, consoleHookSchema } from "./schemas";
+import { authenticationSchema, consoleHookSchema, tokenRenewalSchema } from "./schemas";
 import crypto from "crypto";
 
 import { ConsoleServiceAPI } from "../api";
@@ -55,10 +55,18 @@ const routes: FastifyPluginCallback<{
 
   fastify.route({
     method: "POST",
-    url: "/token",
+    url: "/login",
     // preHandler: [accessControl],
     schema: authenticationSchema,
     handler: controller.auth.bind(controller),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/token",
+    // preHandler: [accessControl],
+    schema: tokenRenewalSchema,
+    handler: controller.tokenRenewal.bind(controller),
   });
 
   next();
