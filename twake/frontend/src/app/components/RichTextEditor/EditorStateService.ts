@@ -1,9 +1,10 @@
 import { EditorState, CompositeDecorator, ContentState } from "draft-js";
+import EditorDataParser from "./EditorDataParser";
 import { getPlugins } from "./plugins";
 
 class EditorStateService {
   private states: Map<string, EditorState>;
-  
+
   constructor() {
     this.states = new Map();
   }
@@ -56,6 +57,9 @@ class EditorStateService {
     return EditorState.createEmpty(decorators);
   }
 
+  getDataParser(plugins?: Array<string>): EditorDataParser {
+    return new EditorDataParser(getPlugins(plugins));
+  }
 }
 
 const instance = new EditorStateService();

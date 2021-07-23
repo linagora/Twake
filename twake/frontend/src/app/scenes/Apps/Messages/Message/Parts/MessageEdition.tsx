@@ -10,7 +10,6 @@ import Languages from 'services/languages/languages';
 import { Message } from 'app/models/Message';
 import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
-import { fromString } from 'app/components/RichTextEditor/EditorDataParser';
 import './MessageEdition.scss';
 import { EditorState } from 'draft-js';
 
@@ -56,6 +55,7 @@ export default (props: Props) => {
 
   useEffect(() => {
     (async () => {
+      const dataParser = RichTextEditorStateService.getDataParser(editorPlugins);
       const initialContent = PseudoMarkdownCompiler.transformBackChannelsUsers(
         typeof props.message?.content === 'string'
           ? props.message?.content
@@ -68,7 +68,7 @@ export default (props: Props) => {
         RichTextEditorStateService.get(editorId, {
           plugins: editorPlugins,
           clearIfExists: true,
-          initialContent: fromString(initialContent, format),
+          initialContent: dataParser.fromString(initialContent, format),
         }),
       );
       setReady(true);
