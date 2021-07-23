@@ -510,10 +510,16 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     return !contentState.hasText() && contentState.getBlockMap().first().getType() !== 'unstyled';
   }
 
+  shouldScroll() {
+    // TODO: rule to be defined
+    return true;
+  }
+
   render() {
     return (
       <div
         className={classNames('editor', {
+          'scrollable-editor': this.shouldScroll(),
           'editor-hide-placeholder': this.shouldHidePlaceHolder(),
         })}
         onClick={this.focus}
