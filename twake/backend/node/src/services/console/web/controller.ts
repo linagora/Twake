@@ -8,7 +8,6 @@ import {
   ConsoleHookBodyContent,
   ConsoleHookCompany,
   ConsoleHookResponse,
-  ConsoleHookUser,
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
@@ -16,10 +15,7 @@ import PasswordEncoder from "../../../utils/password-encoder";
 import { AccessToken, JWTObject } from "../../../utils/types";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import UserServiceAPI from "../../user/api";
-import User from "../../user/entities/user";
 import assert from "assert";
-import { JWTDataType } from "../../../../../../frontend/src/app/services/JWTStorage";
-import { JwtType } from "../../../core/platform/services/types";
 
 export class ConsoleController {
   private passwordEncoder: PasswordEncoder;
