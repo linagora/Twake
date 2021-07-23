@@ -9,8 +9,8 @@ describe("The /workspace users API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
-  const companyId = "21111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
+  let companyId = "";
 
   const checkUserObject = (resource: any) => {
     expect(resource).toMatchObject({
@@ -51,9 +51,8 @@ describe("The /workspace users API", () => {
       ],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
+    companyId = platform.workspace.company_id;
+
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);

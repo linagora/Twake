@@ -1,6 +1,7 @@
 import { beforeAll, afterAll, afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
+import { v1 as uuidv1 } from "uuid";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1";
@@ -8,7 +9,7 @@ describe("The /users API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
   const companyId = "21111111-1111-1111-1111-111111111111";
   const workspaceId = "31111111-1111-1111-1111-111111111111";
 
@@ -29,9 +30,6 @@ describe("The /users API", () => {
       services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
     testDbService = await TestDbService.getInstance(platform);
     await testDbService.createCompany(companyId);
     const workspacePk = { id: workspaceId, group_id: companyId };

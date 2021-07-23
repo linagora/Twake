@@ -21,7 +21,7 @@ export default class User {
   @Column("last_name", "encoded_string")
   last_name: string;
 
-  @Column("picture", "string")
+  @Column("picture", "encoded_string")
   picture: string;
 
   @Column("status_icon", "string")

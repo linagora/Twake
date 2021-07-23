@@ -41,12 +41,18 @@ describe("The console API hooks", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "search", "user", "workspaces", "auth", "console"],
+      services: [
+        "database",
+        "pubsub",
+        "webserver",
+        "search",
+        "user",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
     await platform.database.getConnector().init();
     testDbService = await TestDbService.getInstance(platform);
     await testDbService.createCompany(companyId);
@@ -349,7 +355,6 @@ describe("The console API hooks", () => {
           }),
         });
 
-        console.log(response.json());
         expect(response.statusCode).toBe(200);
 
         users = await testDbService.getCompanyUsers(company.id);

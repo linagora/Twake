@@ -104,13 +104,14 @@ export class WorkspacesCrudController
   ): Promise<ResourceListResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
 
-    const allCompanyWorkspaces = await this.workspaceService
-      .list(new Pagination(request.params.page_token, request.params.limit), {}, context)
-      .then(a => a.getEntities());
+    const allCompanyWorkspaces = await this.workspaceService.getAllForCompany(context.company_id);
 
     const allUserWorkspaceRolesMap = await this.workspaceService
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
       .then(uws => new Map(uws.map(uw => [uw.workspaceId, uw.role])));
+
+    console.log(allUserWorkspaceRolesMap);
+    console.log(allCompanyWorkspaces);
 
     return {
       resources: allCompanyWorkspaces

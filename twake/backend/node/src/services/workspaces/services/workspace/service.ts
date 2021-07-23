@@ -121,8 +121,19 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return this.workspaceRepository.find(pk, { pagination });
   }
 
-  getAllForCompany(companyId: uuid): Promise<Workspace[]> {
-    return this.workspaceRepository.find({ group_id: companyId }).then(a => a.getEntities());
+  async getAllForCompany(companyId: uuid): Promise<Workspace[]> {
+    let allCompanyWorkspaces: Workspace[] = [];
+    let nextPage: Pagination = new Pagination("", "100");
+    do {
+      const tmp = await this.workspaceRepository.find(
+        { group_id: companyId },
+        { pagination: nextPage },
+      );
+      nextPage = tmp.nextPage as Pagination;
+      allCompanyWorkspaces = [...allCompanyWorkspaces, ...tmp.getEntities()];
+    } while (nextPage.page_token);
+
+    return allCompanyWorkspaces;
   }
 
   async addUser(
@@ -193,9 +204,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
     companyId: CompanyPrimaryKey,
   ): Promise<WorkspaceUser[]> {
-    const allCompanyWorkspaces = await this.workspaceRepository
-      .find({ group_id: companyId.id })
-      .then(a => a.getEntities());
+    const allCompanyWorkspaces = await this.getAllForCompany(companyId.id);
 
     const UserWorkspaces = await Promise.all(
       allCompanyWorkspaces.map(workspace =>

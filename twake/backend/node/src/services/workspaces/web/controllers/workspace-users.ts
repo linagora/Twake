@@ -151,15 +151,17 @@ export class WorkspaceUsersCrudController
 
     const companiesMap = await this.getCompaniesMap(allCompanyUsers);
 
-    const resources = allWorkspaceUsers.map(async wu =>
-      this.formatWorkspaceUser(
-        wu,
-        context.company_id,
-        allUsersMap.get(wu.userId),
-        Array.from(companyUsersMap.get(wu.userId) || []),
-        companiesMap,
-      ),
-    );
+    const resources = allWorkspaceUsers
+      .filter(wu => allUsersMap.get(wu.userId))
+      .map(async wu =>
+        this.formatWorkspaceUser(
+          wu,
+          context.company_id,
+          allUsersMap.get(wu.userId),
+          Array.from(companyUsersMap.get(wu.userId) || []),
+          companiesMap,
+        ),
+      );
 
     return {
       resources: await Promise.all(resources),

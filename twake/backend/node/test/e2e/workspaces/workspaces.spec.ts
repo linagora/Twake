@@ -9,8 +9,8 @@ describe("The /workspaces API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
-  const companyId = "21111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
+  let companyId = "";
 
   beforeAll(async ends => {
     platform = await init({
@@ -25,6 +25,8 @@ describe("The /workspaces API", () => {
         "console",
       ],
     });
+
+    companyId = platform.workspace.company_id;
 
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
@@ -84,6 +86,9 @@ describe("The /workspaces API", () => {
       expect(response.statusCode).toBe(200);
 
       const resources = response.json()["resources"];
+
+      console.log(response.json());
+      console.log(testDbService.workspaces[0]);
 
       expect(resources.length).toBe(2);
 

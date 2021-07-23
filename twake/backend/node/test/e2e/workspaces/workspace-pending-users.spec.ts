@@ -54,9 +54,6 @@ describe("The /workspace/pending users API", () => {
       ],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);

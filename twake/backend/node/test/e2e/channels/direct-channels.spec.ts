@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
 import { ResourceCreateResponse, ResourceListResponse } from "../../../src/utils/types";
@@ -91,7 +91,7 @@ describe("The direct channels API", () => {
           {
             members: [uuidv1(), uuidv1()],
           },
-          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
+          { ...getContext({ id: uuidv1() }), ...{ workspace: directWorkspace } },
         ),
       ]);
 
@@ -167,7 +167,7 @@ describe("The direct channels API", () => {
           {
             members,
           },
-          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
+          { ...getContext({ id: uuidv1() }), ...{ workspace: directWorkspace } },
         ),
 
         //This channel will automatically contains the requester because it is added automatically in it
@@ -185,7 +185,7 @@ describe("The direct channels API", () => {
           {
             members: [uuidv1(), uuidv1()],
           },
-          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
+          { ...getContext({ id: uuidv1() }), ...{ workspace: directWorkspace } },
         ),
       ]);
 
@@ -230,7 +230,7 @@ describe("The direct channels API", () => {
         channelService.channels.save(channel, {}, getContext()),
 
         //This channel will not contain currentUser
-        channelService.channels.save(channel2, {}, getContext({ id: uuidv4() })),
+        channelService.channels.save(channel2, {}, getContext({ id: uuidv1() })),
 
         //This channel will automatically contains the requester because it is added automatically in it
         channelService.channels.save<ChannelSaveOptions>(
