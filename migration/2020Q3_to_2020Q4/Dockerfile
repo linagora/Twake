@@ -1,4 +1,4 @@
-FROM php:7.1.11-fpm
+FROM php:7.4-fpm
 
 RUN apt-get update && apt-get install -y curl
 RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
