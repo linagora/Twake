@@ -419,6 +419,7 @@ export class WorkspaceUsersCrudController
 
       return { status: "success" };
     } catch (e) {
+      console.error(e);
       return {
         status: "error",
       };
