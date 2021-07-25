@@ -4,13 +4,9 @@ services:
   scylladb:
     image: scylladb/scylla:4.1.0
     command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
-    volumes:
-      - ./docker-data/scylladb:/var/lib/scylla
   scylladb2:
     image: scylladb/scylla:4.1.0
     command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
-    volumes:
-      - ./docker-data/scylladb2:/var/lib/scylla
   rabbitmq:
     image: rabbitmq:3
     environment:
@@ -22,8 +18,6 @@ services:
   mongo:
     container_name: mongo
     image: mongo
-    volumes:
-      - ./docker-data/mongo:/data/db
     ports:
       - 27017:27017
   redis:
@@ -76,8 +70,6 @@ services:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - ./docker-data/es_twake:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
   nginx:
