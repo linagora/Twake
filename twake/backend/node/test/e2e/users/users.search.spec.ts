@@ -54,12 +54,14 @@ describe("The /users API", () => {
         lastName: "Smith-Rabiot",
         email: "rbs@twake.app",
       });
-
       await testDbService.createUser([workspacePk], {
         firstName: "Alexïs",
         lastName: "Goélâns",
         email: "alexis.goelans@twake.app",
       });
+
+      //Wait for indexation to happen
+      await new Promise(r => setTimeout(r, 2000));
 
       let resources = await search("ha");
       expect(resources.length).toBe(1);

@@ -10,6 +10,7 @@ export function buildSearchQuery<Entity>(
 ): { esParams: RequestParams.Search; esOptions: TransportRequestOptions } {
   const instance = new (entityType as any)();
   const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
+  const indexProperties = entityDefinition.options.search.esMapping.properties || {};
 
   let esBody: any = {
     query: {
@@ -34,13 +35,18 @@ export function buildSearchQuery<Entity>(
   if (options.$text) {
     esBody.query.bool.minimum_should_match = 1;
     esBody.query.bool.should = esBody.query.bool.should || [];
-    let match: any = {};
-    match["expanded"] = {
-      query: options.$text.$search,
-    };
-    esBody.query.bool.should.push({
-      match,
-    });
+
+    for (const [key, value] of Object.entries(indexProperties)) {
+      if ((value as any)["type"] === "text") {
+        let match: any = {};
+        match[key] = {
+          query: options.$text.$search,
+        };
+        esBody.query.bool.should.push({
+          match,
+        });
+      }
+    }
   }
 
   console.log(JSON.stringify(esBody));

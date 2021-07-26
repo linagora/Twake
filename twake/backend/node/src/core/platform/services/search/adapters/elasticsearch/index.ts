@@ -21,8 +21,6 @@ import { parsePrimaryKey, stringifyPrimaryKey } from "../utils";
 import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
 import { buildSearchQuery } from "./search";
 
-const mappingPrefix = "type_";
-
 type Operation = {
   index?: { _index: string; _id: string; _type: string };
   delete?: { _index: string; _id: string; _type: string };
@@ -31,7 +29,8 @@ type Operation = {
 
 export default class ElasticSearch extends SearchAdapter implements SearchAdapterInterface {
   private client: Client;
-  private buffer: Readable;
+  private bulkReaders: number = 0;
+  private buffer: Operation[] = [];
   private name = "ElasticSearch";
 
   constructor(
@@ -64,7 +63,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     const mapping = entity.options?.search?.esMapping;
 
     let mappings: any = {};
-    mappings[`${mappingPrefix}${name}`] = { ...mapping, _source: { enabled: false } };
+    mappings[`_doc`] = { ...mapping, _source: { enabled: false } };
 
     try {
       await this.client.indices.get({
@@ -78,8 +77,17 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         {
           index: name,
           body: {
+            settings: {
+              analysis: {
+                analyzer: {
+                  folding: {
+                    tokenizer: "standard",
+                    filter: ["lowercase", "asciifolding"],
+                  },
+                },
+              },
+            },
             mappings: { ...mappings },
-            _source: { enabled: false },
           },
         },
         { ignore: [400] },
@@ -125,7 +133,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         index: {
           _index: index,
           _id: stringifyPrimaryKey(entity),
-          _type: `${mappingPrefix}${index}`,
+          _type: `_doc`,
         },
         ...body,
       };
@@ -134,6 +142,8 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
 
       this.buffer.push(record);
     }
+
+    this.startBulkReader();
   }
 
   public async remove(entities: any[]) {
@@ -152,7 +162,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         delete: {
           _index: index,
           _id: stringifyPrimaryKey(entity),
-          _type: `${mappingPrefix}${index}`,
+          _type: `_doc`,
         },
       };
 
@@ -160,53 +170,68 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
 
       this.buffer.push(record);
     }
-  }
 
-  private flush() {
     this.startBulkReader();
   }
 
-  private startBulkReader() {
+  private async startBulkReader() {
+    if (this.bulkReaders > 0) {
+      return;
+    }
+
+    logger.info(`Start new Elasticsearch bulk reader.`);
+    this.bulkReaders += 1;
+
+    await new Promise(r => setTimeout(r, parseInt(`${this.configuration.flushInterval}`) || 3000));
+
+    const buffer = this.buffer;
+    this.buffer = [];
+
+    try {
+      await this.client.helpers.bulk({
+        flushInterval: 1,
+        datasource: buffer,
+        onDocument: (doc: Operation) => {
+          if (doc.delete) {
+            logger.info(
+              `Operation ${"DELETE"} pushed to elasticsearch index ${doc.delete._index} (doc.id: ${
+                doc.delete._id
+              })`,
+            );
+            return {
+              delete: doc.delete,
+            };
+          }
+          if (doc.index) {
+            logger.info(
+              `Operation ${"INDEX"} pushed to elasticsearch index ${doc.index._index} (doc.id: ${
+                doc.index._id
+              })`,
+            );
+            return {
+              index: doc.index,
+              ...doc.index,
+            };
+          }
+          return null;
+        },
+        onDrop: res => {
+          const doc = res.document;
+          logger.error(
+            `Operation ${doc.action} was droped while pushing to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
+            res.error,
+          );
+        },
+      });
+    } catch (err) {
+      logger.error(`${this.name} - An error occured with the bulk reader`);
+      logger.error(err);
+    }
+
     logger.info(`Elasticsearch bulk flushed.`);
+    this.bulkReaders += -1;
 
-    if (this.buffer) this.buffer.push(null);
-    this.buffer = new Readable({ objectMode: true, read: () => {} });
-
-    this.client.helpers.bulk({
-      flushInterval: parseInt(`${this.configuration.flushInterval}`) || 3000,
-      datasource: streamToIterator(this.buffer),
-      onDocument: (doc: Operation) => {
-        if (doc.delete) {
-          logger.info(
-            `Operation ${"DELETE"} pushed to elasticsearch index ${doc.delete._index} (doc.id: ${
-              doc.delete._id
-            })`,
-          );
-          return {
-            delete: doc.delete,
-          };
-        }
-        if (doc.index) {
-          logger.info(
-            `Operation ${"INDEX"} pushed to elasticsearch index ${doc.index._index} (doc.id: ${
-              doc.index._id
-            })`,
-          );
-          return {
-            index: doc.index,
-            ...doc.index,
-          };
-        }
-        return null;
-      },
-      onDrop: res => {
-        const doc = res.document;
-        logger.error(
-          `Operation ${doc.action} was droped while pushing to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
-          res.error,
-        );
-      },
-    });
+    this.startBulkReader();
   }
 
   public async search<EntityType>(
