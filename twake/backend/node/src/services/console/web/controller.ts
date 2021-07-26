@@ -42,21 +42,9 @@ export class ConsoleController {
   }
 
   async tokenRenewal(request: FastifyRequest, reply: FastifyReply): Promise<AuthResponse> {
-    const authHeader = request.headers.authorization;
-    if (!authHeader || !authHeader.toLowerCase().startsWith("bearer")) {
-      throw CrudExeption.forbidden("Wrong authorization");
-    }
-
-    const token = authHeader.substr(7).trim();
-
-    let data: JWTObject = null;
-    try {
-      data = this.authService.verifyToken(token);
-    } catch (e) {
-      throw CrudExeption.forbidden(e.message);
-    }
-
-    return { access_token: this.authService.generateJWT(data.sub, data.email) };
+    return {
+      access_token: this.authService.generateJWT(request.currentUser.id, request.currentUser.email),
+    };
   }
 
   private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {

@@ -56,7 +56,6 @@ const routes: FastifyPluginCallback<{
   fastify.route({
     method: "POST",
     url: "/login",
-    // preHandler: [accessControl],
     schema: authenticationSchema,
     handler: controller.auth.bind(controller),
   });
@@ -64,7 +63,7 @@ const routes: FastifyPluginCallback<{
   fastify.route({
     method: "POST",
     url: "/token",
-    // preHandler: [accessControl],
+    preValidation: [fastify.authenticate],
     schema: tokenRenewalSchema,
     handler: controller.tokenRenewal.bind(controller),
   });
