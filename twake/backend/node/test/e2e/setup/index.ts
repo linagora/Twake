@@ -1,4 +1,4 @@
-import path from "path";
+import { resolve as pathResolve } from "path";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { FastifyInstance } from "fastify";
 import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/platform/platform";
@@ -46,7 +46,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
   if (!testPlatform) {
     const configuration: TwakePlatformConfiguration = {
       services: config.services,
-      servicesPath: path.resolve(__dirname, "../../../src/services/"),
+      servicesPath: pathResolve(__dirname, "../../../src/services/"),
     };
     const platform = new TwakePlatform(configuration);
 

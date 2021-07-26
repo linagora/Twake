@@ -141,6 +141,10 @@ export class CrudExeption extends Error {
   static forbidden(details: string): CrudExeption {
     return new CrudExeption(details, 403);
   }
+
+  static notImplemented(details: string): CrudExeption {
+    return new CrudExeption(details, 501);
+  }
 }
 
 export interface Paginable {
