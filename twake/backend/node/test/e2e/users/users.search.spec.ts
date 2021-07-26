@@ -73,7 +73,7 @@ describe("The /users API", () => {
 
       resources = await search("bob rabiot");
 
-      expect(resources[0].email).toBe("rabiot.b@twake.app");
+      expect(resources.map(e => e.email).includes("rabiot.b@twake.app")).toBe(true);
       expect(resources.map(e => e.email).includes("rbs@twake.app")).toBe(true);
       expect(resources.map(e => e.email).includes("bob@twake.app")).toBe(true);
 

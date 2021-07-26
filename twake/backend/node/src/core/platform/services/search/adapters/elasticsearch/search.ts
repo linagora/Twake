@@ -37,6 +37,8 @@ export function buildSearchQuery<Entity>(
     }
   }
 
+  //TODO implement $gte, $lt, etc
+
   if (options.$text) {
     esBody.query.bool.minimum_should_match = 1;
     esBody.query.bool.should = esBody.query.bool.should || [];
