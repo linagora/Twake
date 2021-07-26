@@ -287,8 +287,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       }
     }
 
-    await new Promise(r => setTimeout(r, 1000));
-
     const nextPage: Paginable = new Pagination(nextToken, options.pagination.limitStr || "100");
 
     return new ListResult(entityDefinition.type, entities, nextPage);

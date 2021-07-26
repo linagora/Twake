@@ -54,8 +54,6 @@ export default class SearchRepository<EntityType> {
       logger.error(err);
     }
 
-    await new Promise(r => setTimeout(r, 2000));
-
     logger.debug(`${this.name} Found ${results.length} results for table ${this.table}`);
 
     return new ListResult(entityDefinition.type, results, nextPage);
