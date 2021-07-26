@@ -63,7 +63,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     const mapping = entity.options?.search?.esMapping;
 
     let mappings: any = {};
-    mappings[`_doc`] = { ...mapping, _source: { enabled: false } };
+    mappings[`_doc`] = { ...mapping, _source: { enabled: true } };
 
     try {
       await this.client.indices.get({
@@ -182,9 +182,13 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     logger.info(`Start new Elasticsearch bulk reader.`);
     this.bulkReaders += 1;
 
-    await new Promise(r => setTimeout(r, parseInt(`${this.configuration.flushInterval}`) || 3000));
-
-    const buffer = this.buffer;
+    let buffer;
+    do {
+      await new Promise(r =>
+        setTimeout(r, parseInt(`${this.configuration.flushInterval}`) || 3000),
+      );
+      buffer = this.buffer;
+    } while (buffer.length === 0);
     this.buffer = [];
 
     try {
