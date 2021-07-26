@@ -25,6 +25,8 @@ services:
       - NODE_ENV=test
       - DB_DRIVER
       - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
+      - SEARCH_ES_ENDPOINT=http://elasticsearch:9200
+      - SEARCH_ES_FLUSHINTERVAL=1
     volumes:
       - ./backend/node:/usr/src/app
       - ./docker-data/documents/:/storage/

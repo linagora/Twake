@@ -80,11 +80,11 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
   }
 
   public async upsert(entities: any[]) {
-    entities.forEach(entity => {
+    for (const entity of entities) {
       const { entityDefinition, columnsDefinition } = getEntityDefinition(entity);
       const pkColumns = unwrapPrimarykey(entityDefinition);
 
-      this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
+      await this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
 
       if (!entityDefinition.options?.search) {
         return;
@@ -117,14 +117,14 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       logger.info(`Add operation upsert to to mongodb search for doc ${record.id}`);
 
       this.proceed(record);
-    });
+    }
   }
 
   public async remove(entities: any[]) {
-    entities.forEach(entity => {
+    for (const entity of entities) {
       const { entityDefinition, columnsDefinition } = getEntityDefinition(entity);
 
-      this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
+      await this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
 
       if (!entityDefinition.options?.search) {
         return;
@@ -139,7 +139,7 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       logger.info(`Add operation remove from to mongodb search for doc ${record.id}`);
 
       this.proceed(record);
-    });
+    }
   }
 
   private getIndex(entityDefinition: EntityDefinition) {

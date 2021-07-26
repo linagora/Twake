@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: es-test
-        run: cd twake && docker-compose -f docker-compose.yml.dist.tests up -d elasticsearch; sleep 60; echo "ready"; docker-compose -f docker-compose.yml.dist.tests logs; curl localhost:9200; docker-compose -f docker-compose.yml.dist.tests run elasticsearch curl elasticsearch:9200;
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.yml.dist.tests run node npm run test:unit
       - name: e2e-mongo-test

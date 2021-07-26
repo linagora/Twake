@@ -66,25 +66,40 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
 
     const name = entity.options?.search?.index || entity.name;
     const mapping = entity.options?.search?.esMapping;
-    logger.info(`Create index ${name} with mapping %o`, mapping);
 
-    await this.client.indices.create(
-      {
+    let mappings: any = {};
+    mappings["type_" + name] = { ...mapping, _source: { enabled: false } };
+
+    try {
+      await this.client.indices.get({
         index: name,
-        body: {
-          mappings: { ...mapping, _source: { enabled: false } },
+      });
+      logger.info(`Index "${name}" already created`);
+    } catch (e) {
+      logger.info(`Create index ${name} with mapping %o`, mapping);
+
+      const rep = await this.client.indices.create(
+        {
+          index: name,
+          body: {
+            mappings,
+          },
         },
-      },
-      { ignore: [400] },
-    );
+        { ignore: [400] },
+      );
+
+      if (rep.statusCode !== 200) {
+        logger.error(`${this.name} -  ${JSON.stringify(rep.body)}`);
+      }
+    }
   }
 
   public async upsert(entities: any[]) {
-    entities.forEach(entity => {
+    for (const entity of entities) {
       const { entityDefinition, columnsDefinition } = getEntityDefinition(entity);
       const pkColumns = unwrapPrimarykey(entityDefinition);
 
-      this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
+      await this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
 
       if (!entityDefinition.options?.search) {
         return;
@@ -117,14 +132,14 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       logger.info(`Add operation upsert to elasticsearch for doc ${record.id}`);
 
       this.buffer.push(record);
-    });
+    }
   }
 
   public async remove(entities: any[]) {
-    entities.forEach(entity => {
+    for (const entity of entities) {
       const { entityDefinition, columnsDefinition } = getEntityDefinition(entity);
 
-      this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
+      await this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
 
       if (!entityDefinition.options?.search) {
         return;
@@ -139,7 +154,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       logger.info(`Add operation remove from elasticsearch for doc ${record.id}`);
 
       this.buffer.push(record);
-    });
+    }
   }
 
   private flush() {
@@ -153,20 +168,20 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     this.buffer = new Readable({ objectMode: true, read: () => {} });
 
     this.client.helpers.bulk({
-      flushInterval: this.configuration.flushInterval || 30000,
+      flushInterval: parseInt(`${this.configuration.flushInterval}`) || 3000,
       datasource: streamToIterator(this.buffer),
       onDocument: (doc: Operation) => {
         logger.info(
           `Operation ${doc.action} pushed to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
         );
         if (doc.action === "remove") {
-          return { delete: { _index: doc.index, _id: doc.id } };
+          return { delete: { _index: doc.index, _id: doc.id, _type: "type_" + doc.index } };
         }
         if (doc.action === "upsert") {
-          return [
-            { update: { _index: doc.index, _id: doc.id } },
-            { doc: doc.body, doc_as_upsert: true },
-          ];
+          return {
+            index: { _index: doc.index, _id: doc.id, _type: "type_" + doc.index },
+            ...doc.body,
+          };
         }
       },
       onDrop: res => {
@@ -175,12 +190,13 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
           `Operation ${doc.action} was droped while pushing to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
           res.error,
         );
+        console.log(res);
       },
     });
   }
 
   public async search<EntityType>(
-    table: string,
+    _table: string,
     entityType: EntityTarget<EntityType>,
     filters: FindFilter,
     options: FindOptions = {},
@@ -204,6 +220,12 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     } else {
       esResponse = await this.client.search(esParamsWithScroll, esOptions);
     }
+
+    if (esResponse.statusCode !== 200) {
+      logger.error(`${this.name} -  ${JSON.stringify(esResponse.body)}`);
+    }
+
+    console.log(esResponse);
 
     const nextToken = esResponse.body?._scroll_id || "";
     const hits = esResponse.body?.hits?.hits || [];

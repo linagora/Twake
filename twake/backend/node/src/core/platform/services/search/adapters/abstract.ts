@@ -12,7 +12,7 @@ import {
 export class SearchAdapter implements SearchAdapterInterface {
   private createdIndexes: string[] = [];
 
-  protected ensureIndex(
+  protected async ensureIndex(
     entityDefinition: EntityDefinition,
     columns: { [name: string]: ColumnDefinition },
     createIndex: Function,
@@ -20,7 +20,7 @@ export class SearchAdapter implements SearchAdapterInterface {
     const index = entityDefinition.name;
     if (!this.createdIndexes.includes(index)) {
       this.createdIndexes.push(index);
-      createIndex(entityDefinition, columns);
+      await createIndex(entityDefinition, columns);
     }
   }
 
