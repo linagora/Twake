@@ -8,15 +8,13 @@ import {
   ConsoleHookBodyContent,
   ConsoleHookCompany,
   ConsoleHookResponse,
-  ConsoleHookUser,
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
 import PasswordEncoder from "../../../utils/password-encoder";
-import { AccessToken } from "../../../utils/types";
+import { AccessToken, JWTObject } from "../../../utils/types";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import UserServiceAPI from "../../user/api";
-import User from "../../user/entities/user";
 import assert from "assert";
 
 export class ConsoleController {
@@ -34,13 +32,19 @@ export class ConsoleController {
     request: FastifyRequest<{ Body: AuthRequest }>,
     reply: FastifyReply,
   ): Promise<AuthResponse> {
-    if (request.body.access_token) {
-      return { access_token: await this.authByToken(request.body.access_token) };
+    if (request.body.remote_access_token) {
+      return { access_token: await this.authByToken(request.body.remote_access_token) };
     } else if (request.body.email && request.body.password) {
       return { access_token: await this.authByPassword(request.body.email, request.body.password) };
     } else {
-      throw CrudExeption.badRequest("access_token or email+password are required");
+      throw CrudExeption.badRequest("remote_access_token or email+password are required");
     }
+  }
+
+  async tokenRenewal(request: FastifyRequest, reply: FastifyReply): Promise<AuthResponse> {
+    return {
+      access_token: this.authService.generateJWT(request.currentUser.id, request.currentUser.email),
+    };
   }
 
   private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {

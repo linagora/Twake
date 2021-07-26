@@ -1,6 +1,6 @@
 import AuthServiceAPI, { JwtConfiguration } from "./provider";
 import jwt from "jsonwebtoken";
-import { AccessToken, uuid } from "../../../../utils/types";
+import { AccessToken, JWTObject, uuid } from "../../../../utils/types";
 import assert from "assert";
 
 export class AuthService implements AuthServiceAPI {
@@ -18,12 +18,12 @@ export class AuthService implements AuthServiceAPI {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  verifyToken(token: string): boolean {
-    throw new Error("Method not implemented.");
+  verifyToken(token: string): JWTObject {
+    return jwt.verify(token, this.configuration.secret) as JWTObject;
   }
 
   generateJWT(userId: uuid, email: string): AccessToken {
-    const now = new Date().getTime(); // Current time in UTC
+    const now = Math.round(new Date().getTime() / 1000); // Current time in UTC
     assert(this.configuration.expiration, "jwt.expiration is missing");
     assert(this.configuration.refresh_expiration, "jwt.refresh_expiration is missing");
 

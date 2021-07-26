@@ -1,14 +1,13 @@
-import { afterAll, beforeAll, describe, expect, it as _it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it as _it, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import crypto from "crypto";
 import { ConsoleServiceAPI } from "../../../src/services/console/api";
 import { ConsoleOptions, ConsoleType } from "../../../src/services/console/types";
 
 let consoleType: ConsoleType = null;
 
-export const it = (name: string, cb: (a: any) => void) => {
+export const itRemote = (name: string, cb: (a: any) => void) => {
   _it(name, async done => {
     if (consoleType === "remote") {
       cb(done);
@@ -20,7 +19,8 @@ export const it = (name: string, cb: (a: any) => void) => {
 };
 
 describe("The console API auth", () => {
-  const url = "/internal/services/console/v1/token";
+  const loginUrl = "/internal/services/console/v1/login";
+  const tokenRefreshUrl = "/internal/services/console/v1/token";
 
   let platform: TestPlatform;
 
@@ -28,8 +28,6 @@ describe("The console API auth", () => {
   const companyId = uuidv1();
 
   const firstEmail = "superman@email.com";
-  const secondEmail = "C.o.n.sole_created-user@email.com";
-  const thirdEmail = "superman@someogherservice.com";
 
   const firstUserPassword = "superPassw0rd";
 
@@ -82,29 +80,29 @@ describe("The console API auth", () => {
     it("should 400 when required params are missing ", async done => {
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}`,
+        url: `${loginUrl}`,
         payload: {
           email: "",
           password: "",
-          access_token: "",
+          remote_access_token: "",
         },
       });
       expect(response.statusCode).toBe(400);
       expect(response.json()).toMatchObject({
         statusCode: 400,
         error: "Bad Request",
-        message: "access_token or email+password are required",
+        message: "remote_access_token or email+password are required",
       });
       done();
     });
   });
-  describe.only("Auth using token", () => {
-    it("should 403 when token is invalid", async done => {
+  describe("Auth using token", () => {
+    itRemote("should 403 when token is invalid", async done => {
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}`,
+        url: `${loginUrl}`,
         payload: {
-          access_token: "12345",
+          remote_access_token: "12345",
         },
       });
       expect(response.json()).toMatchObject({
@@ -117,14 +115,14 @@ describe("The console API auth", () => {
       done();
     });
 
-    it("should 200 when token is valid", async done => {
+    itRemote("should 200 when token is valid", async done => {
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}`,
+        url: `${loginUrl}`,
         payload: {
           email: "",
           password: "",
-          access_token: "a550c8b8b942bd92e447271343ac6b29",
+          remote_access_token: "a550c8b8b942bd92e447271343ac6b29",
         },
       });
       expect(response.json()).toMatchObject({
@@ -145,7 +143,7 @@ describe("The console API auth", () => {
     it("should 403 when user doesn't exists", async done => {
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}`,
+        url: `${loginUrl}`,
         payload: {
           email: "randomEmail",
           password: "randomPass",
@@ -165,7 +163,7 @@ describe("The console API auth", () => {
 
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}`,
+        url: `${loginUrl}`,
         payload: {
           email: user.email_canonical,
           password: "randomPass",
@@ -185,7 +183,7 @@ describe("The console API auth", () => {
 
       const response = await platform.app.inject({
         method: "POST",
-        url: `${url}`,
+        url: `${loginUrl}`,
         payload: {
           email: user.email_canonical,
           password: firstUserPassword,
@@ -204,6 +202,73 @@ describe("The console API auth", () => {
       });
 
       done();
+    });
+  });
+  describe("Token renewal", () => {
+    it("should 200 when refresh from access_token", async done => {
+      const user = testDbService.users[0];
+
+      const firstResponse = await platform.app.inject({
+        method: "POST",
+        url: `${loginUrl}`,
+        payload: {
+          email: user.email_canonical,
+          password: firstUserPassword,
+        },
+      });
+
+      const firstRes = firstResponse.json().access_token;
+      expect(firstRes.value).toBeTruthy();
+
+      setTimeout(async () => {
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${tokenRefreshUrl}`,
+          headers: {
+            authorization: `Bearer ${firstRes.value}`,
+          },
+        });
+
+        const secondRes = response.json().access_token;
+
+        expect(secondRes.expiration).toBeGreaterThan(firstRes.expiration);
+        expect(secondRes.refresh_expiration).toBeGreaterThan(firstRes.refresh_expiration);
+
+        done();
+      }, 2000);
+    });
+
+    it("should 200 when refresh from refresh_token", async done => {
+      const user = testDbService.users[0];
+
+      const firstResponse = await platform.app.inject({
+        method: "POST",
+        url: `${loginUrl}`,
+        payload: {
+          email: user.email_canonical,
+          password: firstUserPassword,
+        },
+      });
+
+      const firstRes = firstResponse.json().access_token;
+      expect(firstRes.refresh).toBeTruthy();
+
+      setTimeout(async () => {
+        const response = await platform.app.inject({
+          method: "POST",
+          url: `${tokenRefreshUrl}`,
+          headers: {
+            authorization: `Bearer ${firstRes.refresh}`,
+          },
+        });
+
+        const secondRes = response.json().access_token;
+
+        expect(secondRes.expiration).toBeGreaterThan(firstRes.expiration);
+        expect(secondRes.refresh_expiration).toBeGreaterThan(firstRes.refresh_expiration);
+
+        done();
+      }, 2000);
     });
   });
 });

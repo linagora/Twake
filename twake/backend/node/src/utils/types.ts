@@ -123,3 +123,12 @@ export interface AccessToken {
   refresh: string;
   type: "Bearer";
 }
+
+export interface JWTObject {
+  exp: number;
+  type: string;
+  iat: number;
+  nbf: number;
+  sub: string;
+  email: string;
+}
