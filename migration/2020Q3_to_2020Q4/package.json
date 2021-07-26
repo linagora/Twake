@@ -12,7 +12,7 @@
   "dependencies": {
     "@types/config": "0.0.38",
     "@types/lodash": "^4.14.168",
-    "@types/mongodb": "^3.6.3",
+    "@types/mongodb": "^3.6.19",
     "@types/uuid": "^8.3.0",
     "cassandra-driver": "^4.6.1",
     "class-transformer": "^0.3.2",
