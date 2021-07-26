@@ -28,7 +28,12 @@ describe("The /users API", () => {
         id: platform.workspace.workspace_id,
         group_id: platform.workspace.company_id,
       };
+      const workspacePk2 = {
+        id: uuidv1(),
+        group_id: uuidv1(),
+      };
       await testDbService.createWorkspace(workspacePk);
+      await testDbService.createWorkspace(workspacePk2);
       await testDbService.createUser([workspacePk], {
         firstName: "Ha",
         lastName: "Nguyen",
@@ -49,7 +54,7 @@ describe("The /users API", () => {
         lastName: "Rabiot",
         email: "rabiot.b@twake.app",
       });
-      await testDbService.createUser([workspacePk], {
+      await testDbService.createUser([workspacePk, workspacePk2], {
         firstName: "Bob",
         lastName: "Smith-Rabiot",
         email: "rbs@twake.app",
@@ -61,7 +66,7 @@ describe("The /users API", () => {
       });
 
       //Wait for indexation to happen
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise(r => setTimeout(r, 5000));
 
       let resources = await search("ha");
       expect(resources.length).toBe(1);
@@ -81,7 +86,10 @@ describe("The /users API", () => {
       resources = await search("rbs@twake.app");
       expect(resources[0].email).toBe("rbs@twake.app");
 
-      resources = await search("rbs@twake.app", platform.workspace.company_id);
+      resources = await search("bob", workspacePk2.group_id);
+      expect(resources.length).toBe(1);
+
+      resources = await search("rbs@twake.app", workspacePk.group_id);
       expect(resources[0].email).toBe("rbs@twake.app");
 
       resources = await search("rbs@twake.app", uuidv1());
