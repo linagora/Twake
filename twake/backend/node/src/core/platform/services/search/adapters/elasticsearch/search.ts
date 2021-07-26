@@ -11,10 +11,52 @@ export function buildSearchQuery<Entity>(
   const instance = new (entityType as any)();
   const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
 
-  //TODO
+  let esBody: any = {
+    query: {
+      bool: {
+        /*
+        must: {
+          term: { "user.id": "kimchy" },
+        },
+        filter: {
+          term: { tags: "production" },
+        },
+        must_not: {
+          range: {
+            age: { gte: 10, lte: 20 },
+          },
+        },*/
+        boost: 1.0,
+      },
+    },
+  };
+
+  if (options.$text) {
+    esBody.query.bool.minimum_should_match = 1;
+    esBody.query.bool.should = esBody.query.bool.should || [];
+    let match: any = {};
+    match["expanded"] = {
+      query: options.$text.$search,
+    };
+    esBody.query.bool.should.push({
+      match,
+    });
+  }
+
+  console.log(JSON.stringify(esBody));
+
+  const esParams: RequestParams.Search = {
+    index: entityDefinition.options?.search?.index || entityDefinition.name,
+    body: esBody,
+  };
+
+  let esOptions: TransportRequestOptions = {
+    ignore: [404],
+    maxRetries: 3,
+  };
 
   return {
-    esParams: {},
-    esOptions: {},
+    esParams,
+    esOptions,
   };
 }

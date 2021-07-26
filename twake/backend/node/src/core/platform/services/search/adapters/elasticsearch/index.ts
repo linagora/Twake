@@ -24,10 +24,9 @@ import { buildSearchQuery } from "./search";
 const mappingPrefix = "type_";
 
 type Operation = {
-  index: string;
-  id: string;
-  action: "remove" | "upsert";
-  body?: any;
+  index?: { _index: string; _id: string; _type: string };
+  delete?: { _index: string; _id: string; _type: string };
+  [key: string]: any;
 };
 
 export default class ElasticSearch extends SearchAdapter implements SearchAdapterInterface {
@@ -79,7 +78,8 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         {
           index: name,
           body: {
-            mappings,
+            mappings: { ...mappings },
+            _source: { enabled: false },
           },
         },
         { ignore: [400] },
@@ -119,11 +119,15 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         ...entityDefinition.options.search.source(entity),
       };
 
+      const index = entityDefinition.options?.search?.index || entityDefinition.name;
+
       const record: Operation = {
-        index: entityDefinition.options?.search?.index || entityDefinition.name,
-        id: stringifyPrimaryKey(entity),
-        action: "upsert",
-        body,
+        index: {
+          _index: index,
+          _id: stringifyPrimaryKey(entity),
+          _type: `${mappingPrefix}${index}`,
+        },
+        ...body,
       };
 
       logger.info(`Add operation upsert to elasticsearch for doc ${record.id}`);
@@ -142,10 +146,14 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         return;
       }
 
+      const index = entityDefinition.options?.search?.index || entityDefinition.name;
+
       const record: Operation = {
-        index: entityDefinition.options?.search?.index || entityDefinition.name,
-        id: stringifyPrimaryKey(entity),
-        action: "remove",
+        delete: {
+          _index: index,
+          _id: stringifyPrimaryKey(entity),
+          _type: `${mappingPrefix}${index}`,
+        },
       };
 
       logger.info(`Add operation remove from elasticsearch for doc ${record.id}`);
@@ -168,20 +176,28 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       flushInterval: parseInt(`${this.configuration.flushInterval}`) || 3000,
       datasource: streamToIterator(this.buffer),
       onDocument: (doc: Operation) => {
-        logger.info(
-          `Operation ${doc.action} pushed to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
-        );
-        if (doc.action === "remove") {
+        if (doc.delete) {
+          logger.info(
+            `Operation ${"DELETE"} pushed to elasticsearch index ${doc.delete._index} (doc.id: ${
+              doc.delete._id
+            })`,
+          );
           return {
-            delete: { _index: doc.index, _id: doc.id, _type: `${mappingPrefix}${doc.index}` },
+            delete: doc.delete,
           };
         }
-        if (doc.action === "upsert") {
+        if (doc.index) {
+          logger.info(
+            `Operation ${"INDEX"} pushed to elasticsearch index ${doc.index._index} (doc.id: ${
+              doc.index._id
+            })`,
+          );
           return {
-            index: { _index: doc.index, _id: doc.id, _type: `${mappingPrefix}${doc.index}` },
-            ...doc.body,
+            index: doc.index,
+            ...doc.index,
           };
         }
+        return null;
       },
       onDrop: res => {
         const doc = res.document;
