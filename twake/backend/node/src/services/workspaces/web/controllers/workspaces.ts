@@ -110,9 +110,6 @@ export class WorkspacesCrudController
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
       .then(uws => new Map(uws.map(uw => [uw.workspaceId, uw.role])));
 
-    console.log(allUserWorkspaceRolesMap);
-    console.log(allCompanyWorkspaces);
-
     return {
       resources: allCompanyWorkspaces
         .filter(workspace => allUserWorkspaceRolesMap.has(workspace.id.toString()))

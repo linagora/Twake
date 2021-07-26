@@ -87,9 +87,6 @@ describe("The /workspaces API", () => {
 
       const resources = response.json()["resources"];
 
-      console.log(response.json());
-      console.log(testDbService.workspaces[0]);
-
       expect(resources.length).toBe(2);
 
       for (const resource of resources) {

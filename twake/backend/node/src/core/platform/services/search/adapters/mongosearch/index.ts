@@ -15,7 +15,6 @@ import {
 } from "../../api";
 import { SearchAdapter } from "../abstract";
 import { ListResult, Paginable, Pagination } from "../../../../framework/api/crud-service";
-
 import { MongoConnector } from "../../../database/services/orm/connectors";
 import { parsePrimaryKey, stringifyPrimaryKey } from "../utils";
 import { buildSearchQuery } from "./search";

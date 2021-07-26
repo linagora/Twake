@@ -18,13 +18,10 @@ import { DatabaseServiceAPI } from "../../../database/api";
 import { getEntityDefinition, unwrapPrimarykey } from "../../api";
 import { ListResult, Paginable, Pagination } from "../../../../framework/api/crud-service";
 import { parsePrimaryKey, stringifyPrimaryKey } from "../utils";
-import {
-  ApiResponse,
-  TransportRequestCallback,
-  TransportRequestOptions,
-} from "@elastic/elasticsearch/lib/Transport";
-import { resolveSoa } from "node:dns";
+import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
 import { buildSearchQuery } from "./search";
+
+const mappingPrefix = "type_";
 
 type Operation = {
   index: string;
@@ -68,7 +65,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     const mapping = entity.options?.search?.esMapping;
 
     let mappings: any = {};
-    mappings["type_" + name] = { ...mapping, _source: { enabled: false } };
+    mappings[`${mappingPrefix}${name}`] = { ...mapping, _source: { enabled: false } };
 
     try {
       await this.client.indices.get({
@@ -175,11 +172,13 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
           `Operation ${doc.action} pushed to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
         );
         if (doc.action === "remove") {
-          return { delete: { _index: doc.index, _id: doc.id, _type: "type_" + doc.index } };
+          return {
+            delete: { _index: doc.index, _id: doc.id, _type: `${mappingPrefix}${doc.index}` },
+          };
         }
         if (doc.action === "upsert") {
           return {
-            index: { _index: doc.index, _id: doc.id, _type: "type_" + doc.index },
+            index: { _index: doc.index, _id: doc.id, _type: `${mappingPrefix}${doc.index}` },
             ...doc.body,
           };
         }
@@ -190,7 +189,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
           `Operation ${doc.action} was droped while pushing to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
           res.error,
         );
-        console.log(res);
       },
     });
   }
@@ -224,8 +222,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     if (esResponse.statusCode !== 200) {
       logger.error(`${this.name} -  ${JSON.stringify(esResponse.body)}`);
     }
-
-    console.log(esResponse);
 
     const nextToken = esResponse.body?._scroll_id || "";
     const hits = esResponse.body?.hits?.hits || [];

@@ -54,6 +54,8 @@ export default class SearchRepository<EntityType> {
       logger.error(err);
     }
 
+    console.log(results);
+
     logger.debug(`${this.name} Found ${results.length} results for table ${this.table}`);
 
     return new ListResult(entityDefinition.type, results, nextPage);
