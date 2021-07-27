@@ -2,7 +2,7 @@ import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { uuid } from "../../../utils/types";
 
-export const TYPE = "device";
+export const TYPE = "devices";
 
 @Entity(TYPE, {
   primaryKey: [["id"]],
