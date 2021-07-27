@@ -1,5 +1,6 @@
 import React, { createRef, RefObject } from 'react';
 import { IndexLocationWithAlign, ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import classNames from 'classnames';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import Logger from 'app/services/Logger';
@@ -471,7 +472,7 @@ export default class MessagesList extends React.Component<Props, State> {
         ) : (
           <div
             style={{ width: '100%', height: '100%' }}
-            className={this.state.showBottomButton ? 'messages-list scrolled-up' : 'messages-list'}
+            className={classNames('messages-list', { 'scrolled-up': this.state.showBottomButton })}
           >
             <Virtuoso
               ref={this.virtuosoRef}

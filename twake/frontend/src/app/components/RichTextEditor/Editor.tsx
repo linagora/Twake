@@ -1,4 +1,4 @@
-import React, { KeyboardEvent } from 'react';
+import React, { createRef, KeyboardEvent } from 'react';
 import classNames from 'classnames';
 import {
   Editor,
@@ -27,6 +27,7 @@ import {
 import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from './plugins';
 import './Editor.scss';
 import { TextCountService } from 'app/components/RichTextEditor/TextCount/';
+import useOnScreen from 'app/services/hooks/useOnScreen';
 
 const { isSoftNewlineEvent } = KeyBindingUtil;
 
@@ -46,6 +47,11 @@ type CurrentSuggestion<T> = {
    * The items for the current suggestion
    */
   items: Array<T>;
+
+  /**
+   * unique id for the current suggestion results
+   */
+  id: string;
 };
 
 type EditorProps = {
@@ -67,6 +73,16 @@ type EditorViewState = {
   suggestionIndex: number;
   displaySuggestion: boolean;
   editorPosition: DOMRect | null;
+  isVisible: boolean;
+};
+
+// NOTE: dirty hack to not have to change the whole Editor component to a functional component
+// If one day Editor is a functional component, remove this one and use the on screen hook correctly
+// Since the editor can be used in an infinite scroll, this is not so easy to pass down the scrolling event without polluting everything...
+const OnScreenElement = (props: { onScreen: (status: boolean) => void }): JSX.Element => {
+  const ref = createRef<HTMLDivElement>();
+  props.onScreen(useOnScreen(ref));
+  return <div ref={ref} style={{width: 0, height: 0}}></div>;
 };
 
 export class EditorView extends React.Component<EditorProps, EditorViewState> {
@@ -113,6 +129,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     this.shouldHidePlaceHolder = this.shouldHidePlaceHolder.bind(this);
     this.onSuggestionSelected = this.onSuggestionSelected.bind(this);
     this.focus = this.focus.bind(this);
+    this.updateVisible = this.updateVisible.bind(this);
   }
 
   private enablePlugin(plugin: EditorSuggestionPlugin<any>): void {
@@ -126,6 +143,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       suggestionType: '',
       displaySuggestion: false,
       editorPosition: null,
+      isVisible: true,
     };
   }
 
@@ -256,8 +274,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     const currentEntityKey = getSelectionEntity(this.props.editorState);
     const currentEntityType = currentEntityKey && this.props.editorState.getCurrentContent().getEntity(currentEntityKey).getType();
 
-    const textToMatch = getTextToMatch(this.props.editorState, ' ', this.returnFullTextForEntitiesTypes);
-    if (!textToMatch) {
+    const searchMatch = getTextToMatch(this.props.editorState, ' ', this.returnFullTextForEntitiesTypes);
+    if (!searchMatch || !searchMatch.text) {
       return;
     }
 
@@ -273,14 +291,17 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         return false;
       }
 
-      const trigger = isMatching(plugin.trigger, textToMatch);
+      const trigger = isMatching(plugin.trigger, searchMatch.text);
 
       if (trigger && trigger.text) {
         plugin.resolver(trigger.text, items => {
+          const position = getCaretCoordinates();
           const activeSuggestion = {
-            position: getCaretCoordinates(),
+            position,
             searchText: trigger.text,
             items,
+            // unicity is for a given position and a given start index in the search terms
+            id: `y=${position?.y},index=${searchMatch.start}`,
           };
           this.setState({
             activeSuggestion,
@@ -381,7 +402,13 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     e.preventDefault();
 
     if (this.isDisplayingSuggestions()) {
-      this.resetStateAndFocus();
+      const result = this.onSuggestionSelected(
+        this.state.activeSuggestion?.items[this.state.suggestionIndex],
+      );
+
+      if (result) {
+        this.resetStateAndFocus();
+      }
     }
 
     this.props.onTab && this.props.onTab();
@@ -510,45 +537,60 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     return !contentState.hasText() && contentState.getBlockMap().first().getType() !== 'unstyled';
   }
 
+  shouldScroll() {
+    // TODO: rule to be defined
+    return true;
+  }
+
+  updateVisible(visible: boolean) {
+    this.setState(previousState => {
+      return previousState.isVisible !== visible ? { isVisible: visible} : null;
+    });
+  }
+
   render() {
     return (
-      <div
-        className={classNames('editor', {
-          'editor-hide-placeholder': this.shouldHidePlaceHolder(),
-        })}
-        onClick={this.focus}
-      >
-        <Editor
-          ref={node => (this.editor = node)}
-          editorState={this.props.editorState}
-          onChange={this.onChange}
-          handleKeyCommand={this.handleKeyCommand}
-          handleReturn={this.handleReturn}
-          handleBeforeInput={this.handleBeforeInput}
-          onDownArrow={this.onDownArrow}
-          onUpArrow={this.onUpArrow}
-          onEscape={this.onEscape}
-          onTab={this.onTab}
-          handlePastedFiles={this.handlePastedFiles}
-          blockStyleFn={this.handleBlockStyle}
-          customStyleMap={this.customStyleMap}
-          placeholder={this.props.placeholder || ''}
+      <>
+        <OnScreenElement
+          onScreen={this.updateVisible}
         />
-        {this.state.displaySuggestion && (
-          <div style={{ position: 'relative', top: '-40px' }} className="suggestions">
-            {this.state.displaySuggestion && this.state.suggestionType && (
-              <SuggestionList<any>
-                list={this.state.activeSuggestion?.items}
-                position={this.state.activeSuggestion ? this.state.activeSuggestion.position : null}
-                editorPosition={(this.editor as any)?.editorContainer?.getBoundingClientRect()}
-                renderItem={(props: any) => this.renderSuggestion(props, this.state.suggestionType)}
-                onSelected={this.onSuggestionSelected}
-                selectedIndex={this.state.suggestionIndex}
-              />
-            )}
-          </div>
+        <div
+          className={classNames('editor', {
+            'scrollable-editor': this.shouldScroll(),
+            'editor-hide-placeholder': this.shouldHidePlaceHolder(),
+          })}
+          onClick={this.focus}
+        >
+          <Editor
+            ref={node => (this.editor = node)}
+            editorState={this.props.editorState}
+            onChange={this.onChange}
+            handleKeyCommand={this.handleKeyCommand}
+            handleReturn={this.handleReturn}
+            handleBeforeInput={this.handleBeforeInput}
+            onDownArrow={this.onDownArrow}
+            onUpArrow={this.onUpArrow}
+            onEscape={this.onEscape}
+            onTab={this.onTab}
+            handlePastedFiles={this.handlePastedFiles}
+            blockStyleFn={this.handleBlockStyle}
+            customStyleMap={this.customStyleMap}
+            placeholder={this.props.placeholder || ''}
+          />
+        </div>
+        {this.state.isVisible && this.state.displaySuggestion && this.state.suggestionType && (
+          <SuggestionList<any>
+            id={this.state.activeSuggestion?.id || ""}
+            search={this.state.activeSuggestion?.searchText || ""}
+            list={this.state.activeSuggestion?.items}
+            position={this.state.activeSuggestion ? this.state.activeSuggestion.position : null}
+            editorPosition={(this.editor as any)?.editorContainer?.getBoundingClientRect()}
+            renderItem={(props: any) => this.renderSuggestion(props, this.state.suggestionType)}
+            onSelected={this.onSuggestionSelected}
+            selectedIndex={this.state.suggestionIndex}
+          />
         )}
-      </div>
+      </>
     );
   }
 }
