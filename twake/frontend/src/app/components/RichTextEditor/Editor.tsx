@@ -402,7 +402,13 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     e.preventDefault();
 
     if (this.isDisplayingSuggestions()) {
-      this.resetStateAndFocus();
+      const result = this.onSuggestionSelected(
+        this.state.activeSuggestion?.items[this.state.suggestionIndex],
+      );
+
+      if (result) {
+        this.resetStateAndFocus();
+      }
     }
 
     this.props.onTab && this.props.onTab();
