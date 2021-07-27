@@ -22,18 +22,26 @@ export function buildSearchQuery<Entity>(
   };
 
   if (Object.keys(filters || {}).length > 0) {
-    esBody.query.bool.must = esBody.query.bool.must || {};
-    esBody.query.bool.must.term = esBody.query.bool.must.term || {};
+    esBody.query.bool.must = esBody.query.bool.must || [];
     for (const [key, value] of Object.entries(filters)) {
-      esBody.query.bool.must.term[key] = value;
+      let match: any = {};
+      match[key] = { query: value, operator: "AND" };
+      esBody.query.bool.must.push({ match });
     }
   }
 
   if (options.$in?.length) {
-    esBody.query.bool.must = esBody.query.bool.must || {};
-    esBody.query.bool.must.terms = esBody.query.bool.must.terms || {};
+    esBody.query.bool.must = esBody.query.bool.must || [];
     for (const inOperation of options.$in) {
-      esBody.query.bool.must.terms[inOperation[0]] = inOperation[1];
+      if (inOperation[1].length > 0) {
+        let bool: any = { bool: { should: [], minimum_should_match: 1 } };
+        for (const value of inOperation[1]) {
+          let match: any = {};
+          match[inOperation[0]] = { query: value, operator: "AND" };
+          bool.bool.should.push({ match });
+        }
+        esBody.query.bool.must.push(bool);
+      }
     }
   }
 

@@ -35,7 +35,7 @@ services:
       - scylladb
       - rabbitmq
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     environment:
       - xpack.security.enabled=false
       - bootstrap.memory_lock=true
