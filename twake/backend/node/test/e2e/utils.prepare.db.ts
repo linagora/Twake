@@ -53,14 +53,15 @@ export class TestDbService {
     this.deviceRepository = await this.database.getRepository<Device>("device", Device);
   }
   public get workspaces() {
+    // @ts-ignore
     return [...this.workspacesMap.values()];
   }
 
-  async createCompany(id: uuid): Promise<void> {
+  async createCompany(id?: uuid): Promise<void> {
     const name = `TwakeAutotests-test-company-${this.rand()}`;
     this.company = await this.userService.companies.createCompany(
       getCompanyInstance({
-        id: id,
+        id: id || uuidv1(),
         name: name,
         displayName: name,
         identity_provider_id: id,
