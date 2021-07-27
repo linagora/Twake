@@ -22,6 +22,11 @@ export const transformValueToDbString = (
     //Convert to orderable number on mongodb
     return toMongoDbOrderable(v);
   }
+
+  if (type === "uuid") {
+    return `${v}`;
+  }
+
   if (type === "encoded_string" || type === "encoded_json") {
     if (type === "encoded_json") {
       try {

@@ -4,26 +4,13 @@ services:
   scylladb:
     image: scylladb/scylla:4.1.0
     command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
-  scylladb2:
-    image: scylladb/scylla:4.1.0
-    command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - ./docker-data/scylladb:/var/lib/scylla
   rabbitmq:
     image: rabbitmq:3
     ports:
       - 5672:5672
       - 15672:15672
-  mongo:
-    container_name: mongo
-    image: mongo
-    ports:
-      - 27017:27017
-  redis:
-    image: "redis:alpine"
-    command: redis-server --requirepass some_password
-    ports:
-      - "6379:6379"
-    environment:
-      - REDIS_REPLICATION_MODE=master
   node:
     image: twaketech/twake-node:test
     build:
@@ -37,27 +24,16 @@ services:
       - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
       - SEARCH_ES_ENDPOINT=http://elasticsearch:9200
       - SEARCH_ES_FLUSHINTERVAL=1
-    depends_on:
-      - mongo
-      - scylladb
-      - rabbitmq
-      - elasticsearch
-    links:
-      - mongo
-      - scylladb
-      - rabbitmq
-  php:
-    image: twaketech/twake-php
     volumes:
-      - ./backend/core/:/twake-core:cached
-      - ./docker-data/drive/:/twake-core/drive/
-      - ./docker-data/fpm/:/etc/docker-data/fpm/
+      - ./backend/node:/usr/src/app
+      - ./docker-data/documents/:/storage/
     depends_on:
       - scylladb
       - rabbitmq
       - elasticsearch
     links:
       - scylladb
+      - rabbitmq
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     environment:
@@ -69,15 +45,7 @@ services:
       memlock:
         soft: -1
         hard: -1
+    volumes:
+      - ./docker-data/es_twake:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-  nginx:
-    image: twaketech/twake-nginx
-    ports:
-      - 8000:80
-    links:
-      - php
-    volumes:
-      - ./docker-data/logs/nginx/:/var/log/nginx
-      - ./docker-data/letsencrypt/:/etc/letsencrypt/
-      - ./frontend/:/twake-react/

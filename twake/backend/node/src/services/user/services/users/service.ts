@@ -17,8 +17,10 @@ import Repository, {
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
-import { ListUserOptions } from "./types";
+import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
+import { SearchServiceAPI } from "../../../../core/platform/services/search/api";
+import SearchRepository from "../../../../core/platform/services/search/repository";
 import ExternalUser, { getInstance as getExternalUserInstance } from "../../entities/external_user";
 import Device, {
   getInstance as getDeviceInstance,
@@ -31,13 +33,15 @@ import assert from "assert";
 export class UserService implements UsersServiceAPI {
   version: "1";
   repository: Repository<User>;
+  searchRepository: SearchRepository<User>;
   companyUserRepository: Repository<CompanyUser>;
   extUserRepository: Repository<ExternalUser>;
   private deviceRepository: Repository<Device>;
 
-  constructor(private database: DatabaseServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private searchService: SearchServiceAPI) {}
 
   async init(): Promise<this> {
+    this.searchRepository = this.searchService.getRepository<User>("user", User);
     this.repository = await this.database.getRepository<User>("user", User);
     this.companyUserRepository = await this.database.getRepository<CompanyUser>(
       "group_user",
@@ -95,6 +99,23 @@ export class UserService implements UsersServiceAPI {
     const instance = await this.repository.findOne(pk);
     if (instance) await this.repository.remove(instance);
     return new DeleteResult<User>("user", instance, !!instance);
+  }
+
+  async search(
+    pagination: Pagination,
+    options?: SearchUserOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<User>> {
+    return await this.searchRepository.search(
+      {},
+      {
+        pagination,
+        ...(options.companyId ? { $in: [["companies", [options.companyId]]] } : {}),
+        $text: {
+          $search: options.search,
+        },
+      },
+    );
   }
 
   async list(

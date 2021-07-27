@@ -20,6 +20,7 @@ describe("The Messages User Bookmarks feature", () => {
       services: [
         "pubsub",
         "user",
+        "search",
         "websocket",
         "webserver",
         "messages",

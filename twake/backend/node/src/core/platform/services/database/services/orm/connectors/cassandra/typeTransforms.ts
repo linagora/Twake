@@ -149,7 +149,7 @@ export const transformValueFromDbString = (
     }
   }
 
-  if (type === "uuid") {
+  if (type === "uuid" || type === "timeuuid") {
     return v ? String(v) : null;
   }
 

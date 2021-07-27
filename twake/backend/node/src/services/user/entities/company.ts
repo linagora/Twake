@@ -9,7 +9,7 @@ export const TYPE = "group_entity";
   type: TYPE,
 })
 export default class Company {
-  @Column("id", "uuid")
+  @Column("id", "timeuuid")
   id: string;
 
   @Column("name", "encoded_string")
@@ -24,7 +24,7 @@ export default class Company {
   @Column("stats", "encoded_json")
   stats: any;
 
-  @Column("logo_id", "uuid")
+  @Column("logo_id", "timeuuid")
   logofile: string;
 
   @Column("logo", "encoded_string")

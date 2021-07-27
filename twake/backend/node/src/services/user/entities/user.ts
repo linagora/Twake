@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import search from "./user.search";
 import { uuid } from "../../../utils/types";
 
 export const TYPE = "user";
@@ -8,9 +9,10 @@ export const TYPE = "user";
   primaryKey: [["id"]],
   globalIndexes: [["email_canonical"]],
   type: TYPE,
+  search,
 })
 export default class User {
-  @Column("id", "uuid")
+  @Column("id", "timeuuid")
   id: uuid;
 
   @Column("first_name", "encoded_string")
@@ -19,7 +21,7 @@ export default class User {
   @Column("last_name", "encoded_string")
   last_name: string;
 
-  @Column("picture", "string")
+  @Column("picture", "encoded_string")
   picture: string;
 
   @Column("status_icon", "string")
@@ -89,6 +91,11 @@ export default class User {
   @Column("thumbnail_id", "timeuuid")
   thumbnail_id: string;
 
+  @Column("cache", "encoded_string")
+  cache: null | {
+    companies: string[];
+    workspaces: string[];
+  };
   @Column("devices", "encoded_json")
   devices: Array<string>;
 

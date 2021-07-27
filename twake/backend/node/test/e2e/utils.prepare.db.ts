@@ -99,35 +99,41 @@ export class TestDbService {
 
   async createUser(
     workspacesPk?: Array<WorkspacePrimaryKey>,
-    companyRole?: "member" | "admin" | "guest",
-    workspaceRole?: "member" | "admin",
-    email?: string,
-    username?: string,
-    password?: string,
+    options: {
+      companyRole?: "member" | "admin" | "guest";
+      workspaceRole?: "member" | "admin";
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      username?: string;
+      password?: string;
+      cache?: User["cache"];
+    } = {},
   ): Promise<User> {
     const user = new User();
     const random = this.rand();
     user.id = uuidv1();
-    user.username_canonical = username ? username : `test${random}`;
-    user.first_name = `test${random}_first_name`;
-    user.last_name = `test${random}_last_name`;
-    // user.identity_provider_id = String(this.rand());
+    user.username_canonical = options.username || `test${random}`;
+    user.first_name = options.firstName || `test${random}_first_name`;
+    user.last_name = options.lastName || `test${random}_last_name`;
+    user.email_canonical = options.email || `test${random}@twake.app`;
     user.identity_provider_id = user.id;
+    user.cache = options.cache || user.cache;
 
-    if (email) {
-      user.email_canonical = email;
+    if (options.email) {
+      user.email_canonical = options.email;
     }
     const createdUser = await this.userService.users.create(user).then(a => a.entity);
 
-    if (password) {
-      await this.userService.users.setPassword({ id: createdUser.id }, password);
+    if (options.password) {
+      await this.userService.users.setPassword({ id: createdUser.id }, options.password);
     }
 
     this.users.push(createdUser);
     await this.userService.companies.setUserRole(
       this.company.id,
       createdUser.id,
-      companyRole ? companyRole : "member",
+      options.companyRole ? options.companyRole : "member",
     );
 
     if (workspacesPk && workspacesPk.length) {
@@ -135,7 +141,7 @@ export class TestDbService {
         await this.userService.workspaces.addUser(
           workspacePk,
           { id: createdUser.id },
-          workspaceRole ? workspaceRole : "member",
+          options.workspaceRole ? options.workspaceRole : "member",
         );
         const wsContainer = this.workspacesMap.get(workspacePk.id);
         wsContainer.users.push(createdUser);

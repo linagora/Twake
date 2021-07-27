@@ -13,10 +13,10 @@ export const TYPE = "group_user";
   type: TYPE,
 })
 export default class CompanyUser {
-  @Column("group_id", "uuid")
+  @Column("group_id", "timeuuid")
   group_id: string;
 
-  @Column("user_id", "uuid")
+  @Column("user_id", "timeuuid")
   user_id: string;
 
   @Column("id", "timeuuid")

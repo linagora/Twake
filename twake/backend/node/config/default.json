@@ -75,9 +75,7 @@
       "database": "twake"
     },
     "cassandra": {
-      "contactPoints": [
-        "scylladb:9042"
-      ],
+      "contactPoints": ["scylladb:9042"],
       "localDataCenter": "datacenter1",
       "keyspace": "twake",
       "wait": false,
@@ -86,12 +84,10 @@
     }
   },
   "pubsub": {
-    "// possible 'type' values are": "'ampq' or 'local'",
+    "// possible 'type' values are": "'amqp' or 'local'",
     "type": "amqp",
     "amqp": {
-      "urls": [
-        "amqp://guest:guest@localhost:5672"
-      ]
+      "urls": ["amqp://guest:guest@localhost:5672"]
     }
   },
   "search": {

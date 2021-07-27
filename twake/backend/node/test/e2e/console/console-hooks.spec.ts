@@ -41,22 +41,30 @@ describe("The console API hooks", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth", "console"],
+      services: [
+        "database",
+        "pubsub",
+        "webserver",
+        "search",
+        "user",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
     await platform.database.getConnector().init();
     testDbService = await TestDbService.getInstance(platform);
     await testDbService.createCompany(companyId);
     const ws0pk = { id: uuidv1(), group_id: companyId };
-    // const ws1pk = { id: uuidv1(), group_id: companyId };
+
     await testDbService.createWorkspace(ws0pk);
-    // await testDbService.createWorkspace(ws1pk);
-    await testDbService.createUser([ws0pk], "member", "admin", null, "superman");
-    // await testDbService.createUser([ws0pk], "member", "member");
-    // await testDbService.createUser([ws1pk], "member", "member", emailForExistedUser);
+
+    await testDbService.createUser([ws0pk], {
+      companyRole: "member",
+      workspaceRole: "admin",
+      username: "superman",
+    });
 
     const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
     consoleOptions = console.consoleOptions;
@@ -347,7 +355,6 @@ describe("The console API hooks", () => {
           }),
         });
 
-        console.log(response.json());
         expect(response.statusCode).toBe(200);
 
         users = await testDbService.getCompanyUsers(company.id);
