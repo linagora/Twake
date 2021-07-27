@@ -5,9 +5,6 @@ version: "2"
 services:
   rabbitmq:
     image: rabbitmq:3
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
     ports:
       - 5672:5672
       - 15672:15672
@@ -28,7 +25,7 @@ services:
     environment:
       - NODE_ENV=test
       - DB_DRIVER
-      - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
+      - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
     volumes:
       - ./backend/node:/usr/src/app
       - ./docker-data/documents/:/storage/

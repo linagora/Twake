@@ -8,9 +8,6 @@ services:
       - ./docker-data/scylladb:/var/lib/scylla
   rabbitmq:
     image: rabbitmq:3
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
     ports:
       - 5672:5672
       - 15672:15672
@@ -24,7 +21,7 @@ services:
     environment:
       - NODE_ENV=test
       - DB_DRIVER
-      - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
+      - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
       - SEARCH_ES_ENDPOINT=http://elasticsearch:9200
       - SEARCH_ES_FLUSHINTERVAL=1
     volumes:
