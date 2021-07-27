@@ -37,8 +37,6 @@ services:
       - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
       - SEARCH_ES_ENDPOINT=http://elasticsearch:9200
       - SEARCH_ES_FLUSHINTERVAL=1
-    volumes:
-      - ./backend/node:/usr/src/app
     depends_on:
       - mongo
       - scylladb
