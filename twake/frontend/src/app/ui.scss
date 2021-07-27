@@ -6,11 +6,19 @@ html {
   color: var(--black);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--primary);
+  background-color: var(--primary) !important;
 }
 
 #root {
   position: fixed;
+  overflow: hidden;
+  transition: all 0.3s;
+
+  &.hidden_load {
+    opacity: 0;
+    transform: scale(0.8);
+    border-radius: 16px;
+  }
 }
 
 #app {

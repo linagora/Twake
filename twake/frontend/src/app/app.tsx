@@ -30,6 +30,7 @@ export default () => {
 
   try {
     (window as any).document.getElementById('app_loader').remove();
+    (window as any).document.getElementById('root').classList.remove('hidden_load');
   } catch (err) {}
 
   return (

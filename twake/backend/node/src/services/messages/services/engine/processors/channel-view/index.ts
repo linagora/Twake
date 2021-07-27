@@ -70,11 +70,6 @@ export class ChannelViewProcessor {
               ...pkPrefix,
               message_id: reversed.message_id,
             });
-            console.log(
-              existingThreadRef.thread_id,
-              message.resource.thread_id,
-              existingThreadRef.thread_id === message.resource.thread_id,
-            );
             if (
               existingThreadRef &&
               `${existingThreadRef.thread_id}` === `${message.resource.thread_id}`
