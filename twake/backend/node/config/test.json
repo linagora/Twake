@@ -16,7 +16,7 @@
   "pubsub": {
     "type": "amqp",
     "amqp": {
-      "urls": ["amqp://admin:admin@rabbitmq:5672"]
+      "urls": ["amqp://guest:guest@rabbitmq:5672"]
     }
   },
   "phpnode": {

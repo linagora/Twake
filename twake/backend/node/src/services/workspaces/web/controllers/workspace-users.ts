@@ -77,18 +77,20 @@ export class WorkspaceUsersCrudController
         deleted: Boolean(user.deleted),
         status: user.status_icon,
         last_activity: user.last_activity,
-        companies: userCompanies.map(cu => {
-          const company = companiesMap.get(cu.group_id);
-          return {
-            role: cu.role as CompanyUserRole,
-            status: "active" as CompanyUserStatus, // FIXME: with real status
-            company: {
-              id: company.id,
-              name: company.name,
-              logo: company.logo,
-            } as CompanyShort,
-          };
-        }),
+        companies: userCompanies
+          .filter(cu => companiesMap.get(cu.group_id))
+          .map(cu => {
+            const company = companiesMap.get(cu.group_id);
+            return {
+              role: cu.role as CompanyUserRole,
+              status: "active" as CompanyUserStatus, // FIXME: with real status
+              company: {
+                id: company.id,
+                name: company.name,
+                logo: company.logo,
+              } as CompanyShort,
+            };
+          }),
       },
     };
 
@@ -105,7 +107,9 @@ export class WorkspaceUsersCrudController
             .value()
             .map(companyId => this.companyService.getCompany({ id: companyId })),
         )
-      ).map(c => [c.id, c]),
+      )
+        .filter(c => c)
+        .map(c => [c.id, c]),
     );
     return companiesMap;
   }
@@ -147,15 +151,17 @@ export class WorkspaceUsersCrudController
 
     const companiesMap = await this.getCompaniesMap(allCompanyUsers);
 
-    const resources = allWorkspaceUsers.map(async wu =>
-      this.formatWorkspaceUser(
-        wu,
-        context.company_id,
-        allUsersMap.get(wu.userId),
-        Array.from(companyUsersMap.get(wu.userId)),
-        companiesMap,
-      ),
-    );
+    const resources = allWorkspaceUsers
+      .filter(wu => allUsersMap.get(wu.userId))
+      .map(async wu =>
+        this.formatWorkspaceUser(
+          wu,
+          context.company_id,
+          allUsersMap.get(wu.userId),
+          Array.from(companyUsersMap.get(wu.userId) || []),
+          companiesMap,
+        ),
+      );
 
     return {
       resources: await Promise.all(resources),
@@ -413,6 +419,7 @@ export class WorkspaceUsersCrudController
 
       return { status: "success" };
     } catch (e) {
+      console.error(e);
       return {
         status: "error",
       };

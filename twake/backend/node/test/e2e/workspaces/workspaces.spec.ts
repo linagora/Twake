@@ -9,13 +9,24 @@ describe("The /workspaces API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
-  const companyId = "21111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
+  let companyId = "";
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth", "console"],
+      services: [
+        "database",
+        "pubsub",
+        "webserver",
+        "user",
+        "search",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
+
+    companyId = platform.workspace.company_id;
 
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
@@ -27,9 +38,9 @@ describe("The /workspaces API", () => {
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createWorkspace(ws2pk);
     await testDbService.createUser([ws0pk, ws1pk]);
-    await testDbService.createUser([ws2pk], "admin");
-    await testDbService.createUser([ws2pk], undefined, "admin");
-    await testDbService.createUser([], "guest");
+    await testDbService.createUser([ws2pk], { companyRole: "admin" });
+    await testDbService.createUser([ws2pk], { companyRole: undefined, workspaceRole: "admin" });
+    await testDbService.createUser([], { companyRole: "guest" });
     ends();
   });
 

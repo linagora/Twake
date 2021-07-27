@@ -15,6 +15,7 @@ describe("The Bookmarks Realtime feature", () => {
       services: [
         "pubsub",
         "user",
+        "search",
         "websocket",
         "webserver",
         "messages",

@@ -28,6 +28,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
     platform = await init({
       services: [
         "user",
+        "search",
         "websocket",
         "webserver",
         "channels",

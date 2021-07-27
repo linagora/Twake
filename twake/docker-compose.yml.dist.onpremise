@@ -13,9 +13,6 @@ services:
     image: library/rabbitmq:3.8.9-management-alpine
     ports:
       - 15672:15672
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
 
   node:
     image: twaketech/twake-node:latest

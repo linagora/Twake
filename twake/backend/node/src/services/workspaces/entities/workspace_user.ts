@@ -12,13 +12,13 @@ export const TYPE = "workspace_user";
   type: TYPE,
 })
 export default class WorkspaceUser {
-  @Column("workspace_id", "uuid")
+  @Column("workspace_id", "timeuuid")
   workspaceId: string;
 
-  @Column("user_id", "uuid")
+  @Column("user_id", "timeuuid")
   userId: string;
 
-  @Column("id", "uuid")
+  @Column("id", "timeuuid")
   id: string;
 
   @Column("role", "string")

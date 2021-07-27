@@ -42,12 +42,18 @@ describe("The /workspace/pending users API", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth", "console"],
+      services: [
+        "database",
+        "pubsub",
+        "webserver",
+        "user",
+        "search",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
@@ -55,9 +61,13 @@ describe("The /workspace/pending users API", () => {
     const ws1pk = { id: uuidv1(), group_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
-    await testDbService.createUser([ws0pk], "member", "admin");
-    await testDbService.createUser([ws0pk], "member", "member");
-    await testDbService.createUser([ws1pk], "member", "member", emailForExistedUser);
+    await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "admin" });
+    await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "member" });
+    await testDbService.createUser([ws1pk], {
+      companyRole: "member",
+      workspaceRole: "member",
+      email: emailForExistedUser,
+    });
 
     const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
     consoleType = console.consoleType;

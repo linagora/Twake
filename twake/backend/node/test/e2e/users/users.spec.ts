@@ -9,7 +9,7 @@ describe("The /users API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
 
   beforeEach(async ends => {
     platform = await init({
@@ -28,21 +28,17 @@ describe("The /users API", () => {
       services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
     testDbService = await TestDbService.getInstance(platform);
     await testDbService.createCompany();
     const workspacePk = { id: uuidv1(), group_id: testDbService.company.id };
     await testDbService.createWorkspace(workspacePk);
-    await testDbService.createUser(
-      [workspacePk],
-      "admin",
-      "admin",
-      "admin@admin.admin",
-      "adminuser",
-      "admin",
-    );
+    await testDbService.createUser([workspacePk], {
+      workspaceRole: "admin",
+      companyRole: "admin",
+      email: "admin@admin.admin",
+      username: "adminuser",
+      firstName: "admin",
+    });
     await testDbService.createUser([workspacePk]);
 
     ends();

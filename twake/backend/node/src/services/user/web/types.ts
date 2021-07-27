@@ -4,6 +4,8 @@ import { ChannelMember } from "../../channels/entities";
 export interface UserListQueryParameters extends PaginationQueryParameters {
   user_ids?: string;
   include_companies?: boolean;
+  search?: string;
+  search_company_id?: string;
 }
 
 export interface UserParameters {

@@ -122,8 +122,8 @@ export default class LoginView extends Component {
               >
                 {this.state.i18n.t('scenes.login.home.login_btn')}
               </Button>
-              {!InitService.server_infos?.configuration?.accounts?.type ===
-                'internal'.disable_account_creation && (
+              {!InitService.server_infos?.configuration?.accounts?.internal
+                ?.disable_account_creation && (
                 <Typography.Link
                   onClick={() => this.state.login.changeState('signin')}
                   id="create_btn"

@@ -9,8 +9,8 @@ describe("The /workspace users API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
-  const companyId = "21111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
+  let companyId = "";
 
   const checkUserObject = (resource: any) => {
     expect(resource).toMatchObject({
@@ -39,12 +39,20 @@ describe("The /workspace users API", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth", "console"],
+      services: [
+        "database",
+        "pubsub",
+        "search",
+        "webserver",
+        "user",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
+    companyId = platform.workspace.company_id;
+
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
@@ -57,11 +65,11 @@ describe("The /workspace users API", () => {
     await testDbService.createWorkspace(ws2pk);
     await testDbService.createWorkspace(ws3pk);
     await testDbService.createUser([ws0pk, ws1pk]);
-    await testDbService.createUser([ws2pk], "admin");
-    await testDbService.createUser([ws2pk], undefined, "admin");
-    await testDbService.createUser([ws2pk], undefined, "member");
-    await testDbService.createUser([], "guest");
-    await testDbService.createUser([ws3pk], "guest", "member");
+    await testDbService.createUser([ws2pk], { companyRole: "admin" });
+    await testDbService.createUser([ws2pk], { workspaceRole: "admin" });
+    await testDbService.createUser([ws2pk], { workspaceRole: "member" });
+    await testDbService.createUser([], { companyRole: "member" });
+    await testDbService.createUser([ws3pk], { companyRole: "guest", workspaceRole: "member" });
     ends();
   });
 
