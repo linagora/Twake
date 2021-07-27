@@ -53,7 +53,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     }>,
   ) => {
     if (isNaN(+request.query.limit)) {
-      request.query.limit = "100000";
+      request.query.limit = "100";
     }
   };
 
