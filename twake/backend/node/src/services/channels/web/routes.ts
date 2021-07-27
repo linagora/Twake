@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { BaseChannelsParameters, ChannelParameters } from "./types";
+import { BaseChannelsParameters, ChannelParameters, PaginationQueryParameters } from "./types";
 import {
   createChannelMemberSchema,
   createChannelSchema,
@@ -46,11 +46,22 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
     }
   };
 
+  const validateQuery = async (
+    request: FastifyRequest<{
+      Params: BaseChannelsParameters;
+      Querystring: PaginationQueryParameters;
+    }>,
+  ) => {
+    if (isNaN(+request.query.limit)) {
+      request.query.limit = "100";
+    }
+  };
+
   // channels
   fastify.route({
     method: "GET",
     url: channelsUrl,
-    preHandler: accessControl,
+    preHandler: [accessControl, validateQuery],
     preValidation: [fastify.authenticate],
     handler: channelsController.list.bind(channelsController),
   });
@@ -148,7 +159,7 @@ const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
   fastify.route({
     method: "GET",
     url: pendingEmailsUrl,
-    preHandler: accessControl,
+    preHandler: [accessControl, validateQuery],
     preValidation: [fastify.authenticate],
     //schema: getChannelPendingEmailsSchema,
     handler: channelsController.findPendingEmails.bind(channelsController),

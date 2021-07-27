@@ -10,8 +10,6 @@ describe("The /users API", () => {
   let testDbService: TestDbService;
 
   const nonExistentId = uuidv1();
-  const companyId = "21111111-1111-1111-1111-111111111111";
-  const workspaceId = "31111111-1111-1111-1111-111111111111";
 
   beforeEach(async ends => {
     platform = await init({
@@ -31,10 +29,16 @@ describe("The /users API", () => {
     });
 
     testDbService = await TestDbService.getInstance(platform);
-    await testDbService.createCompany(companyId);
-    const workspacePk = { id: workspaceId, group_id: companyId };
+    await testDbService.createCompany();
+    const workspacePk = { id: uuidv1(), group_id: testDbService.company.id };
     await testDbService.createWorkspace(workspacePk);
-    await testDbService.createUser([workspacePk]);
+    await testDbService.createUser([workspacePk], {
+      workspaceRole: "admin",
+      companyRole: "admin",
+      email: "admin@admin.admin",
+      username: "adminuser",
+      firstName: "admin",
+    });
     await testDbService.createUser([workspacePk]);
 
     ends();
