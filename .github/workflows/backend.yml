@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: e2e-cassandra-test-rabbitmq
-        run: cd twake && docker-compose -f docker-compose.yml.dist.tests up -d rabbitmq && sleep 60 && docker-compose -f docker-compose.yml.dist.tests logs
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.yml.dist.tests run node npm run test:unit
       - name: e2e-mongo-test
