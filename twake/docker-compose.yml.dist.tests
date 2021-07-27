@@ -21,12 +21,13 @@ services:
     ports:
       - 27017:27017
   redis:
-    image: "redis:alpine"
-    command: redis-server --requirepass some_password
-    ports:
-      - "6379:6379"
+    image: rabbitmq:3
     environment:
-      - REDIS_REPLICATION_MODE=master
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    ports:
+      - 5672:5672
+      - 15672:15672
   node:
     image: twaketech/twake-node:test
     build:
