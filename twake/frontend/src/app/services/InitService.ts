@@ -38,6 +38,13 @@ class InitService extends Observable {
   public server_infos_loaded: boolean = false;
   public app_ready: boolean = false;
 
+  async removeLoader() {
+    try {
+      (window as any).document.getElementById('app_loader').remove();
+      (window as any).document.getElementById('root').classList.remove('hidden_load');
+    } catch (err) {}
+  }
+
   async init() {
     this.server_infos = (await Api.get('/internal/services/general/v1/server', null, false, {
       disableJWTAuthentication: true,

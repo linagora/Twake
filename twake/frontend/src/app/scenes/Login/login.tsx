@@ -35,6 +35,8 @@ export default () => {
     return <div />;
   }
 
+  InitService.removeLoader();
+
   return (
     <div className={'loginPage'}>
       {server_infos_loaded && !server_infos?.configuration?.branding?.name && (
