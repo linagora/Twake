@@ -26,16 +26,6 @@ export class AMQPPubsubManager implements PubsubClientManager {
     logger.info(`${LOG_PREFIX} Creating AMQP client %o`, urls);
     const connection = connect(urls);
 
-    // Connect event is not sent on first connection
-    // so we have to deal with the `connected` flag
-    connection.on("connect", ({ url }) => {
-      logger.info(`${LOG_PREFIX} Connected to RabbitMQ on ${url}`);
-      if (this.connected) {
-        return;
-      }
-      this.connected = true;
-    });
-
     // disconnect is called when going from "connected" to "disconnected",
     // and also at every unsuccessfull connection attempt
     connection.on("disconnect", (err: Error) => {
@@ -49,6 +39,17 @@ export class AMQPPubsubManager implements PubsubClientManager {
 
     // For the first connection
     this.clientAvailable.next(pubsub);
+
+    // This event listener must be after the first connection occurs
+    // Connect event is not sent on first connection
+    // so we have to deal with the `connected` flag
+    connection.on("connect", ({ url }) => {
+      logger.info(`${LOG_PREFIX} Connected to RabbitMQ on ${url}`);
+      if (this.connected) {
+        return;
+      }
+      this.connected = true;
+    });
 
     return this.clientAvailable;
   }
