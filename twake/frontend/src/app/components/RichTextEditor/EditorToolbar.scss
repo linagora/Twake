@@ -2,11 +2,16 @@
   display: flex;
   flex-direction: row;
   padding-left: 5px;
+  margin-right: -4px;
 
-  .inline, .block {
+  .button-group:first-child {
+    padding-left: 0;
+    border-left: none;
+  }
+
+  .inline,
+  .block {
     color: var(--grey-dark);
-    margin-right: 2px;
-    margin-left: 2px;
 
     &.active {
       color: var(--black);
@@ -21,9 +26,5 @@
 
     display: flex;
     align-items: center;
-
-    .anticon-strikethrough {
-      padding-bottom: 2px;
-    }
   }
 }

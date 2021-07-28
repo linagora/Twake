@@ -28,6 +28,8 @@ export default () => {
     AuthProviderService.getAuthProviderConfiguration();
   }
 
+  InitService.removeLoader();
+
   return (
     <Integration>
       <Router history={RouterServices.history}>

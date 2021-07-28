@@ -46,15 +46,13 @@ export default (): JSX.Element => {
     };
   }, []);
 
-  InitService.removeLoader();
-
   let page: JSX.Element = <></>;
   if (popupService.isOpen()) {
     page = <PopupComponent key="PopupComponent" />;
   } else {
     if (LoginService.currentUserId) {
       page = (
-        <Layout className="appPage">
+        <Layout className="appPage fade_in">
           <NewVersionComponent />
           {companyId && workspaceId && <CompanyStatusComponent />}
           <Layout hasSider>

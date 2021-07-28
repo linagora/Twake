@@ -19,8 +19,6 @@ export default () => {
     }
   }
 
-  InitService.removeLoader();
-
   return (
     <div className="full_page_error">
       <div className="error_message skew_in_top_nobounce">
