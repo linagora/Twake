@@ -10,8 +10,9 @@ import {
   KeyBindingUtil,
   ContentBlock,
   DraftStyleMap,
+  SelectionState,
 } from 'draft-js';
-import { getSelectionEntity } from "draftjs-utils";
+import { getSelectionEntity } from 'draftjs-utils';
 
 import EditorDataParser from './EditorDataParser';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
@@ -210,7 +211,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       }
 
       if (selection.isCollapsed() && currentBlock.getLength() === selection.getStartOffset()) {
-        if (blockType === 'unstyled') {
+        if (['unstyled', 'code-block', 'blockquote'].includes(blockType)) {
           this.submit(editorState);
           return 'handled';
         }
@@ -238,9 +239,14 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   _handleReturnSoftNewline(e: SyntheticKeyboardEvent, editorState: EditorState): boolean {
     if (isSoftNewlineEvent(e)) {
       const selection = editorState.getSelection();
+      const currentBlock = getCurrentBlock(editorState);
 
       if (selection.isCollapsed()) {
-        this.onChange(RichUtils.insertSoftNewline(editorState));
+        if (['blockquote', 'code-block'].includes(currentBlock.getType())) {
+          this.onChange(RichUtils.insertSoftNewline(editorState));
+        } else {
+          this.onChange(splitBlockWithType(editorState, 'unstyled', selection.getStartOffset(), false));
+        }
       } else {
         let content = editorState.getCurrentContent();
         let newContent = Modifier.removeRange(content, selection, 'forward');
@@ -375,6 +381,26 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       this.setState({
         suggestionIndex: this.state.suggestionIndex - 1 < 0 ? 0 : this.state.suggestionIndex - 1,
       });
+    } else {
+      const currentBlock = getCurrentBlock(this.props.editorState);
+      const selection = this.props.editorState.getSelection();
+
+      if (['blockquote', 'code-block'].includes(currentBlock.getType()) && (currentBlock.getLength() === selection.getStartOffset())) {
+        // if current block is code or quote, we can create a new block after it if there are no block
+        const nextBlock = this.props.editorState.getCurrentContent().getBlockAfter(currentBlock.getKey());
+
+        if (nextBlock) {
+          const selection = new SelectionState({
+            anchorKey: nextBlock.getKey(),
+            anchorOffset: 0,
+            focusKey: nextBlock.getKey(),
+            focusOffset: 0,
+          });
+          this.onChange(EditorState.forceSelection(this.props.editorState, selection));
+        } else {
+          this.onChange(splitBlockWithType(this.props.editorState, 'unstyled', selection.getStartOffset(), false));
+        }
+      }
     }
   }
 
@@ -580,8 +606,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         </div>
         {this.state.isVisible && this.state.displaySuggestion && this.state.suggestionType && (
           <SuggestionList<any>
-            id={this.state.activeSuggestion?.id || ""}
-            search={this.state.activeSuggestion?.searchText || ""}
+            id={this.state.activeSuggestion?.id || ''}
+            search={this.state.activeSuggestion?.searchText || ''}
             list={this.state.activeSuggestion?.items}
             position={this.state.activeSuggestion ? this.state.activeSuggestion.position : null}
             editorPosition={(this.editor as any)?.editorContainer?.getBoundingClientRect()}

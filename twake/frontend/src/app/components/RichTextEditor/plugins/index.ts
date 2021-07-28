@@ -1,4 +1,4 @@
-import { DraftDecorator, EditorState, Entity } from "draft-js";
+import { DraftDecorator, EditorState, Entity, RawDraftContentBlock } from "draft-js";
 import mentionPlugin, { MentionSuggestionType } from "./mentions";
 import emojiPlugin, { EmojiSuggestionType } from "./emoji";
 import channelPlugin, { ChannelSuggestionType } from "./channel";
@@ -19,8 +19,8 @@ export type DataSerializer = {
    * Replace patterns in the content string (whole string)
    */
   replace: (content: string) => string;
-  open: (entity?: Entity) => string;
-  close: (entity?: Entity) => string;
+  open: (entity?: Entity, block?: RawDraftContentBlock) => string;
+  close: (entity?: Entity, block?: RawDraftContentBlock) => string;
 };
 
 export type EditorSuggestionPlugin<T extends SupportedSuggestionTypes> = {
