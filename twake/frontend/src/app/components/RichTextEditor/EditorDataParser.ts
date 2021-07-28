@@ -1,19 +1,20 @@
 import { ContentState, EditorState, convertToRaw, convertFromRaw} from "draft-js";
-import { draftToMarkdown, markdownToDraft, DraftToMarkdownOptions } from "markdown-draft-js";
+import { markdownToDraft, DraftToMarkdownOptions } from "markdown-draft-js";
+import draftToMarkdown from "./markdown/draft-to-markdown";
 import { EditorTextFormat } from "./Editor";
 import { EditorSuggestionPlugin } from "./plugins";
-
+import { EntityItemsOptions } from "./markdown/types";
 
 export default class EditorDataParser {
-  private entityItems: DraftToMarkdownOptions["entityItems"] = {};
+  private entityItems: EntityItemsOptions = {};
   private styleItems: DraftToMarkdownOptions["styleItems"] = {};
 
   constructor(private plugins: EditorSuggestionPlugin<any>[] = []) {
     this.plugins.forEach(plugin => {
       if (plugin.serializer) {
         this.entityItems![plugin.resourceType] = {
-          open: entity => plugin.serializer?.open(entity) || "",
-          close: entity => plugin.serializer?.close(entity) || "",
+          open: (entity, block) => plugin.serializer?.open(entity, block) || "",
+          close: (entity, block) => plugin.serializer?.close(entity, block) || "",
         };
       }
     });
@@ -34,6 +35,7 @@ export default class EditorDataParser {
           entityItems: this.entityItems,
           styleItems: this.styleItems,
           escapeMarkdownCharacters: false,
+          preserveNewlines: true,
           // types definition are not up to date...
         } as DraftToMarkdownOptions).trim();
 

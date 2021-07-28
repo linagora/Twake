@@ -125,9 +125,13 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
   onSelected: (mention: MentionSuggestionType, editorState: EditorState, options: SelectOrInsertOptions = { addSpaceAfter: true }) => addMention(mention, editorState, options),
   renderSuggestion: (mention: MentionSuggestionType) => MentionSuggestion(mention),
   serializer: {
-    replace: content => content.replace(/<MENTION\|(.*?)>(.*?)<\/MENTION>/gm, (_match, mention) => mention),
-    open: entity => `<${MENTION_TYPE}|@${(entity as any).data.username}>`,
-    close: () => `</${MENTION_TYPE}>`,
+    // When in code-block, we choose to not handle the mention the same way: It will be only a text, not a mention
+    // this is why we have the <MENTION> and <CODE_MENTION> elements
+    replace: content => content
+        .replace(/<MENTION\|(.*?)>(.*?)<\/MENTION>/gm, (_match, mention) => mention)
+        .replace(/<CODE_MENTION\|(.*?)>(.*?)<\/CODE_MENTION>/gm, (_match, mention, fullName) => fullName),
+    open: (entity, block) => block?.type === 'code-block' ? `<CODE_${MENTION_TYPE}|@${(entity as any).data.username}>` : `<${MENTION_TYPE}|@${(entity as any).data.username}>`,
+    close: (_entity, block) => block?.type === 'code-block' ? `</CODE_${MENTION_TYPE}>` : `</${MENTION_TYPE}>`,
   },
   returnFullTextForSuggestion: true,
   // will skip suggestion when already in a MENTION block
