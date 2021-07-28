@@ -199,8 +199,7 @@ export default (props: Props) => {
     messageEditorService.onAddAttachment(props.messageId || props.threadId, file);
 
   const onDragEnter = (): void => {
-    const t = messageEditorService.getUploadZone(props.threadId);
-    //console.log(t);
+    messageEditorService.getUploadZone(props.threadId);
   };
   return (
     <div
