@@ -1137,7 +1137,7 @@
   "scenes.app.popup.workspaceparameter.pages.back_button": "Zurück",
   "scenes.app.popup.workspaceparameter.pages.back_to_search_button": "Zurück zur Suche",
   "scenes.app.popup.workspaceparameter.pages.cancel_invitation_button": "Stornieren Sie die Einladung per E-Mail.",
-  "scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button": "Fügen Sie Mitbearbeiter hinzu",
+  "scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button": "Benutzer einladen",
   "scenes.app.popup.workspaceparameter.pages.collaboraters_small_text": "Mitarbeiter in diesem Arbeitsbereich {{$1}}",
   "scenes.app.popup.workspaceparameter.pages.collaborateurs": "Mitarbeiter",
   "scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle": "Vom Unternehmen entwickelte Anwendungen",

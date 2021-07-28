@@ -1174,7 +1174,7 @@
     "scenes.app.popup.workspaceparameter.pages.back_button": "Retour",
     "scenes.app.popup.workspaceparameter.pages.back_to_search_button": "Retour à la recherche",
     "scenes.app.popup.workspaceparameter.pages.cancel_invitation_button": "Annuler l'invitation par mail.",
-    "scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button": "Ajouter des utilisateurs",
+    "scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button": "Inviter des utilisateurs",
     "scenes.app.popup.workspaceparameter.pages.collaboraters_small_text": "Utilisateurs dans cet espace de travail {{$1}}",
     "scenes.app.popup.workspaceparameter.pages.collaborateurs": "Utilisateurs",
     "scenes.app.popup.workspaceparameter.pages.company_developped_apps_subtitle": "Applications développées par l'entreprise",
