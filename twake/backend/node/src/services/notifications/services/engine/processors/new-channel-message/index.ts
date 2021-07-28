@@ -48,7 +48,7 @@ export class NewChannelMessageProcessor
     try {
       if (message.workspace_id === ChannelType.DIRECT) {
         //Fixme: Monkey fix until we find a way to add user to channel BEFORE to add the badge to this channel
-        await new Promise(r => setTimeout(r, 2000));
+        await new Promise(r => setTimeout(r, 1000));
       }
 
       const usersToNotify = await this.getUsersToNotify(message);
