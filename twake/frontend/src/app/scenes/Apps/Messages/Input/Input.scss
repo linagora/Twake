@@ -96,7 +96,6 @@
   .input-toolbar {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     align-items: center;
     flex-direction: row;
     margin-top: 8px;
@@ -118,12 +117,17 @@
         background-color: var(--grey-background);
       }
     }
+
+    .char-counter-toolbar {
+      margin-left: 8px;
+    }
   }
 
   .input-options {
     height: 32px;
     display: flex;
     flex-direction: row;
+    flex: 1;
 
     .option {
       color: var(--grey-light);

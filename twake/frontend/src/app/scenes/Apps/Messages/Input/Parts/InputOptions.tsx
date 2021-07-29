@@ -217,6 +217,7 @@ export default (props: Props) => {
             <Button
               type="text"
               size="small"
+              className="option"
               onClick={(evt: any) => {
                 props.triggerApp && props.triggerApp(app, true, evt);
               }}
@@ -243,16 +244,18 @@ export default (props: Props) => {
         )}
       </div>
 
-      <div className="input-options-toolbar">
-        {displayToolbar() && (
+      {displayToolbar() && (
+        <div className="input-options-toolbar">
           <div className="richtext-toolbar fade_in">
             <RichTextToolbar />
           </div>
-        )}
-        {TextCountService.shouldDisplayTextCountComponent(props.richTextEditorState) && (
+        </div>
+      )}
+      {TextCountService.shouldDisplayTextCountComponent(props.richTextEditorState) && (
+        <div className="char-counter-toolbar fade_in">
           <TextCount editorState={props.richTextEditorState} />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
