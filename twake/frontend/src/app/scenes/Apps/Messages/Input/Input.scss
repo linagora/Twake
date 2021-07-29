@@ -23,7 +23,10 @@
 
 .new-thread {
   .message-input {
-    padding: 8px;
+    .upload-zone-centerer {
+      padding: 8px;
+      padding-bottom: 0px;
+    }
   }
 }
 .message-input {
@@ -99,7 +102,6 @@
     align-items: center;
     flex-direction: row;
     margin-top: 8px;
-    margin-bottom: -8px;
 
     button {
       width: 28px;
@@ -124,7 +126,7 @@
   }
 
   .input-options {
-    height: 32px;
+    height: 28px;
     display: flex;
     flex-direction: row;
     flex: 1;
@@ -163,6 +165,13 @@
         }
       }
     }
+  }
+
+  .upload-zone-centerer {
+    margin: 0 auto;
+    min-width: 0;
+    width: 100%;
+    position: relative;
   }
 
   .ephemerals {
