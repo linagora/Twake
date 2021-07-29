@@ -270,7 +270,7 @@ export default (props: Props) => {
               >
                 <div
                   ref={submitRef}
-                  className={classNames('submit-button', {
+                  className={classNames('submit-button skew_in_right', {
                     disabled: isEmpty() || TextCountService.textIsTooLong(editorState),
                   })}
                   onClick={() => {

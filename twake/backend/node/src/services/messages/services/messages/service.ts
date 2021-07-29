@@ -4,6 +4,7 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
+  Paginable,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
@@ -150,14 +151,39 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options: { previous_thread: string },
     context: ThreadExecutionContext,
   ): Promise<void> {
-    //Fixme: check user has access to both threads
-
     logger.debug(
       `Try to move message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
     );
 
     if (options.previous_thread === context.thread.id) {
       return;
+    }
+
+    //Move replies if it was a thread head message
+    if (pk.id === options.previous_thread) {
+      let nextPage: Paginable = { limitStr: "100" };
+      do {
+        const replies = await this.service.messages.list(nextPage, { thread_id: pk.id }, context);
+
+        for (const reply of replies.getEntities()) {
+          //Do not create an infinite loop
+          if (reply.id !== options.previous_thread) {
+            logger.debug(
+              `Try to move reply ${reply.id} to message ${pk.id} from thread ${reply.thread_id} to thread ${context.thread.id}`,
+            );
+
+            await this.service.messages.move(
+              { id: reply.id || undefined },
+              {
+                previous_thread: reply.thread_id,
+              },
+              context,
+            );
+          }
+        }
+
+        nextPage = replies.nextPage;
+      } while (nextPage.page_token);
     }
 
     const messageInOldThread = await this.repository.findOne({
