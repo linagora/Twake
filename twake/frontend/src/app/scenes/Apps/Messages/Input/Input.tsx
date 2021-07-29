@@ -204,6 +204,9 @@ export default (props: Props) => {
   const onDragEnter = (): void => {
     messageEditorService.getUploadZone(props.threadId);
   };
+
+  const disabled = isEmpty() || TextCountService.textIsTooLong(editorState);
+
   return (
     <div
       className={classNames('message-input', {
@@ -270,8 +273,9 @@ export default (props: Props) => {
               >
                 <div
                   ref={submitRef}
-                  className={classNames('submit-button skew_in_right', {
-                    disabled: isEmpty() || TextCountService.textIsTooLong(editorState),
+                  className={classNames('submit-button', {
+                    disabled: disabled,
+                    skew_in_right: !disabled,
                   })}
                   onClick={() => {
                     if (!isEmpty() && !TextCountService.textIsTooLong(editorState)) {
