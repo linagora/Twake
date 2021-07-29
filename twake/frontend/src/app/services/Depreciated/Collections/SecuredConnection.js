@@ -205,7 +205,7 @@ export default class SecuredConnection {
     let str = '';
     try {
       if (data.public) {
-        return JSON.parse(data.public);
+        return typeof data.public === 'string' ? JSON.parse(data.public) : data.public;
       }
 
       var encrypted_data = data.encrypted;
