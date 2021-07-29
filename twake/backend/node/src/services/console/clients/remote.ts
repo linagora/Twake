@@ -190,8 +190,13 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     user.identity_provider_id = userDTO._id;
     user.mail_verified = coalesce(userDTO.isVerified, user.mail_verified);
     if (userDTO.preference) {
-      user.language = coalesce(userDTO.preference.locale, user.language);
-      user.timezone = coalesce(userDTO.preference.timeZone, user.timezone);
+      user.preferences = user.preferences || {};
+      user.preferences.allow_tracking = coalesce(
+        userDTO.preference.allowTrackingPersonalInfo,
+        user.preferences.allow_tracking,
+      );
+      user.preferences.language = coalesce(userDTO.preference.locale, user.preferences.language);
+      user.preferences.timezone = coalesce(userDTO.preference.timeZone, user.preferences.timezone);
     }
 
     const avatar = userDTO.avatar;

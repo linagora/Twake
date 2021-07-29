@@ -31,6 +31,8 @@ export interface User {
   server_request?: boolean; //Set to true if request if from the user, can be used to cancel any access restriction
   // application call
   application_id?: string;
+  // allow_tracking
+  allow_tracking?: boolean;
 }
 
 export const webSocketSchema = {
@@ -131,4 +133,5 @@ export interface JWTObject {
   nbf: number;
   sub: string;
   email: string;
+  track: boolean;
 }

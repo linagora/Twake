@@ -82,8 +82,9 @@ export class UsersCrudController
       resUser = {
         ...resUser,
         preference: {
-          locale: user.language,
-          timezone: user.timezone,
+          locale: user.preferences.language || user.language,
+          timezone: user.preferences.timezone || user.timezone,
+          allow_tracking: user.preferences.allow_tracking || false,
         },
 
         companies,

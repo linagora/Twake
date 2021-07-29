@@ -58,6 +58,7 @@ export interface UserObject {
   preference?: {
     locale: string;
     timezone: number;
+    allow_tracking: boolean;
   };
 
   companies?: CompanyUserObject[];

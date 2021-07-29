@@ -16,7 +16,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
     localEventBus.subscribe<ResourceEventsPayload>(channelListEvent, data => {
       logger.debug(`Tracker - New ${channelListEvent} event`);
       this.identify({
-        userId: data.user.identity_provider_id || data.user.id,
+        user: data.user,
         traits: {
           email: data.user.email || "",
           company: {
@@ -27,7 +27,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       });
       this.track(
         {
-          userId: data.user.identity_provider_id || data.user.id,
+          user: data.user,
           event: "open_client",
         },
         (err: Error) =>
@@ -42,7 +42,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       logger.debug(`Tracker - New ${messageSentEvent} event`);
       this.track(
         {
-          userId: data.user.identity_provider_id || data.message.sender,
+          user: data.user,
           event: messageSentEvent,
           properties: {
             is_direct: data.message.workspace_id === "direct" ? true : false,
@@ -59,7 +59,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       logger.debug(`Tracker - New ${channelCreatedEvent} event`);
       this.track(
         {
-          userId: data.user.identity_provider_id || data.channel.owner,
+          user: data.user,
           event: channelCreatedEvent,
           properties: this.getVisibilityObject(data.channel.visibility),
         },
@@ -75,7 +75,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       logger.debug(`Tracker - New ${channelMemberCreatedEvent} event`);
       this.track(
         {
-          userId: data.user.identity_provider_id || data.member.user_id,
+          user: data.user,
           event: data.user.id !== data.member.user_id ? "channel:invite" : "channel:join",
           properties: this.getVisibilityObject(data.channel.visibility),
         },
@@ -101,25 +101,37 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
     identity: IdentifyObjectType,
     callback?: (err: Error) => void,
   ): Promise<Analytics> {
+    const analiticsIdentity = {
+      userId: identity.user.allow_tracking ? identity.user.identity_provider_id : undefined,
+      anonymousId: "anonymous",
+      ...identity,
+    };
+
     const analytics = await this.getAnalytics();
 
-    if (analytics && identity) return analytics.identify(identity, callback);
+    if (analytics && identity) return analytics.identify(analiticsIdentity, callback);
   }
 
-  public async track(
-    tracker: TrackedEventType,
-    callback?: (err: Error) => void,
-  ): Promise<Analytics> {
-    if (!tracker.userId) {
-      logger.warn(`Tracker - Tried to track event without userId: ${tracker.event}`);
+  public async track(event: TrackedEventType, callback?: (err: Error) => void): Promise<Analytics> {
+    if (!event.user) {
+      logger.warn(`Tracker - Tried to track event without userId: ${event.event}`);
       return;
     }
 
+    if (!event.user.allow_tracking) return;
+
     const analytics = await this.getAnalytics();
 
-    if (analytics && tracker) {
-      tracker.event = `twake:${tracker.event}`;
-      return analytics.track(tracker, callback);
+    if (analytics && event) {
+      event.event = `twake:${event.event}`;
+      return analytics.track(
+        {
+          userId: event.user.allow_tracking ? event.user.identity_provider_id : undefined,
+          anonymousId: "anonymous",
+          ...event,
+        },
+        callback,
+      );
     }
   }
 
