@@ -193,10 +193,10 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       user.preferences = user.preferences || {};
       user.preferences.allow_tracking = coalesce(
         userDTO.preference.allowTrackingPersonalInfo,
-        user.preferences.allow_tracking,
+        user.preferences?.allow_tracking,
       );
-      user.preferences.language = coalesce(userDTO.preference.locale, user.preferences.language);
-      user.preferences.timezone = coalesce(userDTO.preference.timeZone, user.preferences.timezone);
+      user.preferences.language = coalesce(userDTO.preference.locale, user.preferences?.language);
+      user.preferences.timezone = coalesce(userDTO.preference.timeZone, user.preferences?.timezone);
     }
 
     const avatar = userDTO.avatar;
