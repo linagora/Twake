@@ -243,7 +243,7 @@ export default class SecuredConnection {
         res = '';
       }
     } catch (err) {
-      console.log('Unable to read encrypted websocket event', str);
+      console.error('Unable to read encrypted websocket event', str, err.message);
     }
 
     return res;
