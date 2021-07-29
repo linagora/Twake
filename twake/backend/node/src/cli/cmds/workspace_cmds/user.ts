@@ -11,7 +11,7 @@ type ListParams = {
   id: string;
 };
 
-const services = ["user", "channels", "notifications", "database", "webserver", "pubsub"];
+const services = ["user", "search", "channels", "notifications", "database", "webserver", "pubsub"];
 
 const command: yargs.CommandModule<ListParams, ListParams> = {
   command: "user",
