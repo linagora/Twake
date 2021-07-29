@@ -205,7 +205,7 @@ export default class SecuredConnection {
     let str = '';
     try {
       if (data.public) {
-        return JSON.parse(data.public);
+        return typeof data.public === 'string' ? JSON.parse(data.public) : data.public;
       }
 
       var encrypted_data = data.encrypted;
@@ -243,7 +243,7 @@ export default class SecuredConnection {
         res = '';
       }
     } catch (err) {
-      console.log('Unable to read encrypted websocket event', str);
+      console.error('Unable to read encrypted websocket event', str, err.message);
     }
 
     return res;
