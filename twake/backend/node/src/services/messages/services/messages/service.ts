@@ -161,9 +161,17 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     //Move replies if it was a thread head message
     if (pk.id === options.previous_thread) {
-      let nextPage: Paginable = { limitStr: "100" };
+      let nextPage: Pagination = { limitStr: "100" };
       do {
-        const replies = await this.service.messages.list(nextPage, { thread_id: pk.id }, context);
+        const replies = await this.list(
+          nextPage,
+          {},
+          {
+            user: { id: null, server_request: true },
+            thread: { id: pk.id },
+            company: { id: context.company.id },
+          },
+        );
 
         for (const reply of replies.getEntities()) {
           //Do not create an infinite loop
@@ -182,7 +190,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
           }
         }
 
-        nextPage = replies.nextPage;
+        nextPage = replies.nextPage as Pagination;
       } while (nextPage.page_token);
     }
 
