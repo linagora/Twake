@@ -191,7 +191,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     user.mail_verified = coalesce(userDTO.isVerified, user.mail_verified);
     if (userDTO.preference) {
       user.preferences = user.preferences || {};
-      user.preferences.allow_tracking = coalesce(
+      user.preferences?.allow_tracking = coalesce(
         userDTO.preference.allowTrackingPersonalInfo,
         user.preferences?.allow_tracking,
       );

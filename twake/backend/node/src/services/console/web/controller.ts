@@ -46,7 +46,7 @@ export class ConsoleController {
       access_token: this.authService.generateJWT(
         request.currentUser.id,
         request.currentUser.email,
-        request.currentUser.allow_tracking || false,
+        request.currentUser?.allow_tracking || false,
       ),
     };
   }
@@ -170,7 +170,7 @@ export class ConsoleController {
     return this.authService.generateJWT(
       user.id,
       user.email_canonical,
-      user.preferences.allow_tracking || false,
+      user.preferences?.allow_tracking || false,
     );
   }
 
@@ -184,7 +184,7 @@ export class ConsoleController {
     return this.authService.generateJWT(
       user.id,
       user.email_canonical,
-      user.preferences.allow_tracking || false,
+      user.preferences?.allow_tracking || false,
     );
   }
 }

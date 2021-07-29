@@ -102,7 +102,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
     callback?: (err: Error) => void,
   ): Promise<Analytics> {
     const analiticsIdentity = {
-      userId: identity.user.allow_tracking ? identity.user.identity_provider_id : undefined,
+      userId: identity.user?.allow_tracking ? identity.user.identity_provider_id : undefined,
       anonymousId: "anonymous",
       ...identity,
     };
@@ -118,7 +118,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       return;
     }
 
-    if (!event.user.allow_tracking) return;
+    if (!event.user?.allow_tracking) return;
 
     const analytics = await this.getAnalytics();
 
@@ -126,7 +126,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
       event.event = `twake:${event.event}`;
       return analytics.track(
         {
-          userId: event.user.allow_tracking ? event.user.identity_provider_id : undefined,
+          userId: event.user?.allow_tracking ? event.user.identity_provider_id : undefined,
           anonymousId: "anonymous",
           ...event,
         },
