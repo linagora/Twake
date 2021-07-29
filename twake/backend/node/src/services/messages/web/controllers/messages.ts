@@ -10,7 +10,7 @@ import {
 import { Message } from "../../entities/messages";
 import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
 import { handleError } from "../../../../utils/handleError";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { Paginable, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { getThreadMessageWebsocketRoom } from "../realtime";
 
 export class MessagesController
@@ -50,6 +50,31 @@ export class MessagesController
           },
           context,
         );
+
+        if (request.params.message_id === request.body.options?.previous_thread) {
+          //Move all answers to this message in the new thread
+
+          let nextPage: Paginable = { limitStr: "100" };
+          do {
+            const replies = await this.service.messages.list(
+              nextPage,
+              { thread_id: request.params.message_id },
+              context,
+            );
+
+            for (const reply of replies.getEntities()) {
+              await this.service.messages.move(
+                { id: reply.id || undefined },
+                {
+                  previous_thread: reply.thread_id,
+                },
+                context,
+              );
+            }
+
+            nextPage = replies.nextPage;
+          } while (nextPage.page_token);
+        }
       }
 
       const result = await this.service.messages.save(

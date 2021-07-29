@@ -46,7 +46,6 @@ export class ChannelViewProcessor {
       if (!message.resource.ephemeral) {
         //Publish message in corresponding channel
         if (message.created) {
-
           const pkPrefix = {
             company_id: participant.company_id,
             workspace_id: participant.workspace_id,
@@ -58,8 +57,8 @@ export class ChannelViewProcessor {
             ...pkPrefix,
             message_id: message.resource.id,
           });
-          if(!existingPointer){
 
+          if (!existingPointer) {
             await this.repository.save(
               getInstance({
                 ...pkPrefix,
@@ -95,6 +94,24 @@ export class ChannelViewProcessor {
                 }),
               );
             }
+          }
+
+          //Message moved to it own thread
+          if (existingPointer && message.resource.thread_id === message.resource.id) {
+            await this.repository.save(
+              getInstance({
+                ...pkPrefix,
+                thread_id: thread.id,
+                message_id: message.resource.id,
+              }),
+            );
+            await this.repositoryReversed.save(
+              getInstanceReversed({
+                ...pkPrefix,
+                thread_id: thread.id,
+                message_id: message.resource.id,
+              }),
+            );
           }
         }
       }
