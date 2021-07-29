@@ -33,9 +33,7 @@ type MenuItem = {
 export default (props: Props) => {
   const [displayRichTextOptions, setDisplayRichTextOptions] = useState(false);
   const [displayFileMenu, setDisplayFileMenu] = useState(false);
-  const [displayFileMenuTooltip, setDisplayFileMenuTooltip] = useState(false);
   const [displayEmojiMenu, setDisplayEmojiMenu] = useState(false);
-  const [displayEmojiMenuTooltip, setDisplayEmojiMenuTooltip] = useState(false);
   const addon_menu: MenuItem[] = [];
   const addon_right_icon: any[] = [];
   const addon_files: any[] = [];
@@ -99,94 +97,80 @@ export default (props: Props) => {
   return (
     <div className="input-toolbar">
       <div className="input-options">
-        <div
-          className="files"
-          onMouseEnter={() => setDisplayFileMenuTooltip(true)}
-          onMouseLeave={() => setDisplayFileMenuTooltip(false)}
+        <Menu
+          className="option"
+          position="top"
+          toggle={true}
+          onOpen={() => setDisplayFileMenu(true)}
+          onClose={() => setDisplayFileMenu(false)}
+          menu={[
+            {
+              type: 'menu',
+              icon: 'desktop',
+              text: Languages.t('scenes.apps.messages.input.attach_file.from_computer'),
+              onClick: (evt: any) => {
+                MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
+              },
+            },
+            ...addon_files,
+          ]}
         >
           <Tooltip
             placement="top"
             title={Languages.t('scenes.apps.messages.input.attach_file', [], 'Attach file(s)')}
-            visible={displayFileMenuTooltip && !displayFileMenu}
           >
             <Button type="text" size="small" className="ant-btn-icon-only">
-              <Menu
-                className="option"
-                position="top"
-                toggle={true}
-                onOpen={() => setDisplayFileMenu(true)}
-                onClose={() => setDisplayFileMenu(false)}
-                menu={[
-                  {
-                    type: 'menu',
-                    icon: 'desktop',
-                    text: Languages.t('scenes.apps.messages.input.attach_file.from_computer'),
-                    onClick: (evt: any) => {
-                      MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
-                    },
-                  },
-                  ...addon_files,
-                ]}
-              >
-                <Paperclip size={16} />
-              </Menu>
+              <Paperclip size={16} />
             </Button>
           </Tooltip>
-        </div>
+        </Menu>
 
         {props.onAddEmoji && (
-          <div
-            className="emojis"
-            onMouseEnter={() => setDisplayEmojiMenuTooltip(true)}
-            onMouseLeave={() => setDisplayEmojiMenuTooltip(false)}
+          <Menu
+            className="option"
+            position="top"
+            toggle={true}
+            onOpen={() => setDisplayEmojiMenu(true)}
+            onClose={() => setDisplayEmojiMenu(false)}
+            menu={[
+              {
+                type: 'react-element',
+                className: 'menu-cancel-margin',
+                reactElement: () => {
+                  return (
+                    <EmojiPicker
+                      onChange={(emoji: any) => {
+                        MenusManager.closeMenu();
+                        props.onAddEmoji && props.onAddEmoji(emoji);
+                      }}
+                    />
+                  );
+                },
+              },
+            ]}
           >
             <Tooltip
               placement="top"
               title={Languages.t('scenes.apps.messages.input.emoji', [], 'Emoji')}
-              visible={displayEmojiMenuTooltip && !displayEmojiMenu}
             >
               <Button type="text" size="small">
-                <Menu
-                  className="option"
-                  position="top"
-                  toggle={true}
-                  onOpen={() => setDisplayEmojiMenu(true)}
-                  onClose={() => setDisplayEmojiMenu(false)}
-                  menu={[
-                    {
-                      type: 'react-element',
-                      className: 'menu-cancel-margin',
-                      reactElement: () => {
-                        return (
-                          <EmojiPicker
-                            onChange={(emoji: any) => {
-                              MenusManager.closeMenu();
-                              props.onAddEmoji && props.onAddEmoji(emoji);
-                            }}
-                          />
-                        );
-                      },
-                    },
-                  ]}
-                >
-                  <Smile size={16} />
-                </Menu>
+                <Smile size={16} />
               </Button>
             </Tooltip>
-          </div>
+          </Menu>
         )}
 
         {addon_calls.length > 1 && (
-          <Tooltip
-            placement="top"
-            title={Languages.t('scenes.apps.messages.input.start_call', [], 'Start a call')}
-          >
-            <Button type="text" size="small" className="ant-btn-icon-only">
-              <Menu className="option" position="top" menu={addon_calls}>
+          <Menu className="option" position="top" menu={addon_calls}>
+            <Tooltip
+              placement="top"
+              title={Languages.t('scenes.apps.messages.input.start_call', [], 'Start a call')}
+            >
+              <Button type="text" size="small" className="ant-btn-icon-only">
                 <Video size={16} />
-              </Menu>
-            </Button>
-          </Tooltip>
+              </Button>
+            </Tooltip>
+          </Menu>
         )}
 
         {addon_calls.length === 1 && (
@@ -194,10 +178,13 @@ export default (props: Props) => {
             placement="top"
             title={Languages.t('scenes.apps.messages.input.start_call', [], 'Start a call')}
           >
-            <Button type="text" size="small" className="ant-btn-icon-only">
-              <div className="option" onClick={evt => addon_calls[0].onClick(evt)}>
-                <Video size={16} />
-              </div>
+            <Button
+              type="text"
+              size="small"
+              className="ant-btn-icon-only option"
+              onClick={evt => addon_calls[0].onClick(evt)}
+            >
+              <Video size={16} />
             </Button>
           </Tooltip>
         )}
@@ -213,61 +200,62 @@ export default (props: Props) => {
           <Button
             type="text"
             size="small"
-            className={`ant-btn-icon-only richtext ${displayRichTextOptions ? 'selected' : ''}`}
+            className={`option ant-btn-icon-only richtext ${
+              displayRichTextOptions ? 'selected' : ''
+            }`}
+            onMouseDown={e => {
+              e.preventDefault();
+              setDisplayRichTextOptions(!displayRichTextOptions);
+            }}
           >
-            <Type
-              size={16}
-              className="option"
-              onMouseDown={e => {
-                e.preventDefault();
-                setDisplayRichTextOptions(!displayRichTextOptions);
-              }}
-            />
+            <Type size={16} />
           </Button>
         </Tooltip>
 
         {addon_right_icon.map((app: any) => {
           return (
-            <Button type="text" size="small">
+            <Button
+              type="text"
+              size="small"
+              className="option"
+              onClick={(evt: any) => {
+                props.triggerApp && props.triggerApp(app, true, evt);
+              }}
+            >
               <div
-                className="option"
-                onClick={(evt: any) => {
-                  props.triggerApp && props.triggerApp(app, true, evt);
+                className="messages-input-app-icon"
+                style={{
+                  backgroundImage:
+                    'url(' +
+                    (app.display.messages_module.right_icon.icon_url || app.icon_url) +
+                    ')',
                 }}
-              >
-                <div
-                  className="messages-input-app-icon"
-                  style={{
-                    backgroundImage:
-                      'url(' +
-                      (app.display.messages_module.right_icon.icon_url || app.icon_url) +
-                      ')',
-                  }}
-                />
-              </div>
+              />
             </Button>
           );
         })}
 
         {addon_menu.length > 0 && (
-          <Button type="text" size="small">
-            <Menu className="option" position="top" menu={addon_menu}>
+          <Menu className="option" position="top" menu={addon_menu}>
+            <Button type="text" size="small">
               <MoreHorizontal size={16} />
-            </Menu>
-          </Button>
+            </Button>
+          </Menu>
         )}
       </div>
 
-      <div className="input-options-toolbar">
-        {displayToolbar() && (
-          <div className="richtext-toolbar">
+      {displayToolbar() && (
+        <div className="input-options-toolbar">
+          <div className="richtext-toolbar fade_in">
             <RichTextToolbar />
           </div>
-        )}
-        {TextCountService.shouldDisplayTextCountComponent(props.richTextEditorState) && (
+        </div>
+      )}
+      {TextCountService.shouldDisplayTextCountComponent(props.richTextEditorState) && (
+        <div className="char-counter-toolbar fade_in">
           <TextCount editorState={props.richTextEditorState} />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

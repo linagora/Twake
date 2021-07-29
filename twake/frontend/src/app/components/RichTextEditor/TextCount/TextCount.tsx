@@ -12,7 +12,7 @@ export const TextCount = ({ editorState }: PropsType) => {
   const { Text } = Typography;
 
   return (
-    <Text type="secondary" className="fade_in">
+    <Text type="secondary">
       <Text type={TextCountService.textIsTooLong(editorState) ? 'danger' : 'secondary'}>
         {TextCountService.getCurrentTextLength(editorState)}
       </Text>

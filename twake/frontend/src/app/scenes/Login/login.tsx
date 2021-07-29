@@ -51,7 +51,6 @@ export default () => {
       {LoginService.state === 'verify_mail' && <VerifyMail />}
       {LoginService.state === 'forgot_password' && <ForgotPassword />}
 
-      <div className="white_background light_background" />
       <div className={'app_version_footer '}>
         <div className="version_name fade_in">Twake {Globals.version.version_name}</div>
         <div style={{ height: 20 }}>

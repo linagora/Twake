@@ -28,9 +28,7 @@ export default () => {
     AuthProviderService.getAuthProviderConfiguration();
   }
 
-  try {
-    (window as any).document.getElementById('app_loader').remove();
-  } catch (err) {}
+  InitService.removeLoader();
 
   return (
     <Integration>

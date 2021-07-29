@@ -68,7 +68,10 @@ export default (props: Props) => {
           RichTextEditorStateService.get(editorId, {
             plugins: editorPlugins,
             clearIfExists: true,
-            initialContent: RichTextEditorStateService.getDataParser(editorPlugins).fromString(initialMessage, format),
+            initialContent: RichTextEditorStateService.getDataParser(editorPlugins).fromString(
+              initialMessage,
+              format,
+            ),
           }),
         );
       }
@@ -212,38 +215,38 @@ export default (props: Props) => {
       ref={props.ref}
       onClick={() => focus()}
     >
-      <EphemeralMessages
-        channelId={props.channelId}
-        threadId={props.threadId}
-        collectionKey={props.collectionKey}
-        onHasEphemeralMessage={() => {
-          if (!hasEphemeralMessage) {
-            setHasEphemeralMessage(true);
-          }
-        }}
-        onNotEphemeralMessage={() => {
-          if (hasEphemeralMessage) {
-            setHasEphemeralMessage(false);
-          }
-        }}
-      />
+      <UploadZone
+        className="upload-zone-centerer"
+        ref={setUploadZoneRef}
+        disableClick
+        parent={''}
+        driveCollectionKey={props.collectionKey}
+        uploadOptions={{ workspace_id: Workspaces.currentWorkspaceId, detached: true }}
+        onUploaded={onUploaded}
+        onDragEnter={onDragEnter}
+        multiple={true}
+        allowPaste={true}
+      >
+        <EphemeralMessages
+          channelId={props.channelId}
+          threadId={props.threadId}
+          collectionKey={props.collectionKey}
+          onHasEphemeralMessage={() => {
+            if (!hasEphemeralMessage) {
+              setHasEphemeralMessage(true);
+            }
+          }}
+          onNotEphemeralMessage={() => {
+            if (hasEphemeralMessage) {
+              setHasEphemeralMessage(false);
+            }
+          }}
+        />
 
-      <AttachedFiles channelId={props.channelId} threadId={props.threadId} />
+        <AttachedFiles channelId={props.channelId} threadId={props.threadId} />
 
-      {!hasEphemeralMessage && (
-        <div className="editorview-submit">
-          <UploadZone
-            className="thread-centerer"
-            ref={setUploadZoneRef}
-            disableClick
-            parent={''}
-            driveCollectionKey={props.collectionKey}
-            uploadOptions={{ workspace_id: Workspaces.currentWorkspaceId, detached: true }}
-            onUploaded={onUploaded}
-            onDragEnter={onDragEnter}
-            multiple={true}
-            allowPaste={true}
-          >
+        {!hasEphemeralMessage && (
+          <div className="editorview-submit">
             <EditorView
               ref={editorRef}
               onChange={editorState => onChange(editorState)}
@@ -260,42 +263,42 @@ export default (props: Props) => {
                 'Write a message. Use @ to quote a user.',
               )}
             />
-          </UploadZone>
-          {!isEditing() && (
-            <Tooltip
-              title={Languages.t('scenes.apps.messages.input.send_message', [], 'Send message')}
-              placement="top"
-            >
-              <div
-                ref={submitRef}
-                className={classNames('submit-button', {
-                  disabled: isEmpty() || TextCountService.textIsTooLong(editorState),
-                })}
-                onClick={() => {
-                  if (!isEmpty() && !TextCountService.textIsTooLong(editorState)) {
-                    onSend();
-                  }
-                }}
+            {!isEditing() && (
+              <Tooltip
+                title={Languages.t('scenes.apps.messages.input.send_message', [], 'Send message')}
+                placement="top"
               >
-                <Send className="send-icon" size={20} />
-              </div>
-            </Tooltip>
-          )}
-        </div>
-      )}
+                <div
+                  ref={submitRef}
+                  className={classNames('submit-button', {
+                    disabled: isEmpty() || TextCountService.textIsTooLong(editorState),
+                  })}
+                  onClick={() => {
+                    if (!isEmpty() && !TextCountService.textIsTooLong(editorState)) {
+                      onSend();
+                    }
+                  }}
+                >
+                  <Send className="send-icon" size={20} />
+                </div>
+              </Tooltip>
+            )}
+          </div>
+        )}
 
-      {!hasEphemeralMessage && !props.messageId && (
-        <InputOptions
-          isEmpty={isEmpty()}
-          channelId={props.channelId}
-          threadId={props.threadId}
-          onSend={() => onSend()}
-          triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
-          onAddEmoji={emoji => editorRef.current?.insertCommand('EMOJI', emoji)}
-          richTextEditorState={editorState}
-          onRichTextChange={editorState => setRichTextEditorState(editorState)}
-        />
-      )}
+        {!hasEphemeralMessage && !props.messageId && (
+          <InputOptions
+            isEmpty={isEmpty()}
+            channelId={props.channelId}
+            threadId={props.threadId}
+            onSend={() => onSend()}
+            triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}
+            onAddEmoji={emoji => editorRef.current?.insertCommand('EMOJI', emoji)}
+            richTextEditorState={editorState}
+            onRichTextChange={editorState => setRichTextEditorState(editorState)}
+          />
+        )}
+      </UploadZone>
     </div>
   );
 };

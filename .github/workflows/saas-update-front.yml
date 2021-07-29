@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
     steps:
-      - run: 'echo "DOCKERTAGVERSION=2021.Q2.550" >> $GITHUB_ENV'
+      - run: 'echo "DOCKERTAGVERSION=2021.Q3.640" >> $GITHUB_ENV'
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
         run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=${{ env.DOCKERTAGVERSION }}-develop" >> $GITHUB_ENV'

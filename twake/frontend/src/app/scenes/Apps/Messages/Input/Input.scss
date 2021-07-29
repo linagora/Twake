@@ -23,7 +23,10 @@
 
 .new-thread {
   .message-input {
-    padding: 8px;
+    .upload-zone-centerer {
+      padding: 8px;
+      padding-bottom: 0px;
+    }
   }
 }
 .message-input {
@@ -96,28 +99,43 @@
   .input-toolbar {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     align-items: center;
     flex-direction: row;
-    border-top: var(--grey-background);
-    margin-top: 10px;
-  }
-
-  .input-options-toolbar {
-    display: flex;
-    flex-direction: row;
     margin-top: 8px;
+
+    button {
+      width: 28px;
+      height: 28px;
+      padding: 4px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+
+      &:not(:last-child) {
+        margin-right: 2px;
+      }
+
+      &:hover {
+        background-color: var(--grey-background);
+      }
+    }
+
+    .char-counter-toolbar {
+      margin-left: 8px;
+    }
   }
 
   .input-options {
+    height: 28px;
     display: flex;
     flex-direction: row;
-    margin-top: 8px;
+    flex: 1;
+
     .option {
       color: var(--grey-light);
 
-      &:not(:last-child) {
-        margin-right: 12px;
+      &:first-child {
+        margin-left: -4px;
       }
 
       &:not(.disabled):hover {
@@ -147,6 +165,13 @@
         }
       }
     }
+  }
+
+  .upload-zone-centerer {
+    margin: 0 auto;
+    min-width: 0;
+    width: 100%;
+    position: relative;
   }
 
   .ephemerals {
