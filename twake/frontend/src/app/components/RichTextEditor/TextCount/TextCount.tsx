@@ -1,22 +1,39 @@
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React from 'react';
-import { Typography } from 'antd';
+// eslint-disable-next-line
+import React, { useEffect, useState } from 'react';
+import className from 'classnames';
 import { EditorState } from 'draft-js';
-import TextCountService from './TextCountService';
+import TextCountService, { TextStats } from './TextCountService';
+
+import './TextCount.scss';
 
 type PropsType = {
   editorState: EditorState;
+  displayOnlyAfterThresold: boolean;
 };
 
-export const TextCount = ({ editorState }: PropsType) => {
-  const { Text } = Typography;
+export const TextCount = (props: PropsType) => {
+  const [display, setDisplay] = useState(false);
+  const [stats, setStats] = useState<Partial<TextStats>>({
+    length: 0,
+    isTooLong: false,
+    shouldLimit: false,
+    isOverThreshold: false,
+  });
+
+  useEffect(() => {
+    const stats = TextCountService.getStats(props.editorState);
+
+    setDisplay(props.displayOnlyAfterThresold && !!stats.isOverThreshold);
+    setStats(stats);
+  }, [props.editorState, props.displayOnlyAfterThresold]);
 
   return (
-    <Text type="secondary">
-      <Text type={TextCountService.textIsTooLong(editorState) ? 'danger' : 'secondary'}>
-        {TextCountService.getCurrentTextLength(editorState)}
-      </Text>
-      /{TextCountService.MAX_TEXT_LENGTH}
-    </Text>
+    <>
+      { display && (
+        <div className="text-count fade_in">
+          <span className={className({'limit': stats.isTooLong})}>{stats.length}/{stats.maxLength}</span>
+        </div>
+      )}
+    </>
   );
 };
