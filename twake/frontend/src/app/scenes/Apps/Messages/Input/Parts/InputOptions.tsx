@@ -75,7 +75,8 @@ export default (props: Props) => {
           } else if (app.display?.messages_module?.right_icon) {
             addon_right_icon.push(app);
           } else {
-            addon_menu.push(menu_item);
+            // Not sure about this, giphy still displayed on web.qa.twake
+            app.simple_name !== 'giphy' && addon_menu.push(menu_item);
           }
         }
       });

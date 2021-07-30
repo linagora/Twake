@@ -75,7 +75,7 @@ export default ({}: PropsType): JSX.Element => {
 
       <Row className="x-margin" style={{ display: 'flex', justifyContent: 'center' }}>
         <Typography.Text type="secondary" style={{ width: 380, fontSize: 13, height: 32 }}>
-          {Languages.t('components.add_mails_workspace.text_secondary')}
+          {Languages.t('scenes.app.popup.adduser.adresses_message')}
         </Typography.Text>
       </Row>
     </ObjectModal>
