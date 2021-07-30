@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import User from "src/services/user/entities/user";
+import User from "../../user/entities/user";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelVisibility, ChannelType } from "../types";
 import { ChannelMember } from "./channel-member";
