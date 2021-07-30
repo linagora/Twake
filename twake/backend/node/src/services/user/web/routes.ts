@@ -16,7 +16,7 @@ const usersUrl = "/users";
 const routes: FastifyPluginCallback<{
   service: UserServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
-  const usersController = new UsersCrudController(options.service.users, options.service.companies);
+  const usersController = new UsersCrudController(options.service);
   const accessControl = async (request: FastifyRequest) => {
     // TODO
     const authorized = true;

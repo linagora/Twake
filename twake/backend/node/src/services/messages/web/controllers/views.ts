@@ -46,7 +46,7 @@ export class ViewsController
           request.query.limit,
           request.query.direction !== "history",
         ),
-        { ...request.query },
+        { ...request.query, include_users: request.query.include_users },
         context,
       );
       return {
@@ -70,7 +70,9 @@ export class ViewsController
 
 export interface MessageViewListQueryParameters
   extends PaginationQueryParameters,
-    MessageViewListOptions {}
+    MessageViewListOptions {
+  include_users: boolean;
+}
 
 function getChannelViewExecutionContext(
   request: FastifyRequest<{

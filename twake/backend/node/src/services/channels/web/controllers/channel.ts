@@ -64,13 +64,10 @@ export class ChannelCrudController
   }
 
   async get(
-    request: FastifyRequest<{ Params: ChannelParameters }>,
+    request: FastifyRequest<{ Querystring: ChannelListQueryParameters; Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<Channel>> {
-    const channel = await this.service.get(
-      this.getPrimaryKey(request),
-      getExecutionContext(request),
-    );
+    let channel = await this.service.get(this.getPrimaryKey(request), getExecutionContext(request));
 
     if (!channel) {
       reply.notFound(`Channel ${request.params.id} not found`);
@@ -87,6 +84,12 @@ export class ChannelCrudController
         return;
       }
     }
+
+    if (request.query.include_users)
+      channel = await this.service.includeUsersToDirectChannel(
+        channel,
+        getExecutionContext(request),
+      );
 
     return {
       websocket: getWebsocketInformation(channel),
@@ -199,9 +202,21 @@ export class ChannelCrudController
       getExecutionContext(request),
     );
 
+    let entities = [];
+    if (request.query.include_users) {
+      entities = [];
+      for (const e of list.getEntities()) {
+        entities.push(
+          await this.service.includeUsersToDirectChannel(e, getExecutionContext(request)),
+        );
+      }
+    } else {
+      entities = list.getEntities();
+    }
+
     return {
       ...{
-        resources: list.getEntities(),
+        resources: entities,
       },
       ...(request.query.websockets && {
         websockets: getWorkspaceRooms(request.params, request.currentUser),

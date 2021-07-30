@@ -65,11 +65,14 @@ export interface PaginationQueryParameters {
   direction?: "history" | "future";
 }
 export interface MessageViewListOptions {
+  include_users: boolean;
   replies_per_thread: number;
   emojis: boolean;
 }
 
-export interface MessageListQueryParameters extends PaginationQueryParameters {}
+export interface MessageListQueryParameters extends PaginationQueryParameters {
+  include_users: boolean;
+}
 
 export interface PinOperation {
   id: string;

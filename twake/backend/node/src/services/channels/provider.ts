@@ -16,6 +16,7 @@ import {
   DefaultChannelPrimaryKey,
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
+  UsersIncludedChannel,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
 import { User } from "../../utils/types";
@@ -139,6 +140,16 @@ export interface ChannelService
     user: User,
     workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
   ): Promise<ChannelMember[]>;
+
+  /**
+   * Include users to channel itself, also generate the channel name
+   * @param channel
+   * @param context
+   */
+  includeUsersToDirectChannel(
+    channel: Channel,
+    context?: WorkspaceExecutionContext,
+  ): Promise<UsersIncludedChannel>;
 }
 export interface MemberService
   extends TwakeServiceProvider,

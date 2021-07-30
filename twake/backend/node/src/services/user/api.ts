@@ -12,7 +12,7 @@ import Company, { CompanyPrimaryKey, CompanySearchKey } from "./entities/company
 import ExternalUser from "./entities/external_user";
 import ExternalGroup, { ExternalGroupPrimaryKey } from "./entities/external_company";
 import { ListUserOptions } from "./services/users/types";
-import { CompanyUserRole } from "./web/types";
+import { CompanyObject, CompanyUserObject, CompanyUserRole, UserObject } from "./web/types";
 import { WorkspaceServiceAPI } from "../workspaces/api";
 import { uuid } from "../../utils/types";
 import Device from "./entities/device";
@@ -22,6 +22,9 @@ export default interface UserServiceAPI extends TwakeServiceProvider, Initializa
   companies: CompaniesServiceAPI;
   workspaces: WorkspaceServiceAPI;
   external: UserExternalLinksServiceAPI;
+
+  formatUser(user: User, includeCompanies?: boolean): Promise<UserObject>;
+  formatCompany(companyEntity: Company, companyUserObject?: CompanyUserObject): CompanyObject;
 }
 
 export interface UsersServiceAPI

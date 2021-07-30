@@ -125,6 +125,7 @@ export class MessagesController
 
   async get(
     request: FastifyRequest<{
+      Querystring: MessageListQueryParameters;
       Params: {
         company_id: string;
         thread_id: string;
@@ -168,7 +169,7 @@ export class MessagesController
           request.query.limit,
           request.query.direction !== "history",
         ),
-        { ...request.query },
+        { ...request.query, include_users: request.query.include_users || false },
         context,
       );
       return {
