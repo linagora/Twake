@@ -1,6 +1,6 @@
 # MUST BE BUILT FROM .
 # docker build . -t php7.1-cassandra -f ./Dockerfile
-FROM php:7.1.11-fpm
+FROM php:7.4-fpm
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 
