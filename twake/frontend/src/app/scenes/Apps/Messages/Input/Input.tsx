@@ -201,7 +201,7 @@ export default (props: Props) => {
   };
 
   const setUploadZoneRef = (node: UploadZone): void =>
-    messageEditorService.setUploadZone(props.messageId || '', node);
+    messageEditorService.setUploadZone(props.messageId || props.threadId || '', node);
 
   const onUploaded = (file: FileType) =>
     messageEditorService.onAddAttachment(props.messageId || props.threadId, file);
