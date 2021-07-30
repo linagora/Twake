@@ -1,0 +1,11 @@
+.text-count {
+  font-size: x-small;
+  color: var(--grey-dark);
+  position: relative;
+  bottom: -4px;
+  padding-right: 6px;
+
+  span.limit {
+    color: var(--error);
+  }
+}

@@ -11,11 +11,11 @@ import AttachedFiles from './Parts/AttachedFiles';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import { EditorView } from 'app/components/RichTextEditor';
 import Languages from 'app/services/languages/languages';
-import { TextCountService } from 'app/components/RichTextEditor/TextCount/';
-
-import './Input.scss';
+import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
+
+import './Input.scss';
 
 type FileType = { [key: string]: any };
 
@@ -53,6 +53,11 @@ export default (props: Props) => {
   const [editorState, setEditorState] = useState(() =>
     RichTextEditorStateService.get(editorId, { plugins: editorPlugins }),
   );
+  const [isTooLong, setTooLong] = useState(false);
+  useEffect(() => {
+    setTooLong(TextCountService.getStats(editorState).isTooLong);
+  }, [editorState]);
+
   const disable_app: any = {};
 
   messageEditorService.useListener(useState);
@@ -196,7 +201,7 @@ export default (props: Props) => {
   };
 
   const setUploadZoneRef = (node: UploadZone): void =>
-    messageEditorService.setUploadZone(props.messageId || '', node);
+    messageEditorService.setUploadZone(props.messageId || props.threadId || '', node);
 
   const onUploaded = (file: FileType) =>
     messageEditorService.onAddAttachment(props.messageId || props.threadId, file);
@@ -205,7 +210,7 @@ export default (props: Props) => {
     messageEditorService.getUploadZone(props.threadId);
   };
 
-  const disabled = isEmpty() || TextCountService.textIsTooLong(editorState);
+  const disabled = isEmpty() || isTooLong;
 
   return (
     <div
@@ -278,7 +283,7 @@ export default (props: Props) => {
                     skew_in_right: !disabled,
                   })}
                   onClick={() => {
-                    if (!isEmpty() && !TextCountService.textIsTooLong(editorState)) {
+                    if (!isEmpty() && !isTooLong) {
                       onSend();
                     }
                   }}
@@ -289,6 +294,10 @@ export default (props: Props) => {
             )}
           </div>
         )}
+
+        <div className="counter-right">
+          <TextCount editorState={editorState} displayOnlyAfterThresold={true} />
+        </div>
 
         {!hasEphemeralMessage && !props.messageId && (
           <InputOptions

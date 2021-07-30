@@ -13,7 +13,6 @@ import {
   SelectionState,
 } from 'draft-js';
 import { getSelectionEntity } from 'draftjs-utils';
-
 import EditorDataParser from './EditorDataParser';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import { SuggestionList } from './plugins/suggestion/SuggestionList';
@@ -27,7 +26,7 @@ import {
 } from './EditorUtils';
 import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from './plugins';
 import './Editor.scss';
-import { TextCountService } from 'app/components/RichTextEditor/TextCount/';
+import { TextCountService } from 'app/components/RichTextEditor/TextCount';
 import useOnScreen from 'app/services/hooks/useOnScreen';
 
 const { isSoftNewlineEvent } = KeyBindingUtil;
@@ -66,6 +65,7 @@ type EditorProps = {
   outputFormat: EditorTextFormat;
   placeholder?: string;
   onUpArrow?: (e: SyntheticKeyboardEvent) => void;
+  onSubmitBlocked?: (reason: string, details?: string) => void;
 };
 
 type EditorViewState = {
@@ -210,7 +210,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         }
       }
 
-      if (selection.isCollapsed() && currentBlock.getLength() === selection.getStartOffset()) {
+      if (selection.isCollapsed()) {
         if (['unstyled', 'code-block', 'blockquote'].includes(blockType)) {
           this.submit(editorState);
           return 'handled';
@@ -221,6 +221,11 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
 
   submit(editorState: EditorState): boolean {
+    if (TextCountService.getStats(editorState).isTooLong) {
+      this.props.onSubmitBlocked && this.props.onSubmitBlocked('toolong');
+      return false;
+    }
+
     this.props.onSubmit && this.props.onSubmit(this.editorDataParser.toString(editorState, this.outputFormat));
     if (this.props.clearOnSubmit) {
       this.resetStateAndFocus();
@@ -463,10 +468,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     const blockLength = block.getLength();
     const blockText = block.getText();
     const regex = new RegExp('\r|\n', 'gm');
-
-    if (TextCountService.shouldLimitText(editorState)) {
-      return 'handled';
-    }
 
     if (currentBlockType.indexOf('atomic') === 0) {
       return 'not-handled';
