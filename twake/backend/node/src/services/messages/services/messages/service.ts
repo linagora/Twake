@@ -298,8 +298,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     //Only server and application can definively remove a message
     if (
-      forceDelete &&
-      (context.user.server_request || context.user.application_id || message.application_id)
+      (forceDelete && (context.user.server_request || context.user.application_id)) ||
+      message.application_id
     ) {
       await this.repository.remove(message);
     }
