@@ -1,7 +1,8 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../../utils/types";
+import { UserObject } from "../user/web/types";
 import { MessageFileMetadata } from "./entities/message-files";
-import { Message } from "./entities/messages";
+import { Message, MessageWithUsers } from "./entities/messages";
 import { Thread } from "./entities/threads";
 
 export type specialMention = "all" | "here" | "everyone" | "channel";
@@ -35,6 +36,11 @@ export type MessageWithReplies = Message & {
     last_activity: number;
     replies: number;
   };
+};
+
+export type MessageWithRepliesWithUsers = MessageWithReplies & {
+  last_replies: MessageWithUsers[];
+  users: UserObject[];
 };
 
 export interface CompanyExecutionContext extends ExecutionContext {

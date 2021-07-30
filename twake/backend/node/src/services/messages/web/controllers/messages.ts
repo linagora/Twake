@@ -136,13 +136,18 @@ export class MessagesController
   ): Promise<ResourceGetResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      const resource = await this.service.messages.get(
+      let resource = await this.service.messages.get(
         {
           thread_id: request.params.thread_id,
           id: request.params.message_id,
         },
         context,
       );
+
+      if (request.query.include_users) {
+        resource = await this.service.messages.includeUsersInMessage(resource);
+      }
+
       return {
         resource: resource,
       };
@@ -172,8 +177,18 @@ export class MessagesController
         { ...request.query, include_users: request.query.include_users || false },
         context,
       );
+
+      let entities = [];
+      if (request.query.include_users) {
+        for (const msg of resources.getEntities()) {
+          entities.push(await this.service.messages.includeUsersInMessage(msg));
+        }
+      } else {
+        entities = resources.getEntities();
+      }
+
       return {
-        resources: resources.getEntities(),
+        resources: entities,
         ...(request.query.websockets && {
           websockets: [{ room: getThreadMessageWebsocketRoom(context) }],
         }),

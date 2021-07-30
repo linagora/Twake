@@ -11,31 +11,45 @@ import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/f
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
-import { getInstance, Message, TYPE as MessageTableName } from "../../entities/messages";
+import {
+  getInstance,
+  Message,
+  MessageWithUsers,
+  TYPE as MessageTableName,
+} from "../../entities/messages";
 import {
   BookmarkOperation,
   MessageLocalEvent,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
+  MessageWithRepliesWithUsers,
   PinOperation,
   ReactionOperation,
   ThreadExecutionContext,
 } from "../../types";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../../web/realtime";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
-import { buildMessageListPagination } from "../utils";
+import { buildMessageListPagination, getMentions } from "../utils";
 import _, { update } from "lodash";
 import { ThreadMessagesOperationsService } from "./operations";
 import { getDefaultMessageInstance } from "./utils";
 import { Thread } from "../../entities/threads";
+import UserServiceAPI from "../../../user/api";
+import ChannelServiceAPI from "../../../channels/provider";
+import { UserObject } from "../../../user/web/types";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
   repository: Repository<Message>;
   operations: ThreadMessagesOperationsService;
 
-  constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {
+  constructor(
+    private database: DatabaseServiceAPI,
+    private user: UserServiceAPI,
+    private channel: ChannelServiceAPI,
+    private service: MessageServiceAPI,
+  ) {
     this.operations = new ThreadMessagesOperationsService(database, service, this);
   }
 
@@ -379,6 +393,45 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     return list;
+  }
+
+  async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
+    let ids: string[] = [];
+    if (message.user_id) ids.push(message.user_id);
+    if (message.pinned_info.pinned_by) ids.push(message.pinned_info.pinned_by);
+    const mentions = getMentions(message);
+    for (const mentionedUser of mentions.users) {
+      ids.push(mentionedUser);
+    }
+    ids = _.uniq(ids);
+
+    let users: UserObject[] = [];
+    for (const id of ids) {
+      users.push(
+        await this.user.formatUser(
+          await this.user.users.get({ id }, { user: { id: null, server_request: true } }),
+        ),
+      );
+    }
+
+    let messageWithUsers = { ...message, users };
+    return messageWithUsers;
+  }
+
+  async includeUsersInMessageWithReplies(
+    message: MessageWithReplies,
+  ): Promise<MessageWithRepliesWithUsers> {
+    let last_replies = [];
+    for (const reply of message.last_replies) {
+      last_replies.push(await this.includeUsersInMessage(reply));
+    }
+
+    let messageWithUsers = {
+      ...message,
+      users: (await this.includeUsersInMessage(message)).users,
+      last_replies,
+    };
+    return messageWithUsers;
   }
 
   @RealtimeSaved<Message>((message, context) => [

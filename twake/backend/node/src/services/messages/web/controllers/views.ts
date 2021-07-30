@@ -49,8 +49,18 @@ export class ViewsController
         { ...request.query, include_users: request.query.include_users },
         context,
       );
+
+      let entities = [];
+      if (request.query.include_users) {
+        for (const msg of resources.getEntities()) {
+          entities.push(await this.service.messages.includeUsersInMessageWithReplies(msg));
+        }
+      } else {
+        entities = resources.getEntities();
+      }
+
       return {
-        resources: resources.getEntities(),
+        resources: entities,
         ...(request.query.websockets && {
           websockets: [
             {

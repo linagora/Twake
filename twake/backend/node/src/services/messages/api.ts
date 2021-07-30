@@ -21,10 +21,11 @@ import {
   ThreadExecutionContext,
   MessageWithReplies,
   MessagesGetThreadOptions,
+  MessageWithRepliesWithUsers,
 } from "./types";
 
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
-import { Message, MessagePrimaryKey } from "./entities/messages";
+import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
 
 export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
   userBookmarks: MessageUserBookmarksServiceAPI;
@@ -102,6 +103,11 @@ export interface MessageThreadMessagesServiceAPI
     options: { previous_thread: string },
     context: ThreadExecutionContext,
   ): Promise<void>;
+
+  includeUsersInMessage(message: Message): Promise<MessageWithUsers>;
+  includeUsersInMessageWithReplies(
+    message: MessageWithReplies,
+  ): Promise<MessageWithRepliesWithUsers>;
 }
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
