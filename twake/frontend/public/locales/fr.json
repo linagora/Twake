@@ -1660,4 +1660,5 @@
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_link": "Créer une chaîne privée",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_text": " à la place",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_input_placeholder": "Vous ne pouvez pas ajouter plus de 10 utilisateurs"
+    "general.uploading": "Envoi"
 }

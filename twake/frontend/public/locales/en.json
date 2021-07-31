@@ -1722,4 +1722,5 @@
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_link": "Create a private channel",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_text": " instead",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_input_placeholder": "You cannot add more than 10 users"
+    "general.uploading": "Uploading"
 }

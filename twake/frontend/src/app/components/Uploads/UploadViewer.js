@@ -4,6 +4,7 @@ import UploadManager from './UploadManager.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import './Uploads.scss';
 import moment from 'moment';
+import Languages from 'app/services/languages/languages';
 
 export default class UploadViewer extends React.Component {
   constructor(props) {
@@ -114,7 +115,7 @@ export default class UploadViewer extends React.Component {
         }
       >
         <div className="title" onClick={() => this.setState({ large: !this.state.large })}>
-          Importation {total_finished}/{todo}
+          {Languages.t('general.uploading')} {total_finished}/{todo}
         </div>
         {remaining_time > 0 && (
           <div className="subtitle">
