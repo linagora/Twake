@@ -1721,6 +1721,6 @@
     "components.member.user_parts.and_more_user_text": " and {{$1}} more users",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_link": "Create a private channel",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_text": " instead",
-    "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_input_placeholder": "You cannot add more than 10 users"
+    "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_input_placeholder": "You cannot add more than 10 users",
     "general.uploading": "Uploading"
 }
