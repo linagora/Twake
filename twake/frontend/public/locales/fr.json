@@ -1656,5 +1656,9 @@
     "scenes.apps.messages.message.parts.deleted_content.text.current_user":
     "Vous avez supprimé ce message",
     "scenes.apps.messages.message.parts.deleted_content.text": "{{$1}} a supprimé son message",
+    "components.member.user_parts.and_more_user_text": " et {{$1}} autres utilisateurs",
+    "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_link": "Créer une chaîne privée",
+    "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_text": " à la place",
+    "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_input_placeholder": "Vous ne pouvez pas ajouter plus de 10 utilisateurs",
     "general.uploading": "Envoi"
 }

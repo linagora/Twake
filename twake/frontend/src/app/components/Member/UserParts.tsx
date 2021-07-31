@@ -96,9 +96,18 @@ export const getUserParts = (props: PropsType): UserPartsType => {
     ) : (
       <></>
     );
+
+  const shouldDisplayNotShowedUsersCount = users.length > (props.max || 3);
+  const notShowedUsersCount = users.length - (props.max || 3) + 1; /* myself */
+  const name = `${channelName.join(', ')}${
+    shouldDisplayNotShowedUsersCount
+      ? Languages.t('components.member.user_parts.and_more_user_text', [notShowedUsersCount])
+      : ''
+  }`;
+
   return {
     avatar,
-    name: channelName.join(', '),
+    name,
     users,
     companyRole,
   };
