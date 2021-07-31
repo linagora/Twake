@@ -96,6 +96,14 @@
     }
   }
 
+  .counter-right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    height: 0;
+  }
+
   .input-toolbar {
     display: flex;
     flex-wrap: wrap;
@@ -118,10 +126,6 @@
       &:hover {
         background-color: var(--grey-background);
       }
-    }
-
-    .char-counter-toolbar {
-      margin-left: 8px;
     }
   }
 

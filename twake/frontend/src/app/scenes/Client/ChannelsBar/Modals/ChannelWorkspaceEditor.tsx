@@ -14,9 +14,15 @@ type Props = {
   title: string;
   channel?: ChannelResource;
   currentUserId?: string;
+  defaultVisibility?: ChannelType['visibility'];
 };
 
-const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) => {
+const ChannelWorkspaceEditor: FC<Props> = ({
+  title,
+  channel,
+  currentUserId,
+  defaultVisibility,
+}) => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
 
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -97,6 +103,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
         channel={channel?.data}
         onChange={onChange}
         currentUserId={currentUserId}
+        defaultVisibility={defaultVisibility}
       />
     </ObjectModal>
   );

@@ -12,16 +12,24 @@ type Props = {
   channel: ChannelType | undefined;
   onChange: (channelEntries: any) => void;
   currentUserId?: string;
+  defaultVisibility?: ChannelType['visibility'];
 };
 
 const { TextArea } = Input;
 const { Option } = Select;
 const { Title } = Typography;
-const ChannelTemplateEditor: FC<Props> = ({ channel, onChange, currentUserId }) => {
+const ChannelTemplateEditor: FC<Props> = ({
+  channel,
+  onChange,
+  currentUserId,
+  defaultVisibility,
+}) => {
   const [icon, setIcon] = useState<string>(channel?.icon || '');
   const [name, setName] = useState<string>(channel?.name || '');
   const [description, setDescription] = useState<string>(channel?.description || '');
-  const [visibility, setVisibility] = useState<string>(channel?.visibility || 'public');
+  const [visibility, setVisibility] = useState<string>(
+    channel?.visibility || defaultVisibility || 'public',
+  );
   const [defaultChannel, setDefaultChannel] = useState<boolean>(channel?.is_default || false);
   const [group, setGroup] = useState<string>(channel?.channel_group || '');
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();

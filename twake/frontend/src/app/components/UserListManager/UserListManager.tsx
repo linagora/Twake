@@ -177,9 +177,10 @@ const UserListManager = (props: PropsType) => {
             <AutoCompleteExtended
               maxItems={props.maxResults || 5}
               align={props.onTop ? 'top' : 'bottom'}
+              disabled={props.disabled || false}
               size={'large'}
               value={input}
-              onSelect={usersIds.length < (props.max || 5) ? select : undefined}
+              onSelect={select}
               style={{ width: '100%' }}
               placeholder={
                 props.inputText ||
