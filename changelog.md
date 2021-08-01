@@ -1,3 +1,34 @@
+# Twake 2021.Q2.640
+
+### Messages
+
+- New message WYSIWYG editor 🎨
+- Added limit to message size and to number of attached files
+- Limit number of users in the same direct channel
+
+### General
+
+- Twake is now on weblate 🌎 [Twake](https://hosted.weblate.org/projects/twake/)
+- Multiple bugs fixes
+
+# Twake 2021.Q2.550
+
+### Messages
+
+- Fix missing notification when a first direct channel message is sent
+- Now using the new nodejs backend (need to run `sudo docker-compose run node node bin/twake-cli migration message` after update). PHP endpoints (`/ajax/discussion/...`) are still working but are depreciated.
+
+### General
+
+- Update oidc login workflow for Console connectivity
+
+### Technical changes
+
+- Migrated users, companies, workspaces endpoints to nodejs (frontend not yet using theses endpoints)
+- Migrated file service to nodejs (frontend not yet using theses endpoints)
+- Migrated messages service to nodejs (frontend not yet using theses endpoints)
+- Created Search, Storage and PushNotification internal services
+
 # Twake 2021.Q2.505
 
 ### Messages
