@@ -118,7 +118,7 @@ export default class MessageComponent extends Component<Props> {
     }
 
     if (message?.hidden_data?.type === 'activity') {
-      const activity = message.hidden_data.activity as ActivityType;
+      const activity = message?.hidden_data?.activity as ActivityType;
       return <ActivityMessage activity={activity} />;
     }
 
