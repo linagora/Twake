@@ -94,7 +94,7 @@ export default class EventDetails extends Component {
     return (
       <div className="eventModal event_details" style={{ padding: '16px' }}>
         <div className="title">
-          {event.title || Languages.t('scenes.apps.calendar.modals.untitled', [], 'Sans titre')}
+          {event.title || Languages.t('scenes.apps.drive.navigators.new_file.untitled')}
         </div>
         <div className="subtitle date">
           <Icon type="clock" />
