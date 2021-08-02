@@ -288,28 +288,7 @@ class PseudoMarkdownCompiler {
     return result;
   }
 
-  transformChannelsUsers(str) {
-    //Users
-    str = (str || '').replace(
-      /(\B@)([a-z_.-A-Z0-9]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
-      (full_match, match1, username, match3) => {
-        var values = username.split(':');
-        if (values.length === 1) {
-          if (username === 'me') {
-            username = UserService.getCurrentUser().username;
-          }
-          var user_id = Collections.get('users').findBy({ username: username })[0];
-          if (user_id && user_id.id) {
-            user_id = user_id.id;
-            return match1 + username + ':' + user_id + match3;
-          } else {
-            return full_match;
-          }
-        } else {
-          return full_match;
-        }
-      },
-    );
+  transformChannels(str) {
     //Channels
     str = str.replace(
       /(\B#)([a-z_.-A-Z0-9\u00C0-\u017F]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
@@ -353,7 +332,7 @@ class PseudoMarkdownCompiler {
       _str.forEach((str, i) => {
         if (i % 2 === 0) {
           if (str) {
-            str = this.transformChannelsUsers(str);
+            str = this.transformChannels(str);
 
             emojis_original_service.ascii = true;
             str = emojis_original_service.shortnameToUnicode(str);
