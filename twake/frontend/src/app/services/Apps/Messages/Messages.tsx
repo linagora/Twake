@@ -123,7 +123,7 @@ class Messages extends Observable {
 
   async sendMessage(value: string, options: { [key: string]: any }, collectionKey: string) {
     return new Promise(async resolve => {
-      value = PseudoMarkdownCompiler.transformChannels(value);
+      value = PseudoMarkdownCompiler.transformChannelsUsers(value);
       let channel = await this.findChannel(options.channel_id);
 
       if (value[0] === '/') {
