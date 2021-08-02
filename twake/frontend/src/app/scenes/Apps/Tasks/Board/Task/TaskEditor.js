@@ -82,7 +82,7 @@ export default class TaskEditor extends React.Component {
               onClick={() => {
                 if (typeof task.description == 'string') {
                   task.description = task.description || '';
-                  var value = PseudoMarkdownCompiler.transformChannelsUsers(task.description);
+                  var value = PseudoMarkdownCompiler.transformChannels(task.description);
                   task.description = PseudoMarkdownCompiler.compileToJSON(value);
                 }
                 Collections.get('tasks').save(task, this.props.collectionKey);
