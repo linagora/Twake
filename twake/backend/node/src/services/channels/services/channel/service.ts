@@ -609,7 +609,7 @@ export class Service implements ChannelService {
     }
   }
 
-  public async includeUsersToDirectChannel(
+  public async includeUsersInDirectChannel(
     channel: Channel,
     context?: WorkspaceExecutionContext,
   ): Promise<UsersIncludedChannel> {

@@ -117,14 +117,16 @@ export default (props: Props) => {
         }}
       />
 
-      <div className="message-edition-toolbar">
-        <div className="message-edition-richtext">
-          <EditorToolbar
-            editorState={editorState}
-            onChange={editorState => {
-              setRichTextEditorState(editorState);
-            }}
-          />
+      <div className="message-edition-toolbar message-input">
+        <div className="input-options-toolbar">
+          <div className="richtext-toolbar input-toolbar fade_in">
+            <EditorToolbar
+              editorState={editorState}
+              onChange={editorState => {
+                setRichTextEditorState(editorState);
+              }}
+            />
+          </div>
         </div>
         <div className="message-edition-buttons">
           <Button

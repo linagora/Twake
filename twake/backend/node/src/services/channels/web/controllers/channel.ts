@@ -86,7 +86,7 @@ export class ChannelCrudController
     }
 
     if (request.query.include_users)
-      channel = await this.service.includeUsersToDirectChannel(
+      channel = await this.service.includeUsersInDirectChannel(
         channel,
         getExecutionContext(request),
       );
@@ -110,7 +110,11 @@ export class ChannelCrudController
   }
 
   async save(
-    request: FastifyRequest<{ Body: CreateChannelBody; Params: ChannelParameters }>,
+    request: FastifyRequest<{
+      Body: CreateChannelBody;
+      Params: ChannelParameters;
+      Querystring: { include_users: boolean };
+    }>,
     reply: FastifyReply,
   ): Promise<ResourceCreateResponse<Channel>> {
     const entity = plainToClass(Channel, {
@@ -143,12 +147,17 @@ export class ChannelCrudController
         getChannelExecutionContext(request, channelResult.entity),
       );
 
-      const resultEntity = ({
-        ...channelResult.entity,
+      let entityWithUsers: Channel = channelResult.entity;
+
+      if (request.query.include_users)
+        entityWithUsers = await this.service.includeUsersInDirectChannel(entityWithUsers, context);
+
+      let resultEntity = ({
+        ...entityWithUsers,
         ...{ user_member: member },
       } as unknown) as UserChannel;
 
-      if (channelResult.entity) {
+      if (entity) {
         reply.code(201);
       }
 
@@ -207,7 +216,7 @@ export class ChannelCrudController
       entities = [];
       for (const e of list.getEntities()) {
         entities.push(
-          await this.service.includeUsersToDirectChannel(e, getExecutionContext(request)),
+          await this.service.includeUsersInDirectChannel(e, getExecutionContext(request)),
         );
       }
     } else {

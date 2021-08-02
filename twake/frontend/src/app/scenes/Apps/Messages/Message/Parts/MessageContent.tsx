@@ -55,6 +55,8 @@ export default (props: Props) => {
     }
   };
 
+  const deleted = props.message.subtype === 'deleted';
+
   const showEdition = !props.linkToThread && props.edited;
 
   return (
@@ -66,14 +68,12 @@ export default (props: Props) => {
       })}
       onClick={() => setActive(false)}
     >
-      {!props?.deleted && (
-        <MessageHeader
-          message={props.message}
-          collectionKey={props.collectionKey}
-          linkToThread={props.linkToThread}
-        />
-      )}
-      {!!showEdition && !props?.deleted && (
+      <MessageHeader
+        message={props.message}
+        collectionKey={props.collectionKey}
+        linkToThread={props.linkToThread}
+      />
+      {!!showEdition && !deleted && (
         <div className="content-parent">
           <MessageEdition
             message={props.message}
@@ -85,8 +85,10 @@ export default (props: Props) => {
       )}
       {!showEdition && (
         <div className="content-parent dont-break-out">
-          {props?.deleted === true ? (
-            <DeletedContent userId={props.message.sender || ''} />
+          {deleted === true ? (
+            <div className="deleted-message">
+              <DeletedContent userId={props.message.sender || ''} />
+            </div>
           ) : (
             <>
               <Twacode
@@ -110,7 +112,7 @@ export default (props: Props) => {
           )}
         </div>
       )}
-      {!showEdition && !props?.deleted && (
+      {!showEdition && !deleted && (
         <Options
           message={props.message}
           collectionKey={props.collectionKey}

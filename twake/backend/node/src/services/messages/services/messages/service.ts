@@ -398,7 +398,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
     let ids: string[] = [];
     if (message.user_id) ids.push(message.user_id);
-    if (message.pinned_info.pinned_by) ids.push(message.pinned_info.pinned_by);
+    if (message.pinned_info?.pinned_by) ids.push(message.pinned_info?.pinned_by);
     const mentions = getMentions(message);
     for (const mentionedUser of mentions.users) {
       ids.push(mentionedUser);

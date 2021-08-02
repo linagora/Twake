@@ -146,7 +146,7 @@ export interface ChannelService
    * @param channel
    * @param context
    */
-  includeUsersToDirectChannel(
+  includeUsersInDirectChannel(
     channel: Channel,
     context?: WorkspaceExecutionContext,
   ): Promise<UsersIncludedChannel>;

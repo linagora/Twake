@@ -207,6 +207,7 @@ export default class MessageComponent extends Component<Props> {
               </div>
             </ThreadSection>
           )}
+
           {!showInput &&
             !this.props.deleted &&
             !this.props.noReplies &&

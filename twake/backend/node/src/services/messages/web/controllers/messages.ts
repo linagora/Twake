@@ -25,6 +25,9 @@ export class MessagesController
 
   async save(
     request: FastifyRequest<{
+      Querystring: {
+        include_users: boolean;
+      };
       Params: {
         company_id: string;
         thread_id: string;
@@ -61,8 +64,14 @@ export class MessagesController
         context,
       );
 
+      let entity = result.entity;
+
+      if (request.query.include_users) {
+        entity = await this.service.messages.includeUsersInMessage(entity);
+      }
+
       return {
-        resource: result.entity,
+        resource: entity,
       };
     } catch (err) {
       handleError(reply, err);
