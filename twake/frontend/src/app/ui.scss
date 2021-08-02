@@ -21,6 +21,10 @@ html {
   }
 }
 
+#root {
+  position: fixed;
+}
+
 #app {
   background-color: var(--primary);
 }
