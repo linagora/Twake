@@ -49,9 +49,6 @@ export default class User {
   @Column("creation_date", "number")
   creation_date: number;
 
-  @Column("language", "string")
-  language: string;
-
   @Column("notification_preference", "encoded_json")
   // FIXME= Which type to use with encoded json? This is an object at the end
   notification_preference: any;
@@ -73,9 +70,6 @@ export default class User {
   @Column("email_canonical", "string")
   email_canonical: string;
 
-  @Column("timezone", "number")
-  timezone: number;
-
   @Column("password", "string")
   password: string;
 
@@ -91,11 +85,25 @@ export default class User {
   @Column("thumbnail_id", "timeuuid")
   thumbnail_id: string;
 
-  @Column("cache", "encoded_string")
+  @Column("language", "string")
+  language: string;
+
+  @Column("timezone", "number")
+  timezone: number;
+
+  @Column("preferences", "encoded_json")
+  preferences: null | {
+    timezone?: number;
+    language?: string;
+    allow_tracking?: boolean;
+  };
+
+  @Column("cache", "encoded_json")
   cache: null | {
     companies: string[];
     workspaces: string[];
   };
+
   @Column("devices", "encoded_json")
   devices: Array<string>;
 

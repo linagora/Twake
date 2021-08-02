@@ -23,6 +23,7 @@ export interface PaginationQueryParameters {
 }
 
 export interface ChannelListQueryParameters extends PaginationQueryParameters {
+  include_users?: string;
   search_query?: string;
   mine?: boolean;
 }

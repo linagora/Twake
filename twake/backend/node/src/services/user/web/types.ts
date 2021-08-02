@@ -48,6 +48,7 @@ export interface UserObject {
   picture: string;
   first_name: string;
   last_name: string;
+  full_name: string;
   created_at: number;
   deleted: boolean;
   status: string; //Single string for the status
@@ -58,6 +59,7 @@ export interface UserObject {
   preference?: {
     locale: string;
     timezone: number;
+    allow_tracking: boolean;
   };
 
   companies?: CompanyUserObject[];

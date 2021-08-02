@@ -315,7 +315,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       // remove ephemeral messages
       .filter(message => !message._user_ephemeral)
       // remove init_channel messages
-      .filter(message => message.hidden_data.type !== 'init_channel')
+      .filter(message => message.hidden_data?.type !== 'init_channel')
       // sort them by creation date
       .sort((a, b) => (a?.creation_date || 0) - (b?.creation_date || 0));
 

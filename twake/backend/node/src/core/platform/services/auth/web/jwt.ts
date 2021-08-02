@@ -21,6 +21,7 @@ const jwtPlugin: FastifyPluginCallback = (fastify, _opts, next) => {
         ...{ identity_provider_id: jwt.provider_id },
         ...{ application_id: jwt.application_id || null },
         ...{ server_request: jwt.server_request || false },
+        ...{ allow_tracking: jwt.track || false },
       };
       request.log.debug(`Authenticated as user ${request.currentUser.id}`);
     } catch (err) {

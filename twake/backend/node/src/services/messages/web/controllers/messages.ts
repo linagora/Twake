@@ -25,6 +25,9 @@ export class MessagesController
 
   async save(
     request: FastifyRequest<{
+      Querystring: {
+        include_users: boolean;
+      };
       Params: {
         company_id: string;
         thread_id: string;
@@ -50,31 +53,6 @@ export class MessagesController
           },
           context,
         );
-
-        if (request.params.message_id === request.body.options?.previous_thread) {
-          //Move all answers to this message in the new thread
-
-          let nextPage: Paginable = { limitStr: "100" };
-          do {
-            const replies = await this.service.messages.list(
-              nextPage,
-              { thread_id: request.params.message_id },
-              context,
-            );
-
-            for (const reply of replies.getEntities()) {
-              await this.service.messages.move(
-                { id: reply.id || undefined },
-                {
-                  previous_thread: reply.thread_id,
-                },
-                context,
-              );
-            }
-
-            nextPage = replies.nextPage;
-          } while (nextPage.page_token);
-        }
       }
 
       const result = await this.service.messages.save(
@@ -86,8 +64,14 @@ export class MessagesController
         context,
       );
 
+      let entity = result.entity;
+
+      if (request.query.include_users) {
+        entity = await this.service.messages.includeUsersInMessage(entity);
+      }
+
       return {
-        resource: result.entity,
+        resource: entity,
       };
     } catch (err) {
       handleError(reply, err);
@@ -150,6 +134,7 @@ export class MessagesController
 
   async get(
     request: FastifyRequest<{
+      Querystring: MessageListQueryParameters;
       Params: {
         company_id: string;
         thread_id: string;
@@ -160,13 +145,18 @@ export class MessagesController
   ): Promise<ResourceGetResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      const resource = await this.service.messages.get(
+      let resource = await this.service.messages.get(
         {
           thread_id: request.params.thread_id,
           id: request.params.message_id,
         },
         context,
       );
+
+      if (request.query.include_users) {
+        resource = await this.service.messages.includeUsersInMessage(resource);
+      }
+
       return {
         resource: resource,
       };
@@ -193,11 +183,21 @@ export class MessagesController
           request.query.limit,
           request.query.direction !== "history",
         ),
-        { ...request.query },
+        { ...request.query, include_users: request.query.include_users || false },
         context,
       );
+
+      let entities = [];
+      if (request.query.include_users) {
+        for (const msg of resources.getEntities()) {
+          entities.push(await this.service.messages.includeUsersInMessage(msg));
+        }
+      } else {
+        entities = resources.getEntities();
+      }
+
       return {
-        resources: resources.getEntities(),
+        resources: entities,
         ...(request.query.websockets && {
           websockets: [{ room: getThreadMessageWebsocketRoom(context) }],
         }),

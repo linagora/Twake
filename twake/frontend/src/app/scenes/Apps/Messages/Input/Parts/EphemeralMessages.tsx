@@ -21,6 +21,7 @@ export default (props: Props) => {
         parent_message_id: props.threadId,
         _user_ephemeral: true,
       })
+      .filter((m: any) => m?.subtype !== 'deleted')
       .filter((message: any) => {
         try {
           if (message.ephemeral_message_recipients) {

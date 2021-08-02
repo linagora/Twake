@@ -379,6 +379,7 @@ class Messages extends Observable {
     message.subtype = 'deleted';
 
     this.collection.remove(message, messagesCollectionKey);
+    this.collection.completeObject(message, message.front_id);
   }
 
   editMessage(messageId: string, value: string, messagesCollectionKey: string) {

@@ -157,6 +157,7 @@ export type ConsoleHookUser = {
   preference: {
     locale: string;
     timeZone: number;
+    allowTrackingPersonalInfo: boolean;
   };
   avatar: {
     type: string;

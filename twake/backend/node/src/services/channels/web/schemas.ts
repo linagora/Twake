@@ -29,6 +29,7 @@ const channelSchema = {
     icon: { type: "string" },
     is_default: { type: "boolean" },
     members: { type: ["array", "null"] },
+    users: { type: ["array", "null"] },
     owner: { type: "string" },
     visibility: { type: "string" },
     last_activity: { type: "number" },

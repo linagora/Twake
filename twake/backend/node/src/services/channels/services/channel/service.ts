@@ -21,7 +21,13 @@ import ChannelServiceAPI, {
 } from "../../provider";
 import { getLogger } from "../../../../core/platform/framework";
 import { ChannelObject } from "./types";
-import { Channel, ChannelMember, DefaultChannel, UserChannel } from "../../entities";
+import {
+  Channel,
+  ChannelMember,
+  DefaultChannel,
+  UserChannel,
+  UsersIncludedChannel,
+} from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
@@ -601,6 +607,26 @@ export class Service implements ChannelService {
         logger.warn({ err }, "Can not add requester as channel member");
       }
     }
+  }
+
+  public async includeUsersInDirectChannel(
+    channel: Channel,
+    context?: WorkspaceExecutionContext,
+  ): Promise<UsersIncludedChannel> {
+    let channelWithUsers: UsersIncludedChannel = { users: [], ...channel };
+    if (isDirectChannel(channel)) {
+      let users = [];
+      for (const user of channel.members) {
+        const e = await this.userService.formatUser(await this.userService.users.get({ id: user }));
+        users.push(e);
+      }
+      channelWithUsers.users = users;
+      channelWithUsers.name = users
+        .filter(u => u.id != context?.user?.id)
+        .map(u => u.full_name)
+        .join(", ");
+    }
+    return channelWithUsers;
   }
 
   /**

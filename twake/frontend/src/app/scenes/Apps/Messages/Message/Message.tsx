@@ -118,7 +118,7 @@ export default class MessageComponent extends Component<Props> {
     }
 
     if (message?.hidden_data?.type === 'activity') {
-      const activity = message.hidden_data.activity as ActivityType;
+      const activity = message?.hidden_data?.activity as ActivityType;
       return <ActivityMessage activity={activity} />;
     }
 
@@ -207,6 +207,7 @@ export default class MessageComponent extends Component<Props> {
               </div>
             </ThreadSection>
           )}
+
           {!showInput &&
             !this.props.deleted &&
             !this.props.noReplies &&

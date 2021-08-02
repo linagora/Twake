@@ -503,11 +503,11 @@ export default class MessagesList extends React.Component<Props, State> {
                     />
                   );
 
-                if (message.channel_id && message?.hidden_data.type === 'init_channel') {
+                if (message.channel_id && message?.hidden_data?.type === 'init_channel') {
                   return <FirstMessage channelId={message.channel_id} />;
                 }
 
-                if (message?.hidden_data.type === 'init_thread')
+                if (message?.hidden_data?.type === 'init_thread')
                   return (
                     <MessageComponent
                       noReplies={true}

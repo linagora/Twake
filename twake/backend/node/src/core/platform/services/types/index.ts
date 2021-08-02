@@ -8,4 +8,5 @@ export type JwtType = {
   nbf: number;
   refresh_nbf: number;
   iat: number;
+  track: boolean;
 };
