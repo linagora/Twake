@@ -19,6 +19,7 @@ import '@fullcalendar/list/main.css';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import EventUI from 'components/Calendar/Event/Event.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
+import Languages from 'services/languages/languages';
 
 import moment from 'moment';
 import './FullCalendar.scss';
@@ -346,7 +347,7 @@ export default class FullCalendar extends Component {
       start: moment(from * 1000).toDate(),
       end: moment(to * 1000 + (event.all_day ? 24 * 60 * 60 * 1000 : 0)).toDate(),
       allDay: event.all_day || force_allday,
-      title: event.title || 'Untitled',
+      title: event.title || Languages.t('scenes.apps.drive.navigators.new_file.untitled'),
       rrule: (event.repetition_definition || {}).string, //'DTSTART:20190201T103000Z\nRRULE:FREQ=WEEKLY;INTERVAL=5;UNTIL=20190601;BYDAY=MO,FR',
       duration: (event.repetition_definition || {}).duration,
       editable: !CalendarService.getIsReadonly(event),

@@ -106,7 +106,22 @@ export default class EmojiPicker extends React.Component {
       <div className="menu-cancel-margin">
         <Picker
           set="apple"
-          i18n={{ search: Languages.t('components.emoji_picker.input_search_placeholder') }}
+          i18n={{
+            search: Languages.t('components.emoji_picker.input_search_placeholder'),
+            notfound: Languages.t('components.emoji_picker.categories.not_found'),
+            categories: {
+              search: Languages.t('components.emoji_picker.categories.search_result'),
+              recent: Languages.t('components.emoji_picker.categories.frequently_used'),
+              people: Languages.t('components.emoji_picker.categories.smileys_and_people'),
+              nature: Languages.t('components.emoji_picker.categories.animals_and_nature'),
+              foods: Languages.t('components.emoji_picker.categories.food_and_drink'),
+              activity: Languages.t('components.emoji_picker.categories.activity'),
+              places: Languages.t('components.emoji_picker.categories.travel_and_places'),
+              objects: Languages.t('components.emoji_picker.categories.objects'),
+              symbols: Languages.t('components.emoji_picker.categories.symbols'),
+              flags: Languages.t('components.emoji_picker.categories.flags'),
+            },
+          }}
           showPreview={false}
           showSkinTones={false}
           autoFocus
