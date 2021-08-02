@@ -4,11 +4,12 @@
 
 - New message WYSIWYG editor 🎨
 - Added limit to message size and to number of attached files
+- Deleted messages are now showed as "Deleted" but don't disappear
 - Limit number of users in the same direct channel
 
 ### General
 
-- Twake is now on weblate 🌎 [Twake](https://hosted.weblate.org/projects/twake/)
+- Twake is now on [Weblate](https://hosted.weblate.org/projects/twake/) 🌎
 - Multiple bugs fixes
 
 # Twake 2021.Q2.550
