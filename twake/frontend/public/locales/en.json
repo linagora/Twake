@@ -1723,5 +1723,16 @@
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_text": " instead",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_input_placeholder": "You cannot add more than 10 users",
     "general.uploading": "Uploading",
-    "components.upload.drop_files.toaster.error": "You cannot upload more than {{$1}} files"
+    "components.upload.drop_files.toaster.error": "You cannot upload more than {{$1}} files",
+    "components.emoji_picker.categories.frequently_used": "Frequently Used",
+    "components.emoji_picker.categories.smileys_and_people": "Smileys & People",
+    "components.emoji_picker.categories.animals_and_nature": "Animals & Nature",
+    "components.emoji_picker.categories.food_and_drink": "Food & Drink",
+    "components.emoji_picker.categories.activity": "Activity",
+    "components.emoji_picker.categories.travel_and_places": "Travel & Places",
+    "components.emoji_picker.categories.objects": "Objects",
+    "components.emoji_picker.categories.symbols": "Symbols",
+    "components.emoji_picker.categories.flags": "Flags",
+    "components.emoji_picker.categories.search_result": "Search Results",
+    "components.emoji_picker.categories.not_found": "No Emoji Found"
 }
