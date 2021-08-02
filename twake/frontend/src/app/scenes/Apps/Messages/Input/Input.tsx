@@ -210,8 +210,14 @@ export default (props: Props) => {
     messageEditorService.getUploadZone(props.threadId);
   };
 
-  const disabled = isEmpty() || isTooLong;
+  const getFilesLimit = () => {
+    const attachements = messageEditorService.getAttachements(props.threadId) || [];
+    const limit = messageEditorService.ATTACHEMENTS_LIMIT;
 
+    return attachements.length ? limit - attachements.length : limit;
+  };
+
+  const disabled = isEmpty() || isTooLong;
   return (
     <div
       className={classNames('message-input', {
@@ -234,6 +240,7 @@ export default (props: Props) => {
         onDragEnter={onDragEnter}
         multiple={true}
         allowPaste={true}
+        filesLimit={getFilesLimit()}
       >
         <EphemeralMessages
           channelId={props.channelId}
