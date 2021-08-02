@@ -325,7 +325,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
   ): Promise<Message> {
-    const thread = await this.service.threads.get({ id: pk.thread_id }, context);
+    const thread = await this.service.threads.get({ id: pk.id }, context);
     if (thread) {
       return await this.getThread(thread);
     } else {
