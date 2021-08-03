@@ -1,7 +1,7 @@
+import React from 'react';
 import { NotificationResource } from 'app/models/Notification';
 import { Collection } from 'app/services/CollectionsReact/Collections';
-import Notifications from 'services/user/notifications';
-import React, { Component } from 'react';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 
 import './GroupSwitch.scss';
 
@@ -29,7 +29,7 @@ export default (props: {
       <div
         ref={props.refLogo}
         className={'current_company_logo ' + (group.logo ? 'has_image ' : '')}
-        style={{ backgroundImage: "url('" + (window as any).addApiUrlIfNeeded(group.logo) + "')" }}
+        style={{ backgroundImage: addApiUrlIfNeeded(group.logo, true) }}
       >
         {((group.mininame || group.name || '') + '-')[0].toUpperCase()}
         {unreadOtherCompanies > 0 && <div className="notification_dot" />}

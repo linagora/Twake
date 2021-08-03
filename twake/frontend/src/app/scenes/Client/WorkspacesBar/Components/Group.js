@@ -1,18 +1,19 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Groups from 'services/workspaces/groups.js';
-import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
-import popupManager from 'services/popupManager/popupManager.js';
-import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView.js';
-import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
+import Languages from 'services/languages/languages';
+import Collections from 'app/services/Depreciated/Collections/Collections';
+import Groups from 'services/workspaces/groups';
+import Menu from 'components/Menus/Menu';
+import MenusManager from 'app/components/Menus/MenusManager';
+import popupManager from 'services/popupManager/popupManager';
+import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView';
+import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter';
 import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import Emojione from 'components/Emojione/Emojione';
 import InitService from 'app/services/InitService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 
 export default class Group extends Component {
   constructor() {
@@ -49,7 +50,7 @@ export default class Group extends Component {
           }}
         >
           <div className="icon">
-            {group.logo && <Emojione type={window.addApiUrlIfNeeded(group.logo)} />}
+            {group.logo && <Emojione type={addApiUrlIfNeeded(group.logo)} />}
             {!group.logo && (
               <div className="letter">
                 {((group.mininame || group.name) + '-')[0].toUpperCase()}
@@ -70,14 +71,18 @@ export default class Group extends Component {
     var group = this.group;
 
     this.change_group_menu = [];
-    this.change_group_menu.push({
-      type: 'title',
-      text: Languages.t(
-        'scenes.app.workspacesbar.components.change_company_title',
-        [],
-        'Change company',
-      ),
-    });
+
+    if (Groups.getOrderedGroups().length > 1) {
+      this.change_group_menu.push({
+        type: 'title',
+        text: Languages.t(
+          'scenes.app.workspacesbar.components.change_company_title',
+          [],
+          'Change company',
+        ),
+      });
+    }
+
     Groups.getOrderedGroups().map(item => {
       this.change_group_menu.push(this.renderGroupInMenu(item));
     });

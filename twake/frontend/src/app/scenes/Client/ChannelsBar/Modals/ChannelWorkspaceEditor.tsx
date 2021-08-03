@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
@@ -14,9 +14,15 @@ type Props = {
   title: string;
   channel?: ChannelResource;
   currentUserId?: string;
+  defaultVisibility?: ChannelType['visibility'];
 };
 
-const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) => {
+const ChannelWorkspaceEditor: FC<Props> = ({
+  title,
+  channel,
+  currentUserId,
+  defaultVisibility,
+}) => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
 
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -46,7 +52,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
         name: newChannel.name || channel.data.name,
         description: newChannel.description || channel.data.description,
         icon: newChannel.icon || channel.data.icon,
-        is_default: newChannel.is_default || false,
+        is_default: newChannel.is_default || false,
         visibility:
           newChannel.visibility !== undefined ? newChannel.visibility : channel.data.visibility,
         channel_group:
@@ -97,6 +103,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
         channel={channel?.data}
         onChange={onChange}
         currentUserId={currentUserId}
+        defaultVisibility={defaultVisibility}
       />
     </ObjectModal>
   );

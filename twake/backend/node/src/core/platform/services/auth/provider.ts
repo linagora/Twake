@@ -1,4 +1,5 @@
 import { TwakeServiceProvider } from "../../framework/api";
+import { AccessToken, JWTObject, uuid } from "../../../../utils/types";
 
 export default interface AuthServiceAPI extends TwakeServiceProvider {
   /**
@@ -16,9 +17,13 @@ export default interface AuthServiceAPI extends TwakeServiceProvider {
    *
    * @param token
    */
-  verifyToken(token: string): boolean;
+  verifyToken(token: string): JWTObject;
+
+  generateJWT(userId: uuid, email: string, enableTracking?: boolean): AccessToken;
 }
 
 export interface JwtConfiguration {
   secret: string;
+  expiration: number;
+  refresh_expiration: number;
 }

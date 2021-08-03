@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import userService from 'services/user/user.js';
+import userService from 'services/user/UserService';
 import loginService from 'services/login/login.js';
 import AccountService from 'services/login/account';
 import popupManager from 'services/popupManager/popupManager.js';
@@ -48,15 +48,15 @@ export default class SecondMail extends Component {
     WorkspaceService.removeListener(this);
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.page == 1 && this.state.page == 2 && this.input) {
+    if (prevState.page === 1 && this.state.page === 2 && this.input) {
       this.input.focus();
     }
-    if (prevState.page == 2 && this.state.page == 1 && this.input) {
+    if (prevState.page === 2 && this.state.page === 1 && this.input) {
       this.input.focus();
     }
   }
   displayStep() {
-    if (this.state.page == 1) {
+    if (this.state.page === 1) {
       return (
         <div className="secondMail center_box">
           <div className="title">
@@ -100,7 +100,7 @@ export default class SecondMail extends Component {
                 }}
                 type="text"
                 onKeyDown={e => {
-                  if (e.keyCode == 13 && this.state.mail.length > 0) {
+                  if (e.keyCode === 13 && this.state.mail.length > 0) {
                     this.next();
                   }
                 }}
@@ -117,6 +117,7 @@ export default class SecondMail extends Component {
           </div>
           <div className="bottom">
             <div className="return">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('scenes.app.workspaces.welcome_page.done')}
               </a>
@@ -133,7 +134,7 @@ export default class SecondMail extends Component {
         </div>
       );
     }
-    if (this.state.page == 2) {
+    if (this.state.page === 2) {
       return (
         <div className="secondMail center_box">
           <div className="title">
@@ -155,7 +156,7 @@ export default class SecondMail extends Component {
                 }}
                 type="text"
                 onKeyDown={e => {
-                  if (e.keyCode == 13 && this.state.code.length > 0) {
+                  if (e.keyCode === 13 && this.state.code.length > 0) {
                     this.next();
                   }
                 }}
@@ -176,6 +177,7 @@ export default class SecondMail extends Component {
           </div>
           <div className="bottom">
             <div className="return">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('general.back')}
               </a>
@@ -203,7 +205,7 @@ export default class SecondMail extends Component {
     }
   }
   next() {
-    if (this.state.page == 2) {
+    if (this.state.page === 2) {
       if (this.state.code) {
         AccountService.verifySecondMail(
           this.state.mail,
@@ -214,7 +216,7 @@ export default class SecondMail extends Component {
           this,
         );
       }
-    } else if (this.state.page == 1) {
+    } else if (this.state.page === 1) {
       if (this.state.mail) {
         AccountService.addNewMail(this.state.mail, thot => thot.setState({ page: 2 }), this);
       }

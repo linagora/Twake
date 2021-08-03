@@ -23,6 +23,7 @@ describe("The Channels Realtime feature", () => {
       services: [
         "pubsub",
         "user",
+        "search",
         "websocket",
         "webserver",
         "channels",

@@ -1,14 +1,22 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { UsersCrudController } from "./controller";
 import UserServiceAPI from "../api";
-import { getCompanySchema, getUserCompaniesSchema, getUserSchema, getUsersSchema } from "./schemas";
+import {
+  deleteDeviceSchema,
+  getCompanySchema,
+  getDevicesSchema,
+  getUserCompaniesSchema,
+  getUserSchema,
+  getUsersSchema,
+  postDevicesSchema,
+} from "./schemas";
 
 const usersUrl = "/users";
 
 const routes: FastifyPluginCallback<{
   service: UserServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
-  const usersController = new UsersCrudController(options.service.users, options.service.companies);
+  const usersController = new UsersCrudController(options.service);
   const accessControl = async (request: FastifyRequest) => {
     // TODO
     const authorized = true;
@@ -52,6 +60,33 @@ const routes: FastifyPluginCallback<{
     url: "/companies/:id",
     schema: getCompanySchema,
     handler: usersController.getCompany.bind(usersController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/devices",
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: postDevicesSchema,
+    handler: usersController.registerUserDevice.bind(usersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/devices",
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: getDevicesSchema,
+    handler: usersController.getRegisteredDevices.bind(usersController),
+  });
+
+  fastify.route({
+    method: "DELETE",
+    url: "/devices/:value",
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: deleteDeviceSchema,
+    handler: usersController.deregisterUserDevice.bind(usersController),
   });
 
   next();

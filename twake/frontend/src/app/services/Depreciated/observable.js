@@ -15,20 +15,23 @@ export default class Observable {
     this.observableName = name;
   }
   useListener(_removed = undefined, shouldNotifyOnlyFor = [], shouldNotify = undefined) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [, setState] = useState(0);
     const listener = this.addListener(setState, shouldNotifyOnlyFor, shouldNotify);
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(
       () => () => {
         this.removeListener(listener);
       },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [],
     );
 
     return listener;
   }
   addListener(listener, shouldNotifyOnlyFor = [], shouldNotify = undefined) {
-    if (this.observableListenersList.length == 0 && this.onFirstListener) {
+    if (this.observableListenersList.length === 0 && this.onFirstListener) {
       this.onFirstListener();
     }
     if (this.observableListenersList.indexOf(listener) < 0) {
@@ -46,7 +49,7 @@ export default class Observable {
       this.observableListenersShouldNotifyList.splice(index, 1);
       this.observableListenersOnlyList.splice(index, 1);
     }
-    if (this.observableListenersList.length == 0 && this.onLastListener) {
+    if (this.observableListenersList.length === 0 && this.onLastListener) {
       this.onLastListener();
     }
   }

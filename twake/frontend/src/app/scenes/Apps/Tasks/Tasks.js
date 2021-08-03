@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 
 import UnconfiguredTab from './UnconfiguredTab.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
-import User from 'components/User/User.js';
 import Loader from 'components/Loader/Loader.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import Rounded from 'components/Inputs/Rounded.js';
 import Menu from 'components/Menus/Menu.js';
 import BoardEditor from './Board/BoardEditor.js';
@@ -19,8 +18,8 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import Globals from 'services/Globals.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import Globals from 'services/Globals';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 
 import Board from './Board/Board.js';
 
@@ -78,12 +77,11 @@ export default class Tasks extends Component {
       current_board = Collections.get('boards').find(this.props.tab.configuration.board_id);
     } else if (TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId]) {
       if (
-        TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split('_')[0] ==
+        TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split('_')[0] ===
         'user'
       ) {
-        var user_id = TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split(
-          '_',
-        )[1];
+        var user_id =
+          TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId].split('_')[1];
         var user = Collections.get('users').find(user_id) || {};
         current_board = {
           id: TasksService.current_board_by_workspace[Workspaces.currentWorkspaceId],
@@ -100,7 +98,7 @@ export default class Tasks extends Component {
     var boards = Collections.get('boards').findBy({ workspace_id: Workspaces.currentWorkspaceId });
     var loading =
       !Collections.get('boards').did_load_first_time[this.boards_collection_key] &&
-      boards.length == 0;
+      boards.length === 0;
 
     if (
       this.props.tab != null &&
@@ -165,6 +163,7 @@ export default class Tasks extends Component {
                                   type: 'title',
                                   text: Languages.t(
                                     'scenes.apps.tasks.new_board.edit_title',
+                                    [],
                                     'Edit board',
                                   ),
                                 },
@@ -322,12 +321,8 @@ export default class Tasks extends Component {
                     users={[]}
                     buttonIcon={'enter'}
                     noPlaceholder
-                    buttonText={Languages.t(
-                      'scenes.apps.tasks.select_user_button',
-                      [],
-                      'View tasks for an other user',
-                    )}
-                    inputText={Languages.t('scenes.apps.tasks.select_user', [], 'Search user')}
+                    buttonText={Languages.t('scenes.apps.tasks.select_user_button')}
+                    inputText={Languages.t('scenes.apps.tasks.select_user')}
                     scope="workspace"
                     onUpdate={ids => TasksService.openBoard('user_' + ids[0])}
                   />
@@ -354,7 +349,7 @@ export default class Tasks extends Component {
               key={current_board.id}
               channel={this.props.channel}
               mode={
-                current_board.id.split('_')[0] == 'user'
+                current_board.id.split('_')[0] === 'user'
                   ? 'list'
                   : current_board.view_mode || 'grid'
               }

@@ -1,19 +1,22 @@
 import React, { createRef, RefObject } from 'react';
 import { IndexLocationWithAlign, ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import classNames from 'classnames';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-
 import Logger from 'app/services/Logger';
 import Message from './Message/MessageAndTimeSeparator';
 import GoToBottom from './Parts/GoToBottom';
-import { Message as MessageModel } from 'app/services/Apps/Messages/Message';
+import { Message as MessageModel } from 'app/models/Message';
 import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
 import MessageComponent from './Message/Message';
 import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
 import { ChannelResource } from 'app/models/Channel';
+import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
+import InitService from 'app/services/InitService';
 import _ from 'lodash';
+import FirstMessage from './Message/Parts/FirstMessage/FirstMessage';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
@@ -141,6 +144,7 @@ export default class MessagesList extends React.Component<Props, State> {
       isLoaded: false,
       messages: [],
     };
+
     this.onNewCollectionEvent = this.onNewCollectionEvent.bind(this);
   }
 
@@ -468,17 +472,8 @@ export default class MessagesList extends React.Component<Props, State> {
         ) : (
           <div
             style={{ width: '100%', height: '100%' }}
-            className={this.state.showBottomButton ? 'messages-list scrolled-up' : 'messages-list'}
+            className={classNames('messages-list', { 'scrolled-up': this.state.showBottomButton })}
           >
-            {this.props.threadId && (
-              <MessageComponent
-                noReplies
-                threadHeader={this.props.threadId}
-                key={this.props.threadId}
-                messageId={this.props.threadId}
-                collectionKey={this.props.collectionKey}
-              />
-            )}
             <Virtuoso
               ref={this.virtuosoRef}
               scrollerRef={ref => (this.scrollerRef = ref)}
@@ -492,13 +487,41 @@ export default class MessagesList extends React.Component<Props, State> {
               followOutput={'smooth'}
               rangeChanged={range => this.onVisibleItemsChanged(range)}
               itemContent={(index: number, message: MessageModel) => {
+                const deleted = message?.subtype === 'deleted' ? true : false;
                 const highlight =
                   !!this.service.hightlight &&
                   !!message.id &&
                   this.service.hightlight === message.id;
 
+                if (message?.hidden_data?.type === 'limit_channel')
+                  return (
+                    <LockedHistoryBanner
+                      companySubscriptionUrl={
+                        InitService.server_infos?.configuration?.accounts?.console
+                          ?.company_subscription_url || ''
+                      }
+                    />
+                  );
+
+                if (message.channel_id && message?.hidden_data?.type === 'init_channel') {
+                  return <FirstMessage channelId={message.channel_id} />;
+                }
+
+                if (message?.hidden_data?.type === 'init_thread')
+                  return (
+                    <MessageComponent
+                      noReplies={true}
+                      threadHeader={message?.hidden_data?.thread_id}
+                      key={message?.hidden_data?.thread_id}
+                      messageId={message?.hidden_data?.thread_id}
+                      collectionKey={this.props.collectionKey}
+                    />
+                  );
+
                 return (
                   <Message
+                    deleted={deleted}
+                    noReplies={deleted}
                     key={message.id || message.front_id}
                     messageId={message.id || message.front_id || ''}
                     threadHeader={this.props.threadId}

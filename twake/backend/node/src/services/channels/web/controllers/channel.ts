@@ -64,13 +64,10 @@ export class ChannelCrudController
   }
 
   async get(
-    request: FastifyRequest<{ Params: ChannelParameters }>,
+    request: FastifyRequest<{ Querystring: ChannelListQueryParameters; Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<Channel>> {
-    const channel = await this.service.get(
-      this.getPrimaryKey(request),
-      getExecutionContext(request),
-    );
+    let channel = await this.service.get(this.getPrimaryKey(request), getExecutionContext(request));
 
     if (!channel) {
       reply.notFound(`Channel ${request.params.id} not found`);
@@ -87,6 +84,12 @@ export class ChannelCrudController
         return;
       }
     }
+
+    if (request.query.include_users)
+      channel = await this.service.includeUsersInDirectChannel(
+        channel,
+        getExecutionContext(request),
+      );
 
     return {
       websocket: getWebsocketInformation(channel),
@@ -107,7 +110,11 @@ export class ChannelCrudController
   }
 
   async save(
-    request: FastifyRequest<{ Body: CreateChannelBody; Params: ChannelParameters }>,
+    request: FastifyRequest<{
+      Body: CreateChannelBody;
+      Params: ChannelParameters;
+      Querystring: { include_users: boolean };
+    }>,
     reply: FastifyReply,
   ): Promise<ResourceCreateResponse<Channel>> {
     const entity = plainToClass(Channel, {
@@ -140,12 +147,17 @@ export class ChannelCrudController
         getChannelExecutionContext(request, channelResult.entity),
       );
 
-      const resultEntity = ({
-        ...channelResult.entity,
+      let entityWithUsers: Channel = channelResult.entity;
+
+      if (request.query.include_users)
+        entityWithUsers = await this.service.includeUsersInDirectChannel(entityWithUsers, context);
+
+      let resultEntity = ({
+        ...entityWithUsers,
         ...{ user_member: member },
       } as unknown) as UserChannel;
 
-      if (channelResult.entity) {
+      if (entity) {
         reply.code(201);
       }
 
@@ -199,9 +211,21 @@ export class ChannelCrudController
       getExecutionContext(request),
     );
 
+    let entities = [];
+    if (request.query.include_users) {
+      entities = [];
+      for (const e of list.getEntities()) {
+        entities.push(
+          await this.service.includeUsersInDirectChannel(e, getExecutionContext(request)),
+        );
+      }
+    } else {
+      entities = list.getEntities();
+    }
+
     return {
       ...{
-        resources: list.getEntities(),
+        resources: entities,
       },
       ...(request.query.websockets && {
         websockets: getWorkspaceRooms(request.params, request.currentUser),

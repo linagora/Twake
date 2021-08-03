@@ -1,4 +1,3 @@
-import Globals from 'services/JWTStorage';
 import JWTStorage from 'services/JWTStorage';
 
 class Requests {
@@ -18,7 +17,7 @@ class Requests {
           'Content-Type': 'application/json',
           Authorization: JWTStorage.getAutorizationHeader(),
         },
-        body: type == 'post' ? data || '{}' : undefined,
+        body: type === 'post' ? data || '{}' : undefined,
       })
         .then(response => {
           response.text().then(text => {

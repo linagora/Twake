@@ -1,16 +1,16 @@
-import { Button, Col, Row, Typography } from 'antd';
 import React, { useState } from 'react';
+import { Button, Col, Row, Typography } from 'antd';
 import AutoHeight from '../../AutoHeight/AutoHeight';
 import ObjectModal from '../../ObjectModal/ObjectModal';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/Modal/ModalManager';
-import ConsoleService from 'app/services/ConsoleService';
+import ConsoleService from 'app/services/Console/ConsoleService';
 import RouterServices from 'services/RouterService';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import WorkspacesUsers from 'services/workspaces/workspaces_users';
 
 type PropsType = {};
 
-const AddMailsInWorkspace = ({}: PropsType) => {
+export default ({}: PropsType): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const [emails, _setEmails] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -75,11 +75,9 @@ const AddMailsInWorkspace = ({}: PropsType) => {
 
       <Row className="x-margin" style={{ display: 'flex', justifyContent: 'center' }}>
         <Typography.Text type="secondary" style={{ width: 380, fontSize: 13, height: 32 }}>
-          {Languages.t('components.add_mails_workspace.text_secondary')}
+          {Languages.t('scenes.app.popup.adduser.adresses_message')}
         </Typography.Text>
       </Row>
     </ObjectModal>
   );
 };
-
-export default AddMailsInWorkspace;

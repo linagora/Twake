@@ -1,6 +1,5 @@
-import React from 'react';
 import Observable from 'app/services/Depreciated/observable.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -29,7 +28,7 @@ class Tasks extends Observable {
       Collections.get('tasks').remove(task, collectionKey);
       MediumPopupManager.closeAll();
     });
-    if (task.front_id == (this.edited || {}).front_id) {
+    if (task.front_id === (this.edited || {}).front_id) {
       this.edited = null;
     }
   }
@@ -78,13 +77,14 @@ class Tasks extends Observable {
   }
 
   newIndexAfter(key, index) {
-    if (index == undefined) {
+    if (index === undefined) {
       index = this.index_calculation_pools[key].length - 1;
     }
     var value = this.index_calculation_pools[key][index] || '';
     var next_value = this.index_calculation_pools[key][index + 1] || '';
     var letters = '0abcdefghijklmnopqrstuvwxyz'.split('');
 
+    // eslint-disable-next-line no-extend-native
     String.prototype.replaceAt = function (index, replacement) {
       return this.substr(0, index) + replacement + this.substr(index + replacement.length);
     };
@@ -99,7 +99,7 @@ class Tasks extends Observable {
         next_value = next_value.replaceAt(i, 'z');
       }
       var diff = parseInt((letters.indexOf(next_value[i]) - letters.indexOf(value[i])) / 2);
-      if (diff == 0) {
+      if (diff === 0) {
         i++;
       } else {
         value = value.replaceAt(i, letters[letters.indexOf(value[i]) + diff]);
@@ -112,7 +112,7 @@ class Tasks extends Observable {
     if (!list_id) {
       return [];
     }
-    if (list_id.split('_')[0] == 'allusertasks') {
+    if (list_id.split('_')[0] === 'allusertasks') {
       var filter = {};
       if (archived !== undefined) {
         filter.archived = archived ? true : false;
@@ -126,7 +126,8 @@ class Tasks extends Observable {
           return false;
         });
     }
-    if (list_id.split('_')[0] == 'workspaceusertasks') {
+    if (list_id.split('_')[0] === 'workspaceusertasks') {
+      // eslint-disable-next-line no-redeclare
       var filter = { workspace_id: list_id.split('_')[2] };
       if (archived !== undefined) {
         filter.archived = archived ? true : false;
@@ -140,6 +141,7 @@ class Tasks extends Observable {
           return false;
         });
     }
+    // eslint-disable-next-line no-redeclare
     var filter = { board_id: board_id, list_id: list_id };
     if (archived !== undefined) {
       filter.archived = archived ? true : false;

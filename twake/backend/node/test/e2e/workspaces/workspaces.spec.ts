@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { v1 as uuidv1 } from "uuid";
 
 describe("The /workspaces API", () => {
   const url = "/internal/services/workspaces/v1";
@@ -9,27 +9,38 @@ describe("The /workspaces API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
-  const companyId = "21111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
+  let companyId = "";
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth"],
+      services: [
+        "database",
+        "pubsub",
+        "webserver",
+        "user",
+        "search",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
+
+    companyId = platform.workspace.company_id;
 
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
-    const ws0pk = { id: uuidv4(), group_id: companyId };
-    const ws1pk = { id: uuidv4(), group_id: companyId };
-    const ws2pk = { id: uuidv4(), group_id: companyId };
+    const ws0pk = { id: uuidv1(), group_id: companyId };
+    const ws1pk = { id: uuidv1(), group_id: companyId };
+    const ws2pk = { id: uuidv1(), group_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createWorkspace(ws2pk);
     await testDbService.createUser([ws0pk, ws1pk]);
-    await testDbService.createUser([ws2pk], "admin");
-    await testDbService.createUser([ws2pk], undefined, "admin");
-    await testDbService.createUser([], "guest");
+    await testDbService.createUser([ws2pk], { companyRole: "admin" });
+    await testDbService.createUser([ws2pk], { companyRole: undefined, workspaceRole: "admin" });
+    await testDbService.createUser([], { companyRole: "guest" });
     ends();
   });
 
@@ -119,7 +130,7 @@ describe("The /workspaces API", () => {
 
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${uuidv4()}`,
+        url: `${url}/companies/${companyId}/workspaces/${uuidv1()}`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
       expect(response.statusCode).toBe(404);

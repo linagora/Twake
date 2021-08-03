@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Search from 'services/search/search.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import './SearchPopup.scss';
 import InputIcon from 'components/Inputs/InputIcon.js';
 import QuickResult from './Parts/QuickResult.js';
@@ -13,8 +13,8 @@ import Tabs from 'components/Tabs/Tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import moment from 'moment';
-import Languages from 'services/languages/languages.js';
-import InitService from 'services/InitService';
+import Languages from 'services/languages/languages';
+import userAsyncGet from 'services/user/AsyncGet';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -40,25 +40,25 @@ export default class SearchPopup extends React.Component {
   }
   eventKey(evt) {
     if (Search.isOpen()) {
-      if (evt.keyCode == 27) {
+      if (evt.keyCode === 27) {
         //ESC
         Search.close();
       }
-      if (evt.keyCode == 38) {
+      if (evt.keyCode === 38) {
         //UP
         this.moved_selector = true;
         this.setState({
           selected: (this.state.selected - 1 + this.state.total) % Math.max(1, this.state.total),
         });
       }
-      if (evt.keyCode == 40) {
+      if (evt.keyCode === 40) {
         //DOWN
         this.moved_selector = true;
         this.setState({
           selected: (this.state.selected + 1 + this.state.total) % Math.max(1, this.state.total),
         });
       }
-      if (evt.keyCode == 13) {
+      if (evt.keyCode === 13) {
         //ENTER
         if (this.current_selection) {
           Search.select(this.current_selection);
@@ -177,9 +177,9 @@ export default class SearchPopup extends React.Component {
             <div className="search_tabs">
               <Tabs
                 tabs={tabs}
-                selected={tabs.map(i => i.filterType == this.state.filterType).indexOf(true)}
+                selected={tabs.map(i => i.filterType === this.state.filterType).indexOf(true)}
                 onChange={e => {
-                  if (tabs[e].searchPopupStyle == 'small') {
+                  if (tabs[e].searchPopupStyle === 'small') {
                     this.setState({ withFilters: false });
                   }
                   this.state.hasFilters = tabs[e].hasFilters;
@@ -230,7 +230,7 @@ export default class SearchPopup extends React.Component {
                       group = item.workspace.group;
                     }
 
-                    if (item.type == 'channel') {
+                    if (item.type === 'channel') {
                       if (item.channel.application) {
                         return '';
                       }
@@ -244,20 +244,18 @@ export default class SearchPopup extends React.Component {
                         this.listenUsers();
 
                         users = [];
-                        item.channel.members.map(id => {
-                          if (id != UserService.getCurrentUserId()) {
-                            var user = Collections.get('users').find(id);
+                        item.channel.members.forEach(id => {
+                          if (id !== UserService.getCurrentUserId()) {
+                            const user = Collections.get('users').find(id, () => userAsyncGet(id));
                             if (user) {
                               users.push(user);
-                            } else {
-                              UserService.asyncGet(id);
                             }
                           }
                         });
 
-                        var i_user = 0;
+                        let i_user = 0;
                         text = (
-                          users.map(user => {
+                          users.forEach(user => {
                             i_user++;
                             if (user) {
                               return (
@@ -275,7 +273,7 @@ export default class SearchPopup extends React.Component {
                       ext_members = (item.channel.ext_members || []).length > 0;
                     }
 
-                    if (item.type == 'file') {
+                    if (item.type === 'file') {
                       if (item.file.detached) {
                         return '';
                       }
@@ -283,7 +281,7 @@ export default class SearchPopup extends React.Component {
                       text = item.file.name;
                     }
 
-                    if (item.type == 'task') {
+                    if (item.type === 'task') {
                       icon = 'check-square';
                       text = item.task.title;
 
@@ -296,7 +294,7 @@ export default class SearchPopup extends React.Component {
                       }
                     }
 
-                    if (item.type == 'event') {
+                    if (item.type === 'event') {
                       icon = 'calendar-alt';
                       text = item.event.title;
 
@@ -308,13 +306,13 @@ export default class SearchPopup extends React.Component {
                         workspace_suffix +=
                           ' - ' +
                           moment(item.event.to * 1000).format(
-                            (dateTo != dateFrom ? 'L' : '') + 'LT',
+                            (dateTo !== dateFrom ? 'L' : '') + 'LT',
                           );
                         workspace_suffix += ')';
                       }
                     }
 
-                    if (item.type == 'message') {
+                    if (item.type === 'message') {
                       icon = 'comment';
                       text = PseudoMarkdownCompiler.compileToText(item.message.content);
 
@@ -333,11 +331,11 @@ export default class SearchPopup extends React.Component {
                   pos_i++;
                   this.state.total++;
 
-                  if (pos_i == this.state.selected + 1) {
+                  if (pos_i === this.state.selected + 1) {
                     this.current_selection = item;
                   }
 
-                  if (this.state.filterType && this.state.filterType != item.type) {
+                  if (this.state.filterType && this.state.filterType !== item.type) {
                     return '';
                   }
 
@@ -352,7 +350,7 @@ export default class SearchPopup extends React.Component {
                       users={users}
                       private={secret}
                       public={ext_members}
-                      selected={pos_i == this.state.selected + 1}
+                      selected={pos_i === this.state.selected + 1}
                       onClick={() => Search.select(item)}
                     />
                   );
@@ -395,7 +393,7 @@ export default class SearchPopup extends React.Component {
                   component="div"
                   className="filters"
                 >
-                  {this.state.filterType == 'file' && (
+                  {this.state.filterType === 'file' && (
                     <FilesFilter
                       options={Search.options}
                       onSearch={options => {
@@ -404,7 +402,7 @@ export default class SearchPopup extends React.Component {
                       }}
                     />
                   )}
-                  {this.state.filterType == 'event' && (
+                  {this.state.filterType === 'event' && (
                     <EventsFilter
                       options={Search.options}
                       onSearch={options => {
@@ -413,7 +411,7 @@ export default class SearchPopup extends React.Component {
                       }}
                     />
                   )}
-                  {this.state.filterType == 'message' && (
+                  {this.state.filterType === 'message' && (
                     <MessagesFilter
                       options={Search.options}
                       onSearch={options => {
@@ -422,7 +420,7 @@ export default class SearchPopup extends React.Component {
                       }}
                     />
                   )}
-                  {this.state.filterType == 'task' && (
+                  {this.state.filterType === 'task' && (
                     <TasksFilter
                       options={Search.options}
                       onSearch={options => {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import LoginService from 'services/login/login.js';
 import popupManager from 'services/popupManager/popupManager.js';
@@ -10,7 +10,7 @@ import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import './CreateCompanyView.scss';
 import Input from 'components/Inputs/Input.js';
-import CurrentUser from 'services/user/current_user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
 import InitService from 'services/InitService';
 import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 
@@ -50,7 +50,7 @@ export default class CreateCompanyView extends Component {
   }
   componentDidUpdate(prevProps, prevState, snapshot) {}
   displayStep() {
-    if (this.state.page == 1) {
+    if (this.state.page === 1) {
       return (
         <div className="">
           <div className="subtitle bottom-margin">
@@ -67,7 +67,7 @@ export default class CreateCompanyView extends Component {
             className="full_width big"
             type="text"
             onKeyDown={e => {
-              if (e.keyCode == 13 && this.state.companyName.length > 0) {
+              if (e.keyCode === 13 && this.state.companyName.length > 0) {
                 this.next();
               }
             }}
@@ -79,6 +79,7 @@ export default class CreateCompanyView extends Component {
           />
           <div className="bottom">
             <div className="returnBtn">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('general.back')}
               </a>
@@ -93,7 +94,7 @@ export default class CreateCompanyView extends Component {
         </div>
       );
     }
-    if (this.state.page == 2) {
+    if (this.state.page === 2) {
       return (
         <div className="">
           <div className="subtitle bottom-margin">
@@ -304,6 +305,7 @@ export default class CreateCompanyView extends Component {
           </select>
           <div className="bottom">
             <div className="returnBtn">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('general.back')}
               </a>
@@ -311,9 +313,9 @@ export default class CreateCompanyView extends Component {
             <ButtonWithTimeout
               className="medium"
               disabled={
-                this.state.groupType == '' ||
-                this.state.groupSize == '' ||
-                this.state.groupActivity == ''
+                this.state.groupType === '' ||
+                this.state.groupSize === '' ||
+                this.state.groupActivity === ''
               }
               onClick={() => this.next()}
               value={this.state.i18n.t('general.continue')}
@@ -322,7 +324,7 @@ export default class CreateCompanyView extends Component {
         </div>
       );
     }
-    if (this.state.page == 3) {
+    if (this.state.page === 3) {
       if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
         return (
           <AddUserFromTwakeConsole
@@ -345,7 +347,7 @@ export default class CreateCompanyView extends Component {
         );
       }
     }
-    if (this.state.page == 4) {
+    if (this.state.page === 4) {
       return (
         <div
           className="importTools"
@@ -364,7 +366,7 @@ export default class CreateCompanyView extends Component {
               return (
                 <div className="integration">
                   <div className="logo">
-                    <img src="/public/img/gcalendar.png" />
+                    <img alt="Calendar" src="/public/img/gcalendar.png" />
                   </div>
                   <div className="text">
                     <div className="name">Google Calendar</div>
@@ -382,6 +384,7 @@ export default class CreateCompanyView extends Component {
           </div>
           <div className="bottom">
             <div className="returnBtn">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" className="blue_link" onClick={() => this.previous()}>
                 {this.state.i18n.t('general.back')}
               </a>

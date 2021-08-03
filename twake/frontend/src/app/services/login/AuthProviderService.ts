@@ -7,6 +7,7 @@ import JWTStorage, { JWTDataType } from '../JWTStorage';
 import Observable from '../Observable/Observable';
 import LoginService from './login';
 import Logger from 'app/services/Logger';
+import { getAsFrontUrl } from '../utils/URLUtils';
 import AlertManager from 'services/AlertManager/AlertManager';
 
 type AuthProviderConfiguration = AuthProviderProps;
@@ -24,11 +25,11 @@ class AuthProviderService extends Observable {
         userStore: new Oidc.WebStorageStateStore({ store: localStorage }),
         authority: consoleConfiguration?.authority || environment.api_root_url,
         client_id: consoleConfiguration?.client_id || 'twake',
-        redirect_uri: environment.front_root_url + '/oidccallback',
+        redirect_uri: getAsFrontUrl('/oidccallback'),
         response_type: 'code',
         scope: 'openid profile email address phone offline_access',
-        post_logout_redirect_uri: environment.front_root_url + '/signout',
-        silent_redirect_uri: environment.front_root_url + '/oidcsilientrenew',
+        post_logout_redirect_uri: getAsFrontUrl('/signout'),
+        silent_redirect_uri: getAsFrontUrl('/oidcsilientrenew'),
         automaticSilentRenew: true,
         loadUserInfo: true,
         accessTokenExpiringNotificationTime: 60,
@@ -69,7 +70,7 @@ class AuthProviderService extends Observable {
   //Redirect to valid frontend url to make sure oidc will work as expected
   enforceFrontendUrl() {
     const frontUrl = (getDomain(environment.front_root_url || '') || '').toLocaleLowerCase();
-    if (frontUrl && document.location.host.toLocaleLowerCase() != frontUrl) {
+    if (frontUrl && document.location.host.toLocaleLowerCase() !== frontUrl) {
       document.location.replace(
         document.location.protocol +
           '//' +

@@ -1,15 +1,19 @@
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import search from "./user.search";
+import { uuid } from "../../../utils/types";
 
 export const TYPE = "user";
 
 @Entity(TYPE, {
   primaryKey: [["id"]],
+  globalIndexes: [["email_canonical"]],
   type: TYPE,
+  search,
 })
 export default class User {
   @Column("id", "timeuuid")
-  id: string;
+  id: uuid;
 
   @Column("first_name", "encoded_string")
   first_name: string;
@@ -17,7 +21,7 @@ export default class User {
   @Column("last_name", "encoded_string")
   last_name: string;
 
-  @Column("picture", "string")
+  @Column("picture", "encoded_string")
   picture: string;
 
   @Column("status_icon", "string")
@@ -26,7 +30,7 @@ export default class User {
   public get status_icon(): string {
     if (this._status_icon && this._status_icon.startsWith("[\\")) {
       try {
-        const parsed = JSON.parse(this._status_icon.replace(/\\"/g, "\"").replace(/\\\\/g, "\\"));
+        const parsed = JSON.parse(this._status_icon.replace(/\\"/g, '"').replace(/\\\\/g, "\\"));
         return `${parsed[0]} ${parsed[1]}`;
       } catch (e) {
         return "";
@@ -44,9 +48,6 @@ export default class User {
 
   @Column("creation_date", "number")
   creation_date: number;
-
-  @Column("language", "string")
-  language: string;
 
   @Column("notification_preference", "encoded_json")
   // FIXME= Which type to use with encoded json? This is an object at the end
@@ -69,9 +70,6 @@ export default class User {
   @Column("email_canonical", "string")
   email_canonical: string;
 
-  @Column("timezone", "number")
-  timezone: number;
-
   @Column("password", "string")
   password: string;
 
@@ -86,6 +84,31 @@ export default class User {
 
   @Column("thumbnail_id", "timeuuid")
   thumbnail_id: string;
+
+  @Column("language", "string")
+  language: string;
+
+  @Column("timezone", "number")
+  timezone: number;
+
+  @Column("preferences", "encoded_json")
+  preferences: null | {
+    timezone?: number;
+    language?: string;
+    allow_tracking?: boolean;
+  };
+
+  @Column("cache", "encoded_json")
+  cache: null | {
+    companies: string[];
+    workspaces: string[];
+  };
+
+  @Column("devices", "encoded_json")
+  devices: Array<string>;
+
+  @Column("salt", "string")
+  salt: string;
 
   constructor(id?: string) {
     this.id = id;

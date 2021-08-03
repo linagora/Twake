@@ -3,6 +3,7 @@ import { mergeMap } from "rxjs/operators";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import {
   CreateResult,
+  CrudExeption,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -27,15 +28,23 @@ import Workspace, {
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { UserPrimaryKey } from "../../../user/entities/user";
 import { CompanyPrimaryKey } from "../../../user/entities/company";
-import { ChannelMemberNotificationPreference } from "../../../notifications/entities";
 import { merge } from "lodash";
+import WorkspacePendingUser, {
+  WorkspacePendingUserPrimaryKey,
+  TYPE as WorkspacePendingUserType,
+} from "../../entities/workspace_pending_users";
+import { CompanyUserRole } from "../../../user/web/types";
+import { uuid } from "../../../../utils/types";
+import _ from "lodash";
+import { UsersServiceAPI } from "../../../user/api";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
   private workspaceUserRepository: Repository<WorkspaceUser>;
   private workspaceRepository: Repository<Workspace>;
+  private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
 
-  constructor(private database: DatabaseServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private users: UsersServiceAPI) {}
 
   async init(): Promise<this> {
     this.workspaceUserRepository = await this.database.getRepository<WorkspaceUser>(
@@ -46,6 +55,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     this.workspaceRepository = await this.database.getRepository<Workspace>(
       WorkspaceType,
       Workspace,
+    );
+
+    this.workspacePendingUserRepository = await this.database.getRepository<WorkspacePendingUser>(
+      WorkspacePendingUserType,
+      WorkspacePendingUser,
     );
 
     return this;
@@ -107,11 +121,33 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return this.workspaceRepository.find(pk, { pagination });
   }
 
+  async getAllForCompany(companyId: uuid): Promise<Workspace[]> {
+    let allCompanyWorkspaces: Workspace[] = [];
+    let nextPage: Pagination = new Pagination("", "100");
+    do {
+      const tmp = await this.workspaceRepository.find(
+        { group_id: companyId },
+        { pagination: nextPage },
+      );
+      nextPage = tmp.nextPage as Pagination;
+      allCompanyWorkspaces = [...allCompanyWorkspaces, ...tmp.getEntities()];
+    } while (nextPage.page_token);
+
+    return allCompanyWorkspaces;
+  }
+
   async addUser(
     workspacePk: WorkspacePrimaryKey,
     userPk: UserPrimaryKey,
     role: WorkspaceUserRole,
   ): Promise<void> {
+    const user = await this.users.get(userPk);
+    user.cache = Object.assign(user.cache || {}, {
+      companies: _.uniq([...(user.cache?.companies || []), workspacePk.group_id]),
+      workspaces: _.uniq([...(user.cache?.workspaces || []), workspacePk.id]),
+    });
+    await this.users.save(user, {}, { user: { id: user.id, server_request: true } });
+
     await this.workspaceUserRepository.save(
       getWorkspaceUserInstance({
         workspaceId: workspacePk.id,
@@ -121,13 +157,28 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     );
   }
 
-  async removeUser(workspacePk: WorkspacePrimaryKey, userPk: UserPrimaryKey): Promise<void> {
-    await this.workspaceUserRepository.remove(
-      getWorkspaceUserInstance({
-        workspaceId: workspacePk.id,
-        userId: userPk.id,
-      }),
-    );
+  async updateUserRole(
+    workspaceUserPk: WorkspaceUserPrimaryKey,
+    role: WorkspaceUserRole,
+  ): Promise<void> {
+    const workspaceUser = await this.getUser(workspaceUserPk);
+    if (!workspaceUser) {
+      throw CrudExeption.notFound("WorkspaceUser entity not found");
+    }
+    await this.workspaceUserRepository.save(merge(workspaceUser, { role }));
+  }
+
+  async removeUser(
+    workspaceUserPk: WorkspaceUserPrimaryKey,
+  ): Promise<DeleteResult<WorkspaceUserPrimaryKey>> {
+    const entity = await this.getUser(workspaceUserPk);
+
+    if (!entity) {
+      throw CrudExeption.notFound("WorkspaceUser entity not found");
+    }
+
+    await this.workspaceUserRepository.remove(entity);
+    return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
   getUsers(
@@ -141,11 +192,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   }
 
   getUser(
-    workspaceUser: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
+    workspaceUserPk: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
   ): Promise<WorkspaceUser> {
     return this.workspaceUserRepository.findOne({
-      workspace_id: workspaceUser.workspaceId,
-      user_id: workspaceUser.userId,
+      workspace_id: workspaceUserPk.workspaceId,
+      user_id: workspaceUserPk.userId,
     });
   }
 
@@ -153,9 +204,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
     companyId: CompanyPrimaryKey,
   ): Promise<WorkspaceUser[]> {
-    const allCompanyWorkspaces = await this.workspaceRepository
-      .find({ group_id: companyId.id })
-      .then(a => a.getEntities());
+    const allCompanyWorkspaces = await this.getAllForCompany(companyId.id);
 
     const UserWorkspaces = await Promise.all(
       allCompanyWorkspaces.map(workspace =>
@@ -183,5 +232,43 @@ export class WorkspaceService implements WorkspaceServiceAPI {
         return concat(items$, next$);
       }),
     );
+  }
+
+  async addPendingUser(
+    primaryKey: WorkspacePendingUserPrimaryKey,
+    workspaceRole: WorkspaceUserRole,
+    companyRole: CompanyUserRole,
+  ): Promise<void> {
+    if (await this.getPendingUser(primaryKey)) {
+      throw CrudExeption.badRequest("User is pending already");
+    }
+    const workspacePendingUser = merge(new WorkspacePendingUser(), {
+      workspace_id: primaryKey.workspace_id,
+      email: primaryKey.email,
+      role: workspaceRole,
+      company_role: companyRole,
+    });
+    await this.workspacePendingUserRepository.save(workspacePendingUser);
+  }
+
+  getPendingUser(primaryKey: WorkspacePendingUserPrimaryKey): Promise<WorkspacePendingUser> {
+    return this.workspacePendingUserRepository.findOne(primaryKey);
+  }
+
+  async getPendingUsers(
+    primaryKey: Pick<WorkspacePendingUserPrimaryKey, "workspace_id">,
+  ): Promise<WorkspacePendingUser[]> {
+    return this.workspacePendingUserRepository.find(primaryKey).then(a => a.getEntities());
+  }
+
+  async removePendingUser(
+    primaryKey: WorkspacePendingUserPrimaryKey,
+  ): Promise<DeleteResult<WorkspacePendingUserPrimaryKey>> {
+    const pendingUser = await this.getPendingUser(primaryKey);
+    if (!pendingUser) {
+      throw CrudExeption.notFound("Pending user not found");
+    }
+    await this.workspacePendingUserRepository.remove(pendingUser);
+    return new DeleteResult(WorkspacePendingUserType, primaryKey, true);
   }
 }

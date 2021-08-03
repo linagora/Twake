@@ -14,6 +14,7 @@ type PropsType = {
   titleCenter?: boolean;
   style?: React.CSSProperties;
   headerStyle?: React.CSSProperties;
+  footerStyle?: React.CSSProperties;
   titleLevel?: 5 | 1 | 2 | 3 | 4 | undefined;
   titleColor?: string;
 };
@@ -61,6 +62,7 @@ const ObjectModal: FC<PropsType> = (props: PropsType) => {
               style={{
                 marginBottom: props.footerAlign === 'center' ? 54 : 16,
                 marginRight: !props.footerAlign ? 16 : 0,
+                ...props.footerStyle,
               }}
             >
               {props.footer}

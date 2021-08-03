@@ -22,6 +22,11 @@ export const transformValueToDbString = (
     //Convert to orderable number on mongodb
     return toMongoDbOrderable(v);
   }
+
+  if (type === "uuid") {
+    return `${v}`;
+  }
+
   if (type === "encoded_string" || type === "encoded_json") {
     if (type === "encoded_json") {
       try {
@@ -48,6 +53,11 @@ export const transformValueToDbString = (
     }
     return v;
   }
+
+  if (type === "twake_boolean") {
+    return Boolean(v);
+  }
+
   return v || "";
 };
 
@@ -75,6 +85,9 @@ export const transformValueFromDbString = (v: any, type: string, options: any = 
     } catch (err) {
       return null;
     }
+  }
+  if (type === "twake_boolean") {
+    return Boolean(v);
   }
   return v;
 };

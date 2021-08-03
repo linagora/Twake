@@ -3,10 +3,10 @@
  */
 
 import {
-  ChannelMember,
   Channel as ChannelEntity,
-  ChannelTab,
+  ChannelMember,
   ChannelPendingEmails,
+  ChannelTab,
 } from "../services/channels/entities";
 import { ChannelParameters } from "../services/channels/web/types";
 import { MessageNotification } from "../services/messages/types";
@@ -31,6 +31,8 @@ export interface User {
   server_request?: boolean; //Set to true if request if from the user, can be used to cancel any access restriction
   // application call
   application_id?: string;
+  // allow_tracking
+  allow_tracking?: boolean;
 }
 
 export const webSocketSchema = {
@@ -113,4 +115,23 @@ export interface PaginationQueryParameters {
   page_token?: string;
   limit?: string;
   websockets?: boolean;
+}
+
+export interface AccessToken {
+  time: number;
+  expiration: number;
+  refresh_expiration: number;
+  value: string;
+  refresh: string;
+  type: "Bearer";
+}
+
+export interface JWTObject {
+  exp: number;
+  type: string;
+  iat: number;
+  nbf: number;
+  sub: string;
+  email: string;
+  track: boolean;
 }

@@ -1,6 +1,6 @@
 import emojis_json from 'emojione/emoji.json';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import { emojiIndex } from 'emoji-mart';
 
 class Emojis {
@@ -18,7 +18,7 @@ class Emojis {
   }
 
   getEmoticon(shortname) {
-    if (shortname[0] == ':') {
+    if (shortname[0] === ':') {
       return { shortname: shortname, id: shortname };
     }
     return this.emojisByAscii[shortname];
@@ -36,7 +36,7 @@ class Emojis {
       var emoji = emojis_json[emoji_id];
 
       //Keep only displayable emojis
-      if (emoji.display == 1) {
+      if (emoji.display === 1) {
         emoji.id = emoji.shortname;
 
         //Add emojis by category
@@ -103,7 +103,7 @@ class Emojis {
           emojisByCategByBloc[category].push([]);
         }
         emojisByCategByBloc[category][bloc].push(emoji);
-        if (emojisByCategByBloc[category][bloc].length == 6) {
+        if (emojisByCategByBloc[category][bloc].length === 6) {
           bloc_by_category[category]++;
         }
       });

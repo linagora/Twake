@@ -1,15 +1,56 @@
-import { PaginationQueryParameters } from "../../../utils/types";
+import { PaginationQueryParameters, uuid } from "../../../utils/types";
 import { WorkspaceUserRole } from "../types";
+import { CompanyUserRole, UserObject } from "../../user/web/types";
 
 export interface WorkspaceRequest extends WorkspaceBaseRequest {
-  id: string;
+  id: uuid;
 }
 
 export interface WorkspaceBaseRequest {
-  company_id: string;
+  company_id: uuid;
+}
+
+export interface WorkspaceUsersBaseRequest extends WorkspaceBaseRequest {
+  workspace_id: uuid;
 }
 
 export interface WorkspacesListRequest extends WorkspaceBaseRequest, PaginationQueryParameters {}
+
+export interface WorkspaceUsersRequest extends WorkspaceUsersBaseRequest {
+  user_id: uuid;
+}
+
+export interface WorkspacePendingUserRequest extends WorkspaceUsersBaseRequest {
+  email: string;
+}
+
+export interface WorkspaceUsersAddBody {
+  resource: {
+    user_id: uuid;
+    role: WorkspaceUserRole;
+  };
+}
+
+export interface WorkspaceUsersInvitationItem {
+  email: string;
+  role: WorkspaceUserRole;
+  company_role: CompanyUserRole;
+  password?: string;
+}
+
+export interface WorkspaceUsersInvitationRequestBody {
+  invitations: WorkspaceUsersInvitationItem[];
+}
+
+export interface WorkspaceUserInvitationResponseItem {
+  email: string;
+  status: "ok" | "error";
+  message?: string;
+}
+
+export interface WorkspaceUserInvitationResponse {
+  resources: WorkspaceUserInvitationResponseItem[];
+}
 
 export type WorkspaceCreateResource = Pick<WorkspaceObject, "name" | "logo" | "default">;
 export type WorkspaceUpdateResource = Pick<
@@ -40,4 +81,14 @@ export interface WorkspaceObject {
   };
 
   role?: WorkspaceUserRole;
+}
+
+export interface WorkspaceUserObject {
+  id: string;
+  company_id: string;
+  workspace_id: string;
+  user_id: string;
+  created_at: number; //Timestamp in ms
+  role: WorkspaceUserRole;
+  user: UserObject;
 }

@@ -55,7 +55,17 @@
       }
     }
   },
+  "search": {
+    "type": "SEARCH_DRIVER",
+    "elasticsearch": {
+      "endpoint": "SEARCH_ES_ENDPOINT",
+      "flushInterval": "SEARCH_ES_FLUSHINTERVAL"
+    }
+  },
   "pubsub": {
-    "urls": "PUBSUB_URLS"
+    "type": "PUBSUB_TYPE",
+    "amqp": {
+      "urls": "PUBSUB_URLS"
+    }
   }
 }

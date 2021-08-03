@@ -17,6 +17,7 @@ describe("The Messages feature", () => {
       services: [
         "pubsub",
         "user",
+        "search",
         "websocket",
         "webserver",
         "messages",

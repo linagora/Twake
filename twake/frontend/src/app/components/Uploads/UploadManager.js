@@ -1,11 +1,9 @@
-import React, { Component } from 'react';
-
 import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Resumable from 'services/uploadManager/resumable.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Api from 'services/Api';
 import JWTStorage from 'app/services/JWTStorage';
 
@@ -138,7 +136,7 @@ class UploadManager extends Observable {
   abort(elements) {
     var that = this;
 
-    if (elements.length == undefined) {
+    if (elements.length === undefined) {
       elements = [elements];
     }
 
@@ -307,10 +305,10 @@ class UploadManager extends Observable {
         total_size += real_file.size;
 
         path.split('/').forEach(function (dir, dir_index) {
-          if (dir.indexOf('.') == 0) {
+          if (dir.indexOf('.') === 0) {
             return;
           }
-          if (dir_index == path.split('/').length - 1) {
+          if (dir_index === path.split('/').length - 1) {
             dirs[dir] = real_file;
           } else {
             if (!dirs[dir]) {
@@ -372,10 +370,11 @@ class UploadManager extends Observable {
     this.currentWaitingFilesNumber--;
     this.currentUploadingFilesNumber++;
 
+    // eslint-disable-next-line no-unused-vars
     var listIndex = 0;
     var current_item = 0;
     this.currentUploadFiles.forEach((item, i) => {
-      if (item.file == element) {
+      if (item.file === element) {
         listIndex = i;
         current_item = item;
       }
@@ -383,7 +382,7 @@ class UploadManager extends Observable {
 
     var that = this;
 
-    if (current_item.xhr_cancelled == true) {
+    if (current_item.xhr_cancelled === true) {
       return;
     }
 
@@ -396,7 +395,7 @@ class UploadManager extends Observable {
 
     //Use Resumable.js for upload by chunk
     var r = new Resumable({
-      target: Globals.window.api_root_url + '/ajax/' + 'driveupload/upload',
+      target: `${Globals.api_root_url}/ajax/driveupload/upload`,
       chunkSize: 50000000,
       testChunks: false,
       simultaneousUploads: 5,

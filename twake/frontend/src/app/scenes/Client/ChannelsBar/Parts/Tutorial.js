@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import Languages from 'services/languages/languages';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Emojione from 'components/Emojione/Emojione';
-import UserService from 'services/user/user.js';
-import CurrentUserService from 'services/user/current_user.js';
+import UserService from 'services/user/UserService';
+import CurrentUserService from 'app/services/user/CurrentUser';
 import ElectronService from 'services/electron/electron.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 
@@ -17,7 +17,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 
 import TutorialUI from 'app/scenes/Client/ChannelsBar/Parts/Tutorial/Tutorial.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 export default class Tutorial extends Component {
   constructor() {

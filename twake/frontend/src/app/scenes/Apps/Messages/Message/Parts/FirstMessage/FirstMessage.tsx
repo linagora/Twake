@@ -1,6 +1,6 @@
 import React from 'react';
 import MessageLoaderFactory from 'app/services/Apps/Messages/MessageLoaderFactory';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/CollectionsReact/Collections';
 import Emojione from 'components/Emojione/Emojione';
 import { ChannelResource } from 'app/models/Channel';
@@ -37,11 +37,9 @@ export default (props: Props) => {
           </div>
           <div className="title">{channel.data.name}</div>
           <div className="text">
-            {Languages.t(
-              'scenes.apps.messages.message.types.first_channel_message_text',
-              [channel.data.name],
-              "C'est le premier message du canal",
-            )}
+            {Languages.t('scenes.apps.messages.message.types.first_channel_message_text', [
+              channel.data.name,
+            ])}
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import AutoComplete from 'components/AutoComplete/AutoComplete';
 import Icon from 'components/Icon/Icon.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './Picker.scss';
 
 export default class Picker extends React.Component {

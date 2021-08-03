@@ -23,9 +23,9 @@
 @black-alpha-50: #18295288;
 @black-alpha-70: #18295255;
 @error: #ff5154;
-@primary: #3840f7;
-@primary-background: #3842f723;
-@primary-hover: #3850f7;
+@primary: #1452f4;
+@primary-background: #1452f423;
+@primary-hover: #1145cb;
 @grey-background: #f5f5f7;
 @grey-light: #eeeeee;
 @grey-dark: #6a6a6a;
@@ -87,6 +87,7 @@
   --primary-hover: @primary-hover;
   --primary-background: @primary-background;
   --red: @error;
+  --error: @error;
   --secondary: @secondary;
   --white: @white;
   --warning: @warning;
@@ -173,7 +174,7 @@
 .ant-checkbox:hover .ant-checkbox-inner,
 .ant-checkbox-input:focus + .ant-checkbox-inner,
 .ant-checkbox-checked:hover {
-  border-color: transparent;
+  border-color: @black-alpha-50;
   box-shadow: @checkbox-shadow-unselected;
   border-radius: @border-radius-base;
   transition: box-shadow 0.2s;

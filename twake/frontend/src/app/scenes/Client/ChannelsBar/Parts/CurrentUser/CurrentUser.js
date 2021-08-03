@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserService from 'services/user/user.js';
-import CurrentUserService from 'services/user/current_user.js';
+import UserService from 'services/user/UserService';
+import CurrentUserService from 'app/services/user/CurrentUser';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import LoginService from 'services/login/login.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
-import ListenUsers from 'services/user/listen_users.js';
+import ListenUsers from 'services/user/ListenUsers';
 import UserParameter from 'app/scenes/Client/Popup/UserParameter/UserParameter.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/scenes/Client/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView.js';
@@ -66,13 +66,13 @@ export default class CurrentUser extends Component {
     if (!current_user.status_icon[0]) {
       current_user.status_icon[1] = '';
     }
-    this.state.new_status = current_user.status_icon;
+    this.setState({ new_status: current_user.status_icon });
   }
   updateStatus(value) {
     value = value || this.state.new_status;
     CurrentUserService.updateStatusIcon([
-      value[0] == 'trash' ? '' : value[0],
-      value[0] == 'trash' ? '' : value[1],
+      value[0] === 'trash' ? '' : value[0],
+      value[0] === 'trash' ? '' : value[1],
     ]);
     MenusManager.closeMenu();
     this.setState({ new_status: ['', ''] });
@@ -103,7 +103,7 @@ export default class CurrentUser extends Component {
             type: 'react-element',
             reactElement: level => {
               if (this.state.new_status[0].length <= 0) {
-                this.state.new_status = current_user.status_icon;
+                this.setState({ new_status: current_user.status_icon });
               }
               return (
                 <InputWithIcon
@@ -117,7 +117,7 @@ export default class CurrentUser extends Component {
                   )}
                   value={this.state.new_status}
                   onChange={value => {
-                    if (value[0] == 'trash') {
+                    if (value[0] === 'trash') {
                       this.updateStatus(value);
                     } else {
                       this.setState({ new_status: value });

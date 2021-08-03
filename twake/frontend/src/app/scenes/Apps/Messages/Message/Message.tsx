@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { CornerDownRight } from 'react-feather';
-import Languages from 'services/languages/languages.js';
-import FirstMessage from './Parts/FirstMessage/FirstMessage';
+import Languages from 'services/languages/languages';
 import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
 import MessageContent from './Parts/MessageContent';
-import MessagesService from 'services/Apps/Messages/Messages.js';
-import UserService from 'services/user/user.js';
+import MessagesService from 'services/Apps/Messages/Messages';
+import UserService from 'services/user/UserService';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import { MessageEditorService } from 'app/services/Apps/Messages/MessageEditorService';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
@@ -15,14 +14,15 @@ import Input from '../Input/Input';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ActivityMessage, { ActivityType } from './Parts/ChannelActivity/ActivityMessage';
 import './Message.scss';
-import { Message } from 'app/services/Apps/Messages/Message';
+import { Message } from 'app/models/Message';
 
 type Props = {
   fake?: boolean;
   messageId: string;
   collectionKey: string;
   highlighted?: boolean;
-  style?: any;
+  style?: React.CSSProperties;
+  deleted?: boolean;
   /**
    * Deprecated
    */
@@ -54,7 +54,7 @@ export default class MessageComponent extends Component<Props> {
       [props.messageId || this.message?.front_id],
       () => {
         const length = this.getResponses().length;
-        if (length != savedLength) {
+        if (length !== savedLength) {
           savedLength = length;
           return true;
         }
@@ -117,12 +117,8 @@ export default class MessageComponent extends Component<Props> {
       return <Thread loading />;
     }
 
-    if (message?.hidden_data?.type === 'init_channel') {
-      return <FirstMessage channelId={message.channel_id || ''} />;
-    }
-
     if (message?.hidden_data?.type === 'activity') {
-      const activity = message.hidden_data.activity as ActivityType;
+      const activity = message?.hidden_data?.activity as ActivityType;
       return <ActivityMessage activity={activity} />;
     }
 
@@ -149,6 +145,7 @@ export default class MessageComponent extends Component<Props> {
         >
           <ThreadSection small={linkToThread} message={message} head>
             <MessageContent
+              deleted={this.props.deleted}
               key={message?._last_modified || message?.front_id}
               threadHeader={this.props.threadHeader}
               linkToThread={linkToThread}
@@ -161,9 +158,10 @@ export default class MessageComponent extends Component<Props> {
           {!this.props.noReplies && responses.length > max_responses && (
             <ThreadSection gradient>
               <div className="message-content">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a
                   onClick={() => {
-                    MessagesService.showMessage(message.id);
+                    MessagesService.showMessage(message?.id);
                   }}
                   href="#"
                 >
@@ -209,19 +207,24 @@ export default class MessageComponent extends Component<Props> {
               </div>
             </ThreadSection>
           )}
-          {!showInput && !this.props.noReplies && !message.parent_message_id && (
-            <ThreadSection compact>
-              <div className="message-content">
-                <a
-                  href="#"
-                  onClick={() => this.messageEditorService.openEditor(message?.id || '', '')}
-                >
-                  <CornerDownRight size={14} />{' '}
-                  {Languages.t('scenes.apps.messages.message.reply_button')}
-                </a>
-              </div>
-            </ThreadSection>
-          )}
+
+          {!showInput &&
+            !this.props.deleted &&
+            !this.props.noReplies &&
+            !message.parent_message_id && (
+              <ThreadSection compact>
+                <div className="message-content">
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a
+                    href="#"
+                    onClick={() => this.messageEditorService.openEditor(message?.id || '', '')}
+                  >
+                    <CornerDownRight size={14} />{' '}
+                    {Languages.t('scenes.apps.messages.message.reply_button')}
+                  </a>
+                </div>
+              </ThreadSection>
+            )}
         </Thread>
       </DroppableZone>
     );

@@ -1,11 +1,10 @@
 import Number from 'services/utils/Numbers.js';
 import api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
-import DepreciatedCollections from 'services/Depreciated/Collections/Collections';
 import Collections from 'services/Collections/Collections';
 import LoginService from 'services/login/login';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Websocket extends Observable {
   constructor() {
@@ -34,27 +33,21 @@ class Websocket extends Observable {
     this.window_focus = true;
     this.window_last_blur = new Date();
     this.deconnectionBlurTimeout = setTimeout(() => {}, 0);
-    Globals.window.addEventListener(
-      'focus',
-      (() => {
-        this.reconnectIfNeeded(60);
-        clearTimeout(this.deconnectionBlurTimeout);
-        this.didFocusedLastMinute = true;
-        this.window_focus = true;
-        this.window_last_blur = new Date();
-        if (this.ws == null || new Date().getTime() - this.window_last_blur.getTime() > 30000) {
-          this.alive_connected = false;
-          this.alive();
-        }
-      }).bind(this),
-    );
-    Globals.window.addEventListener(
-      'blur',
-      (() => {
-        this.window_focus = false;
-        this.window_last_blur = new Date();
-      }).bind(this),
-    );
+    Globals.window.addEventListener('focus', () => {
+      this.reconnectIfNeeded(60);
+      clearTimeout(this.deconnectionBlurTimeout);
+      this.didFocusedLastMinute = true;
+      this.window_focus = true;
+      this.window_last_blur = new Date();
+      if (this.ws == null || new Date().getTime() - this.window_last_blur.getTime() > 30000) {
+        this.alive_connected = false;
+        this.alive();
+      }
+    });
+    Globals.window.addEventListener('blur', () => {
+      this.window_focus = false;
+      this.window_last_blur = new Date();
+    });
 
     this.alive.bind(this);
     this.message.bind(this);
@@ -87,7 +80,7 @@ class Websocket extends Observable {
   //Receive server message
   message(unid, route, data) {
     route = (route || '').split('previous::').pop();
-    if (unid != this.subscribedKey[route]) {
+    if (unid !== this.subscribedKey[route]) {
       return;
     }
     if (this.subscribed[route]) {
@@ -113,7 +106,7 @@ class Websocket extends Observable {
       this.subscribed[route] = [];
     }
     this.subscribed[route].push({ name: key, callback: callback });
-    if (this.subscribed[route].length == 1) {
+    if (this.subscribed[route].length === 1) {
       const unid = Number.unid();
       this.subscribedKey[route] = unid;
       Collections.getTransport()
@@ -146,12 +139,12 @@ class Websocket extends Observable {
     }
     var remaining = [];
     this.subscribed[route].forEach(c => {
-      if (c.name != key) {
+      if (c.name !== key) {
         remaining.push(c);
       }
     });
     this.subscribed[route] = remaining;
-    if (this.subscribed[route].length == 0) {
+    if (this.subscribed[route].length === 0) {
       Collections.getTransport()
         .getSocket()
         .leave('previous::' + route, '');
@@ -184,7 +177,7 @@ class Websocket extends Observable {
   }
 
   updateConnected(state) {
-    if (state != this.connected) {
+    if (state !== this.connected) {
       this.connected = state;
       this.notify();
     }

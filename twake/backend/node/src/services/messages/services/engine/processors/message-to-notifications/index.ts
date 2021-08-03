@@ -9,6 +9,7 @@ import { isDirectChannel } from "../../../../../channels/utils";
 import { ChannelActivityNotification } from "../../../../../channels/types";
 import UserServiceAPI from "../../../../../user/api";
 import ChannelServiceAPI from "../../../../../channels/provider";
+import { getMentions } from "../../../utils";
 
 export class MessageToNotificationsProcessor {
   private name = "MessageToNotificationsProcessor";
@@ -54,6 +55,10 @@ export class MessageToNotificationsProcessor {
           },
         );
 
+        if (!channel) {
+          continue;
+        }
+
         const company = await this.user.companies.getCompany({ id: participant.company_id });
 
         let companyName = company?.name || "";
@@ -78,17 +83,7 @@ export class MessageToNotificationsProcessor {
           text = `${senderName}: ${text}`;
         }
 
-        const usersOutput = (messageResource.text || "").match(/@[^: ]+:([0-f-]{36})/gm);
-        const globalOutput = (messageResource.text || "").match(
-          /(^| )@(all|here|channel|everyone)([^a-z]|$)/gm,
-        );
-
-        const mentions = {
-          users: (usersOutput || []).map(u => (u || "").trim().split(":").pop()),
-          specials: (globalOutput || []).map(g =>
-            (g || "").trim().split("@").pop(),
-          ) as specialMention[],
-        };
+        const mentions = getMentions(messageResource);
 
         const messageEvent: MessageNotification = {
           company_id: participant.company_id,

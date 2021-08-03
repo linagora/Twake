@@ -1,5 +1,8 @@
 .message {
   text-align: left;
+  .deleted-message {
+    opacity: 0.5;
+  }
   .sender-space {
     width: 28px;
     margin-right: 8px;

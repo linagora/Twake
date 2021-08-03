@@ -1,18 +1,11 @@
 import { PaginationQueryParameters } from "../../../utils/types";
-
-export interface UserParams {
-  id?: string;
-}
-
-export interface CreateUserBody {
-  email: string;
-  firstname?: string;
-  lastname?: string;
-}
+import { ChannelMember } from "../../channels/entities";
 
 export interface UserListQueryParameters extends PaginationQueryParameters {
   user_ids?: string;
   include_companies?: boolean;
+  search?: string;
+  search_company_id?: string;
 }
 
 export interface UserParameters {
@@ -30,8 +23,8 @@ export interface UsersParameters {
   companies?: string;
 }
 
-export type UserCompanyRole = "owner" | "admin" | "member" | "guest";
-export type UserCompanyStatus = "active" | "deactivated" | "invited";
+export type CompanyUserRole = "owner" | "admin" | "member" | "guest";
+export type CompanyUserStatus = "active" | "deactivated" | "invited";
 
 export interface CompanyShort {
   id: string; //Related to console "code"
@@ -39,10 +32,10 @@ export interface CompanyShort {
   logo: string;
 }
 
-export interface UserCompanyObject {
+export interface CompanyUserObject {
   company: CompanyShort;
-  role: UserCompanyRole;
-  status: UserCompanyStatus;
+  role: CompanyUserRole;
+  status: CompanyUserStatus;
 }
 
 export interface UserObject {
@@ -50,10 +43,12 @@ export interface UserObject {
   provider: string;
   provider_id: string;
   email: string;
+  username: string;
   is_verified: boolean;
   picture: string;
   first_name: string;
   last_name: string;
+  full_name: string;
   created_at: number;
   deleted: boolean;
   status: string; //Single string for the status
@@ -64,9 +59,10 @@ export interface UserObject {
   preference?: {
     locale: string;
     timezone: number;
+    allow_tracking: boolean;
   };
 
-  companies?: UserCompanyObject[];
+  companies?: CompanyUserObject[];
 }
 
 export interface CompanyPlanObject {
@@ -90,6 +86,20 @@ export interface CompanyObject {
   logo: string;
   plan?: CompanyPlanObject;
   stats?: CompanyStatsObject;
-  role?: UserCompanyRole;
-  status?: UserCompanyStatus;
+  role?: CompanyUserRole;
+  status?: CompanyUserStatus;
+}
+
+export interface RegisterDeviceBody {
+  resource: RegisterDeviceParams;
+}
+
+export interface RegisterDeviceParams {
+  type: "FCM";
+  value: string;
+  version: string;
+}
+
+export interface DeregisterDeviceParams {
+  value: "string";
 }

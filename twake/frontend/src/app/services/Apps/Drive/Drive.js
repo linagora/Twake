@@ -1,17 +1,12 @@
-import React from 'react';
-import Languages from 'services/languages/languages.js';
 import Observable from 'app/services/Depreciated/observable.js';
-import CurrentUser from 'services/user/current_user.js';
-import UserService from 'services/user/user.js';
 import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LocalStorage from 'app/services/LocalStorage';
 import AceModeList from './utils/ace_modelist.js';
-import ChannelsService from 'services/channels/channels.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Drive extends Observable {
   constructor() {
@@ -108,7 +103,7 @@ class Drive extends Observable {
       (this.is_in_trash_channels[channel] ? '_trash' : '') +
       channel;
 
-    if (this.current_position_key_channels[channel] != current_position_key) {
+    if (this.current_position_key_channels[channel] !== current_position_key) {
       this.current_position_key_channels[channel] = current_position_key;
 
       var old_drive_collection_key = this.current_collection_key_channels[channel];
@@ -136,7 +131,7 @@ class Drive extends Observable {
   }
 
   toggleView() {
-    this.view_mode = this.view_mode == 'grid' ? 'list' : 'grid';
+    this.view_mode = this.view_mode === 'grid' ? 'list' : 'grid';
     LocalStorage.setItem('drive_view', this.view_mode);
     this.notify();
   }
@@ -146,14 +141,14 @@ class Drive extends Observable {
       return;
     }
 
-    if (directory_id == 'root' || directory_id == 'trash') {
+    if (directory_id === 'root' || directory_id === 'trash') {
       var key = workspace_id + '_' + directory_id;
 
-      if (this.root_directories[key] && directory_id == 'root') {
+      if (this.root_directories[key] && directory_id === 'root') {
         return this.root_directories[key] || {};
       }
 
-      if (this.trash_directories[key] && directory_id == 'trash') {
+      if (this.trash_directories[key] && directory_id === 'trash') {
         return this.trash_directories[key] || {};
       }
 
@@ -175,10 +170,10 @@ class Drive extends Observable {
         res => {
           this.looking_for_root_directories[key] = false;
           if (res && res.data) {
-            if (directory_id == 'root') {
+            if (directory_id === 'root') {
               this.root_directories[key] = res.data;
             }
-            if (directory_id == 'trash') {
+            if (directory_id === 'trash') {
               this.trash_directories[key] = res.data;
             }
             Collections.get('drive').updateObject(res.data);
@@ -227,8 +222,6 @@ class Drive extends Observable {
       );
       return { _searching: true };
     }
-
-    return {};
   }
 
   addPathForElement(element, try_find) {
@@ -252,12 +245,12 @@ class Drive extends Observable {
     if (
       element.path &&
       element.path[element.path.length - 1] &&
-      element.path[element.path.length - 1].id != element.id
+      element.path[element.path.length - 1].id !== element.id
     ) {
       element.path.push(JSON.parse(JSON.stringify(element)));
     }
 
-    if (!element.parent_id || element.parent_id == 'root') {
+    if (!element.parent_id || element.parent_id === 'root') {
       element.path = element.path || [];
       return;
     }
@@ -273,7 +266,7 @@ class Drive extends Observable {
     if (
       parent.path &&
       parent.path[parent.path.length - 1] &&
-      parent.path[parent.path.length - 1].id != element.id
+      parent.path[parent.path.length - 1].id !== element.id
     ) {
       element.path.push(JSON.parse(JSON.stringify(element)));
     }
@@ -362,7 +355,7 @@ class Drive extends Observable {
 
     objects_id.forEach(el_id => {
       var el = Collections.get('drive').find(el_id);
-      if (el && el.parent_id != directory.id && el.id != directory.id) {
+      if (el && el.parent_id !== directory.id && el.id !== directory.id) {
         el.parent_id = directory.id;
         el.detached = false;
         this.addPathForElement(el);
@@ -414,7 +407,7 @@ class Drive extends Observable {
 
   emptyTrash(workspace_id, callback) {
     Api.post('drive/trash/empty', { workspace_id: workspace_id }, res => {
-      if (!res.errors || res.errors.length == 0) {
+      if (!res.errors || res.errors.length === 0) {
         if (res.data) {
           this.trash_directories[workspace_id + '_trash'] = res.data;
 
@@ -449,6 +442,7 @@ class Drive extends Observable {
       return element.url;
     }
 
+    // eslint-disable-next-line no-redeclare
     var workspace_id = element.workspace_id;
     var version = '';
     if (version_id !== undefined) {
@@ -493,15 +487,16 @@ class Drive extends Observable {
       }
     }
 
-    if (AceModeList.getMode(extension) != 'text') {
+    if (AceModeList.getMode(extension) !== 'text') {
       return 'code';
     }
 
     return 'other';
   }
 
-  viewDocument(file) {
+  viewDocument(file, previewonly = false) {
     this.viewed_document = file;
+    this.previewonly = previewonly;
     this.notify();
   }
 
@@ -547,35 +542,35 @@ class Drive extends Observable {
 
     //Default viewers
 
-    if (this.getFileType(current) == 'pdf') {
+    if (this.getFileType(current) === 'pdf') {
       preview_candidate.push({
         url:
           '/public/viewer/PDFViewer/viewer.html?link=' +
           encodeURIComponent(this.getLink(current, null, true)),
       });
     }
-    if (this.getFileType(current) == 'image') {
+    if (this.getFileType(current) === 'image') {
       preview_candidate.push({
         url:
           '/public/viewer/ImageViewer/viewer.html?link=' +
           encodeURIComponent(this.getLink(current, null, true)),
       });
     }
-    if (this.getFileType(current) == 'video') {
+    if (this.getFileType(current) === 'video') {
       preview_candidate.push({
         url:
           '/public/viewer/VideoViewer/viewer.html?link=' +
           encodeURIComponent(this.getLink(current, null, true)),
       });
     }
-    if (this.getFileType(current) == 'sound') {
+    if (this.getFileType(current) === 'sound') {
       preview_candidate.push({
         url:
           '/public/viewer/AudioViewer/viewer.html?link=' +
           encodeURIComponent(this.getLink(current, null, true)),
       });
     }
-    if (this.getFileType(current) == 'code') {
+    if (this.getFileType(current) === 'code') {
       preview_candidate.push({
         url:
           '/public/viewer/CodeViewer/viewer.html?ext=' +

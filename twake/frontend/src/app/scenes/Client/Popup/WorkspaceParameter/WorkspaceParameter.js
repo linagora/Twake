@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 import loginService from 'services/login/login.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import userService from 'services/user/user.js';
-import currentUserService from 'services/user/current_user.js';
+import userService from 'services/user/UserService';
+import currentUserService from 'app/services/user/CurrentUser';
 import WorkspaceIdentity from './Pages/WorkspaceIdentity.js';
 import WorkspacePartner from './Pages/WorkspacePartner.js';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
 import WorkspaceApps from './Pages/WorkspaceApps.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import MenuList from 'components/Menus/MenuComponent.js';
 import InitService from 'app/services/InitService';
-import ConsoleService from 'app/services/ConsoleService';
+import ConsoleService from 'app/services/Console/ConsoleService';
 import './WorkspaceParameter.scss';
 
 export default class WorkspaceParameter extends Component {
@@ -48,7 +48,7 @@ export default class WorkspaceParameter extends Component {
     currentUserService.addListener(this);
   }
   componentWillMount() {
-    this.state.thumbnail = false;
+    this.setState({ thumbnail: false });
   }
   componentWillUnmount() {
     LoginService.removeListener(this);
@@ -58,23 +58,23 @@ export default class WorkspaceParameter extends Component {
     Collections.get('users').removeListener(this);
   }
   displayScene() {
-    if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page == 1) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page === 1) {
       return <WorkspaceIdentity />;
     }
-    if (this.state.page == 2) {
+    if (this.state.page === 2) {
       return <WorkspacePartner />;
     }
-    if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page == 3) {
+    if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page === 3) {
       var options = this.state.options;
-      if (this.state.options == 'open_search_apps') {
-        this.state.options = undefined;
+      if (this.state.options === 'open_search_apps') {
+        this.setState({ option: undefined });
       }
-      return <WorkspaceApps searchApps={options == 'open_search_apps'} />;
+      return <WorkspaceApps searchApps={options === 'open_search_apps'} />;
     }
-    if (WorkspaceUserRights.hasGroupPrivilege('MANAGE_DATA') && this.state.page == 4) {
+    if (WorkspaceUserRights.hasGroupPrivilege('MANAGE_DATA') && this.state.page === 4) {
       return <CompanyIdendity />;
     }
-    if (this.state.page == 5) {
+    if (this.state.page === 5) {
       return (
         <div className="">
           <div className="title">
@@ -152,7 +152,7 @@ export default class WorkspaceParameter extends Component {
           [],
           'Espace de travail',
         ),
-        selected: this.state.page == 1 ? 'selected' : '',
+        selected: this.state.page === 1 ? 'selected' : '',
         onClick: () => {
           this.setPage(1);
         },
@@ -165,7 +165,7 @@ export default class WorkspaceParameter extends Component {
           [],
           'Applications et connecteurs',
         ),
-        selected: this.state.page == 3 ? 'selected' : '',
+        selected: this.state.page === 3 ? 'selected' : '',
         onClick: () => {
           this.setPage(3);
         },
@@ -179,7 +179,7 @@ export default class WorkspaceParameter extends Component {
         [],
         'Collaborateurs',
       ),
-      selected: this.state.page == 2 ? 'selected' : '',
+      selected: this.state.page === 2 ? 'selected' : '',
       onClick: () => {
         this.setPage(2);
       },
@@ -195,7 +195,7 @@ export default class WorkspaceParameter extends Component {
           [],
           "Identité de l'entreprise",
         ),
-        selected: this.state.page == 4 ? 'selected' : '',
+        selected: this.state.page === 4 ? 'selected' : '',
         onClick: () => {
           if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
             return window.open(

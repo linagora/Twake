@@ -1,5 +1,5 @@
 {
-  "services": ["auth", "user", "channels", "webserver", "websocket"],
+  "services": ["auth", "user", "search", "channels", "webserver", "websocket"],
   "webserver": {
     "port": 3000,
     "logger": {

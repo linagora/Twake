@@ -46,11 +46,21 @@ export class ViewsController
           request.query.limit,
           request.query.direction !== "history",
         ),
-        { ...request.query },
+        { ...request.query, include_users: request.query.include_users },
         context,
       );
+
+      let entities = [];
+      if (request.query.include_users) {
+        for (const msg of resources.getEntities()) {
+          entities.push(await this.service.messages.includeUsersInMessageWithReplies(msg));
+        }
+      } else {
+        entities = resources.getEntities();
+      }
+
       return {
-        resources: resources.getEntities(),
+        resources: entities,
         ...(request.query.websockets && {
           websockets: [
             {
@@ -70,7 +80,9 @@ export class ViewsController
 
 export interface MessageViewListQueryParameters
   extends PaginationQueryParameters,
-    MessageViewListOptions {}
+    MessageViewListOptions {
+  include_users: boolean;
+}
 
 function getChannelViewExecutionContext(
   request: FastifyRequest<{

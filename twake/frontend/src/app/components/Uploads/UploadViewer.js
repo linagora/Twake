@@ -1,9 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import UploadManager from './UploadManager.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import './Uploads.scss';
 import moment from 'moment';
+import Languages from 'app/services/languages/languages';
 
 export default class UploadViewer extends React.Component {
   constructor(props) {
@@ -18,6 +19,7 @@ export default class UploadViewer extends React.Component {
   }
   render() {
     if (this.state.upload_manager.currentUploadTotalNumber <= 0) {
+      // eslint-disable-next-line react/no-direct-mutation-state
       this.state.large = true;
       return '';
     }
@@ -51,7 +53,7 @@ export default class UploadViewer extends React.Component {
         if (!d.error && !d.cancelled) {
           folders[folder].total++;
           folders[folder].total_progress += d.progress;
-          if (d.progress == 1) {
+          if (d.progress === 1) {
             folders[folder].total_uploaded += 1;
           }
 
@@ -113,7 +115,7 @@ export default class UploadViewer extends React.Component {
         }
       >
         <div className="title" onClick={() => this.setState({ large: !this.state.large })}>
-          Importation {total_finished}/{todo}
+          {Languages.t('general.uploading')} {total_finished}/{todo}
         </div>
         {remaining_time > 0 && (
           <div className="subtitle">
@@ -122,7 +124,7 @@ export default class UploadViewer extends React.Component {
         )}
         <div className="uploads" style={{ display: this.state.large ? 'block' : 'none' }}>
           {documents
-            .sort((a, b) => (a.progress == 1) - (b.progress == 1))
+            .sort((a, b) => (a.progress === 1) - (b.progress === 1))
             .map(item => {
               return (
                 <div
@@ -130,7 +132,7 @@ export default class UploadViewer extends React.Component {
                   className={
                     'uploadingFile ' +
                     (item.cancelled || item.error ? 'stopped ' : '') +
-                    (item.progress == 1 && !item.error ? 'done ' : '') +
+                    (item.progress === 1 && !item.error ? 'done ' : '') +
                     (item.progress < 1 && !item.error && !item.cancelled ? 'progress ' : '')
                   }
                 >

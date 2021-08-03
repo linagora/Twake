@@ -1,5 +1,5 @@
-import path from "path";
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { resolve as pathResolve } from "path";
+import { v1 as uuidv1 } from "uuid";
 import { FastifyInstance } from "fastify";
 import { TwakePlatform, TwakePlatformConfiguration } from "../../../src/core/platform/platform";
 import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
@@ -46,7 +46,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
   if (!testPlatform) {
     const configuration: TwakePlatformConfiguration = {
       services: config.services,
-      servicesPath: path.resolve(__dirname, "../../../src/services/"),
+      servicesPath: pathResolve(__dirname, "../../../src/services/"),
     };
     const platform = new TwakePlatform(configuration);
 
@@ -78,8 +78,8 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
 
   testPlatform.currentUser = { id: uuidv1() };
   testPlatform.workspace = {
-    company_id: uuidv4(),
-    workspace_id: uuidv4(),
+    company_id: uuidv1(),
+    workspace_id: uuidv1(),
   };
 
   testPlatform.app.server.listen(3000);

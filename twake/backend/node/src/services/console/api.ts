@@ -1,14 +1,9 @@
 import { TwakeServiceProvider } from "../../core/platform/framework";
-import {
-  ConsoleCompany,
-  CreateConsoleCompany,
-  CreateConsoleUser,
-  CreatedConsoleCompany,
-  CreatedConsoleUser,
-  MergeProgress,
-  UpdateConsoleUserRole,
-  UpdatedConsoleUserRole,
-} from "./types";
+import { ConsoleOptions, ConsoleType, MergeProgress } from "./types";
+import { ConsoleServiceClient } from "./client-interface";
+import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
+import UserServiceAPI from "../user/api";
+import User from "../user/entities/user";
 
 export interface ConsoleServiceAPI extends TwakeServiceProvider {
   merge(
@@ -20,32 +15,17 @@ export interface ConsoleServiceAPI extends TwakeServiceProvider {
     client: string,
     secret: string,
   ): MergeProgress;
-}
 
-export interface ConsoleServiceClient {
-  /**
-   * Create a company
-   *
-   * @param company
-   */
-  createCompany(company: CreateConsoleCompany): Promise<CreatedConsoleCompany>;
+  getClient(): ConsoleServiceClient;
 
-  /**
-   * Add user to company
-   *
-   * @param company
-   * @param user
-   */
-  addUser(company: ConsoleCompany, user: CreateConsoleUser): Promise<CreatedConsoleUser>;
+  consoleType: ConsoleType;
+  consoleOptions: ConsoleOptions;
+  services: {
+    database: DatabaseServiceAPI;
+    userService: UserServiceAPI;
+  };
 
-  /**
-   * Update user role
-   *
-   * @param company
-   * @param user
-   */
-  updateUserRole(
-    company: ConsoleCompany,
-    user: UpdateConsoleUserRole,
-  ): Promise<UpdatedConsoleUserRole>;
+  processPendingUser(user: User): Promise<void>;
+
+  getUserByAccessToken(accessToken: string): User;
 }

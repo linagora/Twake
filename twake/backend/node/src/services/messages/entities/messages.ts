@@ -1,7 +1,9 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
+import User from "../../user/entities/user";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { Block } from "../blocks-types";
+import { UserObject } from "../../user/web/types";
 
 export const TYPE = "messages";
 @Entity(TYPE, {
@@ -9,7 +11,12 @@ export const TYPE = "messages";
   type: TYPE,
   search: {
     index: "messages",
-    mapping: {
+    mongoMapping: {
+      text: {
+        text: "text",
+      },
+    },
+    esMapping: {
       properties: {
         text: { type: "text" },
       },
@@ -124,4 +131,8 @@ export function getInstance(message: Partial<Message>): Message {
 
     ...message,
   });
+}
+
+export class MessageWithUsers extends Message {
+  users: UserObject[];
 }

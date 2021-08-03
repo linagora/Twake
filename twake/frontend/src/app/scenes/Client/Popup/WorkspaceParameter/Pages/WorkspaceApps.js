@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import workspaceService from 'services/workspaces/workspaces.js';
@@ -13,7 +13,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import AppsParameters from 'app/scenes/Client/Popup/AppsParameters/AppsParameters.js';
 import Button from 'components/Buttons/Button.js';
 import WorkspaceAppsEditor from '../../AppsParameters/Pages/WorkspaceAppsEditor.js';
@@ -152,8 +152,10 @@ export default class WorkspaceApps extends Component {
 
     var workspace_id = workspaceService.currentWorkspaceId;
     var workspace = Collections.get('workspaces').find(workspace_id);
+    // eslint-disable-next-line no-unused-vars
     var group = Collections.get('groups').find(workspace.group.id);
 
+    // eslint-disable-next-line no-unused-vars
     var developed = Collections.get('applications')
       .findBy({ group_id: workspace.group.id })
       .filter(item => item.available_categories);
@@ -168,6 +170,7 @@ export default class WorkspaceApps extends Component {
       .filter(id => workspaces_app_ids.indexOf(id) < 0)
       .map(id => WorkspacesApps.apps_by_group[workspaceService.currentGroupId][id]);
 
+    // eslint-disable-next-line no-unused-vars
     var all_apps = workspace_apps.concat(group_apps);
 
     return (
@@ -189,7 +192,7 @@ export default class WorkspaceApps extends Component {
             )}
           </div>
 
-          {!WorkspacesApps.loading && workspace_apps.length == 0 && (
+          {!WorkspacesApps.loading && workspace_apps.length === 0 && (
             <div className="smalltext">
               <Emojione type=":information_source:" />{' '}
               {Languages.t(
@@ -218,6 +221,7 @@ export default class WorkspaceApps extends Component {
                   title: 'Application',
                   dataIndex: 'name',
                   render: row => {
+                    // eslint-disable-next-line no-unused-vars
                     var icon = row.icon_url;
                     return (
                       <div className="absolute_position">
@@ -301,7 +305,7 @@ export default class WorkspaceApps extends Component {
           )}
 
           {WorkspacesApps.loading_by_workspace[workspaceService.currentWorkspaceId] &&
-            group_apps.length == 0 && <Loader color="#CCC" className="parameters_loader" />}
+            group_apps.length === 0 && <Loader color="#CCC" className="parameters_loader" />}
 
           {group_apps.length > 0 && (
             <div className="smalltext">
@@ -406,6 +410,7 @@ export default class WorkspaceApps extends Component {
             >
               <div className="parameters_form" style={{ maxWidth: 'none', paddingTop: 10 }}>
                 <Emojione type=":control_knobs:" />{' '}
+                {/*eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a href="#" className="text" onClick={() => popupManager.open(<AppsParameters />)}>
                   {Languages.t(
                     'scenes.app.popup.workspaceparameter.pages.access_apps',

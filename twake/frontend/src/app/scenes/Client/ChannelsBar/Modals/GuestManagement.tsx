@@ -1,22 +1,22 @@
-import ObjectModal from 'app/components/ObjectModal/ObjectModal';
-import RouterService from 'app/services/RouterService';
 import React, { useEffect, useState } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { capitalize } from 'lodash';
+import { Input, Row, Typography } from 'antd';
+import ObjectModal from 'app/components/ObjectModal/ObjectModal';
+import RouterService from 'app/services/RouterService';
 import MemberChannelRow from '../Parts/Header/MemberChannelRow';
 import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
-import { Input, Row, Typography } from 'antd';
 import { PendingEmailResource } from 'app/models/PendingEmail';
-import GuestManagementService from 'app/services/GuestManagementService';
+import GuestManagementService from 'app/services/GuestMember/GuestManagementService';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
-import Languages from 'services/languages/languages.js';
-import { capitalize } from 'lodash';
+import Languages from 'services/languages/languages';
 
 type PropsType = {
   channel: ChannelResource;
 };
 
-const GuestManagement = ({ channel }: PropsType): JSX.Element => {
+export default ({ channel }: PropsType): JSX.Element => {
   const [search, setSearch] = useState<string>('');
   const [limit, setLimit] = useState<number>(10);
   const [shouldDisplayAdditionRow, setShouldDisplayAdditionRow] = useState<boolean>(false);
@@ -124,5 +124,3 @@ const GuestManagement = ({ channel }: PropsType): JSX.Element => {
     </ObjectModal>
   );
 };
-
-export default GuestManagement;

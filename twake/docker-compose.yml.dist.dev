@@ -10,9 +10,6 @@ services:
       - ./docker-data/scylladb:/var/lib/scylla
   rabbitmq:
     image: rabbitmq:3
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
   node:
     image: twaketech/twake-node
     ports:
@@ -22,14 +19,13 @@ services:
       - DB_DRIVER=cassandra
       - DB_CASSANDRA_URI=scylladb:9042
       - DB_CASSANDRA_KEYSPACE=twake
-      - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
+      - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
     build:
       context: ./backend/node
       dockerfile: ../../docker/twake-node/Dockerfile.dev
     volumes:
       - ./backend/node:/usr/src/app
       - ./docker-data/documents/:/storage/
-    #      - /usr/src/app/node_modules
     depends_on:
       - scylladb
       - rabbitmq
@@ -56,9 +52,10 @@ services:
     links:
       - scylladb
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     environment:
       - cluster.name=docker-cluster
+      - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:

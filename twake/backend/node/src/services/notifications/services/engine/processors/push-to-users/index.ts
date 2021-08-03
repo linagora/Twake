@@ -100,7 +100,7 @@ export class PushNotificationToUsersMessageProcessor
         entity: {
           ...badgeLocation,
           title: message.title,
-          text: message.text,
+          text: formatNotificationMessage(message),
         },
         resourcePath: null,
         result: null,
@@ -110,7 +110,7 @@ export class PushNotificationToUsersMessageProcessor
         ...badgeLocation,
         badge_value: 1,
         title: message.title,
-        text: message.text,
+        text: formatNotificationMessage(message),
       });
     });
   }
@@ -173,4 +173,23 @@ export class PushNotificationToUsersMessageProcessor
   sendPushNotification(user: string, pushNotification: PushNotificationMessage): void {
     MobilePushNotifier.get(this.pubsub).notify(user, pushNotification);
   }
+}
+
+function formatNotificationMessage(message: MentionNotification): string {
+  let text = message.text;
+  // Clean the message text to remove @userName:id-id-id
+  ((text || "").match(/@[^: ]+:([0-f-]{36})/gm) || []).forEach(match => {
+    const string = (match || "").trim();
+    const id = string.split(":").pop();
+    const fallback = string.split(":").shift();
+    text = text.replace(string, message.object_names?.users[id] || fallback);
+  });
+  // Clean the message text to remove #channelName:id-id-id
+  ((text || "").match(/#[^: ]+:([0-f-]{36})/gm) || []).forEach(match => {
+    const string = (match || "").trim();
+    const id = string.split(":").pop();
+    const fallback = string.split(":").shift();
+    text = text.replace(string, message.object_names?.channels[id] || fallback);
+  });
+  return text;
 }

@@ -1,6 +1,6 @@
 import Observable from 'app/services/Depreciated/observable.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class ConfiguratorsManager extends Observable {
   constructor() {
@@ -21,7 +21,7 @@ class ConfiguratorsManager extends Observable {
 
     var _new_order = [];
     this.configurator_order.forEach(id => {
-      if (app.id != id) {
+      if (app.id !== id) {
         _new_order.push(id);
       }
     });
@@ -36,7 +36,7 @@ class ConfiguratorsManager extends Observable {
 
     var _new_order = [];
     this.configurator_order.forEach(id => {
-      if (app.id != id) {
+      if (app.id !== id) {
         _new_order.push(id);
       }
     });

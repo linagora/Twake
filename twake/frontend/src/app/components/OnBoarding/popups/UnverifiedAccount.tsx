@@ -1,8 +1,8 @@
-import { Button, Row, Typography } from 'antd';
 import React, { useState } from 'react';
+import { Button, Row, Typography } from 'antd';
 import ObjectModal from '../../ObjectModal/ObjectModal';
-import Languages from 'services/languages/languages.js';
-import ConsoleService from 'app/services/ConsoleService';
+import Languages from 'services/languages/languages';
+import ConsoleService from 'app/services/Console/ConsoleService';
 
 type PropsType = {
   daysLeft: number;
@@ -10,7 +10,7 @@ type PropsType = {
   email: string;
 };
 
-const UnverifiedAccount = ({ daysLeft, email, limit }: PropsType): JSX.Element => {
+export default ({ daysLeft, email, limit }: PropsType): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const onClickButton = () => {
@@ -84,5 +84,3 @@ const UnverifiedAccount = ({ daysLeft, email, limit }: PropsType): JSX.Element =
     </ObjectModal>
   );
 };
-
-export default UnverifiedAccount;

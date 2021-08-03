@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import groupService from 'services/workspaces/groups.js';
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Attribute from 'components/Parameters/Attribute.js';
-import uploadService from 'services/uploadManager/uploadManager.js';
-import Input from 'components/Inputs/Input.js';
+import Languages from 'services/languages/languages';
+import Collections from 'app/services/Depreciated/Collections/Collections';
+import groupService from 'services/workspaces/groups';
+import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout';
+import Attribute from 'components/Parameters/Attribute';
+import uploadService from 'services/uploadManager/uploadManager';
+import Input from 'components/Inputs/Input';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 
 import './Pages.scss';
 
@@ -33,7 +34,7 @@ export default class CompanyIdendity extends Component {
     event.preventDefault();
     uploadService.getFilesTree(event, function (tree) {
       var first = tree[Object.keys(tree)[0]];
-      if (first.constructor.name != 'Object') {
+      if (first.constructor.name !== 'Object') {
         //A file
         var reader = new FileReader();
         reader.onload = function (e) {
@@ -85,7 +86,7 @@ export default class CompanyIdendity extends Component {
                 type="text"
                 value={this.state.groupName}
                 onKeyDown={e => {
-                  if (e.keyCode == 13) {
+                  if (e.keyCode === 13) {
                     groupService.updateName(this.state.groupName);
                   }
                 }}
@@ -127,7 +128,7 @@ export default class CompanyIdendity extends Component {
                 ref={ref => (this.groupLogo = ref)}
                 className={'image thumbnail ' + (this.state.groupLogo ? 'has_image ' : '')}
                 style={{
-                  backgroundImage: "url('" + window.addApiUrlIfNeeded(this.state.groupLogo) + "')",
+                  backgroundImage: addApiUrlIfNeeded(this.state.groupLogo, true),
                 }}
               >
                 {((group.mininame || group.name) + '-')[0].toUpperCase()}
@@ -140,6 +141,7 @@ export default class CompanyIdendity extends Component {
                 'Maximum weight 5 mo.',
               )}
               <br />
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a
                 className="red"
                 onClick={() => {
