@@ -27,6 +27,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   async doInit(): Promise<this> {
     // TODO: Get server config from options
     this.server = fastify({
+      maxParamLength: 300, //We have big urls with uuids and devices tokens
       logger: {
         level: this.configuration.get<string>("logger.level", "debug"),
       },
