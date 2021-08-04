@@ -16,7 +16,6 @@ type PropsType = {
   className?: string;
 }
 
-
 const MainView: FC<PropsType> = ({ className }) => {
   const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
     ({ companyId, workspaceId, channelId }) => {

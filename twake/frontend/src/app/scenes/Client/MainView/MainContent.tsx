@@ -20,6 +20,12 @@ const MainContent: FC<{}> = () => {
     SideViewService.getId(),
   ]);
 
+  // Put the sideview in full screen if screen has not a big width
+  const { innerWidth } = window;
+  let sideViewWidth = "40%";
+  if(innerWidth < 768 ){
+    sideViewWidth = "100%"
+  }
   return (
     <Layout.Content className={'global-view-content'}>
       <Layout style={{ flex: '1' }}>
@@ -45,7 +51,7 @@ const MainContent: FC<{}> = () => {
             breakpoint="lg"
             collapsedWidth="0"
             theme="light"
-            width="40%"
+            width={sideViewWidth}            
             collapsed={sideType === ''}
           >
             {!!sideType && (
