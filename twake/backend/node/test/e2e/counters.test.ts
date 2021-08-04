@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { beforeAll, describe, expect, it } from "@jest/globals";
-import { init, TestPlatform } from "../e2e/setup";
+import { init, TestPlatform } from "./setup";
 import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
 import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
 import { v1 as uuidv1 } from "uuid";
