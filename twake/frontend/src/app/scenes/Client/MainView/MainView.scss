@@ -1,5 +1,6 @@
 .ant-layout .main-view-layout {
   height: 100%;
+  overflow:hidden;
   .main-view-content {
     position: relative;
     & > div {
@@ -86,7 +87,6 @@
       }
     }
   }
-  
 }
 
 .main-view,
@@ -164,5 +164,3 @@
     }
   }
 }
-
-
