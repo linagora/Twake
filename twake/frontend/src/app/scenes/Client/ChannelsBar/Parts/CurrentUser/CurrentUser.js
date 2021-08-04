@@ -16,7 +16,7 @@ import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/scenes/Client/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView.js';
-import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader.js';
+import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
 import popupManager from 'services/popupManager/popupManager.js';
 import Button from 'components/Buttons/Button.js';
 import InitService from 'app/services/InitService';
@@ -333,7 +333,6 @@ export default class CurrentUser extends Component {
           (Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId) || {}).name ||
           '-'
         }
-        user={current_user}
         status={status}
         notificationsDisabled={notifications_disabled}
         onClickUser={evt => {

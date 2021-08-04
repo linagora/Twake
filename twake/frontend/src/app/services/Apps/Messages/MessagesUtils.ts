@@ -22,6 +22,7 @@ export const getSender = (message: Message | undefined) => {
           id: message.sender,
         };
       } else {
+        senderData = {...senderData};
         senderData.type = 'user';
       }
     }
