@@ -106,9 +106,17 @@ export class WorkspacesCrudController
 
     const allCompanyWorkspaces = await this.workspaceService.getAllForCompany(context.company_id);
 
+    const companyUser = await this.companyService.getCompanyUser(
+      { id: context.company_id },
+      { id: context.user.id },
+    );
+
     const allUserWorkspaceRolesMap = await this.workspaceService
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
-      .then(uws => new Map(uws.map(uw => [uw.workspaceId, uw.role])));
+      .then(
+        uws =>
+          new Map(uws.map(uw => [uw.workspaceId, companyUser.role == "admin" ? "admin" : uw.role])),
+      );
 
     return {
       resources: allCompanyWorkspaces

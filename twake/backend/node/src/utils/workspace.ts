@@ -13,6 +13,14 @@ export async function isWorkspaceAdmin(
     return false;
   }
 
+  const companyUser = await userService.companies.getCompanyUser(
+    { id: workspace.company_id },
+    { id: user.id },
+  );
+  if (companyUser && companyUser.role == "admin") {
+    return true;
+  }
+
   const workspaceUser = await getWorkspaceUser(userService, user, workspace);
 
   if (!workspaceUser) {
