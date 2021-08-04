@@ -13,6 +13,11 @@
 }
 
 .ant-layout .global-view-layout {
+  &.collapsed .global-view-header {
+    .channelName{
+      margin-left:26px;
+    }
+  }
   .global-view-header {
     padding: 8px 0;
     height: 56px;
@@ -25,7 +30,7 @@
       white-space: nowrap;
       padding: 0 16px;
       line-height: 47px;
-    }
+    }    
   }
 
   .global-side-view {
@@ -81,6 +86,7 @@
       }
     }
   }
+  
 }
 
 .main-view,
@@ -158,3 +164,5 @@
     }
   }
 }
+
+
