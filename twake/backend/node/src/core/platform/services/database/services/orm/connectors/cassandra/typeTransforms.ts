@@ -92,6 +92,10 @@ export const transformValueToDbString = (
     }
     return `'${(v || "").toString().replace(/'/gm, "''")}'`;
   }
+  if (type === "counter") {
+    if (isNaN(v)) throw Error("Counter value should be a number");
+    return `${options.column.key} + ${v}`;
+  }
   return `'${(v || "").toString().replace(/'/gm, "''")}'`;
 };
 
@@ -154,7 +158,11 @@ export const transformValueFromDbString = (
   }
 
   if (type === "number") {
-    return new Number(v).valueOf();
+    return Number(v).valueOf();
+  }
+
+  if (type === "counter") {
+    return Number(v).valueOf();
   }
 
   return v;

@@ -316,7 +316,11 @@ export class CassandraConnector extends AbstractConnector<
             `${transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              { columns: columnsDefinition[key].options, secret: this.secret },
+              {
+                columns: columnsDefinition[key].options,
+                secret: this.secret,
+                column: { key: key },
+              },
             )}`,
           ]);
         //Set primary key
@@ -329,6 +333,7 @@ export class CassandraConnector extends AbstractConnector<
               columns: columnsDefinition[key].options,
               secret: this.secret,
               disableSalts: true,
+              column: { key: key },
             },
           )}`,
         ]);
@@ -396,6 +401,7 @@ export class CassandraConnector extends AbstractConnector<
                 columns: columnsDefinition[key].options,
                 secret: this.secret,
                 disableSalts: true,
+                column: { key: key },
               },
             )}`,
         );

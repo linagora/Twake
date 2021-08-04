@@ -58,6 +58,11 @@ export const transformValueToDbString = (
     return Boolean(v);
   }
 
+  if (type === "counter") {
+    if (isNaN(v)) throw Error("Counter value should be a number");
+    return +v;
+  }
+
   return v || "";
 };
 
@@ -89,5 +94,10 @@ export const transformValueFromDbString = (v: any, type: string, options: any = 
   if (type === "twake_boolean") {
     return Boolean(v);
   }
+
+  if (type === "counter") {
+    return Number(v).valueOf();
+  }
+
   return v;
 };

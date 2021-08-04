@@ -85,29 +85,44 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         const primaryKey = unwrapPrimarykey(entityDefinition);
 
         //Set updated content
-        const set: any = {};
+        const set = new Map<string, any>();
+        const inc = new Map<string, number>();
         Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
           .filter(key => columnsDefinition[key].nodename !== undefined)
           .forEach(key => {
-            set[key] = transformValueToDbString(
+            const value = transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              { columns: columnsDefinition[key].options, secret: this.secret },
+              {
+                columns: columnsDefinition[key].options,
+                secret: this.secret,
+                column: { key: key },
+              },
             );
+
+            if (columnsDefinition[key].type === "counter") {
+              inc.set(key, value);
+            } else {
+              set.set(key, value);
+            }
           });
 
         //Set primary key
-        const where: any = {};
+        const where = new Map<string, any>();
         primaryKey.forEach(key => {
-          where[key] = transformValueToDbString(
-            entity[columnsDefinition[key].nodename],
-            columnsDefinition[key].type,
-            {
-              columns: columnsDefinition[key].options,
-              secret: this.secret,
-              disableSalts: true,
-            },
+          where.set(
+            key,
+            transformValueToDbString(
+              entity[columnsDefinition[key].nodename],
+              columnsDefinition[key].type,
+              {
+                columns: columnsDefinition[key].options,
+                secret: this.secret,
+                disableSalts: true,
+                column: { key: key },
+              },
+            ),
           );
         });
 
@@ -115,7 +130,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         promises.push(
           collection.updateOne(
             where,
-            { $set: { ...where, ...set } },
+            { $set: { ...where, ...set }, $inc: inc },
             { upsert: true },
           ) as Promise<mongo.UpdateResult>,
         );
@@ -146,6 +161,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
               columns: columnsDefinition[key].options,
               secret: this.secret,
               disableSalts: true,
+              column: { key: key },
             },
           );
         });
