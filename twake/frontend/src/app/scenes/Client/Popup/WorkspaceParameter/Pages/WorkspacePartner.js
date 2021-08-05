@@ -8,7 +8,7 @@ import workspacesUsers from 'services/workspaces/workspaces_users.js';
 import Menu from 'components/Menus/Menu.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
-import Switch from 'components/Inputs/Switch.js';
+// import Switch from 'components/Inputs/Switch.js';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import UserService from 'services/user/UserService';
 import CreateCompanyAccount from './CreateCompanyAccount.js';
@@ -19,6 +19,31 @@ import Members from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspaceP
 import Tabs from 'components/Tabs/Tabs.js';
 import InitService from 'app/services/InitService';
 import ConsoleService from 'app/services/Console/ConsoleService';
+import { Switch } from 'antd';
+
+class AdminSwitch extends Component {
+  constructor() {
+    super();
+    workspacesUsers.addListener(this);
+  }
+  componentWillUnmount(){
+    workspacesUsers.removeListener(this);
+  }
+  render(){
+    const loading = workspacesUsers.updateLevelUserLoading[this.props.col.user.id];
+    const checked = this.props.col.level === this.props.adminLevelId;
+    return(
+      <div className="editLevel">
+        <Switch
+          loading={loading}
+          label={Languages.t('scenes.app.popup.workspaceparameter.pages.administrater_status')}
+          checked={checked}
+          onChange={this.props.onChange}
+        />
+    </div>
+    )
+  }
+}
 
 export default class WorkspacePartner extends Component {
   constructor() {
@@ -104,7 +129,7 @@ export default class WorkspacePartner extends Component {
                 [],
                 "Gérant de l'entreprise",
               )}
-              value={col.groupLevel > 0}
+              checked={col.groupLevel > 0}
               onChange={state => {
                 this.confirmIfMe(
                   col.user.id,
@@ -145,30 +170,25 @@ export default class WorkspacePartner extends Component {
         type: 'react-element',
         text: '',
         icon: 'edit',
-        reactElement: () => (
-          <div className="editLevel">
-            <Switch
-              disabled={workspacesUsers.updateLevelUserLoading[col.user.id]}
-              label={Languages.t('scenes.app.popup.workspaceparameter.pages.administrater_status')}
-              value={col.level === adminLevelId}
-              onChange={state =>
-                this.confirmIfMe(
-                  col.user.id,
-                  {
-                    text: Languages.t(
-                      'scenes.app.popup.workspaceparameter.pages.modify_level',
-                      [],
-                      "Modifier votre niveau d'accès à l'entreprise ? (cette action n'est pas réversible si vous réduisez vos droits d'accès)",
-                    ),
-                  },
-                  () => {
-                    workspacesUsers.updateUserLevel(col.user.id, state);
-                  },
-                )
-              }
-            />
-          </div>
-        ),
+        reactElement: <AdminSwitch 
+          col={col}
+          adminLevelId={adminLevelId}
+          onChange={state =>
+            this.confirmIfMe(
+              col.user.id,
+              {
+                text: Languages.t(
+                  'scenes.app.popup.workspaceparameter.pages.modify_level',
+                  [],
+                  "Modifier votre niveau d'accès à l'entreprise ? (cette action n'est pas réversible si vous réduisez vos droits d'accès)",
+                ),
+              },
+              () => {
+                workspacesUsers.updateUserLevel(col.user.id, state);
+              },
+            )
+          } 
+        />
       },
       {
         type: 'text',
