@@ -32,7 +32,7 @@ export default (): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
     return { companyId, workspaceId };
   });
-
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   popupService.useListener(useState);
   Workspaces.useListener(useState);
   Languages.useListener(useState);
@@ -62,10 +62,17 @@ export default (): JSX.Element => {
               collapsedWidth="0"
               theme="light"
               width={290}
+              onCollapse={(collapsed, type) => {
+                if(type === 'responsive'){
+                  setMenuIsOpen(false);
+                  return;
+                }
+                setMenuIsOpen(!collapsed);
+              }}
             >
               <SideBars />
             </Layout.Sider>
-            <MainView key={'mainview-' + companyId + '-' + workspaceId} />
+            <MainView className={menuIsOpen ? "collapsed" : ""} key={'mainview-' + companyId + '-' + workspaceId} />
           </Layout>
         </Layout>
       );

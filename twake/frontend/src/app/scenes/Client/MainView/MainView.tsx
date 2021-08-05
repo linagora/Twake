@@ -12,7 +12,11 @@ import { useWatcher } from 'app/services/Observable/Observable';
 import AccountStatusComponent from 'app/components/OnBoarding/AccountStatusComponent';
 import CompanyBillingBanner from 'app/components/OnBoarding/CompanyBillingBanner';
 
-const MainView: FC = () => {
+type PropsType = {
+  className?: string;
+}
+
+const MainView: FC<PropsType> = ({ className }) => {
   const { companyId, workspaceId, channelId } = RouterServices.useRouteState(
     ({ companyId, workspaceId, channelId }) => {
       return { companyId, workspaceId, channelId };
@@ -33,7 +37,7 @@ const MainView: FC = () => {
   }
 
   return (
-    <Layout className="global-view-layout">
+    <Layout className={"global-view-layout "+(className ? className : "")}>
       {!!channelId && ready && (
         <>
           <AccountStatusComponent />
