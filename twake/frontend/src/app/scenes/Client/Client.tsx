@@ -20,13 +20,13 @@ import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import LoginService from 'services/login/login';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
-import RouterServices from 'app/services/RouterService';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
+import useRouteState from 'app/services/hooks/useRouteState';
 
 import './Client.scss';
 
 export default (): JSX.Element => {
-  const { companyId, workspaceId } = RouterServices.useRouteState();
+  const { companyId, workspaceId } = useRouteState(({ companyId, workspaceId }) => ({ companyId, workspaceId }));
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   popupService.useListener(useState);

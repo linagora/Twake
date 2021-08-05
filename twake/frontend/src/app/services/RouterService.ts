@@ -118,10 +118,10 @@ class RouterServices extends Observable {
     });
   }
 
-  useRouteState(filter?: (state: ClientStateType) => ClientStateType): ClientStateType {
+  useRouteState(observedScope?: (state: ClientStateType) => ClientStateType): ClientStateType {
     return this.useWatcher(() => {
       const state = this.getStateFromRoute();
-      return filter ? filter(state) : state;
+      return observedScope ? observedScope(state) : state;
     });
   }
 

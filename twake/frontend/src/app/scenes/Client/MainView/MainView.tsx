@@ -1,5 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React, { FC } from 'react';
-import RouterServices from 'app/services/RouterService';
 import { Layout } from 'antd';
 
 import MainHeader from './MainHeader/MainHeader';
@@ -9,6 +9,7 @@ import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import { useWatcher } from 'app/services/Observable/Observable';
 import AccountStatusComponent from 'app/components/OnBoarding/AccountStatusComponent';
 import CompanyBillingBanner from 'app/components/OnBoarding/CompanyBillingBanner';
+import useRouteState from 'app/services/hooks/useRouteState';
 
 import './MainView.scss';
 
@@ -17,7 +18,7 @@ type PropsType = {
 }
 
 const MainView: FC<PropsType> = ({ className }) => {
-  const { companyId, workspaceId, channelId } = RouterServices.useRouteState();
+  const { companyId, workspaceId, channelId } = useRouteState(({ companyId, workspaceId, channelId }) => ({ companyId, workspaceId, channelId }));
   const loaded = useWatcher(ChannelsBarService, () => {
     return (
       ChannelsBarService.isReady(companyId, workspaceId) &&

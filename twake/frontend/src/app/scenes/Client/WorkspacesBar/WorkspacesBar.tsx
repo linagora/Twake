@@ -7,12 +7,12 @@ import Groups from 'services/workspaces/groups.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Group from './Components/Group.js';
 import Workspace from './Components/Workspace.js';
-import RouterServices from 'app/services/RouterService';
+import useRouteState from 'app/services/hooks/useRouteState';
 
 import './WorkspacesBar.scss';
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useRouteState();
+  const { companyId, workspaceId } = useRouteState(({ companyId, workspaceId }) => ({ companyId, workspaceId }));
 
   Workspaces.useListener();
   Groups.useListener();
