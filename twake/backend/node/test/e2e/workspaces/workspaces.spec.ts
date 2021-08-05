@@ -316,7 +316,7 @@ describe("The /workspaces API", () => {
       done();
     });
 
-    it("should 404 when not workspace not found", async done => {
+    it("should 403 when not workspace not found", async done => {
       const companyId = testDbService.company.id;
       const userId = testDbService.workspaces[0].users[0].id;
 
@@ -329,7 +329,7 @@ describe("The /workspaces API", () => {
         payload: { resource: {} },
       });
 
-      expect(response.statusCode).toBe(404);
+      expect(response.statusCode).toBe(403);
 
       done();
     });
