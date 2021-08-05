@@ -1,24 +1,21 @@
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
-
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout } from 'antd';
+
 import Groups from 'services/workspaces/groups.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Group from './Components/Group.js';
 import Workspace from './Components/Workspace.js';
-import ElectronService from 'services/electron/electron.js';
-import './WorkspacesBar.scss';
-
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import RouterServices from 'app/services/RouterService';
 
+import './WorkspacesBar.scss';
+
 export default () => {
-  const { companyId, workspaceId } = RouterServices.useRouteState(({ companyId, workspaceId }) => {
-    return { companyId, workspaceId };
-  });
+  const { companyId, workspaceId } = RouterServices.useRouteState();
 
   Workspaces.useListener();
   Groups.useListener();
-
   Workspaces.initSelection();
 
   return (
