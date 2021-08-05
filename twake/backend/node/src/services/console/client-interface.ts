@@ -29,6 +29,7 @@ export interface ConsoleServiceClient {
    *
    * @param company
    * @param user
+   * @param inviter
    */
   addUserToCompany(company: ConsoleCompany, user: CreateConsoleUser): Promise<CreatedConsoleUser>;
 
