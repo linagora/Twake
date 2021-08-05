@@ -49,10 +49,7 @@
     "cassandra": {
       "contactPoints": "DB_CASSANDRA_URI",
       "localDataCenter": "DB_CASSANDRA_LOCALDATACENTER",
-      "keyspace": "DB_CASSANDRA_KEYSPACE",
-      "elasticsearch": {
-        "endpoint": "DB_ES_ENDPOINT"
-      }
+      "keyspace": "DB_CASSANDRA_KEYSPACE"
     }
   },
   "search": {
