@@ -13,14 +13,9 @@ COPY . .
 # Development Stage
 FROM node-base as development
 
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
 RUN npm install
 COPY . .
 RUN npm run build
-EXPOSE 3000
-EXPOSE 9229
-CMD ["npm", "run", "dev:debug"]
 
 # Production Stage
 FROM node-base as production
@@ -30,5 +25,7 @@ ENV NODE_ENV=${NODE_ENV}
 RUN npm install --only=production
 COPY . .
 COPY --from=development /usr/src/app/dist ./dist
+
 EXPOSE 3000
+
 CMD ["npm", "run", "serve"]
