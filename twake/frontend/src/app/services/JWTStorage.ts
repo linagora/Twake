@@ -1,6 +1,7 @@
 import LocalStorage from 'services/LocalStorage';
 import LoginService from 'services/login/login';
 import WindowService from 'services/utils/window';
+import { TwakeService } from './Decorators/TwakeService';
 
 export type JWTDataType = {
   time: 0;
@@ -16,7 +17,8 @@ if ((WindowService.findGetParameter('mobile_login') as any) === '1') {
   LocalStorage.setItem('mobile_login', '1');
 }
 
-class JWTStorageClass {
+@TwakeService('JWTStorageService')
+class JWTStorage {
   private timeDelta = 5 * 60;
   private jwtData: JWTDataType = {
     time: 0,
@@ -29,7 +31,6 @@ class JWTStorageClass {
 
   async init() {
     this.updateJWT((await LocalStorage.getItem('jwt')) as JWTDataType, { fromLocalStorage: true });
-    (window as any).JWTStorage = this;
   }
 
   clear() {
@@ -97,5 +98,4 @@ class JWTStorageClass {
   }
 }
 
-const JWTStorage = new JWTStorageClass();
-export default JWTStorage;
+export default new JWTStorage();
