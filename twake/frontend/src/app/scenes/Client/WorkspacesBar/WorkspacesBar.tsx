@@ -3,16 +3,16 @@ import React from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout } from 'antd';
 
-import Groups from 'services/workspaces/groups.js';
-import Workspaces from 'services/workspaces/workspaces.js';
-import Group from './Components/Group.js';
-import Workspace from './Components/Workspace.js';
+import Groups from 'services/workspaces/groups';
+import Workspaces from 'services/workspaces/workspaces';
+import Group from './Components/Group/Group';
+import Workspace from './Components/Workspace/Workspace';
 import useRouteState from 'app/services/hooks/useRouteState';
 
 import './WorkspacesBar.scss';
 
 export default () => {
-  const { companyId, workspaceId } = useRouteState(({ companyId, workspaceId }) => ({ companyId, workspaceId }));
+  const { workspaceId, companyId } = useRouteState(({ workspaceId, companyId }) => ({ workspaceId, companyId }));
 
   Workspaces.useListener();
   Groups.useListener();
@@ -25,8 +25,7 @@ export default () => {
           <Workspace key={item.id} workspace={item} isSelected={workspaceId === item.id} />
         ))}
       </PerfectScrollbar>
-
-      <Group selected={companyId} />
+      <Group/>
     </Layout.Sider>
   );
 };
