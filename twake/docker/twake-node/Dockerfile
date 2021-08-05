@@ -15,7 +15,14 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
+
+EXPOSE 3000
+EXPOSE 9229
+
+CMD ["npm", "run", "dev:debug"]
 
 # Production Stage
 
