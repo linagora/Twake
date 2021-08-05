@@ -385,7 +385,7 @@ describe("The /workspaces API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            name: "Random channel name",
+            name: "Another channel name",
             logo: "logo",
             default: false,
             archived: false,
@@ -400,7 +400,7 @@ describe("The /workspaces API", () => {
       expect(resource).toMatchObject({
         id: workspaceId,
         company_id: companyId,
-        name: "Random channel name",
+        name: "Another channel name",
         logo: "logo",
         default: false,
         archived: false,
@@ -423,8 +423,9 @@ describe("The /workspaces API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            name: null,
+            name: "My awesome workspace",
             default: true,
+            logo: "workspace_logo",
           },
         },
       });
@@ -436,7 +437,7 @@ describe("The /workspaces API", () => {
       expect(resource).toMatchObject({
         id: workspaceId,
         company_id: companyId,
-        name: "",
+        name: "My awesome workspace",
         logo: "workspace_logo",
         default: true,
         archived: false,

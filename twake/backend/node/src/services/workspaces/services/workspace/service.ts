@@ -103,8 +103,8 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       ...{
         name: "",
         dateAdded: Date.now(),
-        isDeleted: false,
         isArchived: false,
+        isDefault: false,
       },
     });
 
@@ -123,8 +123,8 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     workspace = merge(workspace, {
       name: await this.getWorkspaceName(item.name, context.company_id),
       logo: item.logo,
-      isDeleted: item.isDeleted,
       isArchived: item.isArchived,
+      isDefault: item.isDefault,
     });
 
     await this.workspaceRepository.save(workspace);
