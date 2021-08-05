@@ -6,7 +6,6 @@ import LocalStorage from 'app/services/LocalStorage';
 /** Collection
  * Act like a doctrine repository and try to be allways in sync with server in realtime
  */
-import Globals from 'services/Globals';
 
 export default class Collection extends Observable {
   constructor(options) {
@@ -959,71 +958,72 @@ export default class Collection extends Observable {
 
   updateCache() {
     if (this.use_cache) {
-      var collection_cache_key = this.base_url + '/' + this.collection_id;
-      LocalStorage.getItem('collections_cache', collections_cache => {
-        try {
-          collections_cache = JSON.parse(collections_cache) || {};
-        } catch (e) {
-          collections_cache = {};
-        }
-        collections_cache[collection_cache_key] = {
-          objects: this.known_objects_by_front_id,
-          last_updated: new Date().getTime(),
-        };
-        LocalStorage.setItem('collections_cache', JSON.stringify(collections_cache));
-      });
+      const collection_cache_key = this.base_url + '/' + this.collection_id;
+      const collections_cache = this._getFromLocalStorage();
+
+      collections_cache[collection_cache_key] = {
+        objects: this.known_objects_by_front_id,
+        last_updated: new Date().getTime(),
+      };
+      LocalStorage.setItem('collections_cache', collections_cache);
     }
   }
 
   retrieveCache() {
-    var that = this;
-    LocalStorage.getItem('collections_cache', collections_cache => {
-      try {
-        collections_cache = JSON.parse(collections_cache) || {};
-      } catch (e) {
-        collections_cache = {};
+    let that = this;
+    let changes = false;
+    const collections_cache = this._getFromLocalStorage();
+    const collection_cache_key = this.base_url + '/' + this.collection_id;
+
+    //Read all cached lists and remove too old caches
+    Object.keys(collections_cache).forEach(item_key => {
+      var item = collections_cache[item_key];
+      if (
+        new Date().getTime() - item.last_updated > 20 * 24 * 60 * 60 * 1000 || //more than 20 days
+        (item_key === collection_cache_key && !this.use_cache) //Cache disabled but present in collection cache
+      ) {
+        //Remove cache data
+        delete collections_cache[item_key];
+        changes = true;
       }
-
-      var collection_cache_key = this.base_url + '/' + this.collection_id;
-
-      var changes = false;
-      //Read all cached lists and remove too old caches
-      Object.keys(collections_cache).forEach(item_key => {
-        var item = collections_cache[item_key];
-        if (
-          new Date().getTime() - item.last_updated > 20 * 24 * 60 * 60 * 1000 || //more than 20 days
-          (item_key === collection_cache_key && !this.use_cache) //Cache disabled but present in collection cache
-        ) {
-          //Remove cache data
-          delete collections_cache[item_key];
-          changes = true;
+      Object.values(item.objects).forEach(itemOfList => {
+        if (itemOfList._failed || itemOfList._retrying) {
+          that.retry(itemOfList);
         }
-        Object.values(item.objects).forEach(itemOfList => {
-          if (itemOfList._failed || itemOfList._retrying) {
-            that.retry(itemOfList);
-          }
-        });
       });
-
-      if (changes) {
-        Globals.localStorageSetItem('collections_cache', JSON.stringify(collections_cache));
-      }
-
-      if (this.use_cache && collections_cache[collection_cache_key]) {
-        var objects = collections_cache[collection_cache_key].objects;
-        Object.keys(objects).forEach(front_id => {
-          var item = objects[front_id];
-          // this.clearObjectState(item);
-          item._cached = true;
-          item._loaded = false;
-          item._cached_from = item._loaded_from;
-          item._loaded_from = null;
-          this.completeObject(item, item.front_id);
-        });
-        this._last_get_generated_list = undefined;
-        this.notify();
-      }
     });
+
+    if (changes) {
+      LocalStorage.setItem('collections_cache', collections_cache);
+    }
+
+    if (this.use_cache && collections_cache[collection_cache_key]) {
+      var objects = collections_cache[collection_cache_key].objects;
+      Object.keys(objects).forEach(front_id => {
+        var item = objects[front_id];
+        // this.clearObjectState(item);
+        item._cached = true;
+        item._loaded = false;
+        item._cached_from = item._loaded_from;
+        item._loaded_from = null;
+        this.completeObject(item, item.front_id);
+      });
+      this._last_get_generated_list = undefined;
+      this.notify();
+    }
+  }
+
+  _getFromLocalStorage() {
+    let collections_cache = LocalStorage.getItem('collections_cache');
+
+    if (!collections_cache) {
+      collections_cache = {};
+    }
+    if (typeof collections_cache === 'string') {
+      collections_cache = JSON.parse(collections_cache);
+    }
+
+    return collections_cache;
   }
 
   updateObject(updated, front_id) {

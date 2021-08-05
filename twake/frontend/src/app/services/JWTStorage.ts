@@ -30,7 +30,7 @@ class JWTStorage {
   };
 
   async init() {
-    this.updateJWT((await LocalStorage.getItem('jwt')) as JWTDataType, { fromLocalStorage: true });
+    this.updateJWT(LocalStorage.getItem<JWTDataType>('jwt') as JWTDataType, { fromLocalStorage: true });
   }
 
   clear() {
@@ -50,14 +50,14 @@ class JWTStorage {
     }
 
     //Mobile temporary
-    LocalStorage.getItem('mobile_login', (res: string) => {
-      LocalStorage.setItem('mobile_login', '0');
-      if (res === '1') {
-        document.location.replace(
-          '/internal/mobile/login/redirect?jwt=' + encodeURI(JSON.stringify(jwtData)),
-        );
-      }
-    });
+    const mobileLogin = LocalStorage.getItem<string>('mobile_login');
+
+    LocalStorage.setItem('mobile_login', '0');
+    if (mobileLogin === '1') {
+      document.location.replace(
+        '/internal/mobile/login/redirect?jwt=' + encodeURI(JSON.stringify(jwtData)),
+      );
+    }
 
     this.jwtData = jwtData;
     if (!options?.fromLocalStorage) {

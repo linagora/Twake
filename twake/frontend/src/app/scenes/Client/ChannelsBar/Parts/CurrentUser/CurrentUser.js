@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import {isRecoilValue} from 'recoil';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
@@ -27,9 +28,10 @@ export default class CurrentUser extends Component {
   constructor() {
     super();
 
+    this.users_repository = Collections.get('users');
+    this.i18n = Languages;
+
     this.state = {
-      i18n: Languages,
-      users_repository: Collections.get('users'),
       new_status: ['', ''],
     };
 
@@ -62,11 +64,13 @@ export default class CurrentUser extends Component {
     clearInterval(this.refreshUserState);
   }
   componentDidMount() {
-    var current_user = this.state.users_repository.known_objects_by_id[this.user_id];
-    if (!current_user.status_icon[0]) {
-      current_user.status_icon[1] = '';
+    const new_status = {...this.users_repository.known_objects_by_id[this.user_id].status_icon};
+
+    if (!new_status[0]) {
+      new_status[1] = '';
     }
-    this.setState({ new_status: current_user.status_icon });
+
+    this.setState({ new_status });
   }
   updateStatus(value) {
     value = value || this.state.new_status;
@@ -79,7 +83,7 @@ export default class CurrentUser extends Component {
     MenusManager.notify();
   }
   onClickUser(evt) {
-    var current_user = this.state.users_repository.known_objects_by_id[this.user_id];
+    var current_user = this.users_repository.known_objects_by_id[this.user_id];
     var usermenu = [
       {
         type: 'menu',
@@ -310,7 +314,7 @@ export default class CurrentUser extends Component {
   }
 
   render() {
-    var current_user = this.state.users_repository.known_objects_by_id[this.user_id];
+    var current_user = this.users_repository.known_objects_by_id[this.user_id];
 
     if (!current_user) {
       return '';

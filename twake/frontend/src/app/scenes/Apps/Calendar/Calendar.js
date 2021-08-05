@@ -167,14 +167,16 @@ export default class Calendar extends Component {
     this.loaded_date_range[key].max = max;
     this.loaded_date_range[key].last_updated = new Date();
   }
+
   componentDidMount() {
-    LocalStorage.getItem('calendar_view', res => {
-      if (res && this.calendar) {
-        this.setState({ view: res });
-        this.calendar.view(res);
-      }
-    });
+    const view = LocalStorage.getItem('calendar_view');
+
+    if (view && this.calendar) {
+      this.setState({ view });
+      this.calendar.view(view);
+    }
   }
+
   componentWillUnmount() {
     Collections.get('events').removeListener(this);
     Collections.get('events').removeSource(this.calendar_collection_key);

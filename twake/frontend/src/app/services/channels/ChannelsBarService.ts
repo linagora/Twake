@@ -3,6 +3,8 @@ import Observable from 'app/services/Observable/Observable';
 import { Collection } from '../CollectionsReact/Collections';
 import RouterService from '../RouterService';
 import { getMine } from './ChannelCollectionPath';
+import LocalStorage from 'app/services/LocalStorage';
+
 class ChannelsBarService extends Observable {
   private callbacks = new Map<string, (state: boolean) => void>();
   private ready = new Map<string, boolean>();
@@ -52,11 +54,11 @@ class ChannelsBarService extends Observable {
     workspaceId: string = '',
     channelId: string = '',
   ): void {
-    localStorage.setItem(this.getLocalStorageKey(companyId, workspaceId), channelId);
+    LocalStorage.setItem(this.getLocalStorageKey(companyId, workspaceId), channelId);
   }
 
   async autoSelectChannel(companyId: string = '', workspaceId: string = ''): Promise<void> {
-    let channelId = localStorage.getItem(this.getLocalStorageKey(companyId, workspaceId));
+    let channelId = LocalStorage.getItem<string>(this.getLocalStorageKey(companyId, workspaceId));
 
     if (!channelId) {
       const channelsCollection = Collection.get(getMine(companyId, workspaceId), ChannelResource);

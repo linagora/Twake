@@ -52,11 +52,11 @@ class TwakeApp {
       }
     });
 
-    LocalStorage.getItem('api_root_url', (res: string) => {
-      if (res) {
-        this.api_root_url = res;
-      }
-    });
+    const apiRootUrl = LocalStorage.getItem<string>('api_root_url');
+
+    if (apiRootUrl) {
+      this.api_root_url = apiRootUrl;
+    }
 
     this.store_public_access_get_data = undefined;
   }
