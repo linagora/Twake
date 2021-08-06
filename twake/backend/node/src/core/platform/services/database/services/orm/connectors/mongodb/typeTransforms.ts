@@ -59,7 +59,7 @@ export const transformValueToDbString = (
   }
 
   if (type === "counter") {
-    if (isNaN(v)) throw Error("Counter value should be a number");
+    if (isNaN(v)) throw new Error("Counter value should be a number");
     return +v;
   }
 
@@ -96,7 +96,7 @@ export const transformValueFromDbString = (v: any, type: string, options: any = 
   }
 
   if (type === "counter") {
-    return Number(v).valueOf();
+    return new Number(v).valueOf();
   }
 
   return v;

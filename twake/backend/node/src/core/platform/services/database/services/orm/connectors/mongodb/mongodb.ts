@@ -85,8 +85,8 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         const primaryKey = unwrapPrimarykey(entityDefinition);
 
         //Set updated content
-        const set = new Map<string, any>();
-        const inc = new Map<string, number>();
+        const set: any = {};
+        const inc: any = {};
         Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
           .filter(key => columnsDefinition[key].nodename !== undefined)
@@ -102,27 +102,24 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
             );
 
             if (columnsDefinition[key].type === "counter") {
-              inc.set(key, value);
+              inc[key] = value;
             } else {
-              set.set(key, value);
+              set[key] = value;
             }
           });
 
         //Set primary key
-        const where = new Map<string, any>();
+        const where: any = {};
         primaryKey.forEach(key => {
-          where.set(
-            key,
-            transformValueToDbString(
-              entity[columnsDefinition[key].nodename],
-              columnsDefinition[key].type,
-              {
-                columns: columnsDefinition[key].options,
-                secret: this.secret,
-                disableSalts: true,
-                column: { key: key },
-              },
-            ),
+          where[key] = transformValueToDbString(
+            entity[columnsDefinition[key].nodename],
+            columnsDefinition[key].type,
+            {
+              columns: columnsDefinition[key].options,
+              secret: this.secret,
+              disableSalts: true,
+              column: { key: key },
+            },
           );
         });
 
