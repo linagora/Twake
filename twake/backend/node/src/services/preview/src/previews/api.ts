@@ -10,6 +10,7 @@ export interface PreviewServiceAPI {
     mime: string,
     inputPath: string,
     outputPath: string,
-    numberOfPages: number
+    outputExtension: string,
+    numberOfPages: number,
   ): any;
 }
