@@ -50,7 +50,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       const insertedChannel = ChannelsCollections.findOne(channel.id, { withoutBackend: true });
       insertedChannel.data = _.assign(insertedChannel.data, {
         name: newChannel.name || channel.data.name,
-        description: newChannel.description || channel.data.description,
+        description: newChannel.description,
         icon: newChannel.icon || channel.data.icon,
         is_default: newChannel.is_default || false,
         visibility:
