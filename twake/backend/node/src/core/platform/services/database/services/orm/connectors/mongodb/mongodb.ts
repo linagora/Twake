@@ -124,12 +124,17 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
         });
 
         const collection = db.collection(`${entityDefinition.name}`);
+
+        const updateObject = { $set: { ...where, ...set } } as any;
+
+        if (Object.keys(inc)) {
+          updateObject.$inc = inc;
+        }
+
         promises.push(
-          collection.updateOne(
-            where,
-            { $set: { ...where, ...set }, $inc: inc },
-            { upsert: true },
-          ) as Promise<mongo.UpdateResult>,
+          collection.updateOne(where, updateObject, {
+            upsert: true,
+          }) as Promise<mongo.UpdateResult>,
         );
       });
 
