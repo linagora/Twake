@@ -992,7 +992,6 @@
     "components.calendar.repetition.day4": "T",
     "components.calendar.repetition.day5": "F",
     "components.calendar.repetition.day6": "S",
-    "scenes.app.channelsbar.currentuser.": "",
     "scenes.app.channelsbar.currentuser.add_apps": "Search applications",
     "scenes.app.channelsbar.currentuser.add_collaboraters_menu": "",
     "scenes.app.channelsbar.currentuser.change_my_status": "Change my status",
@@ -1714,8 +1713,7 @@
     "scenes.apps.drive.new_link_title": "New link",
     "scenes.apps.drive.default_link_name": "Untitled",
     "components.emoji_picker.input_search_placeholder": "Search",
-    "services.apps.messages.message_editor_service.upload_error_toaster":
-    "{{$1}} - You can not add more than {{$2}} files in a message",
+    "services.apps.messages.message_editor_service.upload_error_toaster": "{{$1}} - You can not add more than {{$2}} files in a message",
     "scenes.apps.messages.message.parts.deleted_content.text.current_user": "You deleted this message",
     "scenes.apps.messages.message.parts.deleted_content.text": "{{$1}} deleted his message",
     "components.member.user_parts.and_more_user_text": " and {{$1}} more users",
