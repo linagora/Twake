@@ -94,7 +94,7 @@
     "@sentry/node": "^6.2.0",
     "@sentry/tracing": "^6.2.0",
     "@types/fastify-multipart": "^0.7.0",
-    "@types/mongodb": "^3.6.15",
+    "@types/mongodb": "^3.6.20",
     "@types/node-fetch": "^2.5.10",
     "@types/node-uuid": "^0.0.28",
     "amqp-connection-manager": "^3.2.1",
