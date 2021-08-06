@@ -24,7 +24,7 @@ export class DirectChannel {
    * uuid-v4
    */
   @Type(() => String)
-  @Column("channel_id", "uuid", { generator: "uuid" })
+  @Column("channel_id", "string")
   channel_id: string;
 
   /**

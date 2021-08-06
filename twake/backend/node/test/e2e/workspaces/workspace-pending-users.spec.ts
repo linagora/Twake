@@ -1,7 +1,26 @@
-import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it as _it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService, uuid } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
+import { ConsoleServiceAPI } from "../../../src/services/console/api";
+import { ConsoleType } from "../../../src/services/console/types";
+
+/*
+ THIS TESTS RUNS ONLY FOR THE CONSOLE-MODE (CONSOLE TYPE: INTERNAL)
+*/
+
+let consoleType: ConsoleType = null;
+
+export const it = (name: string, cb: (a: any) => void) => {
+  _it(name, async done => {
+    if (consoleType === "internal") {
+      cb(done);
+    } else {
+      console.warn(`[skipped]: ${name} (no-console mode only)`);
+      done();
+    }
+  });
+};
 
 describe("The /workspace/pending users API", () => {
   const url = "/internal/services/workspaces/v1";
@@ -17,14 +36,24 @@ describe("The /workspace/pending users API", () => {
   const thirdEmail = "third@test-user.com";
   const emailForExistedUser = "exist@email.com";
 
+  async function doTheTest() {
+    return Promise.resolve(consoleType === "remote");
+  }
+
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth"],
+      services: [
+        "database",
+        "pubsub",
+        "webserver",
+        "user",
+        "search",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
 
-    if ((platform.database as any).type == "mongodb") {
-      await platform.database.getConnector().drop();
-    }
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
@@ -32,9 +61,17 @@ describe("The /workspace/pending users API", () => {
     const ws1pk = { id: uuidv1(), group_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
-    await testDbService.createUser([ws0pk], "member", "admin");
-    await testDbService.createUser([ws0pk], "member", "member");
-    await testDbService.createUser([ws1pk], "member", "member", emailForExistedUser);
+    await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "admin" });
+    await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "member" });
+    await testDbService.createUser([ws1pk], {
+      companyRole: "member",
+      workspaceRole: "member",
+      email: emailForExistedUser,
+    });
+
+    const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
+    consoleType = console.consoleType;
+
     ends();
   });
 

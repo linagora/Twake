@@ -3,7 +3,7 @@ import Collection from 'app/services/Depreciated/Collections/Collection';
 import Numbers from 'services/utils/Numbers';
 import Observable from 'app/services/Depreciated/observable';
 import Logger from 'app/services/Logger';
-import { Message } from './Message';
+import { Message } from '../../../models/Message';
 import {
   FeedLoader,
   NextParameters,
@@ -314,6 +314,8 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       )
       // remove ephemeral messages
       .filter(message => !message._user_ephemeral)
+      // remove init_channel messages
+      .filter(message => message.hidden_data?.type !== 'init_channel')
       // sort them by creation date
       .sort((a, b) => (a?.creation_date || 0) - (b?.creation_date || 0));
 
@@ -331,6 +333,17 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         }
         return true;
       });
+    }
+
+    if (this.threadId) {
+      const initThreadMessage = MessageHistoryService.getInitThreadMessageObject({
+        thread_id: this.threadId,
+        channel_id: this.channel.id,
+      });
+      messages = [initThreadMessage, ...messages];
+    } else {
+      const initChannelMessage = MessageHistoryService.getInitChannelMessageObject(this.channel.id);
+      messages = [...(this.topHasBeenReached ? [initChannelMessage] : []), ...messages];
     }
 
     return messages;
@@ -464,16 +477,16 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       this.lastMessageOffset,
       '00000000-0000-1000-0000-000000000000',
     );
-    messages.forEach(m => {
-      if (m.hidden_data?.type === 'init_channel') {
-        this.topHasBeenReached = true;
-      }
-      this.setLastMessageId(m);
-      this.setFirstMessageId(m);
-      this.setLastThreadId(m);
-      this.lastMessageOffset = Numbers.maxTimeuuid(this.lastMessageOffset, m.id);
-      this.firstMessageOffset = Numbers.minTimeuuid(this.firstMessageOffset, m.id);
-    });
+
+    messages.length === 0
+      ? (this.topHasBeenReached = true)
+      : messages.forEach(m => {
+          this.setLastMessageId(m);
+          this.setFirstMessageId(m);
+          this.setLastThreadId(m);
+          this.lastMessageOffset = Numbers.maxTimeuuid(this.lastMessageOffset, m.id);
+          this.firstMessageOffset = Numbers.minTimeuuid(this.firstMessageOffset, m.id);
+        });
 
     if (wasAtEnd) {
       this.lastMessageOfTheStream = Numbers.maxTimeuuid(
@@ -490,14 +503,13 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
    * @param messages
    */
   private updateFirstLast(messages: Message[] = []): void {
-    messages.forEach(m => {
-      if (m.hidden_data?.type === 'init_channel') {
-        this.topHasBeenReached = true;
-      }
-      // TODO: update the last thread
-      this.setLastMessageId(m);
-      this.setFirstMessageId(m);
-    });
+    messages.length === 0
+      ? (this.topHasBeenReached = true)
+      : messages.forEach(m => {
+          // TODO: update the last thread
+          this.setLastMessageId(m);
+          this.setFirstMessageId(m);
+        });
   }
 
   private printCursors(label: string = '') {

@@ -1,5 +1,0 @@
-package-lock.json
-/node_modules
-/dist
-private
-config/production.json

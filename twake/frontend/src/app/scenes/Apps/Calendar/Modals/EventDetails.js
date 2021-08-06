@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import moment from 'moment';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
@@ -71,13 +71,13 @@ export default class EventDetails extends Component {
       'ddd Do MMMM YYYY' + (event.all_day ? '' : ', ' + DateTimeUtils.getDefaultTimeFormat()),
     );
     var to_formatted =
-      (!event.type || event.type == 'event' || event.type == 'move') &&
+      (!event.type || event.type === 'event' || event.type === 'move') &&
       !isNaN(event.to) &&
       moment(to).format(
-        (moment(to).format('D_M_YYYY') != moment(from).format('D_M_YYYY')
+        (moment(to).format('D_M_YYYY') !== moment(from).format('D_M_YYYY')
           ? 'ddd Do ' +
-            (moment(to).format('M_YYYY') != moment(from).format('M_YYYY')
-              ? 'MMMM ' + (moment(to).format('YYYY') != moment(from).format('YYYY') ? 'YYYY' : '')
+            (moment(to).format('M_YYYY') !== moment(from).format('M_YYYY')
+              ? 'MMMM ' + (moment(to).format('YYYY') !== moment(from).format('YYYY') ? 'YYYY' : '')
               : '') +
             (event.all_day ? '' : ', ')
           : '') + (event.all_day ? '' : DateTimeUtils.getDefaultTimeFormat()) || '[]',
@@ -94,7 +94,7 @@ export default class EventDetails extends Component {
     return (
       <div className="eventModal event_details" style={{ padding: '16px' }}>
         <div className="title">
-          {event.title || Languages.t('scenes.apps.calendar.modals.untitled', [], 'Sans titre')}
+          {event.title || Languages.t('scenes.apps.drive.navigators.new_file.untitled')}
         </div>
         <div className="subtitle date">
           <Icon type="clock" />
@@ -136,14 +136,14 @@ export default class EventDetails extends Component {
                       </div>
                     )}
 
-                    {event.location && (event.location || '').slice(0, 4) != 'http' && (
+                    {event.location && (event.location || '').slice(0, 4) !== 'http' && (
                       <div className="subtitle location bottom-margin">
                         <Icon type="location-point" style={{ marginRight: 4 }} />
                         {event.location}
                       </div>
                     )}
 
-                    {event.location && (event.location || '').slice(0, 4) == 'http' && (
+                    {event.location && (event.location || '').slice(0, 4) === 'http' && (
                       <div
                         onClick={() => {
                           var separator = '?';
@@ -167,6 +167,7 @@ export default class EventDetails extends Component {
                         }}
                       >
                         <Icon type="link" style={{ marginRight: 4 }} />
+                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                         <a>
                           {Languages.t('scenes.apps.calendar.video_link', [], 'Click to open link')}{' '}
                           - {event.location}

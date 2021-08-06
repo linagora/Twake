@@ -9,13 +9,24 @@ describe("The /workspaces API", () => {
 
   let testDbService: TestDbService;
 
-  const nonExistentId = "11111111-1111-1111-1111-111111111111";
-  const companyId = "21111111-1111-1111-1111-111111111111";
+  const nonExistentId = uuidv1();
+  let companyId = "";
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "user", "workspaces", "auth"],
+      services: [
+        "database",
+        "pubsub",
+        "webserver",
+        "user",
+        "search",
+        "workspaces",
+        "auth",
+        "console",
+      ],
     });
+
+    companyId = platform.workspace.company_id;
 
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
@@ -27,9 +38,9 @@ describe("The /workspaces API", () => {
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createWorkspace(ws2pk);
     await testDbService.createUser([ws0pk, ws1pk]);
-    await testDbService.createUser([ws2pk], "admin");
-    await testDbService.createUser([ws2pk], undefined, "admin");
-    await testDbService.createUser([], "guest");
+    await testDbService.createUser([ws2pk], { companyRole: "admin" });
+    await testDbService.createUser([ws2pk], { companyRole: undefined, workspaceRole: "admin" });
+    await testDbService.createUser([], { companyRole: "guest" });
     ends();
   });
 
@@ -305,7 +316,7 @@ describe("The /workspaces API", () => {
       done();
     });
 
-    it("should 404 when not workspace not found", async done => {
+    it("should 403 when not workspace not found", async done => {
       const companyId = testDbService.company.id;
       const userId = testDbService.workspaces[0].users[0].id;
 
@@ -318,7 +329,7 @@ describe("The /workspaces API", () => {
         payload: { resource: {} },
       });
 
-      expect(response.statusCode).toBe(404);
+      expect(response.statusCode).toBe(403);
 
       done();
     });
@@ -374,7 +385,7 @@ describe("The /workspaces API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            name: "Random channel name",
+            name: "Another channel name",
             logo: "logo",
             default: false,
             archived: false,
@@ -389,7 +400,7 @@ describe("The /workspaces API", () => {
       expect(resource).toMatchObject({
         id: workspaceId,
         company_id: companyId,
-        name: "Random channel name",
+        name: "Another channel name",
         logo: "logo",
         default: false,
         archived: false,
@@ -412,8 +423,9 @@ describe("The /workspaces API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            name: null,
+            name: "My awesome workspace",
             default: true,
+            logo: "workspace_logo",
           },
         },
       });
@@ -425,7 +437,7 @@ describe("The /workspaces API", () => {
       expect(resource).toMatchObject({
         id: workspaceId,
         company_id: companyId,
-        name: "",
+        name: "My awesome workspace",
         logo: "workspace_logo",
         default: true,
         archived: false,

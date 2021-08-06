@@ -73,15 +73,15 @@ export default class AutoComplete extends Component<Props, State> {
       key &&
       this.currentRegexUsed >= 0 &&
       this.state.currentList.length > 0 &&
-      (key == 13 || key == 9 || key == 38 || key == 40)
+      (key === 13 || key === 9 || key === 38 || key === 40)
     ) {
       ev.preventDefault();
       ev.stopPropagation();
     }
-    if (key == 27 && !this.is_open && this.props.onEscape) {
+    if (key === 27 && !this.is_open && this.props.onEscape) {
       this.props.onEscape();
     }
-    if (key == 27 && this.is_open && this.props.onHide) {
+    if (key === 27 && this.is_open && this.props.onHide) {
       this.is_open = false;
       this.props.onHide();
     }
@@ -89,33 +89,33 @@ export default class AutoComplete extends Component<Props, State> {
   keyUp(ev: any) {
     let key = ev.which;
     let allText = this.getValueBeforeCaret();
-    if (key == 8 && this.input.value.length == 0 && this.props.onBackspace) {
+    if (key === 8 && this.input.value.length === 0 && this.props.onBackspace) {
       this.props.onBackspace();
     }
     for (let i = 0; i < this.props.regexHooked.length; i++) {
       let text = allText.match(this.props.regexHooked[i]);
       if (text && allText) {
-        if (this.currentRegexUsed < 0 || this.currentRegexUsed != i) {
+        if (this.currentRegexUsed < 0 || this.currentRegexUsed !== i) {
           this.currentRegexUsed = i;
         }
         text = text[1] || '';
         if (
           key &&
           !this.props.disableNavigationKey &&
-          (key == 13 || key == 9 || key == 38 || key == 40) &&
+          (key === 13 || key === 9 || key === 38 || key === 40) &&
           this.state.currentList.length > 0
         ) {
           ev.preventDefault();
           ev.stopPropagation();
-          if (key == 13 || key == 9) {
+          if (key === 13 || key === 9) {
             //Select (enter)
             this.select((this.state.currentList || {})[this.state.selected]);
-          } else if (key == 38 || key == 40) {
+          } else if (key === 38 || key === 40) {
             //Up // down
             let nextState = 0;
             if (
-              (key == 38 && this.state.resultPosition == 'top') ||
-              (key == 40 && this.state.resultPosition == 'bottom')
+              (key === 38 && this.state.resultPosition === 'top') ||
+              (key === 40 && this.state.resultPosition === 'bottom')
             ) {
               nextState = (this.state.selected + 1) % this.state.currentList.length;
             } else {
@@ -217,7 +217,7 @@ export default class AutoComplete extends Component<Props, State> {
 
     let myValue = text;
 
-    if (this.input.selectionStart || this.input.selectionStart == '0') {
+    if (this.input.selectionStart || this.input.selectionStart === '0') {
       let startPos = this.input.selectionStart;
       let endPos = this.input.selectionEnd;
       this.input.value =
@@ -246,7 +246,7 @@ export default class AutoComplete extends Component<Props, State> {
     }
 
     let m = this.getValueBeforeCaret().match(this.props.regexHooked[this.currentRegexUsed]);
-    if (m == null) {
+    if (m === null) {
       return;
     }
     let alreadyTypedLength = m[0].length;
@@ -262,13 +262,13 @@ export default class AutoComplete extends Component<Props, State> {
     this.is_open = false;
   }
   setPositionResult() {
-    if (this.input && this.state.resultPosition == '' && this.state.currentList.length > 0) {
+    if (this.input && this.state.resultPosition === '' && this.state.currentList.length > 0) {
       let size = this.state.currentList.length * 32 + 5;
       if (
         //@ts-ignore
         document.documentElement.clientHeight - window.getBoundingClientRect(this.input).bottom <
           size ||
-        this.props.position == 'top'
+        this.props.position === 'top'
       ) {
         this.setState({ resultPosition: 'top' });
       } else {
@@ -378,7 +378,7 @@ export default class AutoComplete extends Component<Props, State> {
                     className={
                       'menu ' +
                       (!this.props.disableNavigationKey &&
-                      item.autocomplete_id == this.state.selected
+                      item.autocomplete_id === this.state.selected
                         ? 'is_selected'
                         : '')
                     }

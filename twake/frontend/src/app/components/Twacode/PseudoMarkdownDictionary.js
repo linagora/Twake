@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import Emojione from 'components/Emojione/Emojione';
 import HighlightedCode from 'components/HighlightedCode/HighlightedCode.js';
-import File from 'components/Drive/File.js';
-import User from './blocks/User.js';
-import Chan from './blocks/Chan.js';
+import User from './blocks/User';
+import Chan from './blocks/Chan';
+import File from 'components/Drive/File';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import UserService from 'services/user/UserService';
 import Button from 'components/Buttons/Button.js';
@@ -83,6 +83,7 @@ class PseudoMarkdownDictionary {
         object: (child, object) => {
           if (!object.url && object.url !== undefined) {
             return (
+              // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a key={this.counter++} href="#">
                 {child}
               </a>
@@ -97,6 +98,7 @@ class PseudoMarkdownDictionary {
             url += separator + 'twake_user=' + UserService.getCurrentUser().id;
           }
           return (
+            // eslint-disable-next-line react/jsx-no-target-blank
             <a key={this.counter++} target="_blank" href={url}>
               {child}
             </a>
@@ -109,6 +111,7 @@ class PseudoMarkdownDictionary {
           const url = linkData[1] || '';
 
           return (
+            // eslint-disable-next-line react/jsx-no-target-blank
             <a href={this.setUrlProtocol(url)} target="_BLANK">
               {linkData[0]}
             </a>
@@ -117,6 +120,7 @@ class PseudoMarkdownDictionary {
       },
       email: {
         object: (child, object) => (
+          // eslint-disable-next-line react/jsx-no-target-blank
           <a key={this.counter++} target="_blank" href={'mailto:' + (object.content || '')}>
             {child}
           </a>
@@ -137,7 +141,12 @@ class PseudoMarkdownDictionary {
       },
       image: {
         object: (child, object, event_container) => (
-          <img key={this.counter++} src={object.src} className={'image twacode'} />
+          <img
+            key={this.counter++}
+            src={object.src}
+            alt={object.alt || ''}
+            className={'image twacode'}
+          />
         ),
       },
       icon: { object: (child, object) => <Emojione key={this.counter++} type={object.src} /> },
@@ -157,8 +166,8 @@ class PseudoMarkdownDictionary {
                 key={this.counter++}
                 className={
                   'interactive_element underline interactive_message_btn ' +
-                  (object.style == 'danger' ? 'danger ' : '') +
-                  (object.style == 'primary' ? 'primary ' : '')
+                  (object.style === 'danger' ? 'danger ' : '') +
+                  (object.style === 'primary' ? 'primary ' : '')
                 }
                 onClick={evt => {
                   if (object.action_id) {
@@ -182,8 +191,8 @@ class PseudoMarkdownDictionary {
               type="button"
               className={
                 'button interactive_element interactive_message_btn small ' +
-                (object.style == 'danger' ? 'danger ' : '') +
-                (object.style == 'default' ? 'default ' : '')
+                (object.style === 'danger' ? 'danger ' : '') +
+                (object.style === 'default' ? 'default ' : '')
               }
               onClick={evt => {
                 if (object.action_id) {
@@ -258,7 +267,7 @@ class PseudoMarkdownDictionary {
               }
             }}
           >
-            <option disabled selected={object.values.filter(e => e.selected).length == 0}>
+            <option disabled selected={object.values.filter(e => e.selected).length === 0}>
               {object.title}
             </option>
             {object.values.map(item => {

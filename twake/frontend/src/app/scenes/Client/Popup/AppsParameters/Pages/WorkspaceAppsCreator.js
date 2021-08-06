@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
-import Emojione from 'components/Emojione/Emojione';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Api from 'services/Api';
@@ -45,9 +44,7 @@ export default class WorkspaceAppsCreator extends Component {
 
       Api.post('market/app/create', data, res => {
         if (res.data && res.data.id) {
-          this.state.new_app_name = '';
-          this.state.new_app_simple_name = '';
-          this.state.new_app_group_name = '';
+          this.setState({ new_app_name: '', new_app_simple_name: '', app_group_name: '' });
 
           Collections.get('applications').completeObject(res.data);
 

@@ -10,10 +10,12 @@ import Collections from 'services/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import { getChannelMembers } from 'app/services/channels/ChannelCollectionPath';
 import { UserType } from 'app/models/User';
+import { ChannelMemberResource } from "app/models/Channel";
+import UserService from 'services/user/UserService';
+import RouterService from "app/services/RouterService";
+
 
 import "./style.scss";
-import { ChannelMemberResource } from "app/models/Channel";
-import RouterService from "app/services/RouterService";
 
 export const MENTION_TYPE = "MENTION";
 const MENTION_CHAR = "@";
@@ -22,7 +24,7 @@ export type MentionSuggestionType = {
   username: string;
 };
 
-const findSuggestionEntities = (contentBlock: ContentBlock, callback: (start: number, end: number) => void, contentState: ContentState) => {
+const findMentionEntities = (contentBlock: ContentBlock, callback: (start: number, end: number) => void, contentState: ContentState) => {
   contentBlock.findEntityRanges(
     (character: CharacterMetadata) => {
       const entityKey = character.getEntity();
@@ -61,7 +63,8 @@ const resolver = (text: string, max: number, callback: (mentions: MentionSuggest
 
 const addMention = (mention: MentionSuggestionType, editorState: EditorState, options: SelectOrInsertOptions): EditorState => {
   let spaceAlreadyPresent = false;
-  const mentionText = `${MENTION_CHAR}${mention.username}`;
+  const username = UserService.getFullName(mention);
+  const mentionText = `${MENTION_CHAR}${username}`;
   const entityKey = editorState.getCurrentContent().createEntity(MENTION_TYPE, 'IMMUTABLE', mention).getLastCreatedEntityKey();
   const selectedBlock = getSelectedBlock(editorState);
   const selectedBlockText = selectedBlock.getText();
@@ -113,7 +116,7 @@ const addMention = (mention: MentionSuggestionType, editorState: EditorState, op
 export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): EditorSuggestionPlugin<MentionSuggestionType>  => ({
   resolver: (text, callback) => resolver(text, options.maxSuggestions, callback),
   decorator: {
-    strategy:  findSuggestionEntities,
+    strategy:  findMentionEntities,
     component: Mention,
   },
   trigger: /\B@([\-+\w]+)$/,
@@ -121,4 +124,16 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
   getTextDisplay: (mention: MentionSuggestionType) => mention.username,
   onSelected: (mention: MentionSuggestionType, editorState: EditorState, options: SelectOrInsertOptions = { addSpaceAfter: true }) => addMention(mention, editorState, options),
   renderSuggestion: (mention: MentionSuggestionType) => MentionSuggestion(mention),
+  serializer: {
+    // When in code-block, we choose to not handle the mention the same way: It will be only a text, not a mention
+    // this is why we have the <MENTION> and <CODE_MENTION> elements
+    replace: content => content
+        .replace(/<MENTION\|(.*?)>(.*?)<\/MENTION>/gm, (_match, mention) => mention)
+        .replace(/<CODE_MENTION\|(.*?)>(.*?)<\/CODE_MENTION>/gm, (_match, mention, fullName) => fullName),
+    open: (entity, block) => block?.type === 'code-block' ? `<CODE_${MENTION_TYPE}|@${(entity as any).data.username}>` : `<${MENTION_TYPE}|@${(entity as any).data.username}>`,
+    close: (_entity, block) => block?.type === 'code-block' ? `</CODE_${MENTION_TYPE}>` : `</${MENTION_TYPE}>`,
+  },
+  returnFullTextForSuggestion: true,
+  // will skip suggestion when already in a MENTION block
+  skipSuggestionForTypes: [MENTION_TYPE],
 });

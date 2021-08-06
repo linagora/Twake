@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import './Twacode.scss';
@@ -15,6 +15,7 @@ type Props = {
 };
 
 export default (props: Props) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let container: any = null;
   let passives: any = {};
   let loadingInteraction_timeout: any = 0;
@@ -25,7 +26,7 @@ export default (props: Props) => {
   const event_container = {
     onAction: (type: string, id: string, context: any, value: any, evt: any) => {
       //Button pressed
-      if (type == 'interactive_action') {
+      if (type === 'interactive_action') {
         if (props.onAction) {
           setLoadingInteraction(true);
           clearTimeout(loadingInteraction_timeout);
@@ -38,7 +39,7 @@ export default (props: Props) => {
       }
 
       //Input changed
-      if (type == 'interactive_change') {
+      if (type === 'interactive_change') {
         passives[id] = value;
         if (props.onPassiveChange) {
           props.onPassiveChange(type, id, context, value);
@@ -49,8 +50,9 @@ export default (props: Props) => {
 
   useEffect(() => {
     var stringified = JSON.stringify([props.content, props.before, props.after]);
-    if (stringified != saved_stringified) {
+    if (stringified !== saved_stringified) {
       clearTimeout(loadingInteraction_timeout);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       saved_stringified = stringified;
       setLoadingInteraction(false);
     }

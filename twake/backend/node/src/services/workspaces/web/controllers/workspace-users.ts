@@ -31,6 +31,8 @@ import Company from "../../../user/entities/company";
 import { chain } from "lodash";
 import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 import WorkspacePendingUser from "../../entities/workspace_pending_users";
+import { ConsoleServiceAPI } from "../../../console/api";
+import { ConsoleCompany, CreateConsoleUser } from "../../../console/types";
 
 export class WorkspaceUsersCrudController
   implements
@@ -44,6 +46,7 @@ export class WorkspaceUsersCrudController
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
     protected usersService: UsersServiceAPI,
+    protected consoleService: ConsoleServiceAPI,
   ) {}
 
   private formatWorkspaceUser(
@@ -65,26 +68,30 @@ export class WorkspaceUsersCrudController
         provider: user.identity_provider,
         provider_id: user.identity_provider_id,
         email: user.email_canonical,
+        username: user.username_canonical,
         is_verified: Boolean(user.mail_verified),
         picture: user.picture,
         first_name: user.first_name,
         last_name: user.last_name,
+        full_name: [user.first_name, user.last_name].join(" "),
         created_at: user.creation_date,
         deleted: Boolean(user.deleted),
         status: user.status_icon,
         last_activity: user.last_activity,
-        companies: userCompanies.map(cu => {
-          const company = companiesMap.get(cu.group_id);
-          return {
-            role: cu.role as CompanyUserRole,
-            status: "active" as CompanyUserStatus, // FIXME: with real status
-            company: {
-              id: company.id,
-              name: company.name,
-              logo: company.logo,
-            } as CompanyShort,
-          };
-        }),
+        companies: userCompanies
+          .filter(cu => companiesMap.get(cu.group_id))
+          .map(cu => {
+            const company = companiesMap.get(cu.group_id);
+            return {
+              role: cu.role as CompanyUserRole,
+              status: "active" as CompanyUserStatus, // FIXME: with real status
+              company: {
+                id: company.id,
+                name: company.name,
+                logo: company.logo,
+              } as CompanyShort,
+            };
+          }),
       },
     };
 
@@ -101,7 +108,9 @@ export class WorkspaceUsersCrudController
             .value()
             .map(companyId => this.companyService.getCompany({ id: companyId })),
         )
-      ).map(c => [c.id, c]),
+      )
+        .filter(c => c)
+        .map(c => [c.id, c]),
     );
     return companiesMap;
   }
@@ -143,15 +152,17 @@ export class WorkspaceUsersCrudController
 
     const companiesMap = await this.getCompaniesMap(allCompanyUsers);
 
-    const resources = allWorkspaceUsers.map(async wu =>
-      this.formatWorkspaceUser(
-        wu,
-        context.company_id,
-        allUsersMap.get(wu.userId),
-        Array.from(companyUsersMap.get(wu.userId)),
-        companiesMap,
-      ),
-    );
+    const resources = allWorkspaceUsers
+      .filter(wu => allUsersMap.get(wu.userId))
+      .map(async wu =>
+        this.formatWorkspaceUser(
+          wu,
+          context.company_id,
+          allUsersMap.get(wu.userId),
+          Array.from(companyUsersMap.get(wu.userId) || []),
+          companiesMap,
+        ),
+      );
 
     return {
       resources: await Promise.all(resources),
@@ -313,6 +324,12 @@ export class WorkspaceUsersCrudController
 
     const usersToProcessImmediately = [];
 
+    const company = await this.companyService.getCompany({ id: context.company_id });
+    const companyCode = company.identity_provider_id;
+    if (!companyCode) {
+      throw new Error(`Company ${context.company_id} has no identity_provider_id`);
+    }
+
     for (const invitation of request.body.invitations) {
       if (workspacePendingUsers.has(invitation.email)) {
         responses.push({
@@ -323,63 +340,74 @@ export class WorkspaceUsersCrudController
         continue;
       }
 
+      let userInCompany = false;
+      let user: User = null;
+
+      const consoleClient = this.consoleService.getClient();
+
       if (usersInTwake.has(invitation.email)) {
-        const user = usersInTwake.get(invitation.email);
-        const userInCompany = await this.companyService.getCompanyUser(
-          { id: context.company_id },
-          { id: user.id },
-        );
-        if (!userInCompany) {
-          // TODO: for console — call console API
-          // TODO: for non-console — create an account directly
-        }
-
-        const userInWorkspace = await this.workspaceService.getUser({
-          workspaceId: context.workspace_id,
-          userId: user.id,
-        });
-
-        if (userInWorkspace) {
-          responses.push({
-            email: invitation.email,
-            status: "error",
-            message: "User is already in workspace",
-          });
-          continue;
-        }
+        user = usersInTwake.get(invitation.email);
         usersToProcessImmediately.push(user);
+
+        if (user) {
+          userInCompany = Boolean(
+            await this.companyService.getCompanyUser({ id: context.company_id }, { id: user.id }),
+          );
+        }
+      } else {
+        user = await consoleClient.addUserToTwake({
+          email: invitation.email,
+          password: invitation.password,
+        });
       }
-      await putUserToPending(invitation);
+
+      if (!userInCompany) {
+        const company = { id: context.company_id, code: null } as ConsoleCompany;
+        const createUser: CreateConsoleUser = {
+          id: user ? user.id : null,
+          email: invitation.email,
+          firstName: null,
+          lastName: null,
+          name: null,
+          avatar: {
+            type: null,
+            value: null,
+          },
+          password: invitation.password,
+          role: invitation.company_role,
+          skipInvite: false,
+          inviterEmail: context.user.email,
+        };
+
+        await consoleClient.addUserToCompany(company, createUser);
+      }
+
+      const userInWorkspace = Boolean(
+        user &&
+          (await this.workspaceService.getUser({
+            workspaceId: context.workspace_id,
+            userId: user.id,
+          })),
+      );
+
+      if (userInWorkspace) {
+        responses.push({
+          email: invitation.email,
+          status: "error",
+          message: "User is already in workspace",
+        });
+      } else {
+        await putUserToPending(invitation);
+      }
     }
 
-    await Promise.all(usersToProcessImmediately.map(user => this.processPendingUser(user)));
+    await Promise.all(
+      usersToProcessImmediately.map(user => this.consoleService.processPendingUser(user)),
+    );
 
     return {
       resources: responses,
     };
-  }
-
-  async processPendingUser(user: User): Promise<void> {
-    const userCompanies = await this.companyService.getAllForUser(user.id);
-    for (const userCompany of userCompanies) {
-      const workspaces = await this.workspaceService.getAllForCompany(userCompany.group_id);
-      for (const workspace of workspaces) {
-        const pendingUserPk = {
-          workspace_id: workspace.id,
-          email: user.email_canonical,
-        };
-        const pendingUser = await this.workspaceService.getPendingUser(pendingUserPk);
-
-        if (pendingUser) {
-          await this.workspaceService.removePendingUser(pendingUserPk);
-          await this.workspaceService.addUser(
-            { id: workspace.id },
-            { id: user.id },
-            pendingUser.role,
-          );
-        }
-      }
-    }
   }
 
   async deletePending(
@@ -394,6 +422,7 @@ export class WorkspaceUsersCrudController
 
       return { status: "success" };
     } catch (e) {
+      console.error(e);
       return {
         status: "error",
       };

@@ -19,6 +19,7 @@ import '@fullcalendar/list/main.css';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import EventUI from 'components/Calendar/Event/Event.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
+import Languages from 'services/languages/languages';
 
 import moment from 'moment';
 import './FullCalendar.scss';
@@ -76,12 +77,13 @@ export default class FullCalendar extends Component {
         that.cancelClickOut = true;
 
         //Create event
-        if (moment(event.end).diff(event.start) == 15 * 60 * 1000) {
+        if (moment(event.end).diff(event.start) === 15 * 60 * 1000) {
           that.api.unselect();
           that.props.onClickOut && that.props.onClickOut();
           return false;
         }
         if (that.props.onCreate) {
+          // eslint-disable-next-line no-unused-vars
           var created_event = that.props.onCreate(
             that.fcToCollection(event),
             that.event_dom_elements[event.id],
@@ -136,7 +138,7 @@ export default class FullCalendar extends Component {
             var calendar_id = cal.calendar_id;
             if (calendar_id && that.props.getCalendar) {
               var tmp = that.props.getCalendar(calendar_id);
-              if (tmp && tmp.workspace_id == WorkspaceService.currentWorkspaceId) {
+              if (tmp && tmp.workspace_id === WorkspaceService.currentWorkspaceId) {
                 calendar = tmp;
                 return true;
               }
@@ -150,7 +152,7 @@ export default class FullCalendar extends Component {
           event.el.style.backgroundColor = color;
         }
 
-        if (col_event.type == 'deadline' || col_event.type == 'remind') {
+        if (col_event.type === 'deadline' || col_event.type === 'remind') {
           event.el.classList.add('not_resizable');
         }
 
@@ -258,7 +260,7 @@ export default class FullCalendar extends Component {
   }
 
   view(view) {
-    if (view != this.api.type) {
+    if (view !== this.api.type) {
       this.willChangeView();
       this.api.changeView(view);
       this.props.onViewChange && this.props.onViewChange(view);
@@ -267,9 +269,8 @@ export default class FullCalendar extends Component {
   }
 
   willChangeView(forward) {
-    var old_effect = this.calendarRef.elRef.current.parentElement.getElementsByClassName(
-      'false_calendar',
-    )[0];
+    var old_effect =
+      this.calendarRef.elRef.current.parentElement.getElementsByClassName('false_calendar')[0];
     if (old_effect) {
       this.calendarRef.elRef.current.parentElement.removeChild(old_effect);
     }
@@ -287,7 +288,7 @@ export default class FullCalendar extends Component {
     calendar.classList.add('calendar_invisible');
     setTimeout(() => {
       this.calendarRef.elRef.current.classList.remove('calendar_invisible');
-      if (forward == undefined) {
+      if (forward === undefined) {
         this.calendarRef.elRef.current.classList.add('calendar_appear');
       } else if (forward) {
         this.calendarRef.elRef.current.classList.add('calendar_appear_right');
@@ -300,7 +301,7 @@ export default class FullCalendar extends Component {
     clone.classList.add('false_calendar');
     calendar.parentElement.append(clone);
     var scroller = clone.getElementsByClassName('fc-scroller')[0];
-    if (scroll_state != scroller.scrollTop) {
+    if (scroll_state !== scroller.scrollTop) {
       scroller.scrollTop = scroll_state;
     }
   }
@@ -335,17 +336,18 @@ export default class FullCalendar extends Component {
     var from = event.from;
     var to = event.to;
 
-    if (event.type == 'remind' || event.type == 'deadline') {
+    if (event.type === 'remind' || event.type === 'deadline') {
       to = parseInt(from) + 15 * 60;
     }
 
+    // eslint-disable-next-line no-redeclare
     var event = {
       id: event.front_id,
       real_id: event.id,
       start: moment(from * 1000).toDate(),
       end: moment(to * 1000 + (event.all_day ? 24 * 60 * 60 * 1000 : 0)).toDate(),
       allDay: event.all_day || force_allday,
-      title: event.title || 'Untitled',
+      title: event.title || Languages.t('scenes.apps.drive.navigators.new_file.untitled'),
       rrule: (event.repetition_definition || {}).string, //'DTSTART:20190201T103000Z\nRRULE:FREQ=WEEKLY;INTERVAL=5;UNTIL=20190601;BYDAY=MO,FR',
       duration: (event.repetition_definition || {}).duration,
       editable: !CalendarService.getIsReadonly(event),

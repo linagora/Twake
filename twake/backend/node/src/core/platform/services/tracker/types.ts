@@ -1,6 +1,6 @@
-export type IdentityType =
-  | { userId: string | number }
-  | { userId?: string | number; anonymousId: string | number };
+import { ExecutionContext } from "../../framework/api/crud-service";
+
+export type IdentityType = { user: ExecutionContext["user"] };
 
 export type IdentifyObjectType = IdentityType & {
   traits?: { [key: string]: unknown };

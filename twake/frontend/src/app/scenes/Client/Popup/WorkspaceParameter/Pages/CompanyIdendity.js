@@ -34,7 +34,7 @@ export default class CompanyIdendity extends Component {
     event.preventDefault();
     uploadService.getFilesTree(event, function (tree) {
       var first = tree[Object.keys(tree)[0]];
-      if (first.constructor.name != 'Object') {
+      if (first.constructor.name !== 'Object') {
         //A file
         var reader = new FileReader();
         reader.onload = function (e) {
@@ -86,7 +86,7 @@ export default class CompanyIdendity extends Component {
                 type="text"
                 value={this.state.groupName}
                 onKeyDown={e => {
-                  if (e.keyCode == 13) {
+                  if (e.keyCode === 13) {
                     groupService.updateName(this.state.groupName);
                   }
                 }}
@@ -141,6 +141,7 @@ export default class CompanyIdendity extends Component {
                 'Maximum weight 5 mo.',
               )}
               <br />
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a
                 className="red"
                 onClick={() => {

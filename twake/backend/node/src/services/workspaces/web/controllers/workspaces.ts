@@ -19,6 +19,9 @@ import Workspace from "../../entities/workspace";
 import { CompaniesServiceAPI } from "../../../user/api";
 import { merge } from "lodash";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
+import { plainToClass } from "class-transformer";
+import { hasCompanyAdminLevel, hasCompanyMemberLevel } from "../../../../utils/company";
+import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
 
 export class WorkspacesCrudController
   implements
@@ -104,9 +107,7 @@ export class WorkspacesCrudController
   ): Promise<ResourceListResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
 
-    const allCompanyWorkspaces = await this.workspaceService
-      .list(new Pagination(request.params.page_token, request.params.limit), {}, context)
-      .then(a => a.getEntities());
+    const allCompanyWorkspaces = await this.workspaceService.getAllForCompany(context.company_id);
 
     const allUserWorkspaceRolesMap = await this.workspaceService
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
@@ -126,63 +127,41 @@ export class WorkspacesCrudController
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
-
     const companyUserRole = await this.getCompanyUserRole(context);
 
-    let workspaceEntity: Workspace;
+    if (!hasCompanyMemberLevel(companyUserRole)) {
+      reply.forbidden(`You are not a member of company ${context.company_id}`);
+      return;
+    }
 
-    if (request.params.id) {
-      // ON UPDATE
+    if (!hasCompanyAdminLevel(companyUserRole) && request.params.id) {
+      const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
 
-      workspaceEntity = await this.workspaceService.get({
-        group_id: context.company_id,
-        id: request.params.id,
-      });
-
-      if (!workspaceEntity) {
-        reply.notFound(`Workspace ${request.params.id} not found`);
+      if (!hasWorkspaceAdminLevel(workspaceUserRole)) {
+        reply.forbidden("You are not a admin of workspace or company");
         return;
       }
+    }
 
-      if (companyUserRole !== "admin") {
-        const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
-
-        if (workspaceUserRole !== "admin") {
-          reply.forbidden("You are not a admin of workspace or company");
-          return;
-        }
-      }
-
-      const r = request.body.resource;
-
-      workspaceEntity = merge(workspaceEntity, {
+    const r = request.body.resource;
+    const entity = plainToClass(Workspace, {
+      ...{
         name: r.name,
         logo: r.logo,
         isDefault: r.default,
         isArchived: r.archived,
-      });
-    } else {
-      // ON CREATE
+      },
+      ...{
+        group_id: request.params.company_id,
+        id: request.params.id,
+      },
+    });
 
-      // you must be a company admin or member to create workspaces
-      if (!["admin", "member"].includes(companyUserRole)) {
-        reply.forbidden(`You are not a member of company ${context.company_id}`);
-        return;
-      }
+    const workspaceEntity = await this.workspaceService
+      .save(entity, {}, context)
+      .then(a => a.entity);
 
-      const obj = merge(new Workspace(), request.body.resource, {
-        group_id: context.company_id,
-        isDefault: request.body.resource.default,
-      });
-
-      workspaceEntity = await this.workspaceService.create(obj).then(a => a.entity);
-      await this.workspaceService.addUser(
-        { id: workspaceEntity.id },
-        { id: context.user.id },
-        "admin",
-      );
-      reply.code(201);
-    }
+    request.params.id ? reply.code(200) : reply.code(201);
 
     const workspaceUserRole = await this.getWorkspaceUserRole(workspaceEntity.id, context);
 

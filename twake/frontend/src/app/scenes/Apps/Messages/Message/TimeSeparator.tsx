@@ -3,7 +3,7 @@ import moment from 'moment';
 import Moment from 'react-moment';
 import 'moment-timezone';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import CurrentUser from 'app/services/user/CurrentUser';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import './Message.scss';
@@ -52,9 +52,10 @@ export default React.memo((props: Props) => {
           <div className="message_timeline">
             <div className="time_container">
               <div className="time">
-                {(new Date().getTime() / 1000 - (message?.creation_date || 0) > 24 * 60 * 60
-                  ? <Moment date={(creation_date || 0) * 1000} format='LL'></Moment>
-                  : <Moment date={(creation_date || 0) * 1000} fromNow></Moment>
+                {new Date().getTime() / 1000 - (message?.creation_date || 0) > 24 * 60 * 60 ? (
+                  <Moment date={(creation_date || 0) * 1000} format="LL"></Moment>
+                ) : (
+                  <Moment date={(creation_date || 0) * 1000} fromNow></Moment>
                 )}
               </div>
             </div>

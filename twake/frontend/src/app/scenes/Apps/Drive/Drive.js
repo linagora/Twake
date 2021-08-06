@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import Loader from 'components/Loader/Loader.js';
-import UploadZone from 'components/Uploads/UploadZone.js';
+import UploadZone from 'components/Uploads/UploadZone';
 
 import Numbers from 'services/utils/Numbers.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
@@ -25,7 +25,7 @@ import PathElement from './PathElement.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 
 import UnconfiguredTab from './UnconfiguredTab.js';
-import Viewer from './Viewer/Viewer.js';
+import Viewer from './Viewer/Viewer';
 
 import MainPlus from 'components/MainPlus/MainPlus.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
@@ -78,6 +78,7 @@ export default class Drive extends Component {
     if (currentdir && !currentdir.id) {
       currentdir = false;
     }
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.app_drive_service.current_directory_channels[this.drive_channel] =
       currentdir || this.props.directory || {};
     this.did_mount = false;
@@ -108,13 +109,13 @@ export default class Drive extends Component {
       directory_id = this.init_directory;
     }
 
-    if ((DriveService.current_directory_channels[this.drive_channel] || {}).id != directory_id) {
+    if ((DriveService.current_directory_channels[this.drive_channel] || {}).id !== directory_id) {
       this.changeCurrentDirectory({ id: directory_id });
       DriveService.current_directory_channels[this.drive_channel] = { id: directory_id };
     }
   }
   onUpdate(nextProps, nextState) {
-    if (this.props.tab && this.init_directory != this.props.tab.configuration.directory_id) {
+    if (this.props.tab && this.init_directory !== this.props.tab.configuration.directory_id) {
       this.init_directory = this.props.tab.configuration.directory_id;
       this.changeCurrentDirectory({ id: this.init_directory });
       return;
@@ -125,7 +126,7 @@ export default class Drive extends Component {
     }
 
     if (
-      (DriveService.current_directory_channels[this.drive_channel] || {}).id !=
+      (DriveService.current_directory_channels[this.drive_channel] || {}).id !==
       this.old_directory_id
     ) {
       this.old_directory_id = (
@@ -142,6 +143,7 @@ export default class Drive extends Component {
     var workspace = Collections.get('workspaces').find(this.state.workspaces.currentWorkspaceId);
     var group = null;
     if (workspace) {
+      // eslint-disable-next-line no-unused-vars
       group = Collections.get('groups').find(workspace.group.id);
     }
 
@@ -155,7 +157,7 @@ export default class Drive extends Component {
       ),
     );
 
-    if (!path || path.length == 0) {
+    if (!path || path.length === 0) {
       path.push(this.state.app_drive_service.current_directory_channels[this.drive_channel]);
     }
 
@@ -169,7 +171,7 @@ export default class Drive extends Component {
     return path
       .filter(dir => {
         if (this.init_directory) {
-          if (dir.id == this.init_directory) {
+          if (dir.id === this.init_directory) {
             did_pass_init_dir = true;
           }
           return did_pass_init_dir;
@@ -187,7 +189,7 @@ export default class Drive extends Component {
           <PathElement
             parent={this}
             data={directory}
-            showOptions={i == path.length}
+            showOptions={i === path.length}
             workspace={workspace}
             inTrash={in_trash}
             driveCollectionKey={
@@ -234,7 +236,8 @@ export default class Drive extends Component {
   }
 
   createLinkFile(new_file_name, new_file_link) {
-    var name = (new_file_name || 'Untitled') + '.url';
+    var name =
+      (new_file_name || Languages.t('scenes.apps.drive.navigators.new_file.untitled')) + '.url';
     var url = new_file_link || '';
     if (!url) {
       return;
@@ -345,7 +348,7 @@ export default class Drive extends Component {
     WorkspacesApps.getApps()
       .filter(app => ((app.display || {}).drive_module || {}).can_connect_to_directory)
       .map(app => {
-        externalStorageMenu.push({
+        return externalStorageMenu.push({
           type: 'menu',
           text: app.name,
           emoji: app.icon_url,
@@ -366,7 +369,7 @@ export default class Drive extends Component {
           },
         });
       });
-    if (externalStorageMenu.length == 0) {
+    if (externalStorageMenu.length === 0) {
       externalStorageMenu.push({
         type: 'text',
         text: Languages.t(
@@ -381,8 +384,8 @@ export default class Drive extends Component {
     WorkspacesApps.getApps()
       .filter(app => ((app.display || {}).drive_module || {}).can_create_files)
       .map(app => {
-        app.display.drive_module.can_create_files.map(info => {
-          addableFilesMenu.push({
+        return app.display.drive_module.can_create_files.map(info => {
+          return addableFilesMenu.push({
             type: 'menu',
             emoji: info.icon || app.icon_url,
             text: info.name + ' (' + app.name + ')',
@@ -411,12 +414,12 @@ export default class Drive extends Component {
     addableFilesMenu.push({
       type: 'menu',
       icon: 'link-alt',
-      text: Languages.t('scenes.apps.drive.new_link_title', [], 'New link'),
+      text: Languages.t('scenes.apps.drive.new_link_title'),
       submenu_replace: true,
       submenu: [
         {
           type: 'title',
-          text: Languages.t('scenes.apps.drive.new_link_title', [], 'New link'),
+          text: Languages.t('scenes.apps.drive.new_link_title'),
         },
         {
           type: 'react-element',
@@ -427,7 +430,7 @@ export default class Drive extends Component {
       ],
     });
 
-    if (addableFilesMenu.length == 0) {
+    if (addableFilesMenu.length === 0) {
       addableFilesMenu.push({
         type: 'text',
         text: Languages.t(
@@ -708,6 +711,7 @@ export default class Drive extends Component {
                 </span>
               )}
               {!!in_trash && WorkspaceUserRights.hasWorkspacePrivilege() && (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid
                 <a
                   className="error right-margin"
                   onClick={() => {
@@ -747,6 +751,7 @@ export default class Drive extends Component {
 
           {in_trash && (
             <div className="smalltext drive_trash_info">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a
                 onClick={() => {
                   DriveService.toggleInTrash(this.drive_channel);
@@ -766,7 +771,7 @@ export default class Drive extends Component {
             {!this.state.drive_repository.did_load_first_time[
               this.state.app_drive_service.current_collection_key_channels[this.drive_channel]
             ] &&
-              files.length + directories.length == 0 && (
+              files.length + directories.length === 0 && (
                 <div className="loading">
                   <Loader color="#CCC" className="app_loader" />
                 </div>

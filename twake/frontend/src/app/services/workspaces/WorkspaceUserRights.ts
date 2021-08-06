@@ -1,10 +1,6 @@
 import Observable from 'app/services/Depreciated/observable.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-
-import CurrentUser from 'app/services/user/CurrentUser';
-import WindowService from 'services/utils/window';
 import AccessRightsService, { RightsOrNone } from 'services/AccessRightsService';
-import Globals from 'services/Globals';
 
 class WorkspaceUserRights extends Observable {
   currentUserRightsByWorkspace: { [key: string]: RightsOrNone };

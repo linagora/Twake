@@ -26,10 +26,14 @@ export function decrypt(data: string, encryptionKey: string): CryptoResult {
   return result.done ? result : v1.decrypt(data, encryptionKey);
 }
 
-export function encrypt(value: any, encryptionKey: any): CryptoResult {
-  return v1.encrypt(value, encryptionKey);
-}
-
 export function md5(value: string): string {
   return createHash("md5").update(value).digest("hex");
+}
+
+export function encrypt(
+  value: any,
+  encryptionKey: any,
+  options: { disableSalts?: boolean } = {},
+): CryptoResult {
+  return v1.encrypt(value, encryptionKey, options);
 }

@@ -13,13 +13,15 @@ import {
   toArray,
 } from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
-import { Paginable, Pagination } from "../../../core/platform/framework/api/crud-service";
+import { Paginable } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
 import User from "../../user/entities/user";
 import UserServiceAPI from "../../user/api";
 import {
   CompanyCreatedStreamObject,
   CompanyReport,
+  ConsoleOptions,
+  ConsoleType,
   CreatedConsoleCompany,
   CreatedConsoleUser,
   MergeProgress,
@@ -31,9 +33,12 @@ import {
 import { getInstance as getExternalUserInstance } from "../../user/entities/external_user";
 import { getInstance as getExternalGroupInstance } from "../../user/entities/external_company";
 import CompanyUser from "../../user/entities/company_user";
-import { ConsoleHTTPClient } from "../client";
-import { ConsoleServiceClient } from "../api";
+import { ConsoleRemoteClient } from "../clients/remote";
+import { ConsoleServiceClient } from "../client-interface";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
+import { CompanyUserRole } from "../../user/web/types";
+import { ConsoleServiceAPI } from "../api";
+import { getService as getConsoleService } from "../service";
 
 const logger = getLogger("console.process.merge");
 
@@ -46,13 +51,11 @@ export class MergeProcess {
     private dryRun: boolean,
     private consoleId: string = "console",
     private linkExternal: boolean = true,
-    consoleClientParameters: {
-      url: string;
-      client: string;
-      secret: string;
-    },
+    consoleClientOptions: ConsoleOptions,
   ) {
-    this.client = new ConsoleHTTPClient(consoleClientParameters, dryRun);
+    const consoleService = getConsoleService(null, null, "remote", consoleClientOptions);
+
+    this.client = new ConsoleRemoteClient(consoleService, dryRun);
   }
 
   merge(concurrent: number = 1): MergeProgress {
@@ -304,7 +307,7 @@ export class MergeProcess {
         });
       }
 
-      result = await this.client.addUser(
+      result = await this.client.addUserToCompany(
         { code: company.id },
         {
           email: user.email_canonical,
@@ -330,7 +333,7 @@ export class MergeProcess {
         CompanyUser,
       );
       companyUser.role = role;
-      companyUserRepository.save(companyUser);
+      await companyUserRepository.save(companyUser);
 
       if (this.linkExternal) {
         await this.createUserLink(user, result, this.consoleId);
@@ -389,7 +392,7 @@ export class MergeProcess {
 
   private updateUserRole(
     user: UserCreatedStreamObject,
-    role: string,
+    role: CompanyUserRole,
   ): Promise<{
     source: UserCreatedStreamObject;
     result: UpdateConsoleUserRole & { error?: Error };

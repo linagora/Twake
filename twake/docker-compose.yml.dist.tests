@@ -4,18 +4,11 @@ services:
   scylladb:
     image: scylladb/scylla:4.1.0
     command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
-    volumes:
-      - ./docker-data/scylladb:/var/lib/scylla
   scylladb2:
     image: scylladb/scylla:4.1.0
     command: --seeds=scylladb --smp 1 --memory 400M --overprovisioned 1 --api-address 0.0.0.0
-    volumes:
-      - ./docker-data/scylladb2:/var/lib/scylla
   rabbitmq:
     image: rabbitmq:3
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
     ports:
       - 5672:5672
       - 15672:15672
@@ -35,13 +28,14 @@ services:
     image: twaketech/twake-node:test
     build:
       context: ./backend/node
-      dockerfile: ../../docker/twake-node/Dockerfile.test
-      #target is not supported in compose v2 file
-      #target: test
+      dockerfile: ../../docker/twake-node/Dockerfile
+      target: test
     environment:
       - NODE_ENV=test
       - DB_DRIVER
-      - PUBSUB_URLS=amqp://admin:admin@rabbitmq:5672
+      - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
+      - SEARCH_ES_ENDPOINT=http://elasticsearch:9200
+      - SEARCH_ES_FLUSHINTERVAL=1
     depends_on:
       - mongo
       - scylladb
@@ -64,7 +58,7 @@ services:
     links:
       - scylladb
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.13.4
     environment:
       - xpack.security.enabled=false
       - bootstrap.memory_lock=true
@@ -74,8 +68,6 @@ services:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - ./docker-data/es_twake:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
   nginx:

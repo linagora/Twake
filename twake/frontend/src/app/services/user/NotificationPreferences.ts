@@ -17,10 +17,6 @@ class NotificationPreferencesService extends Observable {
   url = '/notifications/v1/preferences/';
   notificationPreferences!: NotificationPreferencesResource;
 
-  constructor() {
-    super();
-  }
-
   async init(): Promise<void> {
     const collection = Collection.get(this.url, NotificationPreferencesResource);
 
@@ -28,12 +24,12 @@ class NotificationPreferencesService extends Observable {
       //Will be called each time something happen on this collection
       this.notificationPreferences = collection.findOne({}, { withoutBackend: true }); //Get preferences from collection store
       this.notify(); //Tell all subscribed components to reload
-    }, {}, {})
+    }, {}, {});
   }
 
   /**
-   * 
-   * @param preferences 
+   *
+   * @param preferences
    */
   async save(preferences: { key:Keys, value:Values }[]): Promise<void> {
     const newPreferences:any = {};
@@ -78,12 +74,12 @@ class NotificationPreferencesService extends Observable {
   }
 
   /**
-   * 
+   *
    * @param timeToAdd Time to add
    * @param format Unit of time
    */
   deactivateNotificationsUntil(timeToAdd: number, format: 's'|'m'|'h'|'d'|'y'): void {
-    this.save([{ key:"deactivate_notifications_until", value: moment().add(timeToAdd, format).unix() }])
+    this.save([{ key:"deactivate_notifications_until", value: moment().add(timeToAdd, format).unix() }]);
   }
 
   private isInPeriod(a: number, b: number): boolean {

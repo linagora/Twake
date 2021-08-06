@@ -220,6 +220,7 @@ class Workspaces extends Observable {
         return (a.name || '').localeCompare(b.name || '');
       })
       .forEach(e => {
+        // eslint-disable-next-line no-redeclare
         var e = this.user_workspaces[e];
         if (!group_id || e?.group?.id === group_id) {
           object.push(e);
@@ -318,7 +319,7 @@ class Workspaces extends Observable {
   updateWorkspaceLogo(logo) {
     this.loading = true;
     this.notify();
-    var route = Globals.api_root_url + '/ajax/' + 'workspace/data/logo';
+    var route = `${Globals.api_root_url}/ajax/workspace/data/logo`;
 
     var data = new FormData();
     if (logo !== false) {

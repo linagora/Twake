@@ -1,5 +1,5 @@
 cp -n docker-compose.yml.dist.onpremise docker-compose.yml
-cp -nR default-configuration/ configuration/
+cp -nR default-configuration/* configuration/
 
 docker-compose pull
 

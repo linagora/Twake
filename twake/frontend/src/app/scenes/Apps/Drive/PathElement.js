@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import DriveElement from 'components/Drive/DriveElement.js';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
 import Icon from 'components/Icon/Icon.js';
@@ -7,7 +7,7 @@ import DriveService from 'services/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export default class PathElement extends DriveElement {
   dropFile(data, directory) {
@@ -15,6 +15,7 @@ export default class PathElement extends DriveElement {
     if (data.selection_type) {
       var selected = Object.keys(SelectionsManager.selected_per_type[data.selection_type]);
       if (selected && selected.length > 1) {
+        // eslint-disable-next-line no-redeclare
         var objects_ids = selected;
       }
     }
@@ -47,7 +48,7 @@ export default class PathElement extends DriveElement {
     }
 
     var list = [];
-    if (DriveService.current_directory_channels[this.props.channel].parent_id == 'trash') {
+    if (DriveService.current_directory_channels[this.props.channel].parent_id === 'trash') {
       list = [
         <div
           className={'directory_in_path exit_trash_btn app_back_btn'}
@@ -84,7 +85,7 @@ export default class PathElement extends DriveElement {
             </span>
           )}
 
-          {directory.parent_id && directory.parent_id != 'trash'
+          {directory.parent_id && directory.parent_id !== 'trash'
             ? directory.name
             : this.props.inTrash
             ? Languages.t('scenes.apps.drive.trash', [], 'Trash')
@@ -94,7 +95,7 @@ export default class PathElement extends DriveElement {
 
           {this.props.showOptions &&
             directory.parent_id &&
-            directory.parent_id != 'trash' &&
+            directory.parent_id !== 'trash' &&
             this.common_menu.length > 0 && (
               <Menu menu={this.common_menu} className="options">
                 <Icon type="ellipsis-h" />

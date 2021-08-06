@@ -1,5 +1,6 @@
 import {
   CRUDService,
+  DeleteResult,
   ExecutionContext,
   ListResult,
   Paginable,
@@ -20,10 +21,11 @@ import {
   ThreadExecutionContext,
   MessageWithReplies,
   MessagesGetThreadOptions,
+  MessageWithRepliesWithUsers,
 } from "./types";
 
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
-import { Message, MessagePrimaryKey } from "./entities/messages";
+import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
 
 export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
   userBookmarks: MessageUserBookmarksServiceAPI;
@@ -48,7 +50,8 @@ export interface MessageThreadsServiceAPI
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<Thread, ThreadPrimaryKey, ExecutionContext> {
-  addReply(thread_id: string): Promise<void>;
+  addReply(thread_id: string, increment?: number): Promise<void>;
+  setReplyCount(thread_id: string, count: number): Promise<void>;
   save(
     item: Pick<Thread, "id"> & {
       participants: Pick<ParticipantObject, "id" | "type" | "workspace_id" | "company_id">[];
@@ -88,6 +91,11 @@ export interface MessageThreadMessagesServiceAPI
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
 
+  forceDelete(
+    pk: Pick<Message, "thread_id" | "id">,
+    context?: ThreadExecutionContext,
+  ): Promise<DeleteResult<Message>>;
+
   getThread(thread: Thread, options: MessagesGetThreadOptions): Promise<MessageWithReplies>;
 
   move(
@@ -95,6 +103,11 @@ export interface MessageThreadMessagesServiceAPI
     options: { previous_thread: string },
     context: ThreadExecutionContext,
   ): Promise<void>;
+
+  includeUsersInMessage(message: Message): Promise<MessageWithUsers>;
+  includeUsersInMessageWithReplies(
+    message: MessageWithReplies,
+  ): Promise<MessageWithRepliesWithUsers>;
 }
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {

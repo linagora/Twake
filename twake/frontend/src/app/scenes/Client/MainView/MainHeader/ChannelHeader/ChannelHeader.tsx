@@ -11,11 +11,11 @@ import ChannelUsersHeader from './ChannelUsersHeader';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import { ChannelResource } from 'app/models/Channel';
 import ChannelAvatars from './ChannelAvatars';
-import { useUsersListener } from 'app/components/Member/UserParts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
@@ -74,7 +74,7 @@ export default (): JSX.Element => {
       {channel.data.visibility !== 'direct' && (
         <Col xs={21} sm={21} md={22} lg={12} xl={14} xxl={16}>
           <span
-            className="left-margin text-overflow"
+            className="left-margin text-overflow channelName"
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>

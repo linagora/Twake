@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 
 import MenusManager from 'app/components/Menus/MenusManager.js';
@@ -83,7 +83,7 @@ export default class MenusBodyLayer extends React.Component {
       return;
     }
 
-    if (this.lastUpdatePosition[item.id] != parseInt(new Date().getTime() / 1000)) {
+    if (this.lastUpdatePosition[item.id] !== parseInt(new Date().getTime() / 1000)) {
       this.lastUpdatePosition[item.id] = parseInt(new Date().getTime() / 1000);
       this.indexUpdatePosition[item.id] = 0;
     } else if (this.indexUpdatePosition[item.id] > 2) {
@@ -109,7 +109,7 @@ export default class MenusBodyLayer extends React.Component {
     rect.bottom = rect.height + rect.y;
 
     var max_bottom = document.documentElement.clientHeight;
-    if (item.positionType == 'top') {
+    if (item.positionType === 'top') {
       max_bottom = item.position.y;
     }
 
@@ -120,7 +120,7 @@ export default class MenusBodyLayer extends React.Component {
     }
 
     //Bottom
-    if (item.position.marginTop == undefined || item.position.marginTop < 0) {
+    if (item.position.marginTop === undefined || item.position.marginTop < 0) {
       //Else we are on the top top
       if (
         rect.bottom > Math.min(document.documentElement.clientHeight, max_bottom) - 5 ||
@@ -154,7 +154,7 @@ export default class MenusBodyLayer extends React.Component {
     }
   }
   shouldComponentUpdate(nextProps, nextState) {
-    if (nextState.menus_manager.willClose != this.willClose) {
+    if (nextState.menus_manager.willClose !== this.willClose) {
       this.willClose = nextState.menus_manager.willClose;
       return true;
     }
@@ -177,7 +177,7 @@ export default class MenusBodyLayer extends React.Component {
               <OutsideClickHandler
                 key={item.id}
                 onOutsideClick={() => {
-                  if (i == this.state.menus_manager.menus.length - 1) {
+                  if (i === this.state.menus_manager.menus.length - 1) {
                     MenusManager.closeSubMenu(item.level - 1);
                   }
                 }}
@@ -187,7 +187,7 @@ export default class MenusBodyLayer extends React.Component {
                   style={{
                     zIndex: 1050,
                     position: 'absolute',
-                    transform: item.positionType == 'bottom' ? '' : 'translateY(-50%)',
+                    transform: item.positionType === 'bottom' ? '' : 'translateY(-50%)',
                     left: item.position.x,
                     top: item.position.y,
                     marginTop: item.position.marginTop,
@@ -197,12 +197,13 @@ export default class MenusBodyLayer extends React.Component {
                   <MenuComponent
                     withFrame
                     menu={item.menu}
+                    openAt={item.openAt}
                     level={item.level}
                     animationClass={
                       this.state.menus_manager.willClose || item.willClose
                         ? 'fade_out'
-                        : item.level == 0 || item.positionType
-                        ? item.positionType == 'bottom'
+                        : item.level === 0 || item.positionType
+                        ? item.positionType === 'bottom'
                           ? 'skew_in_bottom_nobounce'
                           : item.left
                           ? 'skew_in_left_nobounce'

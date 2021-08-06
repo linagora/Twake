@@ -20,6 +20,12 @@ const MainContent: FC<{}> = () => {
     SideViewService.getId(),
   ]);
 
+  // Put the sideview in full screen if screen has not a big width
+  const { innerWidth } = window;
+  let sideViewWidth = "40%";
+  if(innerWidth < 768 ){
+    sideViewWidth = "100%"
+  }
   return (
     <Layout.Content className={'global-view-content'}>
       <Layout style={{ flex: '1' }}>
@@ -28,23 +34,24 @@ const MainContent: FC<{}> = () => {
             <Tabs key={mainId} />
           </Layout.Header>
         )}
-        <Layout style={{ height: '100%' }}>
+        <Layout style={{ height: '100%' }} hasSider>
           <Layout.Content>
             <Layout className="main-view-layout">
               <Layout.Content className="main-view-content">
                 {mainType !== '' && (
                   <AppView key={mainId} id={mainId} viewService={MainViewService} />
                 )}
-                {mainType == '' && <NoApp />}
+                {mainType === '' && <NoApp />}
               </Layout.Content>
             </Layout>
           </Layout.Content>
           <Layout.Sider
+            trigger={null}
             className="global-side-view"
             breakpoint="lg"
             collapsedWidth="0"
             theme="light"
-            width="40%"
+            width={sideViewWidth}            
             collapsed={sideType === ''}
           >
             {!!sideType && (

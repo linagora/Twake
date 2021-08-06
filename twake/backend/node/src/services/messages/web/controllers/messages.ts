@@ -10,7 +10,7 @@ import {
 import { Message } from "../../entities/messages";
 import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
 import { handleError } from "../../../../utils/handleError";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { Paginable, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { getThreadMessageWebsocketRoom } from "../realtime";
 
 export class MessagesController
@@ -25,6 +25,9 @@ export class MessagesController
 
   async save(
     request: FastifyRequest<{
+      Querystring: {
+        include_users: boolean;
+      };
       Params: {
         company_id: string;
         thread_id: string;
@@ -60,8 +63,42 @@ export class MessagesController
         {},
         context,
       );
+
+      let entity = result.entity;
+
+      if (request.query.include_users) {
+        entity = await this.service.messages.includeUsersInMessage(entity);
+      }
+
       return {
-        resource: result.entity,
+        resource: entity,
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
+  }
+
+  async forceDelete(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        thread_id: string;
+        message_id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ) {
+    const context = getThreadExecutionContext(request);
+    try {
+      await this.service.messages.forceDelete(
+        {
+          thread_id: request.params.thread_id,
+          id: request.params.message_id,
+        },
+        context,
+      );
+      return {
+        status: "success",
       };
     } catch (err) {
       handleError(reply, err);
@@ -97,6 +134,7 @@ export class MessagesController
 
   async get(
     request: FastifyRequest<{
+      Querystring: MessageListQueryParameters;
       Params: {
         company_id: string;
         thread_id: string;
@@ -107,13 +145,18 @@ export class MessagesController
   ): Promise<ResourceGetResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      const resource = await this.service.messages.get(
+      let resource = await this.service.messages.get(
         {
           thread_id: request.params.thread_id,
           id: request.params.message_id,
         },
         context,
       );
+
+      if (request.query.include_users) {
+        resource = await this.service.messages.includeUsersInMessage(resource);
+      }
+
       return {
         resource: resource,
       };
@@ -135,12 +178,26 @@ export class MessagesController
     const context = getThreadExecutionContext(request);
     try {
       const resources = await this.service.messages.list(
-        new Pagination(request.query.page_token, request.query.limit),
-        { ...request.query },
+        new Pagination(
+          request.query.page_token,
+          request.query.limit,
+          request.query.direction !== "history",
+        ),
+        { ...request.query, include_users: request.query.include_users || false },
         context,
       );
+
+      let entities = [];
+      if (request.query.include_users) {
+        for (const msg of resources.getEntities()) {
+          entities.push(await this.service.messages.includeUsersInMessage(msg));
+        }
+      } else {
+        entities = resources.getEntities();
+      }
+
       return {
-        resources: resources.getEntities(),
+        resources: entities,
         ...(request.query.websockets && {
           websockets: [{ room: getThreadMessageWebsocketRoom(context) }],
         }),

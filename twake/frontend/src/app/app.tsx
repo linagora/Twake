@@ -7,7 +7,6 @@ import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import 'app/ui.scss';
 import InitService from './services/InitService';
 import 'app/theme.less';
-import { AuthProvider } from 'oidc-react';
 import AuthProviderService from './services/login/AuthProviderService';
 import LoginService from './services/login/login';
 
@@ -29,9 +28,7 @@ export default () => {
     AuthProviderService.getAuthProviderConfiguration();
   }
 
-  try {
-    (window as any).document.getElementById('app_loader').remove();
-  } catch (err) {}
+  InitService.removeLoader();
 
   return (
     <Integration>

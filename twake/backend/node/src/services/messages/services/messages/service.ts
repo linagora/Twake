@@ -4,36 +4,52 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
+  Paginable,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
-import { getInstance, Message, TYPE as MessageTableName } from "../../entities/messages";
+import {
+  getInstance,
+  Message,
+  MessageWithUsers,
+  TYPE as MessageTableName,
+} from "../../entities/messages";
 import {
   BookmarkOperation,
   MessageLocalEvent,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
+  MessageWithReplies,
+  MessageWithRepliesWithUsers,
   PinOperation,
   ReactionOperation,
   ThreadExecutionContext,
 } from "../../types";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../../web/realtime";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
-import { buildMessageListPagination } from "../utils";
-import _ from "lodash";
+import { buildMessageListPagination, getMentions } from "../utils";
+import _, { update } from "lodash";
 import { ThreadMessagesOperationsService } from "./operations";
 import { getDefaultMessageInstance } from "./utils";
 import { Thread } from "../../entities/threads";
+import UserServiceAPI from "../../../user/api";
+import ChannelServiceAPI from "../../../channels/provider";
+import { UserObject } from "../../../user/web/types";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
   repository: Repository<Message>;
   operations: ThreadMessagesOperationsService;
 
-  constructor(private database: DatabaseServiceAPI, private service: MessageServiceAPI) {
+  constructor(
+    private database: DatabaseServiceAPI,
+    private user: UserServiceAPI,
+    private channel: ChannelServiceAPI,
+    private service: MessageServiceAPI,
+  ) {
     this.operations = new ThreadMessagesOperationsService(database, service, this);
   }
 
@@ -52,87 +68,88 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
    * @returns SaveResult<Message>
    */
   async save(
-    item: Message,
+    item: Partial<Message>,
     options?: MessagesSaveOptions,
     context?: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    const serverRequest = context?.user?.server_request;
+    //This can come from:
+    // - Server want to change the message somehow (the message should already be formated)
+    // - Application change the message
+    // - User change its message
+    // - Pin / Reaction / Bookmark are *not* done here
 
-    if (!serverRequest && !this.service.threads.checkAccessToThread(context)) {
+    const serverRequest = context?.user?.server_request;
+    const applicationRequest = context?.user?.application_id;
+    let messageOwnerAndNotRemoved = true;
+
+    item.thread_id = (serverRequest ? item.thread_id : null) || context.thread.id;
+    const pk = _.pick(item, "thread_id", "id");
+
+    let messageCreated = !pk.id;
+
+    if (!pk.thread_id || (!serverRequest && !this.service.threads.checkAccessToThread(context))) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't write this message.");
     }
 
-    let created = !item.id;
-
     let message = getDefaultMessageInstance(item, context);
-
-    //We try to update an existing message
-    if (!created) {
-      const messageToUpdate = await this.repository.findOne({
-        id: item.id,
-        thread_id: context.thread.id,
-      });
-
-      //Test if we can update this message. Can edit only:
-      // - Server itself
-      // - Message owner
-      // - Application owner
-      // Deleted messages cannot be edited except by server itself
-      if (
-        !serverRequest &&
-        (!messageToUpdate ||
-          (context?.user?.application_id !== messageToUpdate.application_id &&
-            context.user.id !== messageToUpdate.user_id) ||
-          messageToUpdate.subtype === "deleted")
-      ) {
-        logger.error(`Unable to edit message in thread ${message.thread_id}`);
-        throw Error("Can't edit this message.");
+    if (pk.id) {
+      const existingMessage = await this.repository.findOne(pk);
+      if (!existingMessage && !serverRequest) {
+        logger.error(`This message ${item.id} doesn't exists in thread ${item.thread_id}`);
+        throw Error("This message doesn't exists.");
       }
+      if (existingMessage) {
+        message = existingMessage;
+        messageOwnerAndNotRemoved =
+          ((context.user?.id && message.user_id === context.user?.id) ||
+            (context.user?.application_id &&
+              message.application_id === context.user?.application_id)) &&
+          message.subtype !== "deleted";
 
-      //Created with forced id (server only)
-      if (!messageToUpdate && !options?.message_moved) {
-        created = true;
-      }
-
-      if (serverRequest) {
-        message = _.assign(messageToUpdate || message, message);
-      } else {
-        if (messageToUpdate) {
-          messageToUpdate.edited = {
+        if (message.user_id === context.user?.id && context.user?.id) {
+          message.edited = {
             edited_at: new Date().getTime(),
           };
-
-          let updatedMessage = _.assign(
-            messageToUpdate,
-            _.pick(message, "text", "blocks", "files", "context"),
-          );
-          if (context?.user?.application_id) {
-            updatedMessage = _.assign(updatedMessage, _.pick(message, "override"));
-          }
-
-          message = updatedMessage;
         }
+      } else {
+        messageCreated = true;
       }
     }
 
-    //Server request can edit more fields
-    if (serverRequest) {
-      message.created_at = item.created_at || message.created_at;
-    }
-
-    logger.info(`Saved message in thread ${message.thread_id}`);
+    const updatable: { [K in keyof Partial<Message>]: boolean } = {
+      ephemeral: serverRequest || messageOwnerAndNotRemoved,
+      subtype: serverRequest,
+      text: serverRequest || messageOwnerAndNotRemoved,
+      blocks: serverRequest || messageOwnerAndNotRemoved,
+      files: serverRequest || messageOwnerAndNotRemoved,
+      context: serverRequest || messageOwnerAndNotRemoved,
+      override: serverRequest || (messageOwnerAndNotRemoved && !!applicationRequest),
+    };
+    Object.keys(updatable).forEach(k => {
+      if ((updatable as any)[k] && (item as any)[k] !== undefined) {
+        (message as any)[k] = (item as any)[k];
+      }
+    });
+    message = _.assign(message, pk);
 
     if (!message.ephemeral) {
+      if (options.threadInitialMessage) {
+        message.id = message.thread_id;
+      }
+
+      logger.info(`Saved message in thread ${message.thread_id}`);
       await this.repository.save(message);
+    } else {
+      logger.info(`Did not save ephemeral message in thread ${message.thread_id}`);
     }
 
-    this.onSaved(message, { created }, context);
+    this.onSaved(message, { created: messageCreated }, context);
 
     return new SaveResult<Message>(
       "message",
       message,
-      item.id ? OperationType.UPDATE : OperationType.CREATE,
+      messageCreated ? OperationType.CREATE : OperationType.UPDATE,
     );
   }
 
@@ -148,14 +165,47 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     options: { previous_thread: string },
     context: ThreadExecutionContext,
   ): Promise<void> {
-    //Fixme: check user has access to both threads
-
-    logger.error(
+    logger.debug(
       `Try to move message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
     );
 
     if (options.previous_thread === context.thread.id) {
       return;
+    }
+
+    //Move replies if it was a thread head message
+    if (pk.id === options.previous_thread) {
+      let nextPage: Pagination = { limitStr: "100" };
+      do {
+        const replies = await this.list(
+          nextPage,
+          {},
+          {
+            user: { id: null, server_request: true },
+            thread: { id: pk.id },
+            company: { id: context.company.id },
+          },
+        );
+
+        for (const reply of replies.getEntities()) {
+          //Do not create an infinite loop
+          if (reply.id !== options.previous_thread) {
+            logger.debug(
+              `Try to move reply ${reply.id} to message ${pk.id} from thread ${reply.thread_id} to thread ${context.thread.id}`,
+            );
+
+            await this.service.messages.move(
+              { id: reply.id || undefined },
+              {
+                previous_thread: reply.thread_id,
+              },
+              context,
+            );
+          }
+        }
+
+        nextPage = replies.nextPage as Pagination;
+      } while (nextPage.page_token);
     }
 
     const messageInOldThread = await this.repository.findOne({
@@ -168,31 +218,54 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       throw Error("Can't move this message.");
     }
 
+    //Check new thread exists
+    let thread = await this.service.threads.get({ id: context.thread.id });
+    if (!thread && `${context.thread.id}` === `${pk.id}`) {
+      logger.info(`Create empty thread for message moved out of thread`);
+      let oldThread = await this.service.threads.get({ id: options.previous_thread });
+      let upgradedContext = _.cloneDeep(context);
+      upgradedContext.user.server_request = true;
+      thread = (
+        await this.service.threads.save(
+          {
+            id: messageInOldThread.id,
+            participants: oldThread.participants,
+          },
+          {},
+          upgradedContext,
+        )
+      )?.entity;
+    }
+    if (!thread) {
+      throw Error("Can't move this message to inexistent thread.");
+    }
+
     const messageInNewThread = _.cloneDeep(messageInOldThread);
     messageInNewThread.thread_id = context.thread.id;
 
-    await this.save(
-      messageInNewThread,
-      {
-        message_moved: true,
-      },
-      {
-        user: { id: null, server_request: true },
-        thread: context.thread,
-        company: context.company,
-      },
-    );
+    await this.repository.save(messageInNewThread);
+
+    this.onSaved(messageInNewThread, { created: true }, context);
 
     await this.repository.remove(messageInOldThread);
+    await this.service.threads.addReply(messageInOldThread.thread_id, -1);
 
-    logger.error(
+    logger.info(
       `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
     );
 
     return;
   }
 
-  async delete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
+  async forceDelete(pk: Message, context?: ThreadExecutionContext): Promise<DeleteResult<Message>> {
+    return this.delete(pk, context, true);
+  }
+
+  async delete(
+    pk: Message,
+    context?: ThreadExecutionContext,
+    forceDelete: boolean = false,
+  ): Promise<DeleteResult<Message>> {
     if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
@@ -237,8 +310,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     await this.repository.save(message);
     this.onSaved(message, { created: false }, context);
 
-    //Server and application can definively remove a message
-    if (context.user.server_request || context.user.application_id || message.application_id) {
+    //Only server and application can definively remove a message
+    if (
+      (forceDelete && (context.user.server_request || context.user.application_id)) ||
+      message.application_id
+    ) {
       await this.repository.remove(message);
     }
 
@@ -249,35 +325,33 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
   ): Promise<Message> {
-    return this.repository.findOne(pk);
+    const thread = await this.service.threads.get({ id: pk.id }, context);
+    if (thread) {
+      return await this.getThread(thread);
+    } else {
+      return await this.repository.findOne(pk);
+    }
   }
 
-  async getThread(thread: Thread, options: MessagesGetThreadOptions = {}) {
+  async getThread(
+    thread: Thread,
+    options: MessagesGetThreadOptions = {},
+  ): Promise<MessageWithReplies> {
     const last_replies = (
       await this.repository.find(
         {
           thread_id: thread.id,
         },
         {
-          pagination: new Pagination("", `${options?.replies_per_thread || 3}`, true),
+          pagination: new Pagination("", `${options?.replies_per_thread || 3}`, false),
         },
       )
     ).getEntities();
 
-    if (last_replies.length === 0) {
-      //Delete the thread because it is empty
-      this.service.threads.delete(thread, { user: { id: null, server_request: true } });
-      return null;
-    }
-
-    const first_message = await this.repository.findOne(
-      {
-        thread_id: thread.id,
-      },
-      {
-        pagination: new Pagination("", `1`, false),
-      },
-    );
+    const first_message = await this.repository.findOne({
+      thread_id: thread.id,
+      id: thread.id,
+    });
 
     return {
       ...first_message,
@@ -298,7 +372,66 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       { thread_id: context.thread.id },
       buildMessageListPagination(pagination, "id"),
     );
+
+    //Get complete details about initial message
+    if (
+      list
+        .getEntities()
+        .map(m => `${m.id}`)
+        .includes(`${context.thread.id}`)
+    ) {
+      const initialMessage = await this.get(
+        { thread_id: context.thread.id, id: context.thread.id },
+        context,
+      );
+      list.mapEntities((m: any) => {
+        if (`${m.id}` === `${initialMessage.id}`) {
+          return initialMessage;
+        }
+        return m;
+      });
+    }
+
     return list;
+  }
+
+  async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
+    let ids: string[] = [];
+    if (message.user_id) ids.push(message.user_id);
+    if (message.pinned_info?.pinned_by) ids.push(message.pinned_info?.pinned_by);
+    const mentions = getMentions(message);
+    for (const mentionedUser of mentions.users) {
+      ids.push(mentionedUser);
+    }
+    ids = _.uniq(ids);
+
+    let users: UserObject[] = [];
+    for (const id of ids) {
+      users.push(
+        await this.user.formatUser(
+          await this.user.users.get({ id }, { user: { id: null, server_request: true } }),
+        ),
+      );
+    }
+
+    let messageWithUsers = { ...message, users };
+    return messageWithUsers;
+  }
+
+  async includeUsersInMessageWithReplies(
+    message: MessageWithReplies,
+  ): Promise<MessageWithRepliesWithUsers> {
+    let last_replies = [];
+    for (const reply of message.last_replies) {
+      last_replies.push(await this.includeUsersInMessage(reply));
+    }
+
+    let messageWithUsers = {
+      ...message,
+      users: (await this.includeUsersInMessage(message)).users,
+      last_replies,
+    };
+    return messageWithUsers;
   }
 
   @RealtimeSaved<Message>((message, context) => [
@@ -307,7 +440,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
     },
   ])
-  async onSaved(message: Message, options: { created: boolean }, context: ThreadExecutionContext) {
+  async onSaved(message: Message, options: { created?: boolean }, context: ThreadExecutionContext) {
     if (options.created && !message.ephemeral) {
       await this.service.threads.addReply(message.thread_id);
     }

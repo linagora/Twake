@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Typography } from 'antd';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import popupManager from 'services/popupManager/popupManager.js';
 import AutoHeight from 'app/components/AutoHeight/AutoHeight';
 import ConsoleService from 'app/services/Console/ConsoleService';
@@ -73,7 +73,7 @@ export default (props: PropsType): JSX.Element => {
       </div>
       <div className="current-user-state">
         <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-          {Languages.t('components.add_mails_workspace.text_secondary')}
+          {Languages.t('scenes.app.popup.adduser.adresses_message')}
         </Typography.Text>
       </div>
       <div className="add-user-button-container">

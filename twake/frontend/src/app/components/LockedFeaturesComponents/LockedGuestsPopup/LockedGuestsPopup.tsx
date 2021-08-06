@@ -2,7 +2,7 @@ import { Button, Row, Typography } from 'antd';
 import ObjectModal from 'app/components/ObjectModal/ObjectModal';
 import React from 'react';
 import ModalManager from 'app/components/Modal/ModalManager';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Emojione from 'app/components/Emojione/Emojione';
 
 type PropsType = {

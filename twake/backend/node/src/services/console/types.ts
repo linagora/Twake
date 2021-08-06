@@ -1,6 +1,9 @@
 import { Observable } from "rxjs";
 import Company from "../user/entities/company";
 import CompanyUser from "../user/entities/company_user";
+import { CompanyUserRole } from "../user/web/types";
+import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
+import { AccessToken } from "../../utils/types";
 
 export interface CreateConsoleCompany {
   code: string;
@@ -26,6 +29,7 @@ export interface CreateConsoleCompany {
 export type CreatedConsoleCompany = Partial<CreateConsoleCompany>;
 
 export interface CreateConsoleUser {
+  id?: string;
   email: string;
   firstName: string;
   lastName: string;
@@ -35,8 +39,14 @@ export interface CreateConsoleUser {
     value: string;
   };
   password: string;
-  role: string;
+  role: CompanyUserRole;
   skipInvite: boolean;
+  inviterEmail?: string;
+}
+
+export interface CreateInternalUser {
+  email: string;
+  password: string;
 }
 
 export type CreatedConsoleUser = Partial<CreateConsoleUser> & { _id: string };
@@ -51,6 +61,7 @@ export type ConsoleUser = {
 };
 
 export type ConsoleCompany = {
+  id?: string;
   code: string;
 };
 
@@ -106,3 +117,85 @@ export type ProcessReport = {
   message?: string;
   data?: UserReport | CompanyReport | Error | Company[];
 };
+
+export type ConsoleType = "remote" | "internal";
+
+export type ConsoleOptions = {
+  username: string;
+  password: string;
+  url: string;
+  hook: {
+    token: string;
+    public_key?: string;
+  };
+};
+
+export type ConsoleHookCompany = {
+  stats: string;
+  plan: { name: string; limits: any };
+  value: string;
+  details: {
+    code: string;
+    logo: string;
+    avatar: {
+      value: string;
+      type: string;
+    };
+    name: string;
+    country: string;
+    address: string;
+  };
+};
+
+export type ConsoleHookUser = {
+  _id: string;
+  roles: [{ targetCode: string; roleCode: CompanyUserRole }];
+  email: string;
+  name: string; // backward compatible?
+  firstName: string;
+  lastName: string;
+  isVerified: boolean;
+  preference: {
+    locale: string;
+    timeZone: number;
+    allowTrackingPersonalInfo: boolean;
+  };
+  avatar: {
+    type: string;
+    value: string;
+  };
+};
+
+export type ConsoleHookBodyContent = {
+  company: ConsoleHookCompany;
+  user: ConsoleHookUser;
+};
+
+export type ConsoleHookBody = {
+  type: string;
+  content: ConsoleHookBodyContent;
+  signature: string;
+};
+
+export class ConsoleHookQueryString {
+  secret_key: string;
+}
+
+export class ConsoleHookResponse {
+  success?: boolean;
+  error?: string;
+}
+
+export interface ConsoleExecutionContext extends ExecutionContext {
+  options: ConsoleOptions;
+}
+
+export interface AuthRequest {
+  email?: string;
+  password?: string;
+  remote_access_token?: string;
+}
+
+export interface AuthResponse {
+  access_token: AccessToken;
+}

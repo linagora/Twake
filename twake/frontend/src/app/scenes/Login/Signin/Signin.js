@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import LoginService from 'services/login/login.js';
 import AccountService from 'services/login/account';
 import Emojione from 'components/Emojione/Emojione';
@@ -50,14 +50,14 @@ export default class Signin extends Component {
   }
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (
-      (prevState.page == 1 && this.state.page == 2) ||
-      (prevState.page == 2 && this.state.page == 3 && this.input)
+      (prevState.page === 1 && this.state.page === 2) ||
+      (prevState.page === 2 && this.state.page === 3 && this.input)
     ) {
       this.input.focus();
     }
   }
   displayStep() {
-    if (this.state.page == 1) {
+    if (this.state.page === 1) {
       return (
         <div className="">
           <div className="subtitle">
@@ -85,7 +85,7 @@ export default class Signin extends Component {
               'bottom-margin medium full_width ' + (this.state.errorUsername ? 'error' : '')
             }
             onKeyDown={e => {
-              if (e.keyCode == 13) {
+              if (e.keyCode === 13) {
                 this.next();
               }
             }}
@@ -112,7 +112,7 @@ export default class Signin extends Component {
               (this.state.login.error_subscribe_mailalreadyused ? 'error' : '')
             }
             onKeyDown={e => {
-              if (e.keyCode == 13) {
+              if (e.keyCode === 13) {
                 this.next();
               }
             }}
@@ -134,7 +134,7 @@ export default class Signin extends Component {
               'bottom-margin medium full_width ' + (this.state.errorPassword ? 'error' : '')
             }
             onKeyDown={e => {
-              if (e.keyCode == 13) {
+              if (e.keyCode === 13) {
                 this.next();
               }
             }}
@@ -143,6 +143,7 @@ export default class Signin extends Component {
             onChange={evt => this.setState({ password: evt.target.value })}
           />
           <div className="bottom">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
@@ -159,7 +160,7 @@ export default class Signin extends Component {
         </div>
       );
     }
-    if (this.state.page == 2) {
+    if (this.state.page === 2) {
       return (
         <div className="">
           <div className="subtitle">
@@ -181,7 +182,7 @@ export default class Signin extends Component {
             }}
             className="bottom-margin medium full_width"
             onKeyDown={e => {
-              if (e.keyCode == 13) {
+              if (e.keyCode === 13) {
                 this.next();
               }
             }}
@@ -193,7 +194,7 @@ export default class Signin extends Component {
             id="firstname_create"
             className="bottom-margin medium full_width"
             onKeyDown={e => {
-              if (e.keyCode == 13) {
+              if (e.keyCode === 13) {
                 this.next();
               }
             }}
@@ -209,7 +210,7 @@ export default class Signin extends Component {
                 id="phone_number_create"
                 className="bottom-margin medium full_width"
                 onKeyDown={e => {
-                  if (e.keyCode == 13) {
+                  if (e.keyCode === 13) {
                     this.next();
                   }
                 }}
@@ -229,6 +230,7 @@ export default class Signin extends Component {
             ]}
 
           <div className="bottom">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
               {this.state.i18n.t('general.back')}
             </a>
@@ -247,13 +249,10 @@ export default class Signin extends Component {
     }
     if (
       this.state.page == 3 &&
-      !InitService.server_infos?.configuration?.accounts?.type ===
-        'internal'.disable_email_verification
+      !InitService.server_infos?.configuration?.accounts?.type?.internal?.disable_email_verification
     ) {
-      var mail_inputs = 0;
-      var last_not_empty = 0;
       return (
-        <div className="">
+        <div>
           <div className="subtitle">
             {this.state.i18n.t('scenes.login.create_account.step_3_subtitle')}{' '}
             <Emojione type=":robot:" />
@@ -286,8 +285,7 @@ export default class Signin extends Component {
     }
     if (
       this.state.page == 3 &&
-      InitService.server_infos?.configuration?.accounts?.type ===
-        'internal'.disable_email_verification
+      InitService.server_infos?.configuration?.accounts?.type?.internal?.disable_email_verification
     ) {
       return (
         <div className="">
@@ -340,13 +338,13 @@ export default class Signin extends Component {
     );
   }
   next() {
-    if (this.state.page == 1) {
+    if (this.state.page === 1) {
       if (this.checkForm()) {
         AccountService.checkMailandUsername(
           this.state.email,
           this.state.username,
           (th, value) => {
-            if (value == 0) {
+            if (value === 0) {
               this.setState({ page: this.state.page + 1 });
             } else {
               this.setState({});
@@ -355,7 +353,7 @@ export default class Signin extends Component {
           this,
         );
       }
-    } else if (this.state.page == 2) {
+    } else if (this.state.page === 2) {
       this.subscribeMail();
     } else {
       this.setState({ page: this.state.page + 1 });
@@ -363,10 +361,10 @@ export default class Signin extends Component {
   }
   sub(that, state) {
     // that.login(username, password, 1);
-    if (state == 0) {
+    if (state === 0) {
       that.setState({ page: 3 });
     }
-    if (state == 1) {
+    if (state === 1) {
       that.setState({ page: 1 });
       that.state.errorSub = true;
     }

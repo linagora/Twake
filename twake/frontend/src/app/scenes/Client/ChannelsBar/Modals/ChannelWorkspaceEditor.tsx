@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ChannelTemplateEditor from 'app/scenes/Client/ChannelsBar/Modals/ChannelTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
-import { Typography, Button } from 'antd';
+import { Button } from 'antd';
 import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import _ from 'lodash';
@@ -14,9 +14,15 @@ type Props = {
   title: string;
   channel?: ChannelResource;
   currentUserId?: string;
+  defaultVisibility?: ChannelType['visibility'];
 };
 
-const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) => {
+const ChannelWorkspaceEditor: FC<Props> = ({
+  title,
+  channel,
+  currentUserId,
+  defaultVisibility,
+}) => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
 
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -29,8 +35,29 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
     workspace_id: workspaceId,
   };
 
-  const onChange = (channelEntries: ChannelType): ChannelType => {
-    setDisabled((channelEntries.name || '').trim().length ? true : false);
+  const onChange = (channelEntries: Partial<ChannelType>): ChannelType => {
+    const shouldDisabled =
+      ((channelEntries.name || '').trim().length ? false : true) ||
+      _.isEqual(
+        {
+          channel_group: channelEntries.channel_group,
+          description: channelEntries.description,
+          icon: channelEntries.icon,
+          is_default: channelEntries.is_default,
+          name: channelEntries.name,
+          visibility: channelEntries.visibility,
+        },
+        {
+          channel_group: channel?.data.channel_group,
+          description: channel?.data.description,
+          icon: channel?.data.icon,
+          is_default: channel?.data.is_default,
+          name: channel?.data.name,
+          visibility: channel?.data.visibility,
+        },
+      );
+
+    setDisabled(shouldDisabled);
     return (newChannel = channelEntries);
   };
 
@@ -44,9 +71,9 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
       const insertedChannel = ChannelsCollections.findOne(channel.id, { withoutBackend: true });
       insertedChannel.data = _.assign(insertedChannel.data, {
         name: newChannel.name || channel.data.name,
-        description: newChannel.description || channel.data.description,
+        description: newChannel.description,
         icon: newChannel.icon || channel.data.icon,
-        is_default: newChannel.is_default || false,
+        is_default: newChannel.is_default || false,
         visibility:
           newChannel.visibility !== undefined ? newChannel.visibility : channel.data.visibility,
         channel_group:
@@ -77,16 +104,14 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
       footer={
         <Button
           loading={loading}
+          onClick={upsertChannel}
           className="small"
           block={true}
           type="primary"
+          disabled={disabled}
           style={{
             width: 'auto',
             float: 'right',
-          }}
-          disabled={!disabled}
-          onClick={() => {
-            upsertChannel();
           }}
         >
           {Languages.t(channel?.id ? 'general.edit' : 'general.create')}
@@ -97,6 +122,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({ title, channel, currentUserId }) =>
         channel={channel?.data}
         onChange={onChange}
         currentUserId={currentUserId}
+        defaultVisibility={defaultVisibility}
       />
     </ObjectModal>
   );

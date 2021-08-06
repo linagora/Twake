@@ -1,7 +1,6 @@
 import React from 'react';
 import Languages from 'services/languages/languages';
 import Emojione from 'components/Emojione/Emojione';
-import LoginService from 'services/login/login.js';
 import './Error.scss';
 import RouterServices from 'app/services/RouterService';
 import InitService from 'services/InitService';
@@ -19,20 +18,22 @@ export default () => {
       RouterServices.push('/');
     }
   }
+
   return (
     <div className="full_page_error">
       <div className="error_message skew_in_top_nobounce">
         <div className="title">
           <Emojione type="👨‍🚀" size={32} />{' '}
-          {Languages.t('scenes.error_on_twake', 'You found an error on the Twake platform !')}
+          {Languages.t('scenes.error_on_twake', [], 'You found an error on the Twake platform !')}
         </div>
         <div className="subtitle">
-          {Languages.t('scenes.no_panic', "Don't panic! Just reload this page to fix Twake.")}
+          {Languages.t('scenes.no_panic', [], "Don't panic! Just reload this page to fix Twake.")}
         </div>
         {state?.error?.name && (
           <div className="text">
             {Languages.t(
               'scenes.help_us',
+              [],
               'However, if you would like to help us fix this error, send us a message below: ',
             )}
             <br />
@@ -54,6 +55,7 @@ export default () => {
               <span>
                 {Languages.t('scenes.tell_us', [], 'Please tell us what you were doing at :')}
                 <br />
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a
                   href="#"
                   onClick={() =>

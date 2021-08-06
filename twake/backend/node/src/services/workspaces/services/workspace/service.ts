@@ -7,6 +7,7 @@ import {
   DeleteResult,
   ExecutionContext,
   ListResult,
+  OperationType,
   Paginable,
   Pagination,
   SaveResult,
@@ -27,15 +28,16 @@ import Workspace, {
 } from "../../../workspaces/entities/workspace";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { UserPrimaryKey } from "../../../user/entities/user";
-import { CompanyPrimaryKey } from "../../../user/entities/company";
+import Company, { CompanyPrimaryKey } from "../../../user/entities/company";
 import { merge } from "lodash";
 import WorkspacePendingUser, {
   WorkspacePendingUserPrimaryKey,
   TYPE as WorkspacePendingUserType,
-  getInstance as getWorkspacePendingUserInstance,
 } from "../../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../../user/web/types";
 import { uuid } from "../../../../utils/types";
+import _ from "lodash";
+import { UsersServiceAPI } from "../../../user/api";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -43,7 +45,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   private workspaceRepository: Repository<Workspace>;
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
 
-  constructor(private database: DatabaseServiceAPI) {}
+  constructor(private database: DatabaseServiceAPI, private users: UsersServiceAPI) {}
 
   async init(): Promise<this> {
     this.workspaceUserRepository = await this.database.getRepository<WorkspaceUser>(
@@ -72,6 +74,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const workspaceToCreate: Workspace = getWorkspaceInstance({
       ...workspace,
       ...{
+        name: await this.getWorkspaceName(workspace.name, workspace.group_id),
         dateAdded: Date.now(),
         isDeleted: false,
         isArchived: false,
@@ -90,12 +93,55 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  save?<SaveOptions>(
-    item: Workspace,
+  async save?<SaveOptions>(
+    item: Partial<Workspace>,
     options?: SaveOptions,
-    context?: ExecutionContext,
+    context?: WorkspaceExecutionContext,
   ): Promise<SaveResult<Workspace>> {
-    throw new Error("Method not implemented.");
+    let workspace = getWorkspaceInstance({
+      ...item,
+      ...{
+        name: "",
+        dateAdded: Date.now(),
+        isArchived: false,
+        isDefault: false,
+      },
+    });
+
+    if (item.id) {
+      // ON UPDATE
+      workspace = await this.get({
+        id: item.id,
+        group_id: context.company_id,
+      });
+
+      if (!workspace) {
+        throw new Error(`Unable to edit inexistent workspace ${item.id}`);
+      }
+    }
+
+    workspace = merge(workspace, {
+      name: await this.getWorkspaceName(item.name, context.company_id),
+      logo: item.logo,
+      isArchived: item.isArchived,
+      isDefault: item.isDefault,
+    });
+
+    await this.workspaceRepository.save(workspace);
+
+    if (!item.id) {
+      await this.addUser(
+        { id: workspace.id, group_id: workspace.group_id },
+        { id: context.user.id },
+        "admin",
+      );
+    }
+
+    return new SaveResult<Workspace>(
+      TYPE,
+      workspace,
+      item.id ? OperationType.UPDATE : OperationType.CREATE,
+    );
   }
 
   async delete(
@@ -120,8 +166,19 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return this.workspaceRepository.find(pk, { pagination });
   }
 
-  getAllForCompany(companyId: uuid): Promise<Workspace[]> {
-    return this.workspaceRepository.find({ group_id: companyId }).then(a => a.getEntities());
+  async getAllForCompany(companyId: uuid): Promise<Workspace[]> {
+    let allCompanyWorkspaces: Workspace[] = [];
+    let nextPage: Pagination = new Pagination("", "100");
+    do {
+      const tmp = await this.workspaceRepository.find(
+        { group_id: companyId },
+        { pagination: nextPage },
+      );
+      nextPage = tmp.nextPage as Pagination;
+      allCompanyWorkspaces = [...allCompanyWorkspaces, ...tmp.getEntities()];
+    } while (nextPage.page_token);
+
+    return allCompanyWorkspaces;
   }
 
   async addUser(
@@ -129,6 +186,13 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     userPk: UserPrimaryKey,
     role: WorkspaceUserRole,
   ): Promise<void> {
+    const user = await this.users.get(userPk);
+    user.cache = Object.assign(user.cache || {}, {
+      companies: _.uniq([...(user.cache?.companies || []), workspacePk.group_id]),
+      workspaces: _.uniq([...(user.cache?.workspaces || []), workspacePk.id]),
+    });
+    await this.users.save(user, {}, { user: { id: user.id, server_request: true } });
+
     await this.workspaceUserRepository.save(
       getWorkspaceUserInstance({
         workspaceId: workspacePk.id,
@@ -185,9 +249,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
     companyId: CompanyPrimaryKey,
   ): Promise<WorkspaceUser[]> {
-    const allCompanyWorkspaces = await this.workspaceRepository
-      .find({ group_id: companyId.id })
-      .then(a => a.getEntities());
+    const allCompanyWorkspaces = await this.getAllForCompany(companyId.id);
 
     const UserWorkspaces = await Promise.all(
       allCompanyWorkspaces.map(workspace =>
@@ -253,5 +315,26 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     }
     await this.workspacePendingUserRepository.remove(pendingUser);
     return new DeleteResult(WorkspacePendingUserType, primaryKey, true);
+  }
+
+  /**
+   * @name GetWorkspaceName
+   * @param exceptedName workspace name that user excepted to have
+   * @param companyId company that user excepted to create or update the workspace
+   * @returns if workspace name is already used in the company, this will return the exceptedName with the current duplicates number otherwise simply return the exceptedName
+   */
+  private async getWorkspaceName(exceptedName: string, companyId: string) {
+    const workspacesList = await this.list(
+      null,
+      {},
+      { company_id: companyId, user: { id: null, server_request: true } },
+    );
+
+    workspacesList.filterEntities(entity => _.includes(entity.name, exceptedName));
+
+    const shouldRenameWorkspace = !workspacesList.isEmpty();
+    const duplicatesCount = workspacesList.getEntities().length;
+
+    return shouldRenameWorkspace ? `${exceptedName}(${duplicatesCount + 1})` : exceptedName;
   }
 }

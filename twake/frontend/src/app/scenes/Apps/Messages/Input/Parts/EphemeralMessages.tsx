@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Send, Smile, AlignLeft, Video, MoreHorizontal, Paperclip } from 'react-feather';
-import Languages from 'services/languages/languages.js';
+import React, { useState } from 'react';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import MessageComponent from '../../Message/Message';
-import MessagesService from 'services/Apps/Messages/Messages.js';
+import MessagesService from 'services/Apps/Messages/Messages';
 
 type Props = {
   channelId: string;
@@ -15,8 +14,6 @@ type Props = {
 };
 
 export default (props: Props) => {
-  let savedList: any[] = [];
-
   const getEphemeralMessages = () => {
     return Collections.get('messages')
       .findBy({
@@ -24,6 +21,7 @@ export default (props: Props) => {
         parent_message_id: props.threadId,
         _user_ephemeral: true,
       })
+      .filter((m: any) => m?.subtype !== 'deleted')
       .filter((message: any) => {
         try {
           if (message.ephemeral_message_recipients) {

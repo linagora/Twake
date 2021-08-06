@@ -12,7 +12,7 @@ export type JWTDataType = {
 };
 
 //Mobile temporary
-if ((WindowService.findGetParameter('mobile_login') as any) == '1') {
+if ((WindowService.findGetParameter('mobile_login') as any) === '1') {
   LocalStorage.setItem('mobile_login', '1');
 }
 
@@ -51,7 +51,7 @@ class JWTStorageClass {
     //Mobile temporary
     LocalStorage.getItem('mobile_login', (res: string) => {
       LocalStorage.setItem('mobile_login', '0');
-      if (res == '1') {
+      if (res === '1') {
         document.location.replace(
           '/internal/mobile/login/redirect?jwt=' + encodeURI(JSON.stringify(jwtData)),
         );

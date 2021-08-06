@@ -11,7 +11,16 @@
     }
   },
   "console": {
-    "provider": "https://console.twake.app"
+    "type": "internal",
+    "remote": {
+      "username": "",
+      "password": "12345678",
+      "url": "https://some-remote-console-url/",
+      "hook": {
+        "token": "12345678"
+      }
+    },
+    "internal": {}
   },
   "sentry": {
     "dsn": ""
@@ -55,7 +64,9 @@
   },
   "auth": {
     "jwt": {
-      "secret": "supersecret"
+      "secret": "supersecret",
+      "expiration": 3600,
+      "refresh_expiration": 2592000
     }
   },
   "database": {
@@ -75,10 +86,14 @@
     }
   },
   "pubsub": {
-    "urls": ["amqp://guest:guest@localhost:5672"]
+    "// possible 'type' values are": "'amqp' or 'local'",
+    "type": "amqp",
+    "amqp": {
+      "urls": ["amqp://guest:guest@localhost:5672"]
+    }
   },
   "search": {
-    "type": false,
+    "type": "elasticsearch",
     "elasticsearch": {
       "endpoint": "http://elasticsearch:9200"
     }
@@ -123,6 +138,7 @@
     "notifications",
     "messages",
     "files",
-    "workspaces"
+    "workspaces",
+    "console"
   ]
 }

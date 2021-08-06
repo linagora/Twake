@@ -137,7 +137,7 @@ class Notifications extends Observable {
       if (
         notification.data.company_id !== state.companyId ||
         (notification.data.workspace_id !== state.workspaceId &&
-          notification.data.workspace_id != 'direct')
+          notification.data.workspace_id !== 'direct')
       ) {
         badgeCount++;
         ignore.push(notification.data.company_id);
@@ -191,7 +191,7 @@ class Notifications extends Observable {
     }
     this.processed.push(identifier);
     setTimeout(() => {
-      this.processed = this.processed.filter(e => e != identifier);
+      this.processed = this.processed.filter(e => e !== identifier);
     }, 5000);
     //End Hack fix
 

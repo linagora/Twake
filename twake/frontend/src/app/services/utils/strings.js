@@ -1,6 +1,8 @@
 export default class Strings {
   static verifyMail(email) {
-    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    var re =
+      // eslint-disable-next-line no-useless-escape
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email.toLowerCase());
   }
 
@@ -26,7 +28,7 @@ export default class Strings {
       size = (5 + 1) * 4;
     }
     return;
-    element.addEventListener('keyup', function (e) {
+    /*element.addEventListener('keyup', function (e) {
       var target = e.target,
         position = target.selectionEnd,
         length = target.value.length;
@@ -41,7 +43,7 @@ export default class Strings {
         .replace(new RegExp('([A-Za-z0-9]{' + size + '})', 'g'), '$1' + separator)
         .trim();
       target.value = target.value.substr(0, max);
-    });
+    });*/
   }
 
   static convertBase(src, srctable, desttable) {

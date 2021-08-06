@@ -4,10 +4,13 @@ import Emojione from 'components/Emojione/Emojione';
 import { getAsFrontUrl } from 'app/services/utils/URLUtils';
 import './EmojiPicker.scss';
 import 'emoji-mart/css/emoji-mart.css';
+import Languages from 'services/languages/languages';
 
 Picker.defaultProps.backgroundImageFn = function backgroundImageFn(set, sheetSize) {
   sheetSize = 20;
-  return getAsFrontUrl('/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(sheetSize, '.png'));
+  return getAsFrontUrl(
+    '/public/emoji-datasource/'.concat(set, '/sheets-256/').concat(sheetSize, '.png'),
+  );
 };
 export default class EmojiPicker extends React.Component {
   /*
@@ -103,6 +106,22 @@ export default class EmojiPicker extends React.Component {
       <div className="menu-cancel-margin">
         <Picker
           set="apple"
+          i18n={{
+            search: Languages.t('components.emoji_picker.input_search_placeholder'),
+            notfound: Languages.t('components.emoji_picker.categories.not_found'),
+            categories: {
+              search: Languages.t('components.emoji_picker.categories.search_result'),
+              recent: Languages.t('components.emoji_picker.categories.frequently_used'),
+              people: Languages.t('components.emoji_picker.categories.smileys_and_people'),
+              nature: Languages.t('components.emoji_picker.categories.animals_and_nature'),
+              foods: Languages.t('components.emoji_picker.categories.food_and_drink'),
+              activity: Languages.t('components.emoji_picker.categories.activity'),
+              places: Languages.t('components.emoji_picker.categories.travel_and_places'),
+              objects: Languages.t('components.emoji_picker.categories.objects'),
+              symbols: Languages.t('components.emoji_picker.categories.symbols'),
+              flags: Languages.t('components.emoji_picker.categories.flags'),
+            },
+          }}
           showPreview={false}
           showSkinTones={false}
           autoFocus

@@ -13,11 +13,11 @@ export class MessageFile {
   company_id: string;
 
   @Type(() => String)
-  @Column("message_id", "timeuuid")
+  @Column("message_id", "timeuuid", { order: "DESC" })
   message_id: string;
 
   @Type(() => String)
-  @Column("id", "timeuuid")
+  @Column("id", "timeuuid", { order: "DESC" })
   id: string;
 
   @Column("metadata", "encoded_json")
