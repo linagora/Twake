@@ -1,6 +1,6 @@
 .ant-layout .main-view-layout {
   height: 100%;
-  overflow:hidden;
+  overflow: hidden;
   .main-view-content {
     position: relative;
     & > div {
@@ -15,8 +15,8 @@
 
 .ant-layout .global-view-layout {
   &.collapsed .global-view-header {
-    .channelName{
-      margin-left:26px;
+    .channelName {
+      margin-left: 26px;
     }
   }
   .global-view-header {
@@ -31,7 +31,7 @@
       white-space: nowrap;
       padding: 0 16px;
       line-height: 47px;
-    }    
+    }
   }
 
   .global-side-view {
@@ -72,6 +72,9 @@
   }
 
   .global-view-content {
+    & > .ant-layout {
+      max-width: 100%;
+    }
     padding: 0px;
     display: flex;
 
