@@ -904,7 +904,6 @@
     "scenes.login.home.lost_password": "Forgot password?",
     "scenes.login.home.create_account": "Create an account",
     "scenes.apps.parameters.group_sections.payment.au": "August",
-    "components.task_picker.modal_no_result": "",
     "components.task_picker.modal_search_task": "",
     "components.task_user.placeholder_name": "",
     "scenes.apps.tasks.left_bar.board_modal.placeholder_group": "",
