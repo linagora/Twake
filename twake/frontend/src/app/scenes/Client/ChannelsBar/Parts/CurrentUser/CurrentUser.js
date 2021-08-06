@@ -1,5 +1,5 @@
+// eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
-import {isRecoilValue} from 'recoil';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
