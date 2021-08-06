@@ -319,7 +319,7 @@ export class CassandraConnector extends AbstractConnector<
               {
                 columns: columnsDefinition[key].options,
                 secret: this.secret,
-                column: { key: key },
+                column: { key },
               },
             )}`,
           ]);
@@ -333,7 +333,7 @@ export class CassandraConnector extends AbstractConnector<
               columns: columnsDefinition[key].options,
               secret: this.secret,
               disableSalts: true,
-              column: { key: key },
+              column: { key },
             },
           )}`,
         ]);
@@ -401,7 +401,7 @@ export class CassandraConnector extends AbstractConnector<
                 columns: columnsDefinition[key].options,
                 secret: this.secret,
                 disableSalts: true,
-                column: { key: key },
+                column: { key },
               },
             )}`,
         );

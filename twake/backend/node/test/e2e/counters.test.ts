@@ -61,7 +61,7 @@ describe("Counters implementation", () => {
     platform.tearDown().then(done);
   });
 
-  it("Initing empty value", async done => {
+  it("Initializing empty value", async done => {
     await testCounterRepository.save(
       merge(new TestCounterEntity(), { value: 0 }, testCounterPrimaryKey),
     );
