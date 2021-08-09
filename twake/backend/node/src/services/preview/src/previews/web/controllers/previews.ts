@@ -31,7 +31,7 @@ export class PreviewController {
     const outputPath = `${inputPath.split(".")[0]}_temp`;
     const outputExtension = "png";
     const numberOfPages = 1;
-    const result = await this.service.get(
+    const result = await this.service.generateThumbnails(
       mime,
       inputPath,
       outputPath,

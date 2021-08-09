@@ -6,15 +6,20 @@ export async function convertFromOffice(
   numberOfPages: number,
 ) {
   if (numberOfPages >= 1) {
+    const processOutputPath = outputPath.split("/");
+    processOutputPath.pop();
+    processOutputPath.push("tmp");
+    outputPath = `${processOutputPath.join("/")}/${outputPath.split("/").pop()}`;
     await unoconv
       .run({
         file: inputPath,
-        output: outputPath,
+        output: `${outputPath}`,
         export: `PageRange=1-${numberOfPages}`,
       })
       .catch((e: any) => {
         throw e;
       });
-    inputPath = outputPath;
+
+    return `${outputPath}.pdf`;
   }
 }

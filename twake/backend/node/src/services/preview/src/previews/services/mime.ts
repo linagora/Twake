@@ -46,14 +46,14 @@ export const officeExtensions = [
   "pptm",
 ];
 export const pdfExtensions = ["pdf"];
-export const imageExtensions = ["jpeg", "png", "webp", "avif", "tiff", "giff", "svg"];
+export const imageExtensions = ["jpeg", "jpg", "png", "webp", "avif", "tiff", "gif", "svg"];
 
 // isFileType("application/x-authorware-map", "file.csv", officeExtensions)
 export function isFileType(fileMime: string, fileName: string, requiredExtensions: string[]): any {
   const extension = fileName.split(".").pop(); //filenameToExtension(fileName);
   const secondaryExtensions = Object.keys(mimes).filter(k => mimes[k] === fileMime);
   const fileExtensions = [extension, ...secondaryExtensions];
-  return fileExtensions.some(e => requiredExtensions.indexOf(e) > -1);
+  return fileExtensions.some(e => requiredExtensions.includes(e));
 }
 
 const mimes: any = {

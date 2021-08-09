@@ -6,7 +6,7 @@ export interface PreviewServiceAPI {
    * @param inputPath
    * @param outputPath
    */
-  get(
+  generateThumbnails(
     mime: string,
     inputPath: string,
     outputPath: string,

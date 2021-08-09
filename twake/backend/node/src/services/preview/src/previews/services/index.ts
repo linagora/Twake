@@ -3,10 +3,7 @@ import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
 import { isFileType } from "./mime";
-import mimes from "./mime";
-import pdfExtensions from "./mime";
-import officeExtensions from "./mime";
-import imageExtensions from "./mime";
+import { pdfExtensions, officeExtensions, imageExtensions } from "./mime";
 
 export function getService(): PreviewServiceAPI {
   return getServiceInstance();
@@ -20,8 +17,7 @@ class Service implements PreviewServiceAPI {
 
   constructor() {}
 
-  async get(
-    //generateThumbnails
+  async generateThumbnails(
     mime: string,
     inputPath: string,
     outputPath: string,
@@ -29,14 +25,14 @@ class Service implements PreviewServiceAPI {
     numberOfPages: number,
   ): Promise<any> {
     if (isFileType(mime, inputPath.split("/").pop(), officeExtensions)) {
-      await convertFromOffice(inputPath, outputPath, numberOfPages);
-      //await convertFromPdf(inputPath, outputPath);
-      //thumbnailsFromImages(inputPath, outputPath, outputExtension);
+      const pdfPath = await convertFromOffice(inputPath, outputPath, numberOfPages);
+      const thumbnailPath = await convertFromPdf(pdfPath, numberOfPages);
+      thumbnailsFromImages(thumbnailPath, outputPath, outputExtension);
     }
 
     if (isFileType(mime, inputPath.split("/").pop(), pdfExtensions)) {
-      await convertFromPdf(inputPath, outputPath);
-      thumbnailsFromImages(inputPath, outputPath, outputExtension);
+      const thumbnailPath = await convertFromPdf(inputPath, numberOfPages);
+      thumbnailsFromImages(thumbnailPath, outputPath, outputExtension);
     }
 
     if (isFileType(mime, inputPath.split("/").pop(), imageExtensions)) {
@@ -44,5 +40,3 @@ class Service implements PreviewServiceAPI {
     }
   }
 }
-
-//https://www.thoughtco.com/mime-types-by-content-type-3469108
