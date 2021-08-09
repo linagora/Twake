@@ -54,7 +54,7 @@ We use [Weblate](https://hosted.weblate.org/projects/twake/) for translation man
 
 ## How to contribute
 
-Everyone can contribute at their own level, even if they only give a few minutes of their time. Whatever you do, your help is very valuable. Only thanks to you Twake can be a powerful software. Check out how you can help [twake.app/contribute](https://twake.app/contribute)
+Everyone can contribute at their own level, even if they only give a few minutes of their time. Whatever you do, your help is very valuable. Only thanks to you Twake can be a powerful software. Check out how you can help [twake.app/en/how-to-contribute/](https://twake.app/en/how-to-contribute/)
 
 ## Manual install of Twake
 
