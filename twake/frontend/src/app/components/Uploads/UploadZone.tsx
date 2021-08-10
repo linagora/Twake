@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { createRef } from 'react';
+import React from 'react';
 
 import UploadManager from './UploadManager';
 import Languages from 'services/languages/languages';
@@ -7,12 +7,15 @@ import { Upload } from 'react-feather';
 import classNames from 'classnames';
 import './Uploads.scss';
 import { Typography } from 'antd';
+import { ToasterService as Toaster } from 'app/services/Toaster';
 
 type PropsType = { [key: string]: any };
 
 type StateType = { [key: string]: any };
 
 type FileInputType = any;
+
+type FileObjectType = { [key: string]: any };
 
 let sharedFileInput: any = null;
 export default class UploadZone extends React.Component<PropsType, StateType> {
@@ -121,7 +124,17 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
 
     UploadManager.getFilesTree(event, (tree: any, nb: any, totalSize: any) => {
       this.file_input.value = '';
-      this.upload(tree, nb, totalSize);
+
+      if (this.props.filesLimit) {
+        nb <= this.props.filesLimit
+          ? this.upload(tree, nb, totalSize)
+          : Toaster.error(
+              Languages.t('components.upload.drop_files.toaster.error', [this.props.filesLimit]),
+              4,
+            );
+      } else {
+        this.upload(tree, nb, totalSize);
+      }
     });
   }
 
@@ -205,11 +218,10 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
 
     const filesToUpload: any = {};
 
-    files.forEach((file: any, number: any) => {
+    files.forEach((file: FileObjectType, index: number) => {
       const filename = file.name
         ? file.name.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '')
-        : `file-${number}`;
-
+        : `file-${index}`;
       filesToUpload[filename] = file;
     });
 

@@ -1660,5 +1660,17 @@
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_link": "Créer une chaîne privée",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_text": " à la place",
     "scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_input_placeholder": "Vous ne pouvez pas ajouter plus de 10 utilisateurs",
-    "general.uploading": "Envoi"
+    "general.uploading": "Envoi",
+    "components.upload.drop_files.toaster.error": "Vous ne pouvez pas envoyer plus de {{$1}} fichiers",
+    "components.emoji_picker.categories.frequently_used": "Fréquemment utilisé(s)",
+    "components.emoji_picker.categories.smileys_and_people": "Smileys et personnes",
+    "components.emoji_picker.categories.animals_and_nature": "Animaux et Nature",
+    "components.emoji_picker.categories.food_and_drink": "Nourriture et boisson",
+    "components.emoji_picker.categories.activity": "Activité",
+    "components.emoji_picker.categories.travel_and_places": "Voyages et lieux",
+    "components.emoji_picker.categories.objects": "Objets",
+    "components.emoji_picker.categories.symbols": "Symboles",
+    "components.emoji_picker.categories.flags": "Drapeaux",
+    "components.emoji_picker.categories.search_result": "Résultats de la recherche",
+    "components.emoji_picker.categories.not_found": "Aucun Emoji trouvé"
 }

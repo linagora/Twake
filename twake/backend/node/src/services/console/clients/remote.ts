@@ -54,17 +54,39 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       };
     }
 
-    return this.client
-      .post(`/api/companies/${company.code}/users`, user, {
-        auth: this.auth(),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        params: {
-          skipInvite: user.skipInvite,
-        },
-      })
-      .then(({ data }) => data);
+    if (user.skipInvite) {
+      return this.client
+        .post(`/api/companies/${company.code}/users`, user, {
+          auth: this.auth(),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            skipInvite: user.skipInvite,
+          },
+        })
+        .then(({ data }) => data);
+    } else {
+      const invitationData = {
+        role: user.role,
+        emails: [
+          {
+            email: user.email,
+            role: user.role,
+          },
+        ],
+        inviter: user.inviterEmail,
+      };
+
+      return this.client
+        .post(`/api/companies/${company.code}/users/invitation`, invitationData, {
+          auth: this.auth(),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then(({ data }) => data);
+    }
   }
 
   async updateUserRole(

@@ -222,8 +222,11 @@ export class UserService implements UsersServiceAPI {
 
     if (existedDevice) {
       const user = await this.get({ id: existedDevice.user_id });
-      user.devices = (user.devices || []).filter(d => d !== id);
-      await Promise.all([this.deviceRepository.remove(existedDevice), this.repository.save(user)]);
+      if (user) {
+        user.devices = (user.devices || []).filter(d => d !== id);
+        await this.repository.save(user);
+      }
+      await this.deviceRepository.remove(existedDevice);
     }
   }
 

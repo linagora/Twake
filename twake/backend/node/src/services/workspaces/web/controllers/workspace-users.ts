@@ -363,7 +363,7 @@ export class WorkspaceUsersCrudController
 
       if (!userInCompany) {
         const company = { id: context.company_id, code: null } as ConsoleCompany;
-        const createUser = {
+        const createUser: CreateConsoleUser = {
           id: user ? user.id : null,
           email: invitation.email,
           firstName: null,
@@ -376,7 +376,9 @@ export class WorkspaceUsersCrudController
           password: invitation.password,
           role: invitation.company_role,
           skipInvite: false,
-        } as CreateConsoleUser;
+          inviterEmail: context.user.email,
+        };
+
         await consoleClient.addUserToCompany(company, createUser);
       }
 

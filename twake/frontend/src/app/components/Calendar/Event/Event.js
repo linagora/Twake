@@ -28,7 +28,8 @@ export default class Event extends React.Component {
       classNameUser = 'inEvent';
     }
 
-    var event_name = this.props.event.title || 'untitled';
+    var event_name =
+      this.props.event.title || Languages.t('scenes.apps.drive.navigators.new_file.untitled');
 
     var event_start = moment(parseInt(this.props.event.from) * 1000).format('LT');
 

@@ -10,7 +10,7 @@ import AccessRightsService from 'app/services/AccessRightsService';
 
 type Props = {
   channel: ChannelType | undefined;
-  onChange: (channelEntries: any) => void;
+  onChange: (channelEntries: Partial<ChannelType>) => void;
   currentUserId?: string;
   defaultVisibility?: ChannelType['visibility'];
 };

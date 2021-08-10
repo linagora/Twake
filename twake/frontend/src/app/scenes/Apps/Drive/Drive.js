@@ -236,7 +236,8 @@ export default class Drive extends Component {
   }
 
   createLinkFile(new_file_name, new_file_link) {
-    var name = (new_file_name || 'Untitled') + '.url';
+    var name =
+      (new_file_name || Languages.t('scenes.apps.drive.navigators.new_file.untitled')) + '.url';
     var url = new_file_link || '';
     if (!url) {
       return;
