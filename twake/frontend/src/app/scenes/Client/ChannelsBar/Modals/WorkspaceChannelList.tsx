@@ -3,9 +3,7 @@ import { Input, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages';
 import Icon from 'components/Icon/Icon';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
-import listService, {
-  GenericChannel,
-} from 'app/scenes/Client/ChannelsBar/Modals/SearchListManager';
+import listService, { GenericChannel } from 'services/search/searchListManager';
 import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
 import ChannelsService from 'services/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
@@ -21,25 +19,25 @@ export default () => {
   const [limit, setLimit] = useState(10);
   const [cursor, setCursor] = useState<number>(-1);
   const { companyId } = RouterServices.getStateFromRoute();
-
+  const list = listService.useWatcher(() => listService.list);
   const currentUserId: string = UsersService.getCurrentUserId();
   const inputRef = useRef<Input>(null);
 
   useEffect(() => {
-    listService.bind(search);
-  });
+    listService.searchAll('');
+  }, []);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'ArrowUp' && cursor > 0) {
       return setCursor(cursor - 1);
     }
 
-    if (event.key === 'ArrowDown' && cursor < listService.list.length - 1) {
+    if (event.key === 'ArrowDown' && cursor < list.length - 1) {
       if (cursor < limit - 1) return setCursor(cursor + 1);
     }
 
     if (event.key === 'Enter' && cursor >= 0) {
-      const element = listService.list[cursor];
+      const element = list[cursor];
       return element ? handleElementType(element) : null;
     }
   };
@@ -83,7 +81,6 @@ export default () => {
     setLimit(limit + 10);
     return inputRef.current?.focus();
   };
-
   return (
     <ObjectModal title={Languages.t('components.channelworkspacelist.title')} closable>
       <Row className="small-bottom-margin x-margin">
@@ -96,6 +93,7 @@ export default () => {
           value={search}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setSearch(event.target.value);
+            listService.searchAll(event.target.value);
             return setCursor(0);
           }}
           autoFocus
@@ -108,12 +106,12 @@ export default () => {
         options={{ suppressScrollX: true, suppressScrollY: false }}
       >
         <SearchListContainer
-          list={listService.list}
+          list={list}
           active={cursor}
           limit={limit}
           setCursor={(index: number) => setCursor(index)}
         />
-        {listService.list.length > limit && (
+        {list.length > limit && (
           <Row justify="center" style={{ lineHeight: '32px' }}>
             <Typography.Link onClick={loadMore}>
               {Languages.t(
