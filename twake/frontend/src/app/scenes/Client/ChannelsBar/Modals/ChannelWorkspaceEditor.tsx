@@ -9,6 +9,7 @@ import { Button } from 'antd';
 import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import _ from 'lodash';
+import MainViewService from 'app/services/AppView/MainViewService';
 
 type Props = {
   title: string;
@@ -89,6 +90,12 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       });
 
       if (resource) {
+        MainViewService.select(resource.id, {
+          collection: ChannelsCollections,
+          app: { simple_name: 'messages' },
+          context: null,
+          hasTabs: false,
+        });
         return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
           position: 'center',
           size: { width: '600px', minHeight: '329px' },
