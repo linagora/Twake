@@ -62,10 +62,7 @@ export default class CollectionTransport<G extends Resource<any>> {
           }
         }
         if (buffer[i].action === 'delete') {
-          const [, resourceId] = await this.callRemove(
-            buffer[i].resourceId,
-            buffer[i].options,
-          );
+          const [, resourceId] = await this.callRemove(buffer[i].resourceId, buffer[i].options);
           buffer[i].resolve(resourceId);
         }
       } catch (err) {
@@ -189,6 +186,9 @@ export default class CollectionTransport<G extends Resource<any>> {
       if (!result?.offline) {
         if (result?.resource) {
           resource.setPersisted(true);
+          if (resource.getPrimaryKey().indexOf('tmp:') >= 0) {
+            result.resource._primaryKey = result.resource[resource.getIdKey()];
+          }
           resource.data = Object.assign(resource.data, result?.resource);
           await this.collection.upsert(resource, { withoutBackend: true });
           resourceCreated = resource;
