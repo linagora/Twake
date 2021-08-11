@@ -7,10 +7,8 @@ export interface PreviewServiceAPI {
    * @param outputPath
    */
   generateThumbnails(
+    document: { id: string; path: string; provider: string },
     mime: string,
-    inputPath: string,
-    outputPath: string,
-    outputExtension: string,
     numberOfPages: number,
   ): any;
 }

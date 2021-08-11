@@ -1,12 +1,11 @@
 import sharp from "sharp";
 import { unlink } from "fs/promises";
 
-export async function generatePreview(inputPath: string, outputPath: string, outputFormat: string) {
-  outputFormat = "png";
+export async function generatePreview(inputPath: string, outputPath: string) {
   var result: sharp.OutputInfo;
   try {
-    result = await sharp(inputPath).resize(300, 200).toFile(`${outputPath}.${outputFormat}`);
-    console.log("toFile", JSON.stringify(result));
+    result = await sharp(inputPath).resize(300, 200).toFile(outputPath);
+    //console.log("toFile", JSON.stringify(result));
     await unlink(inputPath);
     console.log("successfully deleted : ", inputPath);
   } catch (error) {

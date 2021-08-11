@@ -31,13 +31,9 @@ export class PreviewController {
     const outputPath = `${inputPath.split(".")[0]}_temp`;
     const outputExtension = "png";
     const numberOfPages = 1;
-    const result = await this.service.generateThumbnails(
-      mime,
-      inputPath,
-      outputPath,
-      outputExtension,
-      numberOfPages,
-    );
+    const provider = "s3";
+    const document = { id: request.id, path: inputPath, provider: provider };
+    const result = await this.service.generateThumbnails(document, mime, numberOfPages);
     response.send("computing");
   }
 }

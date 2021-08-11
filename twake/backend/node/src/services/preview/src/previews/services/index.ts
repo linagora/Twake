@@ -19,25 +19,27 @@ class Service implements PreviewServiceAPI {
   constructor() {}
 
   async generateThumbnails(
+    document: { id: string; path: string; provider: string },
     mime: string,
-    inputPath: string,
-    outputPath: string,
-    outputExtension: string,
-    numberOfPages: number,
+    numberOfPages: number, //can be removed if we decide the number max of page that we can convert in thumbnails
   ): Promise<sharp.OutputInfo> {
-    if (isFileType(mime, inputPath.split("/").pop(), officeExtensions)) {
-      const pdfPath = await convertFromOffice(inputPath, outputPath, numberOfPages);
+    const outputPath = document.path.split(".");
+    outputPath.pop();
+    outputPath.push("png");
+    const output = `${outputPath.join(".")}`;
+    if (isFileType(mime, document.path.split("/").pop(), officeExtensions)) {
+      const pdfPath = await convertFromOffice(document, numberOfPages);
       const thumbnailPath = await convertFromPdf(pdfPath, numberOfPages);
-      return thumbnailsFromImages(thumbnailPath, outputPath, outputExtension);
+      return thumbnailsFromImages(thumbnailPath, output);
     }
 
-    if (isFileType(mime, inputPath.split("/").pop(), pdfExtensions)) {
-      const thumbnailPath = await convertFromPdf(inputPath, numberOfPages);
-      return thumbnailsFromImages(thumbnailPath, outputPath, outputExtension);
+    if (isFileType(mime, document.path.split("/").pop(), pdfExtensions)) {
+      const thumbnailPath = await convertFromPdf(document.path, numberOfPages);
+      return thumbnailsFromImages(thumbnailPath, output);
     }
 
-    if (isFileType(mime, inputPath.split("/").pop(), imageExtensions)) {
-      return thumbnailsFromImages(inputPath, outputPath, outputExtension);
+    if (isFileType(mime, document.path.split("/").pop(), imageExtensions)) {
+      return thumbnailsFromImages(document.path, output);
     }
   }
 }
