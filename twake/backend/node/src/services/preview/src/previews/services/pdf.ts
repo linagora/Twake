@@ -2,9 +2,9 @@ import { PDFImage } from "pdf-image";
 import { unlink } from "fs/promises";
 
 export async function convertFromPdf(inputPath: string, numberOfPages: number) {
-  var pdfImage = new PDFImage(inputPath);
-  const imagePath = await pdfImage.convertFile().catch((e: any) => {
-    throw e;
+  const pdfImage = new PDFImage(inputPath);
+  const imagePath = await pdfImage.convertFile().catch((error: any) => {
+    console.error("there was an error:", error.message);
   });
   try {
     await unlink(inputPath);
@@ -12,6 +12,5 @@ export async function convertFromPdf(inputPath: string, numberOfPages: number) {
   } catch (error) {
     console.error("there was an error:", error.message);
   }
-
-  return `${inputPath.substring(0, inputPath.length - 4)}-0.png`; //attention plusieur fichier
+  return inputPath.replace(".pdf", "-0.png"); //attention plusieur fichier
 }

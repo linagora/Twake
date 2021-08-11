@@ -9,17 +9,17 @@ export async function convertFromOffice(
     const processOutputPath = outputPath.split("/");
     processOutputPath.pop();
     processOutputPath.push("tmp");
-    outputPath = `${processOutputPath.join("/")}/${outputPath.split("/").pop()}`;
+    const output = `${processOutputPath.join("/")}/${outputPath.split("/").pop()}`;
     await unoconv
       .run({
         file: inputPath,
-        output: `${outputPath}`,
+        output: `${output}`,
         export: `PageRange=1-${numberOfPages}`,
       })
       .catch((e: any) => {
         throw e;
       });
 
-    return `${outputPath}.pdf`;
+    return `${output}.pdf`;
   }
 }

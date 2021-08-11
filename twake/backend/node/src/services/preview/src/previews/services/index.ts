@@ -2,8 +2,9 @@ import { PreviewServiceAPI } from "../api";
 import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
-import { isFileType } from "./mime";
+import { isFileType } from "../utils";
 import { pdfExtensions, officeExtensions, imageExtensions } from "./mime";
+import sharp from "sharp";
 
 export function getService(): PreviewServiceAPI {
   return getServiceInstance();
@@ -23,20 +24,20 @@ class Service implements PreviewServiceAPI {
     outputPath: string,
     outputExtension: string,
     numberOfPages: number,
-  ): Promise<any> {
+  ): Promise<sharp.OutputInfo> {
     if (isFileType(mime, inputPath.split("/").pop(), officeExtensions)) {
       const pdfPath = await convertFromOffice(inputPath, outputPath, numberOfPages);
       const thumbnailPath = await convertFromPdf(pdfPath, numberOfPages);
-      thumbnailsFromImages(thumbnailPath, outputPath, outputExtension);
+      return thumbnailsFromImages(thumbnailPath, outputPath, outputExtension);
     }
 
     if (isFileType(mime, inputPath.split("/").pop(), pdfExtensions)) {
       const thumbnailPath = await convertFromPdf(inputPath, numberOfPages);
-      thumbnailsFromImages(thumbnailPath, outputPath, outputExtension);
+      return thumbnailsFromImages(thumbnailPath, outputPath, outputExtension);
     }
 
     if (isFileType(mime, inputPath.split("/").pop(), imageExtensions)) {
-      thumbnailsFromImages(inputPath, outputPath, outputExtension);
+      return thumbnailsFromImages(inputPath, outputPath, outputExtension);
     }
   }
 }
