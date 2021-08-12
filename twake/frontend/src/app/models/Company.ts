@@ -32,6 +32,7 @@ export type CompanyPlanObjectType = {
 export type CompanyType = {
   id: string; //Related to console code
   name: string;
+  mininame?: string;
   logo: string;
   plan?: CompanyPlanObjectType;
   stats?: CompanyStatsObjectType;

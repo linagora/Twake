@@ -40,8 +40,7 @@ export class MessageEditorService extends Observable {
     const editorId = this.getEditorId(threadId, messageId);
 
     if (!messageId) {
-      const all = ((await LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY)) ||
-        {}) as any;
+      const all = LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY) || {} as any;
       all[this.getCacheId(threadId)] = [content, new Date().getTime()];
       LocalStorage.setItem(MessageEditorService.LOCALSTORAGE_KEY, all);
     }
@@ -59,9 +58,7 @@ export class MessageEditorService extends Observable {
     const editorId = this.getEditorId(threadId, messageId);
 
     if (!messageId) {
-      const all = this.cleanSavedInputContents(
-        (await LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY)) || {},
-      );
+      const all = this.cleanSavedInputContents(LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY) || {});
       const res = (all[this.getCacheId(threadId)] || {})[0];
       if (res) {
         this.editorsContents[editorId] = res;
