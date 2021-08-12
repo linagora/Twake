@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { Typography } from 'antd';
 
 import Globals from 'services/Globals';
 import Languages from 'services/languages/languages';
 import InitService from 'services/InitService';
-import LoginService from 'services/login/login.js';
-import Icon from 'components/Icon/Icon.js';
-import InteractiveLoginBackground from 'components/InteractiveLoginBackground/InteractiveLoginBackground.js';
-import './login.scss';
-
-import LoginView from './LoginView/LoginView.js';
-import Signin from './Signin/Signin.js';
-import VerifyMail from './VerifyMail/VerifyMail.js';
-import ForgotPassword from './ForgotPassword/ForgotPassword.js';
+import LoginService from 'services/login/login';
+import Icon from 'components/Icon/Icon';
+import InteractiveLoginBackground from 'components/InteractiveLoginBackground/InteractiveLoginBackground';
+import LoginView from './LoginView/LoginView';
+import Signin from './Signin/Signin';
+import VerifyMail from './VerifyMail/VerifyMail';
+import ForgotPassword from './ForgotPassword/ForgotPassword';
 import Error from './Error/Error';
-import { Typography } from 'antd';
+
+import './login.scss';
 
 export default () => {
   LoginService.useListener(useState);
-  Languages.useListener(useState);
   const [server_infos_loaded, server_infos] = InitService.useWatcher(() => [
     InitService.server_infos_loaded,
     InitService.server_infos,

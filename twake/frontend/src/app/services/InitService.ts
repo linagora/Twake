@@ -10,6 +10,10 @@ type ServerInfoType = null | {
       mobile: string;
     };
   };
+  branding?: {
+    logo: string;
+  },
+  auth: Array<string>;
   configuration: {
     branding: any;
     help_url: string | null;
