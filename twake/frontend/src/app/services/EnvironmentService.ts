@@ -1,10 +1,10 @@
 import { TwakeService } from "./Decorators/TwakeService";
 
-@TwakeService('EnvironmentService')
-class Environement {
+@TwakeService('Environment')
+class Environment {
   isProduction() {
     return process.env?.NODE_ENV === "production";
   }
 }
 
-export default new Environement();
+export default new Environment();
