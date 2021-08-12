@@ -96,10 +96,14 @@ const ChannelWorkspaceEditor: FC<Props> = ({
           context: null,
           hasTabs: false,
         });
-        return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
-          position: 'center',
-          size: { width: '600px', minHeight: '329px' },
-        });
+        if (!resource.data.is_default) {
+          // Show channel member list only for non default channel
+          return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
+            position: 'center',
+            size: { width: '600px', minHeight: '329px' },
+          });
+        }
+        ModalManager.close();
       }
     }
   };
