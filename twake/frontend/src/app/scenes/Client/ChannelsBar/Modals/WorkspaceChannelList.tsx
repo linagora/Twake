@@ -112,7 +112,7 @@ export default () => {
           setCursor={(index: number) => setCursor(index)}
         />
         {list.length > limit && (
-          <Row justify="center" style={{ lineHeight: '32px' }}>
+          <Row justify="center" style={{ lineHeight: '32px', marginBottom: '16px' }}>
             <Typography.Link onClick={loadMore}>
               {Languages.t(
                 'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.loader',
