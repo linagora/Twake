@@ -1,3 +1,4 @@
+import Logger from 'services/Logger';
 import Observable from 'services/Observable/Observable';
 import Api from 'services/Api';
 
@@ -41,12 +42,7 @@ class InitService extends Observable {
   public server_infos: ServerInfoType = null;
   public server_infos_loaded: boolean = false;
   public app_ready: boolean = false;
-
-  async removeLoader() {
-    try {
-      (window as any).document.getElementById('app_loader').remove();
-    } catch (err) {}
-  }
+  private logger = Logger.getLogger("InitService");
 
   async init() {
     this.server_infos = (await Api.get('/internal/services/general/v1/server', null, false, {
@@ -56,12 +52,14 @@ class InitService extends Observable {
     this.server_infos_loaded = true;
 
     if (this.server_infos?.status !== 'ready') {
+      this.logger.debug('Server is not ready', this.server_infos);
       this.app_ready = false;
       this.notify();
       setTimeout(() => {
         this.init();
       }, 1000);
     } else {
+      this.logger.debug('Server is ready', this.server_infos);
       this.app_ready = true;
       this.notify();
     }
