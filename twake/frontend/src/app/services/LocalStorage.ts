@@ -2,32 +2,24 @@ export default class LocalStorage {
   static prefix: string = 'twake:';
 
   static setItem(key: string, value: any) {
-    key = LocalStorage.prefix + key;
-    value = JSON.stringify(value);
-    window.localStorage.setItem(key, value);
+    window.localStorage.setItem(`${LocalStorage.prefix}${key}`, JSON.stringify(value));
   }
 
-  static async getItem(key: string, callback?: Function) {
-    key = LocalStorage.prefix + key;
+  static getItem<T>(key: string): T | string | null {
+    let value = window.localStorage.getItem(`${LocalStorage.prefix}${key}`);
 
-    return new Promise(resolve => {
-      let value = window.localStorage.getItem(key);
+    if (!value) {
+      return null;
+    }
 
-      if (!value) {
-        if (callback) callback(value);
-        resolve(value);
-        return;
-      }
-      try {
-        value = JSON.parse(value);
-      } catch (e) {
-        value = null;
-        console.log(e);
-      }
-      if (callback) callback(value);
-      resolve(value);
-      return value;
-    });
+    try {
+      value = JSON.parse(value);
+    } catch (e) {
+      value = null;
+      console.log(e);
+    }
+
+    return (value as unknown) as T;
   }
 
   static clear() {

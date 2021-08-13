@@ -37,6 +37,10 @@ export default class MenuComponent extends React.Component {
     }
   }
   clickMenu(dom_element, item, evt) {
+    if(Date.now() - this.props.openAt < 200 ){
+      // When a menu is open and another one opens above it, you have to block the buttons for a while. Otherwise, the hovered option of the new menu will be clicked
+      return;
+    }
     if (item.submenu_replace) {
       MenusManager.openMenu(item.submenu, { x: evt.clientX, y: evt.clientY }, 'center');
       return;

@@ -30,6 +30,14 @@ export async function isWorkspaceAdmin(
   return workspaceUser.role === "admin";
 }
 
+export function hasWorkspaceAdminLevel(role: string): boolean {
+  return role === "admin";
+}
+
+export function hasWorkspaceMemberLevel(role: string): boolean {
+  return role === "member" || hasWorkspaceAdminLevel(role);
+}
+
 export async function getWorkspaceUser(
   userService: UserServiceAPI,
   user?: User,

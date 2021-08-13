@@ -55,7 +55,7 @@ export interface SearchServiceAPI extends TwakeServiceProvider {
 }
 
 export type SearchConfiguration = {
-  type?: false | "elasticsearch";
+  type?: false | "elasticsearch" | "mongodb";
   elasticsearch?: {
     endpoint: string;
     flushInterval: number; //In milliseconds

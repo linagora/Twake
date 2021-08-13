@@ -35,7 +35,7 @@ export default (): JSX.Element => {
   }
 
   return (
-    <Row align="middle" className="main-view-tabs">
+    <Row align="middle" className="main-view-tabs" wrap={false}>
       {tabsList.sort((a, b) => (a.data.order || '').localeCompare(b.data.order || '')) && (
         <Tabs activeKey={tabId ? tabId : 'default'}>
           <Tabs.TabPane tab={<DefaultChannelTab selected={!tabId} />} key="default" />

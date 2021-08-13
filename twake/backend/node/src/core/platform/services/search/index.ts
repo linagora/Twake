@@ -31,17 +31,21 @@ export default class Search extends TwakeService<SearchServiceAPI> {
         this.database,
         this.configuration.get("elasticsearch") as SearchConfiguration["elasticsearch"],
       );
-    } else {
+    } else if (type === "mongodb") {
       logger.info("Loaded Mongo adapter for search.");
       this.service = new MongosearchService(this.database);
+    } else {
+      logger.warning("No adapter for search was loaded.");
+      this.service = null;
     }
 
-    this.service.connect();
+    if (this.service) this.service.connect();
     return this;
   }
 
+  //Subscribe to local event bus to get entities to store to es
   public async doStart(): Promise<this> {
-    //Subscribe to local event bus to get entities to store to es
+    if (!this.service) return this;
 
     localEventBus.subscribe("database:entities:saved", (event: DatabaseEntitiesSavedEvent) => {
       this.service.upsert(event.entities);

@@ -74,7 +74,7 @@ export default (): JSX.Element => {
       {channel.data.visibility !== 'direct' && (
         <Col xs={21} sm={21} md={22} lg={12} xl={14} xxl={16}>
           <span
-            className="left-margin text-overflow"
+            className="left-margin text-overflow channelName"
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>

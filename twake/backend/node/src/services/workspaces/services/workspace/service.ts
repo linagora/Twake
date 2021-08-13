@@ -7,6 +7,7 @@ import {
   DeleteResult,
   ExecutionContext,
   ListResult,
+  OperationType,
   Paginable,
   Pagination,
   SaveResult,
@@ -27,7 +28,7 @@ import Workspace, {
 } from "../../../workspaces/entities/workspace";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { UserPrimaryKey } from "../../../user/entities/user";
-import { CompanyPrimaryKey } from "../../../user/entities/company";
+import Company, { CompanyPrimaryKey } from "../../../user/entities/company";
 import { merge } from "lodash";
 import WorkspacePendingUser, {
   WorkspacePendingUserPrimaryKey,
@@ -73,6 +74,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const workspaceToCreate: Workspace = getWorkspaceInstance({
       ...workspace,
       ...{
+        name: await this.getWorkspaceName(workspace.name, workspace.group_id),
         dateAdded: Date.now(),
         isDeleted: false,
         isArchived: false,
@@ -91,12 +93,55 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  save?<SaveOptions>(
-    item: Workspace,
+  async save?<SaveOptions>(
+    item: Partial<Workspace>,
     options?: SaveOptions,
-    context?: ExecutionContext,
+    context?: WorkspaceExecutionContext,
   ): Promise<SaveResult<Workspace>> {
-    throw new Error("Method not implemented.");
+    let workspace = getWorkspaceInstance({
+      ...item,
+      ...{
+        name: "",
+        dateAdded: Date.now(),
+        isArchived: false,
+        isDefault: false,
+      },
+    });
+
+    if (item.id) {
+      // ON UPDATE
+      workspace = await this.get({
+        id: item.id,
+        group_id: context.company_id,
+      });
+
+      if (!workspace) {
+        throw new Error(`Unable to edit inexistent workspace ${item.id}`);
+      }
+    }
+
+    workspace = merge(workspace, {
+      name: await this.getWorkspaceName(item.name, context.company_id),
+      logo: item.logo,
+      isArchived: item.isArchived,
+      isDefault: item.isDefault,
+    });
+
+    await this.workspaceRepository.save(workspace);
+
+    if (!item.id) {
+      await this.addUser(
+        { id: workspace.id, group_id: workspace.group_id },
+        { id: context.user.id },
+        "admin",
+      );
+    }
+
+    return new SaveResult<Workspace>(
+      TYPE,
+      workspace,
+      item.id ? OperationType.UPDATE : OperationType.CREATE,
+    );
   }
 
   async delete(
@@ -271,5 +316,26 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     }
     await this.workspacePendingUserRepository.remove(pendingUser);
     return new DeleteResult(WorkspacePendingUserType, primaryKey, true);
+  }
+
+  /**
+   * @name GetWorkspaceName
+   * @param exceptedName workspace name that user excepted to have
+   * @param companyId company that user excepted to create or update the workspace
+   * @returns if workspace name is already used in the company, this will return the exceptedName with the current duplicates number otherwise simply return the exceptedName
+   */
+  private async getWorkspaceName(exceptedName: string, companyId: string) {
+    const workspacesList = await this.list(
+      null,
+      {},
+      { company_id: companyId, user: { id: null, server_request: true } },
+    );
+
+    workspacesList.filterEntities(entity => _.includes(entity.name, exceptedName));
+
+    const shouldRenameWorkspace = !workspacesList.isEmpty();
+    const duplicatesCount = workspacesList.getEntities().length;
+
+    return shouldRenameWorkspace ? `${exceptedName}(${duplicatesCount + 1})` : exceptedName;
   }
 }

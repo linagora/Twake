@@ -28,9 +28,8 @@ services:
     image: twaketech/twake-node:test
     build:
       context: ./backend/node
-      dockerfile: ../../docker/twake-node/Dockerfile.test
-      #target is not supported in compose v2 file
-      #target: test
+      dockerfile: ../../docker/twake-node/Dockerfile
+      target: test
     environment:
       - NODE_ENV=test
       - DB_DRIVER
