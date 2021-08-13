@@ -17,7 +17,7 @@ export async function isWorkspaceAdmin(
     { id: workspace.company_id },
     { id: user.id },
   );
-  if (companyUser && companyUser.role == "admin") {
+  if (companyUser && ["admin", "owner"].includes(companyUser.role)) {
     return true;
   }
 
