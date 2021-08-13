@@ -19,7 +19,7 @@ import AccessRightsService from 'services/AccessRightsService';
 import loginService from 'services/login/login.js';
 import InitService from 'app/services/InitService';
 import Globals from 'services/Globals';
-import JWTStorage from 'services/JWTStorage';
+import JWT from 'app/services/JWTService';
 import ConsoleService from 'services/Console/ConsoleService';
 
 class Workspaces extends Observable {
@@ -339,7 +339,7 @@ class Workspaces extends Observable {
       processData: false,
 
       headers: {
-        Authorization: JWTStorage.getAutorizationHeader(),
+        Authorization: JWT.getAutorizationHeader(),
       },
       xhrFields: {
         withCredentials: true,

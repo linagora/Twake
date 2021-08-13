@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Resumable from 'services/uploadManager/resumable.js';
 import Globals from 'services/Globals';
 import Api from 'services/Api';
-import JWTStorage from 'app/services/JWTStorage';
+import JWT from 'app/services/JWTService';
 
 class UploadManager extends Observable {
   constructor() {
@@ -402,7 +402,7 @@ class UploadManager extends Observable {
       withCredentials: true,
       maxChunkRetries: 2,
       headers: {
-        Authorization: JWTStorage.getAutorizationHeader(),
+        Authorization: JWT.getAutorizationHeader(),
       },
       query: {
         object: JSON.stringify({

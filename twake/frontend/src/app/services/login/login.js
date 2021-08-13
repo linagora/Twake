@@ -13,7 +13,7 @@ import ws from 'services/websocket.js';
 import Globals from 'services/Globals';
 import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
-import JWTStorage from 'services/JWTStorage';
+import JWT from 'app/services/JWTService';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
@@ -73,7 +73,7 @@ class Login extends Observable {
       !this.firstInit &&
       RouterServices.history.location.pathname === RouterServices.pathnames.LOGIN;
     this.reset();
-    await JWTStorage.init();
+    await JWT.init();
 
     ws.onReconnect('login', () => {
       if (this.firstInit && this.currentUserId) {
@@ -186,7 +186,7 @@ class Login extends Observable {
     }
   }
 
-  updateUser(callback) {
+  updateUser(callback = () => {}) {
     if (Globals.store_public_access_get_data) {
       this.firstInit = true;
       this.state = 'logged_out';
@@ -201,6 +201,8 @@ class Login extends Observable {
       function (res) {
         that.firstInit = true;
         if (res.errors.length > 0) {
+          that.logger.debug('updateUser error', res.errors);
+          // TODO: Should be in a specific handler, not in the login
           if (
             (res.errors.indexOf('redirect_to_openid') >= 0 ||
               that.server_infos.configuration?.accounts.type === 'console') &&
@@ -299,7 +301,7 @@ class Login extends Observable {
     this.currentUserId = null;
     LocalStorage.clear();
     Collections.clear();
-    JWTStorage.clear();
+    JWT.clear();
   }
 
   logout(no_reload = false) {
@@ -367,12 +369,12 @@ class Login extends Observable {
           socket: {
             url: Globals.environment.websocket_url,
             authenticate: async () => {
-              let token = JWTStorage.getJWT();
-              if (JWTStorage.isAccessExpired()) {
+              let token = JWT.getToken();
+              if (JWT.isAccessExpired()) {
                 await new Promise(resolve => {
                   this.updateUser(resolve);
                 });
-                token = JWTStorage.getJWT();
+                token = JWT.getToken();
               }
               return {
                 token,
@@ -382,7 +384,9 @@ class Login extends Observable {
           rest: {
             url: Globals.api_root_url + '/internal/services',
             headers: {
-              Authorization: JWTStorage.getAutorizationHeader(),
+              // TODO: The token can expire if we do not renew it in the later uses of this header
+              // Instead of doing this, we should have a function which is called when header needs to be used
+              Authorization: JWT.getAutorizationHeader(),
             },
           },
         },
