@@ -14,7 +14,6 @@ import {
   WorkspacesListRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import Workspace from "../../entities/workspace";
 import { CompaniesServiceAPI } from "../../../user/api";
 import { merge } from "lodash";
@@ -115,7 +114,12 @@ export class WorkspacesCrudController
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
       .then(
         uws =>
-          new Map(uws.map(uw => [uw.workspaceId, companyUser.role == "admin" ? "admin" : uw.role])),
+          new Map(
+            uws.map(uw => [
+              uw.workspaceId,
+              ["owner", "admin"].includes(companyUser.role) ? "admin" : uw.role,
+            ]),
+          ),
       );
 
     return {
