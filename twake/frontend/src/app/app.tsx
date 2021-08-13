@@ -8,7 +8,7 @@ import Integration from 'app/scenes/Integration/Integration';
 import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
-import AuthProviderService from './services/login/AuthProviderService';
+import AuthProviderService from './services/login/strategies/oidc/OIDCAuthProviderService';
 import LoginService from './services/login/login';
 import UserContext from './state/recoil/integration/UserContext';
 

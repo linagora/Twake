@@ -1,17 +1,17 @@
 import Oidc from 'oidc-client';
 import { AuthProviderProps } from 'oidc-react';
 
-import environment from '../../environment/environment';
-import Api from '../Api';
-import InitService from '../InitService';
-import JWT, { JWTDataType } from '../JWTService';
-import Observable from '../Observable/Observable';
-import LoginService from './login';
+import environment from '../../../../environment/environment';
+import Api from '../../../Api';
+import InitService from '../../../InitService';
+import JWT, { JWTDataType } from '../../../JWTService';
+import Observable from '../../../Observable/Observable';
+import LoginService from '../../login';
 import Logger from 'app/services/Logger';
-import { getAsFrontUrl } from '../utils/URLUtils';
+import { getAsFrontUrl } from '../../../utils/URLUtils';
 import AlertManager from 'services/AlertManager/AlertManager';
-import { TwakeService } from '../Decorators/TwakeService';
-import EnvironmentService from '../EnvironmentService';
+import { TwakeService } from '../../../Decorators/TwakeService';
+import EnvironmentService from '../../../EnvironmentService';
 
 type AuthProviderConfiguration = AuthProviderProps;
 
@@ -21,7 +21,7 @@ const OIDC_SILENT_URL = '/oidcsilientrenew';
 const OIDC_CLIENT_ID = 'twake';
 
 @TwakeService("OIDCAuthProvider")
-class AuthProviderService extends Observable {
+class OIDCAuthProviderService extends Observable {
   private authProviderUserManager: Oidc.UserManager | null = null;
   private logger: Logger.Logger;
 
@@ -101,45 +101,57 @@ class AuthProviderService extends Observable {
     return true;
   }
 
-  async silentLogin() {
-    const authProviderUserManager = this.authProviderUserManager;
-    if (authProviderUserManager) {
-      (async () => {
-        //Try to use the in-url sign-in response from oidc if exists
-        try {
-          await authProviderUserManager.signinRedirectCallback();
-          authProviderUserManager.getUser();
-        } catch (e) {
-          //There is no sign-in response, so we can try to silent login and use refresh token
-          try {
-            //First we try to see if we know this user
-            let user = await authProviderUserManager.getUser();
-            if (user) {
-              //If yes we try a silent signin
-              user = await authProviderUserManager.signinSilent();
-              this.getJWTFromOidcToken(user);
-            } else {
-              //If no we try a redirect signin
-              authProviderUserManager.signinRedirect();
-            }
-          } catch (e) {
-            //In any case if it doesn't work we do a redirect signin
-            authProviderUserManager?.signinRedirect();
-          }
+  async silentLogin(): Promise<void> {
+    if (!this.authProviderUserManager) {
+      this.logger.debug('silentLogin, no auth provider');
+      return;
+    }
+
+    //Try to use the in-url sign-in response from oidc if exists
+    try {
+      this.logger.debug('silentLogin, trying to get user from redirect callback');
+      await this.authProviderUserManager.signinRedirectCallback();
+      this.authProviderUserManager.getUser();
+    } catch (e) {
+      this.logger.debug('silentLogin, not a signin response, trying to signin now', e);
+      //There is no sign-in response, so we can try to silent login and use refresh token
+      try {
+        //First we try to see if we know this user
+        let user = await this.authProviderUserManager.getUser();
+        if (user) {
+          this.logger.debug('silentLogin, user is already defined, launching silent signin');
+          //If yes we try a silent signin
+          user = await this.authProviderUserManager.signinSilent();
+          this.getJWTFromOidcToken(user);
+        } else {
+          //If no we try a redirect signin
+          this.logger.debug('silentLogin, user not defined, launching a signin redirect');
+          this.authProviderUserManager.signinRedirect();
         }
-      })();
+      } catch (e) {
+        this.logger.debug('silentLogin error, launching a signin redirect', e);
+        //In any case if it doesn't work we do a redirect signin
+        this.authProviderUserManager.signinRedirect();
+      }
     }
   }
 
   async signOut(): Promise<void> {
     this.logger.info("Signout");
 
-    this.authProviderUserManager && this.authProviderUserManager.signoutRedirect()
-      .then(() => {
-        JWT.clear();
-        window.location.reload();
-      })
-      .catch(err => this.logger.error(err));
+    if (!this.authProviderUserManager) {
+      return;
+    }
+
+    try {
+      await this.authProviderUserManager.signoutRedirect();
+      // FXIME : This may not be called...
+      JWT.clear();
+      window.location.reload();
+    } catch (err) {
+      this.logger.error(err);
+    }
+
   }
 
   async getJWTFromOidcToken(user: Oidc.User | null): Promise<void> {
@@ -148,10 +160,13 @@ class AuthProviderService extends Observable {
       return;
     }
     const response = (await Api.post('users/console/token', {
+      // FIXME: The access token is potentially expired, we MUST use the refresh one in this case!
+      // TODO: Add logic for this like we do in the JWT service
       access_token: user.access_token,
     })) as { access_token: JWTDataType };
 
     if (!response.access_token) {
+      this.logger.error('Can not retrieve access_token from console. Response was', response);
       AlertManager.confirm(
         () => this.signOut(),
         () => this.signOut(),
@@ -168,7 +183,7 @@ class AuthProviderService extends Observable {
   }
 }
 
-export default new AuthProviderService();
+export default new OIDCAuthProviderService();
 
 function getDomain(str: string): string {
   return ((str || '').split('//').pop() || '').split('/').shift() || '';
