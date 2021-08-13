@@ -2,6 +2,21 @@ import Logger from 'services/Logger';
 import Observable from 'services/Observable/Observable';
 import Api from 'services/Api';
 
+export type ConsoleConfiguration = {
+  authority: string;
+  client_id: string;
+  max_unverified_days: number;
+  account_management_url: string;
+  company_subscription_url: string;
+  company_management_url: string;
+  collaborators_management_url: string;
+};
+
+export type InternalConfiguration = {
+  disable_account_creation: boolean;
+  disable_email_verification: boolean;
+};
+
 type ServerInfoType = null | {
   status: 'ready';
   version: {
@@ -21,19 +36,8 @@ type ServerInfoType = null | {
     pricing_plan_url: string | null;
     accounts: {
       type: 'console' | 'internal';
-      console: null | {
-        authority: string;
-        client_id: string;
-        max_unverified_days: number;
-        account_management_url: string;
-        company_subscription_url: string;
-        company_management_url: string;
-        collaborators_management_url: string;
-      };
-      internal: null | {
-        disable_account_creation: boolean;
-        disable_email_verification: boolean;
-      };
+      console?: ConsoleConfiguration;
+      internal?: InternalConfiguration;
     };
   };
 };

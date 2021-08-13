@@ -8,7 +8,7 @@ import Integration from 'app/scenes/Integration/Integration';
 import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
-import AuthProviderService from './services/login/strategies/oidc/OIDCAuthProviderService';
+import LoginProviderService from './services/login/strategies/LoginProviderService';
 import LoginService from './services/login/login';
 import UserContext from './state/recoil/integration/UserContext';
 
@@ -34,11 +34,9 @@ export default () => {
     return <div />;
   }
 
-  if (
-    InitService.server_infos?.configuration?.accounts.type === 'console' &&
-    !LoginService.getIsPublicAccess()
-  ) {
-    AuthProviderService.getAuthProviderConfiguration();
+  if (!LoginService.getIsPublicAccess()) {
+    // TODO This can be moved as context provider and then used correctly in components
+    LoginProviderService.get();
   }
 
   return (

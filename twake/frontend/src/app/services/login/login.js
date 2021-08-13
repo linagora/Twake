@@ -17,7 +17,7 @@ import JWT from 'app/services/JWTService';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
-import authProviderService from './strategies/oidc/OIDCAuthProviderService';
+import authProviderService from './strategies/oidc/OIDCLoginProviderService';
 
 class Login extends Observable {
   // Promise resolved when user is defined

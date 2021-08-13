@@ -1,9 +1,8 @@
 import Oidc from 'oidc-client';
-import { AuthProviderProps } from 'oidc-react';
 
 import environment from '../../../../environment/environment';
 import Api from '../../../Api';
-import InitService from '../../../InitService';
+import { ConsoleConfiguration } from '../../../InitService';
 import JWT, { JWTDataType } from '../../../JWTService';
 import Observable from '../../../Observable/Observable';
 import LoginService from '../../login';
@@ -12,26 +11,30 @@ import { getAsFrontUrl } from '../../../utils/URLUtils';
 import AlertManager from 'services/AlertManager/AlertManager';
 import { TwakeService } from '../../../Decorators/TwakeService';
 import EnvironmentService from '../../../EnvironmentService';
-
-type AuthProviderConfiguration = AuthProviderProps;
+import { LoginProvider } from '../LoginProvider';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';
 const OIDC_SILENT_URL = '/oidcsilientrenew';
 const OIDC_CLIENT_ID = 'twake';
 
-@TwakeService("OIDCAuthProvider")
-class OIDCAuthProviderService extends Observable {
-  private authProviderUserManager: Oidc.UserManager | null = null;
+@TwakeService("OIDCLoginProvider")
+export default class OIDCLoginProviderService extends Observable implements LoginProvider {
   private logger: Logger.Logger;
+  private authProviderUserManager: Oidc.UserManager | null = null;
+  private initialized: boolean = false;
 
-  constructor() {
+  constructor(private configuration?: ConsoleConfiguration) {
     super();
-    this.logger = Logger.getLogger("OIDCAuthProvider");
+    this.logger = Logger.getLogger("OIDCLoginProvider");
+    this.logger.debug('OIDC configuration', configuration);
   }
 
-  getAuthProviderConfiguration(): AuthProviderConfiguration {
-    const consoleConfiguration = InitService.server_infos?.configuration?.accounts.console;
+  init(): this {
+    if (this.initialized) {
+      this.logger.warn('Alreay initialized');
+      return this;
+    }
 
     if (!this.authProviderUserManager) {
       Oidc.Log.logger = Logger;
@@ -39,8 +42,8 @@ class OIDCAuthProviderService extends Observable {
 
       this.authProviderUserManager = new Oidc.UserManager({
         userStore: new Oidc.WebStorageStateStore({ store: window.localStorage }),
-        authority: consoleConfiguration?.authority || environment.api_root_url,
-        client_id: consoleConfiguration?.client_id || OIDC_CLIENT_ID,
+        authority: this.configuration?.authority || environment.api_root_url,
+        client_id: this.configuration?.client_id || OIDC_CLIENT_ID,
         redirect_uri: getAsFrontUrl(OIDC_CALLBACK_URL),
         response_type: 'code',
         scope: 'openid profile email address phone offline_access',
@@ -78,9 +81,8 @@ class OIDCAuthProviderService extends Observable {
       if (this.enforceFrontendUrl()) this.silentLogin();
     }
 
-    return {
-      userManager: this.authProviderUserManager,
-    };
+    this.initialized = true;
+    return this;
   }
 
   //Redirect to valid frontend url to make sure oidc will work as expected
@@ -182,8 +184,6 @@ class OIDCAuthProviderService extends Observable {
     LoginService.updateUser();
   }
 }
-
-export default new OIDCAuthProviderService();
 
 function getDomain(str: string): string {
   return ((str || '').split('//').pop() || '').split('/').shift() || '';
