@@ -3,6 +3,7 @@ import { User, Workspace } from "./types";
 import Company from "../services/user/entities/company";
 import CompanyUser from "../services/user/entities/company_user";
 import WorkspaceUser from "../services/workspaces/entities/workspace_user";
+import { hasCompanyAdminLevel } from "./company";
 
 export async function isWorkspaceAdmin(
   userService: UserServiceAPI,
@@ -17,7 +18,7 @@ export async function isWorkspaceAdmin(
     { id: workspace.company_id },
     { id: user.id },
   );
-  if (companyUser && ["admin", "owner"].includes(companyUser.role)) {
+  if (companyUser && hasCompanyAdminLevel(companyUser.role)) {
     return true;
   }
 

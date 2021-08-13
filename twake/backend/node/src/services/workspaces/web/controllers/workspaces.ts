@@ -90,7 +90,7 @@ export class WorkspacesCrudController
     if (!workspaceUserRole) {
       const companyUserRole = await this.getCompanyUserRole(context);
 
-      if (companyUserRole !== "admin") {
+      if (!hasCompanyAdminLevel(companyUserRole)) {
         reply.forbidden(`You are not belong to workspace ${request.params.id}`);
         return;
       }
@@ -120,7 +120,7 @@ export class WorkspacesCrudController
           new Map(
             uws.map(uw => [
               uw.workspaceId,
-              ["owner", "admin"].includes(companyUser.role) ? "admin" : uw.role,
+              hasCompanyAdminLevel(companyUser.role) ? "admin" : uw.role,
             ]),
           ),
       );
