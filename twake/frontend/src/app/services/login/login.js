@@ -33,13 +33,6 @@ export class Login extends Observable {
     this.firstInit = false;
     this.currentUserId = null;
     this.emailInit = '';
-    this.server_infos_loaded = false;
-    this.server_infos = {
-      branding: {},
-      ready: {},
-      auth: {},
-      help_url: false,
-    };
 
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
@@ -206,7 +199,7 @@ export class Login extends Observable {
           // TODO: Should be in a specific handler, not in the login
           if (
             (res.errors.indexOf('redirect_to_openid') >= 0 ||
-              that.server_infos.configuration?.accounts.type === 'console') &&
+            InitService.server_infos?.configuration?.accounts.type === 'console') &&
             !that.external_login_error
           ) {
             let developerSuffix = '';
