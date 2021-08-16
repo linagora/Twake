@@ -8,7 +8,7 @@ import Integration from 'app/scenes/Integration/Integration';
 import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
-import LoginProviderService from './services/Auth/strategies/AuthProviderService';
+import AuthService from './services/Auth/AuthService';
 import LoginService from './services/login/login';
 import UserContext from './state/recoil/integration/UserContext';
 
@@ -36,7 +36,7 @@ export default () => {
 
   if (!LoginService.getIsPublicAccess()) {
     // TODO This can be moved as context provider and then used correctly in components
-    LoginProviderService.get();
+    AuthService.getProvider();
   }
 
   return (

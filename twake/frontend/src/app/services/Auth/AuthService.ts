@@ -1,20 +1,20 @@
 import { TwakeService } from 'app/services/Decorators/TwakeService';
 import InitService, { ConsoleConfiguration, InternalConfiguration } from 'app/services/InitService';
-import { AuthProvider } from './AuthProvider';
-import OIDCAuthProviderService from './oidc/OIDCAuthProviderService';
-import InternalAuthProviderService from './internal/InternalAuthProviderService';
+import { AuthProvider } from './provider/AuthProvider';
+import OIDCAuthProviderService from './provider/oidc/OIDCAuthProviderService';
+import InternalAuthProviderService from './provider/internal/InternalAuthProviderService';
 import Logger from 'services/Logger';
 
-@TwakeService('AuthProviderService')
+@TwakeService('AuthService')
 class AuthProviderService {
   private provider: AuthProvider | null = null;
   private logger: Logger.Logger;
 
   constructor() {
-    this.logger = Logger.getLogger('AuthProviderService');
+    this.logger = Logger.getLogger('AuthService');
   }
 
-  get(): AuthProvider | null {
+  getProvider(): AuthProvider | null {
     if (this.provider) {
       return this.provider;
     }

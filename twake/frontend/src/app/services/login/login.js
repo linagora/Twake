@@ -17,7 +17,7 @@ import JWT from 'app/services/JWTService';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
-import authProviderService from '../Auth/strategies/oidc/OIDCAuthProviderService';
+import authProviderService from '../Auth/provider/oidc/OIDCAuthProviderService';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -409,5 +409,4 @@ class Login extends Observable {
   }
 }
 
-const login = new Login();
-export default login;
+export default new Login();
