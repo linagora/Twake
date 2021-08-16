@@ -124,6 +124,8 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
     options?: ListUserOptions,
   ): Promise<ListResult<CompanyUser>>;
 
+  getUsersCount(companyId: string): Promise<number>;
+
   /**
    *  Get company user
    * @param company

@@ -41,6 +41,8 @@ export interface WorkspaceServiceAPI
 
   getAllForCompany(companyId: uuid): Promise<Workspace[]>;
 
+  getUsersCount(workspaceId: string): Promise<number>;
+
   removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,
   ): Promise<DeleteResult<WorkspaceUserPrimaryKey>>;

@@ -38,10 +38,15 @@ import { CompanyUserRole } from "../../../user/web/types";
 import { uuid } from "../../../../utils/types";
 import _ from "lodash";
 import { UsersServiceAPI } from "../../../user/api";
+import WorkspaceCounters, {
+  TYPE as WorkspaceCountersType,
+  getInstance as getWorkspaceCountersInstance,
+} from "../../entities/workspace_counters";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
   private workspaceUserRepository: Repository<WorkspaceUser>;
+  private workspaceCountersRepository: Repository<WorkspaceCounters>;
   private workspaceRepository: Repository<Workspace>;
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
 
@@ -61,6 +66,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     this.workspacePendingUserRepository = await this.database.getRepository<WorkspacePendingUser>(
       WorkspacePendingUserType,
       WorkspacePendingUser,
+    );
+
+    this.workspaceCountersRepository = await this.database.getRepository<WorkspaceCounters>(
+      WorkspaceCountersType,
+      WorkspaceCounters,
     );
 
     return this;
@@ -181,6 +191,25 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return allCompanyWorkspaces;
   }
 
+  private userCounterIncrease(workspaceId: string, increaseValue: number) {
+    return this.workspaceCountersRepository.save(
+      getWorkspaceCountersInstance({
+        workspace_id: workspaceId,
+        counter_type: "users",
+        value: increaseValue,
+      }),
+    );
+  }
+
+  getUsersCount(workspaceId: string): Promise<number> {
+    return this.workspaceCountersRepository
+      .findOne({
+        workspace_id: workspaceId,
+        counter_type: "users",
+      })
+      .then(a => (a ? a.value : 0));
+  }
+
   async addUser(
     workspacePk: WorkspacePrimaryKey,
     userPk: UserPrimaryKey,
@@ -193,12 +222,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     });
     await this.users.save(user, {}, { user: { id: user.id, server_request: true } });
 
+    const wurPk = {
+      workspaceId: workspacePk.id,
+      userId: userPk.id,
+    };
+
+    const alreadyExists = await this.getUser(wurPk);
+    if (!alreadyExists) {
+      await this.userCounterIncrease(workspacePk.id, 1);
+    }
+
     await this.workspaceUserRepository.save(
-      getWorkspaceUserInstance({
-        workspaceId: workspacePk.id,
-        userId: userPk.id,
-        role: role,
-      }),
+      getWorkspaceUserInstance(Object.assign(wurPk, { role: role })),
     );
   }
 
@@ -223,15 +258,33 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     }
 
     await this.workspaceUserRepository.remove(entity);
+    await this.userCounterIncrease(workspaceUserPk.workspaceId, -1);
     return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
+  private recountUsersForWorkspace(workspaceId: string): void {
+    Promise.all([
+      this.workspaceUserRepository
+        .find({ workspace_id: workspaceId })
+        .then(a => a.getEntities().length),
+      this.getUsersCount(workspaceId),
+    ]).then(res => {
+      if (res[0] != res[1]) {
+        this.userCounterIncrease(workspaceId, res[0] - res[1]).then();
+      }
+    });
+  }
+
   getUsers(
-    workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
+    workspacePk: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
   ): Promise<ListResult<WorkspaceUser>> {
+    if (Math.floor(Math.random() * 10) == 0) {
+      this.recountUsersForWorkspace(workspacePk.workspaceId); // ≈ 1/10
+    }
+
     return this.workspaceUserRepository.find(
-      { workspace_id: workspaceId.workspaceId },
+      { workspace_id: workspacePk.workspaceId },
       { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
     );
   }

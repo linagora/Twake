@@ -30,12 +30,18 @@ import ExternalGroup, {
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
 import { pick } from "lodash";
+import CompanyCounters, {
+  TYPE as CompanyCountersType,
+  getInstance as getCompanyCountersInstance,
+} from "../../entities/company_counters";
+import { getInstance as getWorkspaceCountersInstance } from "../../../workspaces/entities/workspace_counters";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
   companyRepository: Repository<Company>;
   externalCompanyRepository: Repository<ExternalGroup>;
   companyUserRepository: Repository<CompanyUser>;
+  companyCountersRepository: Repository<CompanyCounters>;
 
   constructor(private database: DatabaseServiceAPI) {}
 
@@ -50,6 +56,10 @@ export class CompanyService implements CompaniesServiceAPI {
       ExternalGroup,
     );
 
+    this.companyCountersRepository = await this.database.getRepository<CompanyCounters>(
+      CompanyCountersType,
+      CompanyCounters,
+    );
     return this;
   }
 
@@ -92,6 +102,10 @@ export class CompanyService implements CompaniesServiceAPI {
   }
 
   async getCompany(companySearchKey: CompanySearchKey): Promise<Company> {
+    if (Math.floor(Math.random() * 10) == 0) {
+      this.recountUsersForCompany(companySearchKey.id); // ≈ 1/10
+    }
+
     if (companySearchKey.id) {
       return this.companyRepository.findOne(companySearchKey);
     } else if (companySearchKey.identity_provider_id) {
@@ -124,7 +138,10 @@ export class CompanyService implements CompaniesServiceAPI {
       user_id: userPk.id,
     });
     if (entity) {
-      await this.companyUserRepository.remove(entity);
+      await Promise.all([
+        this.userCounterIncrease(companyPk.id, -1),
+        this.companyUserRepository.remove(entity),
+      ]);
     }
   }
 
@@ -159,9 +176,12 @@ export class CompanyService implements CompaniesServiceAPI {
       group_id: companyId,
       user_id: userId,
     };
-    const entity =
-      (await this.companyUserRepository.findOne(key)) ||
-      getCompanyUserInstance(merge(key, { dateAdded: Date.now() }));
+    let entity = await this.companyUserRepository.findOne(key);
+
+    if (entity == null) {
+      entity = getCompanyUserInstance(merge(key, { dateAdded: Date.now() }));
+      await this.userCounterIncrease(entity.group_id, 1);
+    }
 
     entity.role = role;
     await this.companyUserRepository.save(entity);
@@ -189,5 +209,35 @@ export class CompanyService implements CompaniesServiceAPI {
     await this.companyRepository.remove(company);
 
     return Promise.resolve(null);
+  }
+
+  getUsersCount(companyId: string): Promise<number> {
+    return this.companyCountersRepository
+      .findOne({
+        company_id: companyId,
+        counter_type: "users",
+      })
+      .then(a => (a ? a.value : 0));
+  }
+
+  private userCounterIncrease(companyId: string, increaseValue: number) {
+    return this.companyCountersRepository.save(
+      getCompanyCountersInstance({
+        company_id: companyId,
+        counter_type: "users",
+        value: increaseValue,
+      }),
+    );
+  }
+
+  private recountUsersForCompany(companyId: string): void {
+    Promise.all([
+      this.companyUserRepository.find({ group_id: companyId }).then(a => a.getEntities().length),
+      this.getUsersCount(companyId),
+    ]).then(res => {
+      if (res[0] != res[1]) {
+        this.userCounterIncrease(companyId, res[0] - res[1]).then();
+      }
+    });
   }
 }

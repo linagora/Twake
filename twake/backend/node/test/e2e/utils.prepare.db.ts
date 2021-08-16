@@ -193,4 +193,12 @@ export class TestDbService {
   getCompanyUser(companyId: uuid, userId: uuid): Promise<CompanyUser> {
     return this.userService.companies.getCompanyUser({ id: companyId }, { id: userId });
   }
+
+  getWorkspaceUsersCountFromDb(workspaceId: string) {
+    return this.userService.workspaces.getUsersCount(workspaceId);
+  }
+
+  async getCompanyUsersCountFromDb(companyId: string) {
+    return this.userService.companies.getUsersCount(companyId);
+  }
 }
