@@ -62,6 +62,7 @@ export default class OIDCLoginProviderService extends Observable implements Logi
       }
 
       this.authProviderUserManager.events.addUserLoaded(async user => {
+        // fires each time the user is updated
         this.logger.debug('OIDC user loaded listener', user);
         this.getJWTFromOidcToken(user);
       });
@@ -69,6 +70,10 @@ export default class OIDCLoginProviderService extends Observable implements Logi
       this.authProviderUserManager.events.addAccessTokenExpired(() => {
         this.logger.debug('OIDC access token expired listener');
         this.silentLogin();
+      });
+
+      this.authProviderUserManager.events.addAccessTokenExpiring(() => {
+        this.logger.debug('OIDC access token is expiring');
       });
 
       //This even listener is temporary disabled because of this issue: https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/-/issues/2358
@@ -148,6 +153,7 @@ export default class OIDCLoginProviderService extends Observable implements Logi
     try {
       await this.authProviderUserManager.signoutRedirect();
       // FXIME : This may not be called...
+      // This must be in the genereic login service
       JWT.clear();
       window.location.reload();
     } catch (err) {
