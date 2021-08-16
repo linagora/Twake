@@ -1,20 +1,20 @@
 import { TwakeService } from 'app/services/Decorators/TwakeService';
 import InitService, { ConsoleConfiguration, InternalConfiguration } from 'app/services/InitService';
-import { LoginProvider } from './LoginProvider';
-import OIDCLoginProviderService from './oidc/OIDCLoginProviderService';
-import InternalLoginProviderService from './internal/InternalLoginProviderService';
+import { AuthProvider } from './AuthProvider';
+import OIDCAuthProviderService from './oidc/OIDCAuthProviderService';
+import InternalAuthProviderService from './internal/InternalAuthProviderService';
 import Logger from 'services/Logger';
 
-@TwakeService('LoginProviderService')
-class LoginProviderService {
-  private provider: LoginProvider | null = null;
+@TwakeService('AuthProviderService')
+class AuthProviderService {
+  private provider: AuthProvider | null = null;
   private logger: Logger.Logger;
 
   constructor() {
-    this.logger = Logger.getLogger('LoginProviderService');
+    this.logger = Logger.getLogger('AuthProviderService');
   }
 
-  get(): LoginProvider | null {
+  get(): AuthProvider | null {
     if (this.provider) {
       return this.provider;
     }
@@ -27,9 +27,9 @@ class LoginProviderService {
     const config = InitService.server_infos?.configuration?.accounts[accountType];
 
     if (accountType === 'console') {
-      this.provider = new OIDCLoginProviderService(config as ConsoleConfiguration).init();
+      this.provider = new OIDCAuthProviderService(config as ConsoleConfiguration).init();
     } else if (accountType === 'internal') {
-      this.provider = new InternalLoginProviderService(config as InternalConfiguration).init();
+      this.provider = new InternalAuthProviderService(config as InternalConfiguration).init();
     } else {
       throw new Error(`${accountType} is not a valid auth account provider`);
     }
@@ -39,4 +39,4 @@ class LoginProviderService {
 
 }
 
-export default new LoginProviderService();
+export default new AuthProviderService();

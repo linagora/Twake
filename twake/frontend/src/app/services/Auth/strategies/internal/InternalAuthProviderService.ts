@@ -1,18 +1,18 @@
 
+import Logger from 'app/services/Logger';
 import { InternalConfiguration } from '../../../InitService';
 import Observable from '../../../Observable/Observable';
-import Logger from 'app/services/Logger';
 import { TwakeService } from '../../../Decorators/TwakeService';
-import { LoginProvider } from '../LoginProvider';
+import { AuthProvider } from '../AuthProvider';
 
-@TwakeService("InternalLoginProvider")
-export default class InternalLoginProviderService extends Observable implements LoginProvider {
+@TwakeService("InternalAuthProvider")
+export default class InternalAuthProviderService extends Observable implements AuthProvider {
   private logger: Logger.Logger;
   private initialized: boolean = false;
 
   constructor(private configuration?: InternalConfiguration) {
     super();
-    this.logger = Logger.getLogger("InternalLoginProvider");
+    this.logger = Logger.getLogger("InternalAuthProvider");
     this.logger.debug('Internal configuration', configuration);
   }
 

@@ -5,21 +5,21 @@ import Api from '../../../Api';
 import { ConsoleConfiguration } from '../../../InitService';
 import JWT, { JWTDataType } from '../../../JWTService';
 import Observable from '../../../Observable/Observable';
-import LoginService from '../../login';
+import LoginService from '../../../login/login';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../../../utils/URLUtils';
 import AlertManager from 'services/AlertManager/AlertManager';
 import { TwakeService } from '../../../Decorators/TwakeService';
 import EnvironmentService from '../../../EnvironmentService';
-import { LoginProvider } from '../LoginProvider';
+import { AuthProvider } from '../AuthProvider';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';
 const OIDC_SILENT_URL = '/oidcsilientrenew';
 const OIDC_CLIENT_ID = 'twake';
 
-@TwakeService("OIDCLoginProvider")
-export default class OIDCLoginProviderService extends Observable implements LoginProvider {
+@TwakeService("OIDCAuthProvider")
+export default class OIDCAuthProviderService extends Observable implements AuthProvider {
   private logger: Logger.Logger;
   private authProviderUserManager: Oidc.UserManager | null = null;
   private initialized: boolean = false;
