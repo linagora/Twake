@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import Login from 'services/login/login';
+import Login from 'services/login/LoginService';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import Api from 'services/Api';
 import ws from 'services/websocket';

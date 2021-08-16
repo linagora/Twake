@@ -5,7 +5,7 @@ import Api from '../../../Api';
 import { ConsoleConfiguration } from '../../../InitService';
 import JWT, { JWTDataType } from '../../../JWTService';
 import Observable from '../../../Observable/Observable';
-import LoginService from '../../../login/login';
+import LoginService from '../../../login/LoginService';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../../../utils/URLUtils';
 import AlertManager from 'services/AlertManager/AlertManager';

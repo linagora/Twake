@@ -17,7 +17,7 @@ import Viewer from 'scenes/Apps/Drive/Viewer/Viewer';
 import ModalComponent from 'app/components/Modal/ModalComponent';
 import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
-import LoginService from 'services/login/login';
+import LoginService from 'services/login/LoginService';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';

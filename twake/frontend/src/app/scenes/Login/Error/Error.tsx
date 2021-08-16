@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages';
 import Emojione from 'components/Emojione/Emojione';
 import './Error.scss';
 import { Button } from 'antd';
-import LoginService from 'services/login/login.js';
+import LoginService from 'services/login/LoginService';
 
 export default () => {
   return (

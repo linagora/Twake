@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Typography } from 'antd';
 
 import Languages from 'services/languages/languages';
-import LoginService from 'services/login/login';
+import LoginService from 'services/login/LoginService';
 import Emojione from 'components/Emojione/Emojione';
 import Button from 'components/Buttons/Button';
 import Input from 'components/Inputs/Input';

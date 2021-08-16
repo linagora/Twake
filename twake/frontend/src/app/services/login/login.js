@@ -19,7 +19,7 @@ import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
 import authProviderService from '../Auth/provider/oidc/OIDCAuthProviderService';
 
-class Login extends Observable {
+export class Login extends Observable {
   // Promise resolved when user is defined
   userIsSet;
 
@@ -243,24 +243,6 @@ class Login extends Observable {
     this.notify();
   }
 
-  loginWithExternalProvider(service) {
-    this.external_login_error = false;
-
-    var url = '';
-
-    if (service === 'openid') {
-      url = Api.route('users/openid');
-    } else if (service === 'cas') {
-      url = Api.route('users/cas');
-    } else if (service === 'console') {
-      return;
-    } else {
-      return;
-    }
-
-    Globals.window.location = url;
-  }
-
   login(username, password, rememberme, hide_load) {
     if (!hide_load) {
       this.login_loading = true;
@@ -408,5 +390,3 @@ class Login extends Observable {
     return publicAccess;
   }
 }
-
-export default new Login();

@@ -9,7 +9,7 @@ import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
 import AuthService from './services/Auth/AuthService';
-import LoginService from './services/login/login';
+import LoginService from './services/login/LoginService';
 import UserContext from './state/recoil/integration/UserContext';
 
 import 'app/ui.scss';

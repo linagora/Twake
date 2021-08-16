@@ -1,5 +1,5 @@
 import LocalStorage from 'services/LocalStorage';
-import LoginService from 'services/login/login';
+import LoginService from 'services/login/LoginService';
 import WindowService from 'services/utils/window';
 import Logger from 'services/Logger';
 import { TwakeService } from './Decorators/TwakeService';

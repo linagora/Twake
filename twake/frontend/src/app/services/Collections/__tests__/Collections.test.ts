@@ -1,4 +1,4 @@
-import Login from 'services/login/login';
+import Login from 'services/login/LoginService';
 import Collections, { Resource } from '../Collections';
 
 Login.userIsSet = true;

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 
 import InitService from 'services/InitService';
-import LoginService from 'services/login/login';
+import LoginService from 'services/login/LoginService';
 import InteractiveLoginBackground from 'components/InteractiveLoginBackground/InteractiveLoginBackground';
 import LoginView from './LoginView/LoginView';
 import Signin from './Signin/Signin';
