@@ -72,7 +72,7 @@ export default (): JSX.Element => {
               placeholder={Languages.t('scenes.login.home.email')}
               onKeyDown={(evt: any) => {
                 if (evt.keyCode === 13 && !LoginService.login_loading) {
-                  LoginService.login(form.login, form.password, true, false);
+                  LoginService.login({ username: form.login, password: form.password, remember_me: true });
                 }
               }}
               onChange={(evt :any) => setForm({...form, login: evt.target.value })}
@@ -88,7 +88,7 @@ export default (): JSX.Element => {
               placeholder={Languages.t('scenes.login.home.password')}
               onKeyDown={(e :any) => {
                 if (e.keyCode === 13 && !LoginService.login_loading) {
-                  LoginService.login(form.login, form.password, true, false);
+                  LoginService.login({ username: form.login, password: form.password, remember_me: true });
                 }
               }}
               onChange={(evt :any) => setForm({...form, password: evt.target.value })}
@@ -106,7 +106,7 @@ export default (): JSX.Element => {
               className="medium full_width "
               style={{ marginBottom: 8 }}
               disabled={LoginService.login_loading}
-              onClick={() => LoginService.login(form.login, form.password, true, false)}
+              onClick={() => LoginService.login({ username: form.login, password: form.password, remember_me: true })}
             >
               {Languages.t('scenes.login.home.login_btn')}
             </Button>

@@ -6,15 +6,15 @@ import InternalAuthProviderService from './provider/internal/InternalAuthProvide
 import Logger from 'services/Logger';
 
 @TwakeService('AuthService')
-class AuthProviderService {
-  private provider: AuthProvider | null = null;
+class AuthService {
+  private provider: AuthProvider<any, any> | null = null;
   private logger: Logger.Logger;
 
   constructor() {
     this.logger = Logger.getLogger('AuthService');
   }
 
-  getProvider(): AuthProvider | null {
+  getProvider(): AuthProvider<any, any> {
     if (this.provider) {
       return this.provider;
     }
@@ -22,7 +22,9 @@ class AuthProviderService {
     const accountType = InitService.server_infos?.configuration?.accounts.type;
     if (!accountType) {
       this.logger.info('No server account configuration');
-      return null;
+      this.provider = this.getDefaultProvider();
+
+      return this.provider;
     }
     const config = InitService.server_infos?.configuration?.accounts[accountType];
 
@@ -37,6 +39,9 @@ class AuthProviderService {
     return this.provider;
   }
 
+  private getDefaultProvider() {
+    return new InternalAuthProviderService().init();
+  }
 }
 
-export default new AuthProviderService();
+export default new AuthService();

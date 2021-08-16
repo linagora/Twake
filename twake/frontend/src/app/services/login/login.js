@@ -17,8 +17,10 @@ import JWT from 'app/services/JWTService';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
-import authProviderService from '../Auth/provider/oidc/OIDCAuthProviderService';
 
+/**
+ * Deprecated, push your code be in ./LoginService which extends this class
+ */
 export class Login extends Observable {
   // Promise resolved when user is defined
   userIsSet;
@@ -39,7 +41,6 @@ export class Login extends Observable {
       help_url: false,
     };
 
-    Globals.window.login = this;
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
     this.external_login_error = false;
@@ -141,7 +142,7 @@ export class Login extends Observable {
         : false;
     if (cancelAutoLogin && !autologin) {
       this.firstInit = true;
-      this.clearLogin();
+      this.clear();
       this.setPage('logged_out');
       return;
     }
@@ -161,7 +162,7 @@ export class Login extends Observable {
         //Login with token
         try {
           const token = JSON.parse(external_login_result.token);
-          this.login(token.username, token.token, true, true);
+          this.login({ username: token.username, password: token.token, remember_me: true });
           this.firstInit = true;
           return;
         } catch (err) {
@@ -220,8 +221,7 @@ export class Login extends Observable {
           that.state = 'logged_out';
           that.notify();
 
-          WindowState.setPrefix();
-          WindowState.setSuffix();
+          WindowState.reset();
           RouterServices.push(
             RouterServices.addRedirection(
               `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
@@ -243,71 +243,11 @@ export class Login extends Observable {
     this.notify();
   }
 
-  login(username, password, rememberme, hide_load) {
-    if (!hide_load) {
-      this.login_loading = true;
-    }
-    this.login_error = false;
-    this.notify();
-
-    const that = this;
-
-    Api.post(
-      'users/login',
-      {
-        username: username,
-        password: password,
-        remember_me: rememberme,
-        device: {},
-      },
-      function (res) {
-        if (res && res.data && res.data.status === 'connected') {
-          if (that.waitForVerificationTimeout) {
-            clearTimeout(that.waitForVerificationTimeout);
-          }
-          that.login_loading = false;
-          that.init();
-          return RouterServices.replace(RouterServices.pathnames.LOGIN);
-        } else {
-          that.login_error = true;
-          that.login_loading = false;
-          that.notify();
-        }
-      },
-      false,
-      { disableJWTAuthentication: true },
-    );
-  }
-
-  clearLogin() {
-    this.currentUserId = null;
+  clear() {
+    this.resetCurrentUser();
     LocalStorage.clear();
     Collections.clear();
     JWT.clear();
-  }
-
-  logout(no_reload = false) {
-    var identity_provider = CurrentUser.get()
-      ? (CurrentUser.get() || {}).identity_provider
-      : 'internal';
-
-    this.clearLogin();
-
-    document.body.classList.add('fade_out');
-
-    Api.post('users/logout', {}, function () {
-      if (identity_provider === 'console') {
-        authProviderService.signOut();
-      } else {
-        if (!no_reload) {
-          Globals.window.location.reload();
-        } else {
-          RouterServices.push(
-            `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-          );
-        }
-      }
-    });
   }
 
   setCurrentUser(user) {

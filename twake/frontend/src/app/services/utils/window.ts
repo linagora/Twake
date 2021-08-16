@@ -41,6 +41,11 @@ class WindowState {
     return (document.title = `${this.prefix}${this.app_name}${this.suffix}`);
   }
 
+  public reset() {
+    this.setPrefix();
+    this.setSuffix();
+  }
+
   public setSuffix(text?: string) {
     const separator = '-';
     this.suffix = text ? ` ${separator} ${capitalize(text)}` : '';

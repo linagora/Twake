@@ -19,7 +19,7 @@ const OIDC_SILENT_URL = '/oidcsilientrenew';
 const OIDC_CLIENT_ID = 'twake';
 
 @TwakeService("OIDCAuthProvider")
-export default class OIDCAuthProviderService extends Observable implements AuthProvider {
+export default class OIDCAuthProviderService extends Observable implements AuthProvider<unknown, unknown> {
   private logger: Logger.Logger;
   private authProviderUserManager: Oidc.UserManager | null = null;
   private initialized: boolean = false;
@@ -141,6 +141,10 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         this.authProviderUserManager.signinRedirect();
       }
     }
+  }
+
+  async signIn(): Promise<void> {
+    this.logger.info('Signin');
   }
 
   async signOut(): Promise<void> {
