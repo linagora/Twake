@@ -17,7 +17,7 @@ export type InternalConfiguration = {
   disable_email_verification: boolean;
 };
 
-type ServerInfoType = null | {
+export type ServerInfoType = null | {
   status: 'ready';
   version: {
     current: string;
