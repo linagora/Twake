@@ -253,17 +253,4 @@ export class Login extends Observable {
     this.notify();
     RouterServices.push(RouterServices.generateRouteFromState({}));
   }
-
-  getIsPublicAccess() {
-    let publicAccess = false;
-    const viewParameter = WindowState.findGetParameter('view') || '';
-    if (
-      (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
-      Globals.store_publicAccess_get_data
-    ) {
-      publicAccess = true;
-      Globals.store_publicAccess_get_data = WindowState.allGetParameter();
-    }
-    return publicAccess;
-  }
 }

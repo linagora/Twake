@@ -9,11 +9,11 @@ import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
 import AuthService from './services/Auth/AuthService';
-import LoginService from './services/login/LoginService';
 import UserContext from './state/recoil/integration/UserContext';
 
 import 'app/ui.scss';
 import 'app/theme.less';
+import RouterService from './services/RouterService';
 
 export default () => {
   useEffect(() => {
@@ -34,7 +34,7 @@ export default () => {
     return <div />;
   }
 
-  if (!LoginService.getIsPublicAccess()) {
+  if (!RouterService.isPublicAccess()) {
     // TODO This can be moved as context provider and then used correctly in components
     AuthService.getProvider();
   }
