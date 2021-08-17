@@ -71,7 +71,7 @@ export class Login extends Observable {
     var error_code = WindowState.findGetParameter('error_code') ? true : false;
     if (error_code) {
       this.firstInit = true;
-      this.setPage('error');
+      this.changeState('error');
       this.error_code = WindowState.findGetParameter('error_code') || '';
       try {
         this.parsed_error_code = JSON.parse(WindowState.findGetParameter('error_code')).error;
@@ -88,7 +88,7 @@ export class Login extends Observable {
         : false;
     if (subscribe) {
       this.firstInit = true;
-      this.setPage('signin');
+      this.changeState('signin');
       this.emailInit = WindowState.findGetParameter('mail') || '';
       this.notify();
       return;
@@ -99,7 +99,7 @@ export class Login extends Observable {
         : false;
     if (verifymail) {
       this.firstInit = true;
-      this.setPage('verify_mail');
+      this.changeState('verify_mail');
       this.notify();
       return;
     }
@@ -109,7 +109,7 @@ export class Login extends Observable {
         : false;
     if (forgotPassword) {
       this.firstInit = true;
-      this.setPage('forgot_password');
+      this.changeState('forgot_password');
       this.notify();
       return;
     }
@@ -129,7 +129,7 @@ export class Login extends Observable {
     if (cancelAutoLogin && !autologin) {
       this.firstInit = true;
       this.clear();
-      this.setPage('logged_out');
+      this.changeState('logged_out');
       return;
     }
 
@@ -222,11 +222,6 @@ export class Login extends Observable {
       false,
       { disableJWTAuthentication: true },
     );
-  }
-
-  setPage(page) {
-    this.state = page;
-    this.notify();
   }
 
   clear() {
