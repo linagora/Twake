@@ -127,7 +127,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
 
         const updateObject = { $set: { ...where, ...set } } as any;
 
-        if (Object.keys(inc)) {
+        if (Object.keys(inc).length) {
           updateObject.$inc = inc;
         }
 
