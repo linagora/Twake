@@ -10,7 +10,7 @@ import Environment from 'environment/environment';
 import AuthService from 'services/Auth/AuthService';
 
 /**
- * Deprecated, push your code be in ./LoginService which extends this class
+ * FIXME: Not used, to be removed
  */
 export class Login extends Observable {
 

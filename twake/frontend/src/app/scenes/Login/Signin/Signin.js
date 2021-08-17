@@ -9,6 +9,8 @@ import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Input from 'components/Inputs/Input.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import InitService from 'services/InitService';
+import WindowState from 'services/utils/window';
+
 export default class Signin extends Component {
   constructor() {
     super();
@@ -17,7 +19,7 @@ export default class Signin extends Component {
       login: LoginService,
       i18n: Languages,
       username: '',
-      email: LoginService.emailInit,
+      email: '',
       password: '',
       name: '',
       firstName: '',
@@ -43,6 +45,7 @@ export default class Signin extends Component {
     if (this.input) {
       this.input.focus();
     }
+    this.setState({ email: WindowState.findGetParameter('mail') || '' });
   }
   componentWillUnmount() {
     LoginService.removeListener(this);

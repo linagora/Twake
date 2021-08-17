@@ -37,6 +37,10 @@ class WindowState {
     return result;
   }
 
+  public hasParameter(parameterName: string): boolean {
+    return !!this.findGetParameter(parameterName);
+  }
+
   public updateTitle(): string {
     return (document.title = `${this.prefix}${this.app_name}${this.suffix}`);
   }

@@ -13,23 +13,20 @@ import Logger from 'services/Logger';
 import WindowState from 'services/utils/window';
 import { UserType } from 'app/models/User';
 
-type LoginState = '' | 'app' | 'error' | 'signin' | 'verify_mail' | 'forgot_password' | 'logged_out';
+export type LoginState = '' | 'app' | 'error' | 'signin' | 'verify_mail' | 'forgot_password' | 'logged_out' | 'logout';
 @TwakeService('Login')
 class LoginService extends Observable {
   logger: Logger.Logger;
   resolveUser!: (userId: string) => void;
   userIsSet!: Promise<string>;
-  _state: LoginState = '';
   login_loading: boolean = false;
   login_error: boolean = false;
+  // FIXME: Should be removed
   error_secondary_mail_already: boolean = false;
-  addmail_token: string = '';
   firstInit: boolean = false;
   currentUserId: string = '';
-  emailInit: string = '';
-  parsed_error_code: string = '';
-  error_code: string = '';
   initialized = false;
+  private _state: LoginState = '';
 
   constructor() {
     super();
@@ -106,6 +103,7 @@ class LoginService extends Observable {
         try {
           this.getAuthProvider().signOut && (await this.getAuthProvider().signOut!({ no_reload }));
           this.logger.debug('SignOut complete');
+          this.state = 'logged_out';
           resolve();
         } catch (err) {
           this.logger.error('Error while signin out', err);

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
