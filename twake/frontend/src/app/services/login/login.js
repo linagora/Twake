@@ -1,22 +1,16 @@
 import Logger from 'app/services/Logger';
 import Observable from 'app/services/Depreciated/observable.js';
 import Api from 'services/Api';
-import Languages from 'services/languages/languages';
 import WindowState from 'services/utils/window';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/Collections/Collections';
-import Workspaces from 'services/workspaces/workspaces.js';
-import Groups from 'services/workspaces/groups.js';
-import UserNotifications from 'app/services/user/UserNotifications';
-import CurrentUser from 'app/services/user/CurrentUser';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals';
 import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWT from 'app/services/JWTService';
-import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
+import Application from 'services/Application';
 
 /**
  * Deprecated, push your code be in ./LoginService which extends this class
@@ -33,7 +27,6 @@ export class Login extends Observable {
     this.firstInit = false;
     this.currentUserId = null;
     this.emailInit = '';
-
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
     this.external_login_error = false;
@@ -254,60 +247,11 @@ export class Login extends Observable {
   }
 
   startApp(user) {
-    this.logger.info('Starting application for user', user.id);
     this.setCurrentUser(user);
-    this.configureCollections();
-
-    DepreciatedCollections.get('users').updateObject(user);
-
-    AccessRightsService.resetLevels();
-
-    user.workspaces.forEach(workspace => {
-      Workspaces.addToUser(workspace);
-      Groups.addToUser(workspace.group);
-    });
-
+    Application.start(user);
     this.state = 'app';
     this.notify();
     RouterServices.push(RouterServices.generateRouteFromState({}));
-
-    UserNotifications.start();
-    CurrentUser.start();
-    Languages.setLanguage(user.language);
-  }
-
-  configureCollections() {
-    if (this.currentUserId) {
-      Collections.setOptions({
-        storageKey: this.currentUserId,
-        transport: {
-          socket: {
-            url: Globals.environment.websocket_url,
-            authenticate: async () => {
-              let token = JWT.getToken();
-              if (JWT.isAccessExpired()) {
-                await new Promise(resolve => {
-                  this.updateUser(resolve);
-                });
-                token = JWT.getToken();
-              }
-              return {
-                token,
-              };
-            },
-          },
-          rest: {
-            url: Globals.api_root_url + '/internal/services',
-            headers: {
-              // TODO: The token can expire if we do not renew it in the later uses of this header
-              // Instead of doing this, we should have a function which is called when header needs to be used
-              Authorization: JWT.getAutorizationHeader(),
-            },
-          },
-        },
-      });
-      Collections.connect();
-    }
   }
 
   getIsPublicAccess() {
