@@ -33,7 +33,7 @@ class User {
   }
 
   getCurrentUserId(): string {
-    return Login.currentUserId;
+    return Login.currentUserId!;
   }
 
   getFullName(user: Pick<UserType, "username" | "firstname" | "lastname" | "_deleted">): string {

@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Typography } from 'antd';
 
 import Languages from 'services/languages/languages';
@@ -13,21 +13,7 @@ export default (): JSX.Element => {
   LoginService.useListener(useState);
   const [form, setForm] = useState<{ login: string; password: string }>({ login: '', password: '' });
 
-  useEffect(() => {
-    if (
-      InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
-      !(LoginService.external_login_error || false)
-    ) {
-      LoginService.loginWithExternalProvider(
-        InitService.server_infos?.configuration?.accounts?.type,
-      );
-    }
-  }, []);
-
-  if (
-    InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
-    !(LoginService.external_login_error || false)
-  ) {
+  if (InitService.server_infos?.configuration?.accounts?.type !== 'internal') {
     return <></>;
   }
 
@@ -51,12 +37,6 @@ export default (): JSX.Element => {
             style={{ marginBottom: 40, marginTop: 10, width: 140 }}
             src={((InitService.server_infos || {}).branding || {}).logo}
           />
-        )}
-
-        {LoginService.external_login_error && (
-          <div id="identification_information" className="smalltext error">
-            Unable to login: {LoginService.external_login_error}
-          </div>
         )}
 
         {(Object.keys((InitService.server_infos || {}).auth || []).indexOf('internal') >= 0 ||
@@ -113,7 +93,7 @@ export default (): JSX.Element => {
             {!InitService.server_infos?.configuration?.accounts?.internal
               ?.disable_account_creation && (
               <Typography.Link
-                onClick={() => LoginService.changeState('signin')}
+                onClick={() => LoginService.state = 'signin'}
                 id="create_btn"
                 className="blue_link"
               >
@@ -122,7 +102,7 @@ export default (): JSX.Element => {
             )}
 
             <Typography.Link
-              onClick={() => LoginService.changeState('forgot_password')}
+              onClick={() => LoginService.state = 'forgot_password'}
               id="forgot_password_btn"
               className="blue_link"
             >

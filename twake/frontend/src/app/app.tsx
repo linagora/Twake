@@ -5,7 +5,7 @@ import { Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
 import Integration from 'app/scenes/Integration/Integration';
-import RouterServices, { RouteType } from './services/RouterService';
+import RouterService, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
 import AuthService from './services/Auth/AuthService';
@@ -13,7 +13,6 @@ import UserContext from './state/recoil/integration/UserContext';
 
 import 'app/ui.scss';
 import 'app/theme.less';
-import RouterService from './services/RouterService';
 
 export default () => {
   useEffect(() => {
@@ -43,9 +42,9 @@ export default () => {
     <RecoilRoot>
       <UserContext/>
       <Integration>
-        <Router history={RouterServices.history}>
+        <Router history={RouterService.history}>
           <Switch>
-            {RouterServices.routes.map((route: RouteType, index: number) => {
+            {RouterService.routes.map((route: RouteType, index: number) => {
               return (
                 <Route
                   key={`${route.key}_${index}`}
@@ -67,10 +66,10 @@ export default () => {
             <Route
               path="/"
               component={() => {
-                RouterServices.replace(
+                RouterService.replace(
                   `${
-                    RouterServices.pathnames.LOGIN
-                  }?auto&${RouterServices.history.location.search.substr(1)}`,
+                    RouterService.pathnames.LOGIN
+                  }?auto&${RouterService.history.location.search.substr(1)}`,
                 );
                 return <div />;
               }}

@@ -36,8 +36,6 @@ export default class InternalAuthProviderService extends Observable implements A
       return this;
     }
 
-    // TODO
-
     this.initialized = true;
     return this;
   }

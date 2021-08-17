@@ -1,58 +1,20 @@
-import Logger from 'app/services/Logger';
 import Observable from 'app/services/Depreciated/observable.js';
 import Api from 'services/Api';
 import WindowState from 'services/utils/window';
-import Collections from 'app/services/Collections/Collections';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals';
 import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWT from 'app/services/JWTService';
 import Environment from 'environment/environment';
-import LocalStorage from 'services/LocalStorage';
-import Application from 'services/Application';
 import AuthService from 'services/Auth/AuthService';
 
 /**
  * Deprecated, push your code be in ./LoginService which extends this class
  */
 export class Login extends Observable {
-  // Promise resolved when user is defined
-  userIsSet;
 
-  constructor() {
-    super();
-    this.reset();
-    this.setObservableName('login');
-    this.logger = Logger.getLogger('Login');
-    this.firstInit = false;
-    this.currentUserId = null;
-    this.emailInit = '';
-    this.error_secondary_mail_already = false;
-    this.addmail_token = '';
-    this.external_login_error = false;
-  }
-
-  reset() {
-    this.state = '';
-    this.login_loading = false;
-    this.login_error = false;
-    this.resetCurrentUser();
-  }
-
-  changeState(state) {
-    this.state = state;
-    this.notify();
-  }
-
-  async init(did_wait = false) {
-    if (!did_wait) {
-      LocalStorage.getItem('api_root_url');
-      this.init(true);
-
-      return;
-    }
-
+  async _init() {
     if (AuthService.getAccountType() === 'console') {
       this.logger.debug('Account type does not need local initialization');
       return;
@@ -73,7 +35,7 @@ export class Login extends Observable {
     var error_code = WindowState.findGetParameter('error_code') ? true : false;
     if (error_code) {
       this.firstInit = true;
-      this.changeState('error');
+      this._state = 'error';
       this.error_code = WindowState.findGetParameter('error_code') || '';
       try {
         this.parsed_error_code = JSON.parse(WindowState.findGetParameter('error_code')).error;
@@ -90,7 +52,7 @@ export class Login extends Observable {
         : false;
     if (subscribe) {
       this.firstInit = true;
-      this.changeState('signin');
+      this._state = 'signin';
       this.emailInit = WindowState.findGetParameter('mail') || '';
       this.notify();
       return;
@@ -101,7 +63,7 @@ export class Login extends Observable {
         : false;
     if (verifymail) {
       this.firstInit = true;
-      this.changeState('verify_mail');
+      this._state = 'verify_mail';
       this.notify();
       return;
     }
@@ -111,7 +73,7 @@ export class Login extends Observable {
         : false;
     if (forgotPassword) {
       this.firstInit = true;
-      this.changeState('forgot_password');
+      this._state = 'forgot_password';
       this.notify();
       return;
     }
@@ -131,7 +93,7 @@ export class Login extends Observable {
     if (cancelAutoLogin && !autologin) {
       this.firstInit = true;
       this.clear();
-      this.changeState('logged_out');
+      this._state = 'logged_out';
       return;
     }
 
@@ -164,38 +126,37 @@ export class Login extends Observable {
       this.notify();
     }
 
-    if (InitService.server_infos?.configuration?.accounts?.type !== 'internal' && !this.firstInit) {
+    if (this.getAccountType() !== 'internal' && !this.firstInit) {
       //Check I am connected with external sign-in provider
-      return this.loginWithExternalProvider(
-        InitService.server_infos?.configuration?.accounts?.type,
-      );
+      //return this.loginWithExternalProvider(
+      //  InitService.server_infos?.configuration?.accounts?.type,
+      //);
     } else {
       //We can thrust the JWT
       this.updateUser();
     }
   }
 
-  updateUser(callback = () => {}) {
+  _updateUser(callback = () => {}) {
     if (Globals.store_public_access_get_data) {
       this.firstInit = true;
-      this.state = 'logged_out';
+      this._state = 'logged_out';
       this.notify();
       return;
     }
 
-    var that = this;
     Api.post(
       'users/current/get',
       { timezone: new Date().getTimezoneOffset() },
-      function (res) {
-        that.firstInit = true;
+      (res) => {
+        this.firstInit = true;
         if (res.errors.length > 0) {
-          that.logger.debug('updateUser error', res.errors);
+          this.logger.debug('updateUser error', res.errors);
           // TODO: Should be in a specific handler, not in the login
           if (
             (res.errors.indexOf('redirect_to_openid') >= 0 ||
             InitService.server_infos?.configuration?.accounts.type === 'console') &&
-            !that.external_login_error
+            !this.external_login_error
           ) {
             let developerSuffix = '';
             if (Environment.env_dev && document.location.host.indexOf('localhost') === 0) {
@@ -206,8 +167,8 @@ export class Login extends Observable {
             return;
           }
 
-          that.state = 'logged_out';
-          that.notify();
+          this._state = 'logged_out';
+          this.notify();
 
           WindowState.reset();
           RouterServices.push(
@@ -216,7 +177,7 @@ export class Login extends Observable {
             ),
           );
         } else {
-          that.startApp(res.data);
+          this.startApp(res.data);
         }
 
         callback && callback();
@@ -224,30 +185,5 @@ export class Login extends Observable {
       false,
       { disableJWTAuthentication: true },
     );
-  }
-
-  clear() {
-    this.resetCurrentUser();
-    LocalStorage.clear();
-    Collections.clear();
-    JWT.clear();
-  }
-
-  setCurrentUser(user) {
-    this.currentUserId = user.id;
-    this.resolveUser(this.currentUserId);
-  }
-
-  resetCurrentUser() {
-    this.currentUserId = null;
-    this.userIsSet = new Promise(resolve => (this.resolveUser = resolve));
-  }
-
-  startApp(user) {
-    this.setCurrentUser(user);
-    Application.start(user);
-    this.state = 'app';
-    this.notify();
-    RouterServices.push(RouterServices.generateRouteFromState({}));
   }
 }

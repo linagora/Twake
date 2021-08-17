@@ -180,9 +180,11 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     if (!response.access_token) {
       this.logger.error('Can not retrieve access_token from console. Response was', response);
       AlertManager.confirm(
+        // TODO: In this case, signout must be the LoginService one. The best way to do this is to have a listener to call and not havinf the alertmanager linked here...
         () => this.signOut(),
         () => this.signOut(),
         {
+          // TODO: i18n
           title: 'We are unable to open your account.',
           text: (response as any).error,
         },
@@ -191,6 +193,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     }
 
     JWT.update(response.access_token);
+    // having the login service linked here is also bad
     LoginService.updateUser();
   }
 }

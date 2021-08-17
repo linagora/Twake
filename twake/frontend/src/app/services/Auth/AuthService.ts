@@ -32,9 +32,9 @@ class AuthService {
     const config = InitService.server_infos?.configuration?.accounts[accountType];
 
     if (accountType === 'console') {
-      this.provider = new OIDCAuthProviderService(config as ConsoleConfiguration).init();
+      this.provider = new OIDCAuthProviderService(config as ConsoleConfiguration);
     } else if (accountType === 'internal') {
-      this.provider = new InternalAuthProviderService(config as InternalConfiguration).init();
+      this.provider = new InternalAuthProviderService(config as InternalConfiguration);
     } else {
       throw new Error(`${accountType} is not a valid auth account provider`);
     }

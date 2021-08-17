@@ -319,7 +319,7 @@ export default class Signin extends Component {
 
   previous() {
     if (this.state.page <= 1) {
-      this.state.login.changeState('logged_out');
+      this.state.login.state = 'logged_out';
     } else {
       this.setState({ page: this.state.page - 1 });
     }

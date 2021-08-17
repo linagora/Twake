@@ -84,7 +84,7 @@ export default class VerifyMail extends Component {
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
                 onClick={() => {
-                  LoginService.changeState('signin');
+                  LoginService.state = 'signin';
                   document.location.replace('/');
                 }}
                 className="blue_link"
