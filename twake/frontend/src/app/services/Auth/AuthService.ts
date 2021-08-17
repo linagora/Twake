@@ -5,6 +5,8 @@ import OIDCAuthProviderService from './provider/oidc/OIDCAuthProviderService';
 import InternalAuthProviderService from './provider/internal/InternalAuthProviderService';
 import Logger from 'services/Logger';
 
+type AccountType = 'console' | 'internal';
+
 @TwakeService('AuthService')
 class AuthService {
   private provider: AuthProvider<any, any> | null = null;
@@ -19,13 +21,14 @@ class AuthService {
       return this.provider;
     }
 
-    const accountType = InitService.server_infos?.configuration?.accounts.type;
+    const accountType = this.getAccountType();
     if (!accountType) {
       this.logger.info('No server account configuration');
       this.provider = this.getDefaultProvider();
 
       return this.provider;
     }
+
     const config = InitService.server_infos?.configuration?.accounts[accountType];
 
     if (accountType === 'console') {
@@ -41,6 +44,10 @@ class AuthService {
 
   private getDefaultProvider() {
     return new InternalAuthProviderService().init();
+  }
+
+  getAccountType(): AccountType | undefined {
+    return InitService.server_infos?.configuration?.accounts.type;
   }
 }
 

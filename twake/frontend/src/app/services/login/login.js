@@ -11,6 +11,7 @@ import JWT from 'app/services/JWTService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
 import Application from 'services/Application';
+import AuthService from 'services/Auth/AuthService';
 
 /**
  * Deprecated, push your code be in ./LoginService which extends this class
@@ -52,7 +53,8 @@ export class Login extends Observable {
       return;
     }
 
-    if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
+    if (AuthService.getAccountType() === 'console') {
+      this.logger.debug('Account type does not need local initialization');
       return;
     }
 
