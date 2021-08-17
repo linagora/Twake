@@ -12,6 +12,7 @@ import JWT from 'services/JWTService';
 import Logger from 'services/Logger';
 import WindowState from 'services/utils/window';
 import { UserType } from 'app/models/User';
+import AlertManager from '../AlertManager/AlertManager';
 
 export type LoginState = '' | 'app' | 'error' | 'signin' | 'verify_mail' | 'forgot_password' | 'logged_out' | 'logout';
 @TwakeService('Login')
@@ -44,11 +45,29 @@ class LoginService extends Observable {
     return this._state;
   }
 
+  /**
+   * The session expired and we are not able to slient renew it
+   */
+  onSessionExpired() {
+    this.logger.error('Session expired');
+    AlertManager.confirm(
+      () => this.logout(),
+      () => this.logout(),
+      {
+        // TODO: i18n
+        title: 'We are unable to open authenticate user',
+      },
+    );
+
+  }
+
   async init(): Promise<void> {
     // TODO: Manage states from URL parameters for internal strategy
     // FIXME: THis condition is false, we do not want to do it again and again
     if (this.firstInit) {
-      this.getAuthProvider().init();
+      this.getAuthProvider().init({
+        onSessionExpired: () => this.onSessionExpired(),
+      });
       // basic auth
       //this.reset();
       await JWT.init();

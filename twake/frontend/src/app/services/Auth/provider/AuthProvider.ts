@@ -1,7 +1,10 @@
 type AuthEvent = 'userLoaded' | 'userUnloaded' | 'userSignedOut' | 'accessTokenExpiring' | 'accessTokenExpired' | 'silentRenewError';
 
+export type InitParameters = {
+  onSessionExpired?: () => void;
+}
 export interface AuthProvider<SignInParameters, SignOutParameters> {
-  init(): this;
+  init(params?: InitParameters): this;
 
   signIn?(params: SignInParameters): Promise<void>;
 

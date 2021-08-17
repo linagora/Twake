@@ -8,10 +8,9 @@ import Observable from '../../../Observable/Observable';
 import LoginService from '../../../login/LoginService';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../../../utils/URLUtils';
-import AlertManager from 'services/AlertManager/AlertManager';
 import { TwakeService } from '../../../Decorators/TwakeService';
 import EnvironmentService from '../../../EnvironmentService';
-import { AuthProvider } from '../AuthProvider';
+import { AuthProvider, InitParameters } from '../AuthProvider';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';
@@ -30,7 +29,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     this.logger.debug('OIDC configuration', configuration);
   }
 
-  init(): this {
+  init(params: InitParameters): this {
     if (this.initialized) {
       this.logger.warn('Alreay initialized');
       return this;
@@ -64,12 +63,18 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
       this.authProviderUserManager.events.addUserLoaded(async user => {
         // fires each time the user is updated
         this.logger.debug('OIDC user loaded listener', user);
-        this.getJWTFromOidcToken(user);
+        this.getJWTFromOidcToken(user, () => {
+          this.logger.error('OIDC user loaded listener, error while getting the JWT from OIDC token');
+          params.onSessionExpired && params.onSessionExpired();
+        });
       });
 
       this.authProviderUserManager.events.addAccessTokenExpired(() => {
         this.logger.debug('OIDC access token expired listener');
-        this.silentLogin();
+        this.silentLogin(() => {
+          this.logger.error('OIDC access token expired listener, error while getting the JWT from OIDC token');
+          params.onSessionExpired && params.onSessionExpired();
+        });
       });
 
       this.authProviderUserManager.events.addAccessTokenExpiring(() => {
@@ -83,7 +88,12 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
       });
 
       //This manage the initial sign-in when loading the app
-      if (this.enforceFrontendUrl()) this.silentLogin();
+      if (this.enforceFrontendUrl()) {
+        this.silentLogin(() => {
+          this.logger.error('OIDC Init error');
+          params.onSessionExpired && params.onSessionExpired();
+        });
+      }
     }
 
     this.initialized = true;
@@ -108,7 +118,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     return true;
   }
 
-  async silentLogin(): Promise<void> {
+  private async silentLogin(onError: () => void): Promise<void> {
     if (!this.authProviderUserManager) {
       this.logger.debug('silentLogin, no auth provider');
       return;
@@ -129,7 +139,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
           this.logger.debug('silentLogin, user is already defined, launching silent signin');
           //If yes we try a silent signin
           user = await this.authProviderUserManager.signinSilent();
-          this.getJWTFromOidcToken(user);
+          this.getJWTFromOidcToken(user, onError);
         } else {
           //If no we try a redirect signin
           this.logger.debug('silentLogin, user not defined, launching a signin redirect');
@@ -166,7 +176,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
   }
 
-  async getJWTFromOidcToken(user: Oidc.User | null): Promise<void> {
+  private async getJWTFromOidcToken(user: Oidc.User | null, onError: () => void): Promise<void> {
     if (!user) {
       this.logger.info('Cannot getJWTFromOidcToken with a null user');
       return;
@@ -179,21 +189,12 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
     if (!response.access_token) {
       this.logger.error('Can not retrieve access_token from console. Response was', response);
-      AlertManager.confirm(
-        // TODO: In this case, signout must be the LoginService one. The best way to do this is to have a listener to call and not havinf the alertmanager linked here...
-        () => this.signOut(),
-        () => this.signOut(),
-        {
-          // TODO: i18n
-          title: 'We are unable to open your account.',
-          text: (response as any).error,
-        },
-      );
+      onError();
       return;
     }
 
     JWT.update(response.access_token);
-    // having the login service linked here is also bad
+    // FIXME: having the login service linked here is also bad
     LoginService.updateUser();
   }
 }
