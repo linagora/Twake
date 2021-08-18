@@ -7,7 +7,7 @@ import CurrentUserService from 'app/services/user/CurrentUser';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import LoginService from 'services/login/login.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import ListenUsers from 'services/user/ListenUsers';
 import UserParameter from 'app/scenes/Client/Popup/UserParameter/UserParameter.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';

@@ -16,6 +16,21 @@ import LoginService from 'services/login/login';
 import Globals from 'services/Globals';
 
 class WorkspacesUsers extends Observable {
+  public users_by_workspace: { [key: string]: any };
+  public users_by_group: { [key: string]: any };
+  public membersPending: any[];
+
+  public updateRoleUserLoading: { [key: string]: boolean };
+  public updateLevelUserLoading: { [key: string]: boolean };
+
+  public offset_by_workspace_id: any;
+  public offset_by_group_id: any;
+
+  public loading: boolean;
+
+  public errorOnInvitation: boolean;
+  public errorUsersInvitation: any[];
+
   constructor() {
     super();
     this.setObservableName('workspacesUsers');
@@ -30,9 +45,11 @@ class WorkspacesUsers extends Observable {
 
     this.offset_by_workspace_id = {};
     this.offset_by_group_id = {};
+    this.errorOnInvitation = false;
+    this.errorUsersInvitation = [];
 
     this.loading = false;
-    Globals.window.workspaceUserService = this;
+    (Globals.window as any).workspaceUserService = this;
   }
   getAdminLevel(idWorkspace = workspaceService.currentWorkspaceId) {
     var levels = Collections.get('workspaces').find(idWorkspace).levels;
@@ -57,7 +74,7 @@ class WorkspacesUsers extends Observable {
     return false;
   }
   isGroupManager() {}
-  getLevel(idLevel) {
+  getLevel(idLevel: string) {
     var levels = Collections.get('workspaces').find(workspaceService.currentWorkspaceId).levels;
     for (var i = 0; i < levels.length; i++) {
       if (idLevel === levels[i].id) {
@@ -67,15 +84,15 @@ class WorkspacesUsers extends Observable {
     return false;
   }
 
-  getUsersByWorkspace(workspace_id) {
+  getUsersByWorkspace(workspace_id: string) {
     return (this.users_by_workspace || {})[workspace_id] || {};
   }
 
-  unload(workspace_id) {
-    ws.unsubscribe('workspace_users/' + workspace_id);
+  unload(workspace_id: string) {
+    ws.unsubscribe('workspace_users/' + workspace_id, null, null);
   }
 
-  load(workspace_id, reset_offset, options) {
+  load(workspace_id: string, reset_offset: string, options: any) {
     if (!options) {
       options = {};
     }
@@ -101,11 +118,15 @@ class WorkspacesUsers extends Observable {
       this.offset_by_group_id[group_id] = [0, false];
     }
 
-    ws.subscribe('workspace_users/' + workspace_id, (route, res) => {
-      this.recieveWS(res);
-    });
+    ws.subscribe(
+      'workspace_users/' + workspace_id,
+      (route: string, res: any) => {
+        this.recieveWS(res);
+      },
+      null,
+    );
 
-    var loadMembers = data => {
+    var loadMembers = (data: any) => {
       if (!data) {
         return;
       }
@@ -113,7 +134,7 @@ class WorkspacesUsers extends Observable {
         data = data.members;
       }
       if (data.members) {
-        (data.members || []).forEach(item => {
+        (data.members || []).forEach((item: any) => {
           if (
             !that.offset_by_workspace_id[workspace_id][1] ||
             Numbers.compareTimeuuid(item.user.id, that.offset_by_workspace_id[workspace_id][1]) > 0
@@ -148,12 +169,12 @@ class WorkspacesUsers extends Observable {
     if (options.members) {
       loadMembers(options.members || []);
     } else {
-      Api.post('workspace/members/list', data, res => {
+      Api.post('workspace/members/list', data, (res: any) => {
         if (res.data) {
           loadMembers({ members: res.data });
         }
       });
-      Api.post('workspace/members/pending', data, res => {
+      Api.post('workspace/members/pending', data, (res: any) => {
         if (res.data) {
           loadMembers({ mails: res.data });
         }
@@ -162,8 +183,8 @@ class WorkspacesUsers extends Observable {
     }
 
     // eslint-disable-next-line no-unused-vars
-    var loadGroupUsers = data => {
-      data.users.forEach(item => {
+    var loadGroupUsers = (data: any) => {
+      data.users.forEach((item: any) => {
         if (
           !that.offset_by_group_id[group_id][1] ||
           Numbers.compareTimeuuid(item.user.id, that.offset_by_group_id[group_id][1]) > 0
@@ -183,7 +204,7 @@ class WorkspacesUsers extends Observable {
       loadMembers(options.group_users);
     }
   }
-  canShowUserInWorkspaceList(member) {
+  canShowUserInWorkspaceList(member: any) {
     // if user is interne or wexterne => no restriction
     if (!WorkspaceUserRights.isInvite()) {
       return true;
@@ -217,10 +238,10 @@ class WorkspacesUsers extends Observable {
     }
     return false;
   }
-  removeUserFromWorkspaceList(user) {}
-  recieveWS(res) {
+  removeUserFromWorkspaceList(user: any) {}
+  recieveWS(res: any) {
     if (res.workspace_user.user.id === User.getCurrentUserId()) {
-      LoginService.updateUser();
+      LoginService.updateUser(() => {});
     }
 
     if (res.type === 'add' || res.type === 'update_workspace_level') {
@@ -258,27 +279,31 @@ class WorkspacesUsers extends Observable {
     this.notify();
   }
 
-  removeUser(id, workspaceId, cb) {
+  removeUser(id: string, workspaceId: string, cb?: Function) {
     const openedWorkspaceId = workspaceService.currentWorkspaceId;
     var that = this;
     this.loading = true;
     this.notify();
 
-    Api.post('workspace/members/remove', { ids: [id], workspaceId: workspaceId }, function (res) {
-      if (id === CurrentUser.get().id && openedWorkspaceId === workspaceId) {
-        Globals.window.location.reload();
-      }
+    Api.post(
+      'workspace/members/remove',
+      { ids: [id], workspaceId: workspaceId },
+      function (res: any) {
+        if (id === CurrentUser.get().id && openedWorkspaceId === workspaceId) {
+          Globals.window.location.reload();
+        }
 
-      WorkspacesMembersTable.removeElement(workspaceId, 'members', id);
+        WorkspacesMembersTable.removeElement(workspaceId, 'members', id);
 
-      that.loading = false;
-      that.notify();
-      if (cb) {
-        cb();
-      }
-    });
+        that.loading = false;
+        that.notify();
+        if (cb) {
+          cb();
+        }
+      },
+    );
   }
-  addUser(mails, cb, thot) {
+  addUser(mails: any, cb?: Function, thot?: any) {
     var that = this;
     this.loading = true;
     this.notify();
@@ -289,7 +314,7 @@ class WorkspacesUsers extends Observable {
         list: mails.join(';'),
         workspaceId: workspaceService.currentWorkspaceId,
       },
-      function (res) {
+      function (res: any) {
         if (res.errors.length === 0) {
           if (
             ((res.data.added || {}).pending || []).length +
@@ -299,10 +324,8 @@ class WorkspacesUsers extends Observable {
             CurrentUser.updateTutorialStatus('did_invite_collaborators');
           }
 
-          res.data.added.pending.forEach(mail => {
-            WorkspacesMembersTable.updateElement(res.workspaceId, 'pending', res.mail, {
-              mail: mail,
-            });
+          res.data.added.pending.forEach((mail: string) => {
+            WorkspacesMembersTable.updateElement(res.workspaceId, 'pending', res.mail, mail);
           });
           that.errorOnInvitation = false;
           that.errorUsersInvitation = [];
@@ -329,7 +352,7 @@ class WorkspacesUsers extends Observable {
       },
     );
   }
-  addUserFromGroup(id, externe, cb, thot) {
+  addUserFromGroup(id: string, externe: boolean, cb?: Function, thot?: any) {
     if (this.users_by_group[groupService.currentGroupId][id]) {
       this.users_by_workspace[workspaceService.currentWorkspaceId][id] =
         this.users_by_group[groupService.currentGroupId][id];
@@ -338,7 +361,7 @@ class WorkspacesUsers extends Observable {
       this.notify();
     }
   }
-  removeInvitation(mail, cb) {
+  removeInvitation(mail: string, cb?: Function) {
     var that = this;
     this.loading = true;
     var index = that.membersPending
@@ -357,7 +380,7 @@ class WorkspacesUsers extends Observable {
         workspaceId: workspaceService.currentWorkspaceId,
         mail: mail,
       },
-      function (res) {
+      function (res: any) {
         WorkspacesMembersTable.removeElement(workspaceService.currentWorkspaceId, 'pending', mail);
         that.loading = false;
         that.notify();
@@ -367,8 +390,8 @@ class WorkspacesUsers extends Observable {
       },
     );
   }
-  isExterne(userIdOrMail, workspaceId = null) {
-    if (!workspaceId) {
+  isExterne(userIdOrMail: string, workspaceId: string = '') {
+    if (workspaceId === '') {
       workspaceId = workspaceService.currentWorkspaceId;
     }
     if (userIdOrMail.indexOf('@') > 0) {
@@ -383,8 +406,8 @@ class WorkspacesUsers extends Observable {
     }
   }
 
-  isAutoAddUser(userId, workspaceId = null) {
-    if (!workspaceId) {
+  isAutoAddUser(userId: string, workspaceId: string = '') {
+    if (workspaceId === '') {
       workspaceId = workspaceService.currentWorkspaceId;
     }
     var user = (this.users_by_workspace[workspaceId] || {})[userId];
@@ -394,7 +417,7 @@ class WorkspacesUsers extends Observable {
     return false;
   }
 
-  updateManagerRole(userId, state) {
+  updateManagerRole(userId: string, state: any) {
     var workspaceId = workspaceService.currentWorkspaceId;
     var groupId = groupService.currentGroupId;
     const member = WorkspacesMembersTable.getElement(workspaceId, 'members', userId);
@@ -408,7 +431,7 @@ class WorkspacesUsers extends Observable {
       Api.post(
         'workspace/group/manager/toggleManager',
         { groupId: groupId, userId: userId, isManager: state },
-        res => {
+        (res: any) => {
           if (res.errors.length > 0) {
             member.groupLevel = previousState;
             WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
@@ -429,7 +452,7 @@ class WorkspacesUsers extends Observable {
       Api.post(
         'workspace/group/manager/toggleManager',
         { groupId: groupId, userId: userId, isManager: state },
-        res => {
+        (res: any) => {
           if (res.errors.length > 0) {
             member.level = previousState;
             WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
@@ -440,7 +463,7 @@ class WorkspacesUsers extends Observable {
       );
     }
   }
-  updateUserLevel(userId, state) {
+  updateUserLevel(userId: string, state: any) {
     var workspaceId = workspaceService.currentWorkspaceId;
     const member = WorkspacesMembersTable.getElement(workspaceId, 'members', userId);
     if (member && !this.updateRoleUserLoading[userId]) {
@@ -461,7 +484,7 @@ class WorkspacesUsers extends Observable {
           usersId: [userId],
           levelId: member.level,
         },
-        res => {
+        (res: any) => {
           if (res.errors.length > 0 || res.data.updated === 0) {
             member.level = previousState;
             WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
@@ -473,10 +496,14 @@ class WorkspacesUsers extends Observable {
     }
   }
 
-  searchUserInWorkspace(query, cb) {
+  searchUserInWorkspace(query: any, cb: Function) {
     User.search(
       query,
-      { scope: 'workspace', workspace_id: workspaceService.currentWorkspaceId },
+      {
+        scope: 'workspace',
+        workspace_id: workspaceService.currentWorkspaceId,
+        group_id: workspaceService.currentGroupId,
+      },
       results => {
         cb(results);
       },
@@ -521,11 +548,11 @@ class WorkspacesUsers extends Observable {
     }
   }
 
-  fullStringToEmails(str) {
+  fullStringToEmails(str: string) {
     const regex =
       // eslint-disable-next-line no-useless-escape
       /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/gm;
-    const mailToArray = [];
+    const mailToArray: any[] = [];
     const stringToArray = str.match(regex);
 
     (stringToArray || []).map(item => mailToArray.push(item.toLocaleLowerCase()));

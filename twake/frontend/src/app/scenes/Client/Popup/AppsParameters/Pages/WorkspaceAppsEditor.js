@@ -9,7 +9,7 @@ import Attribute from 'components/Parameters/Attribute.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Api from 'services/Api';
 import WorkspaceAppsCreator from './WorkspaceAppsCreator.js';
-import Switch from 'components/Inputs/Switch.js';
+import Switch from 'components/Inputs/Switch';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import Icon from 'components/Icon/Icon.js';
@@ -556,7 +556,7 @@ export default class WorkspaceAppsEditor extends Component {
                   [],
                   "Publier l'application",
                 )}
-                value={application.public}
+                checked={application.public}
                 onChange={value => {
                   application.public = value;
                   this.setState({});
