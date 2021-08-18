@@ -1409,6 +1409,8 @@
   "scenes.login.createaccount.activate_your_account": "Activer votre compte",
   "scenes.login.createaccount.inscription_information": "Cliquez sur le lien que nous vous\\n avons envoyé par mail pour\\n terminer l’inscription. ",
   "scenes.login.createaccount.send_again": "Envoyer à nouveau",
+  "scenes.login.authprovider.error.title": "Nous ne sommes pas en mesure d'ouvrir votre compte",
+  "scenes.login.authprovider.error.text": "Pas de panique, nous allons faire une nouvelle tentative. Veuillez clicker sur \"ok\" pour vous connecter à nouveau.",
   "scenes.tell_us": "Dites-nous ce que vous faisiez à :",
   "scenes.apps.drive.viewer.download_desktop": "Téléchargez Twake pour bureau pour visualiser dans l'application",
   "scenes.apps.tasks.my_tasks": "Mes Tâches",

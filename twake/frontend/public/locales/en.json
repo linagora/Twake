@@ -1448,6 +1448,8 @@
   "scenes.login.createaccount.activate_your_account": "Activate your account",
   "scenes.login.createaccount.inscription_information": "Click on the link we \\n sent you by e-mail to \\n finish the registration.",
   "scenes.login.createaccount.send_again": "Send again",
+  "scenes.login.authprovider.error.title": "We are unable to open your account",
+  "scenes.login.authprovider.error.text": "Don't panic, we will try again. Please click on \"ok\" to log in again.",
   "subscribe.back": "",
   "subscribe.continue": "",
   "subscribe.email": "",
