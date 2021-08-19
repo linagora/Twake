@@ -5,7 +5,6 @@ import Api from '../../../Api';
 import { ConsoleConfiguration } from '../../../InitService';
 import JWT, { JWTDataType } from '../../../JWTService';
 import Observable from '../../../Observable/Observable';
-import LoginService from '../../../login/LoginService';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../../../utils/URLUtils';
 import { TwakeService } from '../../../Decorators/TwakeService';
@@ -36,7 +35,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     }
 
     if (!this.authProviderUserManager) {
-      Oidc.Log.logger = Logger;
+      Oidc.Log.logger = Logger.getLogger("OIDC");
       Oidc.Log.level = EnvironmentService.isProduction() ? Oidc.Log.WARN : Oidc.Log.DEBUG;
 
       this.authProviderUserManager = new Oidc.UserManager({
@@ -63,9 +62,15 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
       this.authProviderUserManager.events.addUserLoaded(async user => {
         // fires each time the user is updated
         this.logger.debug('OIDC user loaded listener', user);
-        this.getJWTFromOidcToken(user, () => {
-          this.logger.error('OIDC user loaded listener, error while getting the JWT from OIDC token');
-          params.onSessionExpired && params.onSessionExpired();
+        await this.getJWTFromOidcToken(user, (err, jwt) => {
+          if (err) {
+            this.logger.error('OIDC user loaded listener, error while getting the JWT from OIDC token');
+            params.onSessionExpired && params.onSessionExpired();
+            return;
+          }
+
+          jwt && JWT.update(jwt);
+          // TODO: LoginService.updateUser();
         });
       });
 
@@ -79,11 +84,21 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
       this.authProviderUserManager.events.addAccessTokenExpiring(() => {
         this.logger.debug('OIDC access token is expiring');
+        this.silentLogin(() => {
+          this.logger.error('OIDC access token expiring listener, error while doing a silent login');
+        });
+      });
+
+      this.authProviderUserManager.events.addSilentRenewError(error => {
+        // in case the renew failed, ask for login
+        // since we have set automaticSilentRenew to true, this will be called when silentSignin raise error when token is expiring
+        this.logger.error('OIDC silent renew error', error);
+        this.signOut();
       });
 
       //This even listener is temporary disabled because of this issue: https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/-/issues/2358
       this.authProviderUserManager.events.addUserSignedOut(() => {
-        this.logger.info('Signed out listener');
+        this.logger.info('OIDC Signed out listener');
         //this.signOut();
       });
 
@@ -101,7 +116,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
   }
 
   //Redirect to valid frontend url to make sure oidc will work as expected
-  enforceFrontendUrl() {
+  private enforceFrontendUrl() {
     const frontUrl = (getDomain(environment.front_root_url || '') || '').toLocaleLowerCase();
     if (frontUrl && document.location.host.toLocaleLowerCase() !== frontUrl) {
       document.location.replace(
@@ -136,10 +151,21 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         //First we try to see if we know this user
         let user = await this.authProviderUserManager.getUser();
         if (user) {
-          this.logger.debug('silentLogin, user is already defined, launching silent signin');
+          this.logger.debug('silentLogin, user is already defined, launching silent signin', user);
           //If yes we try a silent signin
           user = await this.authProviderUserManager.signinSilent();
-          this.getJWTFromOidcToken(user, onError);
+          this.logger.debug('silentLogin, user from silent signin', user);
+          await this.getJWTFromOidcToken(user, (err, jwt) => {
+            if (err) {
+              this.logger.debug('silentLogin, error while getting new token', err);
+              onError();
+              return;
+            }
+
+            jwt && JWT.update(jwt);
+            // TODO: Do we need to update user from Login service?
+            //LoginService.updateUser();
+          });
         } else {
           //If no we try a redirect signin
           this.logger.debug('silentLogin, user not defined, launching a signin redirect');
@@ -171,31 +197,46 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
       JWT.clear();
       window.location.reload();
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error('Signout redirect error', err);
     }
 
   }
 
-  private async getJWTFromOidcToken(user: Oidc.User | null, onError: () => void): Promise<void> {
+  /**
+   * Try to get a new JWT token from the OIDC one:
+   * Call the backend with the OIDC token, it will use it to get a new token from console
+   * FIXME: Try to get a new token with the refresh one and call it again if the current one expired...
+   */
+  private getJWTFromOidcToken(
+    user: Oidc.User | null,
+    callback: (err?: Error, accessToken?: JWTDataType) => void,
+  ): void {
     if (!user) {
-      this.logger.info('Cannot getJWTFromOidcToken with a null user');
-      return;
-    }
-    const response = (await Api.post('users/console/token', {
-      // FIXME: The access token is potentially expired, we MUST use the refresh one in this case!
-      // TODO: Add logic for this like we do in the JWT service
-      access_token: user.access_token,
-    })) as { access_token: JWTDataType };
-
-    if (!response.access_token) {
-      this.logger.error('Can not retrieve access_token from console. Response was', response);
-      onError();
+      this.logger.info('getJWTFromOidcToken, Cannot getJWTFromOidcToken with a null user');
+      callback(new Error('Cannot getJWTFromOidcToken with a null user'));
       return;
     }
 
-    JWT.update(response.access_token);
-    // FIXME: having the login service linked here is also bad
-    LoginService.updateUser();
+    if (user.expired) {
+      // try to get a new token from refresh one before asking for a JWT token
+      this.logger.info('getJWTFromOidcToken, user expired');
+      // TODO: Try to renew now...
+    }
+
+    Api.post('users/console/token',
+      { access_token: user.access_token },
+      (response: { access_token: JWTDataType }) => {
+        // the input access_token is potentially expired and so the response contains an error.
+        // we should be able to refresh the token or renew it...
+        if (!response.access_token) {
+          this.logger.error('getJWTFromOidcToken, Can not retrieve access_token from console. Response was', response);
+          callback(new Error('Can not retrieve access_token from console'));
+          return;
+        }
+
+        callback(undefined, response.access_token);
+      }
+    );
   }
 }
 
