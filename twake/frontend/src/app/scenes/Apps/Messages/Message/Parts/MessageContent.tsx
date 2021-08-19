@@ -118,7 +118,7 @@ export default (props: Props) => {
               {!messageSaveFailed && (
                 <Reactions message={props.message} collectionKey={props.collectionKey} />
               )}
-              {messageSaveFailed && (
+              {messageSaveFailed && !messageIsLoading && (
                 <RetryButtons message={props.message} collectionKey={props.collectionKey} />
               )}
             </>

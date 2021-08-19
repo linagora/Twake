@@ -48,7 +48,6 @@ export default (props: Props) => {
   const editorRef = useRef<EditorView>(null);
   const submitRef = useRef<HTMLDivElement>(null);
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
-  const [loading, setLoading] = useState(false);
   const messageEditorService = MessageEditorsManager.get(props.channelId);
   const [editorState, setEditorState] = useState(() =>
     RichTextEditorStateService.get(editorId, { plugins: editorPlugins }),
@@ -118,7 +117,6 @@ export default (props: Props) => {
   };
 
   const sendMessage = (messageContent: string, editorId: string) => {
-    setLoading(true);
     if (!props.threadId) {
       messageEditorService.closeEditor();
     }
@@ -131,7 +129,6 @@ export default (props: Props) => {
       },
       props.collectionKey,
     ).then((message: any) => {
-      setLoading(false);
       if (message) {
         if (
           messageEditorService.currentEditor ===
@@ -221,7 +218,6 @@ export default (props: Props) => {
   return (
     <div
       className={classNames('message-input', {
-        loading,
         unfocused:
           messageEditorService.currentEditor !==
           messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context),
