@@ -59,10 +59,10 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         this.signOut();
       }
 
-      this.userManager.events.addUserLoaded(async user => {
+      this.userManager.events.addUserLoaded(user => {
         // fires each time the user is updated
         this.logger.debug('OIDC user loaded listener', user);
-        await this.getJWTFromOidcToken(user, (err, jwt) => {
+        this.getJWTFromOidcToken(user, (err, jwt) => {
           if (err) {
             this.logger.error('OIDC user loaded listener, error while getting the JWT from OIDC token');
             params.onSessionExpired && params.onSessionExpired();
@@ -155,7 +155,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
           //If yes we try a silent signin
           user = await this.userManager.signinSilent();
           this.logger.debug('silentLogin, user from silent signin', user);
-          await this.getJWTFromOidcToken(user, (err, jwt) => {
+          this.getJWTFromOidcToken(user, (err, jwt) => {
             if (err) {
               this.logger.debug('silentLogin, error while getting new token', err);
               onError();
@@ -192,14 +192,12 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
     try {
       await this.userManager.signoutRedirect();
-      // FXIME : This may not be called...
-      // This must be in the genereic login service
       JWT.clear();
+      // FIXME: can reload to the OIDC signin window, not to the twake one to do not loose time...
       window.location.reload();
     } catch (err) {
       this.logger.error('Signout redirect error', err);
     }
-
   }
 
   /**
