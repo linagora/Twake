@@ -19,7 +19,7 @@ const OIDC_CLIENT_ID = 'twake';
 @TwakeService("OIDCAuthProvider")
 export default class OIDCAuthProviderService extends Observable implements AuthProvider<unknown, unknown> {
   private logger: Logger.Logger;
-  private authProviderUserManager: Oidc.UserManager | null = null;
+  private userManager: Oidc.UserManager | null = null;
   private initialized: boolean = false;
 
   constructor(private configuration?: ConsoleConfiguration) {
@@ -34,11 +34,11 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
       return this;
     }
 
-    if (!this.authProviderUserManager) {
+    if (!this.userManager) {
       Oidc.Log.logger = Logger.getLogger("OIDC");
       Oidc.Log.level = EnvironmentService.isProduction() ? Oidc.Log.WARN : Oidc.Log.DEBUG;
 
-      this.authProviderUserManager = new Oidc.UserManager({
+      this.userManager = new Oidc.UserManager({
         userStore: new Oidc.WebStorageStateStore({ store: window.localStorage }),
         authority: this.configuration?.authority || environment.api_root_url,
         client_id: this.configuration?.client_id || OIDC_CLIENT_ID,
@@ -59,7 +59,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         this.signOut();
       }
 
-      this.authProviderUserManager.events.addUserLoaded(async user => {
+      this.userManager.events.addUserLoaded(async user => {
         // fires each time the user is updated
         this.logger.debug('OIDC user loaded listener', user);
         await this.getJWTFromOidcToken(user, (err, jwt) => {
@@ -74,7 +74,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         });
       });
 
-      this.authProviderUserManager.events.addAccessTokenExpired(() => {
+      this.userManager.events.addAccessTokenExpired(() => {
         this.logger.debug('OIDC access token expired listener');
         this.silentLogin(() => {
           this.logger.error('OIDC access token expired listener, error while getting the JWT from OIDC token');
@@ -82,14 +82,14 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         });
       });
 
-      this.authProviderUserManager.events.addAccessTokenExpiring(() => {
+      this.userManager.events.addAccessTokenExpiring(() => {
         this.logger.debug('OIDC access token is expiring');
         this.silentLogin(() => {
           this.logger.error('OIDC access token expiring listener, error while doing a silent login');
         });
       });
 
-      this.authProviderUserManager.events.addSilentRenewError(error => {
+      this.userManager.events.addSilentRenewError(error => {
         // in case the renew failed, ask for login
         // since we have set automaticSilentRenew to true, this will be called when silentSignin raise error when token is expiring
         this.logger.error('OIDC silent renew error', error);
@@ -97,7 +97,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
       });
 
       //This even listener is temporary disabled because of this issue: https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng/-/issues/2358
-      this.authProviderUserManager.events.addUserSignedOut(() => {
+      this.userManager.events.addUserSignedOut(() => {
         this.logger.info('OIDC Signed out listener');
         //this.signOut();
       });
@@ -134,7 +134,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
   }
 
   private async silentLogin(onError: () => void): Promise<void> {
-    if (!this.authProviderUserManager) {
+    if (!this.userManager) {
       this.logger.debug('silentLogin, no auth provider');
       return;
     }
@@ -142,18 +142,18 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     //Try to use the in-url sign-in response from oidc if exists
     try {
       this.logger.debug('silentLogin, trying to get user from redirect callback');
-      await this.authProviderUserManager.signinRedirectCallback();
-      this.authProviderUserManager.getUser();
+      await this.userManager.signinRedirectCallback();
+      this.userManager.getUser();
     } catch (e) {
       this.logger.debug('silentLogin, not a signin response, trying to signin now', e);
       //There is no sign-in response, so we can try to silent login and use refresh token
       try {
         //First we try to see if we know this user
-        let user = await this.authProviderUserManager.getUser();
+        let user = await this.userManager.getUser();
         if (user) {
           this.logger.debug('silentLogin, user is already defined, launching silent signin', user);
           //If yes we try a silent signin
-          user = await this.authProviderUserManager.signinSilent();
+          user = await this.userManager.signinSilent();
           this.logger.debug('silentLogin, user from silent signin', user);
           await this.getJWTFromOidcToken(user, (err, jwt) => {
             if (err) {
@@ -169,12 +169,12 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         } else {
           //If no we try a redirect signin
           this.logger.debug('silentLogin, user not defined, launching a signin redirect');
-          this.authProviderUserManager.signinRedirect();
+          this.userManager.signinRedirect();
         }
       } catch (e) {
         this.logger.debug('silentLogin error, launching a signin redirect', e);
         //In any case if it doesn't work we do a redirect signin
-        this.authProviderUserManager.signinRedirect();
+        this.userManager.signinRedirect();
       }
     }
   }
@@ -186,12 +186,12 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
   async signOut(): Promise<void> {
     this.logger.info("Signout");
 
-    if (!this.authProviderUserManager) {
+    if (!this.userManager) {
       return;
     }
 
     try {
-      await this.authProviderUserManager.signoutRedirect();
+      await this.userManager.signoutRedirect();
       // FXIME : This may not be called...
       // This must be in the genereic login service
       JWT.clear();
