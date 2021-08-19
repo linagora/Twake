@@ -1,5 +1,5 @@
 import React from 'react';
-import Login from 'services/login/login';
+import Login from 'services/login/LoginService';
 import { Resource, Collection } from '../Collections';
 import OriginalCollections from '../../Collections/Collections';
 import { shallow } from 'enzyme';

@@ -1,20 +1,28 @@
 import { Modal } from 'antd';
+
 import Languages from 'services/languages/languages';
+import { TwakeService } from '../Decorators/TwakeService';
 
 const { confirm, info } = Modal;
 
+type Options = {
+  title?: string;
+  text?: string;
+};
+@TwakeService('Alert')
 class AlertService {
-  alert(onClose: () => void, options: any = undefined) {
+  alert(onClose: () => void, options?: Options) {
     info({
       title: options?.title || options?.text || '',
       content: options?.text || '',
       onCancel: onClose,
     });
   }
+
   confirm(
     onConfirm: () => void,
     onClose: (() => void) | undefined = undefined,
-    options: any = undefined,
+    options?: Options,
   ) {
     confirm({
       title: options?.title || Languages.t('components.alert.confirm'),
@@ -25,5 +33,4 @@ class AlertService {
   }
 }
 
-const alert_serv = new AlertService();
-export default alert_serv;
+export default new AlertService();

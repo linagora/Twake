@@ -6,12 +6,14 @@ import App from 'app/scenes/App';
 import Login from 'app/scenes/Login/login';
 import Error from 'app/scenes/Error/Error';
 import Collections from 'services/Depreciated/Collections/Collections';
-
+import WindowState from 'services/utils/window';
 import Workspaces from 'services/workspaces/workspaces';
 import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
 import PublicMainView from 'scenes/Client/MainView/PublicMainView';
 import Observable from './Observable/Observable';
+import Globals from './Globals';
+import { TwakeService } from './Decorators/TwakeService';
 
 export type RouteType = {
   path: string;
@@ -38,7 +40,8 @@ export type Pathnames = {
   [key: string]: string;
 };
 
-class RouterServices extends Observable {
+@TwakeService('Router')
+class RouterService extends Observable {
   public translator: Translator = short();
   public history: History<unknown> = createBrowserHistory();
   public match = (pathSchema: string): match<object> | null =>
@@ -279,6 +282,20 @@ class RouterServices extends Observable {
   replace(path: string, state?: unknown): void {
     return this.history.replace(path, state);
   }
+
+  isPublicAccess(): boolean {
+    let publicAccess = false;
+
+    const viewParameter = WindowState.findGetParameter('view') || '';
+    if (
+      (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
+      Globals.store_public_access_get_data
+    ) {
+      publicAccess = true;
+      Globals.store_public_access_get_data = WindowState.allGetParameter();
+    }
+    return publicAccess;
+  }
 }
 
-export default new RouterServices();
+export default new RouterService();

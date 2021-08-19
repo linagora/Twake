@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import Login from 'services/login/login';
+import Login from 'services/login/LoginService';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import Api from 'services/Api';
 import ws from 'services/websocket';
@@ -9,7 +9,7 @@ import Number from 'services/utils/Numbers';
 import ConfiguratorsManager from 'services/Configurators/ConfiguratorsManager';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages';
-import JWTStorage from 'services/JWTStorage';
+import JWT from 'app/services/JWTService';
 import Globals from 'services/Globals';
 
 class CurrentUser extends Observable {
@@ -156,7 +156,7 @@ class CurrentUser extends Observable {
         withCredentials: true,
       },
       headers: {
-        Authorization: JWTStorage.getAutorizationHeader(),
+        Authorization: JWT.getAutorizationHeader(),
       },
       xhr: function () {
         const myXhr = $.ajaxSettings.xhr();

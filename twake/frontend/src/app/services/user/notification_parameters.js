@@ -2,7 +2,7 @@ import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import ws from 'services/websocket.js';
 import Api from 'services/Api';
-import Login from 'services/login/login.js';
+import Login from 'services/login/LoginService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 

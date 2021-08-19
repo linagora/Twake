@@ -3,7 +3,7 @@ import moment from 'moment';
 import Observable from 'services/Observable/Observable';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from 'services/Toaster';
-import Login from 'services/login/login';
+import Login from 'services/login/LoginService';
 import { Collection } from '../CollectionsReact/Collections';
 import {
     preferencesType,

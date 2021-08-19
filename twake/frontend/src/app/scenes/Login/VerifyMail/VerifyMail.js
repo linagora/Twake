@@ -1,7 +1,8 @@
+// eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import LoginService from 'services/login/login.js';
+import LoginService from 'services/login/LoginService';
 import AccountService from 'services/login/account';
 import Emojione from 'components/Emojione/Emojione';
 import WindowState from 'services/utils/window';
@@ -84,7 +85,7 @@ export default class VerifyMail extends Component {
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
                 onClick={() => {
-                  LoginService.changeState('signin');
+                  LoginService.state = 'signin';
                   document.location.replace('/');
                 }}
                 className="blue_link"

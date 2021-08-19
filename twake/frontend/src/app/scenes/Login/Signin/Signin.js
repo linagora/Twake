@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import LoginService from 'services/login/login.js';
+import LoginService from 'services/login/LoginService';
 import AccountService from 'services/login/account';
 import Emojione from 'components/Emojione/Emojione';
 import StepCounter from 'components/StepCounter/StepCounter.js';
@@ -9,6 +9,8 @@ import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Input from 'components/Inputs/Input.js';
 import Checkbox from 'components/Inputs/Checkbox.js';
 import InitService from 'services/InitService';
+import WindowState from 'services/utils/window';
+
 export default class Signin extends Component {
   constructor() {
     super();
@@ -17,7 +19,7 @@ export default class Signin extends Component {
       login: LoginService,
       i18n: Languages,
       username: '',
-      email: LoginService.emailInit,
+      email: '',
       password: '',
       name: '',
       firstName: '',
@@ -43,6 +45,7 @@ export default class Signin extends Component {
     if (this.input) {
       this.input.focus();
     }
+    this.setState({ email: WindowState.findGetParameter('mail') || '' });
   }
   componentWillUnmount() {
     LoginService.removeListener(this);
@@ -319,7 +322,7 @@ export default class Signin extends Component {
 
   previous() {
     if (this.state.page <= 1) {
-      this.state.login.changeState('logged_out');
+      this.state.login.state = 'logged_out';
     } else {
       this.setState({ page: this.state.page - 1 });
     }

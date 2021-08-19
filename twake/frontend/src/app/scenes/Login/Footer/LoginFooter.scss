@@ -1,0 +1,30 @@
+.help_footer {
+  font-size: 15px;
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  z-index: 10;
+}
+
+.app_version_footer {
+  font-size: 15px;
+  position: absolute;
+  bottom: 25px;
+  left: 0px;
+  right: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  text-align: center;
+  z-index: 9;
+  color: var(--white);
+
+  .version_name {
+    margin-bottom: 5px;
+  }
+
+  .smalltext {
+    bottom: -5px;
+    position: relative;
+  }
+}

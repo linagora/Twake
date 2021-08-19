@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import LoginService from 'services/login/login.js';
+import LoginService from 'services/login/LoginService';
 import AccountService from 'services/login/account.js';
 import Emojione from 'components/Emojione/Emojione';
 import StepCounter from 'components/StepCounter/StepCounter.js';
@@ -284,7 +284,7 @@ export default class ForgotPassword extends Component {
   }
   previous() {
     if (this.state.page <= 1) {
-      this.state.login.changeState('logged_out');
+      this.state.login.state = 'logged_out';
     } else {
       this.setState({ page: this.state.page - 1 });
     }

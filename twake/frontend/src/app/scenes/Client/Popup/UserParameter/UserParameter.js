@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import LoginService from 'services/login/login.js';
-import loginService from 'services/login/login.js';
+import LoginService from 'services/login/LoginService';
+import loginService from 'services/login/LoginService';
 import popupManager from 'services/popupManager/popupManager.js';
 import userService from 'services/user/UserService';
 import currentUserService from 'app/services/user/CurrentUser';

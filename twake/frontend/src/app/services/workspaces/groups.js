@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ListenGroups from './listen_groups.js';
 import $ from 'jquery';
-import JWTStorage from 'services/JWTStorage';
+import JWT from 'app/services/JWTService';
 
 import Globals from 'services/Globals';
 
@@ -91,7 +91,7 @@ class Groups extends Observable {
       processData: false,
 
       headers: {
-        Authorization: JWTStorage.getAutorizationHeader(),
+        Authorization: JWT.getAutorizationHeader(),
       },
       xhrFields: {
         withCredentials: true,

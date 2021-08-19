@@ -2,7 +2,7 @@ import Number from 'services/utils/Numbers.js';
 import api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import Collections from 'services/Collections/Collections';
-import LoginService from 'services/login/login';
+import LoginService from 'services/login/LoginService';
 
 import Globals from 'services/Globals';
 

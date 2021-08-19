@@ -11,7 +11,7 @@ import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import CurrentUser from 'app/services/user/CurrentUser';
 import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
-import LoginService from 'services/login/login';
+import LoginService from 'services/login/LoginService';
 
 import Globals from 'services/Globals';
 
