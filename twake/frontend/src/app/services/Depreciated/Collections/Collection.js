@@ -620,7 +620,7 @@ export default class Collection extends Observable {
 
     this.completeObject(object, object.front_id);
 
-    if (this.waiting_to_save_by_front_id[object.front_id] && !object._retrying) {
+    if (this.waiting_to_save_by_front_id[object.front_id] && !object._retrying && !object._failed) {
       this.completeObject({}, object.front_id);
       this.object_buffer_add(object, 'save', source_key);
       this.notify();
@@ -675,6 +675,7 @@ export default class Collection extends Observable {
               res.data.object._failed = false;
               this.completeObject(res.data.object, res.data.object.front_id);
               that.updateCache();
+              console.log('gga message saved in back');
 
               this.share(res.data.object);
               if (callback) callback(res.data.object);
@@ -682,6 +683,15 @@ export default class Collection extends Observable {
           }
 
           this.object_buffer_flush(res.data.object);
+        } else {
+          if (callback) {
+            console.log('gga !!error!!');
+            object._failed = true;
+            object._updating = false;
+            object._creating = false;
+            this.completeObject({}, object);
+            callback(object);
+          }
         }
 
         this.doing_http_request += -1;

@@ -304,13 +304,14 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       filter.parent_message_id = this.threadId;
     }
     let messages: Message[] = this.collection.findBy(filter, null);
-
     messages = messages
-      // keep only the messages between the first and last loaded ones
+      // keep only the messages between the first and last loaded ones and the message that are not sync with the server yet
       .filter(
         message =>
-          Numbers.compareTimeuuid(offsets.to, message.id) >= 0 &&
-          Numbers.compareTimeuuid(offsets.from, message.id) <= 0,
+          (message as any)._creating ||
+          (message as any)._failed ||
+          (Numbers.compareTimeuuid(offsets.to, message.id) >= 0 &&
+            Numbers.compareTimeuuid(offsets.from, message.id) <= 0),
       )
       // remove ephemeral messages
       .filter(message => !message._user_ephemeral)
@@ -419,13 +420,16 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     const newUnknownMessages: Message[] = [];
 
     messages.forEach(m => {
-      if (Numbers.compareTimeuuid(this.lastMessageId, m.id) < 0) {
+      if (
+        (m as any)._creating ||
+        (m as any)._failed ||
+        Numbers.compareTimeuuid(this.lastMessageId, m.id) < 0
+      ) {
         newUnknownMessages.push(m);
       }
     });
 
     newUnknownMessages.forEach(m => this.onNewMessageFromWebsocket(m));
-
     return newUnknownMessages;
   }
 
@@ -438,7 +442,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
         null,
       ),
     );
-    this.logger.debug('New messages from websocket', newMessages);
+    this.logger.debug('New messages from websocket');
     if (newMessages.length) {
       this.notify();
     }
