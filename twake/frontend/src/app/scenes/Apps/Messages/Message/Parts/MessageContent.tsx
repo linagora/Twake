@@ -60,8 +60,7 @@ export default (props: Props) => {
 
   const showEdition = !props.linkToThread && props.edited;
   const messageIsLoading = (props.message as any)._creating || (props.message as any)._updating;
-  const messageSaveFailed =
-    (props.message as any)._failed || props.message.id == '6dec25e0-fc2e-11eb-a9c3-01401e397361';
+  const messageSaveFailed = (props.message as any)._failed;
   return (
     <div
       className={classNames('message-content', {
