@@ -13,6 +13,7 @@ import Logger from 'services/Logger';
 import WindowState from 'services/utils/window';
 import { UserType } from 'app/models/User';
 import AlertManager from '../AlertManager/AlertManager';
+import Languages from '../languages/languages';
 
 export type LoginState = '' | 'app' | 'error' | 'signin' | 'verify_mail' | 'forgot_password' | 'logged_out' | 'logout';
 @TwakeService('Login')
@@ -54,8 +55,7 @@ class LoginService extends Observable {
       () => this.logout(),
       () => this.logout(),
       {
-        // TODO: i18n
-        title: 'We are unable to open authenticate user',
+        title: Languages.t('login.session.expired', undefined, 'Session expired'),
       },
     );
 
