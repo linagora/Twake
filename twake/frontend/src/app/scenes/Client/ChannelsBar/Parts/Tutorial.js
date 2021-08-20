@@ -11,7 +11,7 @@ import AlertManager from 'services/AlertManager/AlertManager';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import UserParameter from 'app/scenes/Client/Popup/UserParameter/UserParameter.js';
 import popupManager from 'services/popupManager/popupManager.js';
 

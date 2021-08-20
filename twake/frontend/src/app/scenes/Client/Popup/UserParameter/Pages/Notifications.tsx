@@ -9,7 +9,7 @@ import NotificationPreferences from 'app/services/user/NotificationPreferences';
 
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Attribute from 'components/Parameters/Attribute.js';
-import Switch from 'components/Inputs/Switch.js';
+import Switch from 'components/Inputs/Switch';
 import Radio from 'components/Inputs/Radio.js';
 
 import {
@@ -91,7 +91,7 @@ export default () => {
             <Switch
               // TODO: Change the title and add the traduction
               label={'Enable night feature'}
-              value={newPreferences.night_break.enable}
+              checked={newPreferences.night_break.enable}
               onChange={(checked: boolean) => {
                 setNewPreferences({
                   ...newPreferences,
@@ -262,7 +262,7 @@ export default () => {
                 ? 'scenes.app.popup.userparameter.pages.private_message_content.hide'
                 : 'scenes.app.popup.userparameter.pages.private_message_content.show',
             )}
-            value={newPreferences.private_message_content}
+            checked={newPreferences.private_message_content}
             onChange={(checked: boolean) => {
               setNewPreferences({
                 ...newPreferences,

@@ -2,7 +2,7 @@ import React from 'react';
 import Languages from 'services/languages/languages';
 import Table from 'components/Table/Table.tsx';
 import Workspaces from 'services/workspaces/workspaces.js';
-import workspacesUsers from 'services/workspaces/workspaces_users.js';
+import workspacesUsers from 'services/workspaces/workspaces_users.ts';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 import Menu from 'components/Menus/Menu.js';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';

@@ -6,6 +6,8 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterService';
 import { getUserParts } from 'app/components/Member/UserParts';
+import Observable from 'services/Observable/Observable';
+import Api from '../Api';
 
 export type GenericChannel = {
   type: 'user' | 'direct' | 'workspace';
@@ -15,20 +17,26 @@ export type GenericChannel = {
   resource: UserType | ChannelResource;
 };
 
-class SearchListManager {
+class SearchListManager extends Observable {
   private workspaceChannels: GenericChannel[];
   private directChannels: GenericChannel[];
   private users: GenericChannel[];
   public list: GenericChannel[];
 
   constructor() {
+    super();
     this.workspaceChannels = [];
     this.directChannels = [];
     this.users = [];
     this.list = [];
   }
 
-  public async bind(search: string): Promise<void> {
+  public async searchAll(
+    search: string,
+    opt?: {
+      onlyChannel: boolean;
+    },
+  ): Promise<void> {
     const { workspaceId, companyId } = RouterServices.getStateFromRoute();
     // Path
     const workspaceChannelsPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
@@ -36,7 +44,7 @@ class SearchListManager {
     const mineWorkspaceChannelsPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
 
     // Resources
-    const workspaceChannelsResources = (await this.find({
+    let workspaceChannelsResources = (await this.find({
       collectionPath: workspaceChannelsPath,
     })) as ChannelResource[];
 
@@ -55,17 +63,22 @@ class SearchListManager {
       channels: workspaceChannelsResources,
       mineWorkspaceChannels: mineWorkspaceChannelsResources,
     });
-    this.directChannels = this.filterDirectChannels({ channels: directChannelsResources });
-    this.users = this.filterUsers({ users: usersSearched });
 
+    this.directChannels = opt?.onlyChannel
+      ? []
+      : this.filterDirectChannels({ channels: directChannelsResources });
+    this.users = this.filterUsers({ users: usersSearched });
     // Concat list
     this.list = [...this.workspaceChannels, ...this.directChannels, ...this.users];
 
     this.removeDuplicate();
 
     this.list = this.list
-      .filter(({ filterString }) => filterString.toUpperCase().indexOf(search.toUpperCase()) > -1)
+      .filter(({ filterString }) => {
+        return filterString.toUpperCase().indexOf(search.toUpperCase()) > -1;
+      })
       .sort((a, b) => (b.lastActivity || 0) - (a.lastActivity || 0));
+    this.notify();
   }
 
   private async find({
@@ -76,12 +89,14 @@ class SearchListManager {
     search?: string;
   }): Promise<(UserType | ChannelResource)[]> {
     if (collectionPath?.length) {
-      return Collection.get(collectionPath, ChannelResource).find({});
+      const res =
+        this.workspaceChannels.length == 0
+          ? await Collection.get(collectionPath, ChannelResource).findSync({})
+          : Collection.get(collectionPath, ChannelResource).find({});
+      return res;
     } else {
       let users: UserType[] = [];
-
       users.push(...(await this.searchUsers(search || '')));
-
       return users;
     }
   }
@@ -100,9 +115,9 @@ class SearchListManager {
           },
           (res: UserType[]) => users.push(...res.filter((el: UserType) => !!el)),
         );
-
         return resolve(users);
       }
+      return resolve([]);
     });
 
     return result;

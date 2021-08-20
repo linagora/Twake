@@ -40,7 +40,7 @@ export type CollectionOptions = {
 };
 
 /**
- * A generic collection of resources. 
+ * A generic collection of resources.
  */
 export default class Collection<R extends Resource<any>> {
   private options: CollectionOptions = {
@@ -160,10 +160,7 @@ export default class Collection<R extends Resource<any>> {
 
     if (!options?.withoutBackend) {
       if (options?.waitServerReply) {
-        const resourceSaved = await this.transport.upsert(
-          resource,
-          options?.query,
-        );
+        const resourceSaved = await this.transport.upsert(resource, options?.query);
 
         if (!resourceSaved) {
           this.remove(item, { withoutBackend: true });
@@ -251,7 +248,9 @@ export default class Collection<R extends Resource<any>> {
             }
 
             if (options?.callback) {
-              options?.callback(storageItems.map(storageItem => this.resources.get(storageItem.id)));
+              options?.callback(
+                storageItems.map(storageItem => this.resources.get(storageItem.id)),
+              );
             }
           })
           .catch(err => {
@@ -267,7 +266,47 @@ export default class Collection<R extends Resource<any>> {
 
     storageItems.forEach(storageItem => this.updateLocalResource(storageItem));
 
-    return storageItems.map(storageItem => (this.resources.get(storageItem.id) as R)).filter(Boolean);
+    return storageItems.map(storageItem => this.resources.get(storageItem.id) as R).filter(Boolean);
+  }
+
+  /**
+   * Find documents according to a filter and some option (sorting etc)
+   * This will call backend if we ask for more items than existing in frontend.
+   */
+  public async findSync(
+    filter?: any,
+    options: GeneralOptions & ServerRequestOptions = {},
+  ): Promise<R[]> {
+    options.query = { ...(this.getOptions().queryParameters || {}), ...(options.query || {}) };
+    const storage = this.getStorage();
+    let storageItems = storage.find(this.getTypeName(), this.getPath(), filter, options);
+
+    if (typeof filter === 'string' || filter?.id) {
+      return [this.findOne(filter, options)];
+    }
+
+    if (!options?.withoutBackend) {
+      if (!this.completion.isLocked || options?.refresh) {
+        storageItems = await this.completion.completeFind(storageItems, filter, options);
+        if (storageItems.length > 0) {
+          for (const storageItem of storageItems) {
+            this.updateLocalResource(storageItem);
+          }
+          this.eventEmitter.notify();
+        }
+      } else {
+        this.completeTimeout && clearTimeout(this.completeTimeout);
+        const that = this;
+        return new Promise(function (resolve) {
+          setTimeout(async () => {
+            resolve(await that.findSync(filter, options));
+          }, 1000);
+        });
+      }
+    }
+
+    storageItems.forEach(storageItem => this.updateLocalResource(storageItem));
+    return storageItems.map(storageItem => this.resources.get(storageItem.id) as R).filter(Boolean);
   }
 
   /**
