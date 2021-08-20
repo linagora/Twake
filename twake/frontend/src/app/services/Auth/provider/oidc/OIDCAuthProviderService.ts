@@ -1,7 +1,6 @@
 import Oidc from 'oidc-client';
 
 import environment from '../../../../environment/environment';
-import Api from '../../../Api';
 import { ConsoleConfiguration } from '../../../InitService';
 import JWT, { JWTDataType } from '../../../JWTService';
 import Observable from '../../../Observable/Observable';
@@ -10,6 +9,7 @@ import { getAsFrontUrl } from '../../../utils/URLUtils';
 import { TwakeService } from '../../../Decorators/TwakeService';
 import EnvironmentService from '../../../EnvironmentService';
 import { AuthProvider, InitParameters } from '../AuthProvider';
+import ConsoleService from 'app/services/Console/ConsoleService';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';
@@ -70,7 +70,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
           }
 
           jwt && JWT.update(jwt);
-          // TODO: LoginService.updateUser();
+          // TODO: LoginService.updateUser() ?;
         });
       });
 
@@ -203,7 +203,6 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
   /**
    * Try to get a new JWT token from the OIDC one:
    * Call the backend with the OIDC token, it will use it to get a new token from console
-   * FIXME: Try to get a new token with the refresh one and call it again if the current one expired...
    */
   private getJWTFromOidcToken(
     user: Oidc.User | null,
@@ -216,25 +215,11 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     }
 
     if (user.expired) {
-      // try to get a new token from refresh one before asking for a JWT token
+      // TODO: try to get a new token from refresh one before asking for a JWT token
       this.logger.info('getJWTFromOidcToken, user expired');
-      // TODO: Try to renew now...
     }
 
-    Api.post('users/console/token',
-      { access_token: user.access_token },
-      (response: { access_token: JWTDataType }) => {
-        // the input access_token is potentially expired and so the response contains an error.
-        // we should be able to refresh the token or renew it...
-        if (!response.access_token) {
-          this.logger.error('getJWTFromOidcToken, Can not retrieve access_token from console. Response was', response);
-          callback(new Error('Can not retrieve access_token from console'));
-          return;
-        }
-
-        callback(undefined, response.access_token);
-      }
-    );
+    ConsoleService.getNewAccessToken({ access_token: user.access_token }, callback);
   }
 }
 

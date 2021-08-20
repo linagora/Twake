@@ -2,11 +2,18 @@ import Api from '../Api';
 import DepreciatedCollections from '../Depreciated/Collections/Collections';
 import InitService from '../InitService';
 import Languages from 'services/languages/languages';
-import logger from 'app/services/Logger';
 import { ToasterService as Toaster } from '../Toaster';
 import { ConsoleMemberRole } from './types';
+import { JWTDataType } from '../JWTService';
+import Logger from 'app/services/Logger';
 
 class ConsoleService {
+  private logger: Logger.Logger;
+
+  constructor() {
+    this.logger = Logger.getLogger('Console');
+  }
+
   public getCompanyManagementUrl(companyId: string) {
     const identity_provider_id =
       DepreciatedCollections.get('groups').find(companyId)?.identity_provider_id;
@@ -51,7 +58,7 @@ class ConsoleService {
       const response = await Api.post('users/console/api/invite', data, (res: any) => {
         if (res) {
           if (res.error) {
-            logger.error('Error while adding emails', res.error);
+            this.logger.error('Error while adding emails', res.error);
             return Toaster.error(
               Languages.t(
                 'services.console_services.toaster.add_emails_error',
@@ -65,7 +72,7 @@ class ConsoleService {
               // 1. "User already belonged to the company" (Good typo in it...)
               // 2. "Unable to invite user ${user.email} to company ${company.code}"
               // TODO: do not compare the message but use error code...
-              logger.error('Error while adding email', email, message);
+              this.logger.error('Error while adding email', email, message);
 
               if (message.match(/Unable to invite user/)) {
                 Toaster.warning(
@@ -90,6 +97,23 @@ class ConsoleService {
       });
       return resolve(response);
     });
+  }
+
+  public getNewAccessToken(currentToken: { access_token: string }, callback: (err?: Error, access_token?: JWTDataType) => void): void {
+    Api.post('users/console/token',
+      { access_token: currentToken.access_token },
+      (response: { access_token: JWTDataType }) => {
+        // the input access_token is potentially expired and so the response contains an error.
+        // we should be able to refresh the token or renew it in some way...
+        if (!response.access_token) {
+          this.logger.error('getNewAccessToken, Can not retrieve access_token from console. Response was', response);
+          callback(new Error('Can not retrieve access_token from console'));
+          return;
+        }
+
+        callback(undefined, response.access_token);
+      }
+    );
   }
 }
 
