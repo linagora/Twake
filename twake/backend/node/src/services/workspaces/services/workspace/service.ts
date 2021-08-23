@@ -250,7 +250,6 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     companyId: CompanyPrimaryKey,
   ): Promise<WorkspaceUser[]> {
     const allCompanyWorkspaces = await this.getAllForCompany(companyId.id);
-
     const UserWorkspaces = await Promise.all(
       allCompanyWorkspaces.map(workspace =>
         this.workspaceUserRepository.findOne({
