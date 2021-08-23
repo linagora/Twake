@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 
 import './User.scss';
 
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import NotificationParameters from 'services/user/notification_parameters.js';
-import ListenUsers from 'services/user/listen_users.js';
+import ListenUsers from 'services/user/ListenUsers';
 
 export default class User extends React.Component {
   constructor(props) {

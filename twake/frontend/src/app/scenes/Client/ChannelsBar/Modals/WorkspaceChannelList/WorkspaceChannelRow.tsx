@@ -2,13 +2,13 @@ import React, { createRef, useEffect } from 'react';
 
 import { Col, Row, Tag, Typography } from 'antd';
 import { capitalize } from 'lodash';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Icon from 'components/Icon/Icon';
 import RouterServices, { ClientStateType } from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import Emojione from 'app/components/Emojione/Emojione';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import ModalManager from 'app/components/Modal/ModalManager';
 import './ChannelRow.scss';
 

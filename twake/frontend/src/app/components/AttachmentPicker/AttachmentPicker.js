@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 
-import File from 'components/Drive/File.js';
+import File from 'components/Drive/File';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import TaskPicker from 'components/TaskPicker/TaskPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import Icon from 'components/Icon/Icon.js';
 import Button from 'components/Buttons/Button.js';
-import UploadZone from 'components/Uploads/UploadZone.js';
+import UploadZone from 'components/Uploads/UploadZone';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './AttachmentPicker.scss';
 
 export default class AttachmentPicker extends Component {
@@ -22,17 +22,14 @@ export default class AttachmentPicker extends Component {
         }
     */
 
-  constructor(props) {
-    super(props);
-  }
   getIcon(att) {
-    if (att.type.toLocaleLowerCase() == 'event') {
+    if (att.type.toLocaleLowerCase() === 'event') {
       return 'calendar-alt';
     }
-    if (att.type.toLocaleLowerCase() == 'file') {
+    if (att.type.toLocaleLowerCase() === 'file') {
       return 'folder';
     }
-    if (att.type.toLocaleLowerCase() == 'task') {
+    if (att.type.toLocaleLowerCase() === 'task') {
       return 'check-square';
     }
   }
@@ -58,7 +55,7 @@ export default class AttachmentPicker extends Component {
       <div className={'attachmentPicker ' + (this.props.className || '')}>
         <div className="attachments">
           {(Object.values(this.props.attachments || {}) || []).map(att => {
-            if (att.type == 'file') {
+            if (att.type === 'file') {
               var additionalMenu = [];
               if (!this.props.readOnly) {
                 additionalMenu = [

@@ -1,7 +1,8 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../../utils/types";
+import { UserObject } from "../user/web/types";
 import { MessageFileMetadata } from "./entities/message-files";
-import { Message } from "./entities/messages";
+import { Message, MessageWithUsers } from "./entities/messages";
 import { Thread } from "./entities/threads";
 
 export type specialMention = "all" | "here" | "everyone" | "channel";
@@ -37,6 +38,11 @@ export type MessageWithReplies = Message & {
   };
 };
 
+export type MessageWithRepliesWithUsers = MessageWithReplies & {
+  last_replies: MessageWithUsers[];
+  users: UserObject[];
+};
+
 export interface CompanyExecutionContext extends ExecutionContext {
   company: { id: string };
 }
@@ -65,11 +71,14 @@ export interface PaginationQueryParameters {
   direction?: "history" | "future";
 }
 export interface MessageViewListOptions {
+  include_users: boolean;
   replies_per_thread: number;
   emojis: boolean;
 }
 
-export interface MessageListQueryParameters extends PaginationQueryParameters {}
+export interface MessageListQueryParameters extends PaginationQueryParameters {
+  include_users: boolean;
+}
 
 export interface PinOperation {
   id: string;
@@ -88,6 +97,9 @@ export interface BookmarkOperation {
 }
 
 export interface MessagesSaveOptions {
+  threadInitialMessage?: boolean;
+  enforceViewPropagation?: boolean;
+  message_moved?: boolean;
   previous_thread?: string; //If message was in a previous thread before (moved) then this indicate when is it from
 }
 export interface MessagesGetThreadOptions {

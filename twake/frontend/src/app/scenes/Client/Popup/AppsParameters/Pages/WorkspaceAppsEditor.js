@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import Emojione from 'components/Emojione/Emojione';
@@ -9,7 +9,7 @@ import Attribute from 'components/Parameters/Attribute.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Api from 'services/Api';
 import WorkspaceAppsCreator from './WorkspaceAppsCreator.js';
-import Switch from 'components/Inputs/Switch.js';
+import Switch from 'components/Inputs/Switch';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import Icon from 'components/Icon/Icon.js';
@@ -19,7 +19,6 @@ import InlineTagPicker from 'app/components/InlineTagPicker/InlineTagPicker';
 
 import './Pages.scss';
 import WorkspacesApp from 'services/workspaces/workspaces_apps.js';
-import WorkspaceApps from './WorkspaceApps.js';
 
 export default class WorkspaceAppsEditor extends Component {
   constructor(props) {
@@ -113,7 +112,8 @@ export default class WorkspaceAppsEditor extends Component {
   }
 
   render() {
-    if (this.state.application.id != this.state.id) {
+    if (this.state.application.id !== this.state.id) {
+      // eslint-disable-next-line react/no-direct-mutation-state
       this.state.application = JSON.parse(
         JSON.stringify(Collections.get('applications').find(this.state.id) || {}),
       );
@@ -127,6 +127,7 @@ export default class WorkspaceAppsEditor extends Component {
 
     var workspace_id = workspaceService.currentWorkspaceId;
     var workspace = Collections.get('workspaces').find(workspace_id);
+    // eslint-disable-next-line no-unused-vars
     var group = Collections.get('groups').find(workspace.group.id);
 
     if (isNew) {
@@ -152,6 +153,7 @@ export default class WorkspaceAppsEditor extends Component {
 
         <div className="smalltext" style={{ opacity: 1 }}>
           <Emojione type={':exploding_head:'} /> If you do not know how to fill these, go to{' '}
+          {/* eslint-disable-next-line react/jsx-no-target-blank */}
           <a href="https://doc.twake.app" target="_blank">
             the Twake API documentation
           </a>{' '}
@@ -333,7 +335,7 @@ export default class WorkspaceAppsEditor extends Component {
               <InputWithClipBoard disabled={true} value={application.api_id} />
 
               <div className="label for_input">
-                Private key{' '}
+                Private key {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a
                   style={{ float: 'inherit' }}
                   onClick={() => {
@@ -554,7 +556,7 @@ export default class WorkspaceAppsEditor extends Component {
                   [],
                   "Publier l'application",
                 )}
-                value={application.public}
+                checked={application.public}
                 onChange={value => {
                   application.public = value;
                   this.setState({});

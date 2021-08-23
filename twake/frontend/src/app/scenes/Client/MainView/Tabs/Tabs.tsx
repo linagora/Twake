@@ -9,7 +9,7 @@ import RouterServices from 'app/services/RouterService';
 import { Plus } from 'react-feather';
 import DefaultChannelTab from 'app/scenes/Client/MainView/Tabs/DefaultChannelTab';
 import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import AccessRightsService from 'app/services/AccessRightsService';
 
 import './Tabs.scss';
@@ -35,7 +35,7 @@ export default (): JSX.Element => {
   }
 
   return (
-    <Row align="middle" className="main-view-tabs">
+    <Row align="middle" className="main-view-tabs" wrap={false}>
       {tabsList.sort((a, b) => (a.data.order || '').localeCompare(b.data.order || '')) && (
         <Tabs activeKey={tabId ? tabId : 'default'}>
           <Tabs.TabPane tab={<DefaultChannelTab selected={!tabId} />} key="default" />
@@ -46,7 +46,7 @@ export default (): JSX.Element => {
                   tab={
                     <Tab
                       currentUserId={currentUser.id}
-                      selected={tabId == tab.data.id}
+                      selected={tabId === tab.data.id}
                       key={tab.data.id}
                       tabResource={tab}
                       upsertTab={upsertTab}
@@ -60,7 +60,7 @@ export default (): JSX.Element => {
           })}
         </Tabs>
       )}
-      {AccessRightsService.hasLevel(workspaceId || '', 'member') && (
+      {AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Button
           className="add-tab-button"
           type="text"

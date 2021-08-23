@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Task from '../Task/Task.js';
 import Icon from 'components/Icon/Icon.js';
@@ -9,7 +9,7 @@ import ListEditor from './ListEditor.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import AddTask from './AddTask.js';
 import UserListManager from 'components/UserListManager/UserListManager';
 import PerfectScrollbar from 'react-perfect-scrollbar';

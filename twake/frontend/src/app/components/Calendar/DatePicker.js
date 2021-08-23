@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Tooltip from 'components/Tooltip/Tooltip.js';
 import moment from 'moment';
 import DateTimeUtils from 'services/utils/datetime.js';
-import UserService from 'services/user/user.js';
-import Globals from 'services/Globals.js';
+import UserService from 'services/user/UserService';
+import Globals from 'services/Globals';
 import DayPicker from './DayPicker/DayPicker.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import Input from 'components/Inputs/Input.js';
@@ -84,7 +84,7 @@ export default class DatePicker extends React.Component {
     if (
       Globals.window.navigator &&
       Globals.window.navigator.language &&
-      Globals.window.navigator.language != this.user_language
+      Globals.window.navigator.language !== this.user_language
     ) {
       this.months_names = this.months_names.concat(
         (moment.localeData(Globals.window.navigator.language).monthsShort() || []).map(m =>
@@ -110,7 +110,7 @@ export default class DatePicker extends React.Component {
   }
 
   shouldComponentUpdate(nextProps, nextStates) {
-    if (nextProps.ts != this.old_props_ts) {
+    if (nextProps.ts !== this.old_props_ts) {
       this.old_props_ts = nextProps.ts;
       nextStates.time_ts = nextProps.ts;
       if (!this.focused) {
@@ -139,6 +139,7 @@ export default class DatePicker extends React.Component {
       var in_text_month = false;
       if (sentences && sentences[1] !== undefined) {
         sentences.slice(1).forEach(s => {
+          // eslint-disable-next-line no-useless-escape
           s = s.replace(/[0-9-'`~!@#$%^&*()_|+=?;:'",.<>\{\}\[\]\\\/]/gi, '');
           s = s.trim();
           s = s.toLocaleLowerCase();
@@ -169,7 +170,7 @@ export default class DatePicker extends React.Component {
         if (numbers && numbers.length >= 1) {
           if (y) {
             //Only got year
-            if (numbers.length == 1) {
+            if (numbers.length === 1) {
               m = parseInt(numbers[0]);
             } else {
               //>=2
@@ -188,7 +189,7 @@ export default class DatePicker extends React.Component {
             }
           } else if (m) {
             //Only got month
-            if (numbers.length == 1) {
+            if (numbers.length === 1) {
               d = parseInt(numbers[0]);
             } else {
               d = parseInt(numbers[0]);
@@ -202,7 +203,7 @@ export default class DatePicker extends React.Component {
           } else {
             //Got nothing
 
-            if (numbers.length == 1) {
+            if (numbers.length === 1) {
               y = parseInt(numbers[0]);
               d = 1;
               m = 1;
@@ -212,7 +213,7 @@ export default class DatePicker extends React.Component {
               } else if (y < 50) {
                 y += 2000;
               }
-            } else if (numbers.length == 2) {
+            } else if (numbers.length === 2) {
               if (Math.max(parseInt(numbers[0]), parseInt(numbers[1])) > 12) {
                 y = Math.max(d, m);
                 m = Math.min(d, m);
@@ -222,6 +223,7 @@ export default class DatePicker extends React.Component {
               }
 
               if (m > 12) {
+                // eslint-disable-next-line no-redeclare
                 var tmp = m;
                 m = d;
                 d = tmp;
@@ -272,24 +274,26 @@ export default class DatePicker extends React.Component {
       if (m < 1 || m > 12) {
         error = true;
       }
+      // eslint-disable-next-line no-redeclare
       var tmp = new Date();
       tmp.setMonth(m - 1);
       tmp.setFullYear(y);
       tmp.setDate(d);
-      if (d < 1 || d > 31 || tmp.getDate() != d) {
+      if (d < 1 || d > 31 || tmp.getDate() !== d) {
         error = true;
       }
     } else {
       error = true;
     }
 
-    this.state.time_string = original_string;
+    this.setState({ time_string: original_string });
 
     if (!error) {
+      // eslint-disable-next-line no-redeclare
       var d = moment(d + '-' + m + '-' + y, 'DD-MM-YYYY').toDate();
       this.changeDate(d);
     } else {
-      this.state.error = true;
+      this.setState({ error: true });
       this.setState({});
     }
   }
@@ -299,14 +303,15 @@ export default class DatePicker extends React.Component {
     date.setDate(d.getDate());
     date.setMonth(d.getMonth());
     date.setFullYear(d.getFullYear());
-    this.state.time_ts = date.getTime() / 1000;
-    this.state.error = false;
-    this.state.time_string_formatted = moment(this.state.time_ts * 1000).format(
-      this.display_format,
-    );
+    this.setState({ time_ts: date.getTime() / 1000 });
+    this.setState({ error: false });
+
+    this.setState({
+      time_string_formatted: moment(this.state.time_ts * 1000).format(this.display_format),
+    });
 
     if (changeInput) {
-      this.state.time_string = this.state.time_string_formatted;
+      this.setState({ time_string: this.state.time_string_formatted });
     }
 
     this.props.onChange && this.props.onChange(this.state.time_ts);
@@ -320,7 +325,7 @@ export default class DatePicker extends React.Component {
     this.focused = true;
 
     if (!this.state.time_ts) {
-      this.state.time_ts = new Date().getTime() / 1000;
+      this.setState({ time_ts: new Date().getTime() / 1000 });
     }
 
     if (!this.helper_open) {
@@ -402,7 +407,7 @@ export default class DatePicker extends React.Component {
             <div
               className="reset_date"
               onClick={() => {
-                this.state.time_ts = false;
+                this.setState({ time_ts: false });
                 this.props.onChangeBlur(this.state.time_ts);
                 this.setState({});
               }}

@@ -3,7 +3,7 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
 import Menu from 'components/Menus/Menu.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 export const NewFolderInput = (props: { value: string; createFolder: (name: string) => void }) => {
   const [value, setValue] = useState(props.value);
@@ -46,7 +46,7 @@ export const NewLinkInput = (props: {
   value: string;
   createLinkFile: (name: string, link: string) => void;
 }) => {
-  const [value, setValue] = useState('Untitled');
+  const [value, setValue] = useState(Languages.t('scenes.apps.drive.default_link_name'));
   const [link, setLink] = useState('');
   return (
     <div>
@@ -74,7 +74,7 @@ export const NewLinkInput = (props: {
         <Button
           disabled={(value || '').length <= 0}
           type="button"
-          value={Languages.t('scenes.apps.drive.add_button', [], 'Ajouter')}
+          value={Languages.t('scenes.apps.drive.add_button')}
           onClick={() => {
             props.createLinkFile(value, link);
           }}

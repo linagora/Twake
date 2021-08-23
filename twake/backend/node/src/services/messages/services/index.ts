@@ -51,7 +51,7 @@ export default class Service implements MessageServiceAPI {
     channel: ChannelServiceAPI,
   ) {
     this.userBookmarks = getMessageUserBookmarksServiceAPI(databaseService);
-    this.messages = getMessageThreadMessagesServiceAPI(databaseService, this);
+    this.messages = getMessageThreadMessagesServiceAPI(databaseService, user, channel, this);
     this.threads = getMessageThreadsServiceAPI(databaseService, this);
     this.views = getMessageViewsServiceAPI(databaseService, this);
     this.engine = new MessagesEngine(databaseService, pubsub, user, channel, this);

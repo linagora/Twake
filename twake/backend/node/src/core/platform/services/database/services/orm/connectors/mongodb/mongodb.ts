@@ -3,7 +3,7 @@ import { UpsertOptions } from "..";
 import { ListResult, Paginable, Pagination } from "../../../../../../framework/api/crud-service";
 import { FindOptions } from "../../repository/repository";
 import { ColumnDefinition, EntityDefinition, ObjectType } from "../../types";
-import { getEntityDefinition, unwrapPrimarykey } from "../../utils";
+import { getEntityDefinition, unwrapIndexes, unwrapPrimarykey } from "../../utils";
 import { AbstractConnector } from "../abstract-connector";
 import { buildSelectQuery } from "./query-builder";
 import { transformValueFromDbString, transformValueToDbString } from "./typeTransforms";
@@ -86,15 +86,26 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
 
         //Set updated content
         const set: any = {};
+        const inc: any = {};
         Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
           .filter(key => columnsDefinition[key].nodename !== undefined)
           .forEach(key => {
-            set[key] = transformValueToDbString(
+            const value = transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              { columns: columnsDefinition[key].options, secret: this.secret },
+              {
+                columns: columnsDefinition[key].options,
+                secret: this.secret,
+                column: { key },
+              },
             );
+
+            if (columnsDefinition[key].type === "counter") {
+              inc[key] = value;
+            } else {
+              set[key] = value;
+            }
           });
 
         //Set primary key
@@ -103,17 +114,27 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
           where[key] = transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            { columns: columnsDefinition[key].options, secret: this.secret },
+            {
+              columns: columnsDefinition[key].options,
+              secret: this.secret,
+              disableSalts: true,
+              column: { key },
+            },
           );
         });
 
         const collection = db.collection(`${entityDefinition.name}`);
+
+        const updateObject = { $set: { ...where, ...set } } as any;
+
+        if (Object.keys(inc).length) {
+          updateObject.$inc = inc;
+        }
+
         promises.push(
-          collection.updateOne(
-            where,
-            { $set: { ...where, ...set } },
-            { upsert: true },
-          ) as Promise<mongo.UpdateResult>,
+          collection.updateOne(where, updateObject, {
+            upsert: true,
+          }) as Promise<mongo.UpdateResult>,
         );
       });
 
@@ -138,7 +159,12 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
           where[key] = transformValueToDbString(
             entity[columnsDefinition[key].nodename],
             columnsDefinition[key].type,
-            { columns: columnsDefinition[key].options, secret: this.secret },
+            {
+              columns: columnsDefinition[key].options,
+              secret: this.secret,
+              disableSalts: true,
+              column: { key },
+            },
           );
         });
 
@@ -161,7 +187,11 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     const { columnsDefinition, entityDefinition } = getEntityDefinition(instance);
 
     const pk = unwrapPrimarykey(entityDefinition);
-    if (Object.keys(filters).some(key => pk.indexOf(key) < 0)) {
+    const indexes = unwrapIndexes(entityDefinition);
+    if (
+      Object.keys(filters).some(key => pk.indexOf(key) < 0) &&
+      Object.keys(filters).some(key => indexes.indexOf(key) < 0)
+    ) {
       //Filter not in primary key
       throw Error(
         "All filter parameters must be defined in entity primary key, got: " +
@@ -182,7 +212,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       options,
     );
 
-    let sort: any = {};
+    const sort: any = {};
     for (const key of entityDefinition.options.primaryKey.slice(1)) {
       const defaultOrder =
         (columnsDefinition[key as string].options.order || "ASC") === "ASC" ? 1 : -1;

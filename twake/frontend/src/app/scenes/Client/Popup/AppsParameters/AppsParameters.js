@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'services/login/login.js';
 import loginService from 'services/login/login.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import userService from 'services/user/user.js';
-import currentUserService from 'services/user/current_user.js';
+import userService from 'services/user/UserService';
+import currentUserService from 'app/services/user/CurrentUser';
 import WorkspaceApps from './Pages/WorkspaceApps.js';
 import WorkspaceAppsInformations from './Pages/WorkspaceAppsInformations.js';
 import TwacodeTester from './Pages/TwacodeTester.js';
@@ -40,7 +40,7 @@ export default class AppsParameters extends Component {
     currentUserService.addListener(this);
   }
   componentWillMount() {
-    this.state.thumbnail = false;
+    this.setState({ thumbnail: false });
   }
   componentWillUnmount() {
     LoginService.removeListener(this);
@@ -49,6 +49,7 @@ export default class AppsParameters extends Component {
     Collections.get('users').removeListener(this);
   }
   displayScene() {
+    // eslint-disable-next-line default-case
     switch (this.state.page) {
       case 1:
         return <WorkspaceApps />;
@@ -77,21 +78,21 @@ export default class AppsParameters extends Component {
                     'Vos applications',
                   ),
                   emoji: ':control_knobs:',
-                  selected: this.state.page == 1,
+                  selected: this.state.page === 1,
                   onClick: () => this.setPage(1),
                 },
                 {
                   type: 'menu',
                   text: 'Basic informations',
                   emoji: ':information_source:',
-                  selected: this.state.page == 2,
+                  selected: this.state.page === 2,
                   onClick: () => this.setPage(2),
                 },
                 {
                   type: 'menu',
                   text: 'Twacode tester',
                   emoji: ':love_letter:',
-                  selected: this.state.page == 3,
+                  selected: this.state.page === 3,
                   onClick: () => this.setPage(3),
                 },
                 {

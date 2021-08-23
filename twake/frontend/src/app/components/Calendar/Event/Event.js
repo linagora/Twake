@@ -3,7 +3,7 @@ import './Event.scss';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import UserListManager from 'components/UserListManager/UserListManager';
 
 import moment from 'moment';
@@ -28,7 +28,8 @@ export default class Event extends React.Component {
       classNameUser = 'inEvent';
     }
 
-    var event_name = this.props.event.title || 'untitled';
+    var event_name =
+      this.props.event.title || Languages.t('scenes.apps.drive.navigators.new_file.untitled');
 
     var event_start = moment(parseInt(this.props.event.from) * 1000).format('LT');
 

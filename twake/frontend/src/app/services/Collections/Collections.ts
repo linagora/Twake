@@ -62,6 +62,7 @@ class Collections {
   ): Collection<R> {
     if (!this.started) {
       logger.error(`Try to init ${path} collection before Collections started!`);
+      // eslint-disable-next-line no-throw-literal
       throw `Try to init ${path} collection before Collections started!`;
     }
 
@@ -77,7 +78,6 @@ class Collections {
       logger.warn(`Collection path was not well formatted, needs: ${formattedPath} got ${path}`);
     }
 
-
     options.storageKey = this.options.storageKey || '';
 
     if (!this.collections.has(key)) {
@@ -86,8 +86,7 @@ class Collections {
         existingCollectionCreator
           ? existingCollectionCreator()
           : new Collection(formattedPath, type || Resource, options)
-        )
-        .setOptions(options);
+      ).setOptions(options);
 
       this.collections.set(key, collection);
     }

@@ -2,11 +2,11 @@ import React from 'react';
 
 import Banner from 'app/components/Banner/Banner';
 import { Button, Typography } from 'antd';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/Modal/ModalManager';
 import UnverifiedAccount from './popups/UnverifiedAccount';
 import BlockedAccount from './popups/BlockedAccount';
-import UserService from 'services/user/user.js';
+import UserService from 'services/user/UserService';
 import InitService from 'app/services/InitService';
 
 const AccountStatusComponent = (): JSX.Element => {

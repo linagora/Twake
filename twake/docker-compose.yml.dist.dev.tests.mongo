@@ -1,0 +1,36 @@
+version: "3.4"
+
+# docker-compose -f docker-compose.yml.dist.dev.tests.mongo stop mongo; rm -R docker-data/mongo/; docker-compose -f docker-compose.yml.dist.dev.tests.mongo run -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb node npm run test:e2e
+
+services:
+  rabbitmq:
+    image: rabbitmq:3
+    ports:
+      - 5672:5672
+      - 15672:15672
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - ./docker-data/mongo:/data/db
+    ports:
+      - 27017:27017
+  node:
+    image: twaketech/twake-node:test
+    build:
+      context: ./backend/node
+      dockerfile: ../../docker/twake-node/Dockerfile
+      target: test
+    environment:
+      - NODE_ENV=test
+      - DB_DRIVER
+      - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
+    volumes:
+      - ./backend/node:/usr/src/app
+      - ./docker-data/documents/:/storage/
+    depends_on:
+      - mongo
+      - rabbitmq
+    links:
+      - mongo
+      - rabbitmq

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
 import Checkbox from 'components/Inputs/Checkbox.js';
-import Switch from 'components/Inputs/Switch.js';
+import Switch from 'components/Inputs/Switch';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
 
 import StepCounter from 'components/StepCounter/StepCounter.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import { lang } from 'moment';
 
 export default class GroupInputs extends React.Component {
@@ -36,7 +36,7 @@ export default class GroupInputs extends React.Component {
         <br />
         <Switch
           className="big"
-          value={this.state.input}
+          checked={this.state.input}
           onChange={value => this.setState({ input: value })}
         />
         <br />
@@ -50,13 +50,13 @@ export default class GroupInputs extends React.Component {
         <br />
         <Checkbox
           className="medium"
-          value={this.state.input}
+          checked={this.state.input}
           onChange={value => this.setState({ input: value })}
         />
         <br />
         <Switch
           className="medium"
-          value={this.state.input}
+          checked={this.state.input}
           onChange={value => this.setState({ input: value })}
         />
         <br />
@@ -76,7 +76,7 @@ export default class GroupInputs extends React.Component {
         <br />
         <Switch
           className="small"
-          value={this.state.input}
+          checked={this.state.input}
           onChange={value => this.setState({ input: value })}
         />
         <br />

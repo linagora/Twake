@@ -21,7 +21,13 @@ import ChannelServiceAPI, {
 } from "../../provider";
 import { getLogger } from "../../../../core/platform/framework";
 import { ChannelObject } from "./types";
-import { Channel, ChannelMember, DefaultChannel, UserChannel } from "../../entities";
+import {
+  Channel,
+  ChannelMember,
+  DefaultChannel,
+  UserChannel,
+  UsersIncludedChannel,
+} from "../../entities";
 import { getChannelPath, getRoomName } from "./realtime";
 import { ChannelType, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { isWorkspaceAdmin as userIsWorkspaceAdmin } from "../../../../utils/workspace";
@@ -410,7 +416,6 @@ export class Service implements ChannelService {
       );
 
       channels = await this.channelRepository.find(findFilters, {
-        pagination,
         $in: [["id", userChannels.getEntities().map(channelMember => channelMember.channel_id)]],
       });
 
@@ -457,13 +462,13 @@ export class Service implements ChannelService {
         },
       });
 
-      return channels;
+      return new ListResult(channels.type, channels.getEntities(), userChannels.nextPage);
     }
 
     channels = await this.channelRepository.find(findFilters, { pagination });
     channels.filterEntities(channel => channel.visibility !== ChannelVisibility.DIRECT);
 
-    if (!isWorkspaceAdmin) {
+    if (!isWorkspaceAdmin && !context.user.server_request) {
       channels.filterEntities(channel => channel.visibility === ChannelVisibility.PUBLIC);
     }
 
@@ -489,6 +494,13 @@ export class Service implements ChannelService {
 
     // TODO map
     return directChannel;
+  }
+
+  async getDirectChannelsInCompany(
+    pagination: Pagination,
+    company_id: string,
+  ): Promise<ListResult<DirectChannel>> {
+    return await this.directChannelRepository.find({ company_id }, { pagination });
   }
 
   async getDirectChannelsForUsersInCompany(
@@ -595,6 +607,26 @@ export class Service implements ChannelService {
         logger.warn({ err }, "Can not add requester as channel member");
       }
     }
+  }
+
+  public async includeUsersInDirectChannel(
+    channel: Channel,
+    context?: WorkspaceExecutionContext,
+  ): Promise<UsersIncludedChannel> {
+    let channelWithUsers: UsersIncludedChannel = { users: [], ...channel };
+    if (isDirectChannel(channel)) {
+      let users = [];
+      for (const user of channel.members) {
+        const e = await this.userService.formatUser(await this.userService.users.get({ id: user }));
+        users.push(e);
+      }
+      channelWithUsers.users = users;
+      channelWithUsers.name = users
+        .filter(u => u.id != context?.user?.id)
+        .map(u => u.full_name)
+        .join(", ");
+    }
+    return channelWithUsers;
   }
 
   /**

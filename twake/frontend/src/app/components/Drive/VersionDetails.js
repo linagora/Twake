@@ -1,17 +1,13 @@
-import React, { Component } from 'react';
-import Languages from 'services/languages/languages.js';
+import React from 'react';
+import Languages from 'services/languages/languages';
 import Icon from 'components/Icon/Icon.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
-import UploadZone from 'components/Uploads/UploadZone.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import UploadZone from 'components/Uploads/UploadZone';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import MediumPopupManager from 'app/components/Modal/ModalManager';
-import {
-  ObjectModal,
-  ObjectModalFormTitle,
-  ObjectModalTitle,
-} from 'components/ObjectModal/DeprecatedObjectModal.js';
+import { ObjectModal, ObjectModalTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
 import UIFile from './UI/File.js';
 import 'moment-timezone';
 

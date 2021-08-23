@@ -1,23 +1,22 @@
 import Logger from 'app/services/Logger';
 import Observable from 'app/services/Depreciated/observable.js';
 import Api from 'services/Api';
-import Languages from 'services/languages/languages.js';
-import WindowState from 'services/utils/window.js';
+import Languages from 'services/languages/languages';
+import WindowState from 'services/utils/window';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/Collections/Collections';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Groups from 'services/workspaces/groups.js';
-import Notifications from 'services/user/notifications';
-import CurrentUser from 'services/user/current_user.js';
+import UserNotifications from 'app/services/user/UserNotifications';
+import CurrentUser from 'app/services/user/CurrentUser';
 import ws from 'services/websocket.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import InitService from 'services/InitService';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import AccessRightsService from 'services/AccessRightsService';
 import Environment from 'environment/environment';
 import LocalStorage from 'services/LocalStorage';
-import WindowService from 'services/utils/window.js';
 import authProviderService from './AuthProviderService';
 
 class Login extends Observable {
@@ -37,7 +36,7 @@ class Login extends Observable {
       branding: {},
       ready: {},
       auth: {},
-      help_link: false,
+      help_url: false,
     };
 
     Globals.window.login = this;
@@ -60,9 +59,9 @@ class Login extends Observable {
 
   async init(did_wait = false) {
     if (!did_wait) {
-      LocalStorage.getItem('api_root_url', res => {
-        this.init(true);
-      });
+      LocalStorage.getItem('api_root_url');
+      this.init(true);
+
       return;
     }
 
@@ -176,9 +175,11 @@ class Login extends Observable {
       this.notify();
     }
 
-    if (!InitService.server_infos?.auth?.internal && !this.firstInit) {
+    if (InitService.server_infos?.configuration?.accounts?.type !== 'internal' && !this.firstInit) {
       //Check I am connected with external sign-in provider
-      return this.loginWithExternalProvider((InitService.server_infos?.auth_mode || [])[0]);
+      return this.loginWithExternalProvider(
+        InitService.server_infos?.configuration?.accounts?.type,
+      );
     } else {
       //We can thrust the JWT
       this.updateUser();
@@ -202,7 +203,7 @@ class Login extends Observable {
         if (res.errors.length > 0) {
           if (
             (res.errors.indexOf('redirect_to_openid') >= 0 ||
-              that.server_infos.configuration.accounts.type === 'console') &&
+              that.server_infos.configuration?.accounts.type === 'console') &&
             !that.external_login_error
           ) {
             let developerSuffix = '';
@@ -217,7 +218,8 @@ class Login extends Observable {
           that.state = 'logged_out';
           that.notify();
 
-          WindowState.setTitle();
+          WindowState.setPrefix();
+          WindowState.setSuffix();
           RouterServices.push(
             RouterServices.addRedirection(
               `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
@@ -249,11 +251,9 @@ class Login extends Observable {
     } else if (service === 'cas') {
       url = Api.route('users/cas');
     } else if (service === 'console') {
-      let developerSuffix = '';
-      if (Environment.env_dev && document.location.host.indexOf('localhost') === 0) {
-        developerSuffix = '?localhost=1&port=' + window.location.port;
-      }
-      url = Api.route('users/console/openid' + developerSuffix);
+      return;
+    } else {
+      return;
     }
 
     Globals.window.location = url;
@@ -268,33 +268,31 @@ class Login extends Observable {
 
     const that = this;
 
-    Globals.getDevice(device => {
-      Api.post(
-        'users/login',
-        {
-          username: username,
-          password: password,
-          remember_me: rememberme,
-          device: device,
-        },
-        function (res) {
-          if (res && res.data && res.data.status === 'connected') {
-            if (that.waitForVerificationTimeout) {
-              clearTimeout(that.waitForVerificationTimeout);
-            }
-            that.login_loading = false;
-            that.init();
-            return RouterServices.replace(RouterServices.pathnames.LOGIN);
-          } else {
-            that.login_error = true;
-            that.login_loading = false;
-            that.notify();
+    Api.post(
+      'users/login',
+      {
+        username: username,
+        password: password,
+        remember_me: rememberme,
+        device: {},
+      },
+      function (res) {
+        if (res && res.data && res.data.status === 'connected') {
+          if (that.waitForVerificationTimeout) {
+            clearTimeout(that.waitForVerificationTimeout);
           }
-        },
-        false,
-        { disableJWTAuthentication: true },
-      );
-    });
+          that.login_loading = false;
+          that.init();
+          return RouterServices.replace(RouterServices.pathnames.LOGIN);
+        } else {
+          that.login_error = true;
+          that.login_loading = false;
+          that.notify();
+        }
+      },
+      false,
+      { disableJWTAuthentication: true },
+    );
   }
 
   clearLogin() {
@@ -356,7 +354,7 @@ class Login extends Observable {
     this.notify();
     RouterServices.push(RouterServices.generateRouteFromState({}));
 
-    Notifications.start();
+    UserNotifications.start();
     CurrentUser.start();
     Languages.setLanguage(user.language);
   }
@@ -367,7 +365,7 @@ class Login extends Observable {
         storageKey: this.currentUserId,
         transport: {
           socket: {
-            url: Globals.window.websocket_url,
+            url: Globals.environment.websocket_url,
             authenticate: async () => {
               let token = JWTStorage.getJWT();
               if (JWTStorage.isAccessExpired()) {
@@ -382,7 +380,7 @@ class Login extends Observable {
             },
           },
           rest: {
-            url: Globals.window.api_root_url + '/internal/services',
+            url: Globals.api_root_url + '/internal/services',
             headers: {
               Authorization: JWTStorage.getAutorizationHeader(),
             },
@@ -395,13 +393,13 @@ class Login extends Observable {
 
   getIsPublicAccess() {
     let publicAccess = false;
-    const viewParameter = WindowService.findGetParameter('view') || '';
+    const viewParameter = WindowState.findGetParameter('view') || '';
     if (
       (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
       Globals.store_publicAccess_get_data
     ) {
       publicAccess = true;
-      Globals.store_publicAccess_get_data = WindowService.allGetParameter();
+      Globals.store_publicAccess_get_data = WindowState.allGetParameter();
     }
     return publicAccess;
   }

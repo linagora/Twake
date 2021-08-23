@@ -1,22 +1,23 @@
+// eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserService from 'services/user/user.js';
-import CurrentUserService from 'services/user/current_user.js';
+import UserService from 'services/user/UserService';
+import CurrentUserService from 'app/services/user/CurrentUser';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import LoginService from 'services/login/login.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
-import ListenUsers from 'services/user/listen_users.js';
+import WorkspacesUsers from 'services/workspaces/workspaces_users';
+import ListenUsers from 'services/user/ListenUsers';
 import UserParameter from 'app/scenes/Client/Popup/UserParameter/UserParameter.js';
 import InputWithIcon from 'components/Inputs/InputWithIcon.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/scenes/Client/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView.js';
-import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader.js';
+import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
 import popupManager from 'services/popupManager/popupManager.js';
 import Button from 'components/Buttons/Button.js';
 import InitService from 'app/services/InitService';
@@ -27,9 +28,10 @@ export default class CurrentUser extends Component {
   constructor() {
     super();
 
+    this.users_repository = Collections.get('users');
+    this.i18n = Languages;
+
     this.state = {
-      i18n: Languages,
-      users_repository: Collections.get('users'),
       new_status: ['', ''],
     };
 
@@ -62,24 +64,26 @@ export default class CurrentUser extends Component {
     clearInterval(this.refreshUserState);
   }
   componentDidMount() {
-    var current_user = this.state.users_repository.known_objects_by_id[this.user_id];
-    if (!current_user.status_icon[0]) {
-      current_user.status_icon[1] = '';
+    const new_status = {...this.users_repository.known_objects_by_id[this.user_id].status_icon};
+
+    if (!new_status[0]) {
+      new_status[1] = '';
     }
-    this.state.new_status = current_user.status_icon;
+
+    this.setState({ new_status });
   }
   updateStatus(value) {
     value = value || this.state.new_status;
     CurrentUserService.updateStatusIcon([
-      value[0] == 'trash' ? '' : value[0],
-      value[0] == 'trash' ? '' : value[1],
+      value[0] === 'trash' ? '' : value[0],
+      value[0] === 'trash' ? '' : value[1],
     ]);
     MenusManager.closeMenu();
     this.setState({ new_status: ['', ''] });
     MenusManager.notify();
   }
   onClickUser(evt) {
-    var current_user = this.state.users_repository.known_objects_by_id[this.user_id];
+    var current_user = this.users_repository.known_objects_by_id[this.user_id];
     var usermenu = [
       {
         type: 'menu',
@@ -103,7 +107,7 @@ export default class CurrentUser extends Component {
             type: 'react-element',
             reactElement: level => {
               if (this.state.new_status[0].length <= 0) {
-                this.state.new_status = current_user.status_icon;
+                this.setState({ new_status: current_user.status_icon });
               }
               return (
                 <InputWithIcon
@@ -117,7 +121,7 @@ export default class CurrentUser extends Component {
                   )}
                   value={this.state.new_status}
                   onChange={value => {
-                    if (value[0] == 'trash') {
+                    if (value[0] === 'trash') {
                       this.updateStatus(value);
                     } else {
                       this.setState({ new_status: value });
@@ -310,7 +314,7 @@ export default class CurrentUser extends Component {
   }
 
   render() {
-    var current_user = this.state.users_repository.known_objects_by_id[this.user_id];
+    var current_user = this.users_repository.known_objects_by_id[this.user_id];
 
     if (!current_user) {
       return '';
@@ -333,7 +337,6 @@ export default class CurrentUser extends Component {
           (Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId) || {}).name ||
           '-'
         }
-        user={current_user}
         status={status}
         notificationsDisabled={notifications_disabled}
         onClickUser={evt => {

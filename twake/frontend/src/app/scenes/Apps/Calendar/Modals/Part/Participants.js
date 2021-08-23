@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import UserListManager from 'components/UserListManager/UserListManager';
 import Menu from 'components/Menus/Menu.js';
 

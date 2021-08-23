@@ -1,15 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { Input } from 'antd';
-import _ from 'lodash';
+import { isEqual } from 'lodash';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import { Collection } from 'services/CollectionsReact/Collections';
-import NotificationParametersService from 'services/user/notificationParameters';
+import NotificationPreferences from 'app/services/user/NotificationPreferences';
 
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Attribute from 'components/Parameters/Attribute.js';
-import Switch from 'components/Inputs/Switch.js';
+import Switch from 'components/Inputs/Switch';
 import Radio from 'components/Inputs/Radio.js';
 
 import {
@@ -33,13 +33,13 @@ export default () => {
   const saveNewPreferences = async (preferences: preferencesType) => {
     const newPreferences: any = Object.entries(preferences).map(([key, value]) => ({ key, value }));
 
-    NotificationParametersService.save(newPreferences);
+    NotificationPreferences.save(newPreferences);
   };
 
   const generateTimeOptions = () => {
     const options = [];
     for (let value = 0; value < 24; value += 0.5) {
-      const text = ~~value + ':' + ((value * 2) % 2 == 0 ? '00' : '30');
+      const text = ~~value + ':' + ((value * 2) % 2 === 0 ? '00' : '30');
       options.push(
         <option key={value} value={value}>
           {text}
@@ -91,7 +91,7 @@ export default () => {
             <Switch
               // TODO: Change the title and add the traduction
               label={'Enable night feature'}
-              value={newPreferences.night_break.enable}
+              checked={newPreferences.night_break.enable}
               onChange={(checked: boolean) => {
                 setNewPreferences({
                   ...newPreferences,
@@ -175,7 +175,7 @@ export default () => {
             <Radio
               small
               label={Languages.t('scenes.apps.account.notifications.devices_option_ever')}
-              value={newPreferences.mobile_notifications == 'always'}
+              value={newPreferences.mobile_notifications === 'always'}
               onChange={() => {
                 setNewPreferences({
                   ...newPreferences,
@@ -188,7 +188,7 @@ export default () => {
             <Radio
               small
               label={Languages.t('scenes.apps.account.notifications.devices_option_inactive')}
-              value={newPreferences.mobile_notifications == 'when_inactive'}
+              value={newPreferences.mobile_notifications === 'when_inactive'}
               onChange={() => {
                 setNewPreferences({
                   ...newPreferences,
@@ -201,7 +201,7 @@ export default () => {
             <Radio
               small
               label={Languages.t('scenes.apps.account.notifications.devices_option_never')}
-              value={newPreferences.mobile_notifications == 'never'}
+              value={newPreferences.mobile_notifications === 'never'}
               onChange={() => {
                 setNewPreferences({
                   ...newPreferences,
@@ -262,7 +262,7 @@ export default () => {
                 ? 'scenes.app.popup.userparameter.pages.private_message_content.hide'
                 : 'scenes.app.popup.userparameter.pages.private_message_content.show',
             )}
-            value={newPreferences.private_message_content}
+            checked={newPreferences.private_message_content}
             onChange={(checked: boolean) => {
               setNewPreferences({
                 ...newPreferences,
@@ -275,7 +275,7 @@ export default () => {
       <div style={{ textAlign: 'right' }}>
         <ButtonWithTimeout
           className="small buttonValidation"
-          disabled={_.isEqual(newPreferences, notificationPreferences[0].data.preferences)}
+          disabled={isEqual(newPreferences, notificationPreferences[0].data.preferences)}
           onClick={() => saveNewPreferences(newPreferences)}
           value={Languages.t('general.update')}
         />

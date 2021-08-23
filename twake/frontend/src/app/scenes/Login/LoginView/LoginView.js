@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import LoginService from 'services/login/login.js';
 import Emojione from 'components/Emojione/Emojione';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
 import InitService from 'services/InitService';
+import { Typography } from 'antd';
 export default class LoginView extends Component {
   constructor() {
     super();
@@ -19,13 +20,13 @@ export default class LoginView extends Component {
     Languages.addListener(this);
   }
   componentDidMount() {
-    const authModes = [InitService.server_infos?.configuration?.accounts?.type];
     if (
-      authModes.length > 0 &&
-      authModes.indexOf('internal') < 0 &&
+      InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
       !(LoginService.external_login_error || false)
     ) {
-      LoginService.loginWithExternalProvider(authModes[0]);
+      LoginService.loginWithExternalProvider(
+        InitService.server_infos?.configuration?.accounts?.type,
+      );
     }
   }
   componentWillUnmount() {
@@ -33,12 +34,8 @@ export default class LoginView extends Component {
     Languages.removeListener(this);
   }
   render() {
-    const login = this.state.login;
-
-    const authModes = [InitService.server_infos?.configuration?.accounts?.type];
     if (
-      authModes.length > 0 &&
-      authModes.indexOf('internal') < 0 &&
+      InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
       !(LoginService.external_login_error || false)
     ) {
       return <></>;
@@ -60,6 +57,7 @@ export default class LoginView extends Component {
 
           {!!((InitService.server_infos || {}).branding || {}).logo && (
             <img
+              alt={((InitService.server_infos || {}).branding || {}).logo}
               style={{ marginBottom: 40, marginTop: 10, width: 140 }}
               src={((InitService.server_infos || {}).branding || {}).logo}
             />
@@ -72,7 +70,7 @@ export default class LoginView extends Component {
           )}
 
           {(Object.keys((InitService.server_infos || {}).auth || []).indexOf('internal') >= 0 ||
-            ((InitService.server_infos || {}).auth || []).length == 0) && (
+            ((InitService.server_infos || {}).auth || []).length === 0) && (
             <div className="internal-login">
               <Input
                 id="username"
@@ -83,7 +81,7 @@ export default class LoginView extends Component {
                 }
                 placeholder={this.state.i18n.t('scenes.login.home.email')}
                 onKeyDown={e => {
-                  if (e.keyCode == 13 && !this.state.login.login_loading) {
+                  if (e.keyCode === 13 && !this.state.login.login_loading) {
                     LoginService.login(this.state.form_login, this.state.form_password, true);
                   }
                 }}
@@ -99,7 +97,7 @@ export default class LoginView extends Component {
                 }
                 placeholder={this.state.i18n.t('scenes.login.home.password')}
                 onKeyDown={e => {
-                  if (e.keyCode == 13 && !this.state.login.login_loading) {
+                  if (e.keyCode === 13 && !this.state.login.login_loading) {
                     LoginService.login(this.state.form_login, this.state.form_password, true);
                   }
                 }}
@@ -124,24 +122,24 @@ export default class LoginView extends Component {
               >
                 {this.state.i18n.t('scenes.login.home.login_btn')}
               </Button>
-              {!InitService.server_infos?.configuration?.accounts?.type ===
-                'internal'.disable_account_creation && (
-                <a
+              {!InitService.server_infos?.configuration?.accounts?.internal
+                ?.disable_account_creation && (
+                <Typography.Link
                   onClick={() => this.state.login.changeState('signin')}
                   id="create_btn"
                   className="blue_link"
                 >
                   {this.state.i18n.t('scenes.login.home.create_account')}
-                </a>
+                </Typography.Link>
               )}
 
-              <a
+              <Typography.Link
                 onClick={() => this.state.login.changeState('forgot_password')}
                 id="forgot_password_btn"
                 className="blue_link"
               >
                 {this.state.i18n.t('scenes.login.home.lost_password')}
-              </a>
+              </Typography.Link>
             </div>
           )}
         </div>

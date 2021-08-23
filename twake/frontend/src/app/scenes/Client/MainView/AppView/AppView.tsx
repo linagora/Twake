@@ -4,7 +4,6 @@ import Drive from 'scenes/Apps/Drive/Drive.js';
 import Calendar from 'scenes/Apps/Calendar/Calendar.js';
 import Tasks from 'scenes/Apps/Tasks/Tasks.js';
 import NoApp from '../NoApp';
-import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 import AppViewService from 'app/services/AppView/AppViewService';
 
 type PropsType = {
@@ -27,7 +26,7 @@ const AppView: FC<PropsType> = props => {
 
   const channelCollection = configuration.collection;
   let channel = null;
-  if(channelCollection){
+  if (channelCollection) {
     if (channelCollection?.findOne) {
       channel = channelCollection.findOne({ id: props.id }, { withoutBackend: true });
     } else {
@@ -46,20 +45,18 @@ const AppView: FC<PropsType> = props => {
   let channelTab = configuration.context;
 
   if (channel) {
-    if ((app || {}).simple_name == 'twake_drive') {
-      return <Drive channel={channel} tab={channelTab} options={configuration} />;
+    switch (app?.simple_name) {
+      case 'twake_drive':
+        return <Drive channel={channel} tab={channelTab} options={configuration} />;
+      case 'twake_calendar':
+        return <Calendar channel={channel} tab={channelTab} options={configuration} />;
+      case 'twake_tasks':
+        return <Tasks channel={channel} tab={channelTab} options={configuration} />;
+      case 'messages':
+        return <Messages channel={channel} options={configuration} />;
+      default:
+        return <NoApp />;
     }
-    if ((app || {}).simple_name == 'twake_calendar') {
-      return <Calendar channel={channel} tab={channelTab} options={configuration} />;
-    }
-    if ((app || {}).simple_name == 'twake_tasks') {
-      return <Tasks channel={channel} tab={channelTab} options={configuration} />;
-    }
-    if (app == 'messages') {
-      return <Messages channel={channel} options={configuration} />;
-    }
-
-    return <NoApp />;
   }
   return <></>;
 };

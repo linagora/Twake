@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { v4 as uuidv4 } from "uuid";
+import { v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
 import { ResourceCreateResponse, ResourceListResponse } from "../../../src/utils/types";
@@ -19,7 +19,16 @@ describe("The direct channels API", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: ["pubsub", "user", "websocket", "webserver", "channels", "auth", "database"],
+      services: [
+        "pubsub",
+        "user",
+        "search",
+        "websocket",
+        "webserver",
+        "channels",
+        "auth",
+        "database",
+      ],
     });
     channelUtils = getChannelUtils(platform);
   });
@@ -62,7 +71,7 @@ describe("The direct channels API", () => {
       const channel = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
       const directChannelNotIn = channelUtils.getDirectChannel();
-      const members = [platform.currentUser.id, uuidv4()];
+      const members = [platform.currentUser.id, uuidv1()];
       const directWorkspace: Workspace = {
         company_id: platform.workspace.company_id,
         workspace_id: ChannelVisibility.DIRECT,
@@ -80,9 +89,9 @@ describe("The direct channels API", () => {
         channelService.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
-            members: [uuidv4(), uuidv4()],
+            members: [uuidv1(), uuidv1()],
           },
-          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
+          { ...getContext({ id: uuidv1() }), ...{ workspace: directWorkspace } },
         ),
       ]);
 
@@ -142,7 +151,7 @@ describe("The direct channels API", () => {
       const directChannelIn = channelUtils.getDirectChannel();
       const directChannelIn2 = channelUtils.getDirectChannel();
       const directChannelNotIn = channelUtils.getDirectChannel();
-      const members = [platform.currentUser.id, uuidv4()];
+      const members = [platform.currentUser.id, uuidv1()];
       const directWorkspace: Workspace = {
         company_id: platform.workspace.company_id,
         workspace_id: ChannelVisibility.DIRECT,
@@ -158,14 +167,14 @@ describe("The direct channels API", () => {
           {
             members,
           },
-          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
+          { ...getContext({ id: uuidv1() }), ...{ workspace: directWorkspace } },
         ),
 
         //This channel will automatically contains the requester because it is added automatically in it
         channelService.channels.save<ChannelSaveOptions>(
           directChannelIn2,
           {
-            members: [uuidv4(), uuidv4()],
+            members: [uuidv1(), uuidv1()],
           },
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
@@ -174,9 +183,9 @@ describe("The direct channels API", () => {
         channelService.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
-            members: [uuidv4(), uuidv4()],
+            members: [uuidv1(), uuidv1()],
           },
-          { ...getContext({ id: uuidv4() }), ...{ workspace: directWorkspace } },
+          { ...getContext({ id: uuidv1() }), ...{ workspace: directWorkspace } },
         ),
       ]);
 
@@ -210,7 +219,7 @@ describe("The direct channels API", () => {
       const channel2 = channelUtils.getChannel();
       const directChannelIn = channelUtils.getDirectChannel();
       const directChannelNotIn = channelUtils.getDirectChannel();
-      const members = [platform.currentUser.id, uuidv4()];
+      const members = [platform.currentUser.id, uuidv1()];
       const directWorkspace: Workspace = {
         company_id: platform.workspace.company_id,
         workspace_id: ChannelVisibility.DIRECT,
@@ -221,7 +230,7 @@ describe("The direct channels API", () => {
         channelService.channels.save(channel, {}, getContext()),
 
         //This channel will not contain currentUser
-        channelService.channels.save(channel2, {}, getContext({ id: uuidv4() })),
+        channelService.channels.save(channel2, {}, getContext({ id: uuidv1() })),
 
         //This channel will automatically contains the requester because it is added automatically in it
         channelService.channels.save<ChannelSaveOptions>(
@@ -235,7 +244,7 @@ describe("The direct channels API", () => {
         channelService.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
-            members: [uuidv4(), uuidv4(), uuidv4()],
+            members: [uuidv1(), uuidv1(), uuidv1()],
           },
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
@@ -269,7 +278,7 @@ describe("The direct channels API", () => {
     it("should be able to create a direct channel with members", async done => {
       const jwtToken = await platform.auth.getJWTToken();
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
-      const members = [uuidv4(), platform.currentUser.id];
+      const members = [uuidv1(), platform.currentUser.id];
 
       const response = await platform.app.inject({
         method: "POST",
@@ -341,7 +350,7 @@ describe("The direct channels API", () => {
       }
 
       const jwtToken = await platform.auth.getJWTToken();
-      const members = [uuidv4(), platform.currentUser.id];
+      const members = [uuidv1(), platform.currentUser.id];
       const ids = new Set<string>();
 
       let response = await createChannel(members);
@@ -383,7 +392,7 @@ describe("The direct channels API", () => {
       }
 
       const jwtToken = await platform.auth.getJWTToken();
-      const members = [uuidv4(), platform.currentUser.id];
+      const members = [uuidv1(), platform.currentUser.id];
       const ids = new Set<string>();
 
       let response = await createChannel(members);

@@ -1,5 +1,5 @@
 import React, { useState, ReactElement } from 'react';
-import { AutoComplete, Avatar, Col, Row, Typography } from 'antd';
+import { AutoComplete } from 'antd';
 import { AutoCompleteProps } from 'antd/lib/auto-complete';
 
 const { Option } = AutoComplete;

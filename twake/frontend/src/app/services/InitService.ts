@@ -12,7 +12,8 @@ type ServerInfoType = null | {
   };
   configuration: {
     branding: any;
-    help_link: string | null;
+    help_url: string | null;
+    pricing_plan_url: string | null;
     accounts: {
       type: 'console' | 'internal';
       console: null | {
@@ -20,6 +21,7 @@ type ServerInfoType = null | {
         client_id: string;
         max_unverified_days: number;
         account_management_url: string;
+        company_subscription_url: string;
         company_management_url: string;
         collaborators_management_url: string;
       };
@@ -35,6 +37,12 @@ class InitService extends Observable {
   public server_infos: ServerInfoType = null;
   public server_infos_loaded: boolean = false;
   public app_ready: boolean = false;
+
+  async removeLoader() {
+    try {
+      (window as any).document.getElementById('app_loader').remove();
+    } catch (err) {}
+  }
 
   async init() {
     this.server_infos = (await Api.get('/internal/services/general/v1/server', null, false, {

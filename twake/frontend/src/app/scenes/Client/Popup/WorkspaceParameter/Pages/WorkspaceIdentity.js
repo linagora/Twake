@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import workspaceService from 'services/workspaces/workspaces.js';
-import uploadService from 'services/uploadManager/uploadManager.js';
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Attribute from 'components/Parameters/Attribute.js';
-import Input from 'components/Inputs/Input.js';
+import Languages from 'services/languages/languages';
+import Collections from 'app/services/Depreciated/Collections/Collections';
+import workspaceService from 'services/workspaces/workspaces';
+import uploadService from 'services/uploadManager/uploadManager';
+import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout';
+import Attribute from 'components/Parameters/Attribute';
+import Input from 'components/Inputs/Input';
 import AlertManager from 'services/AlertManager/AlertManager';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
+
 import './Pages.scss';
 
 export default class WorkspaceIdentity extends Component {
@@ -42,7 +44,7 @@ export default class WorkspaceIdentity extends Component {
     event.preventDefault();
     uploadService.getFilesTree(event, function (tree) {
       var first = tree[Object.keys(tree)[0]];
-      if (first.constructor.name != 'Object') {
+      if (first.constructor.name !== 'Object') {
         //A file
         var reader = new FileReader();
         reader.onload = function (e) {
@@ -96,7 +98,7 @@ export default class WorkspaceIdentity extends Component {
                 type="text"
                 value={this.state.workspaceName}
                 onKeyDown={e => {
-                  if (e.keyCode == 13) {
+                  if (e.keyCode === 13) {
                     workspaceService.updateWorkspaceName(this.state.workspaceName);
                   }
                 }}
@@ -148,10 +150,7 @@ export default class WorkspaceIdentity extends Component {
               <div
                 ref={ref => (this.workspaceLogo = ref)}
                 className={'image thumbnail ' + (this.state.workspaceLogo ? 'has_image ' : '')}
-                style={{
-                  backgroundImage:
-                    "url('" + window.addApiUrlIfNeeded(this.state.workspaceLogo) + "')",
-                }}
+                style={{ backgroundImage: addApiUrlIfNeeded(this.state.workspaceLogo, true) }}
               >
                 {((workspace.mininame || workspace.name) + '-')[0].toUpperCase()}
               </div>
@@ -163,6 +162,7 @@ export default class WorkspaceIdentity extends Component {
                 'Poids maximum 5 mo.',
               )}
               <br />
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a
                 className="red"
                 onClick={() => {
@@ -214,7 +214,7 @@ export default class WorkspaceIdentity extends Component {
                 className="small buttonValidation"
                 disabled={
                   this.state.workspaceService.loading ||
-                  workspace.name != this.state.deleteWorkspaceName
+                  workspace.name !== this.state.deleteWorkspaceName
                 }
                 onClick={() => {
                   AlertManager.confirm(() => {

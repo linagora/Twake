@@ -1,32 +1,25 @@
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class Electron {
-  constructor() {
-    if (this.isElectron()) {
-      document.addEventListener('keydown', function (e) {
-        if (e.which === 123) {
-          Globals.window.electron.remote.getCurrentWindow().toggleDevTools();
-        } else if (e.which === 116) {
-          Globals.window.location.reload();
-        }
-      });
-    }
-  }
+  constructor() {}
 
   isElectron() {
-    return Globals.window.electron != undefined;
+    return window.electron !== undefined;
   }
 
   setBadge(value) {
     if (!this.isElectron()) return;
     try {
       if (
-        Globals.window.electron &&
-        Globals.window.electron.remote &&
-        Globals.window.electron.remote.app &&
-        Globals.window.electron.remote.app.dock
+        window.electron &&
+        window.electron.remote &&
+        window.electron.remote.app &&
+        window.electron.remote.app.dock
       ) {
-        Globals.window.electron.remote.app.dock.setBadge(value);
+        window.electron.remote.app.dock.setBadge(value);
+      }
+      if (window.electron && window.electron.ipcRenderer) {
+        window.electron.ipcRenderer.send('application:update_badge', value);
       }
     } catch (err) {
       console.log('No electron app available for setting dock badge');

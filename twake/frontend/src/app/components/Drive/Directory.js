@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import DriveElement from './DriveElement.js';
 import UIDirectory from './UI/Directory.js';
 import Loader from 'components/Loader/Loader.js';
 
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
-import Draggable from 'components/Draggable/Draggable.js';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import Draggable from 'components/Draggable/Draggable';
 import DroppableZone from 'components/Draggable/DroppableZone.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './Drive.scss';
 
 export default class Directory extends DriveElement {

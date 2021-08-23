@@ -23,6 +23,7 @@ describe("The Channels Realtime feature", () => {
       services: [
         "pubsub",
         "user",
+        "search",
         "websocket",
         "webserver",
         "channels",
@@ -79,12 +80,15 @@ describe("The Channels Realtime feature", () => {
 
               expect(response.statusCode).toEqual(201);
             });
-            socket.on("realtime:resource", event => {
-              expect(event.type).toEqual("channel");
-              expect(event.action).toEqual("saved");
-              expect(event.resource.name).toEqual(channelName);
-              done();
-            });
+            socket.on(
+              "realtime:resource",
+              (event: { type: any; action: any; resource: { name: any } }) => {
+                expect(event.type).toEqual("channel");
+                expect(event.action).toEqual("saved");
+                expect(event.resource.name).toEqual(channelName);
+                done();
+              },
+            );
           })
           .on("unauthorized", () => {
             done(new Error("Should not occur"));
@@ -114,25 +118,28 @@ describe("The Channels Realtime feature", () => {
         socket
           .emit("authenticate", { token: jwtToken })
           .on("authenticated", () => {
-            socket.on("realtime:resource", event => {
-              if (event.action !== "deleted") {
-                // we can receive event when resource is created...
-                return;
-              }
+            socket.on(
+              "realtime:resource",
+              (event: { action: string; type: any; path: any; resource: { id: any } }) => {
+                if (event.action !== "deleted") {
+                  // we can receive event when resource is created...
+                  return;
+                }
 
-              expect(event.type).toEqual("channel");
-              expect(event.action).toEqual("deleted");
-              expect(event.path).toEqual(
-                getChannelPath(
-                  { id: creationResult.entity.id } as Channel,
-                  {
-                    workspace: platform.workspace,
-                  } as WorkspaceExecutionContext,
-                ),
-              );
-              expect(event.resource.id).toEqual(creationResult.entity.id);
-              done();
-            });
+                expect(event.type).toEqual("channel");
+                expect(event.action).toEqual("deleted");
+                expect(event.path).toEqual(
+                  getChannelPath(
+                    { id: creationResult.entity.id } as Channel,
+                    {
+                      workspace: platform.workspace,
+                    } as WorkspaceExecutionContext,
+                  ),
+                );
+                expect(event.resource.id).toEqual(creationResult.entity.id);
+                done();
+              },
+            );
             socket.emit("realtime:join", {
               name: getPublicRoomName(platform.workspace),
               token: roomToken,

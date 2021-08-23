@@ -15,8 +15,13 @@ RUN rm /etc/nginx/sites-enabled/default
 
 RUN usermod -u 1000 www-data
 
-RUN wget https://dl.eff.org/certbot-auto
-RUN chmod a+x certbot-auto
+RUN apt-get remove certbot
+RUN apt-get install -y python3 python3-venv libaugeas0
+RUN python3 -m venv /opt/certbot/
+RUN /opt/certbot/bin/pip install --upgrade pip
+RUN /opt/certbot/bin/pip install certbot
+RUN ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+
 RUN apt-get update && apt-get install -y \
   augeas-lenses binutils cpp cpp-8 dh-python gcc gcc-8 libasan5 libatomic1 \
   libaugeas0 libc-dev-bin libc6-dev libcilkrts5 libexpat1-dev \

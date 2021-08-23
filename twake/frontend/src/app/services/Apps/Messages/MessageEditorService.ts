@@ -1,10 +1,18 @@
 import Observable from 'app/services/Depreciated/observable';
 import LocalStorage from 'app/services/LocalStorage';
+import { ToasterService as Toaster } from 'app/services/Toaster';
+import Languages from 'services/languages/languages';
+
+// FIX ME use real File type instead
+type FileType = { [key: string]: any };
 
 /*
   This class will manage editor states (opened editor and state)
 */
 export class MessageEditorService extends Observable {
+  ATTACHEMENTS_LIMIT = 10;
+  static LOCALSTORAGE_KEY = 'm_input';
+
   constructor(channelId: string) {
     super();
     this.channelId = channelId;
@@ -21,30 +29,45 @@ export class MessageEditorService extends Observable {
 
   setInputNode(threadId: string, messageId: string, context: string, node: any) {}
 
-  async setContent(threadId: string, messageId: string, content: string) {
+  /**
+   * Set the message to cache for the given thread/message
+   *
+   * @param threadId
+   * @param messageId
+   * @param content
+   */
+  async setContent(threadId: string, messageId: string, content: string): Promise<void> {
+    const editorId = this.getEditorId(threadId, messageId);
+
     if (!messageId) {
-      const all = ((await LocalStorage.getItem('m_input')) || {}) as any;
-      all[this.channelId + (threadId ? '_thread=' + threadId : '')] = [
-        content,
-        new Date().getTime(),
-      ];
-      LocalStorage.setItem('m_input', all);
+      const all = LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY) || {} as any;
+      all[this.getCacheId(threadId)] = [content, new Date().getTime()];
+      LocalStorage.setItem(MessageEditorService.LOCALSTORAGE_KEY, all);
     }
-    this.editorsContents[threadId + '_' + messageId] = content;
+    this.editorsContents[editorId] = content;
   }
 
-  async getContent(threadId: string, messageId: string) {
+  /**
+   * Get the cached message for the thread/message
+   *
+   * @param threadId
+   * @param messageId
+   * @returns
+   */
+  async getContent(threadId: string = '', messageId: string = ''): Promise<string> {
+    const editorId = this.getEditorId(threadId, messageId);
+
     if (!messageId) {
-      const all = this.cleanSavedInputContents((await LocalStorage.getItem('m_input')) || {});
-      const res = (all[this.channelId + (threadId ? '_thread=' + threadId : '')] || {})[0];
+      const all = this.cleanSavedInputContents(LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY) || {});
+      const res = (all[this.getCacheId(threadId)] || {})[0];
       if (res) {
-        this.editorsContents[threadId + '_' + messageId] = res;
+        this.editorsContents[editorId] = res;
       }
     }
-    return this.editorsContents[threadId + '_' + messageId] || '';
+    return this.editorsContents[editorId] || '';
   }
 
-  cleanSavedInputContents(all: any) {
+  private cleanSavedInputContents(all: any) {
     Object.keys(all).forEach(key => {
       if (
         all[key] &&
@@ -76,48 +99,90 @@ export class MessageEditorService extends Observable {
     this.notify();
   }
 
-  getEditorId(threadId: string, messageId: string, context: string = ''): string {
-    return threadId + (messageId ? '_' + messageId : '') + (context ? '_' + context : '');
-  }
-
   getUploadZone(threadId: string) {
-    return this.editorsUploadZones[threadId || 'main'];
+    return this.editorsUploadZones[this.getThreadId(threadId)];
   }
 
   setUploadZone(threadId: string, node: any) {
     if (node) {
-      this.editorsUploadZones[threadId || 'main'] = node;
+      this.editorsUploadZones[this.getThreadId(threadId)] = node;
     }
   }
 
   openFileSelector(threadId: string) {
-    if (this.editorsUploadZones[threadId || 'main']) {
-      this.editorsUploadZones[threadId || 'main'].open();
+    const id = this.getThreadId(threadId);
+
+    if (this.editorsUploadZones[id]) {
+      this.editorsUploadZones[id].open();
     }
   }
 
-  onAddAttachment(threadId: string, file: any) {
-    threadId = threadId || 'main';
-    if (!this.filesAttachements[threadId]) this.filesAttachements[threadId] = [];
-    this.filesAttachements[threadId].push(file.id);
+  onAddAttachment(threadId: string, file: FileType) {
+    const id = this.getThreadId(threadId);
+
+    if (this.shouldLimitAttachements(threadId)) {
+      return Toaster.error(
+        Languages.t('services.apps.messages.message_editor_service.upload_error_toaster', [
+          file.name,
+          this.ATTACHEMENTS_LIMIT,
+        ]),
+        4,
+      );
+    }
+
+    if (!this.filesAttachements[id]) {
+      this.filesAttachements[id] = [];
+    }
+
+    this.filesAttachements[id].push(file.id);
 
     this.notify();
   }
 
   onRemoveAttachement(threadId: string, fileId: string) {
-    threadId = threadId || 'main';
+    const id = this.getThreadId(threadId);
+
     let filesAttachements;
-    if (this.filesAttachements[threadId].length >= 0) {
-      filesAttachements = this.filesAttachements[threadId].filter(val => val !== fileId);
-      this.filesAttachements[threadId] = filesAttachements;
+    if (this.filesAttachements[id].length >= 0) {
+      filesAttachements = this.filesAttachements[id].filter(val => val !== fileId);
+      this.filesAttachements[id] = filesAttachements;
     }
 
     this.notify();
   }
 
+  hasAttachments(threadId: string = ''): boolean {
+    const id = this.getThreadId(threadId);
+
+    return !!this.filesAttachements[id]?.length;
+  }
+
+  getAttachements(threadId: string = ''): string[] {
+    return this.filesAttachements[this.getThreadId(threadId)];
+  }
+
+  shouldLimitAttachements(threadId: string = ''): boolean {
+    return this.getAttachements(threadId)?.length >= this.ATTACHEMENTS_LIMIT ? true : false;
+  }
+
   clearAttachments(threadId: string) {
-    threadId = threadId || 'main';
-    this.filesAttachements[threadId] = [];
+    this.filesAttachements[this.getThreadId(threadId)] = [];
     this.notify();
+  }
+
+  clearMessage(threadId: string, messageId: string): Promise<void> {
+    return this.setContent(threadId, messageId, '');
+  }
+
+  private getThreadId(threadId?: string): string {
+    return threadId || 'main';
+  }
+
+  private getCacheId(threadId: string): string {
+    return `${this.channelId}${threadId ? `_thread=${threadId}` : ''}`;
+  }
+
+  getEditorId(threadId: string, messageId: string, context: string = ''): string {
+    return threadId + (messageId ? `_${messageId}` : '') + (context ? `_${context}` : '');
   }
 }

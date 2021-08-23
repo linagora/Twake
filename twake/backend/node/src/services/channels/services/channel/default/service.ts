@@ -18,9 +18,10 @@ import DefaultChannelListener from "./listener";
 import { getLogger } from "../../../../../core/platform/framework";
 import UserServiceAPI from "../../../../user/api";
 import { ChannelMember } from "../../../../channels/entities/channel-member";
-import WorkspaceUser from "../../../../user/entities/workspace_user";
+
 import { User } from "../../../../../utils/types";
 import { Channel } from "../../../../../services/channels/entities";
+import WorkspaceUser from "../../../../workspaces/entities/workspace_user";
 
 const logger = getLogger("channel.default");
 

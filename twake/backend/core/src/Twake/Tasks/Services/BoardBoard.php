@@ -92,7 +92,9 @@ class BoardBoard
 
         $ret = [];
         foreach ($boards as $board) {
-            $ret[] = $board->getAsArray();
+            if(!$board->getDeleted()){
+                $ret[] = $board->getAsArray();
+            }
         }
 
         return $ret;
@@ -203,11 +205,9 @@ class BoardBoard
         if (!$board) {
             return false;
         }
+        $board->setDeleted(true);
 
-        $this->doctrine->getRepository("Twake\Tasks:Task")->removeBy(Array("board_id" => $id));
-        $this->doctrine->getRepository("Twake\Tasks:BoardList")->removeBy(Array("board_id" => $id));
-
-        $this->doctrine->remove($board);
+        $this->doctrine->save($board);
         $this->doctrine->flush();
 
         return $object;

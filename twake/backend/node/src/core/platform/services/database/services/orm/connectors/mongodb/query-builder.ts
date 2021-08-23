@@ -30,6 +30,7 @@ export function buildSelectQuery<Entity>(
       where[key] = transformValueToDbString(filters[key], columnsDefinition[key].type, {
         columns: columnsDefinition[key].options,
         secret: options.secret,
+        disableSalts: true,
       });
     }
   });

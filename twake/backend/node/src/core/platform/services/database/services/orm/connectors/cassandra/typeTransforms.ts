@@ -5,6 +5,7 @@ import { isBoolean, isInteger, isNull, isString, isUndefined } from "lodash";
 import { ColumnOptions, ColumnType } from "../../types";
 import { decrypt, encrypt } from "../../../../../../../crypto";
 import { logger } from "../../../../../../../../core/platform/framework";
+import moment from "moment";
 
 export const cassandraType = {
   encoded_string: "TEXT",
@@ -17,11 +18,16 @@ export const cassandraType = {
   counter: "COUNTER",
   blob: "BLOB",
   boolean: "BOOLEAN",
+
+  // backward compatibility
   twake_boolean: "TINYINT",
+  twake_int: "INT", //Depreciated
+  twake_datetime: "TIMESTAMP", //Depreciated
 };
 
 type TransformOptions = {
   secret?: any;
+  disableSalts?: boolean;
   columns?: ColumnOptions;
   column?: any;
 };
@@ -31,7 +37,11 @@ export const transformValueToDbString = (
   type: ColumnType,
   options: TransformOptions = {},
 ): string => {
-  if (type === "number") {
+  if (type === "twake_datetime") {
+    return `'${moment.unix(v / 1000).format("YYYY-MM-DD HH:mm:ss")}'`;
+  }
+
+  if (type === "number" || type === "twake_int") {
     if (isNull(v)) {
       return "null";
     }
@@ -66,7 +76,7 @@ export const transformValueToDbString = (
         v = null;
       }
     }
-    const encrypted = encrypt(v, options.secret);
+    const encrypted = encrypt(v, options.secret, { disableSalts: options.disableSalts });
     return `'${(encrypted.data || "").toString().replace(/'/gm, "''")}'`;
   }
   if (type === "blob") {
@@ -82,6 +92,10 @@ export const transformValueToDbString = (
     }
     return `'${(v || "").toString().replace(/'/gm, "''")}'`;
   }
+  if (type === "counter") {
+    if (isNaN(v)) throw new Error("Counter value should be a number");
+    return `${options.column.key} + ${v}`;
+  }
   return `'${(v || "").toString().replace(/'/gm, "''")}'`;
 };
 
@@ -91,6 +105,10 @@ export const transformValueFromDbString = (
   options: TransformOptions = {},
 ): any => {
   logger.trace(`Transform value %o of type ${type}`, v);
+
+  if (type === "twake_datetime") {
+    return new Date(`${v}`).getTime();
+  }
 
   if (v !== null && (type === "encoded_string" || type === "encoded_json")) {
     let decryptedValue: any;
@@ -134,11 +152,18 @@ export const transformValueFromDbString = (
       return null;
     }
   }
-  if (type === "uuid") {
-    return String(v);
+
+  if (type === "uuid" || type === "timeuuid") {
+    return v ? String(v) : null;
   }
+
   if (type === "number") {
     return new Number(v).valueOf();
   }
+
+  if (type === "counter") {
+    return new Number(v).valueOf();
+  }
+
   return v;
 };

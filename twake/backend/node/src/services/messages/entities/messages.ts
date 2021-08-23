@@ -1,7 +1,9 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
+import User from "../../user/entities/user";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { Block } from "../blocks-types";
+import { UserObject } from "../../user/web/types";
 
 export const TYPE = "messages";
 @Entity(TYPE, {
@@ -9,7 +11,12 @@ export const TYPE = "messages";
   type: TYPE,
   search: {
     index: "messages",
-    mapping: {
+    mongoMapping: {
+      text: {
+        text: "text",
+      },
+    },
+    esMapping: {
       properties: {
         text: { type: "text" },
       },
@@ -23,11 +30,11 @@ export const TYPE = "messages";
 })
 export class Message {
   @Type(() => String)
-  @Column("thread_id", "timeuuid")
+  @Column("thread_id", "timeuuid", { order: "DESC" })
   thread_id: string;
 
   @Type(() => String)
-  @Column("id", "timeuuid", { generator: "timeuuid" })
+  @Column("id", "timeuuid", { generator: "timeuuid", order: "DESC" })
   id: string;
 
   @Type(() => String) //Not in database (obviousl y because it is ephemeral)
@@ -124,4 +131,8 @@ export function getInstance(message: Partial<Message>): Message {
 
     ...message,
   });
+}
+
+export class MessageWithUsers extends Message {
+  users: UserObject[];
 }

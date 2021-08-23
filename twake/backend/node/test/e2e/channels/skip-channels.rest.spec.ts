@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
 import { TestPlatform, init } from "../setup";
 import {
@@ -28,6 +28,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
     platform = await init({
       services: [
         "user",
+        "search",
         "websocket",
         "webserver",
         "channels",
@@ -71,7 +72,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
    *
    * @param owner will be a random uuidv4 if not defined
    */
-  function getChannel(owner: string = uuidv4()): Channel {
+  function getChannel(owner: string = uuidv1()): Channel {
     const channel = new Channel();
 
     channel.name = "Test Channel";

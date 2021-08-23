@@ -34,12 +34,14 @@ export const useWatcher = <G>(
     savedObservable.current.removeWatcher(forceRender);
     observable.addWatcher(forceRender, observedScope, options);
     savedObservable.current = observable;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, options?.memoizedFilters || []);
 
   useEffect(() => {
     savedObservable.current.removeWatcher(savedForceRender.current);
     observable.addWatcher(savedForceRender.current, observedScope, options);
     savedObservable.current = observable;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [observable]);
 
   useEffect(() => {
@@ -56,8 +58,10 @@ export const useWatcher = <G>(
     });
 
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       savedObservable.current.removeWatcher(savedForceRender.current);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return value as G;
@@ -75,6 +79,7 @@ export default class Observable extends EventListener {
   }
 
   useWatcher<G>(observedScope: () => Promise<G> | G, options?: any): G {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     return useWatcher(this, observedScope, options);
   }
 
@@ -100,7 +105,17 @@ export default class Observable extends EventListener {
       observed = watcher.options?.observedChanges(changes);
     }
 
-    const snapshot = JSON.stringify(observed);
+    let cache: any[] = [];
+    const snapshot = JSON.stringify(observed, (key, value) => {
+      if (typeof value === 'object' && value !== null) {
+        // Duplicate reference found, discard key
+        if (cache.includes(value)) return;
+
+        // Store value in our collection
+        cache.push(value);
+      }
+      return value;
+    });
 
     if (watcher.savedChanges === snapshot) {
       return { changes: changes, didChange: false };

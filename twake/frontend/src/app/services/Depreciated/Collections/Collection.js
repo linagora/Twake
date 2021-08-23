@@ -1,4 +1,3 @@
-import React from 'react';
 import api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
@@ -7,7 +6,6 @@ import LocalStorage from 'app/services/LocalStorage';
 /** Collection
  * Act like a doctrine repository and try to be allways in sync with server in realtime
  */
-import Globals from 'services/Globals.js';
 
 export default class Collection extends Observable {
   constructor(options) {
@@ -75,7 +73,7 @@ export default class Collection extends Observable {
         }
       });
 
-      if (event == 'event') {
+      if (event === 'event') {
         if (data.multiple && data.multiple.forEach) {
           data.multiple.forEach(item => {
             this.ws_message(item);
@@ -140,26 +138,32 @@ export default class Collection extends Observable {
     this.sources_on_event[key] = {
       routes: routes,
       callback: (event, data) => {
-        if (event == 'get') {
+        if (event === 'get') {
           if (data.collectionId === key) {
             initHttp(data.data);
           }
         }
-        if (event == 'init' && data._route == routes[0]) {
+        if (event === 'init' && data._route === routes[0]) {
           //Only get reload from first route to avoid duplicate reload
           initHttp();
         }
       },
     };
 
-    if (routes.length == 0 || (options.http_options || {})._http_force_load || !waiting_one_route) {
+    if (
+      routes.length === 0 ||
+      (options.http_options || {})._http_force_load ||
+      !waiting_one_route
+    ) {
       initHttp();
     }
   }
 
   reload(callback, callbackForKey) {
+    // eslint-disable-next-line array-callback-return
     Object.keys(this.sources).map(key => {
       if (!this.sources[key]) {
+        // eslint-disable-next-line array-callback-return
         return;
       }
       this.sources[key].http_loading = true;
@@ -174,7 +178,7 @@ export default class Collection extends Observable {
             this.sources[key].did_first_load = true;
           }
           this.did_load_first_time[key] = true;
-          if (callback && key == callbackForKey) callback(res);
+          if (callback && key === callbackForKey) callback(res);
         },
       );
     });
@@ -189,6 +193,7 @@ export default class Collection extends Observable {
       clearTimeout(this.sources_to_be_removed_timeout[key]);
     }
     this.sources_to_be_removed_timeout[key] = setTimeout(() => {
+      // eslint-disable-next-line no-unused-vars
       var options = this.sources[key];
       this.sources[key].websockets.forEach(websocket => {
         this.unsubscribe(websocket.uri);
@@ -224,11 +229,20 @@ export default class Collection extends Observable {
     );
   }
 
-  /** find
-    id
-  **/
-  find(id) {
-    return this.known_objects_by_id[id];
+  /**
+   *
+   * @param id resource identifier
+   * @param whenNotFound an optional function to be called when resource is not found
+   * @returns
+   */
+  find(id, whenNotFound) {
+    const result = this.known_objects_by_id[id];
+
+    if (!result && whenNotFound) {
+      typeof whenNotFound === 'function' && whenNotFound(id);
+    }
+
+    return result;
   }
 
   findByFrontId(front_id) {
@@ -245,7 +259,7 @@ export default class Collection extends Observable {
         Object.keys(filters).forEach(filter_key => {
           var expected = filters[filter_key];
           if (expected !== undefined) {
-            if (this.known_objects_by_front_id[fid][filter_key] != expected) {
+            if (this.known_objects_by_front_id[fid][filter_key] !== expected) {
               hidden = true;
             }
           }
@@ -261,8 +275,8 @@ export default class Collection extends Observable {
         var is_desc = false;
         var key_to_compare = false;
         Object.keys(orders).forEach(order_key => {
-          if (!key_to_compare && a[order_key] != b[order_key]) {
-            is_desc = orders[order_key] == 'DESC';
+          if (!key_to_compare && a[order_key] !== b[order_key]) {
+            is_desc = orders[order_key] === 'DESC';
             key_to_compare = order_key;
           }
         });
@@ -271,7 +285,7 @@ export default class Collection extends Observable {
           return 0;
         }
 
-        if (typeof a[key_to_compare] == 'number') {
+        if (typeof a[key_to_compare] === 'number') {
           if (is_desc) {
             return b[key_to_compare] - a[key_to_compare];
           }
@@ -327,8 +341,9 @@ export default class Collection extends Observable {
     this.total_subscribe_by_route[collection_id] =
       (this.total_subscribe_by_route[collection_id] || 0) + 1;
 
-    if (this.total_subscribe_by_route[collection_id] == 1) {
+    if (this.total_subscribe_by_route[collection_id] === 1) {
       var ws_identifier = collection_id || this.collection_id;
+      // eslint-disable-next-line no-redeclare
       var options = options || this.options || {};
       this.connections.addConnection(ws_identifier, options, http_options, key);
       return true;
@@ -369,6 +384,7 @@ export default class Collection extends Observable {
 
     this.doing_http_request++;
 
+    // eslint-disable-next-line no-redeclare
     var base_url = base_url || this.base_url;
 
     if (offset) data.options.offset = offset;
@@ -408,8 +424,8 @@ export default class Collection extends Observable {
       if (
         object._cached &&
         !object._loaded &&
-        (!object._cached_from || object._cached_from == request_key) &&
-        (!object._loaded_from || object._loaded_from == request_key)
+        (!object._cached_from || object._cached_from === request_key) &&
+        (!object._loaded_from || object._loaded_from === request_key)
       ) {
         this.known_objects_by_id[object.id]._deleted = true;
         this.known_objects_by_front_id[object.front_id]._deleted = true;
@@ -427,7 +443,7 @@ export default class Collection extends Observable {
     if (
       this._last_get_generated_list &&
       this._last_get_count &&
-      this._last_get_count == Object.keys(this.known_objects_by_front_id).length
+      this._last_get_count === Object.keys(this.known_objects_by_front_id).length
     ) {
       return this._last_get_generated_list;
     }
@@ -460,7 +476,7 @@ export default class Collection extends Observable {
    * return list of objects filtered
    */
   search(search, without_http) {
-    if (!without_http && !this._doing_search && JSON.stringify(search) != this._old_search) {
+    if (!without_http && !this._doing_search && JSON.stringify(search) !== this._old_search) {
       this._old_search = JSON.stringify(search);
       this._doing_search = true;
 
@@ -492,25 +508,26 @@ export default class Collection extends Observable {
       var filter_ok = true;
 
       search.every(filter => {
-        if (filter.type == 'equal' && obj[filter.on] != filter.query) {
+        if (filter.type === 'equal' && obj[filter.on] !== filter.query) {
           filter_ok = false;
           return false;
         }
-        if (filter.type == 'lower' && obj[filter.on] > filter.query) {
+        if (filter.type === 'lower' && obj[filter.on] > filter.query) {
           filter_ok = false;
           return false;
         }
-        if (filter.type == 'greater' && obj[filter.on] < filter.query) {
+        if (filter.type === 'greater' && obj[filter.on] < filter.query) {
           filter_ok = false;
           return false;
         }
-        if (filter.type == 'contain') {
+        if (filter.type === 'contain') {
           var search_pool = '';
-          if (typeof filter.on == 'object') {
+          if (typeof filter.on === 'object') {
             filter.on.forEach(key => {
               search_pool += ' ' + obj[key];
             });
           } else {
+            // eslint-disable-next-line no-unused-vars
             search_pool = obj[filter.on];
           }
           filter_ok = false;
@@ -769,7 +786,7 @@ export default class Collection extends Observable {
     var front_id = object.front_id;
     if (
       this.objects_buffers_by_front_id[front_id] &&
-      this.objects_buffers_by_front_id[front_id].action == 'remove'
+      this.objects_buffers_by_front_id[front_id].action === 'remove'
     ) {
       return; //Cannot edit on virtually removed item
     }
@@ -788,15 +805,16 @@ export default class Collection extends Observable {
     if (!buffer) {
       return;
     }
+    // eslint-disable-next-line no-redeclare
     var object = JSON.parse(JSON.stringify(buffer.object));
     if (!object.id) {
       object.id = (this.known_objects_by_front_id[front_id] || {}).id;
     }
     delete this.objects_buffers_by_front_id[front_id];
-    if (buffer.action == 'remove') {
+    if (buffer.action === 'remove') {
       this.remove(object, buffer.http_key);
     }
-    if (buffer.action == 'save') {
+    if (buffer.action === 'save') {
       this.save(object, buffer.http_key);
     }
   }
@@ -850,6 +868,7 @@ export default class Collection extends Observable {
 
   //To use only on very specific cases !!!
   share(object) {
+    // eslint-disable-next-line no-redeclare
     var object = this.clearObjectState(object, true);
     Object.keys(object).forEach(key => {
       //Remove keys specific to user
@@ -867,10 +886,10 @@ export default class Collection extends Observable {
   }
 
   ws_message(data) {
-    if (data.client_id == this.client_id) {
+    if (data.client_id === this.client_id) {
       return;
     }
-    if (data.action == 'remove') {
+    if (data.action === 'remove') {
       var deleted_object = this.known_objects_by_front_id[data.front_id];
       if (deleted_object) {
         var deleted_id = deleted_object.id;
@@ -878,7 +897,7 @@ export default class Collection extends Observable {
         delete this.known_objects_by_front_id[data.front_id];
       }
     }
-    if (data.action == 'save') {
+    if (data.action === 'save') {
       //Do not use other client object state
       this.clearObjectState(data.object);
 
@@ -886,7 +905,7 @@ export default class Collection extends Observable {
       data.object._loaded_from_ws = true;
       this.completeObject(data.object, data.object.front_id);
     }
-    if (data.action == 'event') {
+    if (data.action === 'event') {
       this.ws_events_callbacks.forEach(item => {
         item(data.data);
       });
@@ -939,71 +958,72 @@ export default class Collection extends Observable {
 
   updateCache() {
     if (this.use_cache) {
-      var collection_cache_key = this.base_url + '/' + this.collection_id;
-      LocalStorage.getItem('collections_cache', collections_cache => {
-        try {
-          collections_cache = JSON.parse(collections_cache) || {};
-        } catch (e) {
-          collections_cache = {};
-        }
-        collections_cache[collection_cache_key] = {
-          objects: this.known_objects_by_front_id,
-          last_updated: new Date().getTime(),
-        };
-        LocalStorage.setItem('collections_cache', JSON.stringify(collections_cache));
-      });
+      const collection_cache_key = this.base_url + '/' + this.collection_id;
+      const collections_cache = this._getFromLocalStorage();
+
+      collections_cache[collection_cache_key] = {
+        objects: this.known_objects_by_front_id,
+        last_updated: new Date().getTime(),
+      };
+      LocalStorage.setItem('collections_cache', collections_cache);
     }
   }
 
   retrieveCache() {
-    var that = this;
-    LocalStorage.getItem('collections_cache', collections_cache => {
-      try {
-        collections_cache = JSON.parse(collections_cache) || {};
-      } catch (e) {
-        collections_cache = {};
+    let that = this;
+    let changes = false;
+    const collections_cache = this._getFromLocalStorage();
+    const collection_cache_key = this.base_url + '/' + this.collection_id;
+
+    //Read all cached lists and remove too old caches
+    Object.keys(collections_cache).forEach(item_key => {
+      var item = collections_cache[item_key];
+      if (
+        new Date().getTime() - item.last_updated > 20 * 24 * 60 * 60 * 1000 || //more than 20 days
+        (item_key === collection_cache_key && !this.use_cache) //Cache disabled but present in collection cache
+      ) {
+        //Remove cache data
+        delete collections_cache[item_key];
+        changes = true;
       }
-
-      var collection_cache_key = this.base_url + '/' + this.collection_id;
-
-      var changes = false;
-      //Read all cached lists and remove too old caches
-      Object.keys(collections_cache).forEach(item_key => {
-        var item = collections_cache[item_key];
-        if (
-          new Date().getTime() - item.last_updated > 20 * 24 * 60 * 60 * 1000 || //more than 20 days
-          (item_key == collection_cache_key && !this.use_cache) //Cache disabled but present in collection cache
-        ) {
-          //Remove cache data
-          delete collections_cache[item_key];
-          changes = true;
+      Object.values(item.objects).forEach(itemOfList => {
+        if (itemOfList._failed || itemOfList._retrying) {
+          that.retry(itemOfList);
         }
-        Object.values(item.objects).forEach(itemOfList => {
-          if (itemOfList._failed || itemOfList._retrying) {
-            that.retry(itemOfList);
-          }
-        });
       });
-
-      if (changes) {
-        Globals.localStorageSetItem('collections_cache', JSON.stringify(collections_cache));
-      }
-
-      if (this.use_cache && collections_cache[collection_cache_key]) {
-        var objects = collections_cache[collection_cache_key].objects;
-        Object.keys(objects).forEach(front_id => {
-          var item = objects[front_id];
-          // this.clearObjectState(item);
-          item._cached = true;
-          item._loaded = false;
-          item._cached_from = item._loaded_from;
-          item._loaded_from = null;
-          this.completeObject(item, item.front_id);
-        });
-        this._last_get_generated_list = undefined;
-        this.notify();
-      }
     });
+
+    if (changes) {
+      LocalStorage.setItem('collections_cache', collections_cache);
+    }
+
+    if (this.use_cache && collections_cache[collection_cache_key]) {
+      var objects = collections_cache[collection_cache_key].objects;
+      Object.keys(objects).forEach(front_id => {
+        var item = objects[front_id];
+        // this.clearObjectState(item);
+        item._cached = true;
+        item._loaded = false;
+        item._cached_from = item._loaded_from;
+        item._loaded_from = null;
+        this.completeObject(item, item.front_id);
+      });
+      this._last_get_generated_list = undefined;
+      this.notify();
+    }
+  }
+
+  _getFromLocalStorage() {
+    let collections_cache = LocalStorage.getItem('collections_cache');
+
+    if (!collections_cache) {
+      collections_cache = {};
+    }
+    if (typeof collections_cache === 'string') {
+      collections_cache = JSON.parse(collections_cache);
+    }
+
+    return collections_cache;
   }
 
   updateObject(updated, front_id) {
@@ -1055,7 +1075,7 @@ export default class Collection extends Observable {
       that.known_objects_by_front_id[front_id].id &&
       (that.waiting_to_save_by_front_id[front_id] ||
         (that.objects_buffers_by_front_id[front_id] &&
-          that.objects_buffers_by_front_id[front_id].action == 'save'))
+          that.objects_buffers_by_front_id[front_id].action === 'save'))
     ); //There is modifications sent to server but waiting confirmation
     that.known_objects_by_front_id[front_id]._creating = !!(
       !that.known_objects_by_front_id[front_id].id && that.waiting_to_save_by_front_id[front_id]
@@ -1089,6 +1109,7 @@ export default class Collection extends Observable {
     if (listen_only.length === 0) {
       update = true;
     } else {
+      // eslint-disable-next-line array-callback-return
       listen_only.map(item => {
         if (this.known_objects_by_id[item]) {
           item = this.known_objects_by_id[item].front_id || item;

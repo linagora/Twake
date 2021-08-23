@@ -1,7 +1,6 @@
 import Api from 'services/Api';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import Globals from 'services/Globals.js';
 import Login from './login';
 
 /**
@@ -147,24 +146,22 @@ class Account {
   }
 
   doVerifyMail(mail, code, token, success, fail) {
-    Globals.getDevice(device => {
-      Api.post(
-        'users/subscribe/doverifymail',
-        {
-          code: code,
-          token: token,
-          mail: mail,
-          device: device,
-        },
-        function (res) {
-          if (res.data.status === 'success') {
-            success();
-          } else {
-            fail();
-          }
-        },
-      );
-    });
+    Api.post(
+      'users/subscribe/doverifymail',
+      {
+        code: code,
+        token: token,
+        mail: mail,
+        device: {},
+      },
+      function (res) {
+        if (res.data.status === 'success') {
+          success();
+        } else {
+          fail();
+        }
+      },
+    );
   }
 
   checkMailandUsername(mail, username, callback, th) {

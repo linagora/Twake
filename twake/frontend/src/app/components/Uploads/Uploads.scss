@@ -135,13 +135,17 @@
 .upload_drop_zone {
   height: 100%;
 
-  .onDragOverBackground {
+  &.input-drag-focus > .on_drag_over_background.dragover > * {
+    background: var(--primary-background);
+  }
+
+  .on_drag_over_background {
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 100%;
-    background: #fff;
+    background: var(--white);
     z-index: 100;
     transition: opacity 0.5s;
     pointer-events: none;
@@ -157,20 +161,23 @@
       left: 0;
       right: 0;
       bottom: 0;
-      margin: 8px;
       box-sizing: border-box;
-      border-radius: 12px;
-      border: 4px dashed #f2f2f2;
+
+      transition: opacity 0.5s;
+      border: 2px dashed var(--primary-background);
+      border-radius: var(--border-radius-base);
 
       .centered {
         display: flex;
         height: 100%;
         align-items: center;
         justify-content: center;
-        color: var(--grey-dark);
 
         .subtitle {
-          margin: 0px;
+          display: flex;
+          align-items: center;
+          margin: 0;
+          color: var(--primary);
         }
       }
     }

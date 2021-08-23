@@ -1,6 +1,6 @@
 import Observable from 'app/services/Depreciated/observable.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class UploadManager extends Observable {
   constructor() {
@@ -25,9 +25,9 @@ class UploadManager extends Observable {
       this.uploads[i].status = (100 * this.uploads[i].uploaded) / (this.uploads[i].size + 1);
     }
 
-    if (this.sessionUploaded + this.uploads.length == 0) {
+    if (this.sessionUploaded + this.uploads.length === 0) {
       this.globalStatus = 0;
-    } else if (totalSize == 0) {
+    } else if (totalSize === 0) {
       this.globalStatus =
         (100 * this.sessionUploaded) / (this.sessionUploaded + this.uploads.length);
     } else {
@@ -36,12 +36,13 @@ class UploadManager extends Observable {
         (this.sessionUploaded + this.uploads.length);
     }
 
-    if (this.uploads.length == 0) {
+    if (this.uploads.length === 0) {
       this.globalStatus = 0;
       this.sessionUploaded = 0;
 
       if (this.callback) {
         var uploaded = [];
+        // eslint-disable-next-line no-redeclare
         for (var i = 0; i < this.uploaded_entities.length; i++) {
           uploaded.push(this.uploaded_entities[i]);
         }
@@ -165,10 +166,10 @@ class UploadManager extends Observable {
         var dirs = tree;
         var real_file = files[file_index];
         path.split('/').forEach(function (dir, dir_index) {
-          if (dir.indexOf('.') == 0) {
+          if (dir.indexOf('.') === 0) {
             return;
           }
-          if (dir_index == path.split('/').length - 1) {
+          if (dir_index === path.split('/').length - 1) {
             dirs[dir] = real_file;
           } else {
             if (!dirs[dir]) {

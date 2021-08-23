@@ -76,7 +76,7 @@ export default class FindCompletion<G extends Resource<any>> {
             }
           }
 
-          if (this.nextPageToken == items?.next_page_token || !items?.next_page_token) {
+          if (this.nextPageToken === items?.next_page_token || !items?.next_page_token) {
             this.hasMore = false;
           }
           this.nextPageToken = items?.next_page_token;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
@@ -9,8 +9,8 @@ import Table from 'components/Table/Table';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
-import Switch from 'components/Inputs/Switch.js';
-import WorkspaceUserRights from 'services/workspaces/workspace_user_rights.js';
+import Switch from 'components/Inputs/Switch';
+import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Button from 'components/Buttons/Button.js';
 import Icon from 'components/Icon/Icon.js';
 
@@ -91,7 +91,7 @@ export default class WorkspaceApps extends Component {
                     [],
                     'Automatique',
                   )}
-                  value={ga.workspace_default}
+                  checked={ga.workspace_default}
                   onChange={state =>
                     WorkspacesApps.defaultForWorkspacesInEntreprise(app.id, !ga.workspace_default)
                   }
@@ -159,6 +159,7 @@ export default class WorkspaceApps extends Component {
 
     var workspace_id = workspaceService.currentWorkspaceId;
     var workspace = Collections.get('workspaces').find(workspace_id);
+    // eslint-disable-next-line no-unused-vars
     var group = Collections.get('groups').find(workspace.group.id);
 
     var developed = Collections.get('applications')
@@ -175,6 +176,7 @@ export default class WorkspaceApps extends Component {
       .filter(id => workspaces_app_ids.indexOf(id) < 0)
       .map(id => WorkspacesApps.apps_by_group[workspaceService.currentGroupId][id]);
 
+    // eslint-disable-next-line no-unused-vars
     var all_apps = workspace_apps.concat(group_apps);
 
     return (
@@ -205,13 +207,13 @@ export default class WorkspaceApps extends Component {
               )}
             </div>
 
-            {developed.length == 0 && this.state.loading_developed && (
+            {developed.length === 0 && this.state.loading_developed && (
               <div className="smalltext">
-                Languages.t('scenes.app.popup.appsparameters.pages.loading', [], "Chargement...")
+                {Languages.t('scenes.app.popup.appsparameters.pages.loading')}
               </div>
             )}
 
-            {developed.length == 0 && !this.state.loading_developed && (
+            {developed.length === 0 && !this.state.loading_developed && (
               <div className="smalltext">
                 {Languages.t(
                   'scenes.app.popup.appsparameters.pages.current_informations_apps_connectors',

@@ -23,9 +23,13 @@
 
 .new-thread {
   .message-input {
-    padding: 8px;
+    .upload-zone-centerer {
+      padding: 8px;
+      padding-bottom: 0px;
+    }
   }
 }
+
 .message-input {
   flex: 1;
   background: #fff;
@@ -58,15 +62,85 @@
     }
   }
 
-  .input-options {
+  .editorview-submit {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: flex-start;
+
+    .editor {
+      display: block;
+      width: 100%;
+    }
+
+    .submit-button {
+      display: flex;
+      align-self: flex-start;
+      color: var(--primary);
+      opacity: 50%;
+      padding-right: 10px;
+      cursor: not-allowed;
+
+      &:not(.disabled):hover {
+        color: var(--primary-hover);
+      }
+
+      &:not(.disabled) {
+        cursor: pointer;
+        color: var(--primary);
+        opacity: unset;
+      }
+
+      .send-icon {
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  .counter-right {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    height: 0;
+  }
+
+  .input-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    flex-direction: row;
     margin-top: 8px;
+
+    button {
+      width: 28px;
+      height: 28px;
+      padding: 4px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+
+      &:not(:last-child) {
+        margin-right: 2px;
+      }
+
+      &:hover {
+        background-color: var(--grey-background);
+      }
+    }
+  }
+
+  .input-options {
+    height: 28px;
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+
     .option {
       color: var(--grey-light);
 
-      &:not(:last-child) {
-        margin-right: 12px;
+      &:first-child {
+        margin-left: -4px;
       }
 
       &:not(.disabled):hover {
@@ -86,6 +160,23 @@
         border-radius: var(--border-radius-base);
       }
     }
+
+    .richtext {
+      &.selected {
+        background: var(--primary-background);
+
+        .option {
+          color: var(--primary);
+        }
+      }
+    }
+  }
+
+  .upload-zone-centerer {
+    margin: 0 auto;
+    min-width: 0;
+    width: 100%;
+    position: relative;
   }
 
   .ephemerals {

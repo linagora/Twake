@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 
 import Directory from 'components/Drive/Directory.js';
-import File from 'components/Drive/File.js';
+import File from 'components/Drive/File';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 

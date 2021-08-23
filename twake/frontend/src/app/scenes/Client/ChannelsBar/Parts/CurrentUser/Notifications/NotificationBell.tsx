@@ -4,15 +4,15 @@ import moment from 'moment';
 import Menu from 'components/Menus/Menu';
 import Icon from 'components/Icon/Icon.js';
 
-import Languages from 'services/languages/languages.js';
-import NotificationParametersService from 'services/user/notificationParameters';
+import Languages from 'services/languages/languages';
+import NotificationPreferences from 'app/services/user/NotificationPreferences';
 
 type PropsType = {
   preferences: any;
 };
 
 export default (props: PropsType) => {
-  const status = NotificationParametersService.areNotificationsAllowed();
+  const status = NotificationPreferences.areNotificationsAllowed();
 
   const tomorrowMorning = moment().add(1, 'd').hour(9).minute(0).second(0);
   const hoursUntilTomorrowMorning = moment
@@ -29,18 +29,18 @@ export default (props: PropsType) => {
     {
       type: 'menu',
       text: Languages.t('scenes.app.channelsbar.currentuser.disabling_notifications'),
-      onClick: () => NotificationParametersService.deactivateNotificationsUntil(1, 'h'),
+      onClick: () => NotificationPreferences.deactivateNotificationsUntil(1, 'h'),
     },
     {
       type: 'menu',
       text: '2 hours', // Add translation
-      onClick: () => NotificationParametersService.deactivateNotificationsUntil(2, 'h'),
+      onClick: () => NotificationPreferences.deactivateNotificationsUntil(2, 'h'),
     },
     {
       type: 'menu',
       text: Languages.t('scenes.app.channelsbar.currentuser.disabling_notifications_until'),
       onClick: () =>
-        NotificationParametersService.deactivateNotificationsUntil(hoursUntilTomorrowMorning, 'h'),
+        NotificationPreferences.deactivateNotificationsUntil(hoursUntilTomorrowMorning, 'h'),
     },
     {
       type: 'menu',
@@ -51,8 +51,8 @@ export default (props: PropsType) => {
       ),
       onClick: () => {
         status
-          ? NotificationParametersService.deactivateNotificationsUntil(24, 'y')
-          : NotificationParametersService.deactivateNotificationsUntil(0, 's');
+          ? NotificationPreferences.deactivateNotificationsUntil(24, 'y')
+          : NotificationPreferences.deactivateNotificationsUntil(0, 's');
       },
     },
     {

@@ -9,7 +9,7 @@ import {
 } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { Thread } from "../../../src/services/messages/entities/threads";
 import { createMessage, createParticipant, e2e_createThread } from "./utils";
 
@@ -22,6 +22,7 @@ describe("The Messages Threads feature", () => {
       services: [
         "pubsub",
         "user",
+        "search",
         "websocket",
         "webserver",
         "messages",
@@ -65,9 +66,7 @@ describe("The Messages Threads feature", () => {
       );
 
       expect(response.statusCode).toBe(200);
-      expect(result.resource).toMatchObject({
-        created_by: platform.currentUser.id,
-      });
+      expect(result.resource?.created_by).toBe(platform.currentUser.id);
       expect(result.resource.participants.length).toBe(1);
       expect(result.resource.participants[0]).toMatchObject({
         type: "user",
@@ -86,7 +85,7 @@ describe("The Messages Threads feature", () => {
           createParticipant(
             {
               type: "user",
-              id: uuidv4(),
+              id: uuidv1(),
             },
             platform,
           ),
@@ -134,7 +133,14 @@ describe("The Messages Threads feature", () => {
             },
           ],
         },
-        {},
+        {
+          message: createMessage(
+            {
+              text: "Hello!",
+            },
+            platform,
+          ),
+        },
         getContext(platform),
       );
 
@@ -152,7 +158,7 @@ describe("The Messages Threads feature", () => {
               add: [
                 {
                   type: "user",
-                  id: uuidv4(),
+                  id: uuidv1(),
                 },
               ],
             },
@@ -192,7 +198,14 @@ describe("The Messages Threads feature", () => {
             },
           ],
         },
-        {},
+        {
+          message: createMessage(
+            {
+              text: "Hello!",
+            },
+            platform,
+          ),
+        },
         getContext(platform),
       );
 

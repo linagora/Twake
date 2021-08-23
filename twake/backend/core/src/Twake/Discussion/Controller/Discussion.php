@@ -71,7 +71,7 @@ class Discussion extends BaseController
         $participant = $request->request->get("participant");
 
         $channel_id = $participant["id"];
-        $parent_message_id = $context["thread_id"] === $entity["id"] ? "" : $context["thread_id"];
+        $parent_message_id = $entity["thread_id"] === $entity["id"] ? "" : $entity["thread_id"];
         $removed = $entity["subtype"] == "deleted";
 
         $array = $this->get("app.messages")->convertFromNode($entity, [
@@ -88,14 +88,6 @@ class Discussion extends BaseController
             );
             $this->app->getServices()->get("app.pusher")->push($event, "channels/" . $channel_id . "/messages/updates");
 
-            $event = Array(
-                "client_id" => "system",
-                "action" => "remove",
-                "object_type" => "",
-                "front_id" => $entity["context"]["_front_id"] ?: $entity["id"]
-            );
-            $this->app->getServices()->get("app.websockets")->push("messages/" . $channel_id, $event);
-        
         } else {
 
             $event = Array(
@@ -105,15 +97,15 @@ class Discussion extends BaseController
                 "thread_id" => $parent_message_id
             );
             $this->app->getServices()->get("app.pusher")->push($event, "channels/" . $channel_id . "/messages/updates");
-
-            $event = Array(
-                "client_id" => "bot",
-                "action" => "save",
-                "object_type" => "",
-                "object" => $array
-            );
-            $this->app->getServices()->get("app.websockets")->push("messages/" . $channel_id, $event);
         }
+ 
+        $event = Array(
+            "client_id" => "bot",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $array
+        );
+        $this->app->getServices()->get("app.websockets")->push("messages/" . $channel_id, $event);
 
         return new Response(Array("data" => "ok"));
     }

@@ -1,4 +1,3 @@
-import React from 'react';
 import api from 'services/Api';
 import ws from 'services/websocket.js';
 import CryptoJS from 'crypto-js';
@@ -6,7 +5,7 @@ import sha256 from 'crypto-js/sha256';
 /** SecuredConnection
  * Create websockets encrypted connection
  */
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 export default class SecuredConnection {
   constructor(route, options, callback, http_options, collectionId) {
@@ -161,7 +160,7 @@ export default class SecuredConnection {
     var lastKey = this.keys[this.keys.length - 1];
 
     try {
-      if (this.prepared_key_original != lastKey) {
+      if (this.prepared_key_original !== lastKey) {
         this.prepared_key_salt = CryptoJS.lib.WordArray.random(256);
         this.prepared_key_original = lastKey;
         this.prepared_key = CryptoJS.PBKDF2(lastKey.key, this.prepared_key_salt, {
@@ -187,6 +186,7 @@ export default class SecuredConnection {
 
     var encrypted = CryptoJS.AES.encrypt(JSON.stringify(data), prepared_key, { iv: iv });
 
+    // eslint-disable-next-line no-redeclare
     var data = {
       encrypted: CryptoJS.enc.Base64.stringify(encrypted.ciphertext),
       iv: CryptoJS.enc.Hex.stringify(iv),
@@ -204,6 +204,10 @@ export default class SecuredConnection {
     let res = '';
     let str = '';
     try {
+      if (data.public) {
+        return typeof data.public === 'string' ? JSON.parse(data.public) : data.public;
+      }
+
       var encrypted_data = data.encrypted;
 
       var key = this.keys_by_version[data.key_version];
@@ -239,7 +243,7 @@ export default class SecuredConnection {
         res = '';
       }
     } catch (err) {
-      console.log('Unable to read encrypted websocket event', str);
+      console.error('Unable to read encrypted websocket event', str, err.message);
     }
 
     return res;

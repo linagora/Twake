@@ -89,10 +89,10 @@ export default () => {
       >
         <PerfectScrollbar options={{ suppressScrollX: true }}>
           <ChannelsApps key={workspaceId} />
-          {AccessRightsService.hasLevel(workspaceId || '', 'administrator') &&
-            Workspaces.getCurrentWorkspace().stats.total_members <= 5 && <AddUserButton />}
           <ChannelsWorkspace key={'workspace_chans_' + workspaceId} />
           <ChannelsUser key={companyId} />
+          {AccessRightsService.hasLevel(workspaceId, 'administrator') &&
+            Workspaces.getCurrentWorkspace().stats.total_members <= 5 && <AddUserButton />}
         </PerfectScrollbar>
       </ScrollWithHiddenComponents>
       <Footer />

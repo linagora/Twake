@@ -1,12 +1,12 @@
 import React from 'react';
 import Observable from 'app/services/Depreciated/observable.js';
-import CurrentUser from 'services/user/current_user.js';
+import CurrentUser from 'app/services/user/CurrentUser';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from './groups.js';
 import Workspaces from './workspaces.js';
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 import Icon from 'app/components/Icon/Icon';
 import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
@@ -63,6 +63,7 @@ class WorkspacesApps extends Observable {
 
     data.connection_id = CurrentUser.unique_connection_id;
 
+    // eslint-disable-next-line no-redeclare
     var data = {
       workspace_id: workspace_id,
       group_id: group_id,
@@ -87,7 +88,6 @@ class WorkspacesApps extends Observable {
       options = {};
     }
 
-    var that = this;
     var group_id = Collections.get('workspaces').find(workspace_id).group.id;
 
     if (!this.apps_by_group[group_id]) {
@@ -159,7 +159,7 @@ class WorkspacesApps extends Observable {
   }
 
   recieveWS(res) {
-    if (res.type == 'add') {
+    if (res.type === 'add') {
       var app_link = {
         workspace_count: res.workspace_app.workspace_count,
         workspace_default: res.workspace_app.workspace_default,
@@ -172,7 +172,7 @@ class WorkspacesApps extends Observable {
         res.workspace_app.app,
         res.workspace_app.app.front_id,
       );
-    } else if (res.type == 'remove') {
+    } else if (res.type === 'remove') {
       delete this.apps_by_workspace[res.workspace_app.workspace_id][res.workspace_app.app.id];
     }
     this.notify();
@@ -183,15 +183,13 @@ class WorkspacesApps extends Observable {
       workspace_id: Workspaces.currentWorkspaceId,
       app_id: id,
     };
-    var that = this;
 
     if (
       this.apps_by_group[Groups.currentGroupId] &&
       this.apps_by_group[Groups.currentGroupId][id]
     ) {
-      this.apps_by_workspace[Workspaces.currentWorkspaceId][id] = this.apps_by_group[
-        Groups.currentGroupId
-      ][id].app;
+      this.apps_by_workspace[Workspaces.currentWorkspaceId][id] =
+        this.apps_by_group[Groups.currentGroupId][id].app;
     }
 
     Api.post('workspace/apps/enable', data, function (res) {});
@@ -204,7 +202,6 @@ class WorkspacesApps extends Observable {
       workspace_id: Workspaces.currentWorkspaceId,
       app_id: id,
     };
-    var that = this;
 
     if (this.apps_by_workspace[Workspaces.currentWorkspaceId]) {
       delete this.apps_by_workspace[Workspaces.currentWorkspaceId][id];
@@ -225,15 +222,13 @@ class WorkspacesApps extends Observable {
       group_id: Groups.currentGroupId,
       app_id: id,
     };
-    var that = this;
 
     if (
       this.apps_by_group[Groups.currentGroupId] &&
       this.apps_by_group[Groups.currentGroupId][id]
     ) {
-      this.apps_by_workspace[Workspaces.currentWorkspaceId][id] = this.apps_by_group[
-        Groups.currentGroupId
-      ][id].app;
+      this.apps_by_workspace[Workspaces.currentWorkspaceId][id] =
+        this.apps_by_group[Groups.currentGroupId][id].app;
     }
 
     Api.post('workspace/group/application/force', data, function (res) {});
@@ -246,7 +241,6 @@ class WorkspacesApps extends Observable {
       group_id: Groups.currentGroupId,
       app_id: id,
     };
-    var that = this;
 
     if (
       this.apps_by_group[Groups.currentGroupId] &&
@@ -272,7 +266,6 @@ class WorkspacesApps extends Observable {
       app_id: id,
       state: state,
     };
-    var that = this;
 
     if (
       this.apps_by_group[Groups.currentGroupId] &&

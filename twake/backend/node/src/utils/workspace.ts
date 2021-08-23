@@ -1,8 +1,8 @@
 import UserServiceAPI from "../services/user/api";
-import { Workspace, User } from "./types";
+import { User, Workspace } from "./types";
 import Company from "../services/user/entities/company";
 import CompanyUser from "../services/user/entities/company_user";
-import WorkspaceUser from "../services/user/entities/workspace_user";
+import WorkspaceUser from "../services/workspaces/entities/workspace_user";
 
 export async function isWorkspaceAdmin(
   userService: UserServiceAPI,
@@ -20,6 +20,14 @@ export async function isWorkspaceAdmin(
   }
 
   return workspaceUser.role === "admin";
+}
+
+export function hasWorkspaceAdminLevel(role: string): boolean {
+  return role === "admin";
+}
+
+export function hasWorkspaceMemberLevel(role: string): boolean {
+  return role === "member" || hasWorkspaceAdminLevel(role);
 }
 
 export async function getWorkspaceUser(

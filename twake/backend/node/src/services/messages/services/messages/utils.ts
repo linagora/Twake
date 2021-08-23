@@ -24,27 +24,26 @@ export function updateMessageReactions(
   selectedReactions: string[],
   userId: string,
 ) {
-  let reactions: Map<string, MessageReaction> = new Map<string, MessageReaction>();
-  [...message.reactions].forEach(r => reactions.set(r.name, r));
-  [...selectedReactions].forEach(r =>
-    reactions.set(r, reactions.get(r) || { name: r, count: 0, users: [] }),
-  );
-
-  reactions.forEach((reaction, key) => {
-    if (reaction.users.includes(userId)) {
-      reaction.count--;
-      reaction.users = reaction.users.filter(u => u != userId);
+  let reactions: { [key: string]: MessageReaction } = {};
+  for (const reaction of message.reactions || []) {
+    reactions[reaction.name] = reaction;
+  }
+  for (const reaction of selectedReactions) {
+    reactions[reaction] = reactions[reaction] || { name: reaction, count: 0, users: [] };
+  }
+  for (const key in reactions) {
+    if (reactions[key].users.includes(userId)) {
+      reactions[key].count--;
+      reactions[key].users = reactions[key].users.filter(u => u != userId);
     }
     if (selectedReactions.includes(key)) {
-      reaction.count++;
-      reaction.users.push(userId);
+      reactions[key].count++;
+      reactions[key].users.push(userId);
     }
-    if (reaction.count === 0) {
-      reactions.delete(key);
-    } else {
-      reactions.set(key, reaction);
+    if (reactions[key].count === 0) {
+      delete reactions[key];
     }
-  });
+  }
 
   message.reactions = Object.values(reactions);
 }
@@ -56,25 +55,28 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
       (context?.user?.application_id || context?.user?.server_request) && item.ephemeral
         ? item.ephemeral
         : null,
-    thread_id: context.thread.id,
+    thread_id: (context?.user?.server_request ? item.thread_id : null) || context.thread.id,
     type: context?.user?.server_request && item.type === "event" ? "event" : "message",
     subtype: getSubtype({ subtype: item?.subtype || null }, context),
-    created_at: new Date().getTime(),
-    user_id: context.user.id,
-    application_id: context?.user?.application_id || null,
+    created_at: (context?.user?.server_request ? item.created_at : null) || new Date().getTime(),
+    user_id: (context?.user?.server_request ? item.user_id : null) || context.user.id,
+    application_id:
+      (context?.user?.server_request ? item.application_id : null) ||
+      context?.user?.application_id ||
+      null,
     text: item.text || "",
     blocks: item.blocks || [],
     files: item.files || null,
     context: item.context || null,
-    edited: null, //Message cannot be created with edition status
+    edited: (context?.user?.server_request ? item.edited : null) || null, //Message cannot be created with edition status
     pinned_info: item.pinned_info
       ? {
           pinned_at: new Date().getTime(),
           pinned_by: context.user.id,
         }
       : null,
-    reactions: null, // Reactions cannot be set on creation
-    bookmarks: null,
+    reactions: (context?.user?.server_request ? item.reactions : null) || null, // Reactions cannot be set on creation
+    bookmarks: (context?.user?.server_request ? item.bookmarks : null) || null,
     override:
       (context?.user?.application_id || context?.user?.server_request) && item.override
         ? {

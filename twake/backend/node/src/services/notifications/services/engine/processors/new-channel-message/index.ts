@@ -10,7 +10,7 @@ import {
 import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
 import { MentionNotification } from "../../../../types";
 import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
-import { ResourceEventsPayload } from "../../../../../../utils/types";
+import { ChannelType, ResourceEventsPayload } from "../../../../../../utils/types";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
@@ -30,7 +30,13 @@ export class NewChannelMessageProcessor
   readonly name = "NewChannelMessageProcessor";
 
   validate(message: MessageNotification): boolean {
-    return !!(message && message.channel_id && message.company_id && message.workspace_id);
+    return !!(
+      message &&
+      message.channel_id &&
+      message.company_id &&
+      message.workspace_id &&
+      message.creation_date > Date.now() - 5 * 60 * 1000
+    );
   }
 
   async process(message: MessageNotification): Promise<MentionNotification> {
@@ -40,13 +46,17 @@ export class NewChannelMessageProcessor
     logger.debug(`${this.name} - Notification message ${JSON.stringify(message)}`);
 
     try {
+      if (message.workspace_id === ChannelType.DIRECT) {
+        //Fixme: Monkey fix until we find a way to add user to channel BEFORE to add the badge to this channel
+        await new Promise(r => setTimeout(r, 1000));
+      }
+
       const usersToNotify = await this.getUsersToNotify(message);
 
       if (!usersToNotify?.length) {
         logger.info(
           `${this.name} - No users to notify for message ${message.thread_id}/${message.id} in channel ${message.channel_id}`,
         );
-
         return;
       }
 
@@ -55,6 +65,11 @@ export class NewChannelMessageProcessor
           message.channel_id
         } : ['${usersToNotify.join("', '")}']`,
       );
+
+      //Fixme Add user full names if known, need to import microservice
+      const users_names = {};
+      //Fixme add channel full names, need to import microservice
+      const channels_names = {};
 
       return {
         channel_id: message.channel_id,
@@ -65,6 +80,10 @@ export class NewChannelMessageProcessor
         creation_date: message.creation_date,
         mentions: {
           users: usersToNotify || [],
+        },
+        object_names: {
+          users: users_names,
+          channels: channels_names,
         },
 
         //Temp: should not be used like this when migrating messages to node
@@ -82,7 +101,7 @@ export class NewChannelMessageProcessor
   async getUsersToNotify(message: MessageNotification): Promise<string[]> {
     let channelPreferencesForUsers: ChannelMemberNotificationPreference[];
     const threadId = message.thread_id || message.id;
-    const isNewThread = !message.thread_id;
+    const isNewThread = !message.thread_id || `${message.thread_id}` === `${message.id}`;
     const isDirect = isDirectChannel({ workspace_id: message.workspace_id });
     const isAllOrHereMention = this.isAllOrHereMention(message);
 

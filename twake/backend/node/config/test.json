@@ -8,13 +8,14 @@
       "contactPoints": ["scylladb:9042"],
       "wait": true,
       "retries": 50,
-      "delay": 500,
-
-      "elasticsearch": null
+      "delay": 500
     }
   },
   "pubsub": {
-    "urls": ["amqp://admin:admin@rabbitmq:5672"]
+    "type": "amqp",
+    "amqp": {
+      "urls": ["amqp://guest:guest@rabbitmq:5672"]
+    }
   },
   "phpnode": {
     "php_endpoint": false

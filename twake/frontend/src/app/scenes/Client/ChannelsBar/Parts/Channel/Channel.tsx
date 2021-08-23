@@ -8,6 +8,7 @@ import { ChannelResource } from 'app/models/Channel';
 import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
 import Emojione from 'components/Emojione/Emojione';
 import Icon from 'components/Icon/Icon';
+import WindowState from 'services/utils/window';
 import './Channel.scss';
 
 type Props = {
@@ -31,14 +32,19 @@ export default (props: Props) => {
   const { channelId } = RouterServices.getStateFromRoute();
   const selected = channelId === props.id;
 
-  if (selected && props.id && MainViewService.getId() !== props.id) {
-    MainViewService.select(props.id, {
-      collection: props.collection,
-      app: props.app || 'messages',
-      context: null,
-      hasTabs: props.visibility !== 'direct' && !props.app,
-    });
-  }
+  const onChannelChange = () => {
+    props.id &&
+      MainViewService.select(props.id, {
+        collection: props.collection,
+        app: props.app || { simple_name: 'messages' },
+        context: null,
+        hasTabs: props.visibility !== 'direct' && !props.app,
+      });
+
+    WindowState.setSuffix(props.name);
+  };
+
+  if (selected && props.id && MainViewService.getId() !== props.id) onChannelChange();
 
   return (
     <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
@@ -46,15 +52,7 @@ export default (props: Props) => {
         className={`channel ${selected ? 'selected ' : ''} ${
           props.unreadMessages ? 'unread ' : ''
         } ${props.active ? 'menu-open' : ''}`}
-        onClick={() =>
-          props.id &&
-          MainViewService.select(props.id, {
-            collection: props.collection,
-            app: props.app || 'messages',
-            context: null,
-            hasTabs: props.visibility !== 'direct' && !props.app,
-          })
-        }
+        onClick={onChannelChange}
       >
         {!!props.favorite && (
           <div className="icon small-right-margin">

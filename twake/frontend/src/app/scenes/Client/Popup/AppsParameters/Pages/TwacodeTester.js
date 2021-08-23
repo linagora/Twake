@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 import Twacode from 'components/Twacode/Twacode';
 
@@ -18,7 +18,7 @@ export default class TwacodeTester extends Component {
 
   onAction(type, id, context, passives, evt) {
     //Button pressed
-    if (type == 'interactive_action') {
+    if (type === 'interactive_action') {
       this.state.logs.push({
         date: new Date().toLocaleString(),
         content: Languages.t(
@@ -32,6 +32,7 @@ export default class TwacodeTester extends Component {
   }
 
   onPassiveChange(type, id, context, value) {
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.passives[id] = value;
     this.setState({});
   }
@@ -69,6 +70,7 @@ export default class TwacodeTester extends Component {
             }
             onChange={evt => {
               try {
+                // eslint-disable-next-line no-unused-vars
                 var json = JSON.parse(evt.target.value);
                 this.setState({
                   logs: [],

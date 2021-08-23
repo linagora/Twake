@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import RouterServices from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
@@ -45,10 +45,12 @@ export default () => {
     <div className="users_channels">
       <ChannelCategory
         refAdd={(node: any) => {
+          // eslint-disable-next-line no-self-assign
           node = node;
         }}
         text={Languages.t(
           'scenes.app.channelsbar.channelsuser.private_messages',
+          [],
           'Direct messages',
         )}
         onAdd={() => openConv()}
@@ -70,14 +72,14 @@ export default () => {
           );
         })}
 
-      {directChannels.length == 0 && (
+      {directChannels.length === 0 && (
         <div className="channel_small_text">
           {Languages.t(
             'scenes.app.channelsbar.channelsuser.no_private_message_invite_collaboraters',
           )}
         </div>
       )}
-      {directChannels.length == limit && (
+      {directChannels.length === limit && (
         <div style={{ textAlign: 'center', width: '100%' }}>
           <Button
             type="link"

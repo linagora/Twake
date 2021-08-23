@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Input, Col, Row, Select, Typography, Button, Divider, Tooltip } from 'antd';
 import { ChannelType } from 'app/models/Channel';
 import { List, X } from 'react-feather';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './InputWithSelect.scss';
 
 type PropsType = {

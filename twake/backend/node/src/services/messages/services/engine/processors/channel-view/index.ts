@@ -52,28 +52,59 @@ export class ChannelViewProcessor {
             channel_id: participant.id,
           };
 
-          await this.repository.save(
-            getInstance({
-              ...pkPrefix,
-              thread_id: thread.id,
-              message_id: message.resource.id,
-            }),
-          );
-
-          const reversed = await this.repositoryReversed.findOne({
+          //If a pointer exists it means the message already exists (it was probably moved and so we need to keep everything in place)
+          const existingPointer = await this.repository.findOne({
             ...pkPrefix,
-            thread_id: thread.id,
+            message_id: message.resource.id,
           });
 
-          if (reversed) {
-            const existingThreadRef = await this.repository.findOne({
+          if (!existingPointer) {
+            await this.repository.save(
+              getInstance({
+                ...pkPrefix,
+                thread_id: thread.id,
+                message_id: message.resource.id,
+              }),
+            );
+
+            const reversed = await this.repositoryReversed.findOne({
               ...pkPrefix,
-              message_id: reversed.message_id,
+              thread_id: thread.id,
             });
-            reversed.message_id = message.resource.id;
-            await this.repositoryReversed.save(reversed);
-            await this.repository.remove(existingThreadRef);
-          } else {
+
+            if (reversed) {
+              const existingThreadRef = await this.repository.findOne({
+                ...pkPrefix,
+                message_id: reversed.message_id,
+              });
+              if (
+                existingThreadRef &&
+                `${existingThreadRef.thread_id}` === `${message.resource.thread_id}`
+              ) {
+                reversed.message_id = message.resource.id;
+                await this.repositoryReversed.save(reversed);
+                await this.repository.remove(existingThreadRef);
+              }
+            } else {
+              await this.repositoryReversed.save(
+                getInstanceReversed({
+                  ...pkPrefix,
+                  thread_id: thread.id,
+                  message_id: message.resource.id,
+                }),
+              );
+            }
+          }
+
+          //Message moved to it own thread
+          if (existingPointer && message.resource.thread_id === message.resource.id) {
+            await this.repository.save(
+              getInstance({
+                ...pkPrefix,
+                thread_id: thread.id,
+                message_id: message.resource.id,
+              }),
+            );
             await this.repositoryReversed.save(
               getInstanceReversed({
                 ...pkPrefix,
@@ -85,22 +116,24 @@ export class ChannelViewProcessor {
         }
       }
 
-      logger.debug("Share with php realtime endpoint: " + config.get("phpnode.php_endpoint"));
-      //Monkey patch to remove as soon as nobody use php depreciated endpoints
-      if (config.get("phpnode.php_endpoint")) {
-        fetch(config.get("phpnode.php_endpoint") + "/ajax/discussion/noderealtime", {
-          method: "POST",
-          headers: {
-            Authorization: "Token " + config.get("phpnode.secret"),
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            entity: message.resource,
-            context: message.context,
-            participant: participant,
-          }),
-        });
+      if (process.env.NODE_ENV !== "cli") {
+        logger.debug("Share with php realtime endpoint: " + config.get("phpnode.php_endpoint"));
+        //Monkey patch to remove as soon as nobody use php depreciated endpoints
+        if (config.get("phpnode.php_endpoint")) {
+          fetch(config.get("phpnode.php_endpoint") + "/ajax/discussion/noderealtime", {
+            method: "POST",
+            headers: {
+              Authorization: "Token " + config.get("phpnode.secret"),
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({
+              entity: message.resource,
+              context: message.context,
+              participant: participant,
+            }),
+          });
+        }
       }
 
       //Publish message in realtime

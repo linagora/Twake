@@ -1,9 +1,8 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Icon from 'components/Icon/Icon.js';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './AddUserButton.scss';
 import popupManager from 'services/popupManager/popupManager.js';
-import workspaceUserRightsService from 'services/workspaces/workspace_user_rights.js';
 import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
 import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
 import InitService from 'app/services/InitService';

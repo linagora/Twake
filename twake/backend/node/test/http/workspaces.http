@@ -1,0 +1,58 @@
+@baseURL = http://localhost:8000
+
+@workspacesURL = {{baseURL}}/internal/services/workspaces/v1
+@usersURL = {{baseURL}}/internal/services/users/v1
+
+@company_id = 357d0f1c-9dc9-11eb-ae20-0242ac120002
+@workspace_id = 361a5be0-f509-11eb-a69b-d9862196e0cd
+@user_id = ca68bc2a-81a4-11eb-8cf1-0242ac1e0002
+
+# @name login
+POST {{baseURL}}/internal/services/console/v1/login
+Content-Type: application/json
+
+{
+    "email": "",
+    "password": ""
+}
+
+### AUTH - GET TOKEN
+@authToken = {{login.response.body.access_token.value}}
+
+### USERS - GET
+GET {{usersURL}}/users/{{user_id}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+### WORKSPACES - LIST
+GET {{workspacesURL}}/companies/{{company_id}}/workspaces
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+### WORKSPACES - CREATE
+POST {{workspacesURL}}/companies/{{company_id}}/workspaces
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"resource": {
+        "name": "created workspace",
+        "logo": "",
+        "default": false,
+	  	"archived": false
+    }
+}
+
+### WORKSPACES - UPDATE
+POST  {{workspacesURL}}/companies/{{company_id}}/workspaces/{{workspace_id}}
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+	"resource": {
+	  "name": "updated workspace",
+	  "logo": "",
+	  "default": false,
+	  "archived": false
+	}
+}

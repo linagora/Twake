@@ -5,18 +5,18 @@ import { Mail, PlusCircle, Trash } from 'react-feather';
 
 import { ChannelMemberResource } from 'app/models/Channel';
 import { getUserParts } from 'app/components/Member/UserParts';
-import Languages from 'services/languages/languages.js';
+import Languages from 'services/languages/languages';
 import './MemberChannelRow.scss';
 import Menu from 'app/components/Menus/Menu';
 import Icon from 'app/components/Icon/Icon';
 import AccessRightsService from 'app/services/AccessRightsService';
 import RouterServices from 'services/RouterService';
 import Collection from 'app/services/Collections/Collection';
-import UsersService from 'services/user/user.js';
+import UsersService from 'services/user/UserService';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { PendingEmailResource } from 'app/models/PendingEmail';
-import GuestManagementService from 'app/services/GuestManagementService';
-import UserService from 'services/user/user.js';
+import GuestManagementService from 'app/services/GuestMember/GuestManagementService';
+import UserService from 'services/user/UserService';
 
 const { Text } = Typography;
 
@@ -32,7 +32,7 @@ type Props = {
   onPendingEmailDeletion?: () => unknown;
 };
 
-export default (props: Props) => {
+export default (props: Props): JSX.Element => {
   let userEvents: JSX.Element;
   const [isMember, setIsMember] = useState<boolean>(false);
   const [selected, setSelected] = useState<boolean>(false);
@@ -188,7 +188,7 @@ export default (props: Props) => {
             </Tag>
           </Col>
           <Col className="small-right-margin">
-            {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
+            {AccessRightsService.hasLevel(workspaceId, 'member') && userEvents}
           </Col>
         </Row>
       );
@@ -218,7 +218,7 @@ export default (props: Props) => {
       </Col>
       {UserService.getUserRole(users[0], companyId) === 'guest' && <Col>{companyRole}</Col>}
       <Col className="small-right-margin">
-        {AccessRightsService.hasLevel(workspaceId || '', 'member') && userEvents}
+        {AccessRightsService.hasLevel(workspaceId, 'member') && userEvents}
       </Col>
     </Row>
   );

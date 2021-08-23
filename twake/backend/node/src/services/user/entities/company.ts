@@ -24,10 +24,10 @@ export default class Company {
   @Column("stats", "encoded_json")
   stats: any;
 
-  @Column("logo_id", "uuid")
+  @Column("logo_id", "timeuuid")
   logofile: string;
 
-  @Column("logo", "string")
+  @Column("logo", "encoded_string")
   logo: string;
 
   @Column("workspaces_id", "encoded_json")
@@ -60,6 +60,9 @@ export default class Company {
 }
 
 export type CompanyPrimaryKey = Pick<Company, "id">;
+export type CompanySearchKey = Partial<
+  Pick<Company, "id" | "identity_provider_id" | "identity_provider">
+>;
 
 export function getInstance(company: Partial<Company> & CompanyPrimaryKey): Company {
   return merge(new Company(), company);

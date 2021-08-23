@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from "crypto";
 import { CryptoResult } from ".";
 
 export default {
@@ -6,10 +6,15 @@ export default {
   decrypt,
 };
 
-function encrypt(data: any, encryptionKey: any): CryptoResult {
+function encrypt(
+  data: any,
+  encryptionKey: any,
+  options: { disableSalts?: boolean } = {},
+): CryptoResult {
+  const key = createHash("sha256").update(String(encryptionKey)).digest("base64").substr(0, 32);
   try {
-    const iv = randomBytes(16);
-    const cipher = createCipheriv("aes-256-cbc", encryptionKey, iv);
+    const iv = options.disableSalts ? "0000000000000000" : randomBytes(16);
+    const cipher = createCipheriv("aes-256-cbc", key, iv);
     const encrypted = Buffer.concat([cipher.update(JSON.stringify(data)), cipher.final()]).toString(
       "hex",
     );
@@ -27,8 +32,10 @@ function encrypt(data: any, encryptionKey: any): CryptoResult {
 }
 
 function decrypt(data: string, encryptionKey: any): CryptoResult {
+  const key = createHash("sha256").update(String(encryptionKey)).digest("base64").substr(0, 32);
+
   const encryptedArray = data.split(":");
-  
+
   if (!encryptedArray.length || encryptedArray.length !== 2) {
     return {
       data,
@@ -36,9 +43,13 @@ function decrypt(data: string, encryptionKey: any): CryptoResult {
     };
   }
 
-  const iv = Buffer.from(encryptedArray[0], "hex");
+  let iv: Buffer | string = Buffer.from(encryptedArray[0], "hex");
+  if (encryptedArray[0] === "0000000000000000") {
+    iv = "0000000000000000";
+  }
+
   const encrypted = Buffer.from(encryptedArray[1], "hex");
-  const decipher = createDecipheriv("aes-256-cbc", encryptionKey, iv);
+  const decipher = createDecipheriv("aes-256-cbc", key, iv);
   const decrypt = JSON.parse(
     Buffer.concat([decipher.update(encrypted), decipher.final()]).toString(),
   );

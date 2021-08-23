@@ -1,6 +1,6 @@
 import Observable from 'app/services/Depreciated/observable.js';
 
-import Globals from 'services/Globals.js';
+import Globals from 'services/Globals';
 
 class SelectionsManager extends Observable {
   constructor() {
@@ -35,7 +35,7 @@ class SelectionsManager extends Observable {
   }
 
   unselectAll() {
-    if (Object.keys(this.selected_per_type[this.type] || {}).length == 0) {
+    if (Object.keys(this.selected_per_type[this.type] || {}).length === 0) {
       return;
     }
     Object.keys(this.selected_per_type[this.type] || {}).forEach(id => {
@@ -46,7 +46,7 @@ class SelectionsManager extends Observable {
   }
 
   setType(type) {
-    if (type != this.type) {
+    if (type !== this.type) {
       this.type = type;
       if (!this.selected_per_type[this.type]) {
         this.selected_per_type[this.type] = {};
@@ -75,6 +75,7 @@ class SelectionsManager extends Observable {
       node._observable[this.observableName].listen_only
     ) {
       update = false;
+      // eslint-disable-next-line array-callback-return
       node._observable[this.observableName].listen_only.map(item => {
         if (!this._last_modified[item] || this.last_change[item] > this._last_modified[item]) {
           this._last_modified[item] = this.last_change[item];

@@ -2,6 +2,7 @@ import { Type } from "class-transformer";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelVisibility, ChannelType } from "../types";
 import { ChannelMember } from "./channel-member";
+import { UserObject } from "../../user/web/types";
 
 @Entity("channels", {
   primaryKey: [["company_id", "workspace_id"], "id"],
@@ -84,4 +85,8 @@ export class Channel {
 
 export class UserChannel extends Channel {
   user_member: ChannelMember;
+}
+
+export class UsersIncludedChannel extends Channel {
+  users: UserObject[];
 }

@@ -47,21 +47,21 @@
     }
 
     .go-to-bottom {
-      position: absolute;
+      position: relative;
       padding: 0 8px;
-      bottom: 122px;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 46px;
+      margin-bottom: -32px;
+      height: 28px;
+      width: fit-content;
       z-index: 4;
       font-size: 14px;
       color: var(--white);
       align-items: center;
-      justify-content: center;
+      align-self: center;
       display: flex;
       flex-direction: row;
+      justify-content: center;
       background-color: var(--primary);
-      height: 28px;
-      width: auto;
       border-radius: 14px;
       box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
       cursor: pointer;
