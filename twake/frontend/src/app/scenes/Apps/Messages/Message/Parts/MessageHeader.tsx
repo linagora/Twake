@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import 'moment-timezone';
 import moment from 'moment';
 import Moment from 'react-moment';
@@ -17,96 +17,98 @@ import { Message } from 'app/models/Message';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import Languages from 'services/languages/languages';
+import Loader from 'components/Loader/Loader.js';
+import { AlertTriangle } from 'react-feather';
+
+import classNames from 'classnames';
 
 type Props = {
   message: Message;
   collectionKey: string;
   linkToThread?: boolean;
+  loading: boolean;
+  failed: boolean;
 };
 
 type State = {
   messageLink: string;
 };
 
-export default class MessageHeader extends Component<Props, State> {
-  private messageService: MessageListService | null = null;
+export default (props: Props) => {
+  const [messageLink, setMessageLink] = useState('');
+  const messageService = MessageListServiceFactory.get(props.collectionKey);
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      messageLink: '',
-    };
-
-    this.messageService = MessageListServiceFactory.get(this.props.collectionKey);
-  }
-
-  componentWillUnmount() {
-    const senderData = getSender(this.props.message);
-    if (senderData.type === 'user') {
-      ListenUsers.cancelListenUser(senderData.id);
-    }
-    Collections.get('users').removeListener(this);
-  }
-
-  render() {
-    let user_name_node: any = null;
-
-    if (!this.messageService) {
-      return <></>;
-    }
-
-    const scrollToMessage = () => {
-      if (!this.messageService) {
-        return;
-      }
-
-      if (this.props.message.parent_message_id) {
-        this.messageService.scrollTo({ id: this.props.message.parent_message_id });
+  useEffect(() => {
+    return () => {
+      const senderData = getSender(props.message);
+      if (senderData.type === 'user') {
+        ListenUsers.cancelListenUser(senderData.id);
       }
     };
+  }, []);
 
-    const updateMessageLink = () => {
-      const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
-      const url = RouterServices.generateRouteFromState({
-        workspaceId: workspace.id,
-        channelId: this.props.message.channel_id,
-        messageId: this.props.message.parent_message_id || this.props.message.id,
-      });
-      this.setState({ messageLink: url });
-    };
+  let user_name_node: any = null;
 
-    const displayUserCard = (user: any) => {
-      //@ts-ignore
-      let box = window.getBoundingClientRect(user_name_node);
+  if (!messageService) {
+    return <></>;
+  }
 
-      MenusManager.openMenu(
-        [
-          {
-            type: 'react-element',
-            reactElement: () => (
-              <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
-            ),
-          },
-        ],
-        box,
-        null,
-        { margin: 8 },
-      );
-    };
-
-    let senderData: any = getSender(this.props.message);
-    if (senderData.type === 'user') {
-      ListenUsers.listenUser(senderData.id);
-      Collections.get('users').addListener(this);
-      Collections.get('users').listenOnly(this, [senderData.id]);
+  const scrollToMessage = () => {
+    if (!messageService) {
+      return;
     }
 
-    let parentMessage: Message | null = null;
-    if (this.props.linkToThread) {
-      parentMessage = Collections.get('messages').find(this.props.message.parent_message_id);
+    if (props.message.parent_message_id) {
+      messageService.scrollTo({ id: props.message.parent_message_id });
     }
+  };
 
-    return (
+  const updateMessageLink = () => {
+    const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
+    const url = RouterServices.generateRouteFromState({
+      workspaceId: workspace.id,
+      channelId: props.message.channel_id,
+      messageId: props.message.parent_message_id || props.message.id,
+    });
+    setMessageLink(url);
+  };
+
+  const displayUserCard = (user: any) => {
+    //@ts-ignore
+    let box = window.getBoundingClientRect(user_name_node);
+
+    MenusManager.openMenu(
+      [
+        {
+          type: 'react-element',
+          reactElement: () => (
+            <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
+          ),
+        },
+      ],
+      box,
+      null,
+      { margin: 8 },
+    );
+  };
+
+  let senderData: any = getSender(props.message);
+  if (senderData.type === 'user') {
+    ListenUsers.listenUser(senderData.id);
+    Collections.get('users').useListener(useState, [senderData.id]);
+  }
+
+  let parentMessage: Message | null = null;
+  if (props.linkToThread) {
+    parentMessage = Collections.get('messages').find(props.message.parent_message_id);
+  }
+
+  return (
+    <div
+      className={classNames('message-content-header-container', {
+        'message-not-sent': props.failed,
+      })}
+    >
       <div className={'message-content-header '}>
         <span
           className="sender-name"
@@ -121,7 +123,7 @@ export default class MessageHeader extends Component<Props, State> {
           </div>
         )}
 
-        {this.props.linkToThread && (
+        {props.linkToThread && (
           <span className="reply-text">
             replied to {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a href="#" onClick={() => scrollToMessage()}>
@@ -133,26 +135,26 @@ export default class MessageHeader extends Component<Props, State> {
           </span>
         )}
 
-        {this.props.message.creation_date && (
+        {props.message.creation_date && (
           <a
             className="date"
             // eslint-disable-next-line react/jsx-no-target-blank
             target="_BLANK"
-            href={this.state.messageLink || '#'}
+            href={messageLink || '#'}
             onMouseEnter={() => updateMessageLink()}
           >
             <Moment
               tz={moment.tz.guess()}
               format={
-                new Date().getTime() - this.props.message.creation_date * 1000 > 12 * 60 * 60 * 1000
+                new Date().getTime() - props.message.creation_date * 1000 > 12 * 60 * 60 * 1000
                   ? 'lll'
                   : 'LT'
               }
             >
-              {this.props.message.creation_date * 1000}
+              {props.message.creation_date * 1000}
             </Moment>
 
-            {this.props.message.edited && (
+            {props.message.edited && (
               <span style={{ textTransform: 'lowercase' }}>
                 {' '}
                 - {Languages.t('scenes.apps.messages.input.edited', [], 'Edited')}
@@ -161,6 +163,16 @@ export default class MessageHeader extends Component<Props, State> {
           </a>
         )}
       </div>
-    );
-  }
-}
+      {props.loading && (
+        <div className="loading">
+          <Loader color="#999" className="message_header_loader" />
+        </div>
+      )}
+      {props.failed && !props.loading && (
+        <div className="alert_failed_icon">
+          <AlertTriangle size={16} />
+        </div>
+      )}
+    </div>
+  );
+};

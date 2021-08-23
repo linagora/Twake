@@ -199,32 +199,52 @@ class Messages extends Observable {
       message.parent_message_id = options.parent_message_id || '';
       message.sender = CurrentUser.get().id;
 
-      if (message.parent_message_id) {
-        let parent = this.collection.find(message.parent_message_id);
-        this.collection.completeObject(
-          { responses_count: parent.responses_count + 1 },
-          parent.front_id,
-        );
-        this.collection.share(parent);
-      }
+      this.updateParentCounter(message);
 
       message.hidden_data = {};
       message.pinned = false;
       message.responses_count = 0;
 
-      message.creation_date = new Date().getTime() / 1000 + 1000; //To be on the bottom
+      message.creation_date = new Date().getTime() / 1000 + 10; //To be on the bottom
       message.content = val;
 
       ChannelsService.markFrontAsRead(channel.id, message.creation_date);
-
       this.collection.save(message, collectionKey, (message: Message) => {
-        ChannelsService.markFrontAsRead(channel.id);
-        ChannelsService.incrementChannel(channel);
+        if (message) {
+          ChannelsService.markFrontAsRead(channel.id);
+          ChannelsService.incrementChannel(channel);
+        }
         resolve(message);
       });
 
       CurrentUser.updateTutorialStatus('first_message_sent');
     });
+  }
+
+  async retrySendMessage(message: Message, collectionKey: string) {
+    (message as any)._retrying = true;
+    const channel = await this.findChannel(message.channel_id || '');
+    ChannelsService.markFrontAsRead(channel.id, message.creation_date);
+
+    this.collection.save(message, collectionKey, (message: Message) => {
+      if (message) {
+        ChannelsService.markFrontAsRead(channel.id);
+        ChannelsService.incrementChannel(channel);
+      }
+    });
+
+    CurrentUser.updateTutorialStatus('first_message_sent');
+  }
+
+  updateParentCounter(message: Message) {
+    if (message.parent_message_id) {
+      let parent = this.collection.find(message.parent_message_id);
+      this.collection.completeObject(
+        { responses_count: parent.responses_count + 1 },
+        parent.front_id,
+      );
+      this.collection.share(parent);
+    }
   }
 
   async triggerApp(channelId: string, threadId: string, app: any, from_icon: any, evt: any) {
