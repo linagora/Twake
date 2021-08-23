@@ -95,4 +95,8 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
   getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser> {
     throw new Error("Method should not be implemented.");
   }
+
+  resendVerificationEmail(accessToken: string): Promise<void> {
+    throw new Error("Method should not be implemented.");
+  }
 }

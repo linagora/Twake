@@ -51,6 +51,15 @@ export class ConsoleController {
     };
   }
 
+  async resendVerificationEmail(request: FastifyRequest) {
+    const user = await this.userService.users.get({ id: request.currentUser.id });
+    await this.consoleService.getClient().resendVerificationEmail(user.email_canonical);
+    return {
+      success: true,
+      email: user.email_canonical,
+    };
+  }
+
   private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {
     if (!content.company || !content.company.details || !content.company.details.code) {
       throw CrudExeption.badRequest("Company is required");
@@ -119,7 +128,6 @@ export class ConsoleController {
   }
 
   private async userAdded(content: ConsoleHookBodyContent): Promise<void> {
-    //TODO prepare full userDTO
     const userDTO = content.user;
     await this.consoleService.getClient().updateLocalUserFromConsole(userDTO);
   }
