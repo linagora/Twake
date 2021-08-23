@@ -2,7 +2,6 @@ import { Client } from "@elastic/elasticsearch";
 import { Readable } from "stream";
 import { logger } from "../../../../framework";
 import _ from "lodash";
-import streamToIterator from "stream-to-iterator";
 import {
   ColumnDefinition,
   EntityDefinition,
