@@ -5,54 +5,41 @@ import { init, TestPlatform } from "./setup";
 import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
 import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
 import { v1 as uuidv1 } from "uuid";
-import { merge } from "lodash";
-import { Column, Entity } from "../../src/core/platform/services/database/services/orm/decorators";
-
-const TEST_COUNTER_TYPE = "test_counter";
-
-@Entity(TEST_COUNTER_TYPE, {
-  primaryKey: [["id"], "counter_type"],
-  type: TEST_COUNTER_TYPE,
-})
-class TestCounterEntity {
-  @Column("id", "timeuuid")
-  id: string;
-
-  @Column("counter_type", "string")
-  counter_type: string;
-
-  @Column("value", "counter")
-  value: number;
-}
-
-export type TestCounterPrimaryKey = {
-  id: string;
-  counter_type: string;
-};
+import CounterAPI from "../../src/core/platform/services/counter/provider";
+import CounterProvider, { CounterType } from "../../src/core/platform/services/counter/types";
+import { CounterEntity as WorkspaceCounterEntity } from "../../src/core/platform/services/counter/entities/workspace_counters";
 
 describe("Counters implementation", () => {
   let platform: TestPlatform;
   let database: DatabaseServiceAPI;
   let testCounterRepository: Repository<TestCounterEntity>;
+  let workspaceCounter: CounterProvider;
 
-  const testCounterPrimaryKey: TestCounterPrimaryKey = {
-    id: uuidv1(),
-    counter_type: "members",
-  };
+  const getDbData = (entityId: string, type: string) =>
+    testCounterRepository.findOne({
+      id: entityId,
+      counter_type: type,
+    });
+  const workspaceId = uuidv1();
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "auth"],
+      services: ["database", "pubsub", "webserver", "auth", "counter"],
     });
 
     database = platform.platform.getProvider<DatabaseServiceAPI>("database");
-    expect(database).toBeTruthy();
     await platform.database.getConnector().drop();
 
-    testCounterRepository = await database.getRepository<TestCounterEntity>(
-      TEST_COUNTER_TYPE,
-      TestCounterEntity,
+    testCounterRepository = await database.getRepository<WorkspaceCounterEntity>(
+      "workspace_counters",
+      WorkspaceCounterEntity,
     );
+
+    const counterApi = platform.platform.getProvider<CounterAPI>("counter");
+    expect(counterApi).toBeTruthy();
+    // workspaceCounter = counterApi.getCounter(CounterType.WORKSPACE);
+    workspaceCounter = counterApi.getCounter(CounterType.WORKSPACE);
+    expect(workspaceCounter).toBeTruthy();
 
     ends();
   });
@@ -62,50 +49,40 @@ describe("Counters implementation", () => {
   });
 
   it("Initializing empty value", async done => {
-    await testCounterRepository.save(
-      merge(new TestCounterEntity(), { value: 0 }, testCounterPrimaryKey),
-    );
-    const counter = await testCounterRepository.findOne(testCounterPrimaryKey);
-    expect(counter).toMatchObject(merge({ value: 0 }, testCounterPrimaryKey));
+    await workspaceCounter.increase(workspaceId, "members", 0);
+    const dbData = await getDbData(workspaceId, "members");
+    expect(dbData.value).toEqual(0);
     done();
   });
 
   it("Adding value", async done => {
-    let counter = await testCounterRepository.findOne(testCounterPrimaryKey);
-
     // adding 1
 
-    counter.value = 1;
-    await testCounterRepository.save(counter);
-    counter = await testCounterRepository.findOne(testCounterPrimaryKey);
-    expect(counter).toMatchObject(merge({ value: 1 }, testCounterPrimaryKey));
+    await workspaceCounter.increase(workspaceId, "members", 1);
+    let dbData = await getDbData(workspaceId, "members");
+    expect(dbData.value).toEqual(1);
 
     // adding 2
 
-    counter.value = 2;
-    await testCounterRepository.save(counter);
-    counter = await testCounterRepository.findOne(testCounterPrimaryKey);
-    expect(counter).toMatchObject(merge({ value: 3 }, testCounterPrimaryKey));
+    await workspaceCounter.increase(workspaceId, "members", 2);
+    dbData = await getDbData(workspaceId, "members");
+    expect(dbData.value).toEqual(3);
 
     done();
   });
 
   it("Subtracting value", async done => {
-    let counter = await testCounterRepository.findOne(testCounterPrimaryKey);
-
     // Subtracting 2
 
-    counter.value = -2;
-    await testCounterRepository.save(counter);
-    counter = await testCounterRepository.findOne(testCounterPrimaryKey);
-    expect(counter).toMatchObject(merge({ value: 1 }, testCounterPrimaryKey));
+    await workspaceCounter.increase(workspaceId, "members", -2);
+    let dbData = await getDbData(workspaceId, "members");
+    expect(dbData.value).toEqual(1);
 
     // Subtracting 10
 
-    counter.value = -10;
-    await testCounterRepository.save(counter);
-    counter = await testCounterRepository.findOne(testCounterPrimaryKey);
-    expect(counter).toMatchObject(merge({ value: -9 }, testCounterPrimaryKey));
+    await workspaceCounter.increase(workspaceId, "members", -10);
+    dbData = await getDbData(workspaceId, "members");
+    expect(dbData.value).toEqual(-9);
 
     done();
   });

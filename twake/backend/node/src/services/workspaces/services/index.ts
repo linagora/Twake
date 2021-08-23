@@ -4,16 +4,19 @@ import WorkspaceServicesAPI, { WorkspaceServiceAPI } from "../api";
 import { getService as getWorkspaceService } from "./workspace";
 import { getService as getCompaniesService } from "../../user/services/companies";
 import { getService as getUsersService } from "../../user/services/users";
-import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
+import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
 import { ConsoleServiceAPI } from "../../console/api";
 import { SearchServiceAPI } from "../../../core/platform/services/search/api";
+import CounterAPI from "../../../core/platform/services/counter/provider";
+import { CounterType } from "../../../core/platform/services/counter/types";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   consoleService: ConsoleServiceAPI,
   searchService: SearchServiceAPI,
+  counterService: CounterAPI,
 ): WorkspaceServicesAPI {
-  return new Service(databaseService, consoleService, searchService);
+  return new Service(databaseService, consoleService, searchService, counterService);
 }
 
 class Service implements WorkspaceServicesAPI {
@@ -27,10 +30,18 @@ class Service implements WorkspaceServicesAPI {
     databaseService: DatabaseServiceAPI,
     consoleService: ConsoleServiceAPI,
     searchService: SearchServiceAPI,
+    counterService: CounterAPI,
   ) {
-    this.companies = getCompaniesService(databaseService);
+    this.companies = getCompaniesService(
+      databaseService,
+      counterService.getCounter(CounterType.COMPANY),
+    );
     this.users = getUsersService(databaseService, searchService);
-    this.workspaces = getWorkspaceService(databaseService, this.users);
+    this.workspaces = getWorkspaceService(
+      databaseService,
+      this.users,
+      counterService.getCounter(CounterType.WORKSPACE),
+    );
     this.console = consoleService;
   }
 

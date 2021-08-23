@@ -28,20 +28,20 @@ import Workspace, {
 } from "../../../workspaces/entities/workspace";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { UserPrimaryKey } from "../../../user/entities/user";
-import Company, { CompanyPrimaryKey } from "../../../user/entities/company";
-import { merge } from "lodash";
+import { CompanyPrimaryKey } from "../../../user/entities/company";
+import _, { merge } from "lodash";
 import WorkspacePendingUser, {
-  WorkspacePendingUserPrimaryKey,
   TYPE as WorkspacePendingUserType,
+  WorkspacePendingUserPrimaryKey,
 } from "../../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../../user/web/types";
 import { uuid } from "../../../../utils/types";
-import _ from "lodash";
 import { UsersServiceAPI } from "../../../user/api";
 import WorkspaceCounters, {
-  TYPE as WorkspaceCountersType,
   getInstance as getWorkspaceCountersInstance,
+  TYPE as WorkspaceCountersType,
 } from "../../entities/workspace_counters";
+import { CounterProvider } from "../../../../core/platform/services/counter/provider";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -50,7 +50,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   private workspaceRepository: Repository<Workspace>;
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
 
-  constructor(private database: DatabaseServiceAPI, private users: UsersServiceAPI) {}
+  constructor(
+    private database: DatabaseServiceAPI,
+    private users: UsersServiceAPI,
+    protected counters: CounterProvider,
+  ) {}
 
   async init(): Promise<this> {
     this.workspaceUserRepository = await this.database.getRepository<WorkspaceUser>(
@@ -192,13 +196,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   }
 
   private userCounterIncrease(workspaceId: string, increaseValue: number) {
-    return this.workspaceCountersRepository.save(
-      getWorkspaceCountersInstance({
-        workspace_id: workspaceId,
-        counter_type: "users",
-        value: increaseValue,
-      }),
-    );
+    return this.counters.increase(workspaceId, "members", increaseValue);
   }
 
   getUsersCount(workspaceId: string): Promise<number> {
