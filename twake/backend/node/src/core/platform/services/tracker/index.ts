@@ -13,6 +13,10 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
   analytics: Analytics;
 
   async doInit(): Promise<this> {
+    localEventBus.subscribe<ResourceEventsPayload>("user:deleted", data => {
+      this.remove({ user: data.user });
+    });
+
     const channelListEvent = "channel:list";
     localEventBus.subscribe<ResourceEventsPayload>(channelListEvent, data => {
       logger.debug(`Tracker - New ${channelListEvent} event`);

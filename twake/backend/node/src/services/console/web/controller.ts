@@ -84,10 +84,13 @@ export class ConsoleController {
           await this.userAdded(request.body.content);
           break;
         case "company_user_deactivated":
-          await this.userRemoved(request.body.content);
+          await this.userDisabled(request.body.content);
           break;
         case "user_updated":
           await this.userUpdated(request.body.content);
+          break;
+        case "user_deleted":
+          await this.userRemoved(request.body.content);
           break;
         case "plan_updated":
           await this.planUpdated(request.body.content);
@@ -116,17 +119,19 @@ export class ConsoleController {
   }
 
   private async userAdded(content: ConsoleHookBodyContent): Promise<void> {
-    throw new Error("Not implemented");
-
-    // await this.consoleService
-    //   .getClient()
-    //   .addLocalUserFromConsole(content.user._id, company, content.user);
+    //TODO prepare full userDTO
+    const userDTO = content.user;
+    await this.consoleService.getClient().updateLocalUserFromConsole(userDTO);
   }
 
-  private async userRemoved(content: ConsoleHookBodyContent): Promise<void> {
+  private async userDisabled(content: ConsoleHookBodyContent): Promise<void> {
     await this.validateCompany(content);
     const company = await this.updateCompany(content.company);
     await this.consoleService.getClient().removeCompanyUser(content.user._id, company);
+  }
+
+  private async userRemoved(content: ConsoleHookBodyContent): Promise<void> {
+    await this.consoleService.getClient().removeUser(content.user._id);
   }
 
   private async userUpdated(content: ConsoleHookBodyContent) {
@@ -163,7 +168,7 @@ export class ConsoleController {
     if (user == null) {
       throw CrudExeption.forbidden("User doesn't exists");
     }
-    const [storedPassword, salt] = await this.userService.users.getPassword({ id: user.id });
+    const [storedPassword, salt] = await this.userService.users.getHashedPassword({ id: user.id });
     if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
       throw CrudExeption.forbidden("Password doesn't match");
     }

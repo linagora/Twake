@@ -29,6 +29,8 @@ import Device, {
 import crypto from "crypto";
 import PasswordEncoder from "../../../../utils/password-encoder";
 import assert from "assert";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { ResourceEventsPayload } from "../../../../utils/types";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -99,6 +101,31 @@ export class UserService implements UsersServiceAPI {
     const instance = await this.repository.findOne(pk);
     if (instance) await this.repository.remove(instance);
     return new DeleteResult<User>("user", instance, !!instance);
+  }
+
+  async anonymizeAndDelete(pk: UserPrimaryKey, context?: ExecutionContext) {
+    const user = await this.get(pk);
+
+    if (context.user.server_request || context.user.id === user.id) {
+      //We keep a part of the user id as new name
+      const partialId = user.id.toString().split("-")[0];
+
+      user.username_canonical = `deleted-user-${partialId}`;
+      user.email_canonical = `${partialId}@twake.removed`;
+      user.first_name = "";
+      user.last_name = "";
+      user.phone = "";
+      user.picture = "";
+      user.thumbnail_id = null;
+      user.status_icon = null;
+      user.deleted = true;
+
+      await this.save(user);
+
+      localEventBus.publish<ResourceEventsPayload>("user:deleted", {
+        user: user,
+      });
+    }
   }
 
   async search(
@@ -242,7 +269,7 @@ export class UserService implements UsersServiceAPI {
     await this.repository.save(user);
   }
 
-  async getPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
+  async getHashedPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
     const user = await this.get(userPrimaryKey);
     if (!user) {
       throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);

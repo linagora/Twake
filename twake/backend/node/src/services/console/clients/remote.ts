@@ -268,6 +268,18 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
   }
 
+  async removeUser(consoleUserId: string): Promise<void> {
+    let user = await this.userService.users.getByConsoleId(consoleUserId);
+
+    if (!user) {
+      throw new Error("User does not exists on Twake.");
+    }
+
+    await this.userService.users.anonymizeAndDelete(user, {
+      user: { id: user.id, server_request: true },
+    });
+  }
+
   async removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
     await this.userService.companies.removeCompany(companySearchKey);
   }

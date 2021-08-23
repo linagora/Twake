@@ -53,7 +53,8 @@ export interface UsersServiceAPI
   ): Promise<void>;
   deregisterUserDevice(token: string): Promise<void>;
   setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void>;
-  getPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]>;
+  getHashedPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]>;
+  anonymizeAndDelete(user: User, context?: ExecutionContext): Promise<void>;
 }
 
 /**
