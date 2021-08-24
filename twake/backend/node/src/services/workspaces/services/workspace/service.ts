@@ -37,23 +37,26 @@ import WorkspacePendingUser, {
 import { CompanyUserRole } from "../../../user/web/types";
 import { uuid } from "../../../../utils/types";
 import { UsersServiceAPI } from "../../../user/api";
-import WorkspaceCounters, {
-  getInstance as getWorkspaceCountersInstance,
-  TYPE as WorkspaceCountersType,
-} from "../../entities/workspace_counters";
+
 import { CounterProvider } from "../../../../core/platform/services/counter/provider";
+import {
+  TYPE as WorkspaceCounterEntityType,
+  WorkspaceCounterEntity,
+  WorkspaceCounterPrimaryKey,
+} from "../../entities/workspace_counters";
+import { CounterAPI } from "../../../../core/platform/services/counter/types";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
   private workspaceUserRepository: Repository<WorkspaceUser>;
-  private workspaceCountersRepository: Repository<WorkspaceCounters>;
   private workspaceRepository: Repository<Workspace>;
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
+  private workspaceCounter: CounterProvider<WorkspaceCounterEntity>;
 
   constructor(
     private database: DatabaseServiceAPI,
     private users: UsersServiceAPI,
-    protected counters: CounterProvider,
+    private counters: CounterAPI,
   ) {}
 
   async init(): Promise<this> {
@@ -72,10 +75,20 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       WorkspacePendingUser,
     );
 
-    this.workspaceCountersRepository = await this.database.getRepository<WorkspaceCounters>(
-      WorkspaceCountersType,
-      WorkspaceCounters,
+    const workspaceCountersRepository = await this.database.getRepository<WorkspaceCounterEntity>(
+      WorkspaceCounterEntityType,
+      WorkspaceCounterEntity,
     );
+
+    this.workspaceCounter = await this.counters.getCounter<WorkspaceCounterEntity>(
+      workspaceCountersRepository,
+    );
+
+    this.workspaceCounter.reviseCounter(async (pk: WorkspaceCounterPrimaryKey) => {
+      return this.workspaceUserRepository
+        .find({ workspace_id: pk.id })
+        .then(a => a.getEntities().length);
+    });
 
     return this;
   }
@@ -195,17 +208,14 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return allCompanyWorkspaces;
   }
 
+  private wsCountPk = (id: string) => ({ id, counter_type: "members" });
+
   private userCounterIncrease(workspaceId: string, increaseValue: number) {
-    return this.counters.increase(workspaceId, "members", increaseValue);
+    return this.workspaceCounter.increase(this.wsCountPk(workspaceId), increaseValue);
   }
 
   getUsersCount(workspaceId: string): Promise<number> {
-    return this.workspaceCountersRepository
-      .findOne({
-        workspace_id: workspaceId,
-        counter_type: "users",
-      })
-      .then(a => (a ? a.value : 0));
+    return this.workspaceCounter.get(this.wsCountPk(workspaceId));
   }
 
   async addUser(
@@ -260,27 +270,10 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
-  private recountUsersForWorkspace(workspaceId: string): void {
-    Promise.all([
-      this.workspaceUserRepository
-        .find({ workspace_id: workspaceId })
-        .then(a => a.getEntities().length),
-      this.getUsersCount(workspaceId),
-    ]).then(res => {
-      if (res[0] != res[1]) {
-        this.userCounterIncrease(workspaceId, res[0] - res[1]).then();
-      }
-    });
-  }
-
   getUsers(
     workspacePk: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
   ): Promise<ListResult<WorkspaceUser>> {
-    if (Math.floor(Math.random() * 10) == 0) {
-      this.recountUsersForWorkspace(workspacePk.workspaceId); // ≈ 1/10
-    }
-
     return this.workspaceUserRepository.find(
       { workspace_id: workspacePk.workspaceId },
       { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },

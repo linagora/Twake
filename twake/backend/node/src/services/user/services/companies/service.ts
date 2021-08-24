@@ -29,13 +29,10 @@ import ExternalGroup, {
   ExternalGroupPrimaryKey,
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
-import { pick } from "lodash";
 import CompanyCounters, {
-  TYPE as CompanyCountersType,
   getInstance as getCompanyCountersInstance,
+  TYPE as CompanyCountersType,
 } from "../../entities/company_counters";
-import { getInstance as getWorkspaceCountersInstance } from "../../../workspaces/entities/workspace_counters";
-import { CounterProvider } from "../../../../core/platform/services/counter/provider";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -44,7 +41,7 @@ export class CompanyService implements CompaniesServiceAPI {
   companyUserRepository: Repository<CompanyUser>;
   companyCountersRepository: Repository<CompanyCounters>;
 
-  constructor(private database: DatabaseServiceAPI, protected counters: CounterProvider) {}
+  constructor(private database: DatabaseServiceAPI) {}
 
   async init(): Promise<this> {
     this.companyRepository = await this.database.getRepository<Company>("group_entity", Company);

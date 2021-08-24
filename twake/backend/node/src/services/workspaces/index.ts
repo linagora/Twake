@@ -6,8 +6,7 @@ import { getService } from "./services";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import { ConsoleServiceAPI } from "../console/api";
 import { SearchServiceAPI } from "../../core/platform/services/search/api";
-import CounterAPI, { CounterProvider } from "../../core/platform/services/counter/provider";
-import { CounterType } from "../../core/platform/services/counter/types";
+import { CounterAPI } from "../../core/platform/services/counter/types";
 
 @Prefix("/internal/services/workspaces/v1")
 @Consumes(["webserver", "database", "console", "search", "counter"])

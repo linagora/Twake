@@ -1,29 +1,20 @@
-import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { merge } from "lodash";
+import { PhpMessage } from "../../../cli/cmds/migration_cmds/php-message/php-message-entity";
+import { CounterEntity } from "../../../utils/counter-entity";
 
 export const TYPE = "workspace_counters";
 
 @Entity(TYPE, {
-  primaryKey: [["workspace_id"], "counter_type"],
+  primaryKey: [["id"], "counter_type"],
   type: TYPE,
 })
-export default class WorkspaceCounters {
-  @Column("workspace_id", "timeuuid")
-  workspace_id: string;
+export class WorkspaceCounterEntity extends CounterEntity {
+  @Column("id", "timeuuid")
+  id: string;
 
   @Column("counter_type", "string")
   counter_type: string;
-
-  @Column("value", "counter")
-  value: number;
 }
 
-export type WorkspaceCountersPrimaryKey = Partial<
-  Pick<WorkspaceCounters, "workspace_id" | "counter_type">
->;
-
-export function getInstance(
-  workspaceCounters: Partial<WorkspaceCounters> & WorkspaceCountersPrimaryKey,
-): WorkspaceCounters {
-  return merge(new WorkspaceCounters(), workspaceCounters);
-}
+export type WorkspaceCounterPrimaryKey = Pick<WorkspaceCounterEntity, "id" | "counter_type">;

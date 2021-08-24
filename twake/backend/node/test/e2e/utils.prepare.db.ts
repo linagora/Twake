@@ -13,13 +13,14 @@ import { v1 as uuidv1 } from "uuid";
 import CompanyUser from "../../src/services/user/entities/company_user";
 import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
 import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
-import { memoize } from "lodash";
 import Device from "../../src/services/user/entities/device";
+import WorkspaceServicesAPI, { WorkspaceServiceAPI } from "../../src/services/workspaces/api";
 
 export type uuid = string;
 
 export class TestDbService {
   private deviceRepository: Repository<Device>;
+  private workspaceService: WorkspaceServicesAPI;
   public static async getInstance(testPlatform: TestPlatform): Promise<TestDbService> {
     const instance = new this(testPlatform);
     await instance.init();
@@ -39,6 +40,9 @@ export class TestDbService {
 
   constructor(protected testPlatform: TestPlatform) {
     this.userService = this.testPlatform.platform.getProvider<UserServiceAPI>("user");
+    this.workspaceService = this.testPlatform.platform.getProvider<WorkspaceServicesAPI>(
+      "workspaces",
+    );
     this.database = this.testPlatform.platform.getProvider<DatabaseServiceAPI>("database");
     this.users = [];
     this.workspacesMap = new Map<string, { workspace: Workspace; users: User[] }>();
@@ -71,7 +75,7 @@ export class TestDbService {
 
   async createWorkspace(workspacePk: WorkspacePrimaryKey): Promise<Workspace> {
     const name = `TwakeAutotests-test-workspace-${this.rand()}`;
-    const workspace = await this.userService.workspaces.create(
+    const workspace = await this.workspaceService.workspaces.create(
       getWorkspaceInstance({
         id: workspacePk.id,
         name: name,
@@ -80,7 +84,7 @@ export class TestDbService {
       }),
     );
 
-    const createdWorkspace = await this.userService.workspaces.get({
+    const createdWorkspace = await this.workspaceService.workspaces.get({
       id: workspacePk.id,
       group_id: workspacePk.group_id,
     });
@@ -138,7 +142,7 @@ export class TestDbService {
 
     if (workspacesPk && workspacesPk.length) {
       for (const workspacePk of workspacesPk) {
-        await this.userService.workspaces.addUser(
+        await this.workspaceService.workspaces.addUser(
           workspacePk,
           { id: createdUser.id },
           options.workspaceRole ? options.workspaceRole : "member",
@@ -195,7 +199,7 @@ export class TestDbService {
   }
 
   getWorkspaceUsersCountFromDb(workspaceId: string) {
-    return this.userService.workspaces.getUsersCount(workspaceId);
+    return this.workspaceService.workspaces.getUsersCount(workspaceId);
   }
 
   async getCompanyUsersCountFromDb(companyId: string) {
