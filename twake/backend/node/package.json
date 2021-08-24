@@ -92,7 +92,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "7",
     "@sentry/node": "^6.2.0",
-    "@sentry/tracing": "^6.2.0",
+    "@sentry/tracing": "^6.10.0",
     "@types/fastify-multipart": "^0.7.0",
     "@types/mongodb": "^3.6.15",
     "@types/node-fetch": "^2.5.10",
