@@ -7,7 +7,7 @@ const previewsUrl = "/previews";
 const routes: FastifyPluginCallback<{ service: PreviewServiceAPI }> = (
   fastify: FastifyInstance,
   options,
-  next
+  next,
 ) => {
   const previewController = new PreviewController(options.service);
 

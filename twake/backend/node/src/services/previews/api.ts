@@ -1,4 +1,6 @@
-export interface PreviewServiceAPI {
+import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
+
+export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
   /**
    * Get a file entity from its id
    *

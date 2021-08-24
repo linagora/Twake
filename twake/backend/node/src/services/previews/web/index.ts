@@ -7,9 +7,8 @@ export default (
   options: FastifyRegisterOptions<{
     prefix: string;
     service: PreviewServiceAPI;
-  }>
+  }>,
 ) => {
-  fastify.log.info("Configuring /preview");
-  fastify.log.debug("Configuring / routes");
+  fastify.log.debug("Configuring /internal/services/previews/v1 routes");
   fastify.register(routes, options);
 };

@@ -3,20 +3,35 @@ import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
 import { isFileType } from "../utils";
+import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
+import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { pdfExtensions, officeExtensions, imageExtensions } from "./mime";
+import StorageAPI from "../../../core/platform/services/storage/provider";
 import sharp from "sharp";
 
-export function getService(): PreviewServiceAPI {
-  return getServiceInstance();
+export function getService(
+  databaseService: DatabaseServiceAPI,
+  pubsub: PubsubServiceAPI,
+  storage: StorageAPI,
+): PreviewServiceAPI {
+  return getServiceInstance(databaseService, pubsub, storage);
 }
 
-function getServiceInstance(): PreviewServiceAPI {
-  return new Service();
+function getServiceInstance(
+  databaseService: DatabaseServiceAPI,
+  pubsub: PubsubServiceAPI,
+  storage: StorageAPI,
+): PreviewServiceAPI {
+  return new Service(databaseService, pubsub, storage);
 }
 class Service implements PreviewServiceAPI {
   version: "1";
 
-  constructor() {}
+  constructor(
+    readonly database: DatabaseServiceAPI,
+    readonly pubsub: PubsubServiceAPI,
+    readonly storage: StorageAPI,
+  ) {}
 
   async generateThumbnails(
     document: { id: string; path: string; provider: string },
