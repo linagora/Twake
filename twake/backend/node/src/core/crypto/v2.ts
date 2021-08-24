@@ -14,12 +14,12 @@ function encrypt(
   const key = createHash("sha256").update(String(encryptionKey)).digest("base64").substr(0, 32);
   try {
     const iv = options.disableSalts ? "0000000000000000" : randomBytes(16);
-    const cipher = createCipheriv("aes-256-cbc", key, iv);
+    const cipher = createCipheriv("aes-256-gcm", key, iv);
     const encrypted = Buffer.concat([cipher.update(JSON.stringify(data)), cipher.final()]).toString(
-      "hex",
+      "base64",
     );
     return {
-      data: `${iv.toString("hex")}:${encrypted}`,
+      data: `${iv.toString("base64")}:${encrypted}`,
       done: true,
     };
   } catch (err) {
@@ -43,14 +43,14 @@ function decrypt(data: string, encryptionKey: any): CryptoResult {
     };
   }
 
-  let iv: Buffer | string = Buffer.from(encryptedArray[0], "hex");
+  let iv: Buffer | string = Buffer.from(encryptedArray[0], "base64");
   if (encryptedArray[0] === "0000000000000000") {
     iv = "0000000000000000";
   }
 
   try {
-    const encrypted = Buffer.from(encryptedArray[1], "hex");
-    const decipher = createDecipheriv("aes-256-cbc", key, iv);
+    const encrypted = Buffer.from(encryptedArray[1], "base64");
+    const decipher = createDecipheriv("aes-256-gcm", key, iv);
     const decrypt = JSON.parse(
       Buffer.concat([decipher.update(encrypted), decipher.final()]).toString(),
     );
