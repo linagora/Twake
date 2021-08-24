@@ -1,20 +1,22 @@
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
+
 import { NotificationResource } from 'app/models/Notification';
+import { CompanyType } from 'app/models/Company';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 
 import './GroupSwitch.scss';
 
 export default (props: {
-  group: any;
+  group: CompanyType;
   imageOnly: boolean;
   selected: boolean;
   onClick: () => {};
   refDiv: any;
   refLogo: any;
 }) => {
-  var group = props.group || {};
-
+  const group = props.group || {};
   const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
   const unreadOtherCompanies = notificationsCollection
     .useWatcher({})

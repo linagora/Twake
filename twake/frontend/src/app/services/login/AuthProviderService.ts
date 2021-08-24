@@ -9,6 +9,7 @@ import LoginService from './login';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../utils/URLUtils';
 import AlertManager from 'services/AlertManager/AlertManager';
+import languages from '../languages/languages';
 
 type AuthProviderConfiguration = AuthProviderProps;
 
@@ -147,8 +148,8 @@ class AuthProviderService extends Observable {
           this.signOut();
         },
         {
-          title: 'We are unable to open your account.',
-          text: (response as any).error,
+          title: languages.t('scenes.login.authprovider.error.title'),
+          text: (response as any).error || languages.t('scenes.login.authprovider.error.text'),
         },
       );
       return;

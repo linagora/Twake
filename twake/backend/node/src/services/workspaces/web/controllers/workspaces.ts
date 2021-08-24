@@ -14,7 +14,6 @@ import {
   WorkspacesListRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import Workspace from "../../entities/workspace";
 import { CompaniesServiceAPI } from "../../../user/api";
 import { merge } from "lodash";
@@ -91,7 +90,7 @@ export class WorkspacesCrudController
     if (!workspaceUserRole) {
       const companyUserRole = await this.getCompanyUserRole(context);
 
-      if (companyUserRole !== "admin") {
+      if (!hasCompanyAdminLevel(companyUserRole)) {
         reply.forbidden(`You are not belong to workspace ${request.params.id}`);
         return;
       }
@@ -109,9 +108,22 @@ export class WorkspacesCrudController
 
     const allCompanyWorkspaces = await this.workspaceService.getAllForCompany(context.company_id);
 
+    const companyUser = await this.companyService.getCompanyUser(
+      { id: context.company_id },
+      { id: context.user.id },
+    );
+
     const allUserWorkspaceRolesMap = await this.workspaceService
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
-      .then(uws => new Map(uws.map(uw => [uw.workspaceId, uw.role])));
+      .then(
+        uws =>
+          new Map(
+            uws.map(uw => [
+              uw.workspaceId,
+              hasCompanyAdminLevel(companyUser.role) ? "admin" : uw.role,
+            ]),
+          ),
+      );
 
     return {
       resources: allCompanyWorkspaces

@@ -6,7 +6,7 @@ import RouterServices from 'services/RouterService';
 import React from 'react';
 import DirectChannelRow from './DirectChannelRow';
 import WorkspaceChannelRow from './WorkspaceChannelRow';
-import { GenericChannel } from '../SearchListManager';
+import { GenericChannel } from 'services/search/searchListManager';
 
 type PropsType = {
   list: GenericChannel[];
@@ -25,10 +25,9 @@ const SearchListContainer = ({ list, active, limit, setCursor }: PropsType) => {
   const isJoined = (resource: ChannelResource) => {
     return mine.some(channel => resource.id === channel.id && channel.data.user_member?.user_id);
   };
-
   return (
     <>
-      {list.splice(0, limit).map((item, index) => (
+      {list.slice(0, limit).map((item, index) => (
         <div
           key={`${item?.resource?.id}`}
           className={index === active ? 'active' : ''}

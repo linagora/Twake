@@ -9,7 +9,7 @@ import ws from 'services/websocket.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from 'services/workspaces/groups.js';
 import LocalStorage from 'app/services/LocalStorage';
-import workspacesUsers from './workspaces_users.js';
+import workspacesUsers from './workspaces_users.ts';
 import WindowService from 'services/utils/window';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
@@ -43,7 +43,7 @@ class Workspaces extends Observable {
     this.didFirstSelection = false;
   }
 
-  updateCurrentWorkspaceId(workspaceId) {
+  updateCurrentWorkspaceId(workspaceId, notify = false) {
     if (this.currentWorkspaceId !== workspaceId && workspaceId && loginService.state === 'app') {
       this.currentWorkspaceId = workspaceId;
       const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
@@ -58,6 +58,7 @@ class Workspaces extends Observable {
             DepreciatedCollections.get('workspaces').updateObject(res.data);
             DepreciatedCollections.get('groups').updateObject(res.data.group);
             workspacesApps.load(workspaceId, false, { apps: res.data.apps });
+            notify && this.notify();
           } else {
             this.removeFromUser(workspaceId);
           }
@@ -69,10 +70,11 @@ class Workspaces extends Observable {
     }
   }
 
-  updateCurrentCompanyId(companyId) {
+  updateCurrentCompanyId(companyId, notify = false) {
     if (this.currentGroupId !== companyId && companyId) {
       this.currentGroupId = companyId;
       UserNotifications.subscribeToCurrentCompanyNotifications(companyId);
+      notify && this.notify();
     }
   }
 

@@ -48,7 +48,6 @@ export default (props: Props) => {
   const editorRef = useRef<EditorView>(null);
   const submitRef = useRef<HTMLDivElement>(null);
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
-  const [loading, setLoading] = useState(false);
   const messageEditorService = MessageEditorsManager.get(props.channelId);
   const [editorState, setEditorState] = useState(() =>
     RichTextEditorStateService.get(editorId, { plugins: editorPlugins }),
@@ -104,7 +103,7 @@ export default (props: Props) => {
     }
 
     if (content || messageEditorService.hasAttachments(props.threadId)) {
-      sendMessage(content);
+      sendMessage(content, editorId);
       setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
     }
   };
@@ -117,35 +116,33 @@ export default (props: Props) => {
     MessagesService.triggerApp(props.channelId, props.threadId, app, from_icon, evt);
   };
 
-  const sendMessage = (message: string) => {
-    setLoading(true);
+  const sendMessage = (messageContent: string, editorId: string) => {
+    if (!props.threadId) {
+      messageEditorService.closeEditor();
+    }
     MessagesService.iamWriting(props.channelId, props.threadId, false);
     MessagesService.sendMessage(
-      message,
+      messageContent,
       {
         channel_id: props.channelId,
         parent_message_id: props.threadId || '',
       },
       props.collectionKey,
-    )
-      .then((message: any) => {
-        setLoading(false);
-        if (message) {
-          if (
-            messageEditorService.currentEditor ===
-            messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
-          ) {
-            focusEditor();
-          }
-          if (!message.parent_message_id) {
-            messageEditorService.openEditor(message.id, props.messageId || '');
-          }
+    ).then((message: any) => {
+      if (message) {
+        if (
+          messageEditorService.currentEditor ===
+          messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
+        ) {
+          focusEditor();
         }
-      })
-      .finally(() => {
+        if (!message.parent_message_id) {
+          messageEditorService.openEditor(message.id, props.messageId || '');
+        }
         messageEditorService.clearAttachments(props.threadId);
         messageEditorService.clearMessage(props.threadId, props.messageId || '');
-      });
+      }
+    });
   };
 
   const focus = () => {
@@ -221,7 +218,6 @@ export default (props: Props) => {
   return (
     <div
       className={classNames('message-input', {
-        loading,
         unfocused:
           messageEditorService.currentEditor !==
           messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context),

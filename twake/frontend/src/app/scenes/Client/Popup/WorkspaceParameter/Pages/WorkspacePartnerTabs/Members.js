@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages';
 import Table from 'components/Table/Table.tsx';
 import UserService from 'services/user/UserService';
 import Workspaces from 'services/workspaces/workspaces.js';
-import workspacesUsers from 'services/workspaces/workspaces_users.js';
+import workspacesUsers from 'services/workspaces/workspaces_users.ts';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 import popupManager from 'services/popupManager/popupManager.js';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';

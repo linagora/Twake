@@ -6,9 +6,8 @@ import Languages from 'services/languages/languages';
 import popupManager from 'services/popupManager/popupManager.js';
 import Strings from 'services/utils/strings.js';
 import InputWithButton from 'components/Inputs/InputWithButton.js';
-import workspacesUsersService from 'services/workspaces/workspaces_users.js';
+import workspacesUsersService from 'services/workspaces/workspaces_users';
 import './AddUser.scss';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
 import { Typography } from 'antd';
 
 type Props = {
@@ -99,7 +98,7 @@ export default class AddUser extends Component<Props, State> {
   }
 
   stringToArray(str: string) {
-    const members = WorkspacesUsers.fullStringToEmails(str);
+    const members = workspacesUsersService.fullStringToEmails(str);
 
     if (this.props.onChange) this.props.onChange(members);
     this.setState({

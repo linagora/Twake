@@ -11,6 +11,7 @@ import MessageEdition from './MessageEdition';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import { Message } from 'app/models/Message';
 import DeletedContent from './DeletedContent';
+import RetryButtons from './RetryButtons';
 
 type Props = {
   message: Message;
@@ -58,7 +59,8 @@ export default (props: Props) => {
   const deleted = props.message.subtype === 'deleted';
 
   const showEdition = !props.linkToThread && props.edited;
-
+  const messageIsLoading = (props.message as any)._creating || (props.message as any)._updating;
+  const messageSaveFailed = (props.message as any)._failed;
   return (
     <div
       className={classNames('message-content', {
@@ -72,6 +74,8 @@ export default (props: Props) => {
         message={props.message}
         collectionKey={props.collectionKey}
         linkToThread={props.linkToThread}
+        loading={messageIsLoading}
+        failed={messageSaveFailed}
       />
       {!!showEdition && !deleted && (
         <div className="content-parent">
@@ -92,7 +96,10 @@ export default (props: Props) => {
           ) : (
             <>
               <Twacode
-                className="content allow_selection"
+                className={classNames('content allow_selection', {
+                  message_is_loading: messageIsLoading,
+                  'message-not-sent': messageSaveFailed,
+                })}
                 content={MessagesService.prepareContent(
                   props.message.content,
                   props.message.user_specific_content,
@@ -107,12 +114,17 @@ export default (props: Props) => {
                   onAction(type, id, context, passives, evt)
                 }
               />
-              <Reactions message={props.message} collectionKey={props.collectionKey} />
+              {!messageSaveFailed && (
+                <Reactions message={props.message} collectionKey={props.collectionKey} />
+              )}
+              {messageSaveFailed && !messageIsLoading && (
+                <RetryButtons message={props.message} collectionKey={props.collectionKey} />
+              )}
             </>
           )}
         </div>
       )}
-      {!showEdition && !deleted && (
+      {!showEdition && !deleted && !messageSaveFailed && (
         <Options
           message={props.message}
           collectionKey={props.collectionKey}

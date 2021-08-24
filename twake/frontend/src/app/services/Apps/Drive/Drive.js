@@ -34,10 +34,7 @@ class Drive extends Observable {
       Globals.window.drive_service = [];
     }
     Globals.window.drive_service.push(this);
-
-    LocalStorage.getItem('drive_view', res => {
-      this.view_mode = res || 'grid';
-    });
+    this.view_mode = LocalStorage.getItem('drive_view') || 'grid';
   }
 
   addSourceIfNotExist(workspace_id, channel, parent_id, prefix) {

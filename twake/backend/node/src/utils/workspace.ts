@@ -3,6 +3,7 @@ import { User, Workspace } from "./types";
 import Company from "../services/user/entities/company";
 import CompanyUser from "../services/user/entities/company_user";
 import WorkspaceUser from "../services/workspaces/entities/workspace_user";
+import { hasCompanyAdminLevel } from "./company";
 
 export async function isWorkspaceAdmin(
   userService: UserServiceAPI,
@@ -11,6 +12,14 @@ export async function isWorkspaceAdmin(
 ): Promise<boolean> {
   if (!user || !workspace) {
     return false;
+  }
+
+  const companyUser = await userService.companies.getCompanyUser(
+    { id: workspace.company_id },
+    { id: user.id },
+  );
+  if (companyUser && hasCompanyAdminLevel(companyUser.role)) {
+    return true;
   }
 
   const workspaceUser = await getWorkspaceUser(userService, user, workspace);

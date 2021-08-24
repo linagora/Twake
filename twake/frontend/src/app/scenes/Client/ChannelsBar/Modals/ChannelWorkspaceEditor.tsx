@@ -9,6 +9,7 @@ import { Button } from 'antd';
 import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import _ from 'lodash';
+import MainViewService from 'app/services/AppView/MainViewService';
 
 type Props = {
   title: string;
@@ -89,10 +90,20 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       });
 
       if (resource) {
-        return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
-          position: 'center',
-          size: { width: '600px', minHeight: '329px' },
+        MainViewService.select(resource.id, {
+          collection: ChannelsCollections,
+          app: { simple_name: 'messages' },
+          context: null,
+          hasTabs: false,
         });
+        if (!resource.data.is_default) {
+          // Show channel member list only for non default channel
+          return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
+            position: 'center',
+            size: { width: '600px', minHeight: '329px' },
+          });
+        }
+        ModalManager.close();
       }
     }
   };

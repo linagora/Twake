@@ -1,6 +1,7 @@
 import LocalStorage from 'services/LocalStorage';
 import LoginService from 'services/login/login';
 import WindowService from 'services/utils/window';
+import { TwakeService } from './Decorators/TwakeService';
 
 export type JWTDataType = {
   time: 0;
@@ -16,7 +17,8 @@ if ((WindowService.findGetParameter('mobile_login') as any) === '1') {
   LocalStorage.setItem('mobile_login', '1');
 }
 
-class JWTStorageClass {
+@TwakeService('JWTStorageService')
+class JWTStorage {
   private timeDelta = 5 * 60;
   private jwtData: JWTDataType = {
     time: 0,
@@ -28,8 +30,7 @@ class JWTStorageClass {
   };
 
   async init() {
-    this.updateJWT((await LocalStorage.getItem('jwt')) as JWTDataType, { fromLocalStorage: true });
-    (window as any).JWTStorage = this;
+    this.updateJWT(LocalStorage.getItem<JWTDataType>('jwt') as JWTDataType, { fromLocalStorage: true });
   }
 
   clear() {
@@ -49,14 +50,14 @@ class JWTStorageClass {
     }
 
     //Mobile temporary
-    LocalStorage.getItem('mobile_login', (res: string) => {
-      LocalStorage.setItem('mobile_login', '0');
-      if (res === '1') {
-        document.location.replace(
-          '/internal/mobile/login/redirect?jwt=' + encodeURI(JSON.stringify(jwtData)),
-        );
-      }
-    });
+    const mobileLogin = LocalStorage.getItem<string>('mobile_login');
+
+    LocalStorage.setItem('mobile_login', '0');
+    if (mobileLogin === '1') {
+      document.location.replace(
+        '/internal/mobile/login/redirect?jwt=' + encodeURI(JSON.stringify(jwtData)),
+      );
+    }
 
     this.jwtData = jwtData;
     if (!options?.fromLocalStorage) {
@@ -97,5 +98,4 @@ class JWTStorageClass {
   }
 }
 
-const JWTStorage = new JWTStorageClass();
-export default JWTStorage;
+export default new JWTStorage();

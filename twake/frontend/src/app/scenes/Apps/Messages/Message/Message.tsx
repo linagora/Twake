@@ -94,7 +94,7 @@ export default class MessageComponent extends Component<Props> {
     return (
       (Collections.get('messages').findBy({
         channel_id: this.message.channel_id,
-        parent_message_id: this.message.id,
+        parent_message_id: this.message.id || this.message.front_id,
         _user_ephemeral: undefined,
       }) || []) as Message[]
     )

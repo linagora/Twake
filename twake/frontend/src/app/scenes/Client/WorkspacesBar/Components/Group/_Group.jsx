@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
@@ -8,8 +9,8 @@ import MenusManager from 'app/components/Menus/MenusManager';
 import popupManager from 'services/popupManager/popupManager';
 import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter';
-import GroupSwitch from 'app/scenes/Client/WorkspacesBar/Components/GroupSwitch/GroupSwitch';
 import Emojione from 'components/Emojione/Emojione';
+import GroupSwitch from './GroupSwitch/GroupSwitch';
 import InitService from 'app/services/InitService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
@@ -27,10 +28,12 @@ export default class Group extends Component {
     Groups.addListener(this);
     Collections.get('groups').addListener(this);
   }
+
   componentWillUnmount() {
     Collections.get('groups').removeListener(this);
     Groups.removeListener(this);
   }
+
   renderGroupInMenu(group) {
     const notificationsCollection = Collection.get(
       '/notifications/v1/badges/',
@@ -67,7 +70,8 @@ export default class Group extends Component {
       ],
     };
   }
-  openMenu(evt) {
+
+  openMenu() {
     var group = this.group;
 
     this.change_group_menu = [];
@@ -83,17 +87,16 @@ export default class Group extends Component {
       });
     }
 
-    Groups.getOrderedGroups().map(item => {
+    Groups.getOrderedGroups().forEach(item => {
       this.change_group_menu.push(this.renderGroupInMenu(item));
     });
+
     if (InitService.server_infos?.configuration?.accounts?.type !== 'console') {
       this.change_group_menu.push({
         type: 'menu',
         text: Languages.t('scenes.app.workspacesbar.components.create_company_menu'),
         icon: 'plus',
-        onClick: () => {
-          popupManager.open(<CreateCompanyView />);
-        },
+        onClick: () => popupManager.open(<CreateCompanyView />),
       });
 
       this.change_group_menu.push({ type: 'separator' });
@@ -118,18 +121,16 @@ export default class Group extends Component {
     MenusManager.openMenu(this.change_group_menu, { x: pos.x, y: pos.y - 10 }, 'top');
   }
   render() {
-    this.group = Collections.get('groups').find(this.props.selected);
+    this.group = Collections.get('groups').find(this.props.id);
     if (!this.group) {
-      return '';
+      return <></>;
     }
 
     return (
       <GroupSwitch
         refLogo={node => (this.node = node)}
         group={this.group}
-        onClick={evt => {
-          this.openMenu(evt);
-        }}
+        onClick={evt => this.openMenu(evt)}
       />
     );
   }

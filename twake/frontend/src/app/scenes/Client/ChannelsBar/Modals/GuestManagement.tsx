@@ -9,7 +9,7 @@ import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import { PendingEmailResource } from 'app/models/PendingEmail';
 import GuestManagementService from 'app/services/GuestMember/GuestManagementService';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import Languages from 'services/languages/languages';
 
 type PropsType = {

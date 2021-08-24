@@ -5,7 +5,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import AutoHeight from 'app/components/AutoHeight/AutoHeight';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import RouterServices from 'services/RouterService';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import './AddUser.scss';
 
 type PropsType = {
