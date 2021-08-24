@@ -1,4 +1,4 @@
-import { Type } from "class-transformer/decorators";
+import { Type } from "class-transformer";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 const TYPE = "application";
@@ -130,7 +130,7 @@ export const importDepreciatedFields = (application: Application) => {
   }
 
   if (!application.display?.twake) {
-    application.display = application.display || { twake: {} };
+    application.display = application.display || { twake: { version: 1 } };
     application.display.twake = JSON.parse(application.depreciated_display_configuration) || {};
   }
 
@@ -188,7 +188,7 @@ type ApplicationDisplay = {
     };
 
     //Chat plugin
-    chat: {
+    chat?: {
       input?:
         | true
         | {
@@ -225,6 +225,6 @@ type ApplicationDisplay = {
     };
 
     //Define where the app can be configured from
-    configuration: ("global" | "channel")[];
+    configuration?: ("global" | "channel")[];
   };
 };

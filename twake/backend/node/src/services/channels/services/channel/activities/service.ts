@@ -29,6 +29,12 @@ export default class Activities implements Initializable {
       if (data.channel.visibility === ChannelVisibility.DIRECT) {
         return;
       }
+      //Fixme: We don't show activity from user himself,
+      // in the future when we aggregate activities then we could keep it,
+      // but for now it is polution in the channel
+      if (data.resourcesAfter[0].id === data.actor.id) {
+        return;
+      }
       this.notify(
         channelMemberCreatedEvent,
         {
