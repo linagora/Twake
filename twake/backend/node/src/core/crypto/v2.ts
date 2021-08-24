@@ -11,7 +11,7 @@ function encrypt(
   encryptionKey: any,
   options: { disableSalts?: boolean } = {},
 ): CryptoResult {
-  const key = createHash("sha256").update(String(encryptionKey)).digest("base64").substr(0, 32);
+  const key = createHash("sha256").update(String(encryptionKey)).digest("hex").substr(0, 32);
   try {
     const iv = options.disableSalts ? "0000000000000000" : randomBytes(16);
     const cipher = createCipheriv("aes-256-gcm", key, iv);
@@ -32,7 +32,7 @@ function encrypt(
 }
 
 function decrypt(data: string, encryptionKey: any): CryptoResult {
-  const key = createHash("sha256").update(String(encryptionKey)).digest("base64").substr(0, 32);
+  const key = createHash("sha256").update(String(encryptionKey)).digest("hex").substr(0, 32);
 
   const encryptedArray = data.split(":");
 

@@ -42,7 +42,7 @@ export class ChannelViewProcessor {
   }
 
   async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
-    for (const participant of thread.participants.filter(p => p.type === "channel")) {
+    for (const participant of (thread.participants || []).filter(p => p.type === "channel")) {
       if (!message.resource.ephemeral) {
         //Publish message in corresponding channel
         if (message.created) {
