@@ -23,6 +23,7 @@ describe("The /workspaces API", () => {
         "workspaces",
         "auth",
         "console",
+        "counter",
       ],
     });
 
@@ -103,7 +104,7 @@ describe("The /workspaces API", () => {
         if (resource.stats) {
           expect(resource.stats).toMatchObject({
             created_at: expect.any(Number),
-            total_members: expect.any(Number),
+            total_members: 1,
           });
         }
       }
@@ -186,7 +187,7 @@ describe("The /workspaces API", () => {
       if (resource.stats) {
         expect(resource.stats).toMatchObject({
           created_at: expect.any(Number),
-          total_members: expect.any(Number),
+          total_members: 1,
         });
       }
 
@@ -221,7 +222,7 @@ describe("The /workspaces API", () => {
       if (resource.stats) {
         expect(resource.stats).toMatchObject({
           created_at: expect.any(Number),
-          total_members: expect.any(Number),
+          total_members: 1,
         });
       }
 

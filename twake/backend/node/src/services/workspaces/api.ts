@@ -19,6 +19,8 @@ import WorkspacePendingUser, {
 import { CompanyUserRole } from "../user/web/types";
 import { User, uuid } from "../../utils/types";
 import { ConsoleServiceAPI } from "../console/api";
+import { CounterProvider } from "../../core/platform/services/counter/provider";
+import CounterService from "../../core/platform/services/counter";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
   workspaces: WorkspaceServiceAPI;
@@ -40,6 +42,8 @@ export interface WorkspaceServiceAPI
   updateUserRole(workspaceUserPk: WorkspaceUserPrimaryKey, role: WorkspaceUserRole): Promise<void>;
 
   getAllForCompany(companyId: uuid): Promise<Workspace[]>;
+
+  getUsersCount(workspaceId: string): Promise<number>;
 
   removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,

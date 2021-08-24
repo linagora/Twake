@@ -28,24 +28,36 @@ import Workspace, {
 } from "../../../workspaces/entities/workspace";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { UserPrimaryKey } from "../../../user/entities/user";
-import Company, { CompanyPrimaryKey } from "../../../user/entities/company";
-import { merge } from "lodash";
+import { CompanyPrimaryKey } from "../../../user/entities/company";
+import _, { merge } from "lodash";
 import WorkspacePendingUser, {
-  WorkspacePendingUserPrimaryKey,
   TYPE as WorkspacePendingUserType,
+  WorkspacePendingUserPrimaryKey,
 } from "../../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../../user/web/types";
 import { uuid } from "../../../../utils/types";
-import _ from "lodash";
 import { UsersServiceAPI } from "../../../user/api";
+
+import { CounterProvider } from "../../../../core/platform/services/counter/provider";
+import {
+  TYPE as WorkspaceCounterEntityType,
+  WorkspaceCounterEntity,
+  WorkspaceCounterPrimaryKey,
+} from "../../entities/workspace_counters";
+import { CounterAPI } from "../../../../core/platform/services/counter/types";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
   private workspaceUserRepository: Repository<WorkspaceUser>;
   private workspaceRepository: Repository<Workspace>;
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
+  private workspaceCounter: CounterProvider<WorkspaceCounterEntity>;
 
-  constructor(private database: DatabaseServiceAPI, private users: UsersServiceAPI) {}
+  constructor(
+    private database: DatabaseServiceAPI,
+    private users: UsersServiceAPI,
+    private counters: CounterAPI,
+  ) {}
 
   async init(): Promise<this> {
     this.workspaceUserRepository = await this.database.getRepository<WorkspaceUser>(
@@ -62,6 +74,21 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       WorkspacePendingUserType,
       WorkspacePendingUser,
     );
+
+    const workspaceCountersRepository = await this.database.getRepository<WorkspaceCounterEntity>(
+      WorkspaceCounterEntityType,
+      WorkspaceCounterEntity,
+    );
+
+    this.workspaceCounter = await this.counters.getCounter<WorkspaceCounterEntity>(
+      workspaceCountersRepository,
+    );
+
+    this.workspaceCounter.reviseCounter(async (pk: WorkspaceCounterPrimaryKey) => {
+      return this.workspaceUserRepository
+        .find({ workspace_id: pk.id })
+        .then(a => a.getEntities().length);
+    });
 
     return this;
   }
@@ -181,6 +208,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return allCompanyWorkspaces;
   }
 
+  private wsCountPk = (id: string) => ({ id, counter_type: "members" });
+
+  private userCounterIncrease(workspaceId: string, increaseValue: number) {
+    return this.workspaceCounter.increase(this.wsCountPk(workspaceId), increaseValue);
+  }
+
+  getUsersCount(workspaceId: string): Promise<number> {
+    return this.workspaceCounter.get(this.wsCountPk(workspaceId));
+  }
+
   async addUser(
     workspacePk: WorkspacePrimaryKey,
     userPk: UserPrimaryKey,
@@ -193,12 +230,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     });
     await this.users.save(user, {}, { user: { id: user.id, server_request: true } });
 
+    const wurPk = {
+      workspaceId: workspacePk.id,
+      userId: userPk.id,
+    };
+
+    const alreadyExists = await this.getUser(wurPk);
+    if (!alreadyExists) {
+      await this.userCounterIncrease(workspacePk.id, 1);
+    }
+
     await this.workspaceUserRepository.save(
-      getWorkspaceUserInstance({
-        workspaceId: workspacePk.id,
-        userId: userPk.id,
-        role: role,
-      }),
+      getWorkspaceUserInstance(Object.assign(wurPk, { role: role })),
     );
   }
 
@@ -223,15 +266,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     }
 
     await this.workspaceUserRepository.remove(entity);
+    await this.userCounterIncrease(workspaceUserPk.workspaceId, -1);
     return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
   getUsers(
-    workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
+    workspacePk: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
   ): Promise<ListResult<WorkspaceUser>> {
     return this.workspaceUserRepository.find(
-      { workspace_id: workspaceId.workspaceId },
+      { workspace_id: workspacePk.workspaceId },
       { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
     );
   }

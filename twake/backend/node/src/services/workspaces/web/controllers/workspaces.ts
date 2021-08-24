@@ -47,7 +47,15 @@ export class WorkspacesCrudController
       .then(a => (a ? a.role : null));
   }
 
-  private static formatWorkspace(workspace: Workspace, role?: WorkspaceUserRole): WorkspaceObject {
+  private getWorkspaceUsersCount(workspaceId: string) {
+    return this.workspaceService.getUsersCount(workspaceId);
+  }
+
+  private static formatWorkspace(
+    workspace: Workspace,
+    usersCount: number,
+    role?: WorkspaceUserRole,
+  ): WorkspaceObject {
     const res: WorkspaceObject = {
       id: workspace.id,
       company_id: workspace.group_id,
@@ -59,7 +67,7 @@ export class WorkspacesCrudController
 
       stats: {
         created_at: workspace.dateAdded,
-        total_members: 0, // FIXME
+        total_members: usersCount,
       },
     };
     if (role) {
@@ -95,9 +103,9 @@ export class WorkspacesCrudController
         return;
       }
     }
-
+    const count = await this.getWorkspaceUsersCount(workspace.id);
     return {
-      resource: WorkspacesCrudController.formatWorkspace(workspace, workspaceUserRole),
+      resource: WorkspacesCrudController.formatWorkspace(workspace, count, workspaceUserRole),
     };
   }
 
@@ -125,12 +133,20 @@ export class WorkspacesCrudController
           ),
       );
 
+    const userWorkspaces = allCompanyWorkspaces.filter(workspace =>
+      allUserWorkspaceRolesMap.has(workspace.id.toString()),
+    );
+
     return {
-      resources: allCompanyWorkspaces
-        .filter(workspace => allUserWorkspaceRolesMap.has(workspace.id.toString()))
-        .map(ws =>
-          WorkspacesCrudController.formatWorkspace(ws, allUserWorkspaceRolesMap.get(ws.id)),
+      resources: await Promise.all(
+        userWorkspaces.map(async ws =>
+          WorkspacesCrudController.formatWorkspace(
+            ws,
+            await this.getWorkspaceUsersCount(ws.id),
+            allUserWorkspaceRolesMap.get(ws.id),
+          ),
         ),
+      ),
     };
   }
 
@@ -178,7 +194,11 @@ export class WorkspacesCrudController
     const workspaceUserRole = await this.getWorkspaceUserRole(workspaceEntity.id, context);
 
     return {
-      resource: WorkspacesCrudController.formatWorkspace(workspaceEntity, workspaceUserRole),
+      resource: WorkspacesCrudController.formatWorkspace(
+        workspaceEntity,
+        await this.getWorkspaceUsersCount(workspaceEntity.id),
+        workspaceUserRole,
+      ),
     };
   }
 

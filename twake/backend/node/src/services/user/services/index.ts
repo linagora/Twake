@@ -8,8 +8,6 @@ import UserServiceAPI, {
 import { getService as getUserService } from "./users";
 import { getService as getCompanyService } from "./companies";
 import { getService as getExternalService } from "./external_links";
-import { getService as getWorkspaceService } from "../../workspaces/services/workspace";
-import { WorkspaceServiceAPI } from "../../workspaces/api";
 import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 import {
   CompanyObject,
@@ -34,13 +32,11 @@ class Service implements UserServiceAPI {
   users: UsersServiceAPI;
   companies: CompaniesServiceAPI;
   external: UserExternalLinksServiceAPI;
-  workspaces: WorkspaceServiceAPI;
 
   constructor(databaseService: DatabaseServiceAPI, searchService: SearchServiceAPI) {
     this.users = getUserService(databaseService, searchService);
     this.external = getExternalService(databaseService);
     this.companies = getCompanyService(databaseService);
-    this.workspaces = getWorkspaceService(databaseService, this.users);
   }
 
   async init(context: TwakeContext): Promise<this> {
@@ -49,7 +45,6 @@ class Service implements UserServiceAPI {
         this.users.init(context),
         this.companies.init(context),
         this.external.init(context),
-        this.workspaces.init(context),
       ]);
     } catch (err) {
       console.error("Error while initializing user service", err);

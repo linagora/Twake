@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
+  CrudExeption,
   ExecutionContext,
   ListResult,
-  CrudExeption,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
 
@@ -13,16 +13,13 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../utils/types";
-import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../api";
+import UserServiceAPI from "../api";
 
 import User from "../entities/user";
 import {
   CompanyObject,
   CompanyParameters,
-  CompanyShort,
   CompanyUserObject,
-  CompanyUserRole,
-  CompanyUserStatus,
   DeregisterDeviceParams,
   RegisterDeviceBody,
   RegisterDeviceParams,
@@ -32,7 +29,6 @@ import {
 } from "./types";
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
-import { WorkspaceUsersRequest } from "../../workspaces/web/types";
 
 export class UsersCrudController
   implements

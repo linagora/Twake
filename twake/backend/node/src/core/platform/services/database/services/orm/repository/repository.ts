@@ -5,6 +5,7 @@ import { Connector } from "../connectors";
 import Manager from "../manager";
 import { EntityTarget } from "../types";
 import { getEntityDefinition } from "../utils";
+import { assign } from "lodash";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type FindFilter = { [key: string]: any };
@@ -96,5 +97,11 @@ export default class Repository<EntityType> {
 
   async remove(entity: EntityType): Promise<void> {
     await (await this.manager.remove(entity).flush()).reset();
+  }
+
+  //Avoid using this except when no choice
+  createEntityFromObject(object: any): EntityType {
+    const entity = new (this.entityType as any)() as EntityType;
+    return assign(entity, object);
   }
 }
