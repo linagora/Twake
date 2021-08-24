@@ -54,7 +54,7 @@ class Service implements FileServiceAPI {
     context: CompanyExecutionContext,
   ): Promise<File> {
     const userId = context.user?.id;
-    const applicationId: string | null = context.user.application_id || null;
+    const applicationId: string | null = context.user?.application_id || null;
 
     let entity: File = null;
     if (id) {

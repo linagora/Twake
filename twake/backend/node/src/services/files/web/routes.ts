@@ -14,14 +14,14 @@ const routes: FastifyPluginCallback<{ service: FileServiceAPI }> = (
   fastify.route({
     method: "POST",
     url: filesUrl,
-    preValidation: [fastify.authenticate],
+    preValidation: [], //[fastify.authenticate],
     handler: fileController.save.bind(fileController),
   });
 
   fastify.route({
     method: "POST",
     url: `${filesUrl}/:id`,
-    preValidation: [fastify.authenticate],
+    preValidation: [], //[fastify.authenticate],
     handler: fileController.save.bind(fileController),
   });
 
@@ -34,14 +34,14 @@ const routes: FastifyPluginCallback<{ service: FileServiceAPI }> = (
   fastify.route({
     method: "GET",
     url: `${filesUrl}/:id`,
-    preValidation: [fastify.authenticate],
+    preValidation: [], //[fastify.authenticate],
     handler: fileController.get.bind(fileController),
   });
 
   fastify.route({
     method: "DELETE",
     url: `${filesUrl}/:id`,
-    preValidation: [fastify.authenticate],
+    preValidation: [], //[fastify.authenticate],
     handler: fileController.delete.bind(fileController),
   });
 

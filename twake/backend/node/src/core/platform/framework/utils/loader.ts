@@ -1,4 +1,5 @@
 import { logger } from "../logger";
+import fs from "fs";
 
 export class Loader {
   constructor(readonly paths: string[]) {}
@@ -12,10 +13,13 @@ export class Loader {
 
     let classes = await Promise.all(
       modulesPaths.map(async modulePath => {
-        try {
-          return await import(modulePath);
-        } catch (err) {
-          logger.debug({ err }, `${modulePath} can not be loaded`);
+        if (fs.existsSync(modulePath + "/index.js")) {
+          //Fixme: probably a better way to handle this
+          try {
+            return await import(modulePath);
+          } catch (err) {
+            logger.debug({ err }, `${modulePath} can not be loaded`);
+          }
         }
       }),
     );

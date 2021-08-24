@@ -139,6 +139,7 @@
     "messages",
     "files",
     "workspaces",
-    "console"
+    "console",
+    "previews"
   ]
 }
