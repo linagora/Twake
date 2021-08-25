@@ -23,7 +23,16 @@ describe("The /users API", () => {
 
   beforeAll(async ends => {
     const platform = await init({
-      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
+      services: [
+        "database",
+        "search",
+        "pubsub",
+        "websocket",
+        "webserver",
+        "user",
+        "auth",
+        "platform-services",
+      ],
     });
 
     testDbService = await TestDbService.getInstance(platform);

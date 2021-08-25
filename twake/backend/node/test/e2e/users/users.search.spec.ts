@@ -8,7 +8,18 @@ describe("The /users API", () => {
   let platform: TestPlatform;
 
   beforeEach(async ends => {
-    platform = await init();
+    platform = await init({
+      services: [
+        "database",
+        "search",
+        "pubsub",
+        "websocket",
+        "webserver",
+        "user",
+        "auth",
+        "platform-services",
+      ],
+    });
     ends();
   });
 

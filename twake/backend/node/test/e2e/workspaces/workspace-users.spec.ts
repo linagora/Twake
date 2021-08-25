@@ -38,7 +38,19 @@ describe("The /workspace users API", () => {
   };
 
   beforeAll(async ends => {
-    platform = await init();
+    platform = await init({
+      services: [
+        "database",
+        "pubsub",
+        "search",
+        "webserver",
+        "user",
+        "workspaces",
+        "auth",
+        "console",
+        "platform-services",
+      ],
+    });
 
     companyId = platform.workspace.company_id;
 
