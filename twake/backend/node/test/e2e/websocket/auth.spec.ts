@@ -19,6 +19,7 @@ describe("The Websocket authentication", () => {
         "search",
         "realtime",
         "channels" /* FIXME: platform is not started if a business service is not in dependencies */,
+        "platform-services",
       ],
     });
 
