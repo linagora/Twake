@@ -238,10 +238,8 @@ export class UserService implements UsersServiceAPI {
     user.devices = user.devices || [];
     user.devices.push(id);
 
-    await Promise.all([
-      this.repository.save(user),
-      this.deviceRepository.save(getDeviceInstance({ id, type, version, user_id: user.id })),
-    ]);
+    await this.repository.save(user);
+    await this.deviceRepository.save(getDeviceInstance({ id, type, version, user_id: user.id }));
   }
 
   async deregisterUserDevice(id: string): Promise<void> {

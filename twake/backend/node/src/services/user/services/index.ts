@@ -97,7 +97,7 @@ class Service implements UserServiceAPI {
         ...resUser,
         preference: {
           locale: user.preferences?.language || user.language,
-          timezone: user.preferences?.timezone || user.timezone,
+          timezone: user.preferences?.timezone || parseInt(user.timezone),
           allow_tracking: user.preferences?.allow_tracking || false,
         },
 

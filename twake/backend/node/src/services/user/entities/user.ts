@@ -86,10 +86,10 @@ export default class User {
   thumbnail_id: string;
 
   @Column("language", "string")
-  language: string;
+  language: string; //Depreciated (php legacy)
 
-  @Column("timezone", "number")
-  timezone: number;
+  @Column("timezone", "string")
+  timezone: string; //Depreciated (php legacy)
 
   @Column("preferences", "encoded_json")
   preferences: null | {
