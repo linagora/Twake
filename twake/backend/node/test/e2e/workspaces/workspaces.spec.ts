@@ -13,18 +13,7 @@ describe("The /workspaces API", () => {
   let companyId = "";
 
   beforeAll(async ends => {
-    platform = await init({
-      services: [
-        "database",
-        "pubsub",
-        "webserver",
-        "user",
-        "search",
-        "workspaces",
-        "auth",
-        "console",
-      ],
-    });
+    platform = await init();
 
     companyId = platform.workspace.company_id;
 

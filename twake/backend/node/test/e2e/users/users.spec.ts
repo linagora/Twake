@@ -12,9 +12,7 @@ describe("The /users API", () => {
   const nonExistentId = uuidv1();
 
   beforeEach(async ends => {
-    platform = await init({
-      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
-    });
+    platform = await init();
     ends();
   });
   afterEach(async ends => {

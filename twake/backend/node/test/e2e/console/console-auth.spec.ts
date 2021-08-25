@@ -34,18 +34,7 @@ describe("The console API auth", () => {
   let consoleOptions: ConsoleOptions = null;
 
   beforeAll(async ends => {
-    platform = await init({
-      services: [
-        "database",
-        "pubsub",
-        "search",
-        "webserver",
-        "user",
-        "workspaces",
-        "auth",
-        "console",
-      ],
-    });
+    platform = await init();
 
     await platform.database.getConnector().init();
     testDbService = await TestDbService.getInstance(platform);

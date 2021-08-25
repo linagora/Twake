@@ -40,18 +40,7 @@ describe("The console API hooks", () => {
   let consoleOptions: ConsoleOptions = null;
 
   beforeAll(async ends => {
-    platform = await init({
-      services: [
-        "database",
-        "pubsub",
-        "webserver",
-        "search",
-        "user",
-        "workspaces",
-        "auth",
-        "console",
-      ],
-    });
+    platform = await init();
 
     await platform.database.getConnector().init();
     testDbService = await TestDbService.getInstance(platform);

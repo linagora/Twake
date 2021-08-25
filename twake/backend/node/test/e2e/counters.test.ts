@@ -41,9 +41,7 @@ describe("Counters implementation", () => {
   };
 
   beforeAll(async ends => {
-    platform = await init({
-      services: ["database", "pubsub", "webserver", "auth"],
-    });
+    platform = await init();
 
     database = platform.platform.getProvider<DatabaseServiceAPI>("database");
     expect(database).toBeTruthy();
