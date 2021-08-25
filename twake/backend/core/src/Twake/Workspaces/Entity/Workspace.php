@@ -72,7 +72,8 @@ class Workspace extends SearchableObject
     private $uniquename;
 
     /**
-     * @ORM\ManyToOne(name="company_id", targetEntity="Twake\Workspaces\Entity\Group")
+     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Group")
+     * @ORM\JoinColumn(name="company_id")
      */
     private $group;
 
