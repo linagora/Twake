@@ -10,7 +10,7 @@ use Twake\Core\Entity\SearchableObject;
 /**
  * Workspace
  *
- * @ORM\Table(name="workspace",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}, {"group_id":"ASC", "id":"ASC"}, {"group_id":"ASC"}}})
+ * @ORM\Table(name="workspaces",options={"engine":"MyISAM", "scylladb_keys": {{"company_id":"ASC", "id":"ASC"}, {"id":"ASC"}, {"company_id":"ASC"}}})
  * @ORM\Entity()
  */
 class Workspace extends SearchableObject
@@ -116,7 +116,7 @@ class Workspace extends SearchableObject
         $return = Array(
             "id" => $this->getId() . "",
             "name" => $this->getName(),
-            "group_id" => $this->getGroup() ? $this->getGroup()->getId() . "" : "",
+            "company_id" => $this->getGroup() ? $this->getGroup()->getId() . "" : "",
             "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
         );
         return $return;

@@ -41,7 +41,8 @@ export class WorkspaceUsersCrudController
       ResourceCreateResponse<WorkspaceUserObject>,
       ResourceListResponse<WorkspaceUserObject>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,

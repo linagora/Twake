@@ -5,6 +5,7 @@ namespace Twake\Core\Services\DoctrineAdapter\DBAL\Types;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 
+
 class TwakeTextType extends StringType
 {
     /**
@@ -26,28 +27,7 @@ class TwakeTextType extends StringType
 
     public function convertToPHPValue($original_data, AbstractPlatform $platform)
     {
-        if (substr($original_data, 0, 10) == "encrypted_") {
-            $data = substr($original_data, 10);
-            $data = explode("_", $data);
-            $salt = isset($data[1]) ? $data[1] : "";
-            $iv = isset($data[2]) ? base64_decode($data[2]) : $this->iv;
-            $data = base64_decode($data[0]);
-            try {
-                $data = openssl_decrypt(
-                    $data,
-                    "AES-256-CBC",
-                    $this->secretKey . $salt,
-                    true,
-                    $iv
-                );
-            } catch (\Exception $e) {
-                $data = $original_data;
-            }
-        } else {
-            $data = $original_data;
-        }
-
-        return $data;
+        return $this->legacyDecrypt($original_data);
     }
 
     public function convertToDatabaseValue($data, AbstractPlatform $platform)
@@ -87,6 +67,31 @@ class TwakeTextType extends StringType
     public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
         return "TEXT";
+    }
+
+    private function legacyDecrypt($original_data){
+        if (substr($original_data, 0, 10) == "encrypted_") {
+            $data = substr($original_data, 10);
+            $data = explode("_", $data);
+            $salt = isset($data[1]) ? $data[1] : "";
+            $iv = isset($data[2]) ? base64_decode($data[2]) : $this->iv;
+            $data = base64_decode($data[0]);
+            try {
+                $data = openssl_decrypt(
+                    $data,
+                    "AES-256-CBC",
+                    $this->secretKey . $salt,
+                    true,
+                    $iv
+                );
+            } catch (\Exception $e) {
+                $data = $original_data;
+            }
+        } else {
+            $data = $original_data;
+        }
+
+        return $data;
     }
 
 }

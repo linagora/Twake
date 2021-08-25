@@ -1,6 +1,6 @@
 import { getLogger, Initializable } from "../../../../../core/platform/framework";
 import { localEventBus } from "../../../../../core/platform/framework/pubsub";
-import { Channel as ChannelEntity } from "../../../entities/";
+import { Channel as ChannelEntity, ChannelMember } from "../../../entities/";
 import { ResourceEventsPayload } from "../../../../../utils/types";
 import { ActivityObjectType, ActivityPublishedType } from "./types";
 import _, { sortBy } from "lodash";
@@ -32,7 +32,7 @@ export default class Activities implements Initializable {
       //Fixme: We don't show activity from user himself,
       // in the future when we aggregate activities then we could keep it,
       // but for now it is polution in the channel
-      if (data.resourcesAfter[0].id === data.actor.id) {
+      if ((data.resourcesAfter[0] as ChannelMember).user_id === data.actor.id) {
         return;
       }
       this.notify(

@@ -30,7 +30,8 @@ export class WorkspacesCrudController
       ResourceCreateResponse<WorkspaceObject>,
       ResourceListResponse<WorkspaceObject>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
@@ -51,7 +52,7 @@ export class WorkspacesCrudController
   private static formatWorkspace(workspace: Workspace, role?: WorkspaceUserRole): WorkspaceObject {
     const res: WorkspaceObject = {
       id: workspace.id,
-      company_id: workspace.group_id,
+      company_id: workspace.company_id,
       name: workspace.name,
       logo: workspace.logo,
 
@@ -77,7 +78,7 @@ export class WorkspacesCrudController
     const context = getExecutionContext(request);
 
     const workspace = await this.workspaceService.get({
-      group_id: context.company_id,
+      company_id: context.company_id,
       id: request.params.id,
     });
 

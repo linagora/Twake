@@ -1,18 +1,21 @@
+import { Type } from "class-transformer";
 import { merge } from "lodash";
-import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import {
+  Column,
+  Entity,
+} from "../../../../core/platform/services/database/services/orm/decorators";
 
-export const TYPE = "workspaces";
-
+export const TYPE = "workspace";
 @Entity(TYPE, {
-  primaryKey: [["company_id"], "id"],
+  primaryKey: [["id"]],
   type: TYPE,
 })
-export default class Workspace {
+export class PhpWorkspace {
   @Column("id", "timeuuid")
   id: string;
 
-  @Column("company_id", "timeuuid")
-  company_id: string;
+  @Column("group_id", "timeuuid")
+  group_id: string;
 
   @Column("name", "encoded_string")
   name: string;
@@ -36,8 +39,8 @@ export default class Workspace {
   dateAdded: number;
 }
 
-export type WorkspacePrimaryKey = Partial<Pick<Workspace, "company_id" | "id">>;
+export type PhpMessagePrimaryKey = Pick<PhpWorkspace, "id">;
 
-export function getInstance(workspace: Partial<Workspace> & WorkspacePrimaryKey): Workspace {
-  return merge(new Workspace(), workspace);
+export function getInstance(message: PhpWorkspace): PhpWorkspace {
+  return merge(new PhpWorkspace(), message);
 }
