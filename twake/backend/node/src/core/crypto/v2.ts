@@ -15,11 +15,11 @@ function encrypt(
   try {
     const iv = options.disableSalts ? "0000000000000000" : randomBytes(16);
     const cipher = createCipheriv("aes-256-gcm", key, iv);
-    const encrypted = Buffer.concat([cipher.update(JSON.stringify(data)), cipher.final()]).toString(
-      "base64",
-    );
+    const encrypted =
+      cipher.update(JSON.stringify(data), "utf8", "base64") + cipher.final("base64");
+
     return {
-      data: `${iv.toString("base64")}:${encrypted}`,
+      data: `${iv.toString("base64")}:${cipher.getAuthTag().toString("base64")}:${encrypted}`,
       done: true,
     };
   } catch (err) {
@@ -36,7 +36,7 @@ function decrypt(data: string, encryptionKey: any): CryptoResult {
 
   const encryptedArray = data.split(":");
 
-  if (!encryptedArray.length || encryptedArray.length !== 2) {
+  if (!encryptedArray.length || encryptedArray.length !== 3) {
     return {
       data,
       done: false,
@@ -49,11 +49,14 @@ function decrypt(data: string, encryptionKey: any): CryptoResult {
   }
 
   try {
-    const encrypted = Buffer.from(encryptedArray[1], "base64");
     const decipher = createDecipheriv("aes-256-gcm", key, iv);
-    const decrypt = JSON.parse(
-      Buffer.concat([decipher.update(encrypted), decipher.final()]).toString(),
-    );
+    decipher.setAuthTag(Buffer.from(encryptedArray[1], "base64"));
+
+    const encrypted = encryptedArray[2];
+    let str = decipher.update(encrypted, "base64", "utf8");
+    str += decipher.final("utf8");
+    const decrypt = JSON.parse(str);
+
     return {
       data: decrypt,
       done: true,
