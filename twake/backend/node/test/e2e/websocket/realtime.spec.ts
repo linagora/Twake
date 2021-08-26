@@ -9,16 +9,16 @@ describe("The Realtime API", () => {
   beforeEach(async ends => {
     platform = await init({
       services: [
-        "pubsub",
         "webserver",
+        "database",
+        "search",
+        "storage",
+        "pubsub",
         "user",
         "auth",
         "websocket",
         "realtime",
-        "database",
-        "search",
         "channels" /* FIXME: platform is not started if a business service is not in dependencies */,
-        "storage",
         "platform-services",
       ],
     });
