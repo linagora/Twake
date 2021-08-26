@@ -31,6 +31,7 @@ describe("The Channels Realtime feature", () => {
         "database",
         "search",
         "realtime",
+        "platform-services",
       ],
     });
     channelUtils = getChannelUtils(platform);

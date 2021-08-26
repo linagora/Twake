@@ -31,6 +31,7 @@ describe("The Messages Threads feature", () => {
         "search",
         "realtime",
         "channels",
+        "platform-services",
       ],
     });
   });
@@ -244,7 +245,7 @@ describe("The Messages Threads feature", () => {
   });
 });
 
-function getContext(platform) {
+function getContext(platform: TestPlatform) {
   return {
     company: { id: platform.workspace.company_id },
     user: { id: platform.currentUser.id },

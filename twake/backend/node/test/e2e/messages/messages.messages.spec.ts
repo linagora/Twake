@@ -26,6 +26,7 @@ describe("The Messages feature", () => {
         "search",
         "realtime",
         "channels",
+        "platform-services",
       ],
     });
   });

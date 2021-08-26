@@ -24,6 +24,7 @@ describe("The Bookmarks Realtime feature", () => {
         "search",
         "realtime",
         "channels",
+        "platform-services",
       ],
     });
   });
@@ -63,7 +64,7 @@ describe("The Bookmarks Realtime feature", () => {
                 getContext(platform),
               );
             });
-            socket.on("realtime:resource", event => {
+            socket.on("realtime:resource", (event: any) => {
               expect(event.type).toEqual("user_message_bookmark");
               expect(event.action).toEqual("saved");
               expect(event.resource.name).toEqual("mybookmarksaved");
@@ -115,7 +116,7 @@ describe("The Bookmarks Realtime feature", () => {
                 getContext(platform),
               );
             });
-            socket.on("realtime:resource", event => {
+            socket.on("realtime:resource", (event: any) => {
               expect(event.type).toEqual("user_message_bookmark");
               expect(event.action).toEqual("deleted");
               done();

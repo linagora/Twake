@@ -28,6 +28,7 @@ describe("The direct channels API", () => {
         "channels",
         "auth",
         "database",
+        "platform-services",
       ],
     });
     channelUtils = getChannelUtils(platform);
