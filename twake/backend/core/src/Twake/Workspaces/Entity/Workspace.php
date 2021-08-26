@@ -10,7 +10,7 @@ use Twake\Core\Entity\SearchableObject;
 /**
  * Workspace
  *
- * @ORM\Table(name="workspaces",options={"engine":"MyISAM", "scylladb_keys": {{"company_id":"ASC", "id":"ASC"}, {"id":"ASC"}, {"company_id":"ASC"}}})
+ * @ORM\Table(name="workspaces",options={"engine":"MyISAM", "scylladb_keys": {{"company_id":"ASC", "id":"ASC"}, {"id":"ASC"}}})
  * @ORM\Entity()
  */
 class Workspace extends SearchableObject
