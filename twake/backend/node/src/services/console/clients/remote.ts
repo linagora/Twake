@@ -134,7 +134,9 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     return Promise.resolve(undefined);
   }
 
-  async updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company> {
+  async updateLocalCompanyFromConsole(partialCompanyDTO: ConsoleHookCompany): Promise<Company> {
+    const companyDTO = await this.fetchCompanyInfo(partialCompanyDTO.details.code);
+
     let company = await this.userService.companies.getCompany({
       identity_provider_id: companyDTO.details.code,
     });
@@ -171,7 +173,13 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     return company;
   }
 
-  async updateLocalUserFromConsole(userDTO: ConsoleHookUser): Promise<User> {
+  async updateLocalUserFromConsole(partialUserDTO: ConsoleHookUser): Promise<User> {
+    const userDTO = await this.fetchUserInfo(partialUserDTO._id);
+
+    if (!userDTO) {
+      throw CrudExeption.badRequest("User not found on Console");
+    }
+
     const roles = userDTO.roles;
 
     let user = await this.userService.users.getByConsoleId(userDTO._id);
@@ -268,6 +276,18 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
   }
 
+  async removeUser(consoleUserId: string): Promise<void> {
+    let user = await this.userService.users.getByConsoleId(consoleUserId);
+
+    if (!user) {
+      throw new Error("User does not exists on Twake.");
+    }
+
+    await this.userService.users.anonymizeAndDelete(user, {
+      user: { id: user.id, server_request: true },
+    });
+  }
+
   async removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
     await this.userService.companies.removeCompany(companySearchKey);
   }
@@ -281,6 +301,23 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         },
       })
       .then(({ data }) => data.company)
+      .catch(e => {
+        if (e.response.status === 401) {
+          throw CrudExeption.forbidden("Bad console credentials");
+        }
+        throw e;
+      });
+  }
+
+  fetchUserInfo(consoleUserId: string): Promise<ConsoleHookUser> {
+    return this.client
+      .get(`/api/users/${consoleUserId}`, {
+        auth: this.auth(),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(({ data }) => data)
       .catch(e => {
         if (e.response.status === 401) {
           throw CrudExeption.forbidden("Bad console credentials");
@@ -303,6 +340,31 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .catch(e => {
         if (e.response.status === 401) {
           throw CrudExeption.forbidden("Bad access token credentials");
+        }
+        throw e;
+      });
+  }
+
+  async resendVerificationEmail(email: string) {
+    return this.client
+      .post(
+        "/api/users/resend-verification-email",
+        {
+          email,
+        },
+        {
+          auth: this.auth(),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      )
+      .then(({ data }) => {
+        return data;
+      })
+      .catch(e => {
+        if (e.response.status === 401) {
+          throw CrudExeption.forbidden("Bad credentials");
         }
         throw e;
       });

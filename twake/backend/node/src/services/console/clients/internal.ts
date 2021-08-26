@@ -84,11 +84,19 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
     throw new Error("Method should not be implemented.");
   }
 
+  removeUser(consoleUserId: string): Promise<void> {
+    throw new Error("Method should not be implemented.");
+  }
+
   fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
     throw new Error("Method should not be implemented.");
   }
 
   getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser> {
+    throw new Error("Method should not be implemented.");
+  }
+
+  resendVerificationEmail(accessToken: string): Promise<void> {
     throw new Error("Method should not be implemented.");
   }
 }

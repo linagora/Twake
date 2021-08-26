@@ -105,8 +105,8 @@ export interface ResourceEventsPayload {
   member?: ChannelMember;
   message?: Pick<MessageNotification, "sender" | "workspace_id" | "thread_id">;
   actor?: User;
-  resourcesBefore?: (User | ChannelEntity | ChannelTab)[];
-  resourcesAfter?: (User | ChannelEntity | ChannelTab)[];
+  resourcesBefore?: (User | ChannelEntity | ChannelTab | ChannelMember)[];
+  resourcesAfter?: (User | ChannelEntity | ChannelTab | ChannelMember)[];
   tab?: ChannelTab;
   company?: { id: string };
 }

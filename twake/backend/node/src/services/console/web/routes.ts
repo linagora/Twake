@@ -68,6 +68,13 @@ const routes: FastifyPluginCallback<{
     handler: controller.tokenRenewal.bind(controller),
   });
 
+  fastify.route({
+    method: "POST",
+    url: "/resend-verification-email",
+    preValidation: [fastify.authenticate],
+    handler: controller.resendVerificationEmail.bind(controller),
+  });
+
   next();
 };
 

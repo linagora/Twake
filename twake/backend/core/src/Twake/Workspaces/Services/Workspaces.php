@@ -769,7 +769,7 @@ class Workspaces
                 "bool" => Array(
                     "must" => Array(
                         "match_phrase" => Array(
-                            "group_id" => $group_id
+                            "company_id" => $group_id
                         )
                     )
 //                        "should" => $terms,
