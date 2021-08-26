@@ -70,26 +70,17 @@ export async function loadComponents(
   return result;
 }
 
-export function switchComponentsToState(
+export async function switchComponentsToState(
   components: Map<string, TwakeComponent>,
   state: TwakeServiceState.Initialized | TwakeServiceState.Started | TwakeServiceState.Stopped,
-): Subject<boolean> {
-  const subject = new Subject<boolean>();
+): Promise<void> {
   const states = [];
 
   for (const [name, component] of components) {
     logger.info(`Asking for ${state} on ${name} dependencies`);
     states.push(component.getServiceInstance().state);
-    component.switchToState(state);
+    await component.switchToState(state);
   }
 
-  const subscription = combineLatest(states)
-    .pipe(filter((value: Array<TwakeServiceState>) => value.every(v => v === state)))
-    .subscribe(() => {
-      logger.info(`All components are now in ${state} state`);
-      subject.complete();
-      subscription.unsubscribe();
-    });
-
-  return subject;
+  logger.info(`All components are now in ${state} state`);
 }

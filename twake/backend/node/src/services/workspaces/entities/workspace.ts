@@ -1,18 +1,18 @@
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
-export const TYPE = "workspace";
+export const TYPE = "workspaces";
 
 @Entity(TYPE, {
-  primaryKey: [["group_id"], "id"],
+  primaryKey: [["company_id"], "id"],
   type: TYPE,
 })
 export default class Workspace {
   @Column("id", "timeuuid")
   id: string;
 
-  @Column("group_id", "timeuuid")
-  group_id: string;
+  @Column("company_id", "timeuuid")
+  company_id: string;
 
   @Column("name", "encoded_string")
   name: string;
@@ -36,7 +36,7 @@ export default class Workspace {
   dateAdded: number;
 }
 
-export type WorkspacePrimaryKey = Partial<Pick<Workspace, "group_id" | "id">>;
+export type WorkspacePrimaryKey = Partial<Pick<Workspace, "company_id" | "id">>;
 
 export function getInstance(workspace: Partial<Workspace> & WorkspacePrimaryKey): Workspace {
   return merge(new Workspace(), workspace);

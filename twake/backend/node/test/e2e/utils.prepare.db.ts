@@ -76,13 +76,13 @@ export class TestDbService {
         id: workspacePk.id,
         name: name,
         logo: "workspace_logo",
-        group_id: workspacePk.group_id,
+        company_id: workspacePk.company_id,
       }),
     );
 
     const createdWorkspace = await this.userService.workspaces.get({
       id: workspacePk.id,
-      group_id: workspacePk.group_id,
+      company_id: workspacePk.company_id,
     });
 
     if (!createdWorkspace) {
@@ -181,7 +181,7 @@ export class TestDbService {
     for (const user of allUsers) {
       const userInCompany = await this.companyUserRepository.findOne({
         user_id: user.id,
-        group_id: companyId,
+        company_id: companyId,
       });
       if (userInCompany) {
         companyUsers.push(user);

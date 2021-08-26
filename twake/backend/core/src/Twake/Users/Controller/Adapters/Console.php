@@ -26,7 +26,7 @@ class Console extends BaseController
     }
     */
 
-    //Redirect hook to the console
+    //Redirect hook to node
     function hook(Request $request)
     {
         if(!$this->isServiceEnabled()){

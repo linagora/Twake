@@ -48,13 +48,20 @@ function decrypt(data: string, encryptionKey: any): CryptoResult {
     iv = "0000000000000000";
   }
 
-  const encrypted = Buffer.from(encryptedArray[1], "hex");
-  const decipher = createDecipheriv("aes-256-cbc", key, iv);
-  const decrypt = JSON.parse(
-    Buffer.concat([decipher.update(encrypted), decipher.final()]).toString(),
-  );
-  return {
-    data: decrypt,
-    done: true,
-  };
+  try {
+    const encrypted = Buffer.from(encryptedArray[1], "hex");
+    const decipher = createDecipheriv("aes-256-cbc", key, iv);
+    const decrypt = JSON.parse(
+      Buffer.concat([decipher.update(encrypted), decipher.final()]).toString(),
+    );
+    return {
+      data: decrypt,
+      done: true,
+    };
+  } catch (err) {
+    return {
+      data,
+      done: false,
+    };
+  }
 }

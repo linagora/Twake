@@ -36,11 +36,11 @@ describe("The /users API", () => {
       await testDbService.createCompany(platform.workspace.company_id);
       const workspacePk = {
         id: platform.workspace.workspace_id,
-        group_id: platform.workspace.company_id,
+        company_id: platform.workspace.company_id,
       };
       const workspacePk2 = {
         id: uuidv1(),
-        group_id: uuidv1(),
+        company_id: uuidv1(),
       };
       await testDbService.createWorkspace(workspacePk);
       await testDbService.createWorkspace(workspacePk2);
@@ -96,10 +96,10 @@ describe("The /users API", () => {
       resources = await search("rbs@twake.app");
       expect(resources[0].email).toBe("rbs@twake.app");
 
-      resources = await search("bob", workspacePk2.group_id);
+      resources = await search("bob", workspacePk2.company_id);
       expect(resources.length).toBe(1);
 
-      resources = await search("rbs@twake.app", workspacePk.group_id);
+      resources = await search("rbs@twake.app", workspacePk.company_id);
       expect(resources[0].email).toBe("rbs@twake.app");
 
       resources = await search("rbs@twake.app", uuidv1());

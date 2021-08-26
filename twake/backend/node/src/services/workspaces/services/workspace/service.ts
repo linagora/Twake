@@ -74,7 +74,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const workspaceToCreate: Workspace = getWorkspaceInstance({
       ...workspace,
       ...{
-        name: await this.getWorkspaceName(workspace.name, workspace.group_id),
+        name: await this.getWorkspaceName(workspace.name, workspace.company_id),
         dateAdded: Date.now(),
         isDeleted: false,
         isArchived: false,
@@ -112,7 +112,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       // ON UPDATE
       workspace = await this.get({
         id: item.id,
-        group_id: context.company_id,
+        company_id: context.company_id,
       });
 
       if (!workspace) {
@@ -131,7 +131,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
     if (!item.id) {
       await this.addUser(
-        { id: workspace.id, group_id: workspace.group_id },
+        { id: workspace.id, company_id: workspace.company_id },
         { id: context.user.id },
         "admin",
       );
@@ -149,7 +149,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     context?: WorkspaceExecutionContext,
   ): Promise<DeleteResult<Workspace>> {
     const primaryKey: Workspace = merge(new Workspace(), {
-      group_id: context.company_id,
+      company_id: context.company_id,
       id: pk.id,
     });
     await this.workspaceRepository.remove(primaryKey);
@@ -161,7 +161,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     options?: ListOptions,
     context?: WorkspaceExecutionContext,
   ): Promise<ListResult<Workspace>> {
-    const pk = { group_id: context.company_id };
+    const pk = { company_id: context.company_id };
 
     return this.workspaceRepository.find(pk, { pagination });
   }
@@ -171,7 +171,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     let nextPage: Pagination = new Pagination("", "100");
     do {
       const tmp = await this.workspaceRepository.find(
-        { group_id: companyId },
+        { company_id: companyId },
         { pagination: nextPage },
       );
       nextPage = tmp.nextPage as Pagination;
@@ -188,7 +188,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   ): Promise<void> {
     const user = await this.users.get(userPk);
     user.cache = Object.assign(user.cache || {}, {
-      companies: _.uniq([...(user.cache?.companies || []), workspacePk.group_id]),
+      companies: _.uniq([...(user.cache?.companies || []), workspacePk.company_id]),
       workspaces: _.uniq([...(user.cache?.workspaces || []), workspacePk.id]),
     });
     await this.users.save(user, {}, { user: { id: user.id, server_request: true } });

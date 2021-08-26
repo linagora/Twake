@@ -67,7 +67,7 @@ const routes: FastifyPluginCallback<{
 
   const checkWorkspace = async (request: FastifyRequest<{ Params: WorkspaceUsersBaseRequest }>) => {
     const workspace = await options.service.workspaces.get({
-      group_id: request.params.company_id,
+      company_id: request.params.company_id,
       id: request.params.workspace_id,
     });
     if (!workspace) {
@@ -83,7 +83,7 @@ const routes: FastifyPluginCallback<{
     const workspaceUser = await options.service.workspaces.getUser({ workspaceId, userId });
     if (!workspaceUser) {
       const workspace = await options.service.workspaces.get({
-        group_id: request.params.company_id,
+        company_id: request.params.company_id,
         id: request.params.workspace_id,
       });
       if (!workspace) {

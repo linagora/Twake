@@ -43,10 +43,10 @@ describe("The /workspace/pending users API", () => {
   beforeAll(async ends => {
     platform = await init({
       services: [
+        "user",
         "database",
         "pubsub",
         "webserver",
-        "user",
         "search",
         "workspaces",
         "auth",
@@ -56,11 +56,12 @@ describe("The /workspace/pending users API", () => {
       ],
     });
 
+    await platform.database.getConnector().drop();
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
-    const ws0pk = { id: uuidv1(), group_id: companyId };
-    const ws1pk = { id: uuidv1(), group_id: companyId };
+    const ws0pk = { id: uuidv1(), company_id: companyId };
+    const ws1pk = { id: uuidv1(), company_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "admin" });
