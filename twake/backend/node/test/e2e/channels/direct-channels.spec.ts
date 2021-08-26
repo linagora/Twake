@@ -20,14 +20,15 @@ describe("The direct channels API", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
+        "webserver",
+        "database",
+        "search",
+        "storage",
         "pubsub",
         "user",
-        "search",
         "websocket",
-        "webserver",
         "channels",
         "auth",
-        "database",
         "storage",
         "platform-services",
       ],
