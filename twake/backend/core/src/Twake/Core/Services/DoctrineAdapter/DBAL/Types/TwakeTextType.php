@@ -116,13 +116,13 @@ class TwakeTextType extends StringType
             ];
         }
 
-        $iv = hex2binModified($encryptedArray[0]);
+        $iv = hex2bin($encryptedArray[0]);
         if ($encryptedArray[0] === "0000000000000000") {
             $iv = "0000000000000000";
         }
 
         try {
-            $str = openssl_decrypt(hex2binModified($encryptedArray[1]), 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+            $str = openssl_decrypt(hex2bin($encryptedArray[1]), 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
             $decrypt = json_decode($str);
 
             return [

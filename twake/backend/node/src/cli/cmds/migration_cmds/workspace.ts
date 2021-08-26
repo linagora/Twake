@@ -56,7 +56,16 @@ class WorkspaceMigrator {
   }
 }
 
-const services = ["user", "search", "channels", "database", "webserver", "pubsub", "workspaces"];
+const services = [
+  "user",
+  "search",
+  "channels",
+  "database",
+  "webserver",
+  "pubsub",
+  "workspaces",
+  "console",
+];
 
 const command: yargs.CommandModule<unknown, unknown> = {
   command: "workspace",
