@@ -65,6 +65,7 @@ const services = [
   "pubsub",
   "workspaces",
   "console",
+  "auth",
 ];
 
 const command: yargs.CommandModule<unknown, unknown> = {
@@ -89,7 +90,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handler: async argv => {
-    const spinner = ora({ text: "Migrating php messages - " }).start();
+    const spinner = ora({ text: "Migrating php worskpaces - " }).start();
     const platform = await twake.run(services);
     const migrator = new WorkspaceMigrator(platform);
 
