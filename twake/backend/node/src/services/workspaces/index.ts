@@ -10,7 +10,7 @@ import { SearchServiceAPI } from "../../core/platform/services/search/api";
 import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
 
 @Prefix("/internal/services/workspaces/v1")
-@Consumes(["platform-services"])
+@Consumes(["platform-services", "console"])
 export default class WorkspaceService extends TwakeService<WorkspaceServiceAPI> {
   version = "1";
   name = "workspaces";
@@ -21,7 +21,7 @@ export default class WorkspaceService extends TwakeService<WorkspaceServiceAPI> 
 
     const fastify = platformServices.fastify.getServer();
     const database = platformServices.database;
-    const console = platformServices.console;
+    const console = this.context.getProvider<ConsoleServiceAPI>("console");
     const search = platformServices.search;
 
     this.service = getService(database, console, search);

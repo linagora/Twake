@@ -22,7 +22,7 @@ export interface PlatformServicesAPI extends TwakeServiceProvider, Initializable
 }
 
 @ServiceName("platform-services")
-@Consumes(["webserver", "database", "search"])
+@Consumes(["webserver", "database", "search", "storage", "pubsub"])
 export default class PlatformService extends TwakeService<PlatformServicesAPI> {
   version = "1";
   name = "platform-services";
