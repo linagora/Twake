@@ -46,9 +46,11 @@ class WorkspaceMigrator {
             (!options.onlyCompany && !options.onlyWorkspace) ||
             options.onlyCompany == `${workspace.group_id}`
           ) {
-            const newWorkspace = getInstance(workspace);
-            newWorkspace.company_id = workspace.group_id;
-            repository.save(newWorkspace);
+            if (!(await repository.findOne({ company_id: workspace.group_id, id: workspace.id }))) {
+              const newWorkspace = getInstance(workspace);
+              newWorkspace.company_id = workspace.group_id;
+              await repository.save(newWorkspace);
+            }
           }
         }
       }
