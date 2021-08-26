@@ -34,7 +34,7 @@ class WorkspaceMigrator {
     let page: Pagination = { limitStr: "100" };
     // For each companies find workspaces
     do {
-      const workspaceListResult = await phpRepository.find({});
+      const workspaceListResult = await phpRepository.find({}, { pagination: page });
       page = workspaceListResult.nextPage as Pagination;
 
       for (const workspace of workspaceListResult.getEntities()) {
