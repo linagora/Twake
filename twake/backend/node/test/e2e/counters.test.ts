@@ -42,7 +42,7 @@ describe("Counters implementation", () => {
 
   beforeAll(async ends => {
     platform = await init({
-      services: ["database", "pubsub", "webserver", "auth", "platform-services"],
+      services: ["database", "pubsub", "webserver", "auth", "storage", "platform-services"],
     });
 
     database = platform.platform.getProvider<DatabaseServiceAPI>("database");

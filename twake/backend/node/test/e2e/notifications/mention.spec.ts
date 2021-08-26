@@ -36,6 +36,7 @@ describe("The notification for user mentions", () => {
         "pubsub",
         "push",
         "notifications",
+        "storage",
         "platform-services",
       ],
     });

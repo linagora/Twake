@@ -48,6 +48,7 @@ describe("The /workspace users API", () => {
         "workspaces",
         "auth",
         "console",
+        "storage",
         "platform-services",
       ],
     });

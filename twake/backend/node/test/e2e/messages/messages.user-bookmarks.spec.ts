@@ -29,6 +29,7 @@ describe("The Messages User Bookmarks feature", () => {
         "search",
         "realtime",
         "channels",
+        "storage",
         "platform-services",
       ],
     });

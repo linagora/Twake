@@ -32,6 +32,7 @@ describe("The Messages feature", () => {
         "search",
         "realtime",
         "channels",
+        "storage",
         "platform-services",
       ],
     });

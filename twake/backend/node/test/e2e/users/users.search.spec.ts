@@ -17,6 +17,7 @@ describe("The /users API", () => {
         "webserver",
         "user",
         "auth",
+        "storage",
         "platform-services",
       ],
     });

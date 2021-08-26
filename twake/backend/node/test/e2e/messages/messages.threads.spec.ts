@@ -31,6 +31,7 @@ describe("The Messages Threads feature", () => {
         "search",
         "realtime",
         "channels",
+        "storage",
         "platform-services",
       ],
     });
