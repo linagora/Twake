@@ -15,10 +15,6 @@ class TwakeTextType extends StringType
     private $secretKey;
     protected $searchable = false;
 
-    /**
-     * Initialization of encryptor
-     * @param string $key
-     */
     public function setEncryptionKey($key)
     {
         $this->secretKey = $key;
@@ -27,7 +23,14 @@ class TwakeTextType extends StringType
 
     public function convertToPHPValue($original_data, AbstractPlatform $platform)
     {
-        return $this->legacyDecrypt($original_data);
+        $data = $this->v2Decrypt($original_data);
+        if(!$data["done"]){
+            $data = $this->v1Decrypt($original_data);
+        }
+        if(!$data["done"]){
+            $data = ["data" => $this->legacyDecrypt($original_data)];
+        }
+        return $data["data"];
     }
 
     public function convertToDatabaseValue($data, AbstractPlatform $platform)
@@ -69,7 +72,72 @@ class TwakeTextType extends StringType
         return "TEXT";
     }
 
-    private function legacyDecrypt($original_data){
+    public function v2Decrypt($data){
+        $key = substr(hash("sha256", $this->secretKey), 0, 32);
+        $encryptedArray = explode(":", $data);
+
+        if (!count($encryptedArray) || count($encryptedArray) !== 3) {
+            return [
+                "data" => $data,
+                "done" => false,
+            ];
+        }
+
+        $iv = base64_decode($encryptedArray[0]);
+        if ($encryptedArray[0] === "0000000000000000") {
+            $iv = "0000000000000000";
+        }
+
+        try {
+            $tag = base64_decode($encryptedArray[1]);
+            $str = openssl_decrypt(base64_decode($encryptedArray[2]), 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $iv, $tag);
+            $decrypt = json_decode($str);
+
+            return [
+                "data" => $decrypt,
+                "done" => true,
+            ];
+        } catch (Error $err) {
+            return [
+                "data" => $data,
+                "done" => false,
+            ];
+        }
+    }
+
+    public function v1Decrypt($data){
+        $key = substr(base64_encode(hash("sha256", $this->secretKey, true)), 0, 32);
+        $encryptedArray = explode(":", $data);
+
+        if (!count($encryptedArray) || count($encryptedArray) !== 2) {
+            return [
+                "data" => $data,
+                "done" => false,
+            ];
+        }
+
+        $iv = hex2binModified($encryptedArray[0]);
+        if ($encryptedArray[0] === "0000000000000000") {
+            $iv = "0000000000000000";
+        }
+
+        try {
+            $str = openssl_decrypt(hex2binModified($encryptedArray[1]), 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+            $decrypt = json_decode($str);
+
+            return [
+                "data" => $decrypt,
+                "done" => true,
+            ];
+        } catch (Error $err) {
+            return [
+                "data" => $data,
+                "done" => false,
+            ];
+        }
+    }
+
+    public function legacyDecrypt($original_data){
         if (substr($original_data, 0, 10) == "encrypted_") {
             $data = substr($original_data, 10);
             $data = explode("_", $data);
