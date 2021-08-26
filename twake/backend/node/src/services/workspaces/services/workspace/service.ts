@@ -161,7 +161,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     options?: ListOptions,
     context?: WorkspaceExecutionContext,
   ): Promise<ListResult<Workspace>> {
-    const pk = { group_id: context.company_id };
+    const pk = { company_id: context.company_id };
 
     return this.workspaceRepository.find(pk, { pagination });
   }
