@@ -149,7 +149,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     context?: WorkspaceExecutionContext,
   ): Promise<DeleteResult<Workspace>> {
     const primaryKey: Workspace = merge(new Workspace(), {
-      group_id: context.company_id,
+      company_id: context.company_id,
       id: pk.id,
     });
     await this.workspaceRepository.remove(primaryKey);
@@ -171,7 +171,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     let nextPage: Pagination = new Pagination("", "100");
     do {
       const tmp = await this.workspaceRepository.find(
-        { group_id: companyId },
+        { company_id: companyId },
         { pagination: nextPage },
       );
       nextPage = tmp.nextPage as Pagination;

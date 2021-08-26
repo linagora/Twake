@@ -153,7 +153,7 @@ export class WorkspacesCrudController
         isArchived: r.archived,
       },
       ...{
-        group_id: request.params.company_id,
+        company_id: request.params.company_id,
         id: request.params.id,
       },
     });
