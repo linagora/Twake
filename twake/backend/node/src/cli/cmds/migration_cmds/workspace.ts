@@ -6,6 +6,7 @@ import { DatabaseServiceAPI } from "../../../core/platform/services/database/api
 import { PhpWorkspace, TYPE as phpTYPE } from "./php-workspace/php-workspace-entity";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Workspace, { TYPE, getInstance } from "../../../services/workspaces/entities/workspace";
+import _ from "lodash";
 
 type Options = {
   from?: string;
@@ -47,7 +48,20 @@ class WorkspaceMigrator {
             options.onlyCompany == `${workspace.group_id}`
           ) {
             if (!(await repository.findOne({ company_id: workspace.group_id, id: workspace.id }))) {
-              const newWorkspace = getInstance(workspace);
+              const newWorkspace = getInstance(
+                _.pick(
+                  workspace,
+                  "id",
+                  "company_id",
+                  "name",
+                  "logo",
+                  "stats",
+                  "is_deleted",
+                  "is_archived",
+                  "is_default",
+                  "date_added",
+                ),
+              );
               newWorkspace.company_id = workspace.group_id;
               await repository.save(newWorkspace);
             }
