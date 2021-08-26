@@ -9,12 +9,16 @@ import WebServerAPI from "../webserver/provider";
 import { DatabaseServiceAPI } from "../database/api";
 import { SearchServiceAPI } from "../search/api";
 import { ConsoleServiceAPI } from "../../../../services/console/api";
+import { PubsubServiceAPI } from "../pubsub/api";
+import StorageService from "../storage";
+import StorageAPI from "../storage/provider";
 
 export interface PlatformServicesAPI extends TwakeServiceProvider, Initializable {
   fastify: WebServerAPI;
   database: DatabaseServiceAPI;
   search: SearchServiceAPI;
-  console: ConsoleServiceAPI;
+  storage: StorageAPI;
+  pubsub: PubsubServiceAPI;
 }
 
 @ServiceName("platform-services")
@@ -26,13 +30,15 @@ export default class PlatformService extends TwakeService<PlatformServicesAPI> {
   public fastify: WebServerAPI;
   public database: DatabaseServiceAPI;
   public search: SearchServiceAPI;
-  public console: ConsoleServiceAPI;
+  public storage: StorageAPI;
+  public pubsub: PubsubServiceAPI;
 
   public async doInit(): Promise<this> {
     this.fastify = this.context.getProvider<WebServerAPI>("webserver");
     this.database = this.context.getProvider<DatabaseServiceAPI>("database");
     this.search = this.context.getProvider<SearchServiceAPI>("search");
-    this.console = this.context.getProvider<ConsoleServiceAPI>("console");
+    this.storage = this.context.getProvider<StorageAPI>("storage");
+    this.pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
     return this;
   }
 
