@@ -11,7 +11,8 @@ import * as ComponentUtils from "../utils/component-utils";
  */
 export abstract class TwakeContainer
   extends TwakeService<TwakeServiceProvider>
-  implements TwakeContext {
+  implements TwakeContext
+{
   private components: Map<string, TwakeComponent>;
   name = "TwakeContainer";
 
@@ -61,9 +62,6 @@ export abstract class TwakeContainer
   protected async switchToState(
     state: TwakeServiceState.Started | TwakeServiceState.Initialized | TwakeServiceState.Stopped,
   ): Promise<void> {
-    const subject$ = ComponentUtils.switchComponentsToState(this.components, state);
-    await subject$.toPromise();
-
-    return;
+    await ComponentUtils.switchComponentsToState(this.components, state);
   }
 }
