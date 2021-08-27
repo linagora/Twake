@@ -12,9 +12,7 @@ describe("The /users API", () => {
   const nonExistentId = uuidv1();
 
   beforeEach(async ends => {
-    platform = await init({
-      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
-    });
+    platform = await init();
     ends();
   });
   afterEach(async ends => {
@@ -25,7 +23,17 @@ describe("The /users API", () => {
 
   beforeAll(async ends => {
     const platform = await init({
-      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
+      services: [
+        "database",
+        "search",
+        "pubsub",
+        "websocket",
+        "webserver",
+        "user",
+        "auth",
+        "storage",
+        "platform-services",
+      ],
     });
 
     testDbService = await TestDbService.getInstance(platform);

@@ -13,17 +13,20 @@ describe("The Bookmarks Realtime feature", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
+        "webserver",
+        "database",
+        "search",
+        "storage",
         "pubsub",
         "user",
-        "search",
         "websocket",
         "webserver",
         "messages",
         "auth",
-        "database",
         "search",
         "realtime",
         "channels",
+        "platform-services",
       ],
     });
   });
@@ -63,7 +66,7 @@ describe("The Bookmarks Realtime feature", () => {
                 getContext(platform),
               );
             });
-            socket.on("realtime:resource", event => {
+            socket.on("realtime:resource", (event: any) => {
               expect(event.type).toEqual("user_message_bookmark");
               expect(event.action).toEqual("saved");
               expect(event.resource.name).toEqual("mybookmarksaved");
@@ -115,7 +118,7 @@ describe("The Bookmarks Realtime feature", () => {
                 getContext(platform),
               );
             });
-            socket.on("realtime:resource", event => {
+            socket.on("realtime:resource", (event: any) => {
               expect(event.type).toEqual("user_message_bookmark");
               expect(event.action).toEqual("deleted");
               done();

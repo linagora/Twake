@@ -9,7 +9,17 @@ describe("The /users API", () => {
 
   beforeEach(async ends => {
     platform = await init({
-      services: ["database", "search", "pubsub", "websocket", "webserver", "user", "auth"],
+      services: [
+        "database",
+        "search",
+        "pubsub",
+        "websocket",
+        "webserver",
+        "user",
+        "auth",
+        "storage",
+        "platform-services",
+      ],
     });
     ends();
   });

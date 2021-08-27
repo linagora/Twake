@@ -21,17 +21,19 @@ describe("The Messages feature", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
+        "webserver",
+        "database",
+        "search",
+        "storage",
         "pubsub",
         "user",
-        "search",
         "websocket",
-        "webserver",
         "messages",
         "auth",
-        "database",
         "search",
         "realtime",
         "channels",
+        "platform-services",
       ],
     });
   });

@@ -20,17 +20,19 @@ describe("The Messages Threads feature", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
+        "webserver",
+        "database",
+        "search",
+        "storage",
         "pubsub",
         "user",
         "search",
         "websocket",
-        "webserver",
         "messages",
         "auth",
-        "database",
-        "search",
         "realtime",
         "channels",
+        "platform-services",
       ],
     });
   });
@@ -244,7 +246,7 @@ describe("The Messages Threads feature", () => {
   });
 });
 
-function getContext(platform) {
+function getContext(platform: TestPlatform) {
   return {
     company: { id: platform.workspace.company_id },
     user: { id: platform.currentUser.id },

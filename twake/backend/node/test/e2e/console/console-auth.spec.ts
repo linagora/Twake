@@ -44,6 +44,8 @@ describe("The console API auth", () => {
         "workspaces",
         "auth",
         "console",
+        "storage",
+        "platform-services",
       ],
     });
 
