@@ -6,6 +6,7 @@ import { DatabaseServiceAPI } from "../../../core/platform/services/database/api
 import { PhpWorkspace, TYPE as phpTYPE } from "./php-workspace/php-workspace-entity";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Workspace, { TYPE, getInstance } from "../../../services/workspaces/entities/workspace";
+import _ from "lodash";
 
 type Options = {
   from?: string;
@@ -33,7 +34,7 @@ class WorkspaceMigrator {
     let page: Pagination = { limitStr: "100" };
     // For each companies find workspaces
     do {
-      const workspaceListResult = await phpRepository.find({});
+      const workspaceListResult = await phpRepository.find({}, { pagination: page });
       page = workspaceListResult.nextPage as Pagination;
 
       for (const workspace of workspaceListResult.getEntities()) {
@@ -46,9 +47,24 @@ class WorkspaceMigrator {
             (!options.onlyCompany && !options.onlyWorkspace) ||
             options.onlyCompany == `${workspace.group_id}`
           ) {
-            const newWorkspace = getInstance(workspace);
-            newWorkspace.company_id = workspace.group_id;
-            repository.save(newWorkspace);
+            if (!(await repository.findOne({ company_id: workspace.group_id, id: workspace.id }))) {
+              const newWorkspace = getInstance(
+                _.pick(
+                  workspace,
+                  "id",
+                  "company_id",
+                  "name",
+                  "logo",
+                  "stats",
+                  "is_deleted",
+                  "is_archived",
+                  "is_default",
+                  "date_added",
+                ),
+              );
+              newWorkspace.company_id = workspace.group_id;
+              await repository.save(newWorkspace);
+            }
           }
         }
       }
@@ -56,7 +72,17 @@ class WorkspaceMigrator {
   }
 }
 
-const services = ["user", "search", "channels", "database", "webserver", "pubsub", "workspaces"];
+const services = [
+  "user",
+  "search",
+  "channels",
+  "database",
+  "webserver",
+  "pubsub",
+  "workspaces",
+  "console",
+  "auth",
+];
 
 const command: yargs.CommandModule<unknown, unknown> = {
   command: "workspace",
@@ -80,7 +106,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handler: async argv => {
-    const spinner = ora({ text: "Migrating php messages - " }).start();
+    const spinner = ora({ text: "Migrating php worskpaces - " }).start();
     const platform = await twake.run(services);
     const migrator = new WorkspaceMigrator(platform);
 

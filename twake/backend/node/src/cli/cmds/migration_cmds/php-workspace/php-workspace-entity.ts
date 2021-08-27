@@ -41,6 +41,6 @@ export class PhpWorkspace {
 
 export type PhpMessagePrimaryKey = Pick<PhpWorkspace, "id">;
 
-export function getInstance(message: PhpWorkspace): PhpWorkspace {
-  return merge(new PhpWorkspace(), message);
+export function getInstance(workspace: PhpWorkspace): PhpWorkspace {
+  return merge(new PhpWorkspace(), workspace);
 }
