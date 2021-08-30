@@ -73,7 +73,7 @@ class TwakeTextType extends StringType
     }
 
     public function v2Decrypt($data){
-        $key = substr(hash("sha256", $this->secretKey), 0, 32);
+        $key = substr(hash("sha256", unpack("H*", $this->secretKey)[1]), 0, 32);
         $encryptedArray = explode(":", $data);
 
         if (!count($encryptedArray) || count($encryptedArray) !== 3) {
@@ -106,7 +106,7 @@ class TwakeTextType extends StringType
     }
 
     public function v1Decrypt($data){
-        $key = substr(base64_encode(hash("sha256", $this->secretKey, true)), 0, 32);
+        $key = substr(base64_encode(hash("sha256", unpack("H*", $this->secretKey)[1], true)), 0, 32);
         $encryptedArray = explode(":", $data);
 
         if (!count($encryptedArray) || count($encryptedArray) !== 2) {
