@@ -3,6 +3,7 @@ import { Multipart } from "fastify-multipart";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
 import { CompanyExecutionContext } from "./web/types";
 import { File } from "./entities/file";
+import { PubsubHandler, PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 
 export type UploadOptions = {
   filename: string;
@@ -13,6 +14,7 @@ export type UploadOptions = {
 };
 
 export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
+  pubsub: PubsubServiceAPI;
   /**
    * Save a file and returns its entity
    *
@@ -46,4 +48,9 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
    * @param context
    */
   get(id: string, context: CompanyExecutionContext): Promise<File>;
+}
+
+export interface FilePubsubHandler<InputMessage, OutputMessage>
+  extends PubsubHandler<InputMessage, OutputMessage> {
+  readonly service: FileServiceAPI;
 }

@@ -1,25 +1,28 @@
 const unoconv = require("unoconv-promise");
 
 export async function convertFromOffice(
-  document: { id: string; path: string; provider: string },
+  path: string,
   numberOfPages: number,
-) {
+): Promise<{ output: string; done: boolean }> {
+  console.log("Start conversion with unoconv");
+
   if (numberOfPages >= 1) {
-    const outputPath = `${document.path.split(".")[0]}_temp`;
+    const outputPath = `${path.split(".")[0]}_temp`;
     const processOutputPath = outputPath.split("/");
     processOutputPath.pop();
     processOutputPath.push("tmp");
     const output = `${processOutputPath.join("/")}/${outputPath.split("/").pop()}`;
-    await unoconv
-      .run({
-        file: document.path,
+    try {
+      await unoconv.run({
+        file: path,
         output: `${output}`,
         export: `PageRange=1-${numberOfPages}`,
-      })
-      .catch((e: any) => {
-        throw e;
       });
+    } catch (err) {
+      console.log(err);
+      return { output: "", done: false };
+    }
 
-    return `${output}.pdf`;
+    return { output: `${output}.pdf`, done: true };
   }
 }

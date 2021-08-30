@@ -1,5 +1,9 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { PreviewServiceAPI } from "../../api";
+import { PubsubService } from "../../../../core/platform/services/pubsub/index";
+import { PubsubMessage } from "../../../../core/platform/services/pubsub/api";
+import { logger } from "../../../../core/platform/framework";
+import { PreviewPubsubRequest } from "../../types";
 
 /*
   //Input parameters
@@ -25,15 +29,31 @@ export class PreviewController {
     request: FastifyRequest<{ Params: { id: string } }>,
     response: FastifyReply,
   ): Promise<any> {
+    console.log("Current working directory: " + __dirname);
     const inputPath =
-      "/Users/t_issarni/twake/Twake/twake/backend/node/src/services/preview/test.docx";
+      "/usr/src/app/src/services/previews/Fiche_de_poste_tca_2020_Titouan-Issarni_LINAGORA.docx"; //"/Users/t_issarni/twake/Twake/twake/backend/node/src/services/previews/test.docx";
     const mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
     const outputPath = `${inputPath.split(".")[0]}_temp`;
     const outputExtension = "png";
     const numberOfPages = 1;
-    const provider = "s3";
-    const document = { id: request.id, path: inputPath, provider: provider };
-    const result = await this.service.generateThumbnails(document, mime, numberOfPages);
+    const provider = "local";
+    const document: PreviewPubsubRequest["document"] = {
+      id: request.id,
+      path: inputPath,
+      provider,
+      filename: inputPath.split("/").pop(),
+      mime,
+    };
+    const output = { path: "/usr/src/app/src/services/previews/", provider: "local", pages: 10 };
+
+    try {
+      this.service.pubsub.publish<PreviewPubsubRequest>("services:preview", {
+        data: { document, output },
+      });
+    } catch (err) {
+      logger.warn({ err }, `Previewing - Error while sending `);
+    }
+    //const result = await this.service.generateThumbnails(document, mime, numberOfPages);
     response.send("computing");
   }
 }

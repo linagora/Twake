@@ -10,6 +10,8 @@ import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
+import { FileEngine } from "./engine";
+import { PreviewPubsubRequest } from "../../../../src/services/previews/types";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -31,16 +33,24 @@ class Service implements FileServiceAPI {
   version: "1";
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";
+  engine: FileEngine;
+  pubsub: PubsubServiceAPI;
 
   constructor(
     readonly database: DatabaseServiceAPI,
-    readonly pubsub: PubsubServiceAPI,
+    pubsub: PubsubServiceAPI,
     readonly storage: StorageAPI,
-  ) {}
+  ) {
+    this.engine = new FileEngine(this, pubsub);
+    this.pubsub = pubsub;
+  }
 
   async init(): Promise<this> {
     try {
-      this.repository = await this.database.getRepository<File>("files", File);
+      await Promise.all([
+        this.engine.init(),
+        (this.repository = await this.database.getRepository<File>("files", File)),
+      ]);
     } catch (err) {
       logger.error("Error while initializing files service", err);
     }
@@ -116,7 +126,7 @@ class Service implements FileServiceAPI {
       const newReadStream = file.file.pipe(cipher);
       const chunk_number = options.chunkNumber;
       const path = `${getFilePath(entity)}/chunk${chunk_number}`;
-
+      console.log("?????????????????????????????????????", getFilePath(entity));
       await this.storage.write(path, newReadStream);
 
       console.log(totalUploadedSize);
@@ -126,6 +136,22 @@ class Service implements FileServiceAPI {
         await this.repository.save(entity);
       }
     }
+    const document: PreviewPubsubRequest["document"] = {
+      id: entity.id,
+      path: getFilePath(entity),
+      provider: "local",
+      filename: entity.metadata.name,
+      mime: entity.metadata.mime,
+    };
+    const output = { path: "/usr/src/app/src/services/previews/", provider: "local", pages: 10 };
+    try {
+      this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
+        data: { document, output },
+      });
+    } catch (err) {
+      logger.warn({ err }, `Previewing - Error while sending `);
+    }
+
     return entity;
   }
 
@@ -173,5 +199,6 @@ class Service implements FileServiceAPI {
 }
 
 function getFilePath(entity: File): string {
-  return `/twake/files/${entity.company_id}/${entity.user_id}/${entity.id}`;
+  // CARE: do not push with userID hardcoded
+  return `/twake/files/${entity.company_id}/bcfe2f79-8e81-42a3-b551-3a32d49b2b4d/${entity.id}`; //${entity.user_id}/${entity.id}`;
 }

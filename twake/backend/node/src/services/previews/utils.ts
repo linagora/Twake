@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import mimes from "./services/mime";
+import mimes from "./services/processing/mime";
 
 function getTmpFile() {
   return `/tmp/${uuidv4()}`;

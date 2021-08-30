@@ -1,13 +1,17 @@
 import { PreviewServiceAPI } from "../api";
-import { generatePreview as thumbnailsFromImages } from "./image";
-import { convertFromOffice } from "./office";
-import { convertFromPdf } from "./pdf";
+import { generatePreview as thumbnailsFromImages } from "./processing/image";
+import { convertFromOffice } from "./processing/office";
+import { convertFromPdf } from "./processing/pdf";
 import { isFileType } from "../utils";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
-import { pdfExtensions, officeExtensions, imageExtensions } from "./mime";
+import { pdfExtensions, officeExtensions, imageExtensions } from "./processing/mime";
 import StorageAPI from "../../../core/platform/services/storage/provider";
 import sharp from "sharp";
+import { logger } from "../../../core/platform/framework";
+import { PreviewEngine } from "./engine";
+import { getService as getPreviewProcessService } from "./processing/index";
+import { PreviewProcessService } from "./processing/service";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -26,35 +30,26 @@ function getServiceInstance(
 }
 class Service implements PreviewServiceAPI {
   version: "1";
+  engine: PreviewEngine;
+  previewProcess: PreviewProcessService;
+  pubsub: PubsubServiceAPI;
 
   constructor(
     readonly database: DatabaseServiceAPI,
-    readonly pubsub: PubsubServiceAPI,
+    pubsub: PubsubServiceAPI,
     readonly storage: StorageAPI,
-  ) {}
+  ) {
+    this.previewProcess = getPreviewProcessService();
+    this.engine = new PreviewEngine(this, pubsub);
+    this.pubsub = pubsub;
+  }
 
-  async generateThumbnails(
-    document: { id: string; path: string; provider: string },
-    mime: string,
-    numberOfPages: number, //can be removed if we decide the number max of page that we can convert in thumbnails
-  ): Promise<sharp.OutputInfo> {
-    const outputPath = document.path.split(".");
-    outputPath.pop();
-    outputPath.push("png");
-    const output = `${outputPath.join(".")}`;
-    if (isFileType(mime, document.path.split("/").pop(), officeExtensions)) {
-      const pdfPath = await convertFromOffice(document, numberOfPages);
-      const thumbnailPath = await convertFromPdf(pdfPath, numberOfPages);
-      return thumbnailsFromImages(thumbnailPath, output);
+  async init(): Promise<this> {
+    try {
+      await this.engine.init();
+    } catch (err) {
+      console.error("Error while initializing preview service", err);
     }
-
-    if (isFileType(mime, document.path.split("/").pop(), pdfExtensions)) {
-      const thumbnailPath = await convertFromPdf(document.path, numberOfPages);
-      return thumbnailsFromImages(thumbnailPath, output);
-    }
-
-    if (isFileType(mime, document.path.split("/").pop(), imageExtensions)) {
-      return thumbnailsFromImages(document.path, output);
-    }
+    return this;
   }
 }
