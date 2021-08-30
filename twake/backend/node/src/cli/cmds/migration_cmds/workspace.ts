@@ -12,6 +12,7 @@ type Options = {
   from?: string;
   onlyCompany?: string;
   onlyWorkspace?: string;
+  replaceExisting?: boolean;
 };
 
 class WorkspaceMigrator {
@@ -47,7 +48,10 @@ class WorkspaceMigrator {
             (!options.onlyCompany && !options.onlyWorkspace) ||
             options.onlyCompany == `${workspace.group_id}`
           ) {
-            if (!(await repository.findOne({ company_id: workspace.group_id, id: workspace.id }))) {
+            if (
+              !(await repository.findOne({ company_id: workspace.group_id, id: workspace.id })) ||
+              options.replaceExisting
+            ) {
               const newWorkspace = getInstance(
                 _.pick(
                   workspace,
@@ -103,6 +107,11 @@ const command: yargs.CommandModule<unknown, unknown> = {
       type: "string",
       description: "Migrate only this workspace ID",
     },
+    replaceExisting: {
+      default: false,
+      type: "boolean",
+      description: "Replace already migrated workspaces",
+    },
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handler: async argv => {
@@ -113,11 +122,13 @@ const command: yargs.CommandModule<unknown, unknown> = {
     const from = argv.from as string | null;
     const onlyCompany = argv.onlyCompany as string | null;
     const onlyWorkspace = argv.onlyWorkspace as string | null;
+    const replaceExisting = (argv.replaceExisting || false) as boolean;
 
     await migrator.run({
       from,
       onlyCompany,
       onlyWorkspace,
+      replaceExisting,
     });
 
     return spinner.stop();
