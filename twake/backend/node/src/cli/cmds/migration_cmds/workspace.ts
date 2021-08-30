@@ -7,6 +7,7 @@ import { PhpWorkspace, TYPE as phpTYPE } from "./php-workspace/php-workspace-ent
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Workspace, { TYPE, getInstance } from "../../../services/workspaces/entities/workspace";
 import _ from "lodash";
+import { logger } from "../../../core/platform/framework";
 
 type Options = {
   from?: string;
@@ -66,6 +67,7 @@ class WorkspaceMigrator {
                   "date_added",
                 ),
               );
+              console.log(workspace, newWorkspace);
               newWorkspace.company_id = workspace.group_id;
               await repository.save(newWorkspace);
             }
