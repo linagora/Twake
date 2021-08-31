@@ -172,7 +172,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       company.logo =
         details.logo ||
         (avatar && avatar.type && avatar.type !== "url"
-          ? this.infos.url.replace(/\/$/, "") + "/avatars/" + avatar.value
+          ? this.infos.url.replace(/\/$/, "") + "/api/avatars/" + avatar.value
           : companyDTO.value || "");
     }
 
@@ -247,7 +247,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     user.picture =
       avatar && avatar.type && avatar.type !== "url"
-        ? this.infos.url.replace(/\/$/, "") + "/avatars/" + avatar.value
+        ? this.infos.url.replace(/\/$/, "") + "/api/avatars/" + avatar.value
         : "";
 
     await this.userService.users.save(user);
