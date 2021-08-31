@@ -146,7 +146,7 @@ class WorkspaceMembers
                 $groupmember = new GroupUser($workspace->getGroup(), $user);
                 $groupmember->increaseNbWorkspace();
                 $groupmember->setLevel(0);
-                $workspace->getGroup()->setMemberCount($group->getMemberCount() + 1);
+                $group->setMemberCount($group->getMemberCount() + 1);
             } else {
                 $groupmember->increaseNbWorkspace();
             }
@@ -155,7 +155,7 @@ class WorkspaceMembers
             $this->doctrine->persist($workspace);
             $this->doctrine->persist($member);
             $this->doctrine->persist($groupmember);
-            $this->doctrine->persist($workspace->getGroup());
+            $this->doctrine->persist($group);
             $this->doctrine->flush();
 
 
