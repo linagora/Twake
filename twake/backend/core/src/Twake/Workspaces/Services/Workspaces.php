@@ -92,7 +92,7 @@ class Workspaces
         $workspace->setIsDefault($default);
 
         if ($groupId != null) {
-            $workspace->setGroup($group);
+            $workspace->setGroup($groupId);
         }
 
         $this->doctrine->persist($workspace);
@@ -106,13 +106,13 @@ class Workspaces
 
         //Create admin level
         $levelAdmin = new WorkspaceLevel();
-        $levelAdmin->setWorkspace($workspace);
+        $levelAdmin->setWorkspace($workspace->getId());
         $levelAdmin->setLabel("Administrator");
         $levelAdmin->setIsAdmin(true);
         $levelAdmin->setIsDefault(false);
 
         $levelUser = new WorkspaceLevel();
-        $levelUser->setWorkspace($workspace);
+        $levelUser->setWorkspace($workspace->getId());
         $levelUser->setLabel("User");
         $levelUser->setIsAdmin(false);
         $levelUser->setIsDefault(true);
@@ -276,7 +276,7 @@ class Workspaces
                         }
                     }
                     if (!$found) {
-                        $app = new WorkspaceApp($workspace, $old_application->getGroupApp()->getId(), $old_application->getAppId());
+                        $app = new WorkspaceApp($workspace->getId(), $old_application->getGroupApp()->getId(), $old_application->getAppId());
                         $this->doctrine->persist($app);
                     }
                 }

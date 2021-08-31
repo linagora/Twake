@@ -85,7 +85,7 @@ class Application extends BaseController
             //Ok
             $tokenE = new Token();
             $tokenE->setUser($this->getUser());
-            $tokenE->setWorkspace($useringroup->getWorkspace($manager));
+            $tokenE->setWorkspace($useringroup->getWorkspace($manager)->getId());
             $tokenE->setApplication($app);
 
             $manager->persist($tokenE);

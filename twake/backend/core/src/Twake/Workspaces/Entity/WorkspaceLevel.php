@@ -27,10 +27,10 @@ class WorkspaceLevel
     protected $label;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Workspace")
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    protected $workspace;
+    protected $workspace_id;
 
     /**
      * @ORM\Column(name="rights", type="string", length=100000)

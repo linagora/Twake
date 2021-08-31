@@ -219,7 +219,7 @@ class WorkspacesApps
             $app->setInstallCount($app->getInstallCount() + 1);
             $this->doctrine->persist($app);
 
-            $workspaceapp = new WorkspaceApp($workspace, $groupapp->getId(), $groupapp->getAppId());
+            $workspaceapp = new WorkspaceApp($workspace->getId(), $groupapp->getId(), $groupapp->getAppId());
             $this->doctrine->persist($workspaceapp);
             $this->doctrine->flush();
 

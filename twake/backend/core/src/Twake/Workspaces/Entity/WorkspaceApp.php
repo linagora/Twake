@@ -24,7 +24,7 @@ class WorkspaceApp
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Workspace")
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
      * @ORM\Id
      */
     private $workspace;
