@@ -16,6 +16,7 @@ import { AccessToken, JWTObject } from "../../../utils/types";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import UserServiceAPI from "../../user/api";
 import assert from "assert";
+import { logger } from "../../../core/platform/framework/logger";
 
 export class ConsoleController {
   private passwordEncoder: PasswordEncoder;
@@ -86,6 +87,8 @@ export class ConsoleController {
     try {
       const context = getExecutionContext(request, this.consoleService);
 
+      logger.info(`Received event ${request.body.type}`);
+
       switch (request.body.type) {
         case "company_user_added":
         case "company_user_activated":
@@ -112,6 +115,7 @@ export class ConsoleController {
           await this.companyUpdated(request.body.content);
           break;
         default:
+          logger.info(`Event not recognized`);
           reply.notImplemented("Unimplemented");
           return;
       }
