@@ -64,7 +64,7 @@ export default class CurrentUser extends Component {
     clearInterval(this.refreshUserState);
   }
   componentDidMount() {
-    const new_status = {...this.users_repository.known_objects_by_id[this.user_id].status_icon};
+    const new_status = { ...this.users_repository.known_objects_by_id[this.user_id].status_icon };
 
     if (!new_status[0]) {
       new_status[1] = '';
@@ -256,12 +256,12 @@ export default class CurrentUser extends Component {
       );
     }
 
-    usermenu.push({ type: 'separator' });
     if (
       !WorkspaceUserRights.isGroupInvite() &&
       (AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'administrator') ||
         AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'administrator'))
     ) {
+      usermenu.push({ type: 'separator' });
       usermenu.push({
         type: 'menu',
         text: Languages.t(
@@ -275,20 +275,7 @@ export default class CurrentUser extends Component {
         },
       });
     }
-    if (InitService.server_infos?.configuration?.accounts?.type !== 'console') {
-      usermenu.push({
-        type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.create_company_page',
-          [],
-          'Créer une entreprise',
-        ),
-        icon: 'plus',
-        onClick: () => {
-          popupManager.open(<CreateCompanyView />);
-        },
-      });
-    }
+
     usermenu = usermenu.concat([
       { type: 'separator' },
       {
