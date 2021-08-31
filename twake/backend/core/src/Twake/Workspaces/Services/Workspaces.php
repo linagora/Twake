@@ -217,7 +217,7 @@ class Workspaces
             if ($workspace && $workspace->getGroup() && !$workspace->getIsArchived() && !$workspace->getisDeleted()) {
 
                 $workspacelevelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
-                $original_workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $original_workspace));
+                $original_workspacelevels = $workspacelevelRepository->findBy(Array("workspace_id" => $original_workspace));
                 $adminLevelId = 0;
                 foreach ($original_workspacelevels as $level) {
                     if ($level->getIsAdmin()) {

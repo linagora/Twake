@@ -210,10 +210,10 @@ class Groups
             $workspaceUsers = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId()));
 
             $workspaceappsRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceApp");
-            $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));
+            $workspaceapps = $workspaceappsRepository->findBy(Array("workspace_id" => $workspace));
 
             $workspacelevelRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceLevel");
-            $workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $workspace));
+            $workspacelevels = $workspacelevelRepository->findBy(Array("workspace_id" => $workspace));
 
             $workspacestatsRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:WorkspaceStats");
             $workspacestats = $workspacestatsRepository->findOneBy(Array("workspace" => $workspace));

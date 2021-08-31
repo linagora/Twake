@@ -46,7 +46,7 @@ class WorkspaceMembers
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
 
-            $level = $levelRepository->findOneBy(Array("workspace" => $workspaceId, "id" => $levelId));
+            $level = $levelRepository->findOneBy(Array("workspace_id" => $workspaceId, "id" => $levelId));
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
@@ -127,7 +127,7 @@ class WorkspaceMembers
                 $level = $this->wls->getDefaultLevel($workspaceId);
             } else {
                 $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
-                $level = $levelRepository->findOneBy(Array("workspace" => $workspaceId, "id" => $levelId));
+                $level = $levelRepository->findOneBy(Array("workspace_id" => $workspaceId, "id" => $levelId));
             }
             $member = new WorkspaceUser($workspace, $user, $level->getId());
             $member->setExterne($asExterne);
@@ -382,7 +382,7 @@ class WorkspaceMembers
             if ($total_membres > 1) {
 
                 //Test if other workspace administrators are present
-                $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $member->getLevelId()));
+                $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace_id" => $workspace->getId(), "id" => $member->getLevelId()));
 
                 if ($currentUserId != null && $level->getIsAdmin()) {
                     $other_workspace_admins = $workspaceUserRepository->findBy(Array("level_id" => $member->getLevelId()));

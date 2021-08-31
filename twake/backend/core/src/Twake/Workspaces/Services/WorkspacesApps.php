@@ -44,7 +44,7 @@ class WorkspacesApps
 
             //Group apps
             $workspaceappsRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceApp");
-            $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));
+            $workspaceapps = $workspaceappsRepository->findBy(Array("workspace_id" => $workspace));
 
             $applicationRepository = $this->doctrine->getRepository("Twake\Market:Application");
             $groupappsRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupApp");
@@ -110,7 +110,7 @@ class WorkspacesApps
             $this->doctrine->persist($app);
 
             $workspaceappsRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceApp");
-            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp_id" => $groupapp->getId()));
+            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace_id" => $workspace, "groupapp_id" => $groupapp->getId()));
 
             if ($groupapp->getWorkspacesCount() <= 0) {
                 $this->doctrine->remove($groupapp);
@@ -205,7 +205,7 @@ class WorkspacesApps
 
             //Search if the App is already enabled
             $workspaceappsRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceApp");
-            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp_id" => $groupapp->getId()));
+            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace_id" => $workspace, "groupapp_id" => $groupapp->getId()));
 
             if ($workspaceapp) {
                 $this->doctrine->persist($groupapp);
