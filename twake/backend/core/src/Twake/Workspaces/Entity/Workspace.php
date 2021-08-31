@@ -27,6 +27,12 @@ class Workspace extends SearchableObject
     private $id;
 
     /**
+     * @ORM\Column(name="company_id", type="twake_timeuuid")
+     * @ORM\Id
+     */
+    private $group;
+
+    /**
      * @ORM\Column(name="name", type="twake_no_salt_text", nullable=true)
      */
     private $name;
@@ -70,11 +76,6 @@ class Workspace extends SearchableObject
      * @ORM\Column(name="uniquename", type="twake_no_salt_text", nullable=true)
      */
     private $uniquename;
-
-    /**
-     * @ORM\Column(name="company_id", type="twake_timeuuid")
-     */
-    private $group;
 
     /**
      * @ORM\Column(name="member_count", type="integer")

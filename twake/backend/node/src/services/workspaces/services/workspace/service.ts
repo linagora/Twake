@@ -38,6 +38,7 @@ import { CompanyUserRole } from "../../../user/web/types";
 import { uuid } from "../../../../utils/types";
 import _ from "lodash";
 import { UsersServiceAPI } from "../../../user/api";
+import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -45,7 +46,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   private workspaceRepository: Repository<Workspace>;
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
 
-  constructor(private database: DatabaseServiceAPI, private users: UsersServiceAPI) {}
+  constructor(
+    private database: DatabaseServiceAPI,
+    private users: UsersServiceAPI,
+    private pubsub: PubsubServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
     this.workspaceUserRepository = await this.database.getRepository<WorkspaceUser>(
@@ -200,6 +205,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
         role: role,
       }),
     );
+
+    await this.pubsub.publish("workspace:member:added", {
+      data: {
+        company_id: workspacePk.company_id,
+        workspace_id: workspacePk.id,
+        user_id: userPk.id,
+      },
+    });
+
+    this;
   }
 
   async updateUserRole(

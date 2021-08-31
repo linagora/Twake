@@ -7,13 +7,15 @@ import { getService as getUsersService } from "../../user/services/users";
 import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
 import { ConsoleServiceAPI } from "../../console/api";
 import { SearchServiceAPI } from "../../../core/platform/services/search/api";
+import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   consoleService: ConsoleServiceAPI,
   searchService: SearchServiceAPI,
+  pubsub: PubsubServiceAPI,
 ): WorkspaceServicesAPI {
-  return new Service(databaseService, consoleService, searchService);
+  return new Service(databaseService, consoleService, searchService, pubsub);
 }
 
 class Service implements WorkspaceServicesAPI {
@@ -27,10 +29,11 @@ class Service implements WorkspaceServicesAPI {
     databaseService: DatabaseServiceAPI,
     consoleService: ConsoleServiceAPI,
     searchService: SearchServiceAPI,
+    pubsub: PubsubServiceAPI,
   ) {
     this.companies = getCompaniesService(databaseService);
     this.users = getUsersService(databaseService, searchService);
-    this.workspaces = getWorkspaceService(databaseService, this.users);
+    this.workspaces = getWorkspaceService(databaseService, this.users, pubsub);
     this.console = consoleService;
   }
 

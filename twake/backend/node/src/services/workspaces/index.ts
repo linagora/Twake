@@ -7,6 +7,7 @@ import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import { ConsoleServiceAPI } from "../console/api";
 import UserServiceAPI from "../user/api";
 import { SearchServiceAPI } from "../../core/platform/services/search/api";
+import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 
 @Prefix("/internal/services/workspaces/v1")
 @Consumes(["webserver", "database", "console", "search"])
@@ -20,8 +21,9 @@ export default class WorkspaceService extends TwakeService<WorkspaceServiceAPI> 
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
     const console = this.context.getProvider<ConsoleServiceAPI>("console");
     const search = this.context.getProvider<SearchServiceAPI>("search");
+    const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
 
-    this.service = getService(database, console, search);
+    this.service = getService(database, console, search, pubsub);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {
