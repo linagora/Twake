@@ -5,6 +5,7 @@ import web from "./web/index";
 import { getService } from "./services";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import { SearchServiceAPI } from "../../core/platform/services/search/api";
+import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 
 @Prefix("/internal/services/users/v1")
 @Consumes(["webserver", "database", "search"])
@@ -17,8 +18,9 @@ export default class UserService extends TwakeService<UserServiceAPI> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
     const database = this.context.getProvider<DatabaseServiceAPI>("database");
     const search = this.context.getProvider<SearchServiceAPI>("search");
+    const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
 
-    this.service = getService(database, search);
+    this.service = getService(database, search, pubsub);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {

@@ -21,12 +21,14 @@ import {
 } from "../web/types";
 import Company from "../entities/company";
 import User from "../entities/user";
+import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   searchService: SearchServiceAPI,
+  pubsub: PubsubServiceAPI,
 ): UserServiceAPI {
-  return new Service(databaseService, searchService);
+  return new Service(databaseService, searchService, pubsub);
 }
 
 class Service implements UserServiceAPI {
@@ -36,11 +38,15 @@ class Service implements UserServiceAPI {
   external: UserExternalLinksServiceAPI;
   workspaces: WorkspaceServiceAPI;
 
-  constructor(databaseService: DatabaseServiceAPI, searchService: SearchServiceAPI) {
+  constructor(
+    databaseService: DatabaseServiceAPI,
+    searchService: SearchServiceAPI,
+    pubsub: PubsubServiceAPI,
+  ) {
     this.users = getUserService(databaseService, searchService);
     this.external = getExternalService(databaseService);
     this.companies = getCompanyService(databaseService);
-    this.workspaces = getWorkspaceService(databaseService, this.users);
+    this.workspaces = getWorkspaceService(databaseService, this.users, pubsub);
   }
 
   async init(context: TwakeContext): Promise<this> {
