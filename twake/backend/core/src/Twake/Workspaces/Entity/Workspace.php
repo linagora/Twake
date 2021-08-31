@@ -360,7 +360,7 @@ class Workspace extends SearchableObject
                 "total_pending" => $this->getPendingCount(),
             ],
 
-            "group" => (($group()) ? $group()->getAsArray() : null),
+            "group" => ($group ? $group->getAsArray() : null),
         );
     }
 
