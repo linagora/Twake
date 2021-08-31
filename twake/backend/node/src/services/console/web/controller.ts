@@ -61,12 +61,6 @@ export class ConsoleController {
     };
   }
 
-  private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {
-    if (!content.company || !content.company.details || !content.company.details.code) {
-      throw CrudExeption.badRequest("Company is required");
-    }
-  }
-
   private async getCompanyDataFromConsole(
     company: ConsoleHookCompany,
   ): Promise<ConsoleHookCompany> {
@@ -137,7 +131,6 @@ export class ConsoleController {
   }
 
   private async userDisabled(content: ConsoleHookBodyContent): Promise<void> {
-    await this.validateCompany(content);
     const company = await this.updateCompany(content.company);
     await this.consoleService.getClient().removeCompanyUser(content.user._id, company);
   }
@@ -153,8 +146,6 @@ export class ConsoleController {
   }
 
   private async companyRemoved(content: ConsoleHookBodyContent) {
-    await this.validateCompany(content);
-
     assert(content.company, "content.company is missing");
     assert(content.company.details, "content.company.details is missing");
     assert(content.company.details.code, "content.company.details.code is missing");
@@ -166,12 +157,10 @@ export class ConsoleController {
   }
 
   private async companyUpdated(content: ConsoleHookBodyContent) {
-    await this.validateCompany(content);
     await this.updateCompany(content.company);
   }
 
   private async planUpdated(content: ConsoleHookBodyContent) {
-    await this.validateCompany(content);
     await this.updateCompany(content.company);
   }
 
