@@ -1,8 +1,8 @@
-import { FilePubsubHandler, FileServiceAPI } from "../../../api";
-import { logger, TwakeContext } from "../../../../../core/platform/framework";
-//import { PushNotificationMessage, PushNotificationMessageResult } from "../../../../types";
+import { FilePubsubHandler, FileServiceAPI } from "../api";
+import { logger, TwakeContext } from "../../../core/platform/framework";
 import _ from "lodash";
-import { PubsubServiceAPI } from "../../../../../core/platform/services/pubsub/api";
+import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
+
 /**
  * Push new message notification to a set of users
  */
@@ -10,6 +10,7 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<string, strin
   constructor(readonly service: FileServiceAPI, private pubsub: PubsubServiceAPI) {
     this.service = service;
   }
+
   //readonly service: FileServiceAPI;
   init?(context?: TwakeContext): Promise<this> {
     throw new Error("Method not implemented.");

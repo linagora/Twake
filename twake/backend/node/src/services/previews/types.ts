@@ -1,14 +1,19 @@
 export type PreviewPubsubRequest = {
   document: {
     id: string;
-    path: string;
     provider: string;
+    path: string;
+    encryption_algo?: string;
+    encryption_key?: string;
+    chunks?: number;
     mime?: string;
     filename?: string;
   };
   output: {
-    path: string;
     provider: string;
+    path: string;
+    encryption_algo?: string;
+    encryption_key?: string;
     pages?: number; //Max number of pages for the document
     width?: number; //Max width for the thumbnails
     height?: number; //Max height for the thumbnails
@@ -23,9 +28,9 @@ export type PreviewPubsubCallback = {
   };
   thumbnails: {
     path: string;
-    provider: string;
-    index: number;
     width: number;
     height: number;
+    provider?: string;
+    index?: number;
   }[];
 };

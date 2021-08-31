@@ -1,9 +1,15 @@
-import { createCipheriv, createDecipheriv } from "crypto";
+import { createCipheriv, createDecipheriv, Decipher } from "crypto";
 import { Stream, Readable } from "stream";
+import Multistream from "multistream";
 import { Consumes, logger, TwakeService } from "../../framework";
 import LocalConnectorService, { LocalConfiguration } from "./connectors/local/service";
 import S3ConnectorService, { S3Configuration } from "./connectors/S3/service";
-import StorageAPI, { StorageConnectorAPI, WriteMetadata } from "./provider";
+import StorageAPI, {
+  ReadOptions,
+  StorageConnectorAPI,
+  WriteMetadata,
+  WriteOptions,
+} from "./provider";
 
 type EncryptionConfiguration = {
   secret: string | null;
@@ -21,8 +27,12 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return this;
   }
 
+  getConnectorType(): string {
+    return this.configuration.get<string>("type");
+  }
+
   getConnector(): StorageConnectorAPI {
-    const type = this.configuration.get<string>("type");
+    const type = this.getConnectorType();
     if (type === "S3") {
       logger.info("Using 'S3' connector for storage.");
       return new S3ConnectorService(this.configuration.get<S3Configuration>("S3"));
@@ -36,7 +46,14 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return new LocalConnectorService(this.configuration.get<LocalConfiguration>("local"));
   }
 
-  async write(path: string, stream: Stream): Promise<WriteMetadata> {
+  async write(path: string, stream: Stream, options?: WriteOptions): Promise<WriteMetadata> {
+    if (options.encryptionKey) {
+      const [key, iv] = options.encryptionKey.split(".");
+      const cipher = createCipheriv(options.encryptionAlgo, key, iv);
+      stream = stream.pipe(cipher);
+    }
+    if (options.chunkNumber) path = `${path}/chunk${options.chunkNumber}`;
+
     if (this.encryptionOptions.secret) {
       try {
         const cipher = createCipheriv(
@@ -52,7 +69,43 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return await this.getConnector().write(path, stream);
   }
 
-  async read(path: string): Promise<Readable> {
+  async read(path: string, options?: ReadOptions): Promise<Readable> {
+    const self = this;
+
+    let decipher: Decipher;
+    if (options.encryptionKey) {
+      const [key, iv] = options.encryptionKey.split(".");
+      decipher = createDecipheriv(options.encryptionAlgo, key, iv);
+    }
+
+    const chunks = options.totalChunks;
+    let count = 1;
+    let stream;
+    async function factory(callback: (err?: Error, stream?: Stream) => unknown) {
+      if (count > chunks) {
+        callback();
+        return;
+      }
+
+      const chunk = options.totalChunks ? `${path}/chunk${count++}` : path;
+
+      try {
+        stream = await self._read(chunk);
+        if (decipher) {
+          stream = stream.pipe(decipher);
+        }
+      } catch (err) {
+        callback(new Error(`No such chunk ${chunk}`));
+        return;
+      }
+      callback(null, stream);
+      return;
+    }
+
+    return new Multistream(factory);
+  }
+
+  async _read(path: string) {
     let stream = await this.getConnector().read(path);
     if (this.encryptionOptions.secret) {
       try {

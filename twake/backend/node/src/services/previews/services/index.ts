@@ -39,8 +39,8 @@ class Service implements PreviewServiceAPI {
     pubsub: PubsubServiceAPI,
     readonly storage: StorageAPI,
   ) {
-    this.previewProcess = getPreviewProcessService();
-    this.engine = new PreviewEngine(this, pubsub);
+    this.previewProcess = getPreviewProcessService(storage);
+    this.engine = new PreviewEngine(this, pubsub, storage);
     this.pubsub = pubsub;
   }
 

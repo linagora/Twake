@@ -36,16 +36,6 @@ export class FileController {
 
     const id = request.params.id;
     const result = await this.service.save(id, file, options, context);
-    try {
-      this.service.pubsub.publish<PreviewPubsubRequest>("services:file", {
-        data: {
-          document: { id: id, path: file.filepath, provider: "S3" },
-          output: { path: "a path", provider: "S3", pages: 10, width: 400, height: 400 },
-        },
-      });
-    } catch (err) {
-      logger.warn({ err }, `Uploading - Error while sending `);
-    }
 
     response.send({
       resource: result,

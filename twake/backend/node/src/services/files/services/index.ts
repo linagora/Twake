@@ -1,6 +1,5 @@
 import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
 import { Readable, Stream } from "stream";
-import Multistream from "multistream";
 import { Multipart } from "fastify-multipart";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
@@ -10,8 +9,8 @@ import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
-import { FileEngine } from "./engine";
 import { PreviewPubsubRequest } from "../../../../src/services/previews/types";
+import { PreviewFinishedProcessor } from "./preview";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -33,7 +32,7 @@ class Service implements FileServiceAPI {
   version: "1";
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";
-  engine: FileEngine;
+  private max_preview_file_size = 50000000;
   pubsub: PubsubServiceAPI;
 
   constructor(
@@ -41,14 +40,13 @@ class Service implements FileServiceAPI {
     pubsub: PubsubServiceAPI,
     readonly storage: StorageAPI,
   ) {
-    this.engine = new FileEngine(this, pubsub);
     this.pubsub = pubsub;
   }
 
   async init(): Promise<this> {
     try {
       await Promise.all([
-        this.engine.init(),
+        this.pubsub.processor.addHandler(new PreviewFinishedProcessor(this, this.pubsub)),
         (this.repository = await this.database.getRepository<File>("files", File)),
       ]);
     } catch (err) {
@@ -121,13 +119,11 @@ class Service implements FileServiceAPI {
         totalUploadedSize += chunk.length;
       });
 
-      const [key, iv] = entity.encryption_key.split(".");
-      const cipher = createCipheriv(this.algorithm, key, iv);
-      const newReadStream = file.file.pipe(cipher);
-      const chunk_number = options.chunkNumber;
-      const path = `${getFilePath(entity)}/chunk${chunk_number}`;
-      console.log("?????????????????????????????????????", getFilePath(entity));
-      await this.storage.write(path, newReadStream);
+      await this.storage.write(getFilePath(entity), file.file, {
+        chunkNumber: options.chunkNumber,
+        encryptionAlgo: this.algorithm,
+        encryptionKey: entity.encryption_key,
+      });
 
       console.log(totalUploadedSize);
 
@@ -136,21 +132,38 @@ class Service implements FileServiceAPI {
         await this.repository.save(entity);
       }
     }
-    const document: PreviewPubsubRequest["document"] = {
-      id: entity.id,
-      path: getFilePath(entity),
-      provider: "local",
-      filename: entity.metadata.name,
-      mime: entity.metadata.mime,
-    };
-    const output = { path: "/usr/src/app/src/services/previews/", provider: "local", pages: 10 };
-    try {
-      this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
-        data: { document, output },
-      });
-    } catch (err) {
-      logger.warn({ err }, `Previewing - Error while sending `);
+
+    //TODO: when all chunks are uploaded
+    /** Send preview generation task */
+    if (entity.upload_data.size < this.max_preview_file_size) {
+      const document: PreviewPubsubRequest["document"] = {
+        id: entity.id,
+        provider: this.storage.getConnectorType(),
+
+        path: getFilePath(entity),
+        encryption_algo: this.algorithm,
+        encryption_key: entity.encryption_key,
+        chunks: entity.upload_data.chunks,
+
+        filename: entity.metadata.name,
+        mime: entity.metadata.mime,
+      };
+      const output = {
+        provider: this.storage.getConnectorType(),
+        path: `${getFilePath(entity)}/thumbnails/`,
+        encryption_algo: this.algorithm,
+        encryption_key: entity.encryption_key,
+        pages: 10,
+      };
+      try {
+        this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
+          data: { document, output },
+        });
+      } catch (err) {
+        logger.warn({ err }, `Previewing - Error while sending `);
+      }
     }
+    /** End preview generation task generation */
 
     return entity;
   }
@@ -162,31 +175,15 @@ class Service implements FileServiceAPI {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this;
     const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
-    const [key, iv] = entity.encryption_key.split(".");
-    const decipher = createDecipheriv(this.algorithm, key, iv);
-    const chunks = entity.upload_data.chunks;
-    let count = 1;
-    let stream;
 
-    async function factory(callback: (err?: Error, stream?: Stream) => unknown) {
-      if (count > chunks) {
-        callback();
-        return;
-      }
-      const chunk = `${getFilePath(entity)}/chunk${count++}`;
-
-      try {
-        stream = (await self.storage.read(chunk)).pipe(decipher);
-      } catch (err) {
-        callback(new Error(`No such chunk ${chunk}`));
-        return;
-      }
-      callback(null, stream);
-      return;
-    }
+    const readable = await this.storage.read(getFilePath(entity), {
+      totalChunks: entity.upload_data.chunks,
+      encryptionAlgo: this.algorithm,
+      encryptionKey: entity.encryption_key,
+    });
 
     return {
-      file: new Multistream(factory),
+      file: readable,
       name: entity.metadata.name,
       mime: entity.metadata.mime,
       size: entity.upload_data.size,
@@ -199,6 +196,5 @@ class Service implements FileServiceAPI {
 }
 
 function getFilePath(entity: File): string {
-  // CARE: do not push with userID hardcoded
-  return `/twake/files/${entity.company_id}/bcfe2f79-8e81-42a3-b551-3a32d49b2b4d/${entity.id}`; //${entity.user_id}/${entity.id}`;
+  return `/twake/files/${entity.company_id}/${entity.user_id || "anonymous"}/${entity.id}`;
 }
