@@ -313,7 +313,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
-    logger.info(`Remote: fetchCompanyInfo`);
+    logger.info(`Remote: fetchCompanyInfo ${consoleCompanyCode}`);
     return this.client
       .get(`/api/companies/${consoleCompanyCode}`, {
         auth: this.auth(),
@@ -331,7 +331,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   fetchUserInfo(consoleUserId: string): Promise<ConsoleHookUser> {
-    logger.info(`Remote: fetchUserInfo`);
+    logger.info(`Remote: fetchUserInfo ${consoleUserId}`);
     return this.client
       .get(`/api/users/${consoleUserId}`, {
         auth: this.auth(),

@@ -62,11 +62,14 @@ export class ConsoleController {
   }
 
   private async getCompanyDataFromConsole(
-    company: ConsoleHookCompany,
+    company: ConsoleHookCompany | ConsoleHookCompany["details"],
   ): Promise<ConsoleHookCompany> {
-    assert(company.details, "getCompanyDataFromConsole: company details is missing");
-    assert(company.details.code, "getCompanyDataFromConsole: company.details.code is missing");
-    return this.consoleService.getClient().fetchCompanyInfo(company.details.code);
+    return this.consoleService
+      .getClient()
+      .fetchCompanyInfo(
+        (company as ConsoleHookCompany["details"])?.code ||
+          (company as ConsoleHookCompany)?.details?.code,
+      );
   }
 
   private async updateCompany(company: ConsoleHookCompany): Promise<Company> {
