@@ -30,7 +30,7 @@ class Workspace extends BaseController
             $response["errors"][] = "notallowed";
         } else {
 
-            $response["data"] = $ws->getAsArray();
+            $response["data"] = $ws->getAsArray($this->get("app.twake_doctrine"));
 
             $level = $this->get("app.workspace_levels")->getLevel($workspaceId, $this->getUser()->getId());
             $response["data"]["user_level"] = $level ? $level->getAsArray() : null;
@@ -47,7 +47,7 @@ class Workspace extends BaseController
 
             $wp = $workspaceRepository->find($workspaceId);
             if ($wp->getGroup() != null) {
-                $group = $groupRepository->find($wp->getGroup()->getId());
+                $group = $groupRepository->find($wp->getGroup());
 
                 $level = $this->get("app.group_managers")->getLevel($group, $this->getUser()->getId());
 
@@ -75,6 +75,7 @@ class Workspace extends BaseController
         $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspace_id");
+        $groupRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Group");
 
         $ws = $this->get("app.workspaces")->get($workspaceId);
         if (!$ws) {
@@ -85,7 +86,7 @@ class Workspace extends BaseController
 
             if ($ws->getGroup() != null) {
 
-                $group = $ws->getGroup();
+                $group = $groupRepository->findOneBy(["id" => $ws->getGroup()]);
 
                 $response["data"]["group_name"] = $group->getAsArray()["name"];
                 $response["data"]["group_logo"] = $group->getAsArray()["logo"];
@@ -152,7 +153,7 @@ class Workspace extends BaseController
 
             $response["data"]["status"] = "success";
             //$response["data"]["workspace_id"] = $ws_id;
-            $response["data"]["workspace"] = $ws->getAsArray();
+            $response["data"]["workspace"] = $ws->getAsArray($this->get("app.twake_doctrine"));
 
             $this->get("administration.counter")->incrementCounter("total_workspaces", 1);
 

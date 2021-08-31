@@ -209,7 +209,7 @@ class Workspaces
             || $this->wls->can($original_workspace_id, $currentUserId, "workspace:manage")
         ) {
 
-            $groupId = $original_workspace->getGroup()->getId();
+            $groupId = $original_workspace->getGroup();
 
             $workspace = $this->create($name, $groupId, $currentUserId);
             $this->doctrine->persist($workspace);
@@ -533,7 +533,7 @@ class Workspaces
         $workspace = $workspaceRepository->findOneBy(Array("uniquename" => $workspaceName, "group" => $group, "is_deleted" => 0));
 
         if ($workspace != null) {
-            return $workspace->getAsArray();
+            return $workspace->getAsArray($this->doctrine);
         } else {
             return false;
         }

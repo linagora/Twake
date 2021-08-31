@@ -72,8 +72,7 @@ class Workspace extends SearchableObject
     private $uniquename;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Group")
-     * @ORM\JoinColumn(name="company_id")
+     * @ORM\Column(name="company_id", type="twake_timeuuid")
      */
     private $group;
 
@@ -117,7 +116,7 @@ class Workspace extends SearchableObject
         $return = Array(
             "id" => $this->getId() . "",
             "name" => $this->getName(),
-            "company_id" => $this->getGroup() ? $this->getGroup()->getId() . "" : "",
+            "company_id" => $this->getGroup(),
             "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
         );
         return $return;
@@ -338,11 +337,16 @@ class Workspace extends SearchableObject
     }
 
 
-    public function getAsArray()
+    public function getAsArray($em = null)
     {
+
+        if($em){
+            $group = $em->getRepository("Twake\Workspaces:Group")->findOneBy(["id" => $this->getGroup()]);
+        }
+
         return Array(
             "id" => $this->getId(),
-            "company_id" => (($this->getGroup()) ? $this->getGroup()->getId() : null),
+            "company_id" => $this->getGroup(),
             "name" => $this->getName(),
             "logo" => $this->getLogo(),
 
@@ -356,7 +360,7 @@ class Workspace extends SearchableObject
                 "total_pending" => $this->getPendingCount(),
             ],
 
-            "group" => (($this->getGroup()) ? $this->getGroup()->getAsArray() : null),
+            "group" => (($group()) ? $group()->getAsArray() : null),
         );
     }
 

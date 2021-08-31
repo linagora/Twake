@@ -33,7 +33,7 @@ class Workspaces extends BaseController
                 $apps = $workspace_service->getWorkspaceApps($workspace);
                 $invited_mails = $workspace_service->getInvitedUsers($workspace);
 
-                $data["data"]["workspace"] = $workspace->getAsArray();
+                $data["data"]["workspace"] = $workspace->getAsArray($this->get("app.twake_doctrine"));
                 $data["data"]["members"] = $members;
                 $data["data"]["apps"] = $apps;
                 $data["data"]["invited"] = $invited_mails;

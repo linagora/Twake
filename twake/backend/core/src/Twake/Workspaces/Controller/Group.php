@@ -170,7 +170,7 @@ class Group extends BaseController
 
             if (!$is_deleted) {
                 $response["data"][] = Array(
-                    "workspace" => $workspace->getAsArray()
+                    "workspace" => $workspace->getAsArray($this->get("app.twake_doctrine"))
                 );
             }
         }

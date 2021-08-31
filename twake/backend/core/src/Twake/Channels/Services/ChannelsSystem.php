@@ -236,7 +236,7 @@ class ChannelsSystem extends ChannelSystemAbstract
             $channel->setDirect(false);
             $channel->setApplication(true);
 
-            $channel->setOriginalGroupId($workspace->getGroup()->getId());
+            $channel->setOriginalGroupId($workspace->getGroup());
             $channel->setOriginalWorkspaceId($workspace->getId());
 
             $channel->setAppId($application->getId());

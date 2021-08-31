@@ -106,6 +106,7 @@ class WorkspaceMembers
         if ($currentUserId == null || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
             $userRepository = $this->doctrine->getRepository("Twake\Users:User");
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
+            $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
 
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
@@ -139,12 +140,13 @@ class WorkspaceMembers
 
             $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
             $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user));
+            $group = $groupRepository->findOneBy(["id" => $workspace->getGroup()]);
 
             if (!$groupmember) {
                 $groupmember = new GroupUser($workspace->getGroup(), $user);
                 $groupmember->increaseNbWorkspace();
                 $groupmember->setLevel(0);
-                $workspace->getGroup()->setMemberCount($workspace->getGroup()->getMemberCount() + 1);
+                $workspace->getGroup()->setMemberCount($group->getMemberCount() + 1);
             } else {
                 $groupmember->increaseNbWorkspace();
             }
@@ -165,12 +167,12 @@ class WorkspaceMembers
 
             $dataToPush = Array(
                 "type" => "add",
-                "workspace" => $workspace->getAsArray()
+                "workspace" => $workspace->getAsArray($this->doctrine)
             );
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
             
             $this->queues->push("workspace:member:added", [
-                "company_id" => $workspace->getGroup()->getId(),
+                "company_id" => $workspace->getGroup(),
                 "workspace_id" => $workspaceId,
                 "user_id" => $userId
             ], ["exchange_type" => "fanout"]);
@@ -417,12 +419,12 @@ class WorkspaceMembers
             $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
             $dataToPush = Array(
                 "type" => "remove",
-                "workspace" => $workspace->getAsArray(),
+                "workspace" => $workspace->getAsArray($this->doctrine),
             );
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
             
             $this->queues->push("workspace:member:removed", [
-                "company_id" => $workspace->getGroup()->getId(),
+                "company_id" => $workspace->getGroup(),
                 "workspace_id" => $workspaceId,
                 "user_id" => $userId
             ], ["exchange_type" => "fanout"]);
@@ -635,7 +637,7 @@ class WorkspaceMembers
             );
 
         } else {
-            error_log("error group user, " . $link->getUserId() . "," . $workspace->getGroup()->getId());
+            error_log("error group user, " . $link->getUserId() . "," . $workspace->getGroup());
         }
         return $value;
     }
@@ -690,7 +692,7 @@ class WorkspaceMembers
                     $this->doctrine->persist($workspaceMember);
                 }
 
-                $groupUser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $workspace->getGroup()->getId()));
+                $groupUser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $workspace->getGroup()));
 
                 $workspaces[] = Array(
                     "last_access" => $workspaceMember->getLastAccess(),
@@ -742,7 +744,7 @@ class WorkspaceMembers
             foreach ($workspaces_obj as $value) {
                 if($value && $value["workspace"] && $value["workspace"]->getGroup()){
                     $workspaces_ids[] = $value["workspace"]->getId();
-                    $groups_ids[] = $value["workspace"]->getGroup()->getId();
+                    $groups_ids[] = $value["workspace"]->getGroup();
                 }
             }
             $workspaces_ids = array_values(array_unique($workspaces_ids));
