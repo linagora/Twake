@@ -45,7 +45,7 @@ class Workspace extends BaseController
             $workspaceRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:Workspace");
             $groupUserRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:GroupUser");
 
-            $wp = $workspaceRepository->find($workspaceId);
+            $wp = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
             if ($wp->getGroup() != null) {
                 $group = $groupRepository->find($wp->getGroup());
 

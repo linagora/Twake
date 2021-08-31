@@ -33,7 +33,7 @@ class WorkspacesApps
     {
 
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
         if ($workspace == null) {
             return false;

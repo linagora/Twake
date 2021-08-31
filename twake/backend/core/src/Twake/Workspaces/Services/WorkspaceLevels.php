@@ -31,7 +31,7 @@ class WorkspaceLevels
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
             $user = $userRepository->find($userId);
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
             $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
             if (!$link) {
@@ -59,7 +59,7 @@ class WorkspaceLevels
         $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
         $user = $this->convertToEntity($userId, "Twake\Users:User");
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
         if (!$user || !$workspace) {
             error_log("no user / ws ");
@@ -167,7 +167,7 @@ class WorkspaceLevels
         $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
         $levels = $levelRepository->findBy(Array("workspace" => $workspace));
 
 
@@ -205,7 +205,7 @@ class WorkspaceLevels
             $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $oldLevelDefault = $levelRepository->findOneBy(Array("workspace" => $workspace, "isdefault" => true));
 
@@ -240,7 +240,7 @@ class WorkspaceLevels
             || $this->can($workspaceId, $currentUserId, "workspace:write")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $level = new WorkspaceLevel();
 
@@ -281,7 +281,7 @@ class WorkspaceLevels
                 return false; //Can't remove admin level
             }
 
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
             $levelDefault = $levelRepository->findOneBy(Array("workspace" => $workspace, "isdefault" => true));
 
             if (!$levelDefault) {
@@ -323,7 +323,7 @@ class WorkspaceLevels
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
             $level = $levelRepository->findBy(Array("workspace" => $workspaceId, "level" => $levelId));
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if (!$level || !$workspace) {
                 return false;
@@ -347,7 +347,7 @@ class WorkspaceLevels
         $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
         if (!$workspace) {
             return false;
@@ -367,7 +367,7 @@ class WorkspaceLevels
             $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if (!$workspace) {
                 return false;

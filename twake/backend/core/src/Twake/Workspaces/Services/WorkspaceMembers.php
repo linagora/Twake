@@ -48,7 +48,7 @@ class WorkspaceMembers
 
             $level = $levelRepository->findOneBy(Array("workspace" => $workspaceId, "id" => $levelId));
             $user = $userRepository->find($userId);
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
@@ -109,7 +109,7 @@ class WorkspaceMembers
             $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Group");
 
             $user = $userRepository->find($userId);
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if ($workspace->getGroup() != null) {
                 $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
@@ -281,7 +281,7 @@ class WorkspaceMembers
 
             $retour = false;
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
             $mailObj = $workspaceUserByMailRepository->findOneBy(Array("workspace_id" => $workspaceId, "mail" => $mail));
@@ -311,7 +311,7 @@ class WorkspaceMembers
             $mail = $this->string_cleaner->simplifyMail($mail);
 
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
             $mails = $workspaceUserByMailRepository->findBy(Array("workspace_id" => $workspaceId, "mail" => $mail));
@@ -364,7 +364,7 @@ class WorkspaceMembers
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
             $user = $userRepository->find($userId);
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
@@ -488,7 +488,7 @@ class WorkspaceMembers
     public function removeAllMember($workspaceId)
     {
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
         if (!$workspace) {
             return false; //Private workspace, only one user
@@ -547,7 +547,7 @@ class WorkspaceMembers
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if (!$workspace) {
                 return false;
@@ -595,7 +595,7 @@ class WorkspaceMembers
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
             $groupUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
 
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if (!$workspace) {
                 return false;
@@ -650,7 +650,7 @@ class WorkspaceMembers
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $workspaceUserByMailRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUserByMail");
 
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if (!$workspace) {
                 return false;
@@ -713,7 +713,7 @@ class WorkspaceMembers
 
     public function updateCountersIfEmpty($workspaceId){
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
         $update = false;
 

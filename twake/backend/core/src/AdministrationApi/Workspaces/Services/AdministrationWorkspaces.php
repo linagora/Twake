@@ -20,7 +20,7 @@ class AdministrationWorkspaces
     {
         $workspacesRepository = $this->em->getRepository("Twake\Workspaces:Workspace");
 
-        $workspace = $workspacesRepository->find($workspace_id);
+        $workspace = $workspacesRepository->findOneBy(["id"=>$workspace_id]);
 
         return $workspace;
     }

@@ -198,7 +198,7 @@ class Workspaces
     {
 
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $original_workspace = $workspaceRepository->find($original_workspace_id);
+        $original_workspace = $workspaceRepository->findOneBy(["id"=>$original_workspace_id]);
 
         if (!$original_workspace) {
             return false;
@@ -389,7 +389,7 @@ class Workspaces
             || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $this->wms->removeAllMember($workspaceId);
 
@@ -414,7 +414,7 @@ class Workspaces
         ) {
 
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $workspace->setName($name);
 
@@ -438,7 +438,7 @@ class Workspaces
         ) {
 
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $workspace->setLogo($logo);
 
@@ -463,7 +463,7 @@ class Workspaces
         ) {
 
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if ($workspace->getWallpaper()) {
                 if ($uploader) {
@@ -501,7 +501,7 @@ class Workspaces
             || $this->wls->can($workspaceId, $currentUserId, "")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             return $workspace;
         }
@@ -550,7 +550,7 @@ class Workspaces
             || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $isArchived = $workspace->getIsArchived();
             $is_deleted = $workspace->getIsDeleted();
@@ -587,7 +587,7 @@ class Workspaces
             || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $isArchived = $workspace->getIsArchived();
             $is_deleted = $workspace->getIsDeleted();
