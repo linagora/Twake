@@ -27,7 +27,7 @@ import {
   ReadChannelBody,
   UpdateChannelBody,
 } from "../types";
-import { ChannelExecutionContext, WorkspaceExecutionContext } from "../../types";
+import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
 import { handleError } from "../../../../utils/handleError";
 import {
   ResourceCreateResponse,
@@ -208,13 +208,16 @@ export class ChannelCrudController
   ): Promise<ResourceListResponse<Channel>> {
     const context = getExecutionContext(request);
 
-    await this.pendingEmails.proccessPendingEmails(
-      {
-        user_id: context.user.id,
-        ...context.workspace,
-      },
-      context.workspace,
-    );
+    //Fixme: this slow down the channel get operation. Once we stabilize the workspace:member:added event we can remove this
+    if (context.workspace.workspace_id !== ChannelVisibility.DIRECT) {
+      await this.pendingEmails.proccessPendingEmails(
+        {
+          user_id: context.user.id,
+          ...context.workspace,
+        },
+        context.workspace,
+      );
+    }
 
     const list = await this.service.list(
       new Pagination(request.query.page_token, request.query.limit),
