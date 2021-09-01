@@ -49,9 +49,12 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       // Table before
       tableBefore.push([user.id, user.username_canonical, user.deleted]);
 
-      await userService.users.anonymizeAndDelete(user, {
-        user: { id: user.id, server_request: true },
-      });
+      await userService.users.anonymizeAndDelete(
+        { id: user.id },
+        {
+          user: { id: user.id, server_request: true },
+        },
+      );
 
       const finalUser = await userService.users.get(getUserInstance({ id: argv.id }));
 
