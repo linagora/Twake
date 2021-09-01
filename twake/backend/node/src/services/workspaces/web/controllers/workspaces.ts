@@ -30,7 +30,8 @@ export class WorkspacesCrudController
       ResourceCreateResponse<WorkspaceObject>,
       ResourceListResponse<WorkspaceObject>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
@@ -119,7 +120,13 @@ export class WorkspacesCrudController
 
     const allUserWorkspaceRolesMap = await this.workspaceService
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
-      .then(uws => new Map(uws.map(uw => [uw.workspaceId, uw.role])));
+      .then(
+        uws =>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          new Map<string, any>(
+            uws.map(uw => [uw.workspaceId, hasCompanyAdminLevel(uw.role) ? "admin" : uw.role]),
+          ),
+      );
 
     const userWorkspaces = allCompanyWorkspaces.filter(workspace =>
       allUserWorkspaceRolesMap.has(workspace.id.toString()),
