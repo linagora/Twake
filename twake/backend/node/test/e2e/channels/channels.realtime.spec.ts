@@ -34,6 +34,7 @@ describe("The Channels Realtime feature", () => {
         "auth",
         "search",
         "realtime",
+        "counter",
         "platform-services",
       ],
     });

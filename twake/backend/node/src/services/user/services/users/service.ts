@@ -10,7 +10,6 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
   FindFilter,
   FindOptions,
@@ -19,18 +18,17 @@ import User, { UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
 import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
-import { SearchServiceAPI } from "../../../../core/platform/services/search/api";
 import SearchRepository from "../../../../core/platform/services/search/repository";
 import ExternalUser, { getInstance as getExternalUserInstance } from "../../entities/external_user";
 import Device, {
   getInstance as getDeviceInstance,
   TYPE as DeviceType,
 } from "../../entities/device";
-import crypto from "crypto";
 import PasswordEncoder from "../../../../utils/password-encoder";
 import assert from "assert";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
+import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -40,21 +38,24 @@ export class UserService implements UsersServiceAPI {
   extUserRepository: Repository<ExternalUser>;
   private deviceRepository: Repository<Device>;
 
-  constructor(private database: DatabaseServiceAPI, private searchService: SearchServiceAPI) {}
+  constructor(private platformServices: PlatformServicesAPI) {}
 
   async init(): Promise<this> {
-    this.searchRepository = this.searchService.getRepository<User>("user", User);
-    this.repository = await this.database.getRepository<User>("user", User);
-    this.companyUserRepository = await this.database.getRepository<CompanyUser>(
+    this.searchRepository = this.platformServices.search.getRepository<User>("user", User);
+    this.repository = await this.platformServices.database.getRepository<User>("user", User);
+    this.companyUserRepository = await this.platformServices.database.getRepository<CompanyUser>(
       "group_user",
       CompanyUser,
     );
-    this.extUserRepository = await this.database.getRepository<ExternalUser>(
+    this.extUserRepository = await this.platformServices.database.getRepository<ExternalUser>(
       "external_user_repository",
       ExternalUser,
     );
 
-    this.deviceRepository = await this.database.getRepository<Device>(DeviceType, Device);
+    this.deviceRepository = await this.platformServices.database.getRepository<Device>(
+      DeviceType,
+      Device,
+    );
 
     return this;
   }

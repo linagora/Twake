@@ -48,6 +48,7 @@ describe("The /workspace users API", () => {
         "workspaces",
         "auth",
         "console",
+        "counter",
         "storage",
         "platform-services",
       ],
@@ -259,6 +260,11 @@ describe("The /workspace users API", () => {
       const userId = testDbService.workspaces[2].users[1].id;
       const anotherUserId = testDbService.workspaces[0].users[0].id;
 
+      let workspaceUsersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
+      let companyUsersCount = await testDbService.getCompanyUsersCountFromDb(companyId);
+      expect(workspaceUsersCount).toBe(3);
+      expect(companyUsersCount).toBe(6);
+
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
       const response = await platform.app.inject({
         method: "POST",
@@ -275,6 +281,11 @@ describe("The /workspace users API", () => {
       expect(response.statusCode).toBe(201);
       const resource = response.json()["resource"];
       checkUserObject(resource);
+
+      workspaceUsersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
+      companyUsersCount = await testDbService.getCompanyUsersCountFromDb(companyId);
+      expect(workspaceUsersCount).toBe(4);
+      expect(companyUsersCount).toBe(6);
 
       done();
     });
@@ -360,6 +371,9 @@ describe("The /workspace users API", () => {
 
       expect(resource["role"]).toBe("admin");
 
+      const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
+      expect(usersCount).toBe(4);
+
       done();
     });
   });
@@ -434,6 +448,9 @@ describe("The /workspace users API", () => {
       expect(response.statusCode).toBe(200);
       const resources = response.json()["resources"];
       expect(resources.find((a: { user_id: uuid }) => a.user_id === anotherUserId)).toBeUndefined();
+
+      const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
+      expect(usersCount).toBe(3);
 
       done();
     });

@@ -14,6 +14,7 @@ import {
   WorkspacesListRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import Workspace from "../../entities/workspace";
 import { CompaniesServiceAPI } from "../../../user/api";
 import { merge } from "lodash";
@@ -48,7 +49,15 @@ export class WorkspacesCrudController
       .then(a => (a ? a.role : null));
   }
 
-  private static formatWorkspace(workspace: Workspace, role?: WorkspaceUserRole): WorkspaceObject {
+  private getWorkspaceUsersCount(workspaceId: string) {
+    return this.workspaceService.getUsersCount(workspaceId);
+  }
+
+  private static formatWorkspace(
+    workspace: Workspace,
+    usersCount: number,
+    role?: WorkspaceUserRole,
+  ): WorkspaceObject {
     const res: WorkspaceObject = {
       id: workspace.id,
       company_id: workspace.company_id,
@@ -60,7 +69,7 @@ export class WorkspacesCrudController
 
       stats: {
         created_at: workspace.dateAdded,
-        total_members: 0, // FIXME
+        total_members: usersCount,
       },
     };
     if (role) {
@@ -91,14 +100,14 @@ export class WorkspacesCrudController
     if (!workspaceUserRole) {
       const companyUserRole = await this.getCompanyUserRole(context);
 
-      if (!hasCompanyAdminLevel(companyUserRole)) {
+      if (companyUserRole !== "admin") {
         reply.forbidden(`You are not belong to workspace ${request.params.id}`);
         return;
       }
     }
-
+    const count = await this.getWorkspaceUsersCount(workspace.id);
     return {
-      resource: WorkspacesCrudController.formatWorkspace(workspace, workspaceUserRole),
+      resource: WorkspacesCrudController.formatWorkspace(workspace, count, workspaceUserRole),
     };
   }
 
@@ -109,29 +118,24 @@ export class WorkspacesCrudController
 
     const allCompanyWorkspaces = await this.workspaceService.getAllForCompany(context.company_id);
 
-    const companyUser = await this.companyService.getCompanyUser(
-      { id: context.company_id },
-      { id: context.user.id },
-    );
-
     const allUserWorkspaceRolesMap = await this.workspaceService
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
-      .then(
-        uws =>
-          new Map(
-            uws.map(uw => [
-              uw.workspaceId,
-              hasCompanyAdminLevel(companyUser.role) ? "admin" : uw.role,
-            ]),
-          ),
-      );
+      .then(uws => new Map(uws.map(uw => [uw.workspaceId, uw.role])));
+
+    const userWorkspaces = allCompanyWorkspaces.filter(workspace =>
+      allUserWorkspaceRolesMap.has(workspace.id.toString()),
+    );
 
     return {
-      resources: allCompanyWorkspaces
-        .filter(workspace => allUserWorkspaceRolesMap.has(workspace.id.toString()))
-        .map(ws =>
-          WorkspacesCrudController.formatWorkspace(ws, allUserWorkspaceRolesMap.get(ws.id)),
+      resources: await Promise.all(
+        userWorkspaces.map(async ws =>
+          WorkspacesCrudController.formatWorkspace(
+            ws,
+            await this.getWorkspaceUsersCount(ws.id),
+            allUserWorkspaceRolesMap.get(ws.id),
+          ),
         ),
+      ),
     };
   }
 
@@ -165,7 +169,7 @@ export class WorkspacesCrudController
         isArchived: r.archived,
       },
       ...{
-        company_id: request.params.company_id,
+        group_id: request.params.company_id,
         id: request.params.id,
       },
     });
@@ -179,7 +183,11 @@ export class WorkspacesCrudController
     const workspaceUserRole = await this.getWorkspaceUserRole(workspaceEntity.id, context);
 
     return {
-      resource: WorkspacesCrudController.formatWorkspace(workspaceEntity, workspaceUserRole),
+      resource: WorkspacesCrudController.formatWorkspace(
+        workspaceEntity,
+        await this.getWorkspaceUsersCount(workspaceEntity.id),
+        workspaceUserRole,
+      ),
     };
   }
 

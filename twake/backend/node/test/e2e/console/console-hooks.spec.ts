@@ -51,6 +51,7 @@ describe("The console API hooks", () => {
         "auth",
         "console",
         "storage",
+        "counter",
         "platform-services",
       ],
     });
