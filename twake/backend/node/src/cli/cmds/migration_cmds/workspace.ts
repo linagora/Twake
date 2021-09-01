@@ -67,7 +67,6 @@ class WorkspaceMigrator {
                   "date_added",
                 ),
               );
-              console.log(workspace, newWorkspace);
               newWorkspace.company_id = workspace.group_id;
               await repository.save(newWorkspace);
             }

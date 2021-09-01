@@ -146,7 +146,6 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     logger.info(`Remote: updateLocalCompanyFromConsole`);
 
     const companyDTO = await this.fetchCompanyInfo(partialCompanyDTO.details.code);
-    console.log(companyDTO);
 
     let company = await this.userService.companies.getCompany({
       identity_provider_id: companyDTO.details.code,
@@ -188,7 +187,6 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     logger.info(`Remote: updateLocalUserFromConsole`);
 
     const userDTO = await this.fetchUserInfo(partialUserDTO._id);
-    console.log(userDTO);
 
     if (!userDTO) {
       throw CrudExeption.badRequest("User not found on Console");
@@ -258,7 +256,6 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       });
       if (!company) {
         const companyDTO = await this.fetchCompanyInfo(companyCode);
-        console.log(companyDTO);
         await this.updateLocalCompanyFromConsole(companyDTO);
         company = await this.userService.companies.getCompany({
           identity_provider_id: companyCode,
