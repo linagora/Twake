@@ -157,7 +157,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       await this.addUser(
         { id: workspace.id, company_id: workspace.company_id },
         { id: context.user.id },
-        "admin",
+        "moderator",
       );
     }
 

@@ -91,8 +91,8 @@ const routes: FastifyPluginCallback<{
       } else {
         throw fastify.httpErrors.forbidden("Not member of the workspace");
       }
-    } else if (workspaceUser.role !== "admin") {
-      throw fastify.httpErrors.forbidden("Only workspace admin can perform this action");
+    } else if (workspaceUser.role !== "moderator") {
+      throw fastify.httpErrors.forbidden("Only workspace moderator can perform this action");
     }
   };
 

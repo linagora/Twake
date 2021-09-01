@@ -45,8 +45,7 @@ export class WorkspaceUsersCrudController
       ResourceCreateResponse<WorkspaceUserObject>,
       ResourceListResponse<WorkspaceUserObject>,
       ResourceDeleteResponse
-    >
-{
+    > {
   constructor(
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
@@ -351,12 +350,6 @@ export class WorkspaceUsersCrudController
     };
 
     const usersToProcessImmediately = [];
-
-    const company = await this.companyService.getCompany({ id: context.company_id });
-    const companyCode = company.identity_provider_id;
-    if (!companyCode) {
-      throw new Error(`Company ${context.company_id} has no identity_provider_id`);
-    }
 
     for (const invitation of request.body.invitations) {
       if (workspacePendingUsers.has(invitation.email)) {
