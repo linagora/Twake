@@ -11,6 +11,7 @@ import ChannelCategory from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel
 import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 export default () => {
   const { companyId } = RouterServices.getStateFromRoute();
@@ -53,7 +54,7 @@ export default () => {
           [],
           'Direct messages',
         )}
-        onAdd={() => openConv()}
+        onAdd={AccessRightsService.hasCompanyLevel(companyId, 'member') ? () => openConv() : null}
       />
       {directChannels
         .filter(channel => !channel.data.user_member?.favorite)

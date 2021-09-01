@@ -44,6 +44,7 @@ import {
 } from "../../entities/workspace_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
+import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -233,6 +234,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
         role: role,
       }),
     );
+
+    await this.platformServices.pubsub.publish("workspace:member:added", {
+      data: {
+        company_id: workspacePk.company_id,
+        workspace_id: workspacePk.id,
+        user_id: userPk.id,
+      },
+    });
+
+    this;
   }
 
   async updateUserRole(

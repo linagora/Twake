@@ -73,7 +73,7 @@ class WorkspaceData extends BaseController
         }
 
         if ($workspace) {
-            $data["data"] = $workspace->getAsArray();
+            $data["data"] = $workspace->getAsArray($this->get("app.twake_doctrine"));
         }
 
         return new Response($data);

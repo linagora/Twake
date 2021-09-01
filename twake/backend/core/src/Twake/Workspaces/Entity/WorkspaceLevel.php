@@ -27,10 +27,10 @@ class WorkspaceLevel
     protected $label;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Workspace")
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    protected $workspace;
+    protected $workspace_id;
 
     /**
      * @ORM\Column(name="rights", type="string", length=100000)
@@ -84,15 +84,15 @@ class WorkspaceLevel
      */
     public function getWorkspace()
     {
-        return $this->workspace;
+        return $this->workspace_id;
     }
 
     /**
-     * @param mixed $workspace
+     * @param mixed $workspace_id
      */
-    public function setWorkspace($workspace)
+    public function setWorkspace($workspace_id)
     {
-        $this->workspace = $workspace;
+        $this->workspace_id = $workspace_id;
     }
 
     /**

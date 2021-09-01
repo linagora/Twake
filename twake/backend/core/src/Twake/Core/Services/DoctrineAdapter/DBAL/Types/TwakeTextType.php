@@ -73,7 +73,7 @@ class TwakeTextType extends StringType
     }
 
     public function v2Decrypt($data){
-        $key = substr(hash("sha256", $this->secretKey), 0, 32);
+        $key = substr(hash("sha256", unpack("H*", $this->secretKey)[1]), 0, 32);
         $encryptedArray = explode(":", $data);
 
         if (!count($encryptedArray) || count($encryptedArray) !== 3) {
@@ -106,7 +106,7 @@ class TwakeTextType extends StringType
     }
 
     public function v1Decrypt($data){
-        $key = substr(base64_encode(hash("sha256", $this->secretKey, true)), 0, 32);
+        $key = substr(base64_encode(hash("sha256", unpack("H*", $this->secretKey)[1], true)), 0, 32);
         $encryptedArray = explode(":", $data);
 
         if (!count($encryptedArray) || count($encryptedArray) !== 2) {
@@ -116,13 +116,14 @@ class TwakeTextType extends StringType
             ];
         }
 
-        $iv = hex2binModified($encryptedArray[0]);
-        if ($encryptedArray[0] === "0000000000000000") {
-            $iv = "0000000000000000";
-        }
-
         try {
-            $str = openssl_decrypt(hex2binModified($encryptedArray[1]), 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+
+            $iv = @hex2bin($encryptedArray[0]);
+            if ($encryptedArray[0] === "0000000000000000") {
+                $iv = "0000000000000000";
+            }
+
+            $str = openssl_decrypt(@hex2bin($encryptedArray[1]), 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
             $decrypt = json_decode($str);
 
             return [

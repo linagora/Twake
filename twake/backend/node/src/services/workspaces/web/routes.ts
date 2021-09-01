@@ -89,7 +89,7 @@ const routes: FastifyPluginCallback<{
       if (!workspace) {
         throw fastify.httpErrors.notFound(`Workspace ${workspaceId} not found`);
       } else {
-        throw fastify.httpErrors.forbidden("Only workspace admin can perform this action");
+        throw fastify.httpErrors.forbidden("Not member of the workspace");
       }
     } else if (workspaceUser.role !== "admin") {
       throw fastify.httpErrors.forbidden("Only workspace admin can perform this action");

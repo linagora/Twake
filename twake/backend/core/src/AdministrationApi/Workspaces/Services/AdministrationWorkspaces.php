@@ -20,7 +20,7 @@ class AdministrationWorkspaces
     {
         $workspacesRepository = $this->em->getRepository("Twake\Workspaces:Workspace");
 
-        $workspace = $workspacesRepository->find($workspace_id);
+        $workspace = $workspacesRepository->findOneBy(["id"=>$workspace_id]);
 
         return $workspace;
     }
@@ -44,7 +44,7 @@ class AdministrationWorkspaces
     {
         $workspaceAppsRepository = $this->em->getrepository("Twake\Workspaces:WorkspaceApp");
 
-        $apps_tab = $workspaceAppsRepository->findBy(array("workspace" => $workspace));
+        $apps_tab = $workspaceAppsRepository->findBy(array("workspace_id" => $workspace));
 
         $apps = array();
 

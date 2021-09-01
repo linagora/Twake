@@ -8,6 +8,7 @@ import {
   ConsoleHookBodyContent,
   ConsoleHookCompany,
   ConsoleHookResponse,
+  ConsoleHookUser,
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
@@ -16,6 +17,7 @@ import { AccessToken, JWTObject } from "../../../utils/types";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import UserServiceAPI from "../../user/api";
 import assert from "assert";
+import { logger } from "../../../core/platform/framework/logger";
 
 export class ConsoleController {
   private passwordEncoder: PasswordEncoder;
@@ -60,18 +62,15 @@ export class ConsoleController {
     };
   }
 
-  private async validateCompany(content: ConsoleHookBodyContent): Promise<void> {
-    if (!content.company || !content.company.details || !content.company.details.code) {
-      throw CrudExeption.badRequest("Company is required");
-    }
-  }
-
   private async getCompanyDataFromConsole(
-    company: ConsoleHookCompany,
+    company: ConsoleHookCompany | ConsoleHookCompany["details"],
   ): Promise<ConsoleHookCompany> {
-    assert(company.details, "getCompanyDataFromConsole: company details is missing");
-    assert(company.details.code, "getCompanyDataFromConsole: company.details.code is missing");
-    return this.consoleService.getClient().fetchCompanyInfo(company.details.code);
+    return this.consoleService
+      .getClient()
+      .fetchCompanyInfo(
+        (company as ConsoleHookCompany["details"])?.code ||
+          (company as ConsoleHookCompany)?.details?.code,
+      );
   }
 
   private async updateCompany(company: ConsoleHookCompany): Promise<Company> {
@@ -86,32 +85,35 @@ export class ConsoleController {
     try {
       const context = getExecutionContext(request, this.consoleService);
 
+      logger.info(`Received event ${request.body.type}`);
+
       switch (request.body.type) {
         case "company_user_added":
         case "company_user_activated":
         case "company_user_updated":
-          await this.userAdded(request.body.content);
+          await this.userAdded(request.body.content as ConsoleHookBodyContent);
           break;
         case "company_user_deactivated":
-          await this.userDisabled(request.body.content);
+          await this.userDisabled(request.body.content as ConsoleHookBodyContent);
           break;
         case "user_updated":
-          await this.userUpdated(request.body.content);
+          await this.userUpdated(request.body.content as ConsoleHookBodyContent);
           break;
         case "user_deleted":
-          await this.userRemoved(request.body.content);
+          await this.userRemoved(request.body.content as ConsoleHookUser);
           break;
         case "plan_updated":
-          await this.planUpdated(request.body.content);
+          await this.planUpdated(request.body.content as ConsoleHookBodyContent);
           break;
         case "company_deleted":
-          await this.companyRemoved(request.body.content);
+          await this.companyRemoved(request.body.content as ConsoleHookBodyContent);
           break;
         case "company_created":
         case "company_updated":
-          await this.companyUpdated(request.body.content);
+          await this.companyUpdated(request.body.content as ConsoleHookBodyContent);
           break;
         default:
+          logger.info(`Event not recognized`);
           reply.notImplemented("Unimplemented");
           return;
       }
@@ -133,13 +135,12 @@ export class ConsoleController {
   }
 
   private async userDisabled(content: ConsoleHookBodyContent): Promise<void> {
-    await this.validateCompany(content);
     const company = await this.updateCompany(content.company);
     await this.consoleService.getClient().removeCompanyUser(content.user._id, company);
   }
 
-  private async userRemoved(content: ConsoleHookBodyContent): Promise<void> {
-    await this.consoleService.getClient().removeUser(content.user._id);
+  private async userRemoved(content: ConsoleHookUser): Promise<void> {
+    await this.consoleService.getClient().removeUser(content._id);
   }
 
   private async userUpdated(content: ConsoleHookBodyContent) {
@@ -149,8 +150,6 @@ export class ConsoleController {
   }
 
   private async companyRemoved(content: ConsoleHookBodyContent) {
-    await this.validateCompany(content);
-
     assert(content.company, "content.company is missing");
     assert(content.company.details, "content.company.details is missing");
     assert(content.company.details.code, "content.company.details.code is missing");
@@ -162,12 +161,10 @@ export class ConsoleController {
   }
 
   private async companyUpdated(content: ConsoleHookBodyContent) {
-    await this.validateCompany(content);
     await this.updateCompany(content.company);
   }
 
   private async planUpdated(content: ConsoleHookBodyContent) {
-    await this.validateCompany(content);
     await this.updateCompany(content.company);
   }
 

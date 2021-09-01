@@ -9,6 +9,7 @@ import { ConsoleServiceAPI } from "../../console/api";
 import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 import { CounterAPI } from "../../../core/platform/services/counter/types";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
+import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 
 export function getService(
   platformServices: PlatformServicesAPI,

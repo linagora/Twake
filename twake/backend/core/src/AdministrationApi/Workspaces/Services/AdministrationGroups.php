@@ -105,7 +105,7 @@ class AdministrationGroups
             $workspaces_tab = $group->getWorkspaces();
 
             foreach ($workspaces_tab as $workspace) {
-                $rep[] = $workspace->getAsArray();
+                $rep[] = $workspace->getAsArray($this->em);
             }
         }
         return $rep;

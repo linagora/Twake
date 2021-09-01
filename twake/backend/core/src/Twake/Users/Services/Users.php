@@ -251,7 +251,7 @@ class Users
                 "role" => $companyMember->getRole() === null ? "member" : $companyMember->getRole(),
                 "status" => "active",
                 "company" => [
-                    "id" => $companyMember->getGroup()->getId()
+                    "id" => $companyMember->getGroup()
                 ]
             ];
         }

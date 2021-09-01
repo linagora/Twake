@@ -79,7 +79,7 @@ class CheckService
     public function containsApp($workspaceId, $application)
     {
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
         if ($workspace == null) {
             return false;
@@ -93,7 +93,7 @@ class CheckService
         if ($groupApp) {
             //Group apps
             $workspaceappsRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceApp");
-            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp" => $groupApp));
+            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace_id" => $workspace, "groupapp" => $groupApp));
         }
 
         return $workspaceapp != null;

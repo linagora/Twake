@@ -13,6 +13,7 @@ import Collections from 'services/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/ConnectorsListManager/ConnectorsListManager';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
   const apps = WorkspacesApps.getApps().filter(app => (app.display || {}).channel);
@@ -68,7 +69,7 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
 
       <span className="small-right-margin">{Languages.t('scenes.app.mainview.discussion')}</span>
 
-      {!!selected && (
+      {!!selected && AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Menu
           style={{ lineHeight: 0 }}
           menu={[
