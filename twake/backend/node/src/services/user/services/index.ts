@@ -1,5 +1,4 @@
 import { TwakeContext } from "../../../core/platform/framework";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import UserServiceAPI, {
   CompaniesServiceAPI,
   UserExternalLinksServiceAPI,
@@ -10,7 +9,6 @@ import { getService as getCompanyService } from "./companies";
 import { getService as getExternalService } from "./external_links";
 import { getService as getWorkspaceService } from "../../workspaces/services/workspace";
 import { WorkspaceServiceAPI } from "../../workspaces/api";
-import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 import {
   CompanyObject,
   CompanyShort,
@@ -21,14 +19,10 @@ import {
 } from "../web/types";
 import Company from "../entities/company";
 import User from "../entities/user";
-import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
+import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 
-export function getService(
-  databaseService: DatabaseServiceAPI,
-  searchService: SearchServiceAPI,
-  pubsub: PubsubServiceAPI,
-): UserServiceAPI {
-  return new Service(databaseService, searchService, pubsub);
+export function getService(platformServices: PlatformServicesAPI): UserServiceAPI {
+  return new Service(platformServices);
 }
 
 class Service implements UserServiceAPI {
@@ -38,15 +32,11 @@ class Service implements UserServiceAPI {
   external: UserExternalLinksServiceAPI;
   workspaces: WorkspaceServiceAPI;
 
-  constructor(
-    databaseService: DatabaseServiceAPI,
-    searchService: SearchServiceAPI,
-    pubsub: PubsubServiceAPI,
-  ) {
-    this.users = getUserService(databaseService, searchService);
-    this.external = getExternalService(databaseService);
-    this.companies = getCompanyService(databaseService);
-    this.workspaces = getWorkspaceService(databaseService, this.users, pubsub);
+  constructor(platformServices: PlatformServicesAPI) {
+    this.users = getUserService(platformServices);
+    this.external = getExternalService(platformServices.database);
+    this.companies = getCompanyService(platformServices);
+    this.workspaces = getWorkspaceService(platformServices, this.users);
   }
 
   async init(context: TwakeContext): Promise<this> {

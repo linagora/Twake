@@ -17,6 +17,7 @@ type comparisonType = [string, any];
 type inType = [string, Array<any>];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type likeType = [string, any];
+import { assign } from "lodash";
 
 export type FindOptions = {
   pagination?: Pagination;
@@ -96,5 +97,11 @@ export default class Repository<EntityType> {
 
   async remove(entity: EntityType): Promise<void> {
     await (await this.manager.remove(entity).flush()).reset();
+  }
+
+  //Avoid using this except when no choice
+  createEntityFromObject(object: any): EntityType {
+    const entity = new (this.entityType as any)() as EntityType;
+    return assign(entity, object);
   }
 }

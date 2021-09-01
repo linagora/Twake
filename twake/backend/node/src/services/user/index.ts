@@ -13,11 +13,7 @@ export default class UserService extends TwakeService<UserServiceAPI> {
 
   public async doInit(): Promise<this> {
     const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
-    this.service = getService(
-      platformServices.database,
-      platformServices.search,
-      platformServices.pubsub,
-    );
+    this.service = getService(platformServices);
     await this.service?.init(this.context);
     platformServices.fastify.getServer().register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix, service: this.service });
