@@ -84,15 +84,15 @@ class WorkspaceLevel
      */
     public function getWorkspace()
     {
-        return $this->workspace;
+        return $this->workspace_id;
     }
 
     /**
-     * @param mixed $workspace
+     * @param mixed $workspace_id
      */
-    public function setWorkspace($workspace)
+    public function setWorkspace($workspace_id)
     {
-        $this->workspace = $workspace;
+        $this->workspace_id = $workspace_id;
     }
 
     /**
