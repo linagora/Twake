@@ -48,7 +48,8 @@ export class ChannelCrudController
       ResourceCreateResponse<Channel>,
       ResourceListResponse<Channel>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(
     protected service: ChannelService,
     protected membersService: MemberService,
@@ -152,10 +153,10 @@ export class ChannelCrudController
       if (request.query.include_users)
         entityWithUsers = await this.service.includeUsersInDirectChannel(entityWithUsers, context);
 
-      let resultEntity = ({
+      let resultEntity = {
         ...entityWithUsers,
         ...{ user_member: member },
-      } as unknown) as UserChannel;
+      } as unknown as UserChannel;
 
       if (entity) {
         reply.code(201);
@@ -205,19 +206,27 @@ export class ChannelCrudController
       Params: BaseChannelsParameters;
     }>,
   ): Promise<ResourceListResponse<Channel>> {
+    const context = getExecutionContext(request);
+
+    await this.pendingEmails.proccessPendingEmails(
+      {
+        user_id: context.user.id,
+        ...context.workspace,
+      },
+      context.workspace,
+    );
+
     const list = await this.service.list(
       new Pagination(request.query.page_token, request.query.limit),
       { ...request.query },
-      getExecutionContext(request),
+      context,
     );
 
     let entities = [];
     if (request.query.include_users) {
       entities = [];
       for (const e of list.getEntities()) {
-        entities.push(
-          await this.service.includeUsersInDirectChannel(e, getExecutionContext(request)),
-        );
+        entities.push(await this.service.includeUsersInDirectChannel(e, context));
       }
     } else {
       entities = list.getEntities();
