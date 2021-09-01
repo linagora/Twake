@@ -23,7 +23,8 @@ export default class Pending extends React.Component {
           onAdd={
             workspaceUserRightsService.hasWorkspacePrivilege() &&
             (() => {
-              if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
+              if (true) {
+                // TODO use the same component
                 return popupManager.open(<AddUserFromTwakeConsole standalone />);
               } else {
                 return popupManager.open(<AddUser standalone />);
@@ -38,18 +39,23 @@ export default class Pending extends React.Component {
           onRequestMore={refresh =>
             new Promise(async resolve => {
               const state = await WorkspacesMembersTable.nextPage(
+                Workspaces.currentGroupId,
                 Workspaces.currentWorkspaceId,
                 'pending',
                 100,
                 refresh,
               );
+
+              console.log('statetaz', state);
+
               resolve(Object.values(state.list));
             })
           }
           updatedData={col => {
+            console.log('Pending email col', col);
             return (
-              col?.mail &&
-              WorkspacesMembersTable.getElement(Workspaces.currentWorkspaceId, 'pending', col.mail)
+              col?.email &&
+              WorkspacesMembersTable.getElement(Workspaces.currentWorkspaceId, 'pending', col.email)
             );
           }}
           column={[
@@ -57,7 +63,7 @@ export default class Pending extends React.Component {
               title: 'Email',
               render: col => (
                 <div className="absolute_position">
-                  <div className="fix_text_padding_medium text-complete-width">{col.mail}</div>
+                  <div className="fix_text_padding_medium text-complete-width">{col.email}</div>
                   {!!col.externe && (
                     <div className="tag green">
                       {Languages.t(
@@ -92,7 +98,7 @@ export default class Pending extends React.Component {
                             'Create temporary account',
                           ),
                           onClick: () => {
-                            MediumPopupManager.open(<CreateCompanyAccount email={col.mail} />, {
+                            MediumPopupManager.open(<CreateCompanyAccount email={col.email} />, {
                               size: { width: 400 },
                             });
                           },
@@ -108,7 +114,7 @@ export default class Pending extends React.Component {
                           ),
                           onClick: () => {
                             AlertManager.confirm(
-                              () => workspacesUsers.removeInvitation(col.mail),
+                              () => workspacesUsers.removeInvitation(col.email),
                               () => {},
                               {
                                 text: Languages.t(

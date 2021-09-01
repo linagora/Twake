@@ -45,11 +45,16 @@ class WorkspacesMembersTable extends Observable {
     });
   }
 
-  nextPage(workspaceId: string, type: string, max: number, fromStart: boolean) {
+  nextPage(companyId: string, workspaceId: string, type: string, max: number, fromStart: boolean) {
+    const prefixRoute = '/internal/services/workspaces/v1';
+    const pendingEmailRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/pending/email`;
+    const userRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/users`;
+
     return new Promise(resolve => {
-      let route = 'workspace/members/list';
+      let route = userRoute;
+
       if (type === 'pending') {
-        route = 'workspace/members/pending';
+        route = pendingEmailRoute;
       }
 
       this.tables[workspaceId] = this.tables[workspaceId] || {};
@@ -70,25 +75,25 @@ class WorkspacesMembersTable extends Observable {
         offset: offset,
         max: max,
       };
-      Api.post('/ajax/' + route, data, (res: any) => {
-        const data = res.data;
-        if (data && data.list) {
-          if (type !== 'pending')
-            Object.values(data.list).map((o: any) =>
-              Collections.get('users').updateObject(o?.user),
-            );
 
-          this.tables[workspaceId][type].list = Object.assign(
-            this.tables[workspaceId][type].list,
-            res.data.list,
-          );
-          this.tables[workspaceId][type].loaded = Object.values(
-            this.tables[workspaceId][type].list,
-          ).length;
-          this.tables[workspaceId][type].nextPageToken = data.nextPageToken;
-        } else {
-          console.log('Unable to load more members', res);
-        }
+      Api.get(route, (res: any) => {
+        const resources: { [key: string]: any }[] = res.resources || [];
+        if (!res && !resources.length) return console.log('Unable to load more members', res);
+
+        if (type !== 'pending')
+          Object.values(resources).map((r: any) => Collections.get('users').updateObject(r?.user));
+
+        this.tables[workspaceId][type].list = Object.assign(
+          this.tables[workspaceId][type].list,
+          resources,
+        );
+
+        this.tables[workspaceId][type].loaded = Object.values(
+          this.tables[workspaceId][type].list,
+        ).length;
+
+        this.tables[workspaceId][type].nextPageToken = res.nextPageToken;
+
         resolve(this.tables[workspaceId][type]);
       });
     });

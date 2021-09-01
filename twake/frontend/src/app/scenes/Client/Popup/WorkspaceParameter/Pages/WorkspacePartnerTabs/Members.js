@@ -24,7 +24,8 @@ export default class Members extends React.Component {
           onAdd={
             workspaceUserRightsService.hasWorkspacePrivilege() &&
             (() => {
-              if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
+              if (true) {
+                // TODO use the same component
                 return popupManager.open(<AddUserFromTwakeConsole standalone />);
               } else {
                 return popupManager.open(<AddUser standalone />);
@@ -37,6 +38,7 @@ export default class Members extends React.Component {
           onRequestMore={refresh =>
             new Promise(async resolve => {
               const state = await WorkspacesMembersTable.nextPage(
+                Workspaces.currentGroupId,
                 Workspaces.currentWorkspaceId,
                 'members',
                 100,
@@ -57,6 +59,7 @@ export default class Members extends React.Component {
             );
           }}
           updatedData={col => {
+            console.log('User col', col);
             return (
               col?.user?.id &&
               WorkspacesMembersTable.getElement(

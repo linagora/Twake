@@ -186,14 +186,14 @@ export default class Table extends Component<Props, State> {
             </div>
           )}
           <div className="contentTable">
-            {(page_data || []).length === 0 && !this.state.loading && (
+            {(this.getPageData() || []).length === 0 && !this.state.loading && (
               <div className="tr" style={{ justifyContent: 'center', display: 'flex' }}>
                 <div className="item" style={{ lineHeight: '32px' }}>
                   {Languages.t('components.user_picker.modal_no_result')}
                 </div>
               </div>
             )}
-            {(page_data || []).length === 0 &&
+            {(this.getPageData() || []).length === 0 &&
               !!this.state.loading &&
               Array.apply(null, Array(this.state.searching ? 1 : this.getResultsPerPage())).map(
                 () => {
@@ -206,7 +206,7 @@ export default class Table extends Component<Props, State> {
                   );
                 },
               )}
-            {(page_data || []).map((data: any) => {
+            {(this.getPageData() || []).map((data: any) => {
               return (
                 <div className="tr">
                   {this.props.column.map((col: any) => {
