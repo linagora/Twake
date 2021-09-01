@@ -43,17 +43,20 @@ describe("The /workspace/pending users API", () => {
   beforeAll(async ends => {
     platform = await init({
       services: [
+        "user",
         "database",
         "pubsub",
         "webserver",
-        "user",
         "search",
         "workspaces",
         "auth",
         "console",
+        "storage",
+        "platform-services",
       ],
     });
 
+    await platform.database.getConnector().drop();
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);

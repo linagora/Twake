@@ -10,15 +10,18 @@ describe("The Websocket authentication", () => {
   beforeEach(async ends => {
     platform = await init({
       services: [
+        "webserver",
+        "database",
+        "search",
+        "storage",
         "pubsub",
         "user",
         "websocket",
         "webserver",
         "auth",
-        "database",
-        "search",
         "realtime",
         "channels" /* FIXME: platform is not started if a business service is not in dependencies */,
+        "platform-services",
       ],
     });
 

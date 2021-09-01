@@ -7,6 +7,7 @@ import { DatabaseServiceAPI } from "../../../src/core/platform/services/database
 import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import { Workspace } from "../../../src/utils/types";
 import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
+import config from "config";
 
 type TokenPayload = {
   sub: string;
@@ -42,10 +43,10 @@ export interface TestPlatformConfiguration {
 
 let testPlatform: TestPlatform = null;
 
-export async function init(config: TestPlatformConfiguration): Promise<TestPlatform> {
+export async function init(testConfig?: TestPlatformConfiguration): Promise<TestPlatform> {
   if (!testPlatform) {
     const configuration: TwakePlatformConfiguration = {
-      services: config.services,
+      services: testConfig && testConfig.services ? testConfig.services : config.get("services"),
       servicesPath: pathResolve(__dirname, "../../../src/services/"),
     };
     const platform = new TwakePlatform(configuration);

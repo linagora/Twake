@@ -34,37 +34,35 @@ export class TwakeComponent {
       .join(",")}}`;
   }
 
-  switchToState(
+  async switchToState(
     state: TwakeServiceState.Initialized | TwakeServiceState.Started | TwakeServiceState.Stopped,
-  ): void {
+    recursionDepth?: number,
+  ): Promise<void> {
+    if (recursionDepth > 10) {
+      logger.error("Maximum recursion depth exceeded");
+      process.exit(1);
+    }
+
     const states: BehaviorSubject<TwakeServiceState>[] = this.components.map(
       component => component.instance.state,
     );
 
-    if (!states.length) {
+    if (states.length) {
+      for (const component of this.components) {
+        await component.switchToState(state, (recursionDepth || 0) + 1);
+      }
+      logger.info(`Children of ${this.name} are all in ${state} state`);
+      logger.info(this.getStateTree());
+    } else {
       logger.info(`${this.name} does not have children`);
-      _switchServiceToState(this.instance);
-
-      return;
     }
-
-    this.components.forEach(component => _switchServiceToState(component.instance));
-
-    const subscription = combineLatest(states)
-      .pipe(filter((value: Array<TwakeServiceState>) => value.every(v => v === state)))
-      .subscribe(() => {
-        logger.info(`Children of ${this.name} are all in ${state} state`);
-        logger.info(this.getStateTree());
-
-        _switchServiceToState(this.instance);
-        subscription.unsubscribe();
-      });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function _switchServiceToState(service: TwakeService<any>) {
-      state === TwakeServiceState.Initialized && service.init();
-      state === TwakeServiceState.Started && service.start();
-      state === TwakeServiceState.Stopped && service.stop();
+    async function _switchServiceToState(service: TwakeService<any>) {
+      state === TwakeServiceState.Initialized && (await service.init());
+      state === TwakeServiceState.Started && (await service.start());
+      state === TwakeServiceState.Stopped && (await service.stop());
     }
+    await _switchServiceToState(this.instance);
   }
 }

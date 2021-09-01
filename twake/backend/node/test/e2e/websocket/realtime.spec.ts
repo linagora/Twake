@@ -9,15 +9,17 @@ describe("The Realtime API", () => {
   beforeEach(async ends => {
     platform = await init({
       services: [
-        "pubsub",
         "webserver",
+        "database",
+        "search",
+        "storage",
+        "pubsub",
         "user",
         "auth",
         "websocket",
         "realtime",
-        "database",
-        "search",
         "channels" /* FIXME: platform is not started if a business service is not in dependencies */,
+        "platform-services",
       ],
     });
 
@@ -45,7 +47,7 @@ describe("The Realtime API", () => {
           .emit("authenticate", { token })
           .on("authenticated", () => {
             socket.emit("realtime:join", { name });
-            socket.on("realtime:join:error", event => {
+            socket.on("realtime:join:error", (event: any) => {
               expect(event.name).toEqual(name);
               done();
             });
@@ -67,7 +69,7 @@ describe("The Realtime API", () => {
           .emit("authenticate", { token })
           .on("authenticated", () => {
             socket.emit("realtime:join", { name, token: roomToken });
-            socket.on("realtime:join:error", event => {
+            socket.on("realtime:join:error", (event: any) => {
               expect(event.name).toEqual(name);
               done();
             });
@@ -90,7 +92,7 @@ describe("The Realtime API", () => {
           .on("authenticated", () => {
             socket.emit("realtime:join", { name, token: roomToken });
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
-            socket.on("realtime:join:success", event => {
+            socket.on("realtime:join:success", (event: any) => {
               expect(event.name).toEqual(name);
               done();
             });
@@ -113,7 +115,7 @@ describe("The Realtime API", () => {
           .on("authenticated", () => {
             socket.emit("realtime:leave", { name });
             socket.on("realtime:leave:error", () => done(new Error("should not fail")));
-            socket.on("realtime:leave:success", event => {
+            socket.on("realtime:leave:success", (event: any) => {
               expect(event.name).toEqual(name);
               done();
             });
@@ -136,7 +138,7 @@ describe("The Realtime API", () => {
             socket.emit("realtime:join", { name, token: roomToken });
             socket.emit("realtime:leave", { name });
             socket.on("realtime:leave:error", () => done(new Error("should not fail")));
-            socket.on("realtime:leave:success", event => {
+            socket.on("realtime:leave:success", (event: any) => {
               expect(event.name).toEqual(name);
               done();
             });

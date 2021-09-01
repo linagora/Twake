@@ -140,6 +140,7 @@
     "files",
     "applications",
     "workspaces",
-    "console"
+    "console",
+    "platform-services"
   ]
 }
