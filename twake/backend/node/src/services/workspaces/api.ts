@@ -7,7 +7,7 @@ import {
   Paginable,
 } from "../../core/platform/framework/api/crud-service";
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
-import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../user/api";
+import { CompaniesServiceAPI, UsersServiceAPI } from "../user/api";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../workspaces/entities/workspace_user";
 import { Observable } from "rxjs";
 import { UserPrimaryKey } from "../user/entities/user";
@@ -17,7 +17,7 @@ import WorkspacePendingUser, {
   WorkspacePendingUserPrimaryKey,
 } from "./entities/workspace_pending_users";
 import { CompanyUserRole } from "../user/web/types";
-import { User, uuid } from "../../utils/types";
+import { uuid } from "../../utils/types";
 import { ConsoleServiceAPI } from "../console/api";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
@@ -40,6 +40,8 @@ export interface WorkspaceServiceAPI
   updateUserRole(workspaceUserPk: WorkspaceUserPrimaryKey, role: WorkspaceUserRole): Promise<void>;
 
   getAllForCompany(companyId: uuid): Promise<Workspace[]>;
+
+  getUsersCount(workspaceId: string): Promise<number>;
 
   removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,

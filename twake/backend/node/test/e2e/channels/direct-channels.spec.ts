@@ -30,6 +30,7 @@ describe("The direct channels API", () => {
         "channels",
         "auth",
         "storage",
+        "counter",
         "platform-services",
       ],
     });

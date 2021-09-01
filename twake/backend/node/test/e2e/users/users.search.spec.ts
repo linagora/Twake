@@ -18,6 +18,9 @@ describe("The /users API", () => {
         "user",
         "auth",
         "storage",
+        "counter",
+        "workspaces",
+        "console",
         "platform-services",
       ],
     });
