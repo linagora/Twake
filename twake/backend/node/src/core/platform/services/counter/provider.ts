@@ -57,11 +57,11 @@ export class CounterProvider<T extends CounterEntity> {
         currentValue = actual;
       }
       lastRevised.calls = 0;
+      lastRevised.period = now;
     } else {
       lastRevised.calls++;
     }
 
-    lastRevised.period = now;
     this.lastRevised.set(pk, lastRevised);
     return currentValue;
   }
