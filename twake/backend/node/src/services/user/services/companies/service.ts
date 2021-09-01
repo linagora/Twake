@@ -37,6 +37,8 @@ import {
   TYPE as CompanyCounterEntityType,
 } from "../../entities/company_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { WorkspaceCounterPrimaryKey } from "../../../workspaces/entities/workspace_counters";
+import { countRepositoryItems } from "../../../../utils/counters";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -73,7 +75,7 @@ export class CompanyService implements CompaniesServiceAPI {
     );
 
     this.companyCounter.reviseCounter(async (pk: CompanyCounterPrimaryKey) => {
-      return this.companyUserRepository.find({ group_id: pk.id }).then(a => a.getEntities().length);
+      return countRepositoryItems(this.companyUserRepository, pk);
     });
 
     return this;

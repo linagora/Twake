@@ -43,6 +43,7 @@ import {
   WorkspaceCounterPrimaryKey,
 } from "../../entities/workspace_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { countRepositoryItems } from "../../../../utils/counters";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -82,9 +83,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     );
 
     this.workspaceCounter.reviseCounter(async (pk: WorkspaceCounterPrimaryKey) => {
-      return this.workspaceUserRepository
-        .find({ workspace_id: pk.id })
-        .then(a => a.getEntities().length);
+      return countRepositoryItems(this.workspaceUserRepository, pk);
     });
 
     return this;

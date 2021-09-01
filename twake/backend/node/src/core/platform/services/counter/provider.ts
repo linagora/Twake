@@ -1,5 +1,5 @@
 import Repository from "../database/services/orm/repository/repository";
-import { CounterEntity } from "../../../../utils/counter-entity";
+import { CounterEntity } from "../../../../utils/counters";
 
 type LastRevised = {
   calls: number;

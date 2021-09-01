@@ -11,6 +11,7 @@ import {
   WorkspaceCounterPrimaryKey,
 } from "../../src/services/workspaces/entities/workspace_counters";
 import { CounterProvider } from "../../src/core/platform/services/counter/provider";
+import { Pagination } from "../../src/core/platform/framework/api/crud-service";
 
 describe("Counters implementation", () => {
   let platform: TestPlatform;
@@ -49,7 +50,7 @@ describe("Counters implementation", () => {
     workspaceCounter = counterApi.getCounter<WorkspaceCounterEntity>(repo);
 
     workspaceCounter.reviseCounter(async (pk: WorkspaceCounterPrimaryKey) => {
-      return Promise.resolve(5);
+      return Promise.resolve(5); // fake value
     }, 4);
 
     expect(workspaceCounter).toBeTruthy();

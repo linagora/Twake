@@ -1,5 +1,5 @@
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
-import { CounterEntity } from "../../../utils/counter-entity";
+import { CounterEntity } from "../../../utils/counters";
 
 export const TYPE = "workspace_counters";
 

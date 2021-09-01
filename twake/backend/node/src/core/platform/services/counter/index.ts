@@ -2,7 +2,7 @@ import { TwakeService } from "../../framework";
 import { CounterProvider } from "./provider";
 import { CounterAPI } from "./types";
 import Repository from "../database/services/orm/repository/repository";
-import { CounterEntity } from "../../../../utils/counter-entity";
+import { CounterEntity } from "../../../../utils/counters";
 
 export default class CounterService extends TwakeService<CounterAPI> implements CounterAPI {
   name = "counter";
