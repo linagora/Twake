@@ -1,5 +1,5 @@
 # Common node machine
-FROM node:14.17.3-alpine as node-base
+FROM node:14.17.6-alpine as node-base
 
 WORKDIR /usr/src/app
 COPY package*.json ./
