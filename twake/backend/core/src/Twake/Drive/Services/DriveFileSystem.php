@@ -384,7 +384,7 @@ class DriveFileSystem
 
         $notification_data = Array(
             "group" => $workspace->getGroup()->getAsArray(),
-            "workspace" => $workspace->getAsArray(),
+            "workspace" => $workspace->getAsArray($this->em),
             "file" => $file->getAsArray(),
             "user" => $current_user
         );

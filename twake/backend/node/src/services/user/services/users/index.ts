@@ -1,10 +1,6 @@
-import { SearchServiceAPI } from "../../../../core/platform/services/search/api";
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { UserService } from "./service";
+import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 
-export function getService(
-  databaseService: DatabaseServiceAPI,
-  searchService: SearchServiceAPI,
-): UserService {
-  return new UserService(databaseService, searchService);
+export function getService(platformServices: PlatformServicesAPI): UserService {
+  return new UserService(platformServices);
 }

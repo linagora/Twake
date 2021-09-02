@@ -1,5 +1,6 @@
 import legacy from "./legacy";
 import v1 from "./v1";
+import v2 from "./v2";
 import { createHash } from "crypto";
 
 export type CryptoResult = {
@@ -18,12 +19,22 @@ export type CryptoResult = {
 };
 
 export function decrypt(data: string, encryptionKey: string): CryptoResult {
-  const result = legacy.decrypt(data, encryptionKey);
+  let result = v2.decrypt(data, encryptionKey);
   if (result.done) {
     return result;
   }
 
-  return result.done ? result : v1.decrypt(data, encryptionKey);
+  result = v1.decrypt(data, encryptionKey);
+  if (result.done) {
+    return result;
+  }
+
+  result = legacy.decrypt(data, encryptionKey);
+  if (result.done) {
+    return result;
+  }
+
+  return result;
 }
 
 export function md5(value: string): string {
@@ -35,5 +46,5 @@ export function encrypt(
   encryptionKey: any,
   options: { disableSalts?: boolean } = {},
 ): CryptoResult {
-  return v1.encrypt(value, encryptionKey, options);
+  return v2.encrypt(value, encryptionKey, options);
 }

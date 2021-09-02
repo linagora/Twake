@@ -53,7 +53,8 @@ export interface UsersServiceAPI
   ): Promise<void>;
   deregisterUserDevice(token: string): Promise<void>;
   setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void>;
-  getPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]>;
+  getHashedPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]>;
+  anonymizeAndDelete(user: UserPrimaryKey, context?: ExecutionContext): Promise<void>;
 }
 
 /**
@@ -136,4 +137,6 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   setUserRole(companyId: uuid, userId: uuid, role?: CompanyUserRole): Promise<CompanyUser>;
 
   removeCompany(searchKey: CompanySearchKey): Promise<void>;
+
+  getUsersCount(workspaceId: string): Promise<number>;
 }

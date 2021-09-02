@@ -26,16 +26,20 @@ describe("The notification for user mentions", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
-        "user",
-        "websocket",
         "webserver",
-        "channels",
-        "auth",
         "database",
         "search",
+        "storage",
         "pubsub",
+        "user",
+        "websocket",
+        "channels",
+        "auth",
+        "search",
         "push",
         "notifications",
+        "counter",
+        "platform-services",
       ],
     });
     channelUtils = getChannelUtils(platform);

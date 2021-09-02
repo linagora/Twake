@@ -49,13 +49,14 @@ class ApplicationApi extends BaseController
         $event = $request->request->get("event");
         $evt_data = $request->request->get("data");
 
+        
         $workspace = $this->get("app.workspaces")->get($workspace_id, $this->getUser()->getId());
-        if ($workspace && $workspace->getGroup()->getId() == $group_id) {
+        if ($workspace && $workspace->getGroup() == $group_id) {
             $can = $this->get("app.applications_api")->hasCapability($app_id, $group_id);
             if ($can) {
 
-                $evt_data["workspace"] = $workspace->getAsArray();
-                $evt_data["group"] = $workspace->getGroup()->getAsArray();
+                $evt_data["workspace"] = $workspace->getAsArray($this->get("app.twake_doctrine"));
+                $evt_data["group"] = $evt_data["workspace"]["group"];
                 $evt_data["user"] = $this->getUser()->getAsArray();
                 $evt_data["user"]["email"] = $this->getUser()->getEmail();
 

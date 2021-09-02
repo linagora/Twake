@@ -176,7 +176,7 @@ class Groups extends BaseController
             $workspace = $workspace_service->getOneWorkspace($search_string);
 
             if ($workspace) {
-                $data['data']['workspaces'][] = $workspace->getAsArray();
+                $data['data']['workspaces'][] = $workspace->getAsArray($this->get("app.twake_doctrine"));
             }
 
 

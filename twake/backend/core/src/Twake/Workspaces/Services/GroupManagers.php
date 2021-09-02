@@ -338,7 +338,7 @@ class GroupManagers
                     $wss = $workspaceUserRepository->findBy(Array("user_id" => $userEntity->getId()));
                     $nbWs = 0;
                     foreach ($wss as $ws) {
-                        if ($ws->getWorkspace($this->doctrine)->getGroup() && $ws->getWorkspace($this->doctrine)->getGroup()->getId() == $group->getId()) {
+                        if ($ws->getWorkspace($this->doctrine)->getGroup() && $ws->getWorkspace($this->doctrine)->getGroup() == $group->getId()) {
                             $nbWs++;
                         }
                     }

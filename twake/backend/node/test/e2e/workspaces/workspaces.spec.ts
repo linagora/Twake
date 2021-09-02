@@ -23,6 +23,9 @@ describe("The /workspaces API", () => {
         "workspaces",
         "auth",
         "console",
+        "counter",
+        "storage",
+        "platform-services",
       ],
     });
 
@@ -31,9 +34,9 @@ describe("The /workspaces API", () => {
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
-    const ws0pk = { id: uuidv1(), group_id: companyId };
-    const ws1pk = { id: uuidv1(), group_id: companyId };
-    const ws2pk = { id: uuidv1(), group_id: companyId };
+    const ws0pk = { id: uuidv1(), company_id: companyId };
+    const ws1pk = { id: uuidv1(), company_id: companyId };
+    const ws2pk = { id: uuidv1(), company_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createWorkspace(ws2pk);
@@ -103,7 +106,7 @@ describe("The /workspaces API", () => {
         if (resource.stats) {
           expect(resource.stats).toMatchObject({
             created_at: expect.any(Number),
-            total_members: expect.any(Number),
+            total_members: 1,
           });
         }
       }
@@ -186,7 +189,7 @@ describe("The /workspaces API", () => {
       if (resource.stats) {
         expect(resource.stats).toMatchObject({
           created_at: expect.any(Number),
-          total_members: expect.any(Number),
+          total_members: 1,
         });
       }
 
@@ -221,7 +224,7 @@ describe("The /workspaces API", () => {
       if (resource.stats) {
         expect(resource.stats).toMatchObject({
           created_at: expect.any(Number),
-          total_members: expect.any(Number),
+          total_members: 1,
         });
       }
 

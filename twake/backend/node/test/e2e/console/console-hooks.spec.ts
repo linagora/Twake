@@ -50,13 +50,16 @@ describe("The console API hooks", () => {
         "workspaces",
         "auth",
         "console",
+        "storage",
+        "counter",
+        "platform-services",
       ],
     });
 
     await platform.database.getConnector().init();
     testDbService = await TestDbService.getInstance(platform);
     await testDbService.createCompany(companyId);
-    const ws0pk = { id: uuidv1(), group_id: companyId };
+    const ws0pk = { id: uuidv1(), company_id: companyId };
 
     await testDbService.createWorkspace(ws0pk);
 

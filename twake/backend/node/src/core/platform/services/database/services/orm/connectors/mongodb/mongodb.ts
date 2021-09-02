@@ -27,7 +27,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
   }
 
   async connect(): Promise<this> {
-    if (this.client && this.client.topology.isConnected()) {
+    if (this.client) {
       return this;
     }
 
@@ -207,7 +207,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     const collection = db.collection(`${entityDefinition.name}`);
 
     const query = buildSelectQuery<Table>(
-      (entityType as unknown) as ObjectType<Table>,
+      entityType as unknown as ObjectType<Table>,
       filters,
       options,
     );

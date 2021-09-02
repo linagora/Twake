@@ -18,17 +18,20 @@ describe("The Messages User Bookmarks feature", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
+        "webserver",
+        "database",
+        "search",
+        "storage",
         "pubsub",
         "user",
         "search",
         "websocket",
-        "webserver",
         "messages",
         "auth",
-        "database",
-        "search",
         "realtime",
         "channels",
+        "counter",
+        "platform-services",
       ],
     });
   });
@@ -66,7 +69,7 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
-      let list = await service.userBookmarks.list({}, {}, getContext(platform));
+      const list = await service.userBookmarks.list({}, {}, getContext(platform));
       expect(list.getEntities().length).toBe(1);
 
       done();
@@ -114,7 +117,7 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
-      let list = await service.userBookmarks.list({}, {}, getContext(platform));
+      const list = await service.userBookmarks.list({}, {}, getContext(platform));
       expect(list.getEntities().length).toBe(1);
 
       done();

@@ -138,8 +138,10 @@
     "notifications",
     "messages",
     "files",
+    "applications",
     "workspaces",
     "console",
-    "previews"
+    "previews",
+    "platform-services"
   ]
 }

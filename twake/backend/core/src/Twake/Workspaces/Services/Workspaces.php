@@ -92,7 +92,7 @@ class Workspaces
         $workspace->setIsDefault($default);
 
         if ($groupId != null) {
-            $workspace->setGroup($group);
+            $workspace->setGroup($groupId);
         }
 
         $this->doctrine->persist($workspace);
@@ -106,13 +106,13 @@ class Workspaces
 
         //Create admin level
         $levelAdmin = new WorkspaceLevel();
-        $levelAdmin->setWorkspace($workspace);
+        $levelAdmin->setWorkspace($workspace->getId());
         $levelAdmin->setLabel("Administrator");
         $levelAdmin->setIsAdmin(true);
         $levelAdmin->setIsDefault(false);
 
         $levelUser = new WorkspaceLevel();
-        $levelUser->setWorkspace($workspace);
+        $levelUser->setWorkspace($workspace->getId());
         $levelUser->setLabel("User");
         $levelUser->setIsAdmin(false);
         $levelUser->setIsDefault(true);
@@ -198,7 +198,7 @@ class Workspaces
     {
 
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-        $original_workspace = $workspaceRepository->find($original_workspace_id);
+        $original_workspace = $workspaceRepository->findOneBy(["id"=>$original_workspace_id]);
 
         if (!$original_workspace) {
             return false;
@@ -209,7 +209,7 @@ class Workspaces
             || $this->wls->can($original_workspace_id, $currentUserId, "workspace:manage")
         ) {
 
-            $groupId = $original_workspace->getGroup()->getId();
+            $groupId = $original_workspace->getGroup();
 
             $workspace = $this->create($name, $groupId, $currentUserId);
             $this->doctrine->persist($workspace);
@@ -217,7 +217,7 @@ class Workspaces
             if ($workspace && $workspace->getGroup() && !$workspace->getIsArchived() && !$workspace->getisDeleted()) {
 
                 $workspacelevelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
-                $original_workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $original_workspace));
+                $original_workspacelevels = $workspacelevelRepository->findBy(Array("workspace_id" => $original_workspace));
                 $adminLevelId = 0;
                 foreach ($original_workspacelevels as $level) {
                     if ($level->getIsAdmin()) {
@@ -276,7 +276,7 @@ class Workspaces
                         }
                     }
                     if (!$found) {
-                        $app = new WorkspaceApp($workspace, $old_application->getGroupApp()->getId(), $old_application->getAppId());
+                        $app = new WorkspaceApp($workspace->getId(), $old_application->getGroupApp()->getId(), $old_application->getAppId());
                         $this->doctrine->persist($app);
                     }
                 }
@@ -389,7 +389,7 @@ class Workspaces
             || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $this->wms->removeAllMember($workspaceId);
 
@@ -414,7 +414,7 @@ class Workspaces
         ) {
 
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $workspace->setName($name);
 
@@ -438,7 +438,7 @@ class Workspaces
         ) {
 
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $workspace->setLogo($logo);
 
@@ -463,7 +463,7 @@ class Workspaces
         ) {
 
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if ($workspace->getWallpaper()) {
                 if ($uploader) {
@@ -501,7 +501,7 @@ class Workspaces
             || $this->wls->can($workspaceId, $currentUserId, "")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             return $workspace;
         }
@@ -533,7 +533,7 @@ class Workspaces
         $workspace = $workspaceRepository->findOneBy(Array("uniquename" => $workspaceName, "group" => $group, "is_deleted" => 0));
 
         if ($workspace != null) {
-            return $workspace->getAsArray();
+            return $workspace->getAsArray($this->doctrine);
         } else {
             return false;
         }
@@ -550,7 +550,7 @@ class Workspaces
             || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $isArchived = $workspace->getIsArchived();
             $is_deleted = $workspace->getIsDeleted();
@@ -587,7 +587,7 @@ class Workspaces
             || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $isArchived = $workspace->getIsArchived();
             $is_deleted = $workspace->getIsDeleted();
@@ -769,7 +769,7 @@ class Workspaces
                 "bool" => Array(
                     "must" => Array(
                         "match_phrase" => Array(
-                            "group_id" => $group_id
+                            "company_id" => $group_id
                         )
                     )
 //                        "should" => $terms,

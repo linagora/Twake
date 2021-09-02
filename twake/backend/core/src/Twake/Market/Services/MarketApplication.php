@@ -44,8 +44,7 @@ class MarketApplication
         if($workspace_id || $current_user_id != null){
           $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
           $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
-          $group = $workspace->getGroup();
-          $group_id = $group->getId();
+          $group_id = $workspace->getGroup();
         }
 
         if ($current_user_id == null
@@ -83,8 +82,7 @@ class MarketApplication
         if($workspace_id || $current_user_id != null){
           $groupRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
           $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
-          $group = $workspace->getGroup();
-          $group_id = $group->getId();
+          $group_id = $workspace->getGroup();
         }
 
         if ($current_user_id == null

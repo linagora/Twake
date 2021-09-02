@@ -118,7 +118,7 @@ const workspaceUserObjectSchema = {
     workspace_id: { type: "string" },
     user_id: { type: "string" },
     created_at: { type: "number" },
-    role: { type: "string", enum: ["moderator", "member"] },
+    role: { type: "string", enum: ["admin", "member"] },
     user: userObjectSchema,
   },
 };

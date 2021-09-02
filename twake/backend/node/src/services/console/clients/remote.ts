@@ -26,6 +26,7 @@ import { memoize } from "lodash";
 import UserServiceAPI from "../../user/api";
 import { ExternalGroupPrimaryKey } from "../../user/entities/external_company";
 import coalesce from "../../../utils/coalesce";
+import { logger } from "../../../core/platform/framework/logger";
 
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
@@ -48,6 +49,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company: ConsoleCompany,
     user: CreateConsoleUser,
   ): Promise<CreatedConsoleUser> {
+    logger.info(`Remote: addUserToCompany`);
+
     if (this.dryRun) {
       return {
         _id: uuidv1(),
@@ -93,6 +96,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company: ConsoleCompany,
     user: UpdateConsoleUserRole,
   ): Promise<UpdatedConsoleUserRole> {
+    logger.info(`Remote: updateUserRole`);
+
     if (this.dryRun) {
       return {
         id: user.id,
@@ -115,6 +120,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   async createCompany(company: CreateConsoleCompany): Promise<CreatedConsoleCompany> {
+    logger.info(`Remote: createCompany`);
+
     if (this.dryRun) {
       return company;
     }
@@ -130,11 +137,16 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   addUserToTwake(user: CreateConsoleUser): Promise<User> {
+    logger.info(`Remote: addUserToTwake`);
     //should do noting for real console
     return Promise.resolve(undefined);
   }
 
-  async updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company> {
+  async updateLocalCompanyFromConsole(partialCompanyDTO: ConsoleHookCompany): Promise<Company> {
+    logger.info(`Remote: updateLocalCompanyFromConsole`);
+
+    const companyDTO = await this.fetchCompanyInfo(partialCompanyDTO.details.code);
+
     let company = await this.userService.companies.getCompany({
       identity_provider_id: companyDTO.details.code,
     });
@@ -159,7 +171,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       company.logo =
         details.logo ||
         (avatar && avatar.type && avatar.type !== "url"
-          ? this.infos.url.replace(/\/$/, "") + "/avatars/" + avatar.value
+          ? this.infos.url.replace(/\/$/, "") + "/api/avatars/" + avatar.value
           : companyDTO.value || "");
     }
 
@@ -171,7 +183,15 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     return company;
   }
 
-  async updateLocalUserFromConsole(userDTO: ConsoleHookUser): Promise<User> {
+  async updateLocalUserFromConsole(partialUserDTO: ConsoleHookUser): Promise<User> {
+    logger.info(`Remote: updateLocalUserFromConsole`);
+
+    const userDTO = await this.fetchUserInfo(partialUserDTO._id);
+
+    if (!userDTO) {
+      throw CrudExeption.badRequest("User not found on Console");
+    }
+
     const roles = userDTO.roles;
 
     let user = await this.userService.users.getByConsoleId(userDTO._id);
@@ -225,7 +245,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     user.picture =
       avatar && avatar.type && avatar.type !== "url"
-        ? this.infos.url.replace(/\/$/, "") + "/avatars/" + avatar.value
+        ? this.infos.url.replace(/\/$/, "") + "/api/avatars/" + avatar.value
         : "";
 
     await this.userService.users.save(user);
@@ -261,6 +281,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   async removeCompanyUser(consoleUserId: string, company: Company): Promise<void> {
+    logger.info(`Remote: removeCompanyUser`);
+
     const user = await this.userService.users.getByConsoleId(consoleUserId);
     if (!user) {
       throw CrudExeption.notFound(`User ${consoleUserId} doesn't exists`);
@@ -268,11 +290,30 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
   }
 
+  async removeUser(consoleUserId: string): Promise<void> {
+    logger.info(`Remote: removeUser`);
+
+    let user = await this.userService.users.getByConsoleId(consoleUserId);
+
+    if (!user) {
+      throw new Error("User does not exists on Twake.");
+    }
+
+    await this.userService.users.anonymizeAndDelete(
+      { id: user.id },
+      {
+        user: { id: user.id, server_request: true },
+      },
+    );
+  }
+
   async removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
+    logger.info(`Remote: removeCompany`);
     await this.userService.companies.removeCompany(companySearchKey);
   }
 
   fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {
+    logger.info(`Remote: fetchCompanyInfo ${consoleCompanyCode}`);
     return this.client
       .get(`/api/companies/${consoleCompanyCode}`, {
         auth: this.auth(),
@@ -289,7 +330,26 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       });
   }
 
+  fetchUserInfo(consoleUserId: string): Promise<ConsoleHookUser> {
+    logger.info(`Remote: fetchUserInfo ${consoleUserId}`);
+    return this.client
+      .get(`/api/users/${consoleUserId}`, {
+        auth: this.auth(),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      .then(({ data }) => data)
+      .catch(e => {
+        if (e.response.status === 401) {
+          throw CrudExeption.forbidden("Bad console credentials");
+        }
+        throw e;
+      });
+  }
+
   getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser> {
+    logger.info(`Remote: getUserByAccessToken`);
     return this.client
       .get("/api/users/profile", {
         headers: {
@@ -303,6 +363,32 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .catch(e => {
         if (e.response.status === 401) {
           throw CrudExeption.forbidden("Bad access token credentials");
+        }
+        throw e;
+      });
+  }
+
+  async resendVerificationEmail(email: string) {
+    logger.info(`Remote: resendVerificationEmail`);
+    return this.client
+      .post(
+        "/api/users/resend-verification-email",
+        {
+          email,
+        },
+        {
+          auth: this.auth(),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      )
+      .then(({ data }) => {
+        return data;
+      })
+      .catch(e => {
+        if (e.response.status === 401) {
+          throw CrudExeption.forbidden("Bad credentials");
         }
         throw e;
       });

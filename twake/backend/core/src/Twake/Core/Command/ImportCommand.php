@@ -299,7 +299,7 @@ class ImportCommand extends ContainerAwareCommand
                         if ($logo !== '') {
                             $workspace_bdd->setLogo($contents["logo"]);
                         }
-                        $workspace_bdd->setGroup($group);
+                        $workspace_bdd->setGroup($group->getId());
                         $manager->persist($workspace_bdd);
                         $workspace_id = $workspace_bdd->getId();
                         $manager->flush();
@@ -313,14 +313,14 @@ class ImportCommand extends ContainerAwareCommand
                     $contents = json_decode(fread($handle_workspace_members, filesize($workspace_members_file)), true);
                     $level_admin_bdd = new WorkspaceLevel();
                     $level_admin_bdd->setIsAdmin(true);
-                    $level_admin_bdd->setWorkspace($workspace_bdd);
+                    $level_admin_bdd->setWorkspace($workspace_bdd->getId());
                     $level_admin_bdd->setLabel("Administrator");
                     $manager->persist($level_admin_bdd);
                     $manager->flush();
                     $level_admin_id = $level_admin_bdd->getId();
 
                     $level_none_bdd = new WorkspaceLevel();
-                    $level_none_bdd->setWorkspace($workspace_bdd);
+                    $level_none_bdd->setWorkspace($workspace_bdd->getId());
                     $level_none_bdd->setLabel("Basic user");
                     $manager->persist($level_none_bdd);
                     $manager->flush();

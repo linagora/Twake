@@ -173,7 +173,7 @@ export type ConsoleHookBodyContent = {
 
 export type ConsoleHookBody = {
   type: string;
-  content: ConsoleHookBodyContent;
+  content: ConsoleHookBodyContent | ConsoleHookUser | ConsoleHookCompany;
   signature: string;
 };
 
