@@ -1,7 +1,7 @@
 import { CommandModule } from "yargs";
 
 const command: CommandModule = {
-  describe: "WOrk with search middleware",
+  describe: "Work with search middleware",
   command: "search <command>",
   builder: yargs =>
     yargs.commandDir("search_cmds", {

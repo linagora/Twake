@@ -43,7 +43,7 @@ class User {
       return '';
     }
 
-    if (user._deleted) {
+    if (user.deleted) {
       name = Languages.t('general.user.deleted');
     }
 
@@ -77,7 +77,7 @@ class User {
       thumbnail = addApiUrlIfNeeded(user.thumbnail);
     }
 
-    if (user._deleted) {
+    if (user.deleted) {
       thumbnail = '';
     }
 
