@@ -141,6 +141,7 @@
     "applications",
     "workspaces",
     "console",
-    "platform-services"
+    "platform-services",
+    "counter"
   ]
 }
