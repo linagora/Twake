@@ -11,13 +11,6 @@ const routes: FastifyPluginCallback<{ service: PreviewServiceAPI }> = (
 ) => {
   const previewController = new PreviewController(options.service);
 
-  fastify.route({
-    method: "GET",
-    url: `${previewsUrl}`, ///:id`,
-    preValidation: [], //[fastify.authenticate],
-    handler: previewController.get.bind(previewController),
-  });
-
   next();
 };
 

@@ -1,4 +1,4 @@
-import StorageAPI from "../../../../core/platform/services/storage/provider";
+import StorageAPI from "../../../../../src/core/platform/services/storage/provider";
 import { Initializable } from "../../../../core/platform/framework";
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { PreviewServiceAPI } from "../../api";

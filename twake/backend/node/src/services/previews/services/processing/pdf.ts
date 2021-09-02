@@ -5,8 +5,6 @@ export async function convertFromPdf(
   inputPath: string,
   numberOfPages: number,
 ): Promise<{ output: string[]; done: boolean }> {
-  console.log("Start conversion with imagick");
-
   let pages: string[] = [];
 
   try {
@@ -18,15 +16,11 @@ export async function convertFromPdf(
       const newPage = await pdfImage.convertPage(i);
       pages.push(newPage);
     }
-
-    await unlink(inputPath);
-    console.log("successfully deleted : ", inputPath);
   } catch (error) {
     console.error("there was an error:", error.message);
     return { output: [], done: false };
   }
+  await unlink(inputPath);
 
-  console.log(pages);
-
-  return { output: pages, done: true }; //attention plusieur fichier
+  return { output: pages, done: true };
 }

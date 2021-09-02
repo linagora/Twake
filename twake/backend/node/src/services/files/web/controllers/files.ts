@@ -4,8 +4,6 @@ import { ResourceDeleteResponse } from "../../../../utils/types";
 import { CompanyExecutionContext } from "../types";
 import { FileServiceAPI, UploadOptions } from "../../api";
 import { File } from "../../entities/file";
-import { logger } from "../../../../core/platform/framework";
-import { PreviewPubsubRequest } from "../../../../../src/services/previews/types";
 
 export class FileController {
   constructor(protected service: FileServiceAPI) {}
@@ -54,6 +52,20 @@ export class FileController {
     response.header("Content-disposition", `attachment; filename="${filename}"`);
     if (data.size) response.header("Content-Length", data.size);
     response.type(data.mime);
+    response.send(data.file);
+  }
+
+  async thumbnail(
+    request: FastifyRequest<{ Params: { company_id: string; id: string; index: string } }>,
+    response: FastifyReply,
+  ): Promise<void> {
+    const context = getCompanyExecutionContext(request);
+    const params = request.params;
+    const data = await this.service.thumbnail(params.id, params.index, context);
+
+    response.header("Content-disposition", "inline");
+    if (data.size) response.header("Content-Length", data.size);
+    response.type(data.type);
     response.send(data.file);
   }
 

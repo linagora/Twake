@@ -1,11 +1,11 @@
 import { PreviewPubsubHandler, PreviewServiceAPI } from "../../api";
 import { logger, TwakeContext } from "../../../../core/platform/framework";
-//import { PushNotificationMessage, PushNotificationMessageResult } from "../../../../types";
 import _ from "lodash";
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
-import { PreviewPubsubCallback, PreviewPubsubRequest } from "../../types";
+import { PreviewPubsubCallback, PreviewPubsubRequest, ThumbnailResult } from "../../types";
 import { getTmpFile } from "../../utils";
 import fs from "fs";
+import { unlink } from "fs/promises";
 import StorageAPI from "../../../../core/platform/services/storage/provider";
 
 /**
@@ -13,7 +13,6 @@ import StorageAPI from "../../../../core/platform/services/storage/provider";
  */
 export class PreviewProcessor
   implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback> {
-  //TODO: create in and out type
   constructor(
     service: PreviewServiceAPI,
     private pubsub: PubsubServiceAPI,
@@ -44,7 +43,6 @@ export class PreviewProcessor
 
   async process(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
     logger.info(`${this.name} - Processing preview generation ${message.document.id}`);
-    console.log("---------------------------------");
 
     //Download original file
     const readable = await this.storage.read(message.document.path, {
@@ -55,38 +53,43 @@ export class PreviewProcessor
     const inputPath = getTmpFile();
     const writable = fs.createWriteStream(inputPath);
     readable.pipe(writable);
-
-    console.log("Did download file for preview to " + inputPath);
+    await new Promise(r => {
+      writable.on("finish", r);
+    });
+    writable.end();
 
     //Generate previews
-    let localThumbnails: { path: string; width: number; height: number }[] = [];
+    let localThumbnails: ThumbnailResult[] = [];
+
     try {
       localThumbnails = await this.service.previewProcess.generateThumbnails(
         { path: inputPath, mime: message.document.mime, filename: message.document.filename },
         message.output,
       );
     } catch (err) {
-      console.log("Preview generation failed because of ", err);
       localThumbnails = [];
     }
 
-    console.log(localThumbnails);
+    const thumbnails: PreviewPubsubCallback["thumbnails"] = [];
 
-    //TODO: Upload every thumbnails to the provider localThumbnails -> thumbnails;
+    for (let i = 0; i < localThumbnails.length; i++) {
+      const uploadThumbnailPath = `${message.output.path.replace(/\/$/, "")}/${i}.png`;
+      const uploadThumbnail = fs.createReadStream(localThumbnails[i].path);
 
-    const document: PreviewPubsubCallback["document"] = {
-      id: message.document.id,
-      path: message.document.path,
-      provider: "local",
-    };
-    const thumbnails: PreviewPubsubCallback["thumbnails"] = localThumbnails;
-    try {
-      this.service.pubsub.publish<PreviewPubsubCallback>("services:preview:callback", {
-        data: { document, thumbnails },
+      await this.storage.write(uploadThumbnailPath, uploadThumbnail, {
+        encryptionAlgo: message.output.encryption_algo,
+        encryptionKey: message.output.encryption_key,
       });
-    } catch (err) {
-      logger.warn({ err }, `Preview Callback - Error while sending `);
+      thumbnails.push({
+        path: uploadThumbnailPath,
+        size: localThumbnails[i].size,
+        type: localThumbnails[i].type,
+        width: localThumbnails[i].width,
+        height: localThumbnails[i].height,
+      });
+      await unlink(localThumbnails[i].path);
     }
-    return { document: message.document, thumbnails: [] };
+
+    return { document: message.document, thumbnails: thumbnails };
   }
 }

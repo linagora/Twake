@@ -28,9 +28,19 @@ export type PreviewPubsubCallback = {
   };
   thumbnails: {
     path: string;
+    size: number;
+    type: string;
     width: number;
     height: number;
     provider?: string;
     index?: number;
   }[];
+};
+
+export type ThumbnailResult = {
+  path: string;
+  width: number;
+  height: number;
+  size: number;
+  type: string;
 };

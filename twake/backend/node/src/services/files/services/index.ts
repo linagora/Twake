@@ -1,5 +1,5 @@
-import { randomBytes, createCipheriv, createDecipheriv } from "crypto";
-import { Readable, Stream } from "stream";
+import { randomBytes } from "crypto";
+import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
@@ -11,6 +11,7 @@ import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
 import { PreviewPubsubRequest } from "../../../../src/services/previews/types";
 import { PreviewFinishedProcessor } from "./preview";
+import _ from "lodash";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -46,8 +47,10 @@ class Service implements FileServiceAPI {
   async init(): Promise<this> {
     try {
       await Promise.all([
-        this.pubsub.processor.addHandler(new PreviewFinishedProcessor(this, this.pubsub)),
         (this.repository = await this.database.getRepository<File>("files", File)),
+        this.pubsub.processor.addHandler(
+          new PreviewFinishedProcessor(this, this.pubsub, this.repository),
+        ),
       ]);
     } catch (err) {
       logger.error("Error while initializing files service", err);
@@ -79,7 +82,7 @@ class Service implements FileServiceAPI {
       entity = new File();
       entity.company_id = `${context.company.id}`;
       entity.metadata = null;
-      entity.thumbmail = null;
+      entity.thumbnails = [];
 
       const iv = randomBytes(8).toString("hex");
       const secret_key = randomBytes(16).toString("hex");
@@ -118,7 +121,6 @@ class Service implements FileServiceAPI {
       file.file.on("data", function (chunk) {
         totalUploadedSize += chunk.length;
       });
-
       await this.storage.write(getFilePath(entity), file.file, {
         chunkNumber: options.chunkNumber,
         encryptionAlgo: this.algorithm,
@@ -131,39 +133,41 @@ class Service implements FileServiceAPI {
         entity.upload_data.size = totalUploadedSize;
         await this.repository.save(entity);
       }
-    }
 
-    //TODO: when all chunks are uploaded
-    /** Send preview generation task */
-    if (entity.upload_data.size < this.max_preview_file_size) {
-      const document: PreviewPubsubRequest["document"] = {
-        id: entity.id,
-        provider: this.storage.getConnectorType(),
+      //Fixme: detect in multichunk when all chunks are uploaded to trigger this. For now we do only single chunks for preview
+      if (entity.upload_data.chunks === 1 && totalUploadedSize) {
+        /** Send preview generation task */
+        if (entity.upload_data.size < this.max_preview_file_size) {
+          const document: PreviewPubsubRequest["document"] = {
+            id: JSON.stringify(_.pick(entity, "id", "company_id")),
+            provider: this.storage.getConnectorType(),
 
-        path: getFilePath(entity),
-        encryption_algo: this.algorithm,
-        encryption_key: entity.encryption_key,
-        chunks: entity.upload_data.chunks,
+            path: getFilePath(entity),
+            encryption_algo: this.algorithm,
+            encryption_key: entity.encryption_key,
+            chunks: entity.upload_data.chunks,
 
-        filename: entity.metadata.name,
-        mime: entity.metadata.mime,
-      };
-      const output = {
-        provider: this.storage.getConnectorType(),
-        path: `${getFilePath(entity)}/thumbnails/`,
-        encryption_algo: this.algorithm,
-        encryption_key: entity.encryption_key,
-        pages: 10,
-      };
-      try {
-        this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
-          data: { document, output },
-        });
-      } catch (err) {
-        logger.warn({ err }, `Previewing - Error while sending `);
+            filename: entity.metadata.name,
+            mime: entity.metadata.mime,
+          };
+          const output = {
+            provider: this.storage.getConnectorType(),
+            path: `${getFilePath(entity)}/thumbnails/`,
+            encryption_algo: this.algorithm,
+            encryption_key: entity.encryption_key,
+            pages: 10,
+          };
+          try {
+            this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
+              data: { document, output },
+            });
+          } catch (err) {
+            logger.warn({ err }, `Previewing - Error while sending `);
+          }
+        }
+        /** End preview generation task generation */
       }
     }
-    /** End preview generation task generation */
 
     return entity;
   }
@@ -172,9 +176,10 @@ class Service implements FileServiceAPI {
     id: string,
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; name: string; mime: string; size: number }> {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
     const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+    if (!entity) {
+      throw "File not found";
+    }
 
     const readable = await this.storage.read(getFilePath(entity), {
       totalChunks: entity.upload_data.chunks,
@@ -187,6 +192,35 @@ class Service implements FileServiceAPI {
       name: entity.metadata.name,
       mime: entity.metadata.mime,
       size: entity.upload_data.size,
+    };
+  }
+
+  async thumbnail(
+    id: string,
+    index: string,
+    context: CompanyExecutionContext,
+  ): Promise<{ file: Readable; type: string; size: number }> {
+    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+    if (!entity) {
+      throw "File not found";
+    }
+
+    const thumbnail = entity.thumbnails[parseInt(index)];
+    if (!thumbnail) {
+      throw `Thumbnail ${parseInt(index)} not found`;
+    }
+
+    const thumbnailPath = `${getFilePath(entity)}/thumbnails/${thumbnail.id}`;
+
+    const readable = await this.storage.read(thumbnailPath, {
+      encryptionAlgo: this.algorithm,
+      encryptionKey: entity.encryption_key,
+    });
+
+    return {
+      file: readable,
+      type: thumbnail.type,
+      size: thumbnail.size,
     };
   }
 

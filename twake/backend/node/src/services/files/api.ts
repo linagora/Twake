@@ -42,6 +42,18 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
   ): Promise<{ file: Readable; name: string; mime: string; size: number }>;
 
   /**
+   * Get a thumbnail for download by index
+   *
+   * @param id
+   * @param context
+   */
+  thumbnail(
+    id: string,
+    index: string,
+    context: CompanyExecutionContext,
+  ): Promise<{ file: Readable; type: string; size: number }>;
+
+  /**
    * Get a file entity from its id
    *
    * @param id
