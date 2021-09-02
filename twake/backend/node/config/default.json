@@ -142,6 +142,7 @@
     "workspaces",
     "console",
     "previews",
-    "platform-services"
+    "platform-services",
+    "counter"
   ]
 }
