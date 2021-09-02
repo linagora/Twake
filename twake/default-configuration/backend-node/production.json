@@ -31,6 +31,9 @@
     }
   },
   "pubsub": {
-    "urls": ["amqp://admin:admin@rabbitmq:5672"]
+    "type": "amqp",
+    "amqp": {
+      "urls": ["amqp://guest:guest@rabbitmq:5672"]
+    }
   }
 }
