@@ -12,11 +12,6 @@ export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
    * @param inputPath
    * @param outputPath
    */
-  /*generateThumbnails(
-    document: { id: string; path: string; provider: string },
-    mime: string,
-    numberOfPages: number,
-  ): any;*/
 }
 
 /**

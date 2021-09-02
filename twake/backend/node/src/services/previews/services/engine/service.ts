@@ -9,7 +9,7 @@ import { unlink } from "fs/promises";
 import StorageAPI from "../../../../core/platform/services/storage/provider";
 
 /**
- * Push new message notification to a set of users
+ * Generate thumbnails when the upload is finished
  */
 export class PreviewProcessor
   implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback> {
@@ -38,12 +38,15 @@ export class PreviewProcessor
   name = "PreviewProcessor";
 
   validate(message: PreviewPubsubRequest): boolean {
-    return !!true;
+    return !!(message && message.document && message.output);
   }
 
   async process(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
     logger.info(`${this.name} - Processing preview generation ${message.document.id}`);
 
+    if (!this.validate(message)) {
+      throw new Error("Missing required fields");
+    }
     //Download original file
     const readable = await this.storage.read(message.document.path, {
       totalChunks: message.document.chunks,

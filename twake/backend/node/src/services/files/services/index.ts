@@ -127,8 +127,6 @@ class Service implements FileServiceAPI {
         encryptionKey: entity.encryption_key,
       });
 
-      console.log(totalUploadedSize);
-
       if (entity.upload_data.chunks === 1 && totalUploadedSize) {
         entity.upload_data.size = totalUploadedSize;
         await this.repository.save(entity);

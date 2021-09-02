@@ -1,10 +1,11 @@
-import sharp, { Sharp } from "sharp";
+import sharp from "sharp";
 import { unlink } from "fs/promises";
 import { getTmpFile } from "../../utils";
-import { ThumbnailResult } from "../../types";
+import { PreviewPubsubRequest, ThumbnailResult } from "../../types";
 
 export async function generatePreview(
   inputPaths: string[],
+  options: PreviewPubsubRequest["output"],
 ): Promise<{
   output: ThumbnailResult[];
   done: boolean;
@@ -17,7 +18,7 @@ export async function generatePreview(
     try {
       const outputPath = getTmpFile();
       const inputMetadata = await sharp(inputPath).metadata();
-      const outputFormat = computeNewFormat(inputMetadata);
+      const outputFormat = computeNewFormat(inputMetadata, options);
 
       result = await sharp(inputPath).resize(outputFormat).toFile(outputPath);
       output.push({
@@ -40,9 +41,12 @@ export async function generatePreview(
   };
 }
 
-function computeNewFormat(inputMetadata: sharp.Metadata): { width: number; height: number } {
-  const maxOutputWidth = 300;
-  const maxOutputHeight = 200;
+function computeNewFormat(
+  inputMetadata: sharp.Metadata,
+  options?: PreviewPubsubRequest["output"],
+): { width: number; height: number } {
+  const maxOutputWidth = options?.width || 300;
+  const maxOutputHeight = options?.height || 200;
 
   const inputWidth = inputMetadata.width;
   const inputHeight = inputMetadata.height;

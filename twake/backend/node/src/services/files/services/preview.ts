@@ -7,7 +7,7 @@ import Repository from "../../../../src/core/platform/services/database/services
 import { File } from "../entities/file";
 
 /**
- * Push new message notification to a set of users
+ * Update the file metadata and upload the thumbnails in storage
  */
 export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsubCallback, string> {
   repository: Repository<File>;
@@ -21,7 +21,6 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
     this.repository = repository;
   }
 
-  //readonly service: FileServiceAPI;
   init?(context?: TwakeContext): Promise<this> {
     throw new Error("Method not implemented.");
   }
@@ -38,7 +37,7 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
   name = "FilePreviewProcessor";
 
   validate(message: PreviewPubsubCallback): boolean {
-    return !!true;
+    return !!(message && message.document && message.thumbnails);
   }
 
   async process(message: PreviewPubsubCallback): Promise<string> {
@@ -46,6 +45,9 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
       `${this.name} - Updating file metadata with preview generation ${message.thumbnails}`,
     );
 
+    if (!this.validate(message)) {
+      throw new Error("Missing required fields");
+    }
     const pk: { company_id: string; id: string } = JSON.parse(message.document.id);
     const entity = await this.repository.findOne(pk);
 

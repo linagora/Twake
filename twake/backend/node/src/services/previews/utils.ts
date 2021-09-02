@@ -7,12 +7,6 @@ export function getTmpFile() {
   fs.mkdirSync(targetDir, { recursive: true });
   return `${targetDir}${uuidv4()}`;
 }
-export function getFile(path: string) {
-  const targetDir = path;
-  console.log("path : ", path, "final Path: ", `${targetDir}/thumbnail/`);
-  fs.mkdirSync(`${targetDir}/thumbnail/`, { recursive: true });
-  return `${targetDir}/thumbnail/`;
-}
 
 export function isFileType(fileMime: string, fileName: string, requiredExtensions: string[]): any {
   const extension = fileName.split(".").pop();

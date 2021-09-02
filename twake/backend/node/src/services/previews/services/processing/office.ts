@@ -1,5 +1,6 @@
 const unoconv = require("unoconv-promise");
 import { unlink } from "fs/promises";
+import { logger } from "../../../../core/platform/framework/logger";
 
 export async function convertFromOffice(
   path: string,
@@ -9,7 +10,6 @@ export async function convertFromOffice(
     const outputPath = `${path.split(".")[0]}_temp`;
     const processOutputPath = outputPath.split("/");
     processOutputPath.pop();
-    const output = `${processOutputPath.join("/")}/${outputPath.split("/").pop()}`;
     try {
       await unoconv.run({
         file: path,
@@ -17,7 +17,7 @@ export async function convertFromOffice(
         export: `PageRange=1-${numberOfPages}`,
       });
     } catch (err) {
-      console.log(err);
+      logger.error(`unoconv cant process ${err}`);
       return { output: "", done: false };
     }
     await unlink(path);
