@@ -58,6 +58,14 @@ export default class Search extends TwakeService<SearchServiceAPI> {
     return this;
   }
 
+  public async upsert(entities: any[]) {
+    return this.service.upsert(entities);
+  }
+
+  public async remove(entities: any[]) {
+    return this.service.remove(entities);
+  }
+
   public getRepository<EntityType>(table: string, entityType: EntityTarget<EntityType>) {
     return new SearchRepository(this, table, entityType);
   }
