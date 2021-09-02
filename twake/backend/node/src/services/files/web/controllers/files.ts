@@ -23,7 +23,6 @@ export class FileController {
       file = await request.file();
     }
     const q = request.query;
-    console.log("this is the query :", q);
     const options: UploadOptions = {
       totalChunks: parseInt(q.resumableTotalChunks || q.total_chunks) || 1,
       totalSize: parseInt(q.resumableTotalSize || q.total_size) || 0,
