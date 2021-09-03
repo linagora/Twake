@@ -53,7 +53,7 @@ class Workspaces extends Observable {
         this.getting_details[workspaceId] = true;
 
         workspacesApps.unload(this.currentWorkspaceId);
-        Api.post('workspace/get', { workspaceId: workspaceId }, res => {
+        Api.post('/ajax/workspace/get', { workspaceId: workspaceId }, res => {
           if (res && res.data) {
             DepreciatedCollections.get('workspaces').updateObject(res.data);
             DepreciatedCollections.get('groups').updateObject(res.data.group);
@@ -117,7 +117,7 @@ class Workspaces extends Observable {
 
   closeWelcomePage(forever) {
     if (forever) {
-      Api.post('users/set/isNew', { value: false }, function (res) {});
+      Api.post('/ajax/users/set/isNew', { value: false }, function (res) {});
       DepreciatedCollections.get('users').updateObject({
         id: User.getCurrentUserId(),
         isNew: false,
@@ -242,7 +242,7 @@ class Workspaces extends Observable {
     };
     that.loading = true;
     that.notify();
-    Api.post('workspace/create', data, function (res) {
+    Api.post('/ajax/workspace/create', data, function (res) {
       var workspace = undefined;
       if (res.data && res.data.workspace) {
         //Update rights and more
@@ -273,7 +273,7 @@ class Workspaces extends Observable {
               asExterne: false,
             };
 
-            Api.post('workspace/members/addlist', data, () => {
+            Api.post('/ajax/workspace/members/addlist', data, () => {
               that.loading = false;
               popupManager.close();
               if (workspace) {
@@ -302,7 +302,7 @@ class Workspaces extends Observable {
     this.notify();
     var that = this;
     Api.post(
-      'workspace/data/name',
+      '/ajax/workspace/data/name',
       { workspaceId: this.currentWorkspaceId, name: name },
       function (res) {
         if (res.errors.length === 0) {
@@ -375,7 +375,7 @@ class Workspaces extends Observable {
       this.errorDeleteWorkspaceMember = true;
       this.notify();
     } else if (this.currentWorkspaceId) {
-      Api.post('workspace/delete', { workspaceId: this.currentWorkspaceId }, function (res) {
+      Api.post('/ajax/workspace/delete', { workspaceId: this.currentWorkspaceId }, function (res) {
         PopupManager.close();
       });
     }

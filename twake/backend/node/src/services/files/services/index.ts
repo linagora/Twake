@@ -108,6 +108,7 @@ class Service implements FileServiceAPI {
           entity.metadata = {
             name: options.filename,
             mime: options.type,
+            thumbnails_status: "done",
           };
           entity.upload_data = {
             size: options.totalSize,
@@ -155,14 +156,35 @@ class Service implements FileServiceAPI {
             encryption_key: entity.encryption_key,
             pages: 10,
           };
+
+          entity.metadata.thumbnails_status = "waiting";
+          this.repository.save(entity);
+
           try {
-            this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
+            await this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
               data: { document, output },
             });
+
+            if (options.waitForThumbnail) {
+              for (let i = 1; i < 10; i++) {
+                entity = await this.repository.findOne({
+                  company_id: context.company.id,
+                  id: id,
+                });
+                if (entity.metadata.thumbnails_status === "done") {
+                  break;
+                }
+                await new Promise(r => setTimeout(r, i * 200));
+              }
+            }
           } catch (err) {
+            entity.metadata.thumbnails_status = "error";
+            this.repository.save(entity);
+
             logger.warn({ err }, `Previewing - Error while sending `);
           }
         }
+
         /** End preview generation task generation */
       }
     }

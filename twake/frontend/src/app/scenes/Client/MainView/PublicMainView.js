@@ -35,15 +35,19 @@ export default class MainView extends Component {
   }
   routeState = RouterService.getStateFromRoute();
   componentDidMount() {
-    Api.post('workspace/get_public_data', { workspace_id: this.routeState.workspaceId }, res => {
-      if (res && res.data) {
-        this.state.group = {
-          name: res.data.group_name,
-          logo: addApiUrlIfNeeded(res.data.group_logo),
-        };
-        this.setState({});
-      }
-    });
+    Api.post(
+      '/ajax/workspace/get_public_data',
+      { workspace_id: this.routeState.workspaceId },
+      res => {
+        if (res && res.data) {
+          this.state.group = {
+            name: res.data.group_name,
+            logo: addApiUrlIfNeeded(res.data.group_logo),
+          };
+          this.setState({});
+        }
+      },
+    );
   }
   render() {
     const options = {

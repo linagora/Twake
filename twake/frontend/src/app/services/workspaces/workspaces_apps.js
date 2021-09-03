@@ -48,7 +48,7 @@ class WorkspacesApps extends Observable {
 
     this.findingApp[id] = true;
 
-    Api.post('market/app/find', { id: id }, res => {
+    Api.post('/ajax/market/app/find', { id: id }, res => {
       if (res.data) {
         Collections.get('applications').updateObject(res.data);
         this.findingApp[id] = false;
@@ -73,7 +73,7 @@ class WorkspacesApps extends Observable {
       data: data,
     };
 
-    Api.post('market/app/api/event', data, res => {});
+    Api.post('/ajax/market/app/api/event', data, res => {});
   }
 
   unload(workspace_id) {
@@ -131,7 +131,7 @@ class WorkspacesApps extends Observable {
       this.loading_by_workspace[workspace_id] = false;
       loadApps(options.apps);
     } else {
-      Api.post('workspace/apps/get', data, res => {
+      Api.post('/ajax/workspace/apps/get', data, res => {
         if (res.data) {
           loadApps(res.data);
         }
@@ -142,7 +142,7 @@ class WorkspacesApps extends Observable {
   }
 
   loadGroupApps() {
-    Api.post('workspace/group/apps/get', { group_id: Groups.currentGroupId }, res => {
+    Api.post('/ajax/workspace/group/apps/get', { group_id: Groups.currentGroupId }, res => {
       if (res.data) {
         res.data.forEach(item => {
           var app_link = {
@@ -192,7 +192,7 @@ class WorkspacesApps extends Observable {
         this.apps_by_group[Groups.currentGroupId][id].app;
     }
 
-    Api.post('workspace/apps/enable', data, function (res) {});
+    Api.post('/ajax/workspace/apps/enable', data, function (res) {});
 
     this.notify();
   }
@@ -212,7 +212,7 @@ class WorkspacesApps extends Observable {
       this.loadGroupApps();
     }
 
-    Api.post('workspace/apps/disable', data, function (res) {});
+    Api.post('/ajax/workspace/apps/disable', data, function (res) {});
 
     this.notify();
   }
@@ -231,7 +231,7 @@ class WorkspacesApps extends Observable {
         this.apps_by_group[Groups.currentGroupId][id].app;
     }
 
-    Api.post('workspace/group/application/force', data, function (res) {});
+    Api.post('/ajax/workspace/group/application/force', data, function (res) {});
 
     this.notify();
   }
@@ -255,7 +255,7 @@ class WorkspacesApps extends Observable {
       delete this.apps_by_workspace[Workspaces.currentWorkspaceId][id];
     }
 
-    Api.post('workspace/group/application/remove', data, function (res) {});
+    Api.post('/ajax/workspace/group/application/remove', data, function (res) {});
 
     this.notify();
   }
@@ -274,7 +274,7 @@ class WorkspacesApps extends Observable {
       this.apps_by_group[Groups.currentGroupId][id].workspace_default = state;
     }
 
-    Api.post('workspace/group/workspacedefault/set', data, function (res) {});
+    Api.post('/ajax/workspace/group/workspacedefault/set', data, function (res) {});
 
     this.notify();
   }

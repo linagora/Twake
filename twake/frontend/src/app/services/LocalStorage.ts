@@ -19,7 +19,7 @@ export default class LocalStorage {
       console.log(e);
     }
 
-    return (value as unknown) as T;
+    return value as unknown as T;
   }
 
   static clear() {
@@ -27,13 +27,17 @@ export default class LocalStorage {
       const key = localStorage.key(i);
       if (key) {
         const depreciatedKeysRemove =
-          ['twake-collections-db', 'm_input', 'language', 'jwt', 'autoload_workspaces'].indexOf(
-            key,
-          ) >= 0 || key.indexOf(':channel') > 0;
+          [
+            'twake-collections-db',
+            'm_input',
+            'language',
+            'jwt',
+            'autoload_workspaces',
+            'oidc.',
+          ].indexOf(key) >= 0 || key.indexOf(':channel') > 0;
         if (key.indexOf(LocalStorage.prefix) === 0 || depreciatedKeysRemove)
           window.localStorage.removeItem(key);
       }
     }
-    window.localStorage.clear();
   }
 }

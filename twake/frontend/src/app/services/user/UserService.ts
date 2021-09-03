@@ -36,14 +36,14 @@ class User {
     return Login.currentUserId;
   }
 
-  getFullName(user: Pick<UserType, "username" | "firstname" | "lastname" | "_deleted">): string {
+  getFullName(user: Pick<UserType, 'username' | 'firstname' | 'lastname' | 'deleted'>): string {
     let name: string = user?.username;
 
     if (!name) {
       return '';
     }
 
-    if (user._deleted) {
+    if (user.deleted) {
       name = Languages.t('general.user.deleted');
     }
 
@@ -77,7 +77,7 @@ class User {
       thumbnail = addApiUrlIfNeeded(user.thumbnail);
     }
 
-    if (user._deleted) {
+    if (user.deleted) {
       thumbnail = '';
     }
 
@@ -110,7 +110,7 @@ class User {
       .findBy({})
       .forEach((user: UserType) => {
         if (
-          (`${user.username} ${user.firstname} ${user.lastname} ${user.email}`)
+          `${user.username} ${user.firstname} ${user.lastname} ${user.email}`
             .toLocaleLowerCase()
             .indexOf(query.toLocaleLowerCase()) >= 0
         ) {

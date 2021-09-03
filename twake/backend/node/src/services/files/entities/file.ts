@@ -32,8 +32,9 @@ export class File {
 
   @Column("metadata", "encoded_json")
   metadata: null | {
-    name: string;
-    mime: string;
+    name?: string;
+    mime?: string;
+    thumbnails_status?: "done" | "error" | "waiting";
   };
 
   @Column("thumbnails", "encoded_json")

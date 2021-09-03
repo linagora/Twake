@@ -6,6 +6,7 @@ import { NewDirectChannelMessageProcessor } from "./new-direct-channel-message";
 import { NewUserInWorkspaceJoinDefaultChannelsProcessor } from "./new-user-in-workspace-join-default-channels";
 import { NewPendingEmailsInWorkspaceJoinChannelsProcessor } from "./new-pending-emails-in-workspace-join-channels";
 import UserServiceAPI from "../../../user/api";
+import { NewWorkspaceProcessor } from "./new-workspace";
 
 export class PubsubListener implements Initializable {
   constructor(
@@ -25,6 +26,7 @@ export class PubsubListener implements Initializable {
     this.pubsub.processor.addHandler(
       new NewPendingEmailsInWorkspaceJoinChannelsProcessor(this.service),
     );
+    this.pubsub.processor.addHandler(new NewWorkspaceProcessor(this.service));
 
     return this;
   }

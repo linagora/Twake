@@ -169,12 +169,12 @@ class WorkspacesUsers extends Observable {
     if (options.members) {
       loadMembers(options.members || []);
     } else {
-      Api.post('workspace/members/list', data, (res: any) => {
+      Api.post('/ajax/workspace/members/list', data, (res: any) => {
         if (res.data) {
           loadMembers({ members: res.data });
         }
       });
-      Api.post('workspace/members/pending', data, (res: any) => {
+      Api.post('/ajax/workspace/members/pending', data, (res: any) => {
         if (res.data) {
           loadMembers({ mails: res.data });
         }
@@ -286,7 +286,7 @@ class WorkspacesUsers extends Observable {
     this.notify();
 
     Api.post(
-      'workspace/members/remove',
+      '/ajax/workspace/members/remove',
       { ids: [id], workspaceId: workspaceId },
       function (res: any) {
         if (id === CurrentUser.get().id && openedWorkspaceId === workspaceId) {
@@ -309,7 +309,7 @@ class WorkspacesUsers extends Observable {
     this.notify();
 
     Api.post(
-      'workspace/members/addlist',
+      '/ajax/workspace/members/addlist',
       {
         list: mails.join(';'),
         workspaceId: workspaceService.currentWorkspaceId,
@@ -375,7 +375,7 @@ class WorkspacesUsers extends Observable {
     }
     this.notify();
     Api.post(
-      'workspace/members/removemail',
+      '/ajax/workspace/members/removemail',
       {
         workspaceId: workspaceService.currentWorkspaceId,
         mail: mail,

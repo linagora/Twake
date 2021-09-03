@@ -39,7 +39,7 @@ class CurrentUser extends Observable {
     this.badOldPassword = false;
     this.error_secondary_mail_already = false;
     this.error_code = false;
-    this.addmail_token = "";
+    this.addmail_token = '';
 
     (Globals.window as any).currentUser = this;
   }
@@ -77,7 +77,7 @@ class CurrentUser extends Observable {
       status_icon: status,
     };
     Collections.get('users').updateObject(update);
-    Api.post('users/account/update_status', data, () => {
+    Api.post('/ajax/users/account/update_status', data, () => {
       ws.publish('users/' + Login.currentUserId, { user: update });
     });
   }
@@ -99,7 +99,7 @@ class CurrentUser extends Observable {
     const data = {
       status: user.tutorial_status,
     };
-    Api.post('users/account/set_tutorial_status', data, () => {
+    Api.post('/ajax/users/account/set_tutorial_status', data, () => {
       ws.publish('users/' + Login.currentUserId, {
         user: { tutorial_status: user.tutorial_status },
       });
@@ -115,7 +115,7 @@ class CurrentUser extends Observable {
     Collections.get('users').updateObject(update);
     that.loading = true;
     that.notify();
-    Api.post('users/account/username', { username }, (res: any) => {
+    Api.post('/ajax/users/account/username', { username }, (res: any) => {
       that.loading = false;
       if (res.errors.length === 0) {
         ws.publish('users/' + Login.currentUserId, { user: update });
@@ -137,9 +137,9 @@ class CurrentUser extends Observable {
     if (thumbnail) {
       data.append('thumbnail', thumbnail);
     }
-    
-    data.append('firstname', firstname || '');    
-    data.append('lastname', lastname || '');
+
+    data.append('firstname', firstname || '');
+    data.append('lastname', lastname || '');
 
     this.updateTutorialStatus('has_identity');
 
@@ -200,25 +200,29 @@ class CurrentUser extends Observable {
     const that = this;
     that.loading = true;
     that.notify();
-    Api.post('users/account/password', { old_password: oldPassword, password: password }, (res: any) => {
-      that.loading = false;
-      if (res.errors.length === 0) {
-        that.badNewPassword = false;
-        that.badOldPassword = false;
+    Api.post(
+      '/ajax/users/account/password',
+      { old_password: oldPassword, password: password },
+      (res: any) => {
+        that.loading = false;
+        if (res.errors.length === 0) {
+          that.badNewPassword = false;
+          that.badOldPassword = false;
 
-        AlertManager.alert(() => {}, {
-          text: Languages.t(
-            'services.user.update_password_alert',
-            [],
-            'Votre mot de passe a été mis à jour.',
-          ),
-        });
-      } else {
-        that.badNewPassword = false;
-        that.badOldPassword = true;
-      }
-      that.notify();
-    });
+          AlertManager.alert(() => {}, {
+            text: Languages.t(
+              'services.user.update_password_alert',
+              [],
+              'Votre mot de passe a été mis à jour.',
+            ),
+          });
+        } else {
+          that.badNewPassword = false;
+          that.badOldPassword = true;
+        }
+        that.notify();
+      },
+    );
   }
 
   addNewMail(mail: string, cb: (arg: any) => any, thot: any) {
@@ -227,7 +231,7 @@ class CurrentUser extends Observable {
     that.error_secondary_mail_already = false;
     that.error_code = false;
     that.notify();
-    Api.post('users/account/addmail', { mail: mail }, (res: any) => {
+    Api.post('/ajax/users/account/addmail', { mail: mail }, (res: any) => {
       that.loading = false;
 
       if (res.errors.indexOf('badmail') > -1) {
@@ -245,7 +249,7 @@ class CurrentUser extends Observable {
     const that = this;
     that.loading = true;
     that.notify();
-    Api.post('users/account/mainmail', { mail: mailId }, (res: any) => {
+    Api.post('/ajax/users/account/mainmail', { mail: mailId }, (res: any) => {
       if (res.errors.length === 0) {
         const mails = Collections.get('users').find(Login.currentUserId).mails;
         for (let i = 0; i < mails.length; i++) {
@@ -269,7 +273,7 @@ class CurrentUser extends Observable {
     const that = this;
     that.loading = true;
     that.notify();
-    Api.post('users/account/removemail', { mail: mailId }, (res: any) => {
+    Api.post('/ajax/users/account/removemail', { mail: mailId }, (res: any) => {
       if (res.errors.length === 0) {
         const mails = Collections.get('users').find(Login.currentUserId).mails;
         const newMails = [];

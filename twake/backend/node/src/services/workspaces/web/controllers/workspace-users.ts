@@ -29,7 +29,11 @@ import CompanyUser from "../../../user/entities/company_user";
 import { CompanyShort, CompanyUserRole, CompanyUserStatus } from "../../../user/web/types";
 import Company from "../../../user/entities/company";
 import { chain } from "lodash";
-import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CrudExeption,
+  ListResult,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
 import WorkspacePendingUser from "../../entities/workspace_pending_users";
 import { ConsoleServiceAPI } from "../../../console/api";
 import { ConsoleCompany, CreateConsoleUser } from "../../../console/types";
@@ -117,16 +121,39 @@ export class WorkspaceUsersCrudController
   }
 
   async list(
-    request: FastifyRequest<{ Params: WorkspaceUsersBaseRequest }>,
+    request: FastifyRequest<{
+      Params: WorkspaceUsersBaseRequest;
+      Querystring: { search?: string; page_token?: string; limit?: string };
+    }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceUserObject>> {
     const context = getExecutionContext(request);
 
-    const allWorkspaceUsers = await this.workspaceService
-      .getUsers({
-        workspaceId: context.workspace_id,
-      })
-      .then(a => a.getEntities());
+    let allWorkspaceUsers: WorkspaceUser[];
+    if (request.query.search) {
+      let users: ListResult<User> = await this.usersService.search(
+        new Pagination(request.query.page_token, request.query.limit),
+        {
+          search: request.query.search,
+          workspaceId: context.workspace_id,
+        },
+        context,
+      );
+      for (let user of users.getEntities()) {
+        allWorkspaceUsers.push(
+          await this.workspaceService.getUser({
+            workspaceId: context.workspace_id,
+            userId: user.id,
+          }),
+        );
+      }
+    } else {
+      allWorkspaceUsers = await this.workspaceService
+        .getUsers({
+          workspaceId: context.workspace_id,
+        })
+        .then(a => a.getEntities());
+    }
 
     const allUsersMap = new Map(
       (

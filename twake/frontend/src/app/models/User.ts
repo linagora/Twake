@@ -27,11 +27,11 @@ export type UserType = {
   workspaces_id?: string[];
   is_verified?: boolean;
   created_at?: number;
+  deleted?: boolean;
   _cached?: boolean;
   _cached_from?: any;
   _created?: boolean;
   _creating?: boolean;
-  _deleted?: boolean;
   _last_modified?: any;
   _loaded?: boolean;
   _loaded_from?: any;

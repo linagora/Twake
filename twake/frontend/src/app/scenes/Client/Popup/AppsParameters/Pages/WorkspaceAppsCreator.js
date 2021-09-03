@@ -42,7 +42,7 @@ export default class WorkspaceAppsCreator extends Component {
         workspace_id: workspaceService.currentWorkspaceId,
       };
 
-      Api.post('market/app/create', data, res => {
+      Api.post('/ajax/market/app/create', data, res => {
         if (res.data && res.data.id) {
           this.setState({ new_app_name: '', new_app_simple_name: '', app_group_name: '' });
 

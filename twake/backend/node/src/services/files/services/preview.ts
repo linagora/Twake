@@ -67,6 +67,9 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
       };
     });
 
+    if (!entity.metadata) entity.metadata = {};
+    entity.metadata.thumbnails_status = "done";
+
     await this.repository.save(entity);
     return "done";
   }

@@ -39,7 +39,7 @@ export default class WorkspaceAppsEditor extends Component {
         workspace_id: workspaceService.currentWorkspaceId,
       };
 
-      Api.post('market/app/update', data, res => {
+      Api.post('/ajax/market/app/update', data, res => {
         if (res.data && res.data.id) {
           Collections.get('applications').completeObject(res.data);
 
@@ -82,7 +82,7 @@ export default class WorkspaceAppsEditor extends Component {
           application_id: this.state.application.id,
         };
 
-        Api.post('market/app/remove', data, res => {
+        Api.post('/ajax/market/app/remove', data, res => {
           if (res.data && !res.errors.length) {
             Collections.get('applications').removeObject(this.state.application.front_id);
             this.props.exit();

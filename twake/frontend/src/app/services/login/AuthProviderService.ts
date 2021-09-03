@@ -136,9 +136,12 @@ class AuthProviderService extends Observable {
       Logger.info('Cannot getJWTFromOidcToken with a null user');
       return;
     }
-    const response = (await Api.post('users/console/token', {
-      access_token: user.access_token,
-    })) as { access_token: JWTDataType };
+    const response = (await Api.post('/internal/services/console/v1/login', {
+      remote_access_token: user.access_token,
+    })) as { access_token: JWTDataType; message: string; error: string; statusCode: number };
+    if (!response.statusCode && !response.access_token) {
+      return;
+    }
     if (!response.access_token) {
       AlertManager.confirm(
         () => {
@@ -149,7 +152,10 @@ class AuthProviderService extends Observable {
         },
         {
           title: languages.t('scenes.login.authprovider.error.title'),
-          text: (response as any).error || languages.t('scenes.login.authprovider.error.text'),
+          text:
+            (response as any).message ||
+            (response as any).error ||
+            languages.t('scenes.login.authprovider.error.text'),
         },
       );
       return;

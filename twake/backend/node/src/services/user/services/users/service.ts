@@ -139,6 +139,7 @@ export class UserService implements UsersServiceAPI {
       {
         pagination,
         ...(options.companyId ? { $in: [["companies", [options.companyId]]] } : {}),
+        ...(options.workspaceId ? { $in: [["workspaces", [options.workspaceId]]] } : {}),
         $text: {
           $search: options.search,
         },

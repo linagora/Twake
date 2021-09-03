@@ -47,7 +47,7 @@ export default class WorkspaceApps extends Component {
     WorkspacesApps.loadGroupApps();
 
     Api.post(
-      'market/app/get_developed',
+      '/ajax/market/app/get_developed',
       { workspace_id: workspaceService.currentWorkspaceId },
       res => {
         this.setState({ loading_developed: false });

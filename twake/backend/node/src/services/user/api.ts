@@ -23,7 +23,7 @@ export default interface UserServiceAPI extends TwakeServiceProvider, Initializa
   workspaces: WorkspaceServiceAPI;
   external: UserExternalLinksServiceAPI;
 
-  formatUser(user: User, includeCompanies?: boolean): Promise<UserObject>;
+  formatUser(user: User, options?: { includeCompanies?: boolean }): Promise<UserObject>;
   formatCompany(companyEntity: Company, companyUserObject?: CompanyUserObject): CompanyObject;
 }
 

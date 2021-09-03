@@ -31,7 +31,7 @@ class NotificationParameters extends Observable {
     this.loading = true;
     this.notify();
     var that = this;
-    Api.post('users/account/get_notifications', {}, function (res) {
+    Api.post('/ajax/users/account/get_notifications', {}, function (res) {
       that.preferences = res.data;
       that.original_preferences = JSON.parse(JSON.stringify(that.preferences));
 
@@ -90,7 +90,7 @@ class NotificationParameters extends Observable {
 
     this.loading = true;
     var that = this;
-    Api.post('users/account/set_notifications', data, function (res) {
+    Api.post('/ajax/users/account/set_notifications', data, function (res) {
       that.loading = false;
       ws.publish('users/' + Login.currentUserId, {
         user: {

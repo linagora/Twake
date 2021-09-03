@@ -53,7 +53,10 @@ class Service implements UserServiceAPI {
     return this;
   }
 
-  public async formatUser(user: User, includeCompanies: boolean = false): Promise<UserObject> {
+  public async formatUser(
+    user: User,
+    options?: { includeCompanies?: boolean },
+  ): Promise<UserObject> {
     let resUser = {
       id: user.id,
       provider: user.identity_provider,
@@ -71,7 +74,7 @@ class Service implements UserServiceAPI {
       last_activity: user.last_activity,
     } as UserObject;
 
-    if (includeCompanies) {
+    if (options?.includeCompanies) {
       const userCompanies = await this.users.getUserCompanies({ id: user.id });
 
       const companies = await Promise.all(
