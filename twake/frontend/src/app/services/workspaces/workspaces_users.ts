@@ -169,12 +169,12 @@ class WorkspacesUsers extends Observable {
     if (options.members) {
       loadMembers(options.members || []);
     } else {
-      Api.post('workspace/members/list', data, (res: any) => {
+      Api.post('/ajax/workspace/members/list', data, (res: any) => {
         if (res.data) {
           loadMembers({ members: res.data });
         }
       });
-      Api.post('workspace/members/pending', data, (res: any) => {
+      Api.post('/ajax/workspace/members/pending', data, (res: any) => {
         if (res.data) {
           loadMembers({ mails: res.data });
         }

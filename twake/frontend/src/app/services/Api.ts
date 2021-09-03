@@ -50,12 +50,7 @@ export default class Api {
     options: { disableJWTAuthentication?: boolean } = {},
   ) {
     return new Promise((resolve, reject) => {
-      //@ts-ignore old code to fix
-      route =
-        //@ts-ignore old code to fix
-        Globals.api_root_url +
-        (route.indexOf('://') < 0 && route.indexOf('/internal/') < 0 ? '/ajax/' : '') +
-        route;
+      route = Globals.api_root_url + route;
 
       Requests.request(
         'get',
@@ -88,11 +83,7 @@ export default class Api {
         return;
       }
 
-      route =
-        //@ts-ignore old code to fix
-        Globals.api_root_url +
-        (route.indexOf('://') < 0 && route.indexOf('/internal/') < 0 ? '/ajax/' : '') +
-        route;
+      route = Globals.api_root_url + route;
 
       Requests.request(
         'post',
@@ -219,8 +210,7 @@ export default class Api {
   }
 
   static route(route: string) {
-    //@ts-ignore old code
-    return Globals.window.api_root_url + '/ajax/' + route;
+    return Globals.api_root_url + route;
   }
 }
 

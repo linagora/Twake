@@ -60,15 +60,19 @@ class Groups extends Observable {
     var that = this;
     this.loading = true;
     this.notify();
-    Api.post('workspace/group/data/name', { groupId: this.currentGroupId, name: name }, res => {
-      if (res.errors.length === 0) {
-        var group = { id: that.currentGroupId, name: name };
-        Collections.get('groups').updateObject(group);
-        ws.publish('group/' + group.id, { data: { group: group } });
-      }
-      that.loading = false;
-      that.notify();
-    });
+    Api.post(
+      '/ajax/workspace/group/data/name',
+      { groupId: this.currentGroupId, name: name },
+      res => {
+        if (res.errors.length === 0) {
+          var group = { id: that.currentGroupId, name: name };
+          Collections.get('groups').updateObject(group);
+          ws.publish('group/' + group.id, { data: { group: group } });
+        }
+        that.loading = false;
+        that.notify();
+      },
+    );
   }
   updateLogo(logo) {
     this.loading = true;

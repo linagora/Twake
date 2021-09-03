@@ -158,13 +158,17 @@ class Calendar extends Observable {
   }
 
   export(workspace_id, calendars, download, callback) {
-    Api.post('calendar/token_export', { workspace_id: workspace_id, calendars: calendars }, res => {
-      if (download) {
-        document.location = Api.route('calendar/export?token=' + res.token);
-      } else {
-        if (callback) callback(Api.route('calendar/export?token=' + res.token));
-      }
-    });
+    Api.post(
+      '/ajax/calendar/token_export',
+      { workspace_id: workspace_id, calendars: calendars },
+      res => {
+        if (download) {
+          document.location = Api.route('/ajax/calendar/export?token=' + res.token);
+        } else {
+          if (callback) callback(Api.route('/ajax/calendar/export?token=' + res.token));
+        }
+      },
+    );
   }
 
   getIsReadonly(event) {

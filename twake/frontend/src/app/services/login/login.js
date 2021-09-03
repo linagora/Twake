@@ -211,7 +211,7 @@ class Login extends Observable {
               developerSuffix = '?localhost=1&port=' + window.location.port;
             }
 
-            document.location = Api.route('users/console/openid' + developerSuffix);
+            document.location = Api.route('/ajax/users/console/openid' + developerSuffix);
             return;
           }
 
@@ -247,9 +247,9 @@ class Login extends Observable {
     var url = '';
 
     if (service === 'openid') {
-      url = Api.route('users/openid');
+      url = Api.route('/ajax/users/openid');
     } else if (service === 'cas') {
-      url = Api.route('users/cas');
+      url = Api.route('/ajax/users/cas');
     } else if (service === 'console') {
       return;
     } else {
@@ -311,7 +311,7 @@ class Login extends Observable {
 
     document.body.classList.add('fade_out');
 
-    Api.post('users/logout', {}, function () {
+    Api.post('/ajax/users/logout', {}, function () {
       if (identity_provider === 'console') {
         authProviderService.signOut();
       } else {

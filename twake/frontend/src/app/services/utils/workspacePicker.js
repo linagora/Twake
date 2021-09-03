@@ -19,7 +19,7 @@ class WorkspacePicker extends Observable {
     this.isSearching = true;
     this.notify();
     var that = this;
-    Api.post('workspace/getByName', data, function (res) {
+    Api.post('/ajax/workspace/getByName', data, function (res) {
       that.searchedWorkspace = res.data.workspace;
       that.isSearching = false;
       that.notify();

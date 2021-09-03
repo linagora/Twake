@@ -23,7 +23,7 @@ class Account {
     this.login_loading = true;
     that.error_recover_nosuchmail = false;
     this.notify();
-    Api.post('users/recover/mail', data, function (res) {
+    Api.post('/ajax/users/recover/mail', data, function (res) {
       if (res.data.token) {
         that.recover_token = res.data.token;
 
@@ -49,7 +49,7 @@ class Account {
     that.error_recover_badcode = false;
     this.login_loading = true;
     this.notify();
-    Api.post('users/recover/verify', data, function (res) {
+    Api.post('/ajax/users/recover/verify', data, function (res) {
       if (res.data.status === 'success') {
         that.recover_code = code;
 
@@ -85,7 +85,7 @@ class Account {
     that.error_recover_badpasswords = false;
     that.error_recover_unknown = false;
     this.notify();
-    Api.post('users/recover/password', data, function (res) {
+    Api.post('/ajax/users/recover/password', data, function (res) {
       if (res.data.status === 'success') {
         funct(th);
 
@@ -119,7 +119,7 @@ class Account {
     that.login_loading = true;
     that.doing_subscribe = true;
     this.notify();
-    Api.post('users/subscribe/mail', data, function (res) {
+    Api.post('/ajax/users/subscribe/mail', data, function (res) {
       that.login_loading = false;
       that.doing_subscribe = false;
       that.notify();
@@ -175,7 +175,7 @@ class Account {
     };
     that.login_loading = true;
     that.notify();
-    Api.post('users/subscribe/availability', data, function (res) {
+    Api.post('/ajax/users/subscribe/availability', data, function (res) {
       that.login_loading = false;
       if (res.data.status === 'success') {
         callback(th, 0);
@@ -202,7 +202,7 @@ class Account {
     that.error_secondary_mail_already = false;
     that.error_code = false;
     that.notify();
-    Api.post('users/account/addmail', { mail: mail }, function (res) {
+    Api.post('/ajax/users/account/addmail', { mail: mail }, function (res) {
       that.loading = false;
 
       if (res.errors.indexOf('badmail') > -1) {

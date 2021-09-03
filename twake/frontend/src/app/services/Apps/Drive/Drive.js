@@ -403,7 +403,7 @@ class Drive extends Observable {
   }
 
   emptyTrash(workspace_id, callback) {
-    Api.post('drive/trash/empty', { workspace_id: workspace_id }, res => {
+    Api.post('/ajax/drive/trash/empty', { workspace_id: workspace_id }, res => {
       if (!res.errors || res.errors.length === 0) {
         if (res.data) {
           this.trash_directories[workspace_id + '_trash'] = res.data;
@@ -423,7 +423,7 @@ class Drive extends Observable {
       var workspace_id = element[0].workspace_id;
 
       return (
-        Api.route('drive/download') +
+        Api.route('/ajax/drive/download') +
           '?workspace_id=' +
           workspace_id +
           '&elements_id=' +
@@ -446,7 +446,7 @@ class Drive extends Observable {
       version = '&version_id=' + version_id;
     }
     return (
-      Api.route('drive/download') +
+      Api.route('/ajax/drive/download') +
         '?workspace_id=' +
         workspace_id +
         '&element_id=' +

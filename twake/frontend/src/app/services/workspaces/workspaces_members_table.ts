@@ -33,7 +33,7 @@ class WorkspacesMembersTable extends Observable {
       query: query,
       max: max,
     };
-    Api.post('workspace/members/list', data, (res: any) => {
+    Api.post('/ajax/workspace/members/list', data, (res: any) => {
       const data = res.data;
       if (data && data.list) {
         Object.values(data.list).map((o: any) => Collections.get('users').updateObject(o?.user));

@@ -48,7 +48,7 @@ class Tasks extends Observable {
   archiveAllTasksInList(list, collectionKey) {
     var options = {};
     AlertManager.confirm(() => {
-      Api.post('tasks/list/tasks/archive', { object: list, options: options }, () => {});
+      Api.post('/ajax/tasks/list/tasks/archive', { object: list, options: options }, () => {});
     });
   }
 
@@ -57,7 +57,7 @@ class Tasks extends Observable {
       only_archived_tasks: only_archived_tasks,
     };
     AlertManager.confirm(() => {
-      Api.post('tasks/list/tasks/remove', { object: list, options: options }, () => {});
+      Api.post('/ajax/tasks/list/tasks/remove', { object: list, options: options }, () => {});
     });
   }
 
