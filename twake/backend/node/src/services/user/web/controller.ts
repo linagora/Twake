@@ -65,7 +65,7 @@ export class UsersCrudController
     }
 
     return {
-      resource: await this.service.formatUser(user, context.user.id === id),
+      resource: await this.service.formatUser(user, { includeCompanies: context.user.id === id }),
       websocket: undefined, // empty for now
     };
   }
@@ -84,7 +84,6 @@ export class UsersCrudController
         {
           search: request.query.search,
           companyId: request.query.search_company_id,
-          workspaceId: request.query.search_workspace_id,
         },
         context,
       );
@@ -97,9 +96,11 @@ export class UsersCrudController
     }
 
     const resUsers = await Promise.all(
-      users
-        .getEntities()
-        .map(user => this.service.formatUser(user, request.query.include_companies)),
+      users.getEntities().map(user =>
+        this.service.formatUser(user, {
+          includeCompanies: request.query.include_companies,
+        }),
+      ),
     );
 
     // return users;
