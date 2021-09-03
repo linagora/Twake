@@ -70,7 +70,7 @@ class WorkspacesMembersTable extends Observable {
         offset: offset,
         max: max,
       };
-      Api.post(route, data, (res: any) => {
+      Api.post('/ajax/' + route, data, (res: any) => {
         const data = res.data;
         if (data && data.list) {
           if (type !== 'pending')

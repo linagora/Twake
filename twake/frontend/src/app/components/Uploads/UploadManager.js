@@ -493,7 +493,7 @@ class UploadManager extends Observable {
     r.addFile(element);
 
     Api.post(
-      'driveupload/preprocess',
+      '/ajax/driveupload/preprocess',
       {
         workspace_id: r_data.workspace_id,
         name: r_data.name,

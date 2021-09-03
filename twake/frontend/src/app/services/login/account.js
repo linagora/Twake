@@ -147,7 +147,7 @@ class Account {
 
   doVerifyMail(mail, code, token, success, fail) {
     Api.post(
-      'users/subscribe/doverifymail',
+      '/ajax/users/subscribe/doverifymail',
       {
         code: code,
         token: token,
@@ -223,7 +223,7 @@ class Account {
     that.error_code = false;
     that.notify();
     Api.post(
-      'users/account/addmailverify',
+      '/ajax/users/account/addmailverify',
       { code: code, token: this.addmail_token },
       function (res) {
         that.loading = false;

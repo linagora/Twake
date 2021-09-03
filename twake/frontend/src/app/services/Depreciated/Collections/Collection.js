@@ -1,4 +1,4 @@
-import api from 'services/Api';
+import Api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
 import MultipleSecuredConnections from './MultipleSecuredConnections.js';
@@ -390,7 +390,7 @@ export default class Collection extends Observable {
     if (offset) data.options.offset = offset;
     if (limit) data.options.limit = limit;
 
-    api.post(base_url + '/get', data, res => {
+    Api.post('/ajax/' + base_url + '/get', data, res => {
       if (res.data) {
         var res_list = this.loadData(request_key, res.data);
 
@@ -487,7 +487,7 @@ export default class Collection extends Observable {
 
       this.doing_http_request++;
 
-      api.post(this.base_url + '/search', data, res => {
+      Api.post('/ajax/' + this.base_url + '/search', data, res => {
         if (res.data) {
           res.data.forEach(item => {
             item._loaded = true;
@@ -645,7 +645,7 @@ export default class Collection extends Observable {
     }
 
     if (base_url) {
-      api.post(base_url + '/save', data, res => {
+      Api.post('/ajax/' + base_url + '/save', data, res => {
         if (res.data && res.data.object) {
           if (this.use_retry) {
             clearTimeout(that.timeout_fail[object.front_id]);
@@ -748,7 +748,7 @@ export default class Collection extends Observable {
       return;
     }
 
-    api.post(base_url + '/remove', data, res => {
+    Api.post('/ajax/' + base_url + '/remove', data, res => {
       var front_id = ((res.data || {}).object || {}).front_id || deleted_front_id;
 
       //Verify nothing more recent was done in the time interval

@@ -302,7 +302,7 @@ class Workspaces extends Observable {
     this.notify();
     var that = this;
     Api.post(
-      'workspace/data/name',
+      '/ajax/workspace/data/name',
       { workspaceId: this.currentWorkspaceId, name: name },
       function (res) {
         if (res.errors.length === 0) {

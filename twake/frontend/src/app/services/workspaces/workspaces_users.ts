@@ -286,7 +286,7 @@ class WorkspacesUsers extends Observable {
     this.notify();
 
     Api.post(
-      'workspace/members/remove',
+      '/ajax/workspace/members/remove',
       { ids: [id], workspaceId: workspaceId },
       function (res: any) {
         if (id === CurrentUser.get().id && openedWorkspaceId === workspaceId) {
@@ -309,7 +309,7 @@ class WorkspacesUsers extends Observable {
     this.notify();
 
     Api.post(
-      'workspace/members/addlist',
+      '/ajax/workspace/members/addlist',
       {
         list: mails.join(';'),
         workspaceId: workspaceService.currentWorkspaceId,
@@ -375,7 +375,7 @@ class WorkspacesUsers extends Observable {
     }
     this.notify();
     Api.post(
-      'workspace/members/removemail',
+      '/ajax/workspace/members/removemail',
       {
         workspaceId: workspaceService.currentWorkspaceId,
         mail: mail,

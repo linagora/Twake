@@ -608,7 +608,7 @@ class Drive extends Observable {
       return;
     }
     Api.post(
-      'market/app/api/getToken',
+      '/ajax/market/app/api/getToken',
       {
         application_id: app.id,
         workspace_id: Workspaces.currentWorkspaceId,
