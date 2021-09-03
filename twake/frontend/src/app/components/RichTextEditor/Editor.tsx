@@ -28,6 +28,7 @@ import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from './
 import './Editor.scss';
 import { TextCountService } from 'app/components/RichTextEditor/TextCount';
 import useOnScreen from 'app/services/hooks/useOnScreen';
+import Logger from 'app/services/Logger';
 
 const { isSoftNewlineEvent } = KeyBindingUtil;
 
@@ -83,7 +84,7 @@ type EditorViewState = {
 const OnScreenElement = (props: { onScreen: (status: boolean) => void }): JSX.Element => {
   const ref = createRef<HTMLDivElement>();
   props.onScreen(useOnScreen(ref));
-  return <div ref={ref} style={{width: 0, height: 0}}></div>;
+  return <div ref={ref} style={{ width: 0, height: 0 }}></div>;
 };
 
 export class EditorView extends React.Component<EditorProps, EditorViewState> {
@@ -94,6 +95,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   customStyleMap: DraftStyleMap;
   editorDataParser: EditorDataParser;
   returnFullTextForEntitiesTypes: Array<string>;
+  logger: Logger.Logger;
 
   constructor(props: EditorProps) {
     super(props);
@@ -112,8 +114,9 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       },
     };
 
-    this.returnFullTextForEntitiesTypes = Array
-      .from(this.plugins.values())
+    this.logger = Logger.getLogger(`Apps/Components/RichTextEditor`);
+
+    this.returnFullTextForEntitiesTypes = Array.from(this.plugins.values())
       .filter(plugin => plugin.returnFullTextForSuggestion)
       .map(plugin => plugin.resourceType);
     this.editorDataParser = RichTextEditorStateService.getDataParser(this.props.plugins);
@@ -131,6 +134,12 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     this.onSuggestionSelected = this.onSuggestionSelected.bind(this);
     this.focus = this.focus.bind(this);
     this.updateVisible = this.updateVisible.bind(this);
+  }
+
+  //To fix https://github.com/facebook/draft-js/issues/1320#issuecomment-472776784
+  componentDidCatch(error: any, errorInfo: any) {
+    this.forceUpdate();
+    this.logger.log(error, errorInfo);
   }
 
   private enablePlugin(plugin: EditorSuggestionPlugin<any>): void {
@@ -226,7 +235,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       return false;
     }
 
-    this.props.onSubmit && this.props.onSubmit(this.editorDataParser.toString(editorState, this.outputFormat));
+    this.props.onSubmit &&
+      this.props.onSubmit(this.editorDataParser.toString(editorState, this.outputFormat));
     if (this.props.clearOnSubmit) {
       this.resetStateAndFocus();
     }
@@ -250,7 +260,9 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         if (['blockquote', 'code-block'].includes(currentBlock.getType())) {
           this.onChange(RichUtils.insertSoftNewline(editorState));
         } else {
-          this.onChange(splitBlockWithType(editorState, 'unstyled', selection.getStartOffset(), false));
+          this.onChange(
+            splitBlockWithType(editorState, 'unstyled', selection.getStartOffset(), false),
+          );
         }
       } else {
         let content = editorState.getCurrentContent();
@@ -283,10 +295,16 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
 
   updateSuggestionsState(): void {
     const currentEntityKey = getSelectionEntity(this.props.editorState);
-    const currentEntityType = currentEntityKey && this.props.editorState.getCurrentContent().getEntity(currentEntityKey).getType();
+    const currentEntityType =
+      currentEntityKey &&
+      this.props.editorState.getCurrentContent().getEntity(currentEntityKey).getType();
 
-    const searchMatch = getTextToMatch(this.props.editorState, ' ', this.returnFullTextForEntitiesTypes);
-    if (!searchMatch || !searchMatch.text) {
+    const searchMatch = getTextToMatch(
+      this.props.editorState,
+      ' ',
+      this.returnFullTextForEntitiesTypes,
+    );
+    if (!searchMatch || !searchMatch.text) {
       return;
     }
 
@@ -298,7 +316,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       // 2. It has been selected by the user and is now displayed as `@John Doe` in the editor
       // 3. Moving cursor in the entity `@John Doe` of type `MENTION` will return a textToMatch = `@John Doe` (which is different from the first search)
       // If not handled, it can lead to unpredictable state, where we can suggest other things than expected and also other suggestion types...
-      if (currentEntityType && (plugin.skipSuggestionForTypes || []).includes(currentEntityType)) {
+      if (currentEntityType && (plugin.skipSuggestionForTypes || []).includes(currentEntityType)) {
         return false;
       }
 
@@ -390,9 +408,14 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       const currentBlock = getCurrentBlock(this.props.editorState);
       const selection = this.props.editorState.getSelection();
 
-      if (['blockquote', 'code-block'].includes(currentBlock.getType()) && (currentBlock.getLength() === selection.getStartOffset())) {
+      if (
+        ['blockquote', 'code-block'].includes(currentBlock.getType()) &&
+        currentBlock.getLength() === selection.getStartOffset()
+      ) {
         // if current block is code or quote, we can create a new block after it if there are no block
-        const nextBlock = this.props.editorState.getCurrentContent().getBlockAfter(currentBlock.getKey());
+        const nextBlock = this.props.editorState
+          .getCurrentContent()
+          .getBlockAfter(currentBlock.getKey());
 
         if (nextBlock) {
           const selection = new SelectionState({
@@ -403,7 +426,14 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
           });
           this.onChange(EditorState.forceSelection(this.props.editorState, selection));
         } else {
-          this.onChange(splitBlockWithType(this.props.editorState, 'unstyled', selection.getStartOffset(), false));
+          this.onChange(
+            splitBlockWithType(
+              this.props.editorState,
+              'unstyled',
+              selection.getStartOffset(),
+              false,
+            ),
+          );
         }
       }
     }
@@ -571,16 +601,14 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
 
   updateVisible(visible: boolean) {
     this.setState(previousState => {
-      return previousState.isVisible !== visible ? { isVisible: visible} : null;
+      return previousState.isVisible !== visible ? { isVisible: visible } : null;
     });
   }
 
   render() {
     return (
       <>
-        <OnScreenElement
-          onScreen={this.updateVisible}
-        />
+        <OnScreenElement onScreen={this.updateVisible} />
         <div
           className={classNames('editor', {
             'scrollable-editor': this.shouldScroll(),
@@ -607,7 +635,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         </div>
         {this.state.isVisible && this.state.displaySuggestion && this.state.suggestionType && (
           <SuggestionList<any>
-            id={this.state.activeSuggestion?.id || ''}
+            id={this.state.activeSuggestion?.id || ''}
             search={this.state.activeSuggestion?.searchText || ''}
             list={this.state.activeSuggestion?.items}
             position={this.state.activeSuggestion ? this.state.activeSuggestion.position : null}
