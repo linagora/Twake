@@ -44,7 +44,7 @@ import {
 } from "../../entities/workspace_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
-import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -159,6 +159,15 @@ export class WorkspaceService implements WorkspaceServiceAPI {
         { id: context.user.id },
         "admin",
       );
+    }
+
+    if (!item.id) {
+      this.platformServices.pubsub.publish("workspace:added", {
+        data: {
+          company_id: workspace.company_id,
+          workspace_id: workspace.id,
+        },
+      });
     }
 
     return new SaveResult<Workspace>(
