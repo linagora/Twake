@@ -11,6 +11,7 @@ export type UploadOptions = {
   totalSize: number;
   totalChunks: number;
   chunkNumber: number;
+  waitForThumbnail: boolean;
 };
 
 export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
