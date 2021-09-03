@@ -63,7 +63,7 @@ class Websocket extends Observable {
       this.alive_timeout = setTimeout(() => {
         this.alive_connected = false;
       }, 5100);
-      api.post(
+      Api.post(
         'users/alive',
         { focus: this.didFocusedLastMinute },
         () => {
