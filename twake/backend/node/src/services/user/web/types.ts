@@ -6,6 +6,7 @@ export interface UserListQueryParameters extends PaginationQueryParameters {
   include_companies?: boolean;
   search?: string;
   search_company_id?: string;
+  search_workspace_id?: string;
 }
 
 export interface UserParameters {
