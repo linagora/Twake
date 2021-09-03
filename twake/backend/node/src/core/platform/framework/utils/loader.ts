@@ -1,21 +1,24 @@
 import { logger } from "../logger";
+import fs from "fs";
 
 export class Loader {
   constructor(readonly paths: string[]) {}
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async load(componentName: string): Promise<any> {
-    logger.info(`Loading ${componentName}`);
     const modulesPaths = this.paths.map(path => `${path}/${componentName}`);
-
-    logger.debug(`Loading ${componentName} from ${modulesPaths.join(" - ")}`);
 
     let classes = await Promise.all(
       modulesPaths.map(async modulePath => {
-        try {
-          return await import(modulePath);
-        } catch (err) {
-          logger.debug({ err }, `${modulePath} can not be loaded`);
+        if (fs.existsSync(modulePath)) {
+          try {
+            return await import(modulePath);
+          } catch (err) {
+            logger.debug(
+              { err },
+              `${modulePath} can not be loaded (file was found but we were unable to import the module)`,
+            );
+          }
         }
       }),
     );
@@ -23,8 +26,19 @@ export class Loader {
     classes = classes.filter(Boolean);
 
     if (!classes || !classes.length) {
-      throw new Error(`Can not find ${componentName} in any given path`);
+      modulesPaths.map(modulePath => {
+        if (fs.existsSync(modulePath)) {
+          logger.debug(`${modulePath} content was: [${fs.readdirSync(modulePath).join(", ")}]`);
+        }
+      });
+      throw new Error(
+        `Can not find or load ${componentName} in any given path [${modulesPaths.join(
+          " - ",
+        )}] see previous logs for more details.`,
+      );
     }
+
+    logger.debug(`Loaded ${componentName}`);
 
     return classes[0].default;
   }
