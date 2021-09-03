@@ -26,7 +26,7 @@ class ConsoleService {
   public verifyMail() {
     return new Promise(async resolve => {
       const response = await Api.post(
-        'users/console/api/verify_mail',
+        '/internal/services/console/v1/resend-verification-email',
         {},
         (res: { data: { error: string; message: string; statusCode: number } }) => {
           if (res.data === null)

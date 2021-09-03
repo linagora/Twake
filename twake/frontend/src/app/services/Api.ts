@@ -223,3 +223,5 @@ export default class Api {
     return Globals.window.api_root_url + '/ajax/' + route;
   }
 }
+
+(window as any).Api = Api;
