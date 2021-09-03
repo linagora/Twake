@@ -54,6 +54,20 @@ export class FileController {
     response.send(data.file);
   }
 
+  async thumbnail(
+    request: FastifyRequest<{ Params: { company_id: string; id: string; index: string } }>,
+    response: FastifyReply,
+  ): Promise<void> {
+    const context = getCompanyExecutionContext(request);
+    const params = request.params;
+    const data = await this.service.thumbnail(params.id, params.index, context);
+
+    response.header("Content-disposition", "inline");
+    if (data.size) response.header("Content-Length", data.size);
+    response.type(data.type);
+    response.send(data.file);
+  }
+
   async get(
     request: FastifyRequest<{ Params: { company_id: string; id: string } }>,
   ): Promise<{ resource: File }> {

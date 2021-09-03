@@ -141,6 +141,7 @@
     "applications",
     "workspaces",
     "console",
+    "previews",
     "platform-services",
     "counter"
   ]

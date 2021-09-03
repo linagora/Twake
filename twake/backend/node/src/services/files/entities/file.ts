@@ -36,12 +36,16 @@ export class File {
     mime: string;
   };
 
-  @Column("thumbmail", "encoded_json")
-  thumbmail: null | {
-    thumbmail: string;
+  @Column("thumbnails", "encoded_json")
+  thumbnails: {
+    index: number;
+    id: string;
+
+    type: string;
+    size: number;
     width: number;
     height: number;
-  };
+  }[];
 
   @Column("upload_data", "encoded_json")
   upload_data: null | {

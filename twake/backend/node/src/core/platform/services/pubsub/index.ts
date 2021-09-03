@@ -43,7 +43,7 @@ export default class Pubsub extends TwakeService<PubsubServiceAPI> {
   }
 }
 
-class PubsubService implements PubsubServiceAPI {
+export class PubsubService implements PubsubServiceAPI {
   version: "1";
   processor: Processor;
 
