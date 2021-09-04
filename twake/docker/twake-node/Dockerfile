@@ -1,6 +1,6 @@
 # Test Stage
 
-FROM node:14.17.3-alpine as test
+FROM node:14.17.6-alpine as test
 
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -9,7 +9,7 @@ COPY . .
 
 # Development Stage
 
-FROM node:14.17.3-alpine as development
+FROM node:14.17.6-alpine as development
 
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -19,7 +19,7 @@ RUN npm run build
 
 # Production Stage
 
-FROM node:14.17.3-alpine as production
+FROM node:14.17.6-alpine as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
