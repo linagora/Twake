@@ -225,6 +225,7 @@ export class UsersCrudController
     };
   }
 }
+
 function getExecutionContext(request: FastifyRequest): ExecutionContext {
   return {
     user: request.currentUser,

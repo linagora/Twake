@@ -273,7 +273,6 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
           throw CrudExeption.notFound(`Company ${companyConsoleCode} not found`);
         }
         await this.userService.companies.setUserRole(company.id, user.id, roleName);
-        // await services.companies.setUserRole(company.id, user.id, roleName);
       }
     }
 

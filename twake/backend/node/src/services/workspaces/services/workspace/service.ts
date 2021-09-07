@@ -44,7 +44,6 @@ import {
 } from "../../entities/workspace_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";

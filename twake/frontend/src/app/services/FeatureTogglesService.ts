@@ -2,22 +2,18 @@
 export enum FeatureNames {
   GUESTS = 'guests',
   MESSAGE_HISTORY = 'message_history',
-  ONLY_OFFICE = 'only_office',
-  PENDING_EMAILS = 'pending_emails',
-  FILE_ENCRYPTION = 'file_encryption',
-  CALENDAR = 'calendar',
-  JITSI = 'jitsi',
+  MULTIPLE_WORKSPACES = 'multiple_workspaces',
+  ONLY_OFFICE = 'app_only_office',
+  UNLIMITED_STORAGE = 'unlimited_storage',
 }
 
 // Define available features here
 const availableFeatures = [
   FeatureNames.GUESTS,
   FeatureNames.MESSAGE_HISTORY,
+  FeatureNames.MULTIPLE_WORKSPACES,
   FeatureNames.ONLY_OFFICE,
-  FeatureNames.PENDING_EMAILS,
-  FeatureNames.FILE_ENCRYPTION,
-  FeatureNames.CALENDAR,
-  FeatureNames.JITSI,
+  FeatureNames.UNLIMITED_STORAGE,
 ];
 
 /**

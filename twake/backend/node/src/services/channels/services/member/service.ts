@@ -224,6 +224,7 @@ export class Service implements MemberService {
         company_id: member.company_id,
         workspace_id: member.workspace_id,
         id: member.channel_id,
+        user_id: member.user_id,
         user_member: null,
       },
     },
