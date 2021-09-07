@@ -3,6 +3,7 @@ import { CompanyExecutionContext } from "../types";
 import { ApplicationServiceAPI } from "../../api";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
+  PaginationQueryParameters,
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
@@ -32,7 +33,10 @@ export class CompanyApplicationController
   }
 
   async list(
-    request: FastifyRequest<{ Params: { company_id: string } }>,
+    request: FastifyRequest<{
+      Params: { company_id: string };
+      Querystring: PaginationQueryParameters & { search: string };
+    }>,
   ): Promise<ResourceListResponse<Application>> {
     const context = getCompanyExecutionContext(request);
 

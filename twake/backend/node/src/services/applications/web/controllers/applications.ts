@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ApplicationServiceAPI } from "../../api";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
+  PaginationQueryParameters,
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
@@ -30,9 +31,12 @@ export class ApplicationController
     };
   }
 
-  async list(request: FastifyRequest<{}>): Promise<ResourceListResponse<Application>> {
+  async list(
+    request: FastifyRequest<{
+      Querystring: PaginationQueryParameters & { search: string };
+    }>,
+  ): Promise<ResourceListResponse<Application>> {
     const context = getExecutionContext(request);
-
     return {
       resources: [],
     };
