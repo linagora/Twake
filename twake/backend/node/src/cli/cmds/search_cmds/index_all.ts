@@ -6,6 +6,9 @@ import { DatabaseServiceAPI } from "../../../core/platform/services/database/api
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import _ from "lodash";
 import User, { TYPE as UserTYPE } from "../../../services/user/entities/user";
+import Application, {
+  TYPE as ApplicationTYPE,
+} from "../../../services/applications/entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 
@@ -25,10 +28,14 @@ class SearchIndexAll {
   public async run(options: Options = {}): Promise<void> {
     const repositories: Map<string, Repository<any>> = new Map();
     repositories.set("users", await this.database.getRepository(UserTYPE, User));
+    repositories.set(
+      "applications",
+      await this.database.getRepository(ApplicationTYPE, Application),
+    );
 
     const repository = repositories.get(options.repository);
     if (!repository) {
-      throw "No such repository ready for indexation";
+      throw `No such repository ready for indexation, available are: users, applications`;
     }
 
     // Get all companies

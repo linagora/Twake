@@ -1,12 +1,14 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import search from "./application.search";
 
 export const TYPE = "applications";
 
 @Entity(TYPE, {
   primaryKey: ["id"],
   type: TYPE,
+  search,
 })
 export default class Application {
   @Type(() => String)
@@ -16,10 +18,6 @@ export default class Application {
   @Type(() => String)
   @Column("group_id", "timeuuid")
   company_id: string;
-
-  @Type(() => String)
-  @Column("app_group_name", "string")
-  app_group_name: string = "";
 
   @Column("identity", "json")
   identity: ApplicationIdentity;
