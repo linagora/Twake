@@ -6,7 +6,7 @@ import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Menu from 'components/Menus/Menu.js';
 import { ColumnsType } from 'antd/lib/table';
 import UserService from 'services/user/UserService';
-import workspacesUsers from 'services/workspaces/workspaces_users.ts';
+import workspacesUsers from 'services/workspaces/workspaces_users';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import InitService from 'app/services/InitService';
 import RouterServices from 'services/RouterService';
@@ -125,7 +125,7 @@ export default ({ filter }: { filter: string }) => {
         role: col.role === 'moderator' ? 'member' : 'moderator',
       },
     });
-    
+
     if (res.resource) {
       updateData(data =>
         data.map(d => (d.user_id === col.user_id ? (res.resource as ColumnObjectType) : d)),
@@ -145,6 +145,10 @@ export default ({ filter }: { filter: string }) => {
         setLoading(false);
       });
     });
+
+  const leaveWorkspace = (col: any) => {
+    workspacesUsers.leaveWorkspace();
+  };
 
   const buildMenu = (col: any) => {
     let menu: any[] = [];
@@ -170,7 +174,7 @@ export default ({ filter }: { filter: string }) => {
         text: Languages.t('scenes.app.popup.workspaceparameter.pages.quit_workspace_menu'),
         className: 'error',
         onClick: () => {
-          workspacesUsers.leaveWorkspace();
+          leaveWorkspace(col);
         },
       });
     } else if (workspaceUserRightsService.hasWorkspacePrivilege()) {

@@ -4,16 +4,14 @@ import User from 'services/user/UserService';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import groupService from 'services/workspaces/groups.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import Numbers from 'services/utils/Numbers.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import CurrentUser from 'app/services/user/CurrentUser';
 import AlertManager from 'services/AlertManager/AlertManager';
-import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
-import LoginService from 'services/login/login';
-import Requests from 'services/Requests';
 import Globals from 'services/Globals';
+
+const prefixRoute = '/internal/services/workspaces/v1';
 
 class WorkspacesUsers extends Observable {
   public users_by_workspace: { [key: string]: any };
@@ -117,14 +115,6 @@ class WorkspacesUsers extends Observable {
     if (!this.offset_by_group_id[group_id] || reset_offset) {
       this.offset_by_group_id[group_id] = [0, false];
     }
-
-    ws.subscribe(
-      'workspace_users/' + workspace_id,
-      (route: string, res: any) => {
-        this.recieveWS(res);
-      },
-      null,
-    );
 
     var loadMembers = (data: any) => {
       if (!data) {
@@ -238,71 +228,7 @@ class WorkspacesUsers extends Observable {
     }
     return false;
   }
-  removeUserFromWorkspaceList(user: any) {}
-  recieveWS(res: any) {
-    if (res.workspace_user.user.id === User.getCurrentUserId()) {
-      LoginService.updateUser(() => {});
-    }
 
-    if (res.type === 'add' || res.type === 'update_workspace_level') {
-      var userlink = {
-        externe: res.workspace_user.externe,
-        autoAddExterne: res.workspace_user.auto_add_externe,
-        last_access: res.workspace_user.last_access,
-        level: res.workspace_user.level_id,
-        user: res.workspace_user.user,
-        groupLevel: res.workspace_user.groupLevel,
-      };
-      this.users_by_workspace[res.workspace_user.workspace.id][res.workspace_user.user.id] =
-        userlink;
-      this.users_by_group[res.workspace_user.workspace.group.id][res.workspace_user.user.id] =
-        userlink;
-      WorkspacesMembersTable.updateElement(
-        res.workspace_user.workspace.id,
-        'members',
-        res.workspace_user.user.id,
-        res.workspace_user,
-      );
-      // Collections.get("users").completeObject(res.workspace_user.user, res.workspace_user.user.front_id);
-    } else if (res.type === 'remove') {
-      WorkspacesMembersTable.removeElement(
-        res.workspace_user.workspace.id,
-        'members',
-        res.workspace_user.user.id,
-      );
-      if (res.workspace_user.nbWorkspace <= 0) {
-        delete this.users_by_group[res.workspace_user.workspace.group.id][
-          res.workspace_user.user.id
-        ];
-      }
-    }
-    this.notify();
-  }
-
-  removeUser(id: string, workspaceId: string, cb?: Function) {
-    const openedWorkspaceId = workspaceService.currentWorkspaceId;
-    var that = this;
-    this.loading = true;
-    this.notify();
-
-    Api.post(
-      '/ajax/workspace/members/remove',
-      { ids: [id], workspaceId: workspaceId },
-      function (res: any) {
-        if (id === CurrentUser.get().id && openedWorkspaceId === workspaceId) {
-          Globals.window.location.reload();
-        }
-
-        WorkspacesMembersTable.removeElement(workspaceId, 'members', id);
-
-        that.loading = false;
-        that.notify();
-        if (cb) {
-          cb();
-        }
-      },
-    );
-  }
   addUser(mails: any, cb?: Function, thot?: any) {
     var that = this;
     this.loading = true;
@@ -324,9 +250,6 @@ class WorkspacesUsers extends Observable {
             CurrentUser.updateTutorialStatus('did_invite_collaborators');
           }
 
-          res.data.added.pending.forEach((mail: string) => {
-            WorkspacesMembersTable.updateElement(res.workspaceId, 'pending', res.mail, mail);
-          });
           that.errorOnInvitation = false;
           that.errorUsersInvitation = [];
           if (res.data.not_added.length > 0) {
@@ -352,140 +275,6 @@ class WorkspacesUsers extends Observable {
       },
     );
   }
-  addUserFromGroup(id: string, externe: boolean, cb?: Function, thot?: any) {
-    if (this.users_by_group[groupService.currentGroupId][id]) {
-      this.users_by_workspace[workspaceService.currentWorkspaceId][id] =
-        this.users_by_group[groupService.currentGroupId][id];
-      var username = (Collections.get('users').find(id) || {}).username || '';
-      this.addUser([username + '|' + (externe ? 1 : 0)], cb, thot);
-      this.notify();
-    }
-  }
-  removeInvitation(mail: string, cb?: Function) {
-    const that = this;
-    this.loading = true;
-    const index = that.membersPending.map(e => e.mail).indexOf(mail);
-
-    if (index >= 0) {
-      // eslint-disable-next-line no-unused-vars
-      var old = that.membersPending.splice(index, 1);
-    }
-
-    this.notify();
-
-    const removePendingEmailRoute = `/internal/services/workspaces/v1/companies/${workspaceService.currentGroupId}/workspaces/${workspaceService.currentWorkspaceId}/pending/${mail}`;
-    Api.delete(removePendingEmailRoute, {}).then(() => {
-      WorkspacesMembersTable.removeElement(workspaceService.currentWorkspaceId, 'pending', mail);
-      that.loading = false;
-      that.notify();
-      cb && cb();
-    });
-  }
-  isExterne(userIdOrMail: string, workspaceId: string = '') {
-    if (workspaceId === '') {
-      workspaceId = workspaceService.currentWorkspaceId;
-    }
-    if (userIdOrMail.indexOf('@') > 0) {
-      //c'est un mail
-      return true;
-    } else {
-      return (
-        this.users_by_workspace[workspaceId] &&
-        this.users_by_workspace[workspaceId][userIdOrMail] &&
-        this.users_by_workspace[workspaceId][userIdOrMail].externe
-      );
-    }
-  }
-
-  isAutoAddUser(userId: string, workspaceId: string = '') {
-    if (workspaceId === '') {
-      workspaceId = workspaceService.currentWorkspaceId;
-    }
-    var user = (this.users_by_workspace[workspaceId] || {})[userId];
-    if (user) {
-      return user.externe && user.autoAddExterne;
-    }
-    return false;
-  }
-
-  updateManagerRole(userId: string, state: any) {
-    var workspaceId = workspaceService.currentWorkspaceId;
-    var groupId = groupService.currentGroupId;
-    const member = WorkspacesMembersTable.getElement(workspaceId, 'members', userId);
-    if (member && !this.updateRoleUserLoading[userId]) {
-      var that = this;
-      this.updateRoleUserLoading[userId] = true;
-      var previousState = member.groupLevel;
-      member.groupLevel = state ? 3 : -1;
-      WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
-      this.notify();
-      Api.post(
-        'workspace/group/manager/toggleManager',
-        { groupId: groupId, userId: userId, isManager: state },
-        (res: any) => {
-          if (res.errors.length > 0) {
-            member.groupLevel = previousState;
-            WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
-          }
-          that.updateRoleUserLoading[userId] = false;
-          that.notify();
-        },
-      );
-    } else if (member && !this.updateRoleUserLoading[userId]) {
-      // eslint-disable-next-line no-redeclare
-      var that = this;
-      this.updateRoleUserLoading[userId] = true;
-      // eslint-disable-next-line no-redeclare
-      var previousState = member.groupLevel;
-      member.level = state ? 3 : -1;
-      WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
-      this.notify();
-      Api.post(
-        'workspace/group/manager/toggleManager',
-        { groupId: groupId, userId: userId, isManager: state },
-        (res: any) => {
-          if (res.errors.length > 0) {
-            member.level = previousState;
-            WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
-          }
-          that.updateRoleUserLoading[userId] = false;
-          that.notify();
-        },
-      );
-    }
-  }
-  updateUserLevel(userId: string, state: any) {
-    var workspaceId = workspaceService.currentWorkspaceId;
-    const member = WorkspacesMembersTable.getElement(workspaceId, 'members', userId);
-    if (member && !this.updateRoleUserLoading[userId]) {
-      var that = this;
-      this.updateLevelUserLoading[userId] = true;
-      var previousState = member.level;
-      if (previousState === this.getDefaultLevel().id) {
-        member.level = this.getAdminLevel().id;
-      } else {
-        member.level = this.getDefaultLevel().id;
-      }
-      WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
-      this.notify();
-      Api.post(
-        'workspace/members/changelevel',
-        {
-          workspaceId: workspaceService.currentWorkspaceId,
-          usersId: [userId],
-          levelId: member.level,
-        },
-        (res: any) => {
-          if (res.errors.length > 0 || res.data.updated === 0) {
-            member.level = previousState;
-            WorkspacesMembersTable.updateElement(workspaceId, 'members', userId, member);
-          }
-          that.updateLevelUserLoading[userId] = false;
-          that.notify();
-        },
-      );
-    }
-  }
 
   searchUserInWorkspace(query: any, cb: Function) {
     User.search(
@@ -502,41 +291,26 @@ class WorkspacesUsers extends Observable {
   }
 
   leaveWorkspace() {
-    var that = this;
-    var has_other_admin = false;
-    if (!WorkspaceUserRights.hasWorkspacePrivilege()) {
-      has_other_admin = true;
-    } else {
-      var users = WorkspacesMembersTable.getList(workspaceService.currentWorkspaceId, 'members');
-      Object.keys(users).forEach(id => {
-        if (
-          id !== User.getCurrentUserId() &&
-          users[id].level === users[User.getCurrentUserId()].level
-        ) {
-          has_other_admin = true;
-        }
-      });
-    }
-    if (has_other_admin) {
-      AlertManager.confirm(() => {
-        try {
-          that.removeUser(User.getCurrentUserId(), workspaceService.currentWorkspaceId);
-          workspaceService.removeFromUser(
-            Collections.get('workspaces').find(workspaceService.currentWorkspaceId),
-          );
-        } catch (err) {
-          console.log(err);
-        }
-      });
-    } else {
-      AlertManager.alert(() => {}, {
-        text: Languages.t(
-          'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing',
-          [],
-          "Impossible de quitter l'espace de travail car vous êtes le dernier administrateur. Vous pouvez définir un nouvel administrateur ou bien supprimer / archiver cet espace de travail.",
-        ),
-      });
-    }
+    AlertManager.confirm(() => {
+      try {
+        const deleteWorkspaceUser = `${prefixRoute}/companies/${
+          workspaceService.currentGroupId
+        }/workspaces/${workspaceService.currentWorkspaceId}/users/${User.getCurrentUserId()}`;
+        Api.delete(deleteWorkspaceUser, {}, (res: any) => {
+          if (res.status == 'success') {
+            window.location.reload();
+          } else {
+            AlertManager.alert(() => {}, {
+              text: Languages.t(
+                'scenes.app.popup.workspaceparameter.pages.alert_impossible_removing',
+              ),
+            });
+          }
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    });
   }
 
   fullStringToEmails(str: string) {

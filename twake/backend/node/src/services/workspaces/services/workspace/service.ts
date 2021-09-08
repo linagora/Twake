@@ -266,6 +266,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     await this.workspaceUserRepository.save(merge(workspaceUser, { role }));
   }
 
+  async checkWorkspaceHasOtherAdmin(workspaceUserPk: WorkspaceUserPrimaryKey): Promise<boolean> {
+    //TODO: not implemented, we should check there is still an admin in the workspace before removal.
+    // Note: company admin and owner are always workspace admins.
+    return true;
+  }
+
   async removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,
   ): Promise<DeleteResult<WorkspaceUserPrimaryKey>> {
@@ -273,6 +279,10 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
     if (!entity) {
       throw CrudExeption.notFound("WorkspaceUser entity not found");
+    }
+
+    if (!(await this.checkWorkspaceHasOtherAdmin(workspaceUserPk))) {
+      throw CrudExeption.notFound("No other admin found in workspace");
     }
 
     await this.workspaceUserRepository.remove(entity);

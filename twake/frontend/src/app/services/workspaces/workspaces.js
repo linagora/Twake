@@ -368,9 +368,7 @@ class Workspaces extends Observable {
   deleteWorkspace() {
     if (
       workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId) &&
-      (Object.keys(workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId)) || []).filter(
-        userId => !workspacesUsers.isExterne(userId),
-      ).length > 1
+      (Object.keys(workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId)) || []).length > 1
     ) {
       this.errorDeleteWorkspaceMember = true;
       this.notify();
