@@ -59,7 +59,7 @@ describe("The console API auth", () => {
     // await testDbService.createWorkspace(ws1pk);
     await testDbService.createUser([ws0pk], {
       companyRole: "member",
-      workspaceRole: "admin",
+      workspaceRole: "moderator",
       email: firstEmail,
       firstName: "superman",
       password: firstUserPassword,

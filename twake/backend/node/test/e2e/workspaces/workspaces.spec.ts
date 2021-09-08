@@ -100,7 +100,7 @@ describe("The /workspaces API", () => {
           logo: expect.any(String),
           default: expect.any(Boolean),
           archived: expect.any(Boolean),
-          role: expect.stringMatching(/admin|member/),
+          role: expect.stringMatching(/moderator|member/),
         });
 
         if (resource.stats) {
@@ -218,7 +218,7 @@ describe("The /workspaces API", () => {
         logo: expect.any(String),
         default: expect.any(Boolean),
         archived: expect.any(Boolean),
-        role: expect.stringMatching(/admin|member/),
+        role: expect.stringMatching(/moderator|member/),
       });
 
       if (resource.stats) {
@@ -356,7 +356,7 @@ describe("The /workspaces API", () => {
       done();
     });
 
-    it("should 403 when not workspace admin", async done => {
+    it("should 403 when not workspace moderator", async done => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[1].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
@@ -378,7 +378,7 @@ describe("The /workspaces API", () => {
     it("should 200 when admin of company (full update)", async done => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
-      const userId = testDbService.workspaces[2].users[0].id; // company admin
+      const userId = testDbService.workspaces[2].users[0].id; // company moderator
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
