@@ -99,7 +99,7 @@ export default ({ filter }: { filter: string }) => {
     try {
       setLoading(true);
       const res = (await Api.get(
-        `${workspaceUsersRoute}?limit=10${pageToken ? `&page_token=${pageToken}` : ''}`,
+        `${workspaceUsersRoute}?limit=25${pageToken ? `&page_token=${pageToken}` : ''}`,
       )) as any;
       setPageToken(res.next_page_token || null);
       if (res.resources)
@@ -125,7 +125,7 @@ export default ({ filter }: { filter: string }) => {
         role: col.role === 'moderator' ? 'member' : 'moderator',
       },
     });
-    console.log(res);
+    
     if (res.resource) {
       updateData(data =>
         data.map(d => (d.user_id === col.user_id ? (res.resource as ColumnObjectType) : d)),
