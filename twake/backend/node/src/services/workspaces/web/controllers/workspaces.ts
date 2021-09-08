@@ -120,7 +120,13 @@ export class WorkspacesCrudController
 
     const allUserWorkspaceRolesMap = await this.workspaceService
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
-      .then(uws => new Map(uws.map(uw => [uw.workspaceId, uw.role])));
+      .then(
+        uws =>
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          new Map<string, any>(
+            uws.map(uw => [uw.workspaceId, hasCompanyAdminLevel(uw.role) ? "moderator" : uw.role]),
+          ),
+      );
 
     const userWorkspaces = allCompanyWorkspaces.filter(workspace =>
       allUserWorkspaceRolesMap.has(workspace.id.toString()),
@@ -199,7 +205,7 @@ export class WorkspacesCrudController
 
     const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
 
-    if (workspaceUserRole !== "admin") {
+    if (!hasWorkspaceAdminLevel(workspaceUserRole)) {
       const companyUserRole = await this.getCompanyUserRole(context);
       if (companyUserRole !== "admin") {
         reply.forbidden("You are not a admin of workspace or company");

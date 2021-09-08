@@ -19,7 +19,7 @@ describe("The /workspace users API", () => {
       workspace_id: expect.any(String),
       user_id: expect.any(String),
       created_at: expect.any(Number),
-      role: expect.stringMatching(/admin|member/),
+      role: expect.stringMatching(/moderator|member/),
       user: {
         id: expect.any(String),
         provider: expect.any(String),
@@ -69,7 +69,7 @@ describe("The /workspace users API", () => {
     await testDbService.createWorkspace(ws3pk);
     await testDbService.createUser([ws0pk, ws1pk]);
     await testDbService.createUser([ws2pk], { companyRole: "admin" });
-    await testDbService.createUser([ws2pk], { workspaceRole: "admin" });
+    await testDbService.createUser([ws2pk], { workspaceRole: "moderator" });
     await testDbService.createUser([ws2pk], { workspaceRole: "member" });
     await testDbService.createUser([], { companyRole: "member" });
     await testDbService.createUser([ws3pk], { companyRole: "guest", workspaceRole: "member" });
@@ -190,7 +190,7 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace admin", async done => {
+    it("should 403 user is not workspace moderator", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -204,7 +204,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -225,7 +225,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: nonExistentId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -246,7 +246,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: userId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -273,7 +273,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -304,7 +304,7 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace admin", async done => {
+    it("should 403 user is not workspace moderator", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -318,7 +318,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -338,7 +338,7 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -360,7 +360,7 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -369,7 +369,7 @@ describe("The /workspace users API", () => {
       const resource = response.json()["resource"];
       checkUserObject(resource);
 
-      expect(resource["role"]).toBe("admin");
+      expect(resource["role"]).toBe("moderator");
 
       const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
       expect(usersCount).toBe(4);
@@ -391,7 +391,7 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace admin", async done => {
+    it("should 403 user is not workspace moderator", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;

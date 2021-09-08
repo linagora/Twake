@@ -590,9 +590,9 @@ describe.skip("The /internal/services/channels/v1 API", () => {
       );
     });
 
-    describe("When user is workspace admin and channel has been created by other user", () => {
+    describe("When user is workspace moderator and channel has been created by other user", () => {
       beforeEach(() => {
-        platform.currentUser.isWorkspaceAdmin = true;
+        platform.currentUser.isWorkspaceModerator = true;
       });
 
       it("should fail when resource is not defined", async done => {
@@ -727,7 +727,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
 
     describe("When user is channel owner", () => {
       beforeEach(() => {
-        platform.currentUser.isWorkspaceAdmin = false;
+        platform.currentUser.isWorkspaceModerator = false;
       });
 
       it("should be able to update the is_default field", async done => {
@@ -850,7 +850,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
 
     describe("When user is 'standard' user and is not channel owner", () => {
       beforeEach(() => {
-        platform.currentUser.isWorkspaceAdmin = false;
+        platform.currentUser.isWorkspaceModerator = false;
       });
 
       it("should not be able to update the is_default field", async done => {
@@ -990,9 +990,9 @@ describe.skip("The /internal/services/channels/v1 API", () => {
       );
     });
 
-    describe("When user is workspace administrator", () => {
+    describe("When user is workspace moderator", () => {
       beforeEach(() => {
-        platform.currentUser.isWorkspaceAdmin = true;
+        platform.currentUser.isWorkspaceModerator = true;
       });
 
       it("should not be able to delete a direct channel", async done => {
@@ -1037,7 +1037,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
 
     describe("When user is channel owner", () => {
       beforeEach(() => {
-        platform.currentUser.isWorkspaceAdmin = false;
+        platform.currentUser.isWorkspaceModerator = false;
       });
 
       it("should not be able to delete a direct channel", async done => {
@@ -1080,9 +1080,9 @@ describe.skip("The /internal/services/channels/v1 API", () => {
       });
     });
 
-    describe("When user is not creator nor workspace administrator", () => {
+    describe("When user is not creator nor workspace moderator", () => {
       beforeEach(() => {
-        platform.currentUser.isWorkspaceAdmin = false;
+        platform.currentUser.isWorkspaceModerator = false;
       });
 
       it("should not be able to delete the channel", async done => {

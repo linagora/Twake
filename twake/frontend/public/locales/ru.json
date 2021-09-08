@@ -1159,7 +1159,7 @@
   "scenes.app.popup.workspaceparameter.pages.deleteworkspace_description": "Чтобы подтвердить, что вы хотите удалить эту рабочую область, пожалуйста, введите имя ниже и нажмите кнопку \"Удалить\".",
   "scenes.app.popup.workspaceparameter.pages.enter": "Введите ",
   "scenes.app.popup.workspaceparameter.pages.access_apps": "Доступ к вашим приложениям и разъёмам",
-  "scenes.app.popup.workspaceparameter.pages.administrater_status": "Администратор",
+  "scenes.app.popup.workspaceparameter.pages.moderator_status": "Администратор",
   "scenes.app.popup.workspaceparameter.pages.alert_impossible_removing": "Вы не можете покинуть рабочее пространство, потому что вы последний администратор. Вы можете определить нового администратора или удалить/архивировать это рабочее пространство.",
   "scenes.app.popup.workspaceparameter.pages.all_apps_small_text": "Все приложения",
   "scenes.app.popup.workspaceparameter.pages.apps_company_small_text": "Приложения вашей компании",

@@ -44,7 +44,7 @@ describe("The /users API", () => {
     const workspacePk = { id: uuidv1(), company_id: testDbService.company.id };
     await testDbService.createWorkspace(workspacePk);
     await testDbService.createUser([workspacePk], {
-      workspaceRole: "admin",
+      workspaceRole: "moderator",
       companyRole: "admin",
       email: "admin@admin.admin",
       username: "adminuser",

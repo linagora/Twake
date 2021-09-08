@@ -67,9 +67,7 @@ export default (props: PropsType): JSX.Element => {
         />
       </div>
       <div className="current-user-state small-text small-top-margin">
-        {Languages.t('scenes.app.popup.adduserfromtwakeconsole.current_users_state', [
-          emails.length || 0,
-        ])}
+        {Languages.t('scenes.app.popup.AddUserByEmail.current_users_state', [emails.length || 0])}
       </div>
       <div className="current-user-state">
         <Typography.Text type="secondary" style={{ fontSize: 13 }}>

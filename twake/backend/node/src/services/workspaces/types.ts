@@ -9,4 +9,4 @@ export interface WorkspaceUsersExecutionContext extends ExecutionContext {
   workspace_id: string;
 }
 
-export type WorkspaceUserRole = "admin" | "member";
+export type WorkspaceUserRole = "moderator" | "member";

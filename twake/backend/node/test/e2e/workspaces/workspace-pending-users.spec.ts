@@ -65,7 +65,7 @@ describe("The /workspace/pending users API", () => {
     const ws1pk = { id: uuidv1(), company_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
-    await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "admin" });
+    await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "moderator" });
     await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "member" });
     await testDbService.createUser([ws1pk], {
       companyRole: "member",
@@ -120,7 +120,7 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace admin", async done => {
+    it("should 403 when requester is not workspace moderator", async done => {
       const workspace_id = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[1].id;
 
@@ -266,7 +266,7 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace admin", async done => {
+    it("should 403 when requester is not workspace moderator", async done => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[1].id;
@@ -357,7 +357,7 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace admin", async done => {
+    it("should 403 when requester is not workspace moderator", async done => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[1].id;

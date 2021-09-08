@@ -2,6 +2,7 @@ import { getLogger } from "../../../../../core/platform/framework";
 import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 import { ChannelActivityNotification, ChannelVisibility } from "../../../types";
 import ChannelServiceAPI from "../../../provider";
+import { Channel } from "../../../../../services/channels/entities/channel";
 
 const logger = getLogger("channel.pubsub.new-channel-activity");
 export class NewWorkspaceProcessor implements PubsubHandler<ChannelActivityNotification, void> {
@@ -34,7 +35,7 @@ export class NewWorkspaceProcessor implements PubsubHandler<ChannelActivityNotif
           description: "",
           visibility: ChannelVisibility.PUBLIC,
           is_default: true,
-        },
+        } as Channel,
         {
           workspace: {
             workspace_id: message.workspace_id,

@@ -727,7 +727,7 @@
   "scenes.apps.parameters.workspace_sections.members.members": "Users",
   "scenes.apps.parameters.workspace_sections.members.members_text": "You can remove or change users rights.",
   "scenes.apps.parameters.workspace_sections.members.guests": "Guests",
-  "scenes.apps.parameters.workspace_sections.members.pending": "Pending users",
+  "scenes.apps.parameters.workspace_sections.members.pending": "Pending emails",
   "scenes.apps.parameters.workspace_sections.members.pending_text": "No user are using the e-mails bellow.",
   "scenes.apps.parameters.workspace_sections.members.invite": "Invite new user",
   "scenes.apps.parameters.workspace_sections.members.invite_text": "You can add user using an e-mail address or a username. You can add multiple e-mails separated by commas or spaces.",
@@ -1180,7 +1180,7 @@
   "scenes.app.popup.workspaceparameter.pages.deleteworkspace_description": "To confirm you want to delete this workspace, please type the name below and hit delete",
   "scenes.app.popup.workspaceparameter.pages.enter": "Enter ",
   "scenes.app.popup.workspaceparameter.pages.access_apps": "Access your applications and connectors",
-  "scenes.app.popup.workspaceparameter.pages.administrater_status": "Workspace administrator",
+  "scenes.app.popup.workspaceparameter.pages.moderator_status": "Workspace moderator",
   "scenes.app.popup.workspaceparameter.pages.alert_impossible_removing": "You can not leave the workspace, because you are the last administrator. You can define a new administrator or delete/archive this workspace.",
   "scenes.app.popup.workspaceparameter.pages.all_apps_small_text": "All applications",
   "scenes.app.popup.workspaceparameter.pages.apps_company_small_text": "Your company's applications",
@@ -1671,7 +1671,7 @@
   "services.console_services.toaster.add_emails_error": "Error while adding email(s)",
   "services.console_services.toaster.add_email_error_message": "Error while adding {{$1}}",
   "services.console_services.toaster.success_verify_email": "A verification link has been sent to your email account",
-  "scenes.app.popup.workspaceparameter.edit_from_console": "Edit from Console",
+  "scenes.app.popup.workspaceparameter.edit_from_console": "See in Console",
   "services.console_services.toaster.success_invite_emails": "Successfully added {{$1}} user(s)",
   "scenes.client.channels_bar.modals.guest_management.title": "Manage guests in {{$1}}",
   "scenes.client.channels_bar.modals.guest_management.input_placeholder": "Search guests or pending emails",
@@ -1737,5 +1737,7 @@
   "components.emoji_picker.categories.symbols": "Symbols",
   "components.emoji_picker.categories.flags": "Flags",
   "components.emoji_picker.categories.search_result": "Search Results",
-  "components.emoji_picker.categories.not_found": "No Emoji Found"
+  "components.emoji_picker.categories.not_found": "No Emoji Found",
+  "scenes.app.popup.workspaceparameter.pages.workspace_partner_tabs.members.table.tags": "Role",
+  "general.email": "Email"
 }

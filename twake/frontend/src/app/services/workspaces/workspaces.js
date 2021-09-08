@@ -186,13 +186,13 @@ class Workspaces extends Observable {
 
     AccessRightsService.updateLevel(
       workspace.id,
-      workspace._user_is_admin ? 'administrator' : workspace._user_is_guest ? 'guest' : 'member',
+      workspace._user_is_admin ? 'moderator' : workspace._user_is_guest ? 'guest' : 'member',
     );
     if (workspace._user_is_organization_administrator !== undefined) {
       AccessRightsService.updateCompanyLevel(
         workspace.group.id,
         workspace._user_is_organization_administrator
-          ? 'administrator'
+          ? 'admin'
           : workspace._user_is_guest
           ? 'guest'
           : 'member',
@@ -368,9 +368,7 @@ class Workspaces extends Observable {
   deleteWorkspace() {
     if (
       workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId) &&
-      (Object.keys(workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId)) || []).filter(
-        userId => !workspacesUsers.isExterne(userId),
-      ).length > 1
+      (Object.keys(workspacesUsers.getUsersByWorkspace(this.currentWorkspaceId)) || []).length > 1
     ) {
       this.errorDeleteWorkspaceMember = true;
       this.notify();

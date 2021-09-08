@@ -65,7 +65,7 @@ describe("The console API hooks", () => {
 
     await testDbService.createUser([ws0pk], {
       companyRole: "member",
-      workspaceRole: "admin",
+      workspaceRole: "moderator",
       username: "superman",
     });
 
@@ -256,7 +256,7 @@ describe("The console API hooks", () => {
 
         expect(userRoles).toEqual(
           expect.objectContaining({
-            role: "admin",
+            role: "moderator",
           }),
         );
         done();

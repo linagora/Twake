@@ -3,20 +3,14 @@ import Icon from 'components/Icon/Icon.js';
 import Languages from 'services/languages/languages';
 import './AddUserButton.scss';
 import popupManager from 'services/popupManager/popupManager.js';
-import AddUser from 'app/scenes/Client/Popup/AddUser/AddUser';
-import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
-import InitService from 'app/services/InitService';
+import AddUserByEmail from 'app/scenes/Client/Popup/AddUser/AddUserByEmail';
 
 export default (props: any) => {
   return (
     <div
       className="channel addUserButton"
       onClick={() => {
-        if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
-          return popupManager.open(<AddUserFromTwakeConsole standalone />);
-        } else {
-          return popupManager.open(<AddUser standalone />);
-        }
+        return popupManager.open(<AddUserByEmail standalone />);
       }}
     >
       <div className="icon">

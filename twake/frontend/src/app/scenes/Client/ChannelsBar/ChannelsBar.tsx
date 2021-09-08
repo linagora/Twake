@@ -91,7 +91,7 @@ export default () => {
           <ChannelsApps key={workspaceId} />
           <ChannelsWorkspace key={'workspace_chans_' + workspaceId} />
           <ChannelsUser key={companyId} />
-          {AccessRightsService.hasLevel(workspaceId, 'administrator') &&
+          {AccessRightsService.hasLevel(workspaceId, 'moderator') &&
             Workspaces.getCurrentWorkspace().stats.total_members <= 5 && <AddUserButton />}
         </PerfectScrollbar>
       </ScrollWithHiddenComponents>
