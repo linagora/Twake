@@ -4,6 +4,7 @@ import InitService from '../InitService';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from '../Toaster';
 import { ConsoleMemberRole } from './types';
+import logger from 'app/services/Logger';
 
 class ConsoleService {
   public getCompanyManagementUrl(companyId: string) {
@@ -40,28 +41,56 @@ class ConsoleService {
     });
   }
 
-  public addMailsInWorkspace(data: {
+  public async addMailsInWorkspace(data: {
     workspace_id: string;
     company_id: string;
     emails: string[];
     role?: ConsoleMemberRole;
   }) {
-    return new Promise(async resolve => {
-      const response = await Api.post(
-        `/internal/services/workspaces/v1/companies/${data.company_id}/workspaces/${data.workspace_id}/users/invite`,
-        {
-          invitations: [
-            ...data.emails.map(email => ({
-              email,
-              role: 'member',
-              company_role: 'member',
-            })),
-          ],
-        },
-        (res: any) => console.log(res),
+    const res: any = await Api.post(
+      `/internal/services/workspaces/v1/companies/${data.company_id}/workspaces/${data.workspace_id}/users/invite`,
+      {
+        invitations: [
+          ...data.emails.map(email => ({
+            email,
+            role: 'member',
+            company_role: 'member',
+          })),
+        ],
+      },
+    );
+
+    if (!res?.resources || !res.resources.length) {
+      logger.error('Error while adding emails');
+      return Toaster.error(Languages.t('services.console_services.toaster.add_emails_error'));
+    }
+
+    if (res.resources.filter((r: any) => r.status === 'error').length > 0) {
+      res.resources
+        .filter((r: any) => r.status === 'error')
+        .forEach(({ email, message }: { email: string; message: string }) => {
+          // possible error messages are
+          // 1. "User already belonged to the company" (Good typo in it...)
+          // 2. "Unable to invite user ${user.email} to company ${company.code}"
+          logger.error('Error while adding email', email, message);
+
+          Toaster.warning(
+            Languages.t('services.console_services.toaster.add_email_error_message', [
+              email + ` (${message})`,
+            ]),
+          );
+        });
+    }
+
+    if (res.resources.filter((r: any) => r.status !== 'error').length > 0) {
+      Toaster.success(
+        Languages.t('services.console_services.toaster.success_invite_emails', [
+          res.resources.filter((r: any) => r.status !== 'error').length,
+        ]),
       );
-      return resolve(response);
-    });
+    }
+
+    return res;
   }
 }
 
