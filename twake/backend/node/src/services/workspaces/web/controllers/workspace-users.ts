@@ -67,7 +67,7 @@ export class WorkspaceUsersCrudController
       user_id: workspaceUser.userId,
       workspace_id: workspaceUser.workspaceId,
       created_at: workspaceUser.dateAdded,
-      role: workspaceUser.role,
+      role: workspaceUser.role || "member",
       user: {
         id: user.id,
         provider: user.identity_provider,
@@ -88,7 +88,7 @@ export class WorkspaceUsersCrudController
           .map(cu => {
             const company = companiesMap.get(cu.group_id);
             return {
-              role: cu.role as CompanyUserRole,
+              role: (cu.role as CompanyUserRole) || "guest",
               status: "active" as CompanyUserStatus, // FIXME: with real status
               company: {
                 id: company.id,
@@ -402,7 +402,7 @@ export class WorkspaceUsersCrudController
             value: null,
           },
           password: invitation.password,
-          role: invitation.company_role,
+          role: invitation.company_role || "guest",
           skipInvite: false,
           inviterEmail: context.user.email,
         };

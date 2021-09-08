@@ -101,7 +101,6 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
   const newApplication = new Application();
 
   newApplication.id = application.id;
-  newApplication.app_group_name = application.app_group_name;
   newApplication.company_id = application.group_id;
 
   if (!newApplication.identity?.name) {
