@@ -65,7 +65,7 @@ const ChannelTemplateEditor: FC<Props> = ({
     const editable =
       (channel &&
         channel.id &&
-        (AccessRightsService.hasLevel(workspaceId || '', 'admin') ||
+        (AccessRightsService.hasLevel(workspaceId || '', 'moderator') ||
           currentUserId === channel.owner)) ||
       false;
     return isNewChannel || editable ? true : false;
