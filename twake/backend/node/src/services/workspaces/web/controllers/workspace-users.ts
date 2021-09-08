@@ -203,7 +203,6 @@ export class WorkspaceUsersCrudController
     return {
       resources: await Promise.all(resources),
       next_page_token: nextPageToken,
-      total: 100,
     };
   }
 

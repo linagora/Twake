@@ -130,7 +130,6 @@ export const getWorkspaceUsersSchema = {
       properties: {
         resources: { type: "array", items: workspaceUserObjectSchema },
         next_page_token: { type: "string" },
-        total: { type: "number" },
       },
       required: ["resources"],
     },
