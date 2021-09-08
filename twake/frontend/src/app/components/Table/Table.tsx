@@ -141,7 +141,11 @@ export default class Table extends Component<Props, State> {
           }}
         >
           {this.props.onAdd && (
-            <Button class="medium" value={this.props.addText || 'Add'} onClick={this.props.onAdd} />
+            <Button
+              className="medium"
+              value={this.props.addText || 'Add'}
+              onClick={this.props.onAdd}
+            />
           )}
           {this.props.onSearch && (
             <div>

@@ -32,7 +32,7 @@ export async function isWorkspaceAdmin(
 }
 
 export function hasWorkspaceAdminLevel(role: string): boolean {
-  return role === "admin";
+  return role === "moderator";
 }
 
 export function hasWorkspaceMemberLevel(role: string): boolean {

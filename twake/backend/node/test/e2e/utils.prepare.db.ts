@@ -107,7 +107,7 @@ export class TestDbService {
     workspacesPk?: Array<WorkspacePrimaryKey>,
     options: {
       companyRole?: "member" | "admin" | "guest";
-      workspaceRole?: "member" | "admin";
+      workspaceRole?: "member" | "moderator";
       firstName?: string;
       lastName?: string;
       email?: string;

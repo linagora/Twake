@@ -20,7 +20,7 @@ type TokenPayload = {
 
 type User = {
   id: string;
-  isWorkspaceAdmin?: boolean;
+  isWorkspaceModerator?: boolean;
 };
 
 export interface TestPlatform {
@@ -93,7 +93,7 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
       payload.sub = testPlatform.currentUser.id;
     }
 
-    if (testPlatform.currentUser.isWorkspaceAdmin) {
+    if (testPlatform.currentUser.isWorkspaceModerator) {
       payload.org = {};
       payload.org[testPlatform.workspace.company_id] = {
         role: "",
