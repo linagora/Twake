@@ -124,7 +124,7 @@ export class WorkspacesCrudController
         uws =>
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           new Map<string, any>(
-            uws.map(uw => [uw.workspaceId, hasCompanyAdminLevel(uw.role) ? "admin" : uw.role]),
+            uws.map(uw => [uw.workspaceId, hasCompanyAdminLevel(uw.role) ? "moderator" : uw.role]),
           ),
       );
 
