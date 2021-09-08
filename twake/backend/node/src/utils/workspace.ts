@@ -28,7 +28,7 @@ export async function isWorkspaceAdmin(
     return false;
   }
 
-  return workspaceUser.role === "admin";
+  return workspaceUser.role === "moderator";
 }
 
 export function hasWorkspaceAdminLevel(role: string): boolean {

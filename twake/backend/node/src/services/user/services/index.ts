@@ -36,7 +36,7 @@ class Service implements UserServiceAPI {
     this.users = getUserService(platformServices);
     this.external = getExternalService(platformServices.database);
     this.companies = getCompanyService(platformServices);
-    this.workspaces = getWorkspaceService(platformServices, this.users);
+    this.workspaces = getWorkspaceService(platformServices, this.users, this.companies);
   }
 
   async init(context: TwakeContext): Promise<this> {
