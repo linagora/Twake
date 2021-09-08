@@ -186,13 +186,13 @@ class Workspaces extends Observable {
 
     AccessRightsService.updateLevel(
       workspace.id,
-      workspace._user_is_admin ? 'administrator' : workspace._user_is_guest ? 'guest' : 'member',
+      workspace._user_is_admin ? 'moderator' : workspace._user_is_guest ? 'guest' : 'member',
     );
     if (workspace._user_is_organization_administrator !== undefined) {
       AccessRightsService.updateCompanyLevel(
         workspace.group.id,
         workspace._user_is_organization_administrator
-          ? 'administrator'
+          ? 'admin'
           : workspace._user_is_guest
           ? 'guest'
           : 'member',

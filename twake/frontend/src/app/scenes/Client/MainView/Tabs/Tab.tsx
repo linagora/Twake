@@ -31,7 +31,7 @@ export default ({
   const { tabId, workspaceId } = RouterServices.getStateFromRoute();
 
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
-    AccessRightsService.hasLevel(workspaceId, 'administrator'),
+    AccessRightsService.hasLevel(workspaceId, 'admin'),
   );
 
   if (selected && tabResource?.state?.persisted) {

@@ -16,7 +16,7 @@ const workspaceObjectSchema = {
         total_members: { type: "number" },
       },
     },
-    role: { type: "string", enum: ["admin", "member"] },
+    role: { type: "string", enum: ["moderator", "member"] },
   },
 };
 
@@ -118,7 +118,7 @@ const workspaceUserObjectSchema = {
     workspace_id: { type: "string" },
     user_id: { type: "string" },
     created_at: { type: "number" },
-    role: { type: "string", enum: ["admin", "member"] },
+    role: { type: "string", enum: ["moderator", "member"] },
     user: userObjectSchema,
   },
 };
@@ -129,6 +129,8 @@ export const getWorkspaceUsersSchema = {
       type: "object",
       properties: {
         resources: { type: "array", items: workspaceUserObjectSchema },
+        next_page_token: { type: "string" },
+        total: { type: "number" },
       },
       required: ["resources"],
     },
@@ -155,7 +157,7 @@ export const createWorkspaceUserSchema = {
         type: "object",
         properties: {
           user_id: { type: "string" },
-          role: { type: "string", enum: ["admin", "member"] },
+          role: { type: "string", enum: ["moderator", "member"] },
         },
         required: ["user_id", "role"],
       },
@@ -180,7 +182,7 @@ export const updateWorkspaceUserSchema = {
       resource: {
         type: "object",
         properties: {
-          role: { type: "string", enum: ["admin", "member"] },
+          role: { type: "string", enum: ["moderator", "member"] },
         },
         required: ["role"],
       },
@@ -220,7 +222,7 @@ export const inviteWorkspaceUserSchema = {
           type: "object",
           properties: {
             email: { type: "string" },
-            role: { type: "string", enum: ["admin", "member"] },
+            role: { type: "string", enum: ["moderator", "member"] },
             company_role: { type: "string", enum: ["owner", "admin", "member", "guest"] },
           },
           required: ["email", "role", "company_role"],
@@ -261,7 +263,7 @@ export const getWorkspacePendingUsersSchema = {
             type: "object",
             properties: {
               email: { type: "string" },
-              role: { type: "string", enum: ["admin", "member"] },
+              role: { type: "string", enum: ["moderator", "member"] },
               company_role: { type: "string", enum: ["owner", "admin", "member", "guest"] },
             },
             required: ["email", "role", "company_role"],

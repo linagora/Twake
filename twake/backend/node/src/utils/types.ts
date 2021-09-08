@@ -67,6 +67,7 @@ export class ResourceListResponse<T> {
   resources: T[];
   websockets?: ResourceWebsocket[];
   next_page_token?: string;
+  total?: number;
 }
 
 export class ResourceGetResponse<T> {

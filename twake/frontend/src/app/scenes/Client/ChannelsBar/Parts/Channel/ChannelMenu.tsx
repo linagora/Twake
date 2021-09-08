@@ -251,7 +251,7 @@ export default (props: Props): JSX.Element => {
       type: 'menu',
       hide:
         currentUser.id !== props.channel.data.owner &&
-        !AccessRightsService.hasLevel(workspaceId, 'administrator'),
+        !AccessRightsService.hasLevel(workspaceId, 'admin'),
       text: Languages.t('scenes.app.channelsbar.channel_removing'),
       className: 'danger',
       onClick: () => {

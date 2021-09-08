@@ -113,8 +113,9 @@ class WorkspacesMembersTable extends Observable {
 
   removeElement(workspaceId: string, type: string, user_id: string) {
     if (this.tables[workspaceId] && this.tables[workspaceId][type]) {
-      delete this.tables[workspaceId][type].list[user_id];
-      this.notify();
+      console.log('testest', this.tables[workspaceId][type].list);
+      //delete this.tables[workspaceId][type].list[user_id];
+      //this.notify();
     }
   }
 

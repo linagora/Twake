@@ -2,7 +2,6 @@ import Api from '../Api';
 import DepreciatedCollections from '../Depreciated/Collections/Collections';
 import InitService from '../InitService';
 import Languages from 'services/languages/languages';
-import logger from 'app/services/Logger';
 import { ToasterService as Toaster } from '../Toaster';
 import { ConsoleMemberRole } from './types';
 

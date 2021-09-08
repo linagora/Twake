@@ -205,7 +205,7 @@ export class WorkspacesCrudController
 
     const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
 
-    if (workspaceUserRole !== "moderator") {
+    if (!hasWorkspaceAdminLevel(workspaceUserRole)) {
       const companyUserRole = await this.getCompanyUserRole(context);
       if (companyUserRole !== "admin") {
         reply.forbidden("You are not a admin of workspace or company");

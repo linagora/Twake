@@ -18,6 +18,7 @@ import {
 import WorkspaceServicesAPI from "../api";
 import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { WorkspaceUsersCrudController } from "./controllers/workspace-users";
+import { hasWorkspaceAdminLevel } from "../../../utils/workspace";
 
 const workspacesUrl = "/companies/:company_id/workspaces";
 const workspaceUsersUrl = "/companies/:company_id/workspaces/:workspace_id/users";
@@ -91,7 +92,7 @@ const routes: FastifyPluginCallback<{
       } else {
         throw fastify.httpErrors.forbidden("Not member of the workspace");
       }
-    } else if (workspaceUser.role !== "moderator") {
+    } else if (!hasWorkspaceAdminLevel(workspaceUser.role)) {
       throw fastify.httpErrors.forbidden("Only workspace moderator can perform this action");
     }
   };

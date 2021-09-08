@@ -9,7 +9,6 @@ import {
 import { WorkspaceServiceAPI } from "../../api";
 import {
   WorkspacePendingUserRequest,
-  WorkspaceRequest,
   WorkspaceUserInvitationResponse,
   WorkspaceUserInvitationResponseItem,
   WorkspaceUserObject,
@@ -45,7 +44,8 @@ export class WorkspaceUsersCrudController
       ResourceCreateResponse<WorkspaceUserObject>,
       ResourceListResponse<WorkspaceUserObject>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
@@ -127,10 +127,11 @@ export class WorkspaceUsersCrudController
     reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceUserObject>> {
     const context = getExecutionContext(request);
+    let nextPageToken: string | null = null;
 
     let allWorkspaceUsers: WorkspaceUser[];
     if (request.query.search) {
-      let users: ListResult<User> = await this.usersService.search(
+      const users: ListResult<User> = await this.usersService.search(
         new Pagination(request.query.page_token, request.query.limit),
         {
           search: request.query.search,
@@ -138,7 +139,10 @@ export class WorkspaceUsersCrudController
         },
         context,
       );
-      for (let user of users.getEntities()) {
+
+      nextPageToken = users.nextPage?.page_token;
+
+      for (const user of users.getEntities()) {
         allWorkspaceUsers.push(
           await this.workspaceService.getUser({
             workspaceId: context.workspace_id,
@@ -147,11 +151,16 @@ export class WorkspaceUsersCrudController
         );
       }
     } else {
-      allWorkspaceUsers = await this.workspaceService
-        .getUsers({
+      const result = await this.workspaceService.getUsers(
+        {
           workspaceId: context.workspace_id,
-        })
-        .then(a => a.getEntities());
+        },
+        new Pagination(request.query.page_token, request.query.limit),
+      );
+
+      allWorkspaceUsers = result.getEntities();
+
+      nextPageToken = result.page_token;
     }
 
     const allUsersMap = new Map(
@@ -193,6 +202,8 @@ export class WorkspaceUsersCrudController
 
     return {
       resources: await Promise.all(resources),
+      next_page_token: nextPageToken,
+      total: 100,
     };
   }
 

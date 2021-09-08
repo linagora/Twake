@@ -70,12 +70,51 @@ export default class Api {
     });
   }
 
+  static put(
+    route: string,
+    data: any,
+    callback: any = false,
+    raw: boolean = false,
+    options: {
+      disableJWTAuthentication?: boolean;
+    } = {},
+  ) {
+    return Api.request(route, data, callback, raw, { ...options, requestType: 'put' });
+  }
+
   static post(
     route: string,
     data: any,
     callback: any = false,
     raw: boolean = false,
-    options: { disableJWTAuthentication?: boolean } = {},
+    options: {
+      disableJWTAuthentication?: boolean;
+    } = {},
+  ) {
+    return Api.request(route, data, callback, raw, { ...options, requestType: 'post' });
+  }
+
+  static delete(
+    route: string,
+    data: any,
+    callback: any = false,
+    raw: boolean = false,
+    options: {
+      disableJWTAuthentication?: boolean;
+    } = {},
+  ) {
+    return Api.request(route, data, callback, raw, { ...options, requestType: 'delete' });
+  }
+
+  static request(
+    route: string,
+    data: any,
+    callback: any = false,
+    raw: boolean = false,
+    options: {
+      disableJWTAuthentication?: boolean;
+      requestType?: 'post' | 'get' | 'put' | 'delete';
+    } = {},
   ) {
     return new Promise((resolve, reject) => {
       if (data && data._grouped && route === 'core/collections/init') {
@@ -86,7 +125,7 @@ export default class Api {
       route = Globals.api_root_url + route;
 
       Requests.request(
-        'post',
+        options.requestType ? options.requestType : 'post',
         route,
         JSON.stringify(data),
         (resp: any) => {

@@ -30,7 +30,7 @@ export async function isWorkspaceAdmin(
 
   return workspaceUser.role === "moderator";
 }
-// todo admin to moderator level
+
 export function hasWorkspaceAdminLevel(role: string): boolean {
   return role === "moderator";
 }

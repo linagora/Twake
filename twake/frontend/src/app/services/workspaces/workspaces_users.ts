@@ -12,7 +12,7 @@ import CurrentUser from 'app/services/user/CurrentUser';
 import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesMembersTable from 'services/workspaces/workspaces_members_table';
 import LoginService from 'services/login/login';
-
+import Requests from 'services/Requests';
 import Globals from 'services/Globals';
 
 class WorkspacesUsers extends Observable {
@@ -362,33 +362,24 @@ class WorkspacesUsers extends Observable {
     }
   }
   removeInvitation(mail: string, cb?: Function) {
-    var that = this;
+    const that = this;
     this.loading = true;
-    var index = that.membersPending
-      .map(function (e) {
-        return e.mail;
-      })
-      .indexOf(mail);
+    const index = that.membersPending.map(e => e.mail).indexOf(mail);
+
     if (index >= 0) {
       // eslint-disable-next-line no-unused-vars
       var old = that.membersPending.splice(index, 1);
     }
+
     this.notify();
-    Api.post(
-      '/ajax/workspace/members/removemail',
-      {
-        workspaceId: workspaceService.currentWorkspaceId,
-        mail: mail,
-      },
-      function (res: any) {
-        WorkspacesMembersTable.removeElement(workspaceService.currentWorkspaceId, 'pending', mail);
-        that.loading = false;
-        that.notify();
-        if (cb) {
-          cb();
-        }
-      },
-    );
+
+    const removePendingEmailRoute = `/internal/services/workspaces/v1/companies/${workspaceService.currentGroupId}/workspaces/${workspaceService.currentWorkspaceId}/pending/${mail}`;
+    Api.delete(removePendingEmailRoute, {}).then(() => {
+      WorkspacesMembersTable.removeElement(workspaceService.currentWorkspaceId, 'pending', mail);
+      that.loading = false;
+      that.notify();
+      cb && cb();
+    });
   }
   isExterne(userIdOrMail: string, workspaceId: string = '') {
     if (workspaceId === '') {
