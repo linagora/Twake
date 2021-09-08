@@ -190,7 +190,7 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace admin", async done => {
+    it("should 403 user is not workspace moderator", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -204,7 +204,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -246,7 +246,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: userId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -273,7 +273,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -304,7 +304,7 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace admin", async done => {
+    it("should 403 user is not workspace moderator", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -318,7 +318,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -338,7 +338,7 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -360,7 +360,7 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            role: "admin",
+            role: "moderator",
           },
         },
       });

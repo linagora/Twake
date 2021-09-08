@@ -65,7 +65,7 @@ describe("The /workspace/pending users API", () => {
     const ws1pk = { id: uuidv1(), company_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
-    await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "admin" });
+    await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "moderator" });
     await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "member" });
     await testDbService.createUser([ws1pk], {
       companyRole: "member",

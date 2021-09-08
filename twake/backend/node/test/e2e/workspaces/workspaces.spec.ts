@@ -42,7 +42,7 @@ describe("The /workspaces API", () => {
     await testDbService.createWorkspace(ws2pk);
     await testDbService.createUser([ws0pk, ws1pk]);
     await testDbService.createUser([ws2pk], { companyRole: "admin" });
-    await testDbService.createUser([ws2pk], { companyRole: undefined, workspaceRole: "admin" });
+    await testDbService.createUser([ws2pk], { companyRole: undefined, workspaceRole: "moderator" });
     await testDbService.createUser([], { companyRole: "guest" });
     ends();
   });
@@ -297,7 +297,7 @@ describe("The /workspaces API", () => {
         logo: expect.any(String),
         default: expect.any(Boolean),
         archived: expect.any(Boolean),
-        role: expect.stringMatching(/admin/),
+        role: expect.stringMatching(/moderator/),
       });
 
       done();
@@ -413,7 +413,7 @@ describe("The /workspaces API", () => {
       done();
     });
 
-    it("should 200 when admin of workspace (partial update)", async done => {
+    it("should 200 when moderator of workspace (partial update)", async done => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
       const userId = testDbService.workspaces[2].users[1].id; // workspace admin
@@ -444,7 +444,7 @@ describe("The /workspaces API", () => {
         logo: "workspace_logo",
         default: true,
         archived: false,
-        role: "admin",
+        role: "moderator",
       });
 
       done();
