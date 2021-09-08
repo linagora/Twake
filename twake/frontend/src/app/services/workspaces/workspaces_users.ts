@@ -229,53 +229,6 @@ class WorkspacesUsers extends Observable {
     return false;
   }
 
-  addUser(mails: any, cb?: Function, thot?: any) {
-    var that = this;
-    this.loading = true;
-    this.notify();
-
-    Api.post(
-      '/ajax/workspace/members/addlist',
-      {
-        list: mails.join(';'),
-        workspaceId: workspaceService.currentWorkspaceId,
-      },
-      function (res: any) {
-        if (res.errors.length === 0) {
-          if (
-            ((res.data.added || {}).pending || []).length +
-              ((res.data.added || {}).user || []).length >
-            0
-          ) {
-            CurrentUser.updateTutorialStatus('did_invite_collaborators');
-          }
-
-          that.errorOnInvitation = false;
-          that.errorUsersInvitation = [];
-          if (res.data.not_added.length > 0) {
-            if (res.data.not_added[0] !== '') {
-              that.errorOnInvitation = true;
-              that.errorUsersInvitation = res.data.not_added;
-            }
-            AlertManager.alert(() => {}, {
-              text:
-                Languages.t(
-                  'services.workspaces.not_added',
-                  [],
-                  "Les utilisateurs suivants n'ont pas été ajoutés (déjà invité, email mal formatté, ou utilisateur inconnu) : ",
-                ) + (res.data.not_added || []).join(', '),
-            });
-          }
-        }
-        that.loading = false;
-        that.notify();
-        if (cb) {
-          cb(thot);
-        }
-      },
-    );
-  }
-
   searchUserInWorkspace(query: any, cb: Function) {
     User.search(
       query,
