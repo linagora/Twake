@@ -25,7 +25,7 @@ import RouterServices from 'services/RouterService';
 import { UserType } from 'app/models/User.js';
 import Api from 'app/services/Api';
 import { Table, Row, Col, Button, Input, Typography, Divider } from 'antd';
-import AddUserFromTwakeConsole from '../../AddUser/AddUserFromTwakeConsole';
+import AddUserByEmail from '../../AddUser/AddUserByEmail';
 import { Search } from 'react-feather';
 
 export const AdminSwitch = (props: { col: any; adminLevelId: string; onChange: any }) => {
@@ -104,10 +104,7 @@ export default () => {
 
       <Row className="small-y-margin" justify="space-between" align="middle">
         <Col>
-          <Button
-            type="primary"
-            onClick={() => popupManager.open(<AddUserFromTwakeConsole standalone />)}
-          >
+          <Button type="primary" onClick={() => popupManager.open(<AddUserByEmail standalone />)}>
             {Languages.t('scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button')}
           </Button>
         </Col>

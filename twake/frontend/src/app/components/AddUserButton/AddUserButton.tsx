@@ -3,14 +3,14 @@ import Icon from 'components/Icon/Icon.js';
 import Languages from 'services/languages/languages';
 import './AddUserButton.scss';
 import popupManager from 'services/popupManager/popupManager.js';
-import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
+import AddUserByEmail from 'app/scenes/Client/Popup/AddUser/AddUserByEmail';
 
 export default (props: any) => {
   return (
     <div
       className="channel addUserButton"
       onClick={() => {
-        return popupManager.open(<AddUserFromTwakeConsole standalone />);
+        return popupManager.open(<AddUserByEmail standalone />);
       }}
     >
       <div className="icon">

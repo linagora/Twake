@@ -11,7 +11,7 @@ import './CreateCompanyView.scss';
 import Input from 'components/Inputs/Input.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import InitService from 'services/InitService';
-import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
+import AddUserByEmail from 'app/scenes/Client/Popup/AddUser/AddUserByEmail';
 
 export default class CreateCompanyView extends Component {
   constructor() {
@@ -325,7 +325,7 @@ export default class CreateCompanyView extends Component {
     }
     if (this.state.page === 3) {
       return (
-        <AddUserFromTwakeConsole
+        <AddUserByEmail
           inline
           onChange={members => this.setState({ members: members })}
           previous={() => this.previous()}

@@ -7,7 +7,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import Emojione from 'components/Emojione/Emojione';
 import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
 import Input from 'components/Inputs/Input.js';
-import AddUserFromTwakeConsole from 'app/scenes/Client/Popup/AddUser/AddUserFromTwakeConsole';
+import AddUserByEmail from 'app/scenes/Client/Popup/AddUser/AddUserByEmail';
 import InitService from 'app/services/InitService';
 import './CreateWorkspacePage.scss';
 
@@ -85,10 +85,11 @@ export default class CreateWorkspacePage extends Component {
     }
     if (this.state.page === 2) {
       return (
-        <AddUser
+        <AddUserByEmail
           inline
           onChange={members => {
-            this.setState({ members: members });
+            this.setState({ members });
+            this.setState({});
           }}
           previous={() => this.previous()}
           finish={() => this.next()}
