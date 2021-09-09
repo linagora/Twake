@@ -70,6 +70,7 @@ class UsersConnections extends BaseController
                 $value["_user_is_guest"] = $workspace_obj["_user_is_guest"];
                 $value["_user_is_organization_administrator"] = $workspace_obj["_user_is_organization_administrator"];
                 $value["_user_is_admin"] = $workspace_obj["_user_is_admin"];
+                $value["role"] = ($value["_user_is_admin"] || $value["_user_is_organization_administrator"]) ? "moderator" : $value["role"];
                 $workspaces[] = $value;
             }
 
@@ -206,6 +207,7 @@ class UsersConnections extends BaseController
                 $value["_user_is_guest"] = $workspace_obj["_user_is_guest"];
                 $value["_user_is_organization_administrator"] = $workspace_obj["_user_is_organization_administrator"];
                 $value["_user_is_admin"] = $workspace_obj["_user_is_admin"];
+                $value["role"] = ($value["_user_is_admin"] || $value["_user_is_organization_administrator"]) ? "moderator" : $value["role"];
 
                 $workspaces[] = $value;
 

@@ -696,8 +696,6 @@ class WorkspaceMembers
 
                 $companyAdmin = $groupUser ?( $groupUser->getLevel() === 3 || $groupUser->getRole() === "admin" || $groupUser->getRole() === "owner"): false;
 
-                $workspace["role"] = $companyAdmin ? "moderator" : $workspace["role"];
-
                 $workspaces[] = Array(
                     "last_access" => $workspaceMember->getLastAccess(),
                     "workspace" => $workspace,
