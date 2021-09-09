@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Languages from 'services/languages/languages';
-import { Table, Row, Col, Typography } from 'antd';
+import { Table, Row, Col, Typography, Divider } from 'antd';
 import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Menu from 'components/Menus/Menu.js';
@@ -20,7 +20,7 @@ import { delayRequest } from 'app/services/utils/managedSearchRequest';
 
 type ColumnObjectType = { [key: string]: any };
 
-const RoleComponent = ({ text, icon }: { text: string; icon?: JSX.Element }) => (
+const RoleComponent = ({ text, icon }: { text: string; icon?: JSX.Element }): JSX.Element => (
   <Row justify="center" align="middle">
     {!!icon && (
       <Col pull={1} style={{ height: 16 }}>
@@ -290,25 +290,28 @@ export default ({ filter }: { filter: string }) => {
   ];
 
   return (
-    <div>
-      <Typography.Title level={3}>
-        {Languages.t('scenes.apps.parameters.workspace_sections.members.members')}
-      </Typography.Title>
-      <Table<ColumnObjectType>
-        columns={columns}
-        loading={loading}
-        size="small"
-        pagination={false}
-        dataSource={filteredData ? filteredData : data}
-        scroll={{ x: xs || sm ? true : undefined }}
-      />
-      {pageToken !== null && pageToken.length && (
-        <Row justify="center" align="middle" className="small-y-margin">
-          <Typography.Link onClick={() => requestWorkspaceUsers(pageToken)}>
-            {Languages.t('components.searchpopup.load_more')}
-          </Typography.Link>
-        </Row>
-      )}
-    </div>
+    <>
+      <Divider />
+      <div>
+        <Typography.Title level={3}>
+          {Languages.t('scenes.apps.parameters.workspace_sections.members.members')}
+        </Typography.Title>
+        <Table<ColumnObjectType>
+          columns={columns}
+          loading={loading}
+          size="small"
+          pagination={false}
+          dataSource={filteredData ? filteredData : data}
+          scroll={{ x: xs || sm ? true : undefined }}
+        />
+        {pageToken !== null && pageToken.length && (
+          <Row justify="center" align="middle" className="small-y-margin">
+            <Typography.Link onClick={() => requestWorkspaceUsers(pageToken)}>
+              {Languages.t('components.searchpopup.load_more')}
+            </Typography.Link>
+          </Row>
+        )}
+      </div>
+    </>
   );
 };

@@ -8,8 +8,5 @@ import { CurrentCompanyState } from 'app/state/recoil/atoms/CurrentCompany';
 export default (): JSX.Element => {
   const company = useRecoilValue(CurrentCompanyState);
 
-  return (company
-    ? <Group id={company.id} />
-    : <></>
-  );
+  return company ? <Group id={company.id} /> : <></>;
 };

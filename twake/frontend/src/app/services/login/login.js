@@ -186,7 +186,7 @@ class Login extends Observable {
     }
   }
 
-  updateUser(callback) {
+  async updateUser(callback) {
     if (Globals.store_public_access_get_data) {
       this.firstInit = true;
       this.state = 'logged_out';

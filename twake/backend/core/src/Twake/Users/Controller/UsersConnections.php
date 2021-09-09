@@ -173,9 +173,31 @@ class UsersConnections extends BaseController
 
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
 
+            //This is needed because node do some stuff when loading workspaces list
+            $api = $this->app->getServices()->get("app.restclient");
+            $groups_ids = Array();
+            foreach($workspaces_obj as $workspace_obj){
+                $groups_ids[] = $value["group"]["id"];
+            }
+            $groups_ids = array_values(array_unique($groups_ids));
+            foreach($groups_ids as $gid){
+                $url = "/internal/services/workspaces/v1/companies/".$gid."/workspaces";
+                $opt = [
+                    CURLOPT_HTTPHEADER => Array(
+                        "Authorization: " . $request->headers->get("Authorization"),
+                        "Content-Type: application/json"
+                    ),
+                    CURLOPT_CONNECTTIMEOUT => 1,
+                    CURLOPT_TIMEOUT => 1
+                ];
+                $res = $api->request("GET", $url, null, $opt);
+            }
+            //End of temp stuff
+
+            $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
+
             $workspaces = Array();
             $workspaces_ids = Array();
-            $groups_ids = Array();
             foreach ($workspaces_obj as $workspace_obj) {
                 $value = $workspace_obj["workspace"]->getAsArray($this->get("app.twake_doctrine"));
                 $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
@@ -191,7 +213,6 @@ class UsersConnections extends BaseController
             }
 
             $workspaces_ids = array_values(array_unique($workspaces_ids));
-            $groups_ids = array_values(array_unique($groups_ids));
             
             $this->get("app.workspace_members")->updateUser($this->getUser(), $workspaces_ids, $groups_ids);
 

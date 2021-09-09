@@ -393,7 +393,7 @@ export class WorkspaceUsersCrudController
       }
 
       if (!userInCompany) {
-        const company = { id: context.company_id, code: null } as ConsoleCompany;
+        const company = await this.companyService.getCompany({ id: context.company_id });
         const createUser: CreateConsoleUser = {
           id: user ? user.id : null,
           email: invitation.email,
@@ -410,7 +410,10 @@ export class WorkspaceUsersCrudController
           inviterEmail: context.user.email,
         };
 
-        await consoleClient.addUserToCompany(company, createUser);
+        await consoleClient.addUserToCompany(
+          { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
+          createUser,
+        );
       }
 
       const userInWorkspace = Boolean(

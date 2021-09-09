@@ -138,6 +138,7 @@
     "notifications",
     "messages",
     "files",
+    "applications",
     "workspaces",
     "console",
     "previews",
