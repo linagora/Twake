@@ -66,7 +66,7 @@ export class WorkspaceUsersCrudController
       user_id: workspaceUser.userId,
       workspace_id: workspaceUser.workspaceId,
       created_at: workspaceUser.dateAdded,
-      role: workspaceUser.role,
+      role: workspaceUser.role || "member",
       user: {
         id: user.id,
         provider: user.identity_provider,
@@ -87,7 +87,7 @@ export class WorkspaceUsersCrudController
           .map(cu => {
             const company = companiesMap.get(cu.group_id);
             return {
-              role: cu.role as CompanyUserRole,
+              role: (cu.role as CompanyUserRole) || "guest",
               status: "active" as CompanyUserStatus, // FIXME: with real status
               company: {
                 id: company.id,
@@ -393,7 +393,7 @@ export class WorkspaceUsersCrudController
       }
 
       if (!userInCompany) {
-        const company = { id: context.company_id, code: null } as ConsoleCompany;
+        const company = await this.companyService.getCompany({ id: context.company_id });
         const createUser: CreateConsoleUser = {
           id: user ? user.id : null,
           email: invitation.email,
@@ -405,12 +405,15 @@ export class WorkspaceUsersCrudController
             value: null,
           },
           password: invitation.password,
-          role: invitation.company_role,
+          role: invitation.company_role || "guest",
           skipInvite: false,
           inviterEmail: context.user.email,
         };
 
-        await consoleClient.addUserToCompany(company, createUser);
+        await consoleClient.addUserToCompany(
+          { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
+          createUser,
+        );
       }
 
       const userInWorkspace = Boolean(

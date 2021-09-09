@@ -1,11 +1,9 @@
 import WebServerAPI from "../../core/platform/services/webserver/provider";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
-import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
-import StorageAPI from "../../core/platform/services/storage/provider";
 import { ApplicationServiceAPI } from "./api";
 import { getService } from "./services/index";
 import web from "./web/index";
+import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
 
 @Prefix("/internal/services/applications/v1")
 @Consumes(["webserver", "database", "storage", "pubsub"])
@@ -20,11 +18,9 @@ export default class ApplicationsService extends TwakeService<ApplicationService
 
   public async doInit(): Promise<this> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
-    const database = this.context.getProvider<DatabaseServiceAPI>("database");
-    const storage = this.context.getProvider<StorageAPI>("storage");
-    const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
+    const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
 
-    this.service = getService(database, pubsub, storage);
+    this.service = getService(platformServices);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {

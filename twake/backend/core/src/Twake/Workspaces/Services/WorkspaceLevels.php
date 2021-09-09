@@ -57,6 +57,7 @@ class WorkspaceLevels
 
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
         $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
+        $companyUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
 
         $user = $this->convertToEntity($userId, "Twake\Users:User");
         $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
@@ -66,39 +67,28 @@ class WorkspaceLevels
             return false;
         }
 
+        $companyLink = $companyUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user->getId()));
         $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
         if ($link) {
-            $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace_id" => $workspace->getId(), "id" => $link->getLevelId()));
-            if (!$link || !$level) {
-                return false;
+
+            if($link->getRole() === "moderator" || $companyLink->getRole() === "admin" || $companyLink->getRole() === "owner"){
+                return true; //Admin can do everything
             }
 
-            //No flush, if this is just a read we don't count the activity
-
-            if ($level->getIsAdmin()) {
+            $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace_id" => $workspace->getId(), "id" => $link->getLevelId()));
+            if ($level && $level->getIsAdmin()) {
                 return true; //Admin can do everything
             }
 
             if($action === "admin"){
-                return $level->getIsAdmin();
+                return false;
             }
 
             if ($action == "" || $action == null) {
                 return true;
             }
 
-            $rights = $level->getRights();
-
-            //Compare with action asked
-            $actions = explode(":", $action);
-            $object = $actions[0];
-            $value = intval(str_replace(Array("none", "read", "write", "manage"), Array(0, 1, 2, 3), $actions[1]));
-
-            if (!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"), Array(0, 1, 2, 3), $rights[$object])) < $value) {
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
         return false;

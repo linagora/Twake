@@ -694,14 +694,16 @@ class WorkspaceMembers
 
                 $groupUser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $workspace->getGroup()));
 
+                $companyAdmin = $groupUser ?( $groupUser->getLevel() === 3 || $groupUser->getRole() === "admin" || $groupUser->getRole() === "owner"): false;
+
                 $workspaces[] = Array(
                     "last_access" => $workspaceMember->getLastAccess(),
                     "workspace" => $workspace,
                     "ishidden" => $workspaceMember->getisHidden(),
                     "isfavorite" => $workspaceMember->getisFavorite(),
-                    "_user_is_admin" => $isAdmin,
+                    "_user_is_admin" => $isAdmin || $companyAdmin,
                     "_user_is_guest" => $workspaceMember->getExterne() || ($groupUser ? $groupUser->getExterne() : true),
-                    "_user_is_organization_administrator" => $groupUser ? $groupUser->getLevel() === 3 : false,
+                    "_user_is_organization_administrator" => $companyAdmin,
                     "hasnotifications" => $workspaceMember->getHasNotifications(),
                     "isArchived" => $workspaceMember->getWorkspace($this->doctrine)->getIsArchived()
                 );

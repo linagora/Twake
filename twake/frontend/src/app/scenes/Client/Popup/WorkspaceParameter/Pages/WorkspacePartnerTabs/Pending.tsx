@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Languages from 'services/languages/languages';
-import { Table, Typography } from 'antd';
+import { Divider, Table, Typography } from 'antd';
 import Menu from 'components/Menus/Menu.js';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
@@ -120,18 +120,21 @@ export default (props: { filter: string }) => {
   }
 
   return (
-    <div>
-      <Typography.Title level={3}>
-        {Languages.t('scenes.apps.parameters.workspace_sections.members.pending')}
-      </Typography.Title>
-      <Table
-        columns={columns}
-        loading={loading}
-        dataSource={filteredData ? filteredData : data}
-        size="small"
-        pagination={{ pageSize: DEFAULT_PAGE_SIZE, simple: true }}
-        scroll={{ x: xs || sm ? true : undefined }}
-      />
-    </div>
+    <>
+      <Divider />
+      <div>
+        <Typography.Title level={3}>
+          {Languages.t('scenes.apps.parameters.workspace_sections.members.pending')}
+        </Typography.Title>
+        <Table
+          columns={columns}
+          loading={loading}
+          dataSource={filteredData ? filteredData : data}
+          size="small"
+          pagination={{ pageSize: DEFAULT_PAGE_SIZE, simple: true }}
+          scroll={{ x: xs || sm ? true : undefined }}
+        />
+      </div>
+    </>
   );
 };

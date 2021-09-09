@@ -35,7 +35,7 @@ import WorkspacePendingUser, {
 } from "../../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../../user/web/types";
 import { uuid } from "../../../../utils/types";
-import { UsersServiceAPI } from "../../../user/api";
+import { CompaniesServiceAPI, UsersServiceAPI } from "../../../user/api";
 import { CounterProvider } from "../../../../core/platform/services/counter/provider";
 import {
   TYPE as WorkspaceCounterEntityType,
@@ -44,7 +44,6 @@ import {
 } from "../../entities/workspace_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
-import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -53,7 +52,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
   private workspaceCounter: CounterProvider<WorkspaceCounterEntity>;
 
-  constructor(private platformServices: PlatformServicesAPI, private users: UsersServiceAPI) {}
+  constructor(
+    private platformServices: PlatformServicesAPI,
+    private users: UsersServiceAPI,
+    private companies: CompaniesServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
     this.workspaceUserRepository =
@@ -211,6 +214,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       allCompanyWorkspaces = [...allCompanyWorkspaces, ...tmp.getEntities()];
     } while (nextPage.page_token);
 
+    //Check there is at least one workspace in this company or enforce one
+    if (allCompanyWorkspaces.length == 0) {
+      const created = await this.create(
+        getWorkspaceInstance({
+          company_id: companyId,
+          name: "Home",
+          isDefault: true,
+        }),
+      );
+      allCompanyWorkspaces.push(created.entity);
+    }
+
     return allCompanyWorkspaces;
   }
 
@@ -314,16 +329,46 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     companyId: CompanyPrimaryKey,
   ): Promise<WorkspaceUser[]> {
     const allCompanyWorkspaces = await this.getAllForCompany(companyId.id);
-    const UserWorkspaces = await Promise.all(
-      allCompanyWorkspaces.map(workspace =>
-        this.workspaceUserRepository.findOne({
-          user_id: userId.userId,
-          workspace_id: workspace.id,
-        }),
-      ),
-    );
+    let userWorkspaces = (
+      await Promise.all(
+        allCompanyWorkspaces.map(workspace =>
+          this.workspaceUserRepository.findOne({
+            user_id: userId.userId,
+            workspace_id: workspace.id,
+          }),
+        ),
+      )
+    ).filter(uw => uw);
 
-    return UserWorkspaces.filter(uw => uw);
+    //If user is in no workspace, then it must be invited in the default workspaces
+    if (userWorkspaces.length === 0) {
+      for (const workspace of allCompanyWorkspaces) {
+        if (workspace.isDefault && !workspace.isArchived && !workspace.isDeleted) {
+          try {
+            //Role will match the company role in the default workspaces
+            const companyRole = await this.companies.getCompanyUser(
+              { id: companyId.id },
+              { id: userId.userId },
+            );
+            let role: WorkspaceUserRole = "member";
+            if (companyRole.role == "admin" || companyRole.role == "owner") role = "moderator";
+
+            await this.addUser(workspace, { id: userId.userId }, role);
+            const uw = await this.workspaceUserRepository.findOne({
+              user_id: userId.userId,
+              workspace_id: workspace.id,
+            });
+            if (uw) {
+              userWorkspaces.push(uw);
+            }
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+    }
+
+    return userWorkspaces;
   }
 
   getAllUsers$(

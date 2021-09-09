@@ -65,11 +65,12 @@ class UsersConnections extends BaseController
             $workspaces = Array();
             foreach ($workspaces_obj as $workspace_obj) {
                 $value = $workspace_obj["workspace"]->getAsArray();
-                $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $value["_user_last_access"] = $workspace_obj["last_access"] ? $workspace_obj["last_access"]->getTimestamp() : null;
                 $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
                 $value["_user_is_guest"] = $workspace_obj["_user_is_guest"];
                 $value["_user_is_organization_administrator"] = $workspace_obj["_user_is_organization_administrator"];
                 $value["_user_is_admin"] = $workspace_obj["_user_is_admin"];
+                $value["role"] = ($value["_user_is_admin"] || $value["_user_is_organization_administrator"]) ? "moderator" : $value["role"];
                 $workspaces[] = $value;
             }
 
@@ -171,18 +172,42 @@ class UsersConnections extends BaseController
             $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
             $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
 
+            //This is needed because node do some stuff when loading workspaces list
+            $api = $this->app->getServices()->get("app.restclient");
+            $groupManagerRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:GroupUser");
+            $groupLinks = $groupManagerRepository->findBy(Array("user" => $this->getUser()));
+            $groups_ids = Array();
+            foreach($groupLinks as $group){
+                $groups_ids[] = $group->getGroup()->getId();
+            }
+            $groups_ids = array_values(array_unique($groups_ids));
+            foreach($groups_ids as $gid){
+                $url = str_replace("/private", "/internal/services/workspaces/v1", $this->app->getContainer()->getParameter("node.api"));
+                $url = $url . "companies/".$gid."/workspaces";
+                $opt = [
+                    CURLOPT_HTTPHEADER => Array(
+                        "Authorization: " . $request->headers->get("Authorization"),
+                        "Content-Type: application/json"
+                    ),
+                    CURLOPT_CONNECTTIMEOUT => 1,
+                    CURLOPT_TIMEOUT => 1
+                ];
+                $res = $api->request("GET", $url, null, $opt);
+            }
+            //End of temp stuff
+
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
 
             $workspaces = Array();
             $workspaces_ids = Array();
-            $groups_ids = Array();
             foreach ($workspaces_obj as $workspace_obj) {
                 $value = $workspace_obj["workspace"]->getAsArray($this->get("app.twake_doctrine"));
-                $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $value["_user_last_access"] = $workspace_obj["last_access"] ? $workspace_obj["last_access"]->getTimestamp() : null;
                 $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
                 $value["_user_is_guest"] = $workspace_obj["_user_is_guest"];
                 $value["_user_is_organization_administrator"] = $workspace_obj["_user_is_organization_administrator"];
                 $value["_user_is_admin"] = $workspace_obj["_user_is_admin"];
+                $value["role"] = ($value["_user_is_admin"] || $value["_user_is_organization_administrator"]) ? "moderator" : $value["role"];
 
                 $workspaces[] = $value;
 
@@ -191,7 +216,6 @@ class UsersConnections extends BaseController
             }
 
             $workspaces_ids = array_values(array_unique($workspaces_ids));
-            $groups_ids = array_values(array_unique($groups_ids));
             
             $this->get("app.workspace_members")->updateUser($this->getUser(), $workspaces_ids, $groups_ids);
 

@@ -28,7 +28,7 @@ class Service implements WorkspaceServicesAPI {
   constructor(platformServices: PlatformServicesAPI, consoleService: ConsoleServiceAPI) {
     this.companies = getCompaniesService(platformServices);
     this.users = getUsersService(platformServices);
-    this.workspaces = getWorkspaceService(platformServices, this.users);
+    this.workspaces = getWorkspaceService(platformServices, this.users, this.companies);
     this.console = consoleService;
   }
 

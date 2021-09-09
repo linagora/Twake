@@ -1,30 +1,17 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import groupService from 'services/workspaces/groups.js';
 import workspacesUsers from 'services/workspaces/workspaces_users';
-import Menu from 'components/Menus/Menu.js';
-import AlertManager from 'services/AlertManager/AlertManager';
-import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Switch from 'components/Inputs/Switch';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
-import UserService from 'services/user/UserService';
-import CreateCompanyAccount from './CreateCompanyAccount.js';
-import MediumPopupManager from 'app/components/Modal/ModalManager';
 import popupManager from 'services/popupManager/popupManager.js';
 import './Pages.scss';
 import Pending from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending';
 import Members from 'app/scenes/Client/Popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members';
-import Tabs from 'components/Tabs/Tabs.js';
-import InitService from 'app/services/InitService';
-import ConsoleService from 'app/services/Console/ConsoleService';
-import RouterServices from 'services/RouterService';
-// import { Switch } from 'antd';
-import { UserType } from 'app/models/User.js';
-import Api from 'app/services/Api';
-import { Table, Row, Col, Button, Input, Typography, Divider } from 'antd';
+import { Row, Col, Button, Input, Typography, Divider } from 'antd';
 import AddUserByEmail from '../../AddUser/AddUserByEmail';
 import { Search } from 'react-feather';
 
@@ -118,11 +105,7 @@ export default () => {
         </Col>
       </Row>
 
-      <Divider />
-
       <Pending filter={searchValue} />
-
-      <Divider />
 
       <Members filter={searchValue} />
     </div>

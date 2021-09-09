@@ -1,4 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
+import { CompanyExecutionContext } from "../types";
 import { ApplicationServiceAPI } from "../../api";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
@@ -9,8 +10,8 @@ import {
   ResourceUpdateResponse,
 } from "../../../../utils/types";
 import Application from "../../entities/application";
-import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
-export class ApplicationController
+
+export class CompanyApplicationController
   implements
     CrudController<
       ResourceGetResponse<Application>,
@@ -22,10 +23,10 @@ export class ApplicationController
   constructor(protected service: ApplicationServiceAPI) {}
 
   async get(
-    request: FastifyRequest<{ Params: { application_id: string } }>,
+    request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<Application>> {
-    const context = getExecutionContext(request);
+    const context = getCompanyExecutionContext(request);
     return {
       resource: null,
     };
@@ -33,20 +34,25 @@ export class ApplicationController
 
   async list(
     request: FastifyRequest<{
+      Params: { company_id: string };
       Querystring: PaginationQueryParameters & { search: string };
     }>,
   ): Promise<ResourceListResponse<Application>> {
-    const context = getExecutionContext(request);
+    const context = getCompanyExecutionContext(request);
+
     return {
       resources: [],
     };
   }
 
   async save(
-    request: FastifyRequest<{ Params: { application_id: string }; Body: Application }>,
+    request: FastifyRequest<{
+      Params: { company_id: string; application_id: string };
+      Body: Application;
+    }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<Application>> {
-    const context = getExecutionContext(request);
+    const context = getCompanyExecutionContext(request);
 
     return {
       resource: null,
@@ -54,10 +60,10 @@ export class ApplicationController
   }
 
   async delete(
-    request: FastifyRequest<{ Params: { application_id: string } }>,
+    request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
-    const context = getExecutionContext(request);
+    const context = getCompanyExecutionContext(request);
     const deleteResult: any = {};
 
     if (deleteResult.deleted) {
@@ -74,11 +80,17 @@ export class ApplicationController
   }
 }
 
-function getExecutionContext(request: FastifyRequest): ExecutionContext {
+function getCompanyExecutionContext(
+  request: FastifyRequest<{
+    Params: { company_id: string };
+  }>,
+): CompanyExecutionContext {
   return {
     user: request.currentUser,
+    company: { id: request.params.company_id },
     url: request.url,
     method: request.routerMethod,
+    reqId: request.id,
     transport: "http",
   };
 }
