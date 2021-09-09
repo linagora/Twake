@@ -44,11 +44,7 @@ class SearchIndexAll {
     do {
       const list = await repository.find({}, { pagination: page });
       page = list.nextPage as Pagination;
-
-      for (const item of list.getEntities()) {
-        await this.search.upsert(item);
-      }
-
+      await this.search.upsert(list.getEntities());
       await new Promise(r => setTimeout(r, 200));
     } while (page.page_token);
   }

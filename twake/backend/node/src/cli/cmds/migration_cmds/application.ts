@@ -51,6 +51,8 @@ class ApplicationMigrator {
 }
 
 const services = [
+  "storage",
+  "counter",
   "platform-services",
   "user",
   "search",

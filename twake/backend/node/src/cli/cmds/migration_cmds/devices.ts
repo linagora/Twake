@@ -55,6 +55,8 @@ class DeviceMigrator {
 }
 
 const services = [
+  "storage",
+  "counter",
   "platform-services",
   "user",
   "search",
