@@ -270,6 +270,8 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     const nextToken = esResponse.body?._scroll_id || "";
     const hits = esResponse.body?.hits?.hits || [];
 
+    logger.debug(`${this.name} got response: ${JSON.stringify(esResponse)}`);
+
     const entities: IndexedEntity[] = [];
     for await (const hit of hits) {
       try {
