@@ -973,5 +973,9 @@
     "scenes.apps.messages.left_bar.stream.add_to_favorites": "Añadir a favoritos",
     "scenes.apps.drive.services.see_info": "Ver información",
     "scenes.apps.drive.right_preview.public_link.no_access": "Lo sentimos, no tiene acceso a esta ubicación. O bien su enlace está roto, o el elemento solicitado ya no existe.",
-    "scenes.apps.drive.right_preview.public_link.message": "Si elimina este enlace, los usuarios con este enlace ya no tendrán acceso."
+    "scenes.apps.drive.right_preview.public_link.message": "Si elimina este enlace, los usuarios con este enlace ya no tendrán acceso.",
+    "components.locked_features.locked_workspace_popup.title": "No se puede crear más espacio de trabajo",
+    "components.locked_features.locked_workspace_popup.subtitle": "En la versión gratuita, solo puede tener 1 espacio de trabajo en su empresa.",
+    "components.locked_features.locked_workspace_popup.text": "¡Ups! Parece que desea crear un nuevo espacio de trabajo en su empresa. Es posible que desee considerar actualizar su plan si desea colaborar en varios espacios de trabajo. Explore nuestras opciones de precios y seleccione la mejor opción para las necesidades de colaboración de su equipo."
+
 }

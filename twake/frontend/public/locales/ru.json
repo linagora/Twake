@@ -1501,5 +1501,8 @@
     "scenes.apps.messages.select_computer": "Выбрать из компьютера",
     "scenes.apps.messages.select_twake": "Выбрать в Twake Документы",
     "scenes.apps.tasks.active_tasks": "активные(х) задачи(ь)",
-    "scenes.apps.drive.right_preview.versions": "Версии"
+    "scenes.apps.drive.right_preview.versions": "Версии",
+    "components.locked_features.locked_workspace_popup.title": "Вы не можете создать больше рабочего пространства",
+    "components.locked_features.locked_workspace_popup.subtitle": "В бесплатной версии у вас может быть только 1 рабочее место в вашей компании.",
+    "components.locked_features.locked_workspace_popup.text": "Упс !! Похоже, вы хотите создать новое рабочее место в своей компании. Возможно, вы захотите обновить свой план, если хотите сотрудничать в нескольких рабочих областях. Изучите наши варианты цен и выберите лучший вариант для совместной работы вашей команды."
 }

@@ -1670,5 +1670,9 @@
     "scenes.app.sidemenu.user.account.manage_emails": "E-Mails verwalten",
     "scenes.app.sidemenu.channels.public": "öffentlich",
     "scenes.apps.messages.message.copy_link": "Link zur Nachricht kopieren",
-    "scenes.apps.messages.message.unpin_button": "Nachricht lösen"
+    "scenes.apps.messages.message.unpin_button": "Nachricht lösen",
+    "components.locked_features.locked_workspace_popup.title": "Sie können keinen weiteren Arbeitsbereich erstellen",
+    "components.locked_features.locked_workspace_popup.subtitle": "In der kostenlosen Version können Sie nur 1 Arbeitsbereich in Ihrem Unternehmen haben.",
+    "components.locked_features.locked_workspace_popup.text": "Hoppla!! Anscheinend möchten Sie einen neuen Arbeitsbereich in Ihrem Unternehmen erstellen. Wenn Sie in mehreren Arbeitsbereichen zusammenarbeiten möchten, sollten Sie ein Upgrade Ihres Plans in Betracht ziehen. Entdecken Sie unsere Preisoptionen und wählen Sie die beste Option für Ihre Anforderungen an die Teamzusammenarbeit aus."
+
 }

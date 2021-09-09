@@ -17,6 +17,9 @@ type PropsType = {
   footerStyle?: React.CSSProperties;
   titleLevel?: 5 | 1 | 2 | 3 | 4 | undefined;
   titleColor?: string;
+  colTitleStyle?: React.CSSProperties;
+  contentStyle?: React.CSSProperties;
+  titleTypographyStyle?: React.CSSProperties;
 };
 
 const { Header, Content, Footer } = Layout;
@@ -24,16 +27,17 @@ const ObjectModal: FC<PropsType> = (props: PropsType) => {
   return (
     <Layout className="modal-layout" hasSider={false} style={props.style || {}}>
       <Header className="modal-layout-header" style={props.headerStyle || {}}>
-        <Row justify="space-between" align="middle" className="modal-layout-row">
+        <Row justify="space-between" align="middle" className="modal-layout-row" wrap={false}>
           {props.titleCenter && <Col style={{ width: 32 }}></Col>}
           {props.title && (
-            <Col>
+            <Col style={props.colTitleStyle}>
               <Typography.Title
                 level={props.titleLevel || 5}
                 style={{
                   margin: 0,
                   marginTop: props.titleCenter ? 8 : 0,
                   color: props.titleColor,
+                  ...props.titleTypographyStyle,
                 }}
               >
                 {props.title}
@@ -53,7 +57,7 @@ const ObjectModal: FC<PropsType> = (props: PropsType) => {
           )) || <Col style={{ width: 32 }}></Col>}
         </Row>
       </Header>
-      {props.children && <Content>{props.children}</Content>}
+      {props.children && <Content style={props.contentStyle}>{props.children}</Content>}
       {props.footer && (
         <Footer className="modal-layout-footer">
           {!props.hideFooterDivider && <Divider className="y-margin" />}

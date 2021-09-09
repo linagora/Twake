@@ -1735,5 +1735,8 @@
     "components.emoji_picker.categories.search_result": "Search Results",
     "components.emoji_picker.categories.not_found": "No Emoji Found",
     "scenes.app.popup.workspaceparameter.pages.workspace_partner_tabs.members.table.tags": "Role",
-    "general.email": "Email"
+    "general.email": "Email",
+    "components.locked_features.locked_workspace_popup.title": "You can not create more workspace",
+    "components.locked_features.locked_workspace_popup.subtitle": "In the free version, you can have only 1 workspace in your company.",
+    "components.locked_features.locked_workspace_popup.text": "Whoops!! Seems like you want to create a new workspace in your company. You might want to consider upgrading your plan if you want to collaborate in several workspaces. Explore our pricing options and select the best option for your team collaboration needs."
 }

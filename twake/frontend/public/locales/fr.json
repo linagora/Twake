@@ -1676,5 +1676,8 @@
     "components.emoji_picker.categories.search_result": "Résultats de la recherche",
     "components.emoji_picker.categories.not_found": "Aucun Emoji trouvé",
     "scenes.app.popup.workspaceparameter.pages.workspace_partner_tabs.members.table.tags": "Rôle",
-    "general.email": "Email"
+    "general.email": "Email",
+    "components.locked_features.locked_workspace_popup.title": "Vous ne pouvez pas créer plus d'espace de travail",
+    "components.locked_features.locked_workspace_popup.subtitle": "Dans la version gratuite, vous ne pouvez avoir qu'un seul espace de travail dans votre entreprise.",
+    "components.locked_features.locked_workspace_popup.text": "Oups !! Il semble que vous souhaitiez créer un nouvel espace de travail dans votre entreprise. Vous pouvez envisager de mettre à niveau votre plan si vous souhaitez collaborer dans plusieurs espaces de travail. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe."
 }
