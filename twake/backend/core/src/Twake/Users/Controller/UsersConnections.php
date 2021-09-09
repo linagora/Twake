@@ -65,7 +65,7 @@ class UsersConnections extends BaseController
             $workspaces = Array();
             foreach ($workspaces_obj as $workspace_obj) {
                 $value = $workspace_obj["workspace"]->getAsArray();
-                $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $value["_user_last_access"] = $workspace_obj["last_access"] ? $workspace_obj["last_access"]->getTimestamp() : null;
                 $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
                 $value["_user_is_guest"] = $workspace_obj["_user_is_guest"];
                 $value["_user_is_organization_administrator"] = $workspace_obj["_user_is_organization_administrator"];
@@ -171,17 +171,18 @@ class UsersConnections extends BaseController
             $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
             $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
 
-            $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
-
             //This is needed because node do some stuff when loading workspaces list
             $api = $this->app->getServices()->get("app.restclient");
+            $groupManagerRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:GroupUser");
+            $groupLinks = $groupManagerRepository->findBy(Array("user" => $this->getUser()));
             $groups_ids = Array();
-            foreach($workspaces_obj as $workspace_obj){
-                $groups_ids[] = $value["group"]["id"];
+            foreach($groupLinks as $group){
+                $groups_ids[] = $group->getGroup()->getId();
             }
             $groups_ids = array_values(array_unique($groups_ids));
             foreach($groups_ids as $gid){
-                $url = "/internal/services/workspaces/v1/companies/".$gid."/workspaces";
+                $url = str_replace("/private", "/internal/services/workspaces/v1", $this->app->getContainer()->getParameter("node.api"));
+                $url = $url . "companies/".$gid."/workspaces";
                 $opt = [
                     CURLOPT_HTTPHEADER => Array(
                         "Authorization: " . $request->headers->get("Authorization"),
@@ -200,7 +201,7 @@ class UsersConnections extends BaseController
             $workspaces_ids = Array();
             foreach ($workspaces_obj as $workspace_obj) {
                 $value = $workspace_obj["workspace"]->getAsArray($this->get("app.twake_doctrine"));
-                $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $value["_user_last_access"] = $workspace_obj["last_access"] ? $workspace_obj["last_access"]->getTimestamp() : null;
                 $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
                 $value["_user_is_guest"] = $workspace_obj["_user_is_guest"];
                 $value["_user_is_organization_administrator"] = $workspace_obj["_user_is_organization_administrator"];

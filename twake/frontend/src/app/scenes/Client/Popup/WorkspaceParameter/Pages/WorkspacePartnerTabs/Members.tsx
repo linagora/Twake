@@ -21,7 +21,7 @@ import { delayRequest } from 'app/services/utils/managedSearchRequest';
 type ColumnObjectType = { [key: string]: any };
 
 const RoleComponent = ({ text, icon }: { text: string; icon?: JSX.Element }): JSX.Element => (
-  <Row justify="center" align="middle">
+  <Row align="middle">
     {!!icon && (
       <Col pull={1} style={{ height: 16 }}>
         {icon}
@@ -204,7 +204,7 @@ export default ({ filter }: { filter: string }) => {
     );
   };
 
-  const setRoleTitle = ({
+  const getRoleTitle = ({
     companyRole,
     workspaceRole,
   }: {
@@ -273,7 +273,7 @@ export default ({ filter }: { filter: string }) => {
       dataIndex: 'tags',
       render: (text, col, index) => (
         <Typography.Text type="secondary">
-          {setRoleTitle({
+          {getRoleTitle({
             companyRole: UserService.getUserRole(col.user, companyId),
             workspaceRole: col.role,
           })}

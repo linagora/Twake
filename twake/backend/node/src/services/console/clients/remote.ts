@@ -78,7 +78,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
             role: user.role,
           },
         ],
-        inviter: user.inviterEmail,
+        inviter: { email: user.inviterEmail },
       };
 
       return this.client
