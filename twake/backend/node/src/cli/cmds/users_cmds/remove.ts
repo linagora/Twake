@@ -12,7 +12,7 @@ type CLIArgs = {
   id: string;
 };
 
-const services = ["user", "search", "database", "webserver"];
+const services = ["platform-service", "user", "search", "database", "webserver"];
 
 const command: yargs.CommandModule<unknown, CLIArgs> = {
   command: "remove",

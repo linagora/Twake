@@ -3,7 +3,16 @@ import twake from "../../../twake";
 import ora from "ora";
 import MessageMigrator from "./php-message/message-migrator-service";
 
-const services = ["user", "search", "channels", "database", "webserver", "pubsub", "messages"];
+const services = [
+  "platform-service",
+  "user",
+  "search",
+  "channels",
+  "database",
+  "webserver",
+  "pubsub",
+  "messages",
+];
 
 const command: yargs.CommandModule<unknown, unknown> = {
   command: "message",

@@ -78,6 +78,7 @@ class WorkspaceMigrator {
 }
 
 const services = [
+  "platform-service",
   "user",
   "search",
   "channels",

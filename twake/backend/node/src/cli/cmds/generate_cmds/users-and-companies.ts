@@ -18,7 +18,16 @@ type CLIArgs = {
   concurrent: number;
 };
 
-const services = ["user", "search", "channels", "notifications", "database", "webserver", "pubsub"];
+const services = [
+  "platform-service",
+  "user",
+  "search",
+  "channels",
+  "notifications",
+  "database",
+  "webserver",
+  "pubsub",
+];
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 const command: yargs.CommandModule<{}, CLIArgs> = {

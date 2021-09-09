@@ -20,6 +20,7 @@ type MergeParams = {
 };
 
 const services = [
+  "platform-service",
   "user",
   "channels",
   "notifications",

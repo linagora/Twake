@@ -55,6 +55,7 @@ class DeviceMigrator {
 }
 
 const services = [
+  "platform-service",
   "user",
   "search",
   "channels",

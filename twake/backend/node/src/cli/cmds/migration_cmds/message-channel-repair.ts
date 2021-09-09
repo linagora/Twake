@@ -24,7 +24,16 @@ class MessageReferenceRepair {
   }
 }
 
-const services = ["user", "search", "channels", "database", "webserver", "pubsub", "messages"];
+const services = [
+  "platform-service",
+  "user",
+  "search",
+  "channels",
+  "database",
+  "webserver",
+  "pubsub",
+  "messages",
+];
 
 const command: yargs.CommandModule<unknown, unknown> = {
   command: "message-channel-repair",

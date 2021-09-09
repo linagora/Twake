@@ -54,7 +54,7 @@ class SearchIndexAll {
   }
 }
 
-const services = ["search", "database", "webserver", "pubsub", "workspaces", "console", "auth"];
+const services = ["search", "database", "webserver"];
 
 const command: yargs.CommandModule<unknown, unknown> = {
   command: "index",
