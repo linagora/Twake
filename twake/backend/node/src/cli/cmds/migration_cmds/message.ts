@@ -4,7 +4,7 @@ import ora from "ora";
 import MessageMigrator from "./php-message/message-migrator-service";
 
 const services = [
-  "platform-service",
+  "platform-services",
   "user",
   "search",
   "channels",

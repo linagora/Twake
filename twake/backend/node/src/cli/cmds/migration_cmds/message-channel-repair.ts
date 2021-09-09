@@ -25,7 +25,7 @@ class MessageReferenceRepair {
 }
 
 const services = [
-  "platform-service",
+  "platform-services",
   "user",
   "search",
   "channels",
