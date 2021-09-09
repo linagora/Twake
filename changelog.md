@@ -6,6 +6,7 @@
 - Added limit to message size and to number of attached files
 - Deleted messages are now showed as "Deleted" but don't disappear
 - Limit number of users in the same direct channel
+- You can now set multiple reactions to a single message 🌟👍🔥
 
 ### General
 
