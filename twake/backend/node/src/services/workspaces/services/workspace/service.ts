@@ -337,7 +337,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
         if (pendingUser) {
           await this.removePendingUser(pendingUserPk);
-          await this.addUser({ id: workspace.id }, { id: user.id }, pendingUser.role);
+          await this.addUser(
+            { id: workspace.id, company_id: workspace.company_id },
+            { id: user.id },
+            pendingUser.role,
+          );
         }
       }
     }

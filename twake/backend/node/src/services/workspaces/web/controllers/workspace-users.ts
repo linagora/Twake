@@ -283,7 +283,11 @@ export class WorkspaceUsersCrudController
     } else {
       // ON ADD
       if (!workspaceUser) {
-        await this.workspaceService.addUser({ id: context.workspace_id }, { id: userId }, role);
+        await this.workspaceService.addUser(
+          { id: context.workspace_id, company_id: context.company_id },
+          { id: userId },
+          role,
+        );
       }
     }
 

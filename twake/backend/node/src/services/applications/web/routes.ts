@@ -3,7 +3,7 @@ import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
 
-const applicationsUrl = "";
+const applicationsUrl = "applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
 
 const routes: FastifyPluginCallback<{ service: ApplicationServiceAPI }> = (
