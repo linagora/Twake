@@ -1,22 +1,23 @@
 import sharp from "sharp";
-import { unlink } from "fs/promises";
-import { getTmpFile } from "../../utils";
+import { cleanFile, getTmpFile } from "../../utils";
 import { PreviewPubsubRequest, ThumbnailResult } from "../../types";
+import { logger } from "../../../../core/platform/framework/logger";
 
 export async function generatePreview(
   inputPaths: string[],
   options: PreviewPubsubRequest["output"],
+  deleteInputFile: boolean,
 ): Promise<{
   output: ThumbnailResult[];
   done: boolean;
+  error?: string;
 }> {
   let output: ThumbnailResult[] = [];
 
   for (const inputPath of inputPaths) {
     var result: sharp.OutputInfo;
-
+    const outputPath = getTmpFile();
     try {
-      const outputPath = getTmpFile();
       const inputMetadata = await sharp(inputPath).metadata();
       const outputFormat = computeNewFormat(inputMetadata, options);
 
@@ -29,10 +30,11 @@ export async function generatePreview(
         size: result.size,
       });
     } catch (error) {
-      console.error("there was an error:", error.message);
-      return { output: [], done: false };
+      logger.info(`sharp cant process ${error}`);
+      cleanFile(outputPath);
+      throw Error("Can't resize thumnail with Sharp");
     }
-    await unlink(inputPath);
+    if (deleteInputFile) cleanFile(inputPath);
   }
 
   return {
@@ -52,7 +54,5 @@ function computeNewFormat(
   const inputHeight = inputMetadata.height;
 
   const scale = Math.max(inputWidth / maxOutputWidth, inputHeight / maxOutputHeight);
-  let output = { width: Math.round(inputWidth / scale), height: Math.round(inputHeight / scale) };
-
-  return output;
+  return { width: Math.round(inputWidth / scale), height: Math.round(inputHeight / scale) };
 }

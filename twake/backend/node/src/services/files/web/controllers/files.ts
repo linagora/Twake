@@ -64,7 +64,9 @@ export class FileController {
     const data = await this.service.thumbnail(params.id, params.index, context);
 
     response.header("Content-disposition", "inline");
-    if (data.size) response.header("Content-Length", data.size);
+    if (data.size && response.header("Content-Length", data.size)) {
+      response.header("Content-Length", data.size);
+    }
     response.type(data.type);
     response.send(data.file);
   }

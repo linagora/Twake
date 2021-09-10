@@ -14,13 +14,11 @@ import StorageAPI from "../../../../core/platform/services/storage/provider";
 export class PreviewProcessor
   implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback> {
   constructor(
-    service: PreviewServiceAPI,
+    readonly service: PreviewServiceAPI,
     private pubsub: PubsubServiceAPI,
     readonly storage: StorageAPI,
-  ) {
-    this.service = service;
-  }
-  service: PreviewServiceAPI;
+  ) {}
+
   init?(context?: TwakeContext): Promise<this> {
     throw new Error("Method not implemented.");
   }
@@ -68,9 +66,12 @@ export class PreviewProcessor
       localThumbnails = await this.service.previewProcess.generateThumbnails(
         { path: inputPath, mime: message.document.mime, filename: message.document.filename },
         message.output,
+        true,
       );
     } catch (err) {
+      logger.error(`${this.name} - Can't generate thumbnails ${err}`);
       localThumbnails = [];
+      throw Error("Can't generate thumbnails.");
     }
 
     const thumbnails: PreviewPubsubCallback["thumbnails"] = [];

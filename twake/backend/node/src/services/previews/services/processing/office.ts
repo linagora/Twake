@@ -1,27 +1,28 @@
 const unoconv = require("unoconv-promise");
-import { unlink } from "fs/promises";
 import { logger } from "../../../../core/platform/framework/logger";
+import { cleanFile } from "../../utils";
 
 export async function convertFromOffice(
   path: string,
   numberOfPages: number,
+  deleteInputFile: boolean,
 ): Promise<{ output: string; done: boolean }> {
   if (numberOfPages >= 1) {
-    const outputPath = `${path.split(".")[0]}_temp`;
-    const processOutputPath = outputPath.split("/");
-    processOutputPath.pop();
+    const outputPath = `${path}.pdf`;
     try {
       await unoconv.run({
         file: path,
-        output: `${path}.pdf`,
+        output: outputPath,
         export: `PageRange=1-${numberOfPages}`,
       });
     } catch (err) {
       logger.error(`unoconv cant process ${err}`);
-      return { output: "", done: false };
+      cleanFile(outputPath);
+      throw Error("Can't convert file with unoconv");
     }
-    await unlink(path);
-
-    return { output: `${path}.pdf`, done: true };
+    if (deleteInputFile) cleanFile(path);
+    return { output: outputPath, done: true };
+  } else {
+    logger.error(`Unoconv can't processe, number of pages lower than 1`);
   }
 }

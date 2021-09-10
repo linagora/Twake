@@ -1,9 +1,11 @@
 import { PDFImage } from "pdf-image";
-import { unlink } from "fs/promises";
+import { existsSync } from "fs";
+import { cleanFile } from "../../utils";
 
 export async function convertFromPdf(
   inputPath: string,
   numberOfPages: number,
+  deleteInputFile: boolean,
 ): Promise<{ output: string[]; done: boolean }> {
   let pages: string[] = [];
 
@@ -18,9 +20,11 @@ export async function convertFromPdf(
     }
   } catch (error) {
     console.error("there was an error:", error.message);
-    return { output: [], done: false };
+    for (const file of pages) {
+      if (existsSync(file)) cleanFile(file);
+    }
+    throw Error("Can't convert file with pdf-image.");
   }
-  await unlink(inputPath);
-
+  if (deleteInputFile) cleanFile(inputPath);
   return { output: pages, done: true };
 }

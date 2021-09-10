@@ -10,18 +10,13 @@ import { File } from "../entities/file";
  * Update the file metadata and upload the thumbnails in storage
  */
 export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsubCallback, string> {
-  repository: Repository<File>;
-
   constructor(
     readonly service: FileServiceAPI,
     private pubsub: PubsubServiceAPI,
-    repository: Repository<File>,
-  ) {
-    this.service = service;
-    this.repository = repository;
-  }
+    private repository: Repository<File>,
+  ) {}
 
-  init?(context?: TwakeContext): Promise<this> {
+  init(context?: TwakeContext): Promise<this> {
     throw new Error("Method not implemented.");
   }
 
