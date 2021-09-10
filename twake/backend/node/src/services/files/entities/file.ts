@@ -38,15 +38,7 @@ export class File {
   };
 
   @Column("thumbnails", "encoded_json")
-  thumbnails: {
-    index: number;
-    id: string;
-
-    type: string;
-    size: number;
-    width: number;
-    height: number;
-  }[];
+  thumbnails: Thumbnail[];
 
   @Column("upload_data", "encoded_json")
   upload_data: null | {
@@ -54,3 +46,13 @@ export class File {
     chunks: number;
   };
 }
+
+export type Thumbnail = {
+  index: number;
+  id: string;
+
+  type: string;
+  size: number;
+  width: number;
+  height: number;
+};

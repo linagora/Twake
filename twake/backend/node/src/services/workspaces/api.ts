@@ -10,7 +10,7 @@ import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../user/api";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../workspaces/entities/workspace_user";
 import { Observable } from "rxjs";
-import { UserPrimaryKey } from "../user/entities/user";
+import User, { UserPrimaryKey } from "../user/entities/user";
 import { WorkspaceUserRole } from "./types";
 import { CompanyPrimaryKey } from "../user/entities/company";
 import WorkspacePendingUser, {
@@ -42,6 +42,8 @@ export interface WorkspaceServiceAPI
   getAllForCompany(companyId: uuid): Promise<Workspace[]>;
 
   getUsersCount(workspaceId: string): Promise<number>;
+
+  processPendingUser(user: User): Promise<void>;
 
   removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,

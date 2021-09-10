@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
+import { Thumbnail } from "../../files/entities/file";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 export const TYPE = "message_files";
@@ -31,8 +32,6 @@ export type MessageFileMetadata = {
   name: string; //Original file name
   extension: string; //Original file extension
   size: number; //Original file weight
-  width: number; //Thumbnail width (for images only)
-  height: number; //Thumbnail height (for images only)
   type:
     | "link"
     | "code"
@@ -45,7 +44,7 @@ export type MessageFileMetadata = {
     | "video"
     | "archive"
     | "other";
-  thumbnail: string; //Url to thumbnail (or set it to undefined if no relevant)
+  thumbnail: Thumbnail[]; //Url to thumbnail (or set it to undefined if no relevant)
 };
 
 export type MessageFilePrimaryKey = Pick<MessageFile, "company_id" | "message_id" | "id">;
