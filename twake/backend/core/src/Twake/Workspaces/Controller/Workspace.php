@@ -54,7 +54,7 @@ class Workspace extends BaseController
                 $privileges = $this->get("app.group_managers")->getPrivileges($level);
                 $response["data"]["group"]["level"] = $privileges;
 
-                $response["data"]["apps"] = $this->get("app.workspaces_apps")->getApps($workspaceId);
+                $response["data"]["apps"] = $this->get("app.group_apps")->getApps($workspaceId);
                 
                 $this->get("app.workspace_members")->updateCountersIfEmpty($workspaceId);
                 if($wp->getMemberCount() < 50){
@@ -231,7 +231,7 @@ class Workspace extends BaseController
         if (!$ws) {
             $response["errors"][] = "notallowed";
         } else {
-            $apps = $this->get("app.workspaces_apps")->getApps($workspaceId);
+            $apps = $this->get("app.group_apps")->getApps($workspaceId);
             $response["data"] = $apps;
         }
 
