@@ -27,9 +27,7 @@ class ApplicationMigrator {
     const phpRepository = await this.database.getRepository(phpTYPE, PhpApplication);
     const repository = await this.database.getRepository(TYPE, Application);
 
-    // Get all companies
     let page: Pagination = { limitStr: "100" };
-    // For each companies find applications
     do {
       const applicationListResult = await phpRepository.find({}, { pagination: page });
       page = applicationListResult.nextPage as Pagination;
@@ -105,6 +103,7 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
 
   newApplication.id = application.id;
   newApplication.company_id = application.group_id;
+  newApplication.is_default = application.is_default;
 
   if (!newApplication.identity?.name) {
     newApplication.identity = {

@@ -44,6 +44,7 @@ import {
 } from "../../entities/workspace_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
+import { ApplicationServiceAPI } from "../../../applications/api";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -56,6 +57,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     private platformServices: PlatformServicesAPI,
     private users: UsersServiceAPI,
     private companies: CompaniesServiceAPI,
+    private applications: ApplicationServiceAPI,
   ) {}
 
   async init(): Promise<this> {
@@ -109,6 +111,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     });
 
     await this.workspaceRepository.save(workspaceToCreate);
+
+    await this.applications.companyApplications.initWithDefaultApplications(
+      workspaceToCreate.company_id,
+    );
+
     return new CreateResult<Workspace>(TYPE, workspaceToCreate);
   }
 

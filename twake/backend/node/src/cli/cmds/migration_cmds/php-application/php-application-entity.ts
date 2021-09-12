@@ -32,6 +32,9 @@ export default class PhpApplication {
   @Column("icon_url", "encoded_string")
   depreciated_icon_url: string;
 
+  @Column("is_default", "twake_boolean")
+  is_default: boolean;
+
   @Column("public", "twake_boolean")
   depreciated_public: boolean;
 
