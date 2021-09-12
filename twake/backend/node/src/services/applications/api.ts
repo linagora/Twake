@@ -30,7 +30,7 @@ export interface CompanyApplicationServiceAPI
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<CompanyApplication, CompanyApplicationPrimaryKey, CompanyExecutionContext> {
-  initWithDefaultApplications(companyId: string): Promise<void>;
+  initWithDefaultApplications(companyId: string, context: CompanyExecutionContext): Promise<void>;
 
   save<SaveOptions>(
     item: Pick<CompanyApplicationPrimaryKey, "company_id" | "application_id">,

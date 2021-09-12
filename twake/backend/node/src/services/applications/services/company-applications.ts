@@ -73,7 +73,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     _?: SaveOptions,
     context?: CompanyExecutionContext,
   ): Promise<SaveResult<CompanyApplication>> {
-    if (!context.user.id) {
+    if (!context?.user?.id && !context?.user?.server_request) {
       throw new Error("Only an user of a company can add an application to a company.");
     }
 
@@ -89,7 +89,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
       companyApplication.company_id = context.company.id;
       companyApplication.application_id = item.application_id;
       companyApplication.created_at = new Date().getTime();
-      companyApplication.created_by = context.user.id;
+      companyApplication.created_by = context?.user?.id || "";
 
       await this.repository.save(companyApplication);
     }
@@ -97,10 +97,13 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     return new SaveResult(TYPE, companyApplication, operation);
   }
 
-  async initWithDefaultApplications(companyId: string): Promise<void> {
+  async initWithDefaultApplications(
+    companyId: string,
+    context: CompanyExecutionContext,
+  ): Promise<void> {
     const defaultApps = await this.applicationService.listDefaults();
     for (let defaultApp of defaultApps.getEntities()) {
-      await this.save({ company_id: companyId, application_id: defaultApp.id });
+      await this.save({ company_id: companyId, application_id: defaultApp.id }, {}, context);
     }
   }
 

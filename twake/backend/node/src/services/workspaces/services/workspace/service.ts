@@ -114,6 +114,10 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
     await this.applications.companyApplications.initWithDefaultApplications(
       workspaceToCreate.company_id,
+      {
+        company: { id: workspaceToCreate.company_id },
+        user: { id: context.user.id || "", server_request: true },
+      },
     );
 
     return new CreateResult<Workspace>(TYPE, workspaceToCreate);
