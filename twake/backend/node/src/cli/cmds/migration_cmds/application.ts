@@ -116,24 +116,32 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
   }
 
   if (newApplication.publication?.published === undefined) {
+    //@ts-ignore
+    newApplication.publication = newApplication.publication || {};
     newApplication.publication.published = application.depreciated_is_available_to_public;
     newApplication.publication.pending =
       application.depreciated_public && !application.depreciated_twake_team_validation;
   }
 
   if (!newApplication.stats?.version) {
+    //@ts-ignore
+    newApplication.stats = newApplication.stats || {};
     newApplication.stats.version = 1;
     newApplication.stats.createdAt = Date.now();
     newApplication.stats.updatedAt = Date.now();
   }
 
   if (!newApplication.api?.privateKey) {
+    //@ts-ignore
+    newApplication.api = newApplication.api || {};
     newApplication.api.hooksUrl = application.depreciated_api_events_url;
     newApplication.api.allowedIps = application.depreciated_api_allowed_ip;
     newApplication.api.privateKey = application.depreciated_api_private_key;
   }
 
   if (newApplication.access?.capabilities === undefined) {
+    //@ts-ignore
+    newApplication.access = newApplication.access || {};
     try {
       newApplication.access.capabilities =
         JSON.parse(application.depreciated_capabilities || "[]") || [];
