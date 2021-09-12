@@ -35,7 +35,6 @@ class ApplicationMigrator {
       for (const application of applicationListResult.getEntities()) {
         if (
           !(await repository.findOne({
-            group_id: application.group_id,
             id: application.id,
           })) ||
           options.replaceExisting
