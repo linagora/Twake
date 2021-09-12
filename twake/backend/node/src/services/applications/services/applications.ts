@@ -35,7 +35,8 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
         Application,
       );
     } catch (err) {
-      logger.error("Error while initializing applications service", err);
+      console.log(err);
+      logger.error("Error while initializing applications service");
     }
     return this;
   }

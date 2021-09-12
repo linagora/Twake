@@ -42,7 +42,8 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
         CompanyApplication,
       );
     } catch (err) {
-      logger.error("Error while initializing applications service", err);
+      console.log(err);
+      logger.error("Error while initializing applications service");
     }
     return this;
   }
