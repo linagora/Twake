@@ -25,6 +25,7 @@ describe("The Messages feature", () => {
         "database",
         "search",
         "storage",
+        "files",
         "applications",
         "pubsub",
         "user",

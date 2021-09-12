@@ -25,6 +25,7 @@ describe("The Messages feature", () => {
         "websocket",
         "webserver",
         "messages",
+        "files",
         "auth",
         "search",
         "realtime",

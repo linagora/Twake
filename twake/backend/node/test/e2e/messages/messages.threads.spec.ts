@@ -28,6 +28,7 @@ describe("The Messages Threads feature", () => {
         "pubsub",
         "user",
         "search",
+        "files",
         "websocket",
         "messages",
         "auth",

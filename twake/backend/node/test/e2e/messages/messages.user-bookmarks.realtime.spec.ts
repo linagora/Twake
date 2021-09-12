@@ -18,6 +18,7 @@ describe("The Bookmarks Realtime feature", () => {
         "search",
         "storage",
         "pubsub",
+        "files",
         "user",
         "websocket",
         "webserver",
