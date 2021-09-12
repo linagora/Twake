@@ -28,6 +28,7 @@ describe("The /users API", () => {
         "search",
         "pubsub",
         "websocket",
+        "applications",
         "webserver",
         "user",
         "auth",

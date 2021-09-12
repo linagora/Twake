@@ -22,6 +22,7 @@ describe("The Messages User Bookmarks feature", () => {
         "database",
         "search",
         "storage",
+        "applications",
         "pubsub",
         "user",
         "search",

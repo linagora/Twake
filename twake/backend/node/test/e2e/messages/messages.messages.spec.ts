@@ -20,6 +20,7 @@ describe("The Messages feature", () => {
         "search",
         "storage",
         "pubsub",
+        "applications",
         "user",
         "websocket",
         "webserver",

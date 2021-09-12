@@ -26,6 +26,7 @@ describe("The direct channels API", () => {
         "storage",
         "pubsub",
         "user",
+        "applications",
         "websocket",
         "channels",
         "auth",

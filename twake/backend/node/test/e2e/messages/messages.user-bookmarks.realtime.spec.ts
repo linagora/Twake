@@ -22,6 +22,7 @@ describe("The Bookmarks Realtime feature", () => {
         "websocket",
         "webserver",
         "messages",
+        "applications",
         "auth",
         "search",
         "realtime",
