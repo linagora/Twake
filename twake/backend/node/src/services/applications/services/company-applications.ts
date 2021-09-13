@@ -79,8 +79,8 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
 
     let operation = OperationType.UPDATE;
     let companyApplication = await this.repository.findOne({
-      company_id: context.company.id,
-      application_id: item.application_id,
+      group_id: context.company.id,
+      app_id: item.application_id,
     });
     if (!companyApplication) {
       operation = OperationType.CREATE;
