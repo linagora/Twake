@@ -66,7 +66,6 @@ class Service implements UserServiceAPI {
     user: User,
     options?: { includeCompanies?: boolean },
   ): Promise<UserObject> {
-    console.log("creation_date => ", user.creation_date);
     let resUser = {
       id: user.id,
       provider: user.identity_provider,
