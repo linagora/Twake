@@ -29,6 +29,8 @@ import assert from "assert";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { use } from "chai";
+import { isNumber } from "lodash";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -70,7 +72,7 @@ export class UserService implements UsersServiceAPI {
   }
 
   private assignDefaults(user: User) {
-    user = getInstance(user);
+    user.creation_date = !isNumber(user.creation_date) ? Date.now() : user.creation_date;
     if (user.identity_provider_id && !user.identity_provider) user.identity_provider = "console";
     if (user.email_canonical) user.email_canonical = user.email_canonical.toLocaleLowerCase();
     if (user.username_canonical)
