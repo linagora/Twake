@@ -71,8 +71,6 @@ export default class ChannelsApps extends Component {
       original_workspace: Workspaces.currentWorkspaceId,
     });
 
-    console.log('workspace_apps_channels', workspace_apps_channels);
-
     workspace_apps_channels = workspace_apps_channels
       .filter((channel: any) => channel)
       .filter(
@@ -83,14 +81,11 @@ export default class ChannelsApps extends Component {
             .concat(channel.ext_members || [])
             .indexOf(UserService.getCurrentUserId()) >= 0,
       );
-    console.log('workspace_apps_channels2', workspace_apps_channels);
 
     const workspace_channels_by_app_id: any = {};
     workspace_apps_channels.map((ch: any) => {
       ch.app_id && (workspace_channels_by_app_id[ch.app_id] = ch);
     });
-
-    console.log('workspace_channels_by_app_id', workspace_channels_by_app_id);
 
     return (
       <div className="applications_channels" style={{ marginTop: 8 }}>
