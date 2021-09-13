@@ -81,6 +81,7 @@ const services = [
   "storage",
   "counter",
   "platform-services",
+  "applications",
   "user",
   "search",
   "channels",
