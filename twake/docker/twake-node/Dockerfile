@@ -1,5 +1,5 @@
 # Common node machine
-FROM node:14.17.3 as node-base
+FROM node:16.8.0 as node-base
 
 #Imagick
 RUN apt-get update && apt-get install -y ghostscript && apt-get clean
