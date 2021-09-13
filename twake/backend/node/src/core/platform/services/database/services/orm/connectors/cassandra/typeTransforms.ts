@@ -107,7 +107,6 @@ export const transformValueFromDbString = (
   logger.trace(`Transform value %o of type ${type}`, v);
 
   if (type === "twake_datetime") {
-    console.log("twake_datetime => ", v);
     return new Date(`${v}`).getTime();
   }
 
