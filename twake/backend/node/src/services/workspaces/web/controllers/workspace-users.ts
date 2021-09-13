@@ -60,6 +60,8 @@ export class WorkspaceUsersCrudController
     userCompanies: CompanyUser[],
     companiesMap: Map<string, Company>,
   ): WorkspaceUserObject {
+    console.log("creation_date (ws) => ", user.creation_date);
+
     const res: WorkspaceUserObject = {
       id: workspaceUser.id,
       company_id: currentCompanyId,
