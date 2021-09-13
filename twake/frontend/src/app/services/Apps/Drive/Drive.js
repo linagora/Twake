@@ -156,7 +156,7 @@ class Drive extends Observable {
       this.looking_for_root_directories[key] = true;
 
       Api.post(
-        'drive/v2/find',
+        '/drive/v2/find',
         {
           options: {
             element_id: directory_id,
@@ -190,7 +190,7 @@ class Drive extends Observable {
       this.looking_for[directory_id] = true;
 
       Api.post(
-        'drive/v2/find',
+        '/drive/v2/find',
         {
           options: {
             element_id: directory_id,

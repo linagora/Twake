@@ -48,7 +48,7 @@ class Languages extends Observable {
 
     if (oldLanguage && language !== oldLanguage) {
       Api.post(
-        'users/account/language',
+        '/users/account/language',
         { language: language, sentByLanguageService: true },
         (_: any) => {},
       );

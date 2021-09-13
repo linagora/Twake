@@ -64,7 +64,7 @@ class Websocket extends Observable {
         this.alive_connected = false;
       }, 5100);
       Api.post(
-        'users/alive',
+        '/users/alive',
         { focus: this.didFocusedLastMinute },
         () => {
           this.reconnectIfNeeded();
