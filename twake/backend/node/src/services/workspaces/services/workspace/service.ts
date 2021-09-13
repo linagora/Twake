@@ -110,17 +110,23 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       },
     });
 
-    await this.workspaceRepository.save(workspaceToCreate);
+    const userId = context?.user?.id || "";
+
+    const created = await this.save(
+      workspaceToCreate,
+      {},
+      { company_id: workspace.company_id, user: { id: userId, server_request: true } },
+    );
 
     await this.applications.companyApplications.initWithDefaultApplications(
-      workspaceToCreate.company_id,
+      created.entity.company_id,
       {
-        company: { id: workspaceToCreate.company_id },
-        user: { id: context?.user?.id || "", server_request: true },
+        company: { id: created.entity.company_id },
+        user: { id: userId, server_request: true },
       },
     );
 
-    return new CreateResult<Workspace>(TYPE, workspaceToCreate);
+    return new CreateResult<Workspace>(TYPE, created.entity);
   }
 
   update?(
@@ -167,7 +173,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
     await this.workspaceRepository.save(workspace);
 
-    if (!item.id) {
+    if (!item.id && context.user.id) {
       await this.addUser(
         { id: workspace.id, company_id: workspace.company_id },
         { id: context.user.id },
