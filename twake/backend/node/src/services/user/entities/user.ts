@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import { isNumber, merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import search from "./user.search";
 import { uuid } from "../../../utils/types";
@@ -118,6 +118,6 @@ export default class User {
 export type UserPrimaryKey = Pick<User, "id">;
 
 export function getInstance(user: Partial<User>): User {
-  user.creation_date = !user.creation_date ? Date.now() : user.creation_date;
+  user.creation_date = !isNumber(user.creation_date) ? Date.now() : user.creation_date;
   return merge(new User(), user);
 }
