@@ -118,6 +118,6 @@ export default class User {
 export type UserPrimaryKey = Pick<User, "id">;
 
 export function getInstance(user: Partial<User>): User {
-  user.creation_date = !!user.creation_date ? Date.now() : user.creation_date;
+  user.creation_date = !user.creation_date ? Date.now() : user.creation_date;
   return merge(new User(), user);
 }
