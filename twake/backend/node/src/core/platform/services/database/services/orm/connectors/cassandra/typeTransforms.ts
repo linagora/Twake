@@ -38,7 +38,7 @@ export const transformValueToDbString = (
   options: TransformOptions = {},
 ): string => {
   if (type === "twake_datetime") {
-    return `'${moment.unix(v / 1000).format("YYYY-MM-DD HH:mm:ss")}'`;
+    return `${v}`;
   }
 
   if (type === "number" || type === "twake_int") {
