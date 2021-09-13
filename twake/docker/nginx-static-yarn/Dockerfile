@@ -1,6 +1,6 @@
 # MUST BE BUILT FROM .
 # docker build . -t nginx-static-yarn -f ./Dockerfile
-FROM debian:buster
+FROM debian:11
 
 MAINTAINER Romaric Mourgues <romaric.mourgues@twakeapp.com>
 
