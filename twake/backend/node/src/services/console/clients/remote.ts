@@ -14,7 +14,7 @@ import {
 } from "../types";
 
 import { v1 as uuidv1 } from "uuid";
-import User from "../../user/entities/user";
+import User, { getInstance } from "../../user/entities/user";
 import { ConsoleServiceAPI } from "../api";
 import Company, {
   CompanyPrimaryKey,
@@ -216,7 +216,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         throw CrudExeption.badRequest("Console user not created because username already exists");
       }
 
-      user = new User();
+      user = getInstance({});
       user.username_canonical = username;
       user.email_canonical = userDTO.email;
       user.deleted = false;

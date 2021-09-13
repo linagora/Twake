@@ -50,6 +50,7 @@ describe("The console API hooks", () => {
         "workspaces",
         "auth",
         "console",
+        "applications",
         "storage",
         "counter",
         "platform-services",

@@ -49,6 +49,7 @@ describe("The /workspace/pending users API", () => {
         "webserver",
         "search",
         "workspaces",
+        "applications",
         "auth",
         "console",
         "storage",

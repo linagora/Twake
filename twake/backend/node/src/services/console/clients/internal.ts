@@ -63,7 +63,6 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
       email_canonical: user.email,
       first_name: user.firstName,
       last_name: user.lastName,
-      creation_date: Date.now(),
     });
 
     const createdUser = await usersApi.save(userToCreate).then(result => result.entity);

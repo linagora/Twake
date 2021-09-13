@@ -14,7 +14,7 @@ import Repository, {
   FindFilter,
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
-import User, { UserPrimaryKey } from "../../entities/user";
+import User, { getInstance, UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
 import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
@@ -29,6 +29,8 @@ import assert from "assert";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { use } from "chai";
+import { isNumber } from "lodash";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -70,6 +72,7 @@ export class UserService implements UsersServiceAPI {
   }
 
   private assignDefaults(user: User) {
+    user.creation_date = !isNumber(user.creation_date) ? Date.now() : user.creation_date;
     if (user.identity_provider_id && !user.identity_provider) user.identity_provider = "console";
     if (user.email_canonical) user.email_canonical = user.email_canonical.toLocaleLowerCase();
     if (user.username_canonical)

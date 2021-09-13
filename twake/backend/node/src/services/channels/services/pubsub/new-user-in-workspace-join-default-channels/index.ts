@@ -11,7 +11,8 @@ const logger = getLogger("channel.pubsub.new-user-in-workspace-join-default-chan
  * In such case, the user must be added to all the default channels of the workspace.
  */
 export class NewUserInWorkspaceJoinDefaultChannelsProcessor
-  implements PubsubHandler<NewUserInWorkspaceNotification, void> {
+  implements PubsubHandler<NewUserInWorkspaceNotification, void>
+{
   constructor(readonly service: ChannelServiceAPI) {}
 
   readonly topics = {

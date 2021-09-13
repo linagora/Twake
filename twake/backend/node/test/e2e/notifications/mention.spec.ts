@@ -36,6 +36,8 @@ describe("The notification for user mentions", () => {
         "channels",
         "auth",
         "search",
+        "applications",
+        "files",
         "push",
         "notifications",
         "counter",

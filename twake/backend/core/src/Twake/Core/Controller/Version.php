@@ -49,10 +49,10 @@ class Version extends BaseController
             "auth_mode" => array_keys($auth),
             "auth" => $auth,
             "version" => [
-                "current" => /* @VERSION_DETAIL */ "2021.Q3.640",
+                "current" => /* @VERSION_DETAIL */ "2021.Q3.735",
                 "minimal" => [
-                    "web" => /* @MIN_VERSION_WEB */ "2021.Q3.640",
-                    "mobile" => /* @MIN_VERSION_MOBILE */ "2021.Q3.640",
+                    "web" => /* @MIN_VERSION_WEB */ "2021.Q3.735",
+                    "mobile" => /* @MIN_VERSION_MOBILE */ "2021.Q3.735",
                 ]
             ],
             "elastic_search_available" => !!$this->container->getParameter("es.host"),

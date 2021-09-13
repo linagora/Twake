@@ -14,6 +14,7 @@ describe("The Realtime API", () => {
         "search",
         "storage",
         "pubsub",
+        "applications",
         "user",
         "auth",
         "websocket",

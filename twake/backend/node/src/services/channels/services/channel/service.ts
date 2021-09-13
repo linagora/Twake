@@ -121,6 +121,9 @@ export class Service implements ChannelService {
     const isPrivateChannel = Channel.isPrivateChannel(channel);
     const isDefaultChannel = Channel.isDefaultChannel(channel);
 
+    channel.workspace_id = context.workspace.workspace_id || channel.workspace_id;
+    channel.company_id = context.workspace.company_id || channel.company_id;
+
     if (isDirectChannel) {
       channel.visibility = ChannelVisibility.DIRECT;
       channel.workspace_id = ChannelVisibility.DIRECT;

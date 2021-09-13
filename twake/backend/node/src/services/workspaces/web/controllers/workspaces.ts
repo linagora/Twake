@@ -213,7 +213,10 @@ export class WorkspacesCrudController
       }
     }
 
-    const deleteResult = await this.workspaceService.delete({ id: request.params.id }, context);
+    const deleteResult = await this.workspaceService.delete(
+      { id: request.params.id, company_id: context.company_id },
+      context,
+    );
 
     if (deleteResult.deleted) {
       reply.code(204);

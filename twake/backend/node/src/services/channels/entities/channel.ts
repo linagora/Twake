@@ -3,6 +3,7 @@ import { Entity, Column } from "../../../core/platform/services/database/service
 import { ChannelVisibility, ChannelType } from "../types";
 import { ChannelMember } from "./channel-member";
 import { UserObject } from "../../user/web/types";
+import { merge } from "lodash";
 
 @Entity("channels", {
   primaryKey: [["company_id", "workspace_id"], "id"],
@@ -89,4 +90,8 @@ export class UserChannel extends Channel {
 
 export class UsersIncludedChannel extends Channel {
   users: UserObject[];
+}
+
+export function getInstance(channel: Partial<Channel>): Channel {
+  return merge(new Channel(), channel);
 }
