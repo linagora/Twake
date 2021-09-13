@@ -152,7 +152,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       },
     });
 
-    if (item.id) {
+    if (item.id && !context?.user?.server_request) {
       // ON UPDATE
       workspace = await this.get({
         id: item.id,
