@@ -8,7 +8,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import userService from 'services/user/UserService';
 import currentUserService from 'app/services/user/CurrentUser';
 import WorkspaceIdentity from './Pages/WorkspaceIdentity.js';
-import WorkspacePartner from './Pages/WorkspacePartner.js';
+import WorkspacePartner from './Pages/WorkspacePartner';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
 import WorkspaceApps from './Pages/WorkspaceApps.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';

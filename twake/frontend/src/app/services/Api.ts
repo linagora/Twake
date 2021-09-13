@@ -50,12 +50,7 @@ export default class Api {
     options: { disableJWTAuthentication?: boolean } = {},
   ) {
     return new Promise((resolve, reject) => {
-      //@ts-ignore old code to fix
-      route =
-        //@ts-ignore old code to fix
-        Globals.api_root_url +
-        (route.indexOf('://') < 0 && route.indexOf('/internal/') < 0 ? '/ajax/' : '') +
-        route;
+      route = Globals.api_root_url + route;
 
       Requests.request(
         'get',
@@ -75,12 +70,51 @@ export default class Api {
     });
   }
 
+  static put(
+    route: string,
+    data: any,
+    callback: any = false,
+    raw: boolean = false,
+    options: {
+      disableJWTAuthentication?: boolean;
+    } = {},
+  ) {
+    return Api.request(route, data, callback, raw, { ...options, requestType: 'put' });
+  }
+
   static post(
     route: string,
     data: any,
     callback: any = false,
     raw: boolean = false,
-    options: { disableJWTAuthentication?: boolean } = {},
+    options: {
+      disableJWTAuthentication?: boolean;
+    } = {},
+  ) {
+    return Api.request(route, data, callback, raw, { ...options, requestType: 'post' });
+  }
+
+  static delete(
+    route: string,
+    data: any,
+    callback: any = false,
+    raw: boolean = false,
+    options: {
+      disableJWTAuthentication?: boolean;
+    } = {},
+  ) {
+    return Api.request(route, data, callback, raw, { ...options, requestType: 'delete' });
+  }
+
+  static request(
+    route: string,
+    data: any,
+    callback: any = false,
+    raw: boolean = false,
+    options: {
+      disableJWTAuthentication?: boolean;
+      requestType?: 'post' | 'get' | 'put' | 'delete';
+    } = {},
   ) {
     return new Promise((resolve, reject) => {
       if (data && data._grouped && route === 'core/collections/init') {
@@ -88,14 +122,10 @@ export default class Api {
         return;
       }
 
-      route =
-        //@ts-ignore old code to fix
-        Globals.api_root_url +
-        (route.indexOf('://') < 0 && route.indexOf('/internal/') < 0 ? '/ajax/' : '') +
-        route;
+      route = Globals.api_root_url + route;
 
       Requests.request(
-        'post',
+        options.requestType ? options.requestType : 'post',
         route,
         JSON.stringify(data),
         (resp: any) => {
@@ -219,7 +249,8 @@ export default class Api {
   }
 
   static route(route: string) {
-    //@ts-ignore old code
-    return Globals.window.api_root_url + '/ajax/' + route;
+    return Globals.api_root_url + route;
   }
 }
+
+(window as any).Api = Api;

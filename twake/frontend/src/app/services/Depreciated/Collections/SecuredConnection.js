@@ -1,4 +1,4 @@
-import api from 'services/Api';
+import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import CryptoJS from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
@@ -41,7 +41,7 @@ export default class SecuredConnection {
       options: this.options,
       _grouped: true,
     };
-    api.post('core/collections/init', data, res => {
+    Api.post('/ajax/core/collections/init', data, res => {
       var did_get = false;
 
       if (res.data) {

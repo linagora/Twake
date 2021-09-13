@@ -32,16 +32,13 @@ export class File {
 
   @Column("metadata", "encoded_json")
   metadata: null | {
-    name: string;
-    mime: string;
+    name?: string;
+    mime?: string;
+    thumbnails_status?: "done" | "error" | "waiting";
   };
 
-  @Column("thumbmail", "encoded_json")
-  thumbmail: null | {
-    thumbmail: string;
-    width: number;
-    height: number;
-  };
+  @Column("thumbnails", "encoded_json")
+  thumbnails: Thumbnail[];
 
   @Column("upload_data", "encoded_json")
   upload_data: null | {
@@ -49,3 +46,13 @@ export class File {
     chunks: number;
   };
 }
+
+export type Thumbnail = {
+  index: number;
+  id: string;
+
+  type: string;
+  size: number;
+  width: number;
+  height: number;
+};

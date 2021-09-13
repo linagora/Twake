@@ -24,10 +24,10 @@ class WorkspaceApp
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Twake\Workspaces\Entity\Workspace")
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    private $workspace;
+    private $workspace_id;
 
     /**
      * @ORM\Column(name="groupapp_id", type="twake_timeuuid")
@@ -46,9 +46,9 @@ class WorkspaceApp
      */
     private $date_added;
 
-    public function __construct($workspace, $groupapp_id, $app_id)
+    public function __construct($workspace_id, $groupapp_id, $app_id)
     {
-        $this->workspace = $workspace;
+        $this->workspace_id = $workspace_id;
         $this->groupapp_id = $groupapp_id;
         $this->app_id = $app_id;
         $this->date_added = new \DateTime();
@@ -72,7 +72,7 @@ class WorkspaceApp
      */
     public function getWorkspace()
     {
-        return $this->workspace;
+        return $this->workspace_id;
     }
 
     /**

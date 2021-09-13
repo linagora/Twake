@@ -99,7 +99,7 @@ class WorkspaceUser
     public function getWorkspace($em)
     {
         $workspacesRepository = $em->getRepository("Twake\Workspaces:Workspace");
-        return $workspacesRepository->find($this->workspace_id);
+        return $workspacesRepository->findOneBy(["id"=>$this->workspace_id]);
     }
 
     /**

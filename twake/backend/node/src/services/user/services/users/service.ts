@@ -10,25 +10,27 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
   FindFilter,
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
-import User, { UserPrimaryKey } from "../../entities/user";
+import User, { getInstance, UserPrimaryKey } from "../../entities/user";
 import { UsersServiceAPI } from "../../api";
 import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
-import { SearchServiceAPI } from "../../../../core/platform/services/search/api";
 import SearchRepository from "../../../../core/platform/services/search/repository";
 import ExternalUser, { getInstance as getExternalUserInstance } from "../../entities/external_user";
 import Device, {
   getInstance as getDeviceInstance,
   TYPE as DeviceType,
 } from "../../entities/device";
-import crypto from "crypto";
 import PasswordEncoder from "../../../../utils/password-encoder";
 import assert from "assert";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { ResourceEventsPayload } from "../../../../utils/types";
+import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { use } from "chai";
+import { isNumber } from "lodash";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -38,21 +40,24 @@ export class UserService implements UsersServiceAPI {
   extUserRepository: Repository<ExternalUser>;
   private deviceRepository: Repository<Device>;
 
-  constructor(private database: DatabaseServiceAPI, private searchService: SearchServiceAPI) {}
+  constructor(private platformServices: PlatformServicesAPI) {}
 
   async init(): Promise<this> {
-    this.searchRepository = this.searchService.getRepository<User>("user", User);
-    this.repository = await this.database.getRepository<User>("user", User);
-    this.companyUserRepository = await this.database.getRepository<CompanyUser>(
+    this.searchRepository = this.platformServices.search.getRepository<User>("user", User);
+    this.repository = await this.platformServices.database.getRepository<User>("user", User);
+    this.companyUserRepository = await this.platformServices.database.getRepository<CompanyUser>(
       "group_user",
       CompanyUser,
     );
-    this.extUserRepository = await this.database.getRepository<ExternalUser>(
+    this.extUserRepository = await this.platformServices.database.getRepository<ExternalUser>(
       "external_user_repository",
       ExternalUser,
     );
 
-    this.deviceRepository = await this.database.getRepository<Device>(DeviceType, Device);
+    this.deviceRepository = await this.platformServices.database.getRepository<Device>(
+      DeviceType,
+      Device,
+    );
 
     return this;
   }
@@ -67,6 +72,7 @@ export class UserService implements UsersServiceAPI {
   }
 
   private assignDefaults(user: User) {
+    user.creation_date = !isNumber(user.creation_date) ? Date.now() : user.creation_date;
     if (user.identity_provider_id && !user.identity_provider) user.identity_provider = "console";
     if (user.email_canonical) user.email_canonical = user.email_canonical.toLocaleLowerCase();
     if (user.username_canonical)
@@ -101,6 +107,31 @@ export class UserService implements UsersServiceAPI {
     return new DeleteResult<User>("user", instance, !!instance);
   }
 
+  async anonymizeAndDelete(pk: UserPrimaryKey, context?: ExecutionContext) {
+    const user = await this.get(pk);
+
+    if (context.user.server_request || context.user.id === user.id) {
+      //We keep a part of the user id as new name
+      const partialId = user.id.toString().split("-")[0];
+
+      user.username_canonical = `deleted-user-${partialId}`;
+      user.email_canonical = `${partialId}@twake.removed`;
+      user.first_name = "";
+      user.last_name = "";
+      user.phone = "";
+      user.picture = "";
+      user.thumbnail_id = null;
+      user.status_icon = null;
+      user.deleted = true;
+
+      await this.save(user);
+
+      localEventBus.publish<ResourceEventsPayload>("user:deleted", {
+        user: user,
+      });
+    }
+  }
+
   async search(
     pagination: Pagination,
     options?: SearchUserOptions,
@@ -111,6 +142,7 @@ export class UserService implements UsersServiceAPI {
       {
         pagination,
         ...(options.companyId ? { $in: [["companies", [options.companyId]]] } : {}),
+        ...(options.workspaceId ? { $in: [["workspaces", [options.workspaceId]]] } : {}),
         $text: {
           $search: options.search,
         },
@@ -211,10 +243,8 @@ export class UserService implements UsersServiceAPI {
     user.devices = user.devices || [];
     user.devices.push(id);
 
-    await Promise.all([
-      this.repository.save(user),
-      this.deviceRepository.save(getDeviceInstance({ id, type, version, user_id: user.id })),
-    ]);
+    await this.repository.save(user);
+    await this.deviceRepository.save(getDeviceInstance({ id, type, version, user_id: user.id }));
   }
 
   async deregisterUserDevice(id: string): Promise<void> {
@@ -222,8 +252,11 @@ export class UserService implements UsersServiceAPI {
 
     if (existedDevice) {
       const user = await this.get({ id: existedDevice.user_id });
-      user.devices = (user.devices || []).filter(d => d !== id);
-      await Promise.all([this.deviceRepository.remove(existedDevice), this.repository.save(user)]);
+      if (user) {
+        user.devices = (user.devices || []).filter(d => d !== id);
+        await this.repository.save(user);
+      }
+      await this.deviceRepository.remove(existedDevice);
     }
   }
 
@@ -239,7 +272,7 @@ export class UserService implements UsersServiceAPI {
     await this.repository.save(user);
   }
 
-  async getPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
+  async getHashedPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
     const user = await this.get(userPrimaryKey);
     if (!user) {
       throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);

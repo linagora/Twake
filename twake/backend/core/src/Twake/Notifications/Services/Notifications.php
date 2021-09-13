@@ -109,7 +109,8 @@ class Notifications
             $title .= $channel->getName();
         }
         if ($workspace) {
-            $title .= " in " . $workspace->getName() . " (" . $workspace->getGroup()->getName() . ")";
+            $group = $this->doctrine->getRepository("Twake\Workspaces:Group")->findOneBy(["id" => $workspace->getGroup()]);
+            $title .= " in " . $workspace->getName() . " (" . $group->getName() . ")";
         }
 
         if (($application || $sender_application) && $sender_user) {
@@ -124,7 +125,7 @@ class Notifications
         $data = Array(
             "type" => "add",
 
-            "company_id" => ($workspace != null ? $workspace->getGroup()->getId() : null),
+            "company_id" => ($workspace != null ? $workspace->getGroup() : null),
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "channel_id" => ($channel != null ? $channel->getId() : null),
             "message_id" => $message->getId(),
@@ -143,7 +144,7 @@ class Notifications
         );
 
         $device_minimal_data = Array(
-            "company_id" => ($workspace != null ? $workspace->getGroup()->getId() : null),
+            "company_id" => ($workspace != null ? $workspace->getGroup() : null),
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "channel_id" => ($channel != null ? $channel->getId() : null),
             "message_id" => $message->getId(),

@@ -52,10 +52,12 @@ export interface SearchAdapterInterface {
 
 export interface SearchServiceAPI extends TwakeServiceProvider {
   getRepository<Entity>(table: string, entityType: EntityTarget<Entity>): SearchRepository<Entity>;
+  upsert(entities: any[]): Promise<void>;
+  remove(entities: any[]): Promise<void>;
 }
 
 export type SearchConfiguration = {
-  type?: false | "elasticsearch";
+  type?: false | "elasticsearch" | "mongodb";
   elasticsearch?: {
     endpoint: string;
     flushInterval: number; //In milliseconds

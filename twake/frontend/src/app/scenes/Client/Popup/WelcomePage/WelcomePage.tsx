@@ -14,6 +14,7 @@ import SecondMail from '../SecondMail/SecondMail.js';
 import InitService from 'services/InitService';
 
 import './WelcomePage.scss';
+import Api from 'app/services/Api.js';
 
 export default class WelcomePage extends Component {
   private retrying: boolean = false;

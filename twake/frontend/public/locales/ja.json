@@ -75,6 +75,7 @@
     "components.views_system.return_btn": "戻る",
     "components.welcome_in_new_workspace.text": "あなたの新しいワークスペースへようこそ！このワークスペースに新しいメンバーを追加しますか？",
     "components.welcome_user.welcome_header": "ようこそ",
+    "components.welcome_user.skip_btn": "スキップ",
     "components.workspace.group.guest": "ゲスト",
     "components.workspace.group_parameters.title": "ワークスペースおよびグループパラメータ",
     "components.workspace.private_workspace": "プライベートワークスペース",
@@ -615,5 +616,6 @@
     "scenes.login.home.login_btn": "ログイン",
     "scenes.login.home.lost_password": "パスワードをお忘れですか",
     "scenes.login.home.create_account": "アカウントを作成する",
+    "scenes.login.quote_loader.loading_text": "しばらくお待ちください、最新版のTwake（{{$1}}）をダウンロードしています。",
     "scenes.app.popup.appsparameters.pages.icon": "アイコン"
 }

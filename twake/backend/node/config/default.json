@@ -13,10 +13,12 @@
   "console": {
     "type": "internal",
     "remote": {
-      "client": "",
-      "secret": "12345678",
+      "username": "",
+      "password": "12345678",
       "url": "https://some-remote-console-url/",
-      "public_key": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA9eZACyBB6HtW7QAxv6Dq\nhy0YJ8zaIhpfGkOiw//XOBefiFT/YD8RptuoWkjFtmfXaCXk7nL1fLMkFW3cHPc9\nDVITYRRtUS7I9Pnj4KbgXyr/rsxCAq0XnT+8LJlgt+ytTZhmfi8zttaHriztC9/Z\nDZPqrKSZ6qsfDyH1JnkOgw5BClvydCEnjrATnrSoiQtp+ReBZIn4dQatk7BX1vU8\n+O4XywCpDVMqLpQW6l/8VYlIZYRW+fbMYaDHrAi/1SX+zpky768lwVv01AmBbLAG\nV10ljjs3NpPl9lV90LJSnwh7Jwju+SPhTxXfWLRVipWh3qt+mR5WMZ2KqUXHYsc4\nYwIDAQAB\n-----END PUBLIC KEY-----"
+      "hook": {
+        "token": "12345678"
+      }
     },
     "internal": {}
   },
@@ -71,7 +73,7 @@
     "secret": "ab63bb3e90c0271c9a1c06651a7c0967eab8851a7a897766",
     "type": "cassandra",
     "mongodb": {
-      "uri": "mongodb://localhost:27017",
+      "uri": "mongodb://mongo:27017",
       "database": "twake"
     },
     "cassandra": {
@@ -87,11 +89,11 @@
     "// possible 'type' values are": "'amqp' or 'local'",
     "type": "amqp",
     "amqp": {
-      "urls": ["amqp://guest:guest@localhost:5672"]
+      "urls": ["amqp://guest:guest@rabbitmq:5672"]
     }
   },
   "search": {
-    "type": false,
+    "type": "elasticsearch",
     "elasticsearch": {
       "endpoint": "http://elasticsearch:9200"
     }
@@ -132,11 +134,15 @@
     "tracker",
     "general",
     "user",
+    "applications",
     "channels",
     "notifications",
     "messages",
     "files",
     "workspaces",
-    "console"
+    "console",
+    "previews",
+    "platform-services",
+    "counter"
   ]
 }

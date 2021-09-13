@@ -119,9 +119,9 @@ class AdministrationUsers
         $workspaces = array();
 
         foreach ($workspaces_tab as $workspace) {
-            $ws = $workspacesRepository->find($workspace->getWorkspaceId());
+            $ws = $workspacesRepository->findOneBy(["id"=>$workspace->getWorkspaceId()]);
             if($ws){
-                $workspaces[] = $ws->getAsArray();
+                $workspaces[] = $ws->getAsArray($this->em);
             }
         }
 

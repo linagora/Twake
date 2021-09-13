@@ -2,7 +2,6 @@ import { Client } from "@elastic/elasticsearch";
 import { Readable } from "stream";
 import { logger } from "../../../../framework";
 import _ from "lodash";
-import streamToIterator from "stream-to-iterator";
 import {
   ColumnDefinition,
   EntityDefinition,
@@ -270,6 +269,8 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
 
     const nextToken = esResponse.body?._scroll_id || "";
     const hits = esResponse.body?.hits?.hits || [];
+
+    logger.debug(`${this.name} got response: ${JSON.stringify(esResponse)}`);
 
     const entities: IndexedEntity[] = [];
     for await (const hit of hits) {

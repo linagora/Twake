@@ -41,6 +41,7 @@ export interface CreateConsoleUser {
   password: string;
   role: CompanyUserRole;
   skipInvite: boolean;
+  inviterEmail?: string;
 }
 
 export interface CreateInternalUser {
@@ -172,7 +173,7 @@ export type ConsoleHookBodyContent = {
 
 export type ConsoleHookBody = {
   type: string;
-  content: ConsoleHookBodyContent;
+  content: ConsoleHookBodyContent | ConsoleHookUser | ConsoleHookCompany;
   signature: string;
 };
 

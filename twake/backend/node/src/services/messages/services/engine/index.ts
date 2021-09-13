@@ -16,6 +16,7 @@ import { MessageToNotificationsProcessor } from "./processors/message-to-notific
 import { ResourceEventsPayload } from "../../../../utils/types";
 import UserServiceAPI from "../../../user/api";
 import ChannelServiceAPI from "../../../channels/provider";
+import _ from "lodash";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -70,13 +71,15 @@ export class MessagesEngine implements Initializable {
       this.filesViewProcessor.process(thread, e);
       this.messageToNotifications.process(thread, e);
 
-      for (const participant of thread.participants) {
-        if (e.created) {
+      if (e.created) {
+        for (const workspaceId of _.uniq(
+          thread.participants.filter(p => p.type == "channel").map(p => p.workspace_id),
+        )) {
           localEventBus.publish<ResourceEventsPayload>("channel:message_sent", {
             message: {
               thread_id: e.resource.thread_id,
               sender: e.resource.user_id,
-              workspace_id: participant.workspace_id,
+              workspace_id: workspaceId,
             },
             user: e.context.user,
           });

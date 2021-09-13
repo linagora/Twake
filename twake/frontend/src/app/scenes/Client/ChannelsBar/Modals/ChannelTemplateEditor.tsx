@@ -10,7 +10,7 @@ import AccessRightsService from 'app/services/AccessRightsService';
 
 type Props = {
   channel: ChannelType | undefined;
-  onChange: (channelEntries: any) => void;
+  onChange: (channelEntries: Partial<ChannelType>) => void;
   currentUserId?: string;
   defaultVisibility?: ChannelType['visibility'];
 };
@@ -65,7 +65,7 @@ const ChannelTemplateEditor: FC<Props> = ({
     const editable =
       (channel &&
         channel.id &&
-        (AccessRightsService.hasLevel(workspaceId || '', 'administrator') ||
+        (AccessRightsService.hasLevel(workspaceId || '', 'moderator') ||
           currentUserId === channel.owner)) ||
       false;
     return isNewChannel || editable ? true : false;

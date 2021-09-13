@@ -1,19 +1,19 @@
 import { TwakeContext } from "../../../core/platform/framework";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import WorkspaceServicesAPI, { WorkspaceServiceAPI } from "../api";
 import { getService as getWorkspaceService } from "./workspace";
 import { getService as getCompaniesService } from "../../user/services/companies";
 import { getService as getUsersService } from "../../user/services/users";
-import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
+import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
 import { ConsoleServiceAPI } from "../../console/api";
-import { SearchServiceAPI } from "../../../core/platform/services/search/api";
+import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
+import { ApplicationServiceAPI } from "../../applications/api";
 
 export function getService(
-  databaseService: DatabaseServiceAPI,
+  platformServices: PlatformServicesAPI,
   consoleService: ConsoleServiceAPI,
-  searchService: SearchServiceAPI,
+  applicationsService: ApplicationServiceAPI,
 ): WorkspaceServicesAPI {
-  return new Service(databaseService, consoleService, searchService);
+  return new Service(platformServices, consoleService, applicationsService);
 }
 
 class Service implements WorkspaceServicesAPI {
@@ -21,17 +21,20 @@ class Service implements WorkspaceServicesAPI {
   workspaces: WorkspaceServiceAPI;
   companies: CompaniesServiceAPI;
   users: UsersServiceAPI;
-  console: ConsoleServiceAPI;
 
   constructor(
-    databaseService: DatabaseServiceAPI,
-    consoleService: ConsoleServiceAPI,
-    searchService: SearchServiceAPI,
+    platformServices: PlatformServicesAPI,
+    readonly console: ConsoleServiceAPI,
+    readonly applications: ApplicationServiceAPI,
   ) {
-    this.companies = getCompaniesService(databaseService);
-    this.users = getUsersService(databaseService, searchService);
-    this.workspaces = getWorkspaceService(databaseService, this.users);
-    this.console = consoleService;
+    this.companies = getCompaniesService(platformServices);
+    this.users = getUsersService(platformServices);
+    this.workspaces = getWorkspaceService(
+      platformServices,
+      this.users,
+      this.companies,
+      this.applications,
+    );
   }
 
   async init(context: TwakeContext): Promise<this> {
@@ -42,7 +45,7 @@ class Service implements WorkspaceServicesAPI {
         this.users.init(context),
       ]);
     } catch (err) {
-      console.error("Error while initializing notification service", err);
+      console.error("Error while initializing workspace service", err);
     }
     return this;
   }

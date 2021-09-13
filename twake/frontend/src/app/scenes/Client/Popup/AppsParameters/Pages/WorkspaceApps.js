@@ -9,7 +9,7 @@ import Table from 'components/Table/Table';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
-import Switch from 'components/Inputs/Switch.js';
+import Switch from 'components/Inputs/Switch';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Button from 'components/Buttons/Button.js';
 import Icon from 'components/Icon/Icon.js';
@@ -47,7 +47,7 @@ export default class WorkspaceApps extends Component {
     WorkspacesApps.loadGroupApps();
 
     Api.post(
-      'market/app/get_developed',
+      '/ajax/market/app/get_developed',
       { workspace_id: workspaceService.currentWorkspaceId },
       res => {
         this.setState({ loading_developed: false });
@@ -91,7 +91,7 @@ export default class WorkspaceApps extends Component {
                     [],
                     'Automatique',
                   )}
-                  value={ga.workspace_default}
+                  checked={ga.workspace_default}
                   onChange={state =>
                     WorkspacesApps.defaultForWorkspacesInEntreprise(app.id, !ga.workspace_default)
                   }

@@ -64,26 +64,7 @@ class ConsoleService implements ConsoleServiceAPI {
 
   async processPendingUser(user: User): Promise<void> {
     const services = this.services.userService;
-    const userCompanies = await services.companies.getAllForUser(user.id);
-    for (const userCompany of userCompanies) {
-      const workspaces = await services.workspaces.getAllForCompany(userCompany.group_id);
-      for (const workspace of workspaces) {
-        const pendingUserPk = {
-          workspace_id: workspace.id,
-          email: user.email_canonical,
-        };
-        const pendingUser = await services.workspaces.getPendingUser(pendingUserPk);
-
-        if (pendingUser) {
-          await services.workspaces.removePendingUser(pendingUserPk);
-          await services.workspaces.addUser(
-            { id: workspace.id },
-            { id: user.id },
-            pendingUser.role,
-          );
-        }
-      }
-    }
+    await services.workspaces.processPendingUser(user);
   }
 }
 

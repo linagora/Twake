@@ -1,5 +1,4 @@
 import { TwakeContext } from "../../../core/platform/framework";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import UserServiceAPI, {
   CompaniesServiceAPI,
   UserExternalLinksServiceAPI,
@@ -10,7 +9,6 @@ import { getService as getCompanyService } from "./companies";
 import { getService as getExternalService } from "./external_links";
 import { getService as getWorkspaceService } from "../../workspaces/services/workspace";
 import { WorkspaceServiceAPI } from "../../workspaces/api";
-import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 import {
   CompanyObject,
   CompanyShort,
@@ -21,12 +19,14 @@ import {
 } from "../web/types";
 import Company from "../entities/company";
 import User from "../entities/user";
+import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
+import { ApplicationServiceAPI } from "../../applications/api";
 
 export function getService(
-  databaseService: DatabaseServiceAPI,
-  searchService: SearchServiceAPI,
+  platformServices: PlatformServicesAPI,
+  applications: ApplicationServiceAPI,
 ): UserServiceAPI {
-  return new Service(databaseService, searchService);
+  return new Service(platformServices, applications);
 }
 
 class Service implements UserServiceAPI {
@@ -36,11 +36,16 @@ class Service implements UserServiceAPI {
   external: UserExternalLinksServiceAPI;
   workspaces: WorkspaceServiceAPI;
 
-  constructor(databaseService: DatabaseServiceAPI, searchService: SearchServiceAPI) {
-    this.users = getUserService(databaseService, searchService);
-    this.external = getExternalService(databaseService);
-    this.companies = getCompanyService(databaseService);
-    this.workspaces = getWorkspaceService(databaseService, this.users);
+  constructor(platformServices: PlatformServicesAPI, readonly applications: ApplicationServiceAPI) {
+    this.users = getUserService(platformServices);
+    this.external = getExternalService(platformServices.database);
+    this.companies = getCompanyService(platformServices);
+    this.workspaces = getWorkspaceService(
+      platformServices,
+      this.users,
+      this.companies,
+      this.applications,
+    );
   }
 
   async init(context: TwakeContext): Promise<this> {
@@ -57,7 +62,10 @@ class Service implements UserServiceAPI {
     return this;
   }
 
-  public async formatUser(user: User, includeCompanies: boolean = false): Promise<UserObject> {
+  public async formatUser(
+    user: User,
+    options?: { includeCompanies?: boolean },
+  ): Promise<UserObject> {
     let resUser = {
       id: user.id,
       provider: user.identity_provider,
@@ -75,7 +83,7 @@ class Service implements UserServiceAPI {
       last_activity: user.last_activity,
     } as UserObject;
 
-    if (includeCompanies) {
+    if (options?.includeCompanies) {
       const userCompanies = await this.users.getUserCompanies({ id: user.id });
 
       const companies = await Promise.all(
@@ -96,8 +104,8 @@ class Service implements UserServiceAPI {
       resUser = {
         ...resUser,
         preference: {
-          locale: user.preferences?.language || user.language,
-          timezone: user.preferences?.timezone || user.timezone,
+          locale: user.preferences?.language || user.language || "en",
+          timezone: user.preferences?.timezone || parseInt(user.timezone) || 0,
           allow_tracking: user.preferences?.allow_tracking || false,
         },
 

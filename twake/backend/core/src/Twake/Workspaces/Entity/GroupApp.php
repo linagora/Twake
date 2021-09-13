@@ -88,7 +88,7 @@ class GroupApp
             "id" => $this->getId(),
             "group_id" => $this->getGroup()->getId(),
             "app_id" => $this->getAppId(),
-            "date_added" => $this->getDateAdded()->getTimestamp(),
+            "date_added" => $this->getDateAdded() ? $this->getDateAdded()->getTimestamp() : null,
             "workspace_default" => $this->getWorkspaceDefault(),
             "workspace_count" => $this->getWorkspacesCount()
         );

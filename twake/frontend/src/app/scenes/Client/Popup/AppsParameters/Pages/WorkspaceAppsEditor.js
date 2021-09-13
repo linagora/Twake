@@ -9,7 +9,7 @@ import Attribute from 'components/Parameters/Attribute.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Api from 'services/Api';
 import WorkspaceAppsCreator from './WorkspaceAppsCreator.js';
-import Switch from 'components/Inputs/Switch.js';
+import Switch from 'components/Inputs/Switch';
 import AutoHeight from 'components/AutoHeight/AutoHeight.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import Icon from 'components/Icon/Icon.js';
@@ -39,7 +39,7 @@ export default class WorkspaceAppsEditor extends Component {
         workspace_id: workspaceService.currentWorkspaceId,
       };
 
-      Api.post('market/app/update', data, res => {
+      Api.post('/ajax/market/app/update', data, res => {
         if (res.data && res.data.id) {
           Collections.get('applications').completeObject(res.data);
 
@@ -82,7 +82,7 @@ export default class WorkspaceAppsEditor extends Component {
           application_id: this.state.application.id,
         };
 
-        Api.post('market/app/remove', data, res => {
+        Api.post('/ajax/market/app/remove', data, res => {
           if (res.data && !res.errors.length) {
             Collections.get('applications').removeObject(this.state.application.front_id);
             this.props.exit();
@@ -556,7 +556,7 @@ export default class WorkspaceAppsEditor extends Component {
                   [],
                   "Publier l'application",
                 )}
-                value={application.public}
+                checked={application.public}
                 onChange={value => {
                   application.public = value;
                   this.setState({});

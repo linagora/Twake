@@ -9,7 +9,6 @@ import {
 import { WorkspaceServiceAPI } from "../../api";
 import {
   WorkspacePendingUserRequest,
-  WorkspaceRequest,
   WorkspaceUserInvitationResponse,
   WorkspaceUserInvitationResponseItem,
   WorkspaceUserObject,
@@ -29,7 +28,11 @@ import CompanyUser from "../../../user/entities/company_user";
 import { CompanyShort, CompanyUserRole, CompanyUserStatus } from "../../../user/web/types";
 import Company from "../../../user/entities/company";
 import { chain } from "lodash";
-import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CrudExeption,
+  ListResult,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
 import WorkspacePendingUser from "../../entities/workspace_pending_users";
 import { ConsoleServiceAPI } from "../../../console/api";
 import { ConsoleCompany, CreateConsoleUser } from "../../../console/types";
@@ -41,7 +44,8 @@ export class WorkspaceUsersCrudController
       ResourceCreateResponse<WorkspaceUserObject>,
       ResourceListResponse<WorkspaceUserObject>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
@@ -62,7 +66,7 @@ export class WorkspaceUsersCrudController
       user_id: workspaceUser.userId,
       workspace_id: workspaceUser.workspaceId,
       created_at: workspaceUser.dateAdded,
-      role: workspaceUser.role,
+      role: workspaceUser.role || "member",
       user: {
         id: user.id,
         provider: user.identity_provider,
@@ -83,7 +87,7 @@ export class WorkspaceUsersCrudController
           .map(cu => {
             const company = companiesMap.get(cu.group_id);
             return {
-              role: cu.role as CompanyUserRole,
+              role: (cu.role as CompanyUserRole) || "guest",
               status: "active" as CompanyUserStatus, // FIXME: with real status
               company: {
                 id: company.id,
@@ -116,16 +120,48 @@ export class WorkspaceUsersCrudController
   }
 
   async list(
-    request: FastifyRequest<{ Params: WorkspaceUsersBaseRequest }>,
+    request: FastifyRequest<{
+      Params: WorkspaceUsersBaseRequest;
+      Querystring: { search?: string; page_token?: string; limit?: string };
+    }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceUserObject>> {
     const context = getExecutionContext(request);
+    let nextPageToken: string | null = null;
 
-    const allWorkspaceUsers = await this.workspaceService
-      .getUsers({
-        workspaceId: context.workspace_id,
-      })
-      .then(a => a.getEntities());
+    let allWorkspaceUsers: WorkspaceUser[] = [];
+    if (request.query.search) {
+      const users: ListResult<User> = await this.usersService.search(
+        new Pagination(request.query.page_token, request.query.limit),
+        {
+          search: request.query.search,
+          workspaceId: context.workspace_id,
+        },
+        context,
+      );
+
+      nextPageToken = users.nextPage?.page_token;
+
+      for (const user of users.getEntities()) {
+        allWorkspaceUsers.push(
+          await this.workspaceService.getUser({
+            workspaceId: context.workspace_id,
+            userId: user.id,
+          }),
+        );
+      }
+    } else {
+      const result = await this.workspaceService.getUsers(
+        {
+          workspaceId: context.workspace_id,
+        },
+        new Pagination(request.query.page_token, request.query.limit),
+      );
+
+      allWorkspaceUsers = result.getEntities();
+
+      nextPageToken = result.page_token;
+    }
 
     const allUsersMap = new Map(
       (
@@ -166,6 +202,7 @@ export class WorkspaceUsersCrudController
 
     return {
       resources: await Promise.all(resources),
+      next_page_token: nextPageToken,
     };
   }
 
@@ -246,7 +283,11 @@ export class WorkspaceUsersCrudController
     } else {
       // ON ADD
       if (!workspaceUser) {
-        await this.workspaceService.addUser({ id: context.workspace_id }, { id: userId }, role);
+        await this.workspaceService.addUser(
+          { id: context.workspace_id, company_id: context.company_id },
+          { id: userId },
+          role,
+        );
       }
     }
 
@@ -324,12 +365,6 @@ export class WorkspaceUsersCrudController
 
     const usersToProcessImmediately = [];
 
-    const company = await this.companyService.getCompany({ id: context.company_id });
-    const companyCode = company.identity_provider_id;
-    if (!companyCode) {
-      throw new Error(`Company ${context.company_id} has no identity_provider_id`);
-    }
-
     for (const invitation of request.body.invitations) {
       if (workspacePendingUsers.has(invitation.email)) {
         responses.push({
@@ -362,8 +397,8 @@ export class WorkspaceUsersCrudController
       }
 
       if (!userInCompany) {
-        const company = { id: context.company_id, code: null } as ConsoleCompany;
-        const createUser = {
+        const company = await this.companyService.getCompany({ id: context.company_id });
+        const createUser: CreateConsoleUser = {
           id: user ? user.id : null,
           email: invitation.email,
           firstName: null,
@@ -374,10 +409,24 @@ export class WorkspaceUsersCrudController
             value: null,
           },
           password: invitation.password,
-          role: invitation.company_role,
+          role: invitation.company_role || "guest",
           skipInvite: false,
-        } as CreateConsoleUser;
-        await consoleClient.addUserToCompany(company, createUser);
+          inviterEmail: context.user.email,
+        };
+
+        try {
+          await consoleClient.addUserToCompany(
+            { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
+            createUser,
+          );
+        } catch (err) {
+          responses.push({
+            email: invitation.email,
+            status: "error",
+            message: "Unable to invite this user to your company",
+          });
+          return;
+        }
       }
 
       const userInWorkspace = Boolean(

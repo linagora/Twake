@@ -27,7 +27,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
   }
 
   async connect(): Promise<this> {
-    if (this.client && this.client.topology.isConnected()) {
+    if (this.client) {
       return this;
     }
 
@@ -86,15 +86,26 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
 
         //Set updated content
         const set: any = {};
+        const inc: any = {};
         Object.keys(columnsDefinition)
           .filter(key => primaryKey.indexOf(key) === -1)
           .filter(key => columnsDefinition[key].nodename !== undefined)
           .forEach(key => {
-            set[key] = transformValueToDbString(
+            const value = transformValueToDbString(
               entity[columnsDefinition[key].nodename],
               columnsDefinition[key].type,
-              { columns: columnsDefinition[key].options, secret: this.secret },
+              {
+                columns: columnsDefinition[key].options,
+                secret: this.secret,
+                column: { key },
+              },
             );
+
+            if (columnsDefinition[key].type === "counter") {
+              inc[key] = value;
+            } else {
+              set[key] = value;
+            }
           });
 
         //Set primary key
@@ -107,17 +118,23 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
               columns: columnsDefinition[key].options,
               secret: this.secret,
               disableSalts: true,
+              column: { key },
             },
           );
         });
 
         const collection = db.collection(`${entityDefinition.name}`);
+
+        const updateObject = { $set: { ...where, ...set } } as any;
+
+        if (Object.keys(inc).length) {
+          updateObject.$inc = inc;
+        }
+
         promises.push(
-          collection.updateOne(
-            where,
-            { $set: { ...where, ...set } },
-            { upsert: true },
-          ) as Promise<mongo.UpdateResult>,
+          collection.updateOne(where, updateObject, {
+            upsert: true,
+          }) as Promise<mongo.UpdateResult>,
         );
       });
 
@@ -146,6 +163,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
               columns: columnsDefinition[key].options,
               secret: this.secret,
               disableSalts: true,
+              column: { key },
             },
           );
         });
@@ -189,7 +207,7 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
     const collection = db.collection(`${entityDefinition.name}`);
 
     const query = buildSelectQuery<Table>(
-      (entityType as unknown) as ObjectType<Table>,
+      entityType as unknown as ObjectType<Table>,
       filters,
       options,
     );

@@ -30,12 +30,6 @@ export default class Company {
   @Column("logo", "encoded_string")
   logo: string;
 
-  @Column("workspaces_id", "encoded_json")
-  workspaces: Array<string>;
-
-  @Column("managers_id", "encoded_json")
-  managers: Array<string>;
-
   @Column("date_added", "number")
   dateAdded: number;
 

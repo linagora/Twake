@@ -34,10 +34,7 @@ class Drive extends Observable {
       Globals.window.drive_service = [];
     }
     Globals.window.drive_service.push(this);
-
-    LocalStorage.getItem('drive_view', res => {
-      this.view_mode = res || 'grid';
-    });
+    this.view_mode = LocalStorage.getItem('drive_view') || 'grid';
   }
 
   addSourceIfNotExist(workspace_id, channel, parent_id, prefix) {
@@ -406,7 +403,7 @@ class Drive extends Observable {
   }
 
   emptyTrash(workspace_id, callback) {
-    Api.post('drive/trash/empty', { workspace_id: workspace_id }, res => {
+    Api.post('/ajax/drive/trash/empty', { workspace_id: workspace_id }, res => {
       if (!res.errors || res.errors.length === 0) {
         if (res.data) {
           this.trash_directories[workspace_id + '_trash'] = res.data;
@@ -426,7 +423,7 @@ class Drive extends Observable {
       var workspace_id = element[0].workspace_id;
 
       return (
-        Api.route('drive/download') +
+        Api.route('/ajax/drive/download') +
           '?workspace_id=' +
           workspace_id +
           '&elements_id=' +
@@ -449,7 +446,7 @@ class Drive extends Observable {
       version = '&version_id=' + version_id;
     }
     return (
-      Api.route('drive/download') +
+      Api.route('/ajax/drive/download') +
         '?workspace_id=' +
         workspace_id +
         '&element_id=' +
@@ -611,7 +608,7 @@ class Drive extends Observable {
       return;
     }
     Api.post(
-      'market/app/api/getToken',
+      '/ajax/market/app/api/getToken',
       {
         application_id: app.id,
         workspace_id: Workspaces.currentWorkspaceId,

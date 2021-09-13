@@ -5,10 +5,11 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/models/Channel';
-import { Typography, Button } from 'antd';
+import { Button } from 'antd';
 import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import _ from 'lodash';
+import MainViewService from 'app/services/AppView/MainViewService';
 
 type Props = {
   title: string;
@@ -35,8 +36,29 @@ const ChannelWorkspaceEditor: FC<Props> = ({
     workspace_id: workspaceId,
   };
 
-  const onChange = (channelEntries: ChannelType): ChannelType => {
-    setDisabled((channelEntries.name || '').trim().length ? true : false);
+  const onChange = (channelEntries: Partial<ChannelType>): ChannelType => {
+    const shouldDisabled =
+      ((channelEntries.name || '').trim().length ? false : true) ||
+      _.isEqual(
+        {
+          channel_group: channelEntries.channel_group,
+          description: channelEntries.description,
+          icon: channelEntries.icon,
+          is_default: channelEntries.is_default,
+          name: channelEntries.name,
+          visibility: channelEntries.visibility,
+        },
+        {
+          channel_group: channel?.data.channel_group,
+          description: channel?.data.description,
+          icon: channel?.data.icon,
+          is_default: channel?.data.is_default,
+          name: channel?.data.name,
+          visibility: channel?.data.visibility,
+        },
+      );
+
+    setDisabled(shouldDisabled);
     return (newChannel = channelEntries);
   };
 
@@ -50,7 +72,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       const insertedChannel = ChannelsCollections.findOne(channel.id, { withoutBackend: true });
       insertedChannel.data = _.assign(insertedChannel.data, {
         name: newChannel.name || channel.data.name,
-        description: newChannel.description || channel.data.description,
+        description: newChannel.description,
         icon: newChannel.icon || channel.data.icon,
         is_default: newChannel.is_default || false,
         visibility:
@@ -68,10 +90,20 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       });
 
       if (resource) {
-        return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
-          position: 'center',
-          size: { width: '600px', minHeight: '329px' },
+        MainViewService.select(resource.id, {
+          collection: ChannelsCollections,
+          app: { simple_name: 'messages' },
+          context: null,
+          hasTabs: false,
         });
+        if (!resource.data.is_default) {
+          // Show channel member list only for non default channel
+          return ModalManager.open(<ChannelMembersList channel={resource} closable />, {
+            position: 'center',
+            size: { width: '600px', minHeight: '329px' },
+          });
+        }
+        ModalManager.close();
       }
     }
   };
@@ -83,16 +115,14 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       footer={
         <Button
           loading={loading}
+          onClick={upsertChannel}
           className="small"
           block={true}
           type="primary"
+          disabled={disabled}
           style={{
             width: 'auto',
             float: 'right',
-          }}
-          disabled={!disabled}
-          onClick={() => {
-            upsertChannel();
           }}
         >
           {Languages.t(channel?.id ? 'general.edit' : 'general.create')}

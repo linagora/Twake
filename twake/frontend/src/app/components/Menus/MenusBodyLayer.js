@@ -197,6 +197,7 @@ export default class MenusBodyLayer extends React.Component {
                   <MenuComponent
                     withFrame
                     menu={item.menu}
+                    openAt={item.openAt}
                     level={item.level}
                     animationClass={
                       this.state.menus_manager.willClose || item.willClose

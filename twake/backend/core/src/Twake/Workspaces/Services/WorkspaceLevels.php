@@ -31,13 +31,13 @@ class WorkspaceLevels
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
             $user = $userRepository->find($userId);
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
             $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
 
             if (!$link) {
                 return null; //No level because no member
             }
-            $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
+            $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace_id" => $workspace->getId(), "id" => $link->getLevelId()));
 
             return $level;
 
@@ -57,48 +57,38 @@ class WorkspaceLevels
 
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
         $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
+        $companyUserRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupUser");
 
         $user = $this->convertToEntity($userId, "Twake\Users:User");
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
         if (!$user || !$workspace) {
             error_log("no user / ws ");
             return false;
         }
 
+        $companyLink = $companyUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user->getId()));
         $link = $workspaceUserRepository->findOneBy(Array("workspace_id" => $workspace->getId(), "user_id" => $user->getId()));
         if ($link) {
-            $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
-            if (!$link || !$level) {
-                return false;
+
+            if($link->getRole() === "moderator" || $companyLink->getRole() === "admin" || $companyLink->getRole() === "owner"){
+                return true; //Admin can do everything
             }
 
-            //No flush, if this is just a read we don't count the activity
-
-            if ($level->getIsAdmin()) {
+            $level = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel")->findOneBy(Array("workspace_id" => $workspace->getId(), "id" => $link->getLevelId()));
+            if ($level && $level->getIsAdmin()) {
                 return true; //Admin can do everything
             }
 
             if($action === "admin"){
-                return $level->getIsAdmin();
+                return false;
             }
 
             if ($action == "" || $action == null) {
                 return true;
             }
 
-            $rights = $level->getRights();
-
-            //Compare with action asked
-            $actions = explode(":", $action);
-            $object = $actions[0];
-            $value = intval(str_replace(Array("none", "read", "write", "manage"), Array(0, 1, 2, 3), $actions[1]));
-
-            if (!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"), Array(0, 1, 2, 3), $rights[$object])) < $value) {
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
         return false;
@@ -129,7 +119,7 @@ class WorkspaceLevels
 
             $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
 
-            $level = $levelRepository->findBy(Array("workspace" => $workspaceId, "level" => $levelId));
+            $level = $levelRepository->findBy(Array("workspace_id" => $workspaceId, "level" => $levelId));
             if (!$level) {
                 return false;
             }
@@ -165,10 +155,8 @@ class WorkspaceLevels
         $choosen = null;
 
         $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
-        $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
-        $workspace = $workspaceRepository->find($workspaceId);
-        $levels = $levelRepository->findBy(Array("workspace" => $workspace));
+        $levels = $levelRepository->findBy(Array("workspace_id" => $workspaceId));
 
 
         foreach ($levels as $level) {
@@ -181,7 +169,7 @@ class WorkspaceLevels
         if (!$choosen) {
 
             $levelD = new WorkspaceLevel();
-            $levelD->setWorkspace($workspace);
+            $levelD->setWorkspace($workspaceId);
             $levelD->setLabel("Default");
             $levelD->setIsAdmin(false);
             $levelD->setIsDefault(true);
@@ -203,11 +191,8 @@ class WorkspaceLevels
         ) {
 
             $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
-            $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
-            $workspace = $workspaceRepository->find($workspaceId);
-
-            $oldLevelDefault = $levelRepository->findOneBy(Array("workspace" => $workspace, "isdefault" => true));
+            $oldLevelDefault = $levelRepository->findOneBy(Array("workspace_id" => $workspaceId, "isdefault" => true));
 
             if ($oldLevelDefault) {
                 $oldLevelDefault->setisDefault(false);
@@ -240,11 +225,11 @@ class WorkspaceLevels
             || $this->can($workspaceId, $currentUserId, "workspace:write")
         ) {
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             $level = new WorkspaceLevel();
 
-            $level->setWorkspace($workspace);
+            $level->setWorkspace($workspaceId);
             $level->setRights($rights);
             $level->setLabel($label);
 
@@ -268,7 +253,7 @@ class WorkspaceLevels
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
-            $level = $levelRepository->findBy(Array("workspace" => $workspaceId, "level" => $levelId));
+            $level = $levelRepository->findBy(Array("workspace_id" => $workspaceId, "level" => $levelId));
             if ($level->getWorkspace()->getId() != $workspaceId) {
                 return false;
             }
@@ -281,14 +266,13 @@ class WorkspaceLevels
                 return false; //Can't remove admin level
             }
 
-            $workspace = $workspaceRepository->find($workspaceId);
-            $levelDefault = $levelRepository->findOneBy(Array("workspace" => $workspace, "isdefault" => true));
+            $levelDefault = $levelRepository->findOneBy(Array("workspace_id" => $workspaceId, "isdefault" => true));
 
             if (!$levelDefault) {
                 return false;
             }
 
-            $affectedUsers = $workspaceUserRepository->findBy(Array("workspace_id" => $workspace->getId(), "level" => $level));
+            $affectedUsers = $workspaceUserRepository->findBy(Array("workspace_id" => $workspaceId, "level" => $level));
             foreach ($affectedUsers as $affectedUser) {
                 $affectedUser->setLevel($levelDefault);
                 $this->doctrine->persist($affectedUser);
@@ -300,10 +284,10 @@ class WorkspaceLevels
             $datatopush = Array(
                 "type" => "CHANGE_LEVEL",
                 "data" => Array(
-                    "workspaceId" => $workspace->getId(),
+                    "workspaceId" => $workspaceId(),
                 )
             );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+            $this->pusher->push($datatopush, "group/" . $workspaceId());
 
             return true;
 
@@ -322,14 +306,14 @@ class WorkspaceLevels
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
             $workspaceUserRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceUser");
 
-            $level = $levelRepository->findBy(Array("workspace" => $workspaceId, "level" => $levelId));
-            $workspace = $workspaceRepository->find($workspaceId);
+            $level = $levelRepository->findBy(Array("workspace_id" => $workspaceId, "level" => $levelId));
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if (!$level || !$workspace) {
                 return false;
             }
 
-            $link = $workspaceUserRepository->findBy(Array("level" => $level, "workspace" => $workspace));
+            $link = $workspaceUserRepository->findBy(Array("level" => $level, "workspace_id" => $workspaceId));
 
             $users = Array();
             foreach ($link as $user) {
@@ -347,13 +331,13 @@ class WorkspaceLevels
         $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
-        $workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
         if (!$workspace) {
             return false;
         }
 
-        $levels = $levelRepository->findBy(Array("workspace" => $workspace));
+        $levels = $levelRepository->findBy(Array("workspace_id" => $workspaceId));
 
         return $levels;
     }
@@ -367,13 +351,13 @@ class WorkspaceLevels
             $levelRepository = $this->doctrine->getRepository("Twake\Workspaces:WorkspaceLevel");
             $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
 
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(["id"=>$workspaceId]);
 
             if (!$workspace) {
                 return false;
             }
 
-            $levels = $levelRepository->findBy(["label" => $label, "workspace" => $workspace]);
+            $levels = $levelRepository->findBy(["label" => $label, "workspace_id" => $workspaceId]);
 
             return $levels;
         }

@@ -21,16 +21,22 @@ describe("The Channels Realtime feature", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
+        "webserver",
+        "database",
+        "search",
+        "storage",
         "pubsub",
         "user",
         "search",
         "websocket",
+        "applications",
         "webserver",
         "channels",
         "auth",
-        "database",
         "search",
         "realtime",
+        "counter",
+        "platform-services",
       ],
     });
     channelUtils = getChannelUtils(platform);

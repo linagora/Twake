@@ -19,7 +19,7 @@ describe("The /workspace users API", () => {
       workspace_id: expect.any(String),
       user_id: expect.any(String),
       created_at: expect.any(Number),
-      role: expect.stringMatching(/admin|member/),
+      role: expect.stringMatching(/moderator|member/),
       user: {
         id: expect.any(String),
         provider: expect.any(String),
@@ -46,8 +46,12 @@ describe("The /workspace users API", () => {
         "webserver",
         "user",
         "workspaces",
+        "applications",
         "auth",
         "console",
+        "counter",
+        "storage",
+        "platform-services",
       ],
     });
 
@@ -56,17 +60,17 @@ describe("The /workspace users API", () => {
     await platform.database.getConnector().init();
     testDbService = new TestDbService(platform);
     await testDbService.createCompany(companyId);
-    const ws0pk = { id: uuidv1(), group_id: companyId };
-    const ws1pk = { id: uuidv1(), group_id: companyId };
-    const ws2pk = { id: uuidv1(), group_id: companyId };
-    const ws3pk = { id: uuidv1(), group_id: companyId };
+    const ws0pk = { id: uuidv1(), company_id: companyId };
+    const ws1pk = { id: uuidv1(), company_id: companyId };
+    const ws2pk = { id: uuidv1(), company_id: companyId };
+    const ws3pk = { id: uuidv1(), company_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
     await testDbService.createWorkspace(ws2pk);
     await testDbService.createWorkspace(ws3pk);
     await testDbService.createUser([ws0pk, ws1pk]);
     await testDbService.createUser([ws2pk], { companyRole: "admin" });
-    await testDbService.createUser([ws2pk], { workspaceRole: "admin" });
+    await testDbService.createUser([ws2pk], { workspaceRole: "moderator" });
     await testDbService.createUser([ws2pk], { workspaceRole: "member" });
     await testDbService.createUser([], { companyRole: "member" });
     await testDbService.createUser([ws3pk], { companyRole: "guest", workspaceRole: "member" });
@@ -187,7 +191,7 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace admin", async done => {
+    it("should 403 user is not workspace moderator", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -201,7 +205,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -222,7 +226,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: nonExistentId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -243,7 +247,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: userId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -257,6 +261,11 @@ describe("The /workspace users API", () => {
       const userId = testDbService.workspaces[2].users[1].id;
       const anotherUserId = testDbService.workspaces[0].users[0].id;
 
+      let workspaceUsersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
+      let companyUsersCount = await testDbService.getCompanyUsersCountFromDb(companyId);
+      expect(workspaceUsersCount).toBe(3);
+      expect(companyUsersCount).toBe(6);
+
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
       const response = await platform.app.inject({
         method: "POST",
@@ -265,7 +274,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -273,6 +282,11 @@ describe("The /workspace users API", () => {
       expect(response.statusCode).toBe(201);
       const resource = response.json()["resource"];
       checkUserObject(resource);
+
+      workspaceUsersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
+      companyUsersCount = await testDbService.getCompanyUsersCountFromDb(companyId);
+      expect(workspaceUsersCount).toBe(4);
+      expect(companyUsersCount).toBe(6);
 
       done();
     });
@@ -291,7 +305,7 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace admin", async done => {
+    it("should 403 user is not workspace moderator", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -305,7 +319,7 @@ describe("The /workspace users API", () => {
         payload: {
           resource: {
             user_id: anotherUserId,
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -325,7 +339,7 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -347,7 +361,7 @@ describe("The /workspace users API", () => {
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {
           resource: {
-            role: "admin",
+            role: "moderator",
           },
         },
       });
@@ -356,7 +370,10 @@ describe("The /workspace users API", () => {
       const resource = response.json()["resource"];
       checkUserObject(resource);
 
-      expect(resource["role"]).toBe("admin");
+      expect(resource["role"]).toBe("moderator");
+
+      const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
+      expect(usersCount).toBe(4);
 
       done();
     });
@@ -375,7 +392,7 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace admin", async done => {
+    it("should 403 user is not workspace moderator", async done => {
       const userId = testDbService.users[0].id;
       const anotherUserId = testDbService.users[1].id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
@@ -432,6 +449,9 @@ describe("The /workspace users API", () => {
       expect(response.statusCode).toBe(200);
       const resources = response.json()["resources"];
       expect(resources.find((a: { user_id: uuid }) => a.user_id === anotherUserId)).toBeUndefined();
+
+      const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
+      expect(usersCount).toBe(3);
 
       done();
     });

@@ -20,17 +20,22 @@ describe("The Messages Threads feature", () => {
   beforeEach(async () => {
     platform = await init({
       services: [
+        "webserver",
+        "database",
+        "applications",
+        "search",
+        "storage",
         "pubsub",
         "user",
         "search",
+        "files",
         "websocket",
-        "webserver",
         "messages",
         "auth",
-        "database",
-        "search",
         "realtime",
         "channels",
+        "counter",
+        "platform-services",
       ],
     });
   });
@@ -66,9 +71,7 @@ describe("The Messages Threads feature", () => {
       );
 
       expect(response.statusCode).toBe(200);
-      expect(result.resource).toMatchObject({
-        created_by: platform.currentUser.id,
-      });
+      expect(result.resource?.created_by).toBe(platform.currentUser.id);
       expect(result.resource.participants.length).toBe(1);
       expect(result.resource.participants[0]).toMatchObject({
         type: "user",
@@ -246,7 +249,7 @@ describe("The Messages Threads feature", () => {
   });
 });
 
-function getContext(platform) {
+function getContext(platform: TestPlatform) {
   return {
     company: { id: platform.workspace.company_id },
     user: { id: platform.currentUser.id },

@@ -37,10 +37,10 @@ class WorkspaceUserRights extends Observable {
   }
 
   hasGroupPrivilege(): boolean {
-    return AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'administrator');
+    return AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'admin');
   }
 
-  hasWorkspacePrivilege(level: RightsOrNone = 'administrator'): boolean {
+  hasWorkspacePrivilege(level: RightsOrNone = 'moderator'): boolean {
     return AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, level);
   }
 }

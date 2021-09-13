@@ -29,6 +29,7 @@ export class FileController {
       chunkNumber: parseInt(q.resumableChunkNumber || q.chunk_number) || 1,
       filename: q.resumableFilename || q.filename || file?.filename || undefined,
       type: q.resumableType || q.type || file?.mimetype || undefined,
+      waitForThumbnail: q.thumbnail_sync,
     };
 
     const id = request.params.id;
@@ -51,6 +52,20 @@ export class FileController {
     response.header("Content-disposition", `attachment; filename="${filename}"`);
     if (data.size) response.header("Content-Length", data.size);
     response.type(data.mime);
+    response.send(data.file);
+  }
+
+  async thumbnail(
+    request: FastifyRequest<{ Params: { company_id: string; id: string; index: string } }>,
+    response: FastifyReply,
+  ): Promise<void> {
+    const context = getCompanyExecutionContext(request);
+    const params = request.params;
+    const data = await this.service.thumbnail(params.id, params.index, context);
+
+    response.header("Content-disposition", "inline");
+    if (data.size) response.header("Content-Length", data.size);
+    response.type(data.type);
     response.send(data.file);
   }
 

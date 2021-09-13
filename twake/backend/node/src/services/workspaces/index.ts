@@ -1,27 +1,26 @@
-import WebServerAPI from "../../core/platform/services/webserver/provider";
 import { Consumes, Prefix, TwakeService } from "../../core/platform/framework";
 import WorkspaceServiceAPI from "./api";
 import web from "./web/index";
 import { getService } from "./services";
-import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import { ConsoleServiceAPI } from "../console/api";
-import UserServiceAPI from "../user/api";
-import { SearchServiceAPI } from "../../core/platform/services/search/api";
+import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
+import { ApplicationServiceAPI } from "../applications/api";
 
 @Prefix("/internal/services/workspaces/v1")
-@Consumes(["webserver", "database", "console", "search"])
+@Consumes(["platform-services", "console", "applications"])
 export default class WorkspaceService extends TwakeService<WorkspaceServiceAPI> {
   version = "1";
   name = "workspaces";
   private service: WorkspaceServiceAPI;
 
   public async doInit(): Promise<this> {
-    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
-    const database = this.context.getProvider<DatabaseServiceAPI>("database");
-    const console = this.context.getProvider<ConsoleServiceAPI>("console");
-    const search = this.context.getProvider<SearchServiceAPI>("search");
+    const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
 
-    this.service = getService(database, console, search);
+    const fastify = platformServices.fastify.getServer();
+    const console = this.context.getProvider<ConsoleServiceAPI>("console");
+    const applications = this.context.getProvider<ApplicationServiceAPI>("applications");
+
+    this.service = getService(platformServices, console, applications);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {

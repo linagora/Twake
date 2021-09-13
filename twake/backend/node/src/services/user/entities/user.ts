@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import { isNumber, merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import search from "./user.search";
 import { uuid } from "../../../utils/types";
@@ -46,7 +46,7 @@ export default class User {
   @Column("last_activity", "number")
   last_activity: number;
 
-  @Column("creation_date", "number")
+  @Column("creation_date", "twake_datetime")
   creation_date: number;
 
   @Column("notification_preference", "encoded_json")
@@ -86,10 +86,10 @@ export default class User {
   thumbnail_id: string;
 
   @Column("language", "string")
-  language: string;
+  language: string; //Depreciated (php legacy)
 
-  @Column("timezone", "number")
-  timezone: number;
+  @Column("timezone", "string")
+  timezone: string; //Depreciated (php legacy)
 
   @Column("preferences", "encoded_json")
   preferences: null | {
@@ -117,6 +117,7 @@ export default class User {
 
 export type UserPrimaryKey = Pick<User, "id">;
 
-export function getInstance(user: Partial<User> & UserPrimaryKey): User {
+export function getInstance(user: Partial<User>): User {
+  user.creation_date = !isNumber(user.creation_date) ? Date.now() : user.creation_date;
   return merge(new User(), user);
 }

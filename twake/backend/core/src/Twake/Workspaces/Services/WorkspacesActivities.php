@@ -38,7 +38,7 @@ class WorkspacesActivities
         $user = $this->convertToEntity($user, "Twake\Users:User");
         $app = $this->applicationManager->getAppByPublicKey($appPublicKey);
 
-        $workspaceActivity = new WorkspaceActivity($workspace, $user, $app, $title, $objectrepository, $objectid);
+        $workspaceActivity = new WorkspaceActivity($workspace->getId(), $user, $app, $title, $objectrepository, $objectid);
 
         $this->doctrine->persist($workspaceActivity);
         $this->doctrine->flush();

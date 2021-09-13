@@ -39,6 +39,12 @@ const routes: FastifyPluginCallback<{ service: FileServiceAPI }> = (
   });
 
   fastify.route({
+    method: "GET",
+    url: `${filesUrl}/:id/thumbnails/:index`,
+    handler: fileController.thumbnail.bind(fileController),
+  });
+
+  fastify.route({
     method: "DELETE",
     url: `${filesUrl}/:id`,
     preValidation: [fastify.authenticate],

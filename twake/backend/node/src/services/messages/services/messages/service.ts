@@ -38,6 +38,7 @@ import { Thread } from "../../entities/threads";
 import UserServiceAPI from "../../../user/api";
 import ChannelServiceAPI from "../../../channels/provider";
 import { UserObject } from "../../../user/web/types";
+import { FileServiceAPI } from "../../../files/api";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -48,6 +49,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     private database: DatabaseServiceAPI,
     private user: UserServiceAPI,
     private channel: ChannelServiceAPI,
+    private files: FileServiceAPI,
     private service: MessageServiceAPI,
   ) {
     this.operations = new ThreadMessagesOperationsService(database, service, this);
@@ -145,6 +147,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     this.onSaved(message, { created: messageCreated }, context);
+
+    message = await this.completeMessageFiles(message);
 
     return new SaveResult<Message>(
       "message",
@@ -480,5 +484,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     return this.operations.bookmark(operation, options, context);
+  }
+
+  async completeMessageFiles(message: Message) {
+    //TODO complete message file with all the data of the included files
+    return message;
   }
 }

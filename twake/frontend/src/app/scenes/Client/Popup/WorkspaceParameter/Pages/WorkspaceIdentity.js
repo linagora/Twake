@@ -230,7 +230,7 @@ export default class WorkspaceIdentity extends Component {
                 {Languages.t(
                   'scenes.app.popup.workspaceparameter.pages.error_workspace_member',
                   [],
-                  "Vous devez être seul dans l'espace de travail pour le supprimer.\nRetirez vos collaborateurs et recommencer l'opération",
+                  'You must be alone in the workspace to remove it. Remove your collaborators and try again.',
                 )}
               </span>
             )}

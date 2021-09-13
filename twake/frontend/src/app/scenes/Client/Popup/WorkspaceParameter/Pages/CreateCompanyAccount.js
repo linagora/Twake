@@ -42,7 +42,7 @@ export default class CreateCompanyAccount extends Component {
       language: Languages.language,
       workspace_id: Workspaces.currentWorkspaceId,
     };
-    Api.post('users/subscribe/company_subscribe', data, res => {
+    Api.post('/ajax/users/subscribe/company_subscribe', data, res => {
       if ((res || {}).data == 'success') {
         AlertManager.alert(() => {}, {
           title: 'Account created',

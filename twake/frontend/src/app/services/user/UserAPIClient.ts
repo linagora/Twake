@@ -29,7 +29,7 @@ class UserAPIClient {
    */
   async _list(users: string[] = []): Promise<UserType[]> {
     return new Promise<UserType[]>(resolve => {
-      Api.post('users/all/get', { id: users }, (res: { data?: UserType[] }) => {
+      Api.post('/ajax/users/all/get', { id: users }, (res: { data?: UserType[] }) => {
         resolve(res.data || []);
       });
     });

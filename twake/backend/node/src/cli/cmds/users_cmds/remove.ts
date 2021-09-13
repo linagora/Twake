@@ -12,7 +12,16 @@ type CLIArgs = {
   id: string;
 };
 
-const services = ["user", "search", "database", "webserver"];
+const services = [
+  "storage",
+  "counter",
+  "pubsub",
+  "platform-services",
+  "user",
+  "search",
+  "database",
+  "webserver",
+];
 
 const command: yargs.CommandModule<unknown, CLIArgs> = {
   command: "remove",
@@ -38,7 +47,6 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     const platform = await twake.run(services);
     const userService = platform.getProvider<UserServiceAPI>("user");
 
-    // rechercher md5 pour l'id
     const user = await userService.users.get({ id: argv.id });
 
     if (!user) {
@@ -50,19 +58,12 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       // Table before
       tableBefore.push([user.id, user.username_canonical, user.deleted]);
 
-      const partialId = user.id.toString().split("-")[0];
-
-      user.username_canonical = `deleted-user-${partialId}`;
-      user.email_canonical = `${partialId}@twake.removed`;
-      user.first_name = "";
-      user.last_name = "";
-      user.phone = "";
-      user.picture = "";
-      user.thumbnail_id = null;
-      user.status_icon = null;
-      user.deleted = true;
-
-      await userService.users.save(user);
+      await userService.users.anonymizeAndDelete(
+        { id: user.id },
+        {
+          user: { id: user.id, server_request: true },
+        },
+      );
 
       const finalUser = await userService.users.get(getUserInstance({ id: argv.id }));
 
@@ -70,10 +71,6 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       tableAfter.push([finalUser.id, finalUser.username_canonical, finalUser.deleted]);
 
       spinner.stop();
-      console.log("table before");
-      console.log(tableBefore.toString());
-      console.log("table after");
-      console.log(tableAfter.toString());
     }
   },
 };

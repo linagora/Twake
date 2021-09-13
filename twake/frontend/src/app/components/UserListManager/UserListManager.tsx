@@ -8,7 +8,7 @@ import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import UserOrMail from '../ui/UserOrMail';
 import Icon from '../Icon/Icon';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.js';
+import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import AutoCompleteExtended from 'components/AutoCompleteExtended/AutoCompleteExtended';
 import { UserType } from 'app/models/User';
 import './UserListManager.scss';

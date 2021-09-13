@@ -121,6 +121,9 @@ export class Service implements ChannelService {
     const isPrivateChannel = Channel.isPrivateChannel(channel);
     const isDefaultChannel = Channel.isDefaultChannel(channel);
 
+    channel.workspace_id = context.workspace.workspace_id || channel.workspace_id;
+    channel.company_id = context.workspace.company_id || channel.company_id;
+
     if (isDirectChannel) {
       channel.visibility = ChannelVisibility.DIRECT;
       channel.workspace_id = ChannelVisibility.DIRECT;
@@ -136,15 +139,12 @@ export class Service implements ChannelService {
 
       const isChannelOwner = this.isChannelOwner(channelToUpdate, context.user);
       const updatableParameters: Partial<Record<keyof Channel, boolean>> = {
-        name: !isDirectChannel,
-        description: true,
-        icon: true,
-        channel_group: true,
+        name: true,
+        description: !isDirectChannel,
+        icon: !isDirectChannel,
+        channel_group: !isDirectChannel,
         is_default: (isWorkspaceAdmin || isChannelOwner) && !isDirectChannel && !isPrivateChannel,
-        visibility:
-          (isWorkspaceAdmin || isChannelOwner) &&
-          !isDirectChannel &&
-          (!isPrivateChannel || isWorkspaceAdmin),
+        visibility: !isDirectChannel && (isWorkspaceAdmin || isChannelOwner),
         archived: isWorkspaceAdmin || isChannelOwner,
         connectors: !isDirectChannel,
       };
@@ -436,22 +436,22 @@ export class Service implements ChannelService {
 
         const channelActivity = activityPerChannel.get(channel.id);
 
-        return ({
+        return {
           ...channel,
           ...{ user_member: userChannel },
           last_activity: channelActivity?.last_activity || 0,
           last_message: channelActivity?.last_message || {},
-        } as unknown) as UserChannel;
+        } as unknown as UserChannel;
       });
 
       if (isDirectWorkspace) {
         channels.mapEntities(<UserDirectChannel>(channel: UserChannel) => {
-          return ({
+          return {
             ...channel,
             ...{
               members: channel.members || [],
             },
-          } as unknown) as UserDirectChannel;
+          } as unknown as UserDirectChannel;
         });
       }
 

@@ -18,6 +18,7 @@ import {
 import WorkspaceServicesAPI from "../api";
 import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { WorkspaceUsersCrudController } from "./controllers/workspace-users";
+import { hasWorkspaceAdminLevel } from "../../../utils/workspace";
 
 const workspacesUrl = "/companies/:company_id/workspaces";
 const workspaceUsersUrl = "/companies/:company_id/workspaces/:workspace_id/users";
@@ -67,7 +68,7 @@ const routes: FastifyPluginCallback<{
 
   const checkWorkspace = async (request: FastifyRequest<{ Params: WorkspaceUsersBaseRequest }>) => {
     const workspace = await options.service.workspaces.get({
-      group_id: request.params.company_id,
+      company_id: request.params.company_id,
       id: request.params.workspace_id,
     });
     if (!workspace) {
@@ -83,16 +84,16 @@ const routes: FastifyPluginCallback<{
     const workspaceUser = await options.service.workspaces.getUser({ workspaceId, userId });
     if (!workspaceUser) {
       const workspace = await options.service.workspaces.get({
-        group_id: request.params.company_id,
+        company_id: request.params.company_id,
         id: request.params.workspace_id,
       });
       if (!workspace) {
         throw fastify.httpErrors.notFound(`Workspace ${workspaceId} not found`);
       } else {
-        throw fastify.httpErrors.forbidden("Only workspace admin can perform this action");
+        throw fastify.httpErrors.forbidden("Not member of the workspace");
       }
-    } else if (workspaceUser.role !== "admin") {
-      throw fastify.httpErrors.forbidden("Only workspace admin can perform this action");
+    } else if (!hasWorkspaceAdminLevel(workspaceUser.role)) {
+      throw fastify.httpErrors.forbidden("Only workspace moderator can perform this action");
     }
   };
 

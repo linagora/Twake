@@ -63,7 +63,7 @@ export class AmqpClient {
     type = CONSTANTS.EXCHANGE_TYPES.topic,
   ): Promise<Replies.AssertExchange> {
     logger.debug(`${LOG_PREFIX} Assert exchange ${exchange} of type ${type}`);
-    return this.channel.assertExchange(exchange, type);
+    return new Promise((r, e) => this.channel.assertExchange(exchange, type).then(r).catch(e));
   }
 
   ack(message: Message, allUpTo = false): void {
@@ -73,18 +73,26 @@ export class AmqpClient {
 
   assertQueue(name: string, options: Options.AssertQueue): Promise<Replies.AssertQueue> {
     logger.debug(`${LOG_PREFIX} Assert queue ${name} with options %o`, options);
-    return this.channel.assertQueue(name, options).then(result => {
-      logger.debug(`${LOG_PREFIX} Queue created %o`, result);
+    return new Promise((r, e) =>
+      this.channel
+        .assertQueue(name, options)
+        .then(result => {
+          logger.debug(`${LOG_PREFIX} Queue created %o`, result);
 
-      return result;
-    });
+          return result;
+        })
+        .then(r)
+        .catch(e),
+    );
   }
 
   assertBinding(queue: string, exchange: string, routingPattern?: string): Promise<Replies.Empty> {
     logger.debug(
       `${LOG_PREFIX} Bind queue ${queue} on exchange ${exchange} with pattern ${routingPattern}`,
     );
-    return this.channel.bindQueue(queue, exchange, routingPattern);
+    return new Promise((r, e) =>
+      this.channel.bindQueue(queue, exchange, routingPattern).then(r).catch(e),
+    );
   }
 
   send(exchange: string, data: unknown, routingKey = "", options?: Options.Publish): boolean {
@@ -94,9 +102,13 @@ export class AmqpClient {
 
   consume(queue: string, options: Options.Consume, callback: AmqpCallbackType): Promise<void> {
     logger.debug(`${LOG_PREFIX} Consume queue ${queue} with options %o`, options);
-    return this.channel
-      .consume(queue, onMessage, options)
-      .then(res => this._registerNewConsumerTag(callback, res.consumerTag, queue));
+    return new Promise((r, e) =>
+      this.channel
+        .consume(queue, onMessage, options)
+        .then(res => this._registerNewConsumerTag(callback, res.consumerTag, queue))
+        .then(r)
+        .catch(e),
+    );
 
     function onMessage(originalMessage: ConsumeMessage) {
       try {

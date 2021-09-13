@@ -7,6 +7,7 @@ import { DatabaseServiceAPI } from "../../../src/core/platform/services/database
 import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import { Workspace } from "../../../src/utils/types";
 import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
+import config from "config";
 
 type TokenPayload = {
   sub: string;
@@ -19,7 +20,7 @@ type TokenPayload = {
 
 type User = {
   id: string;
-  isWorkspaceAdmin?: boolean;
+  isWorkspaceModerator?: boolean;
 };
 
 export interface TestPlatform {
@@ -42,10 +43,10 @@ export interface TestPlatformConfiguration {
 
 let testPlatform: TestPlatform = null;
 
-export async function init(config: TestPlatformConfiguration): Promise<TestPlatform> {
+export async function init(testConfig?: TestPlatformConfiguration): Promise<TestPlatform> {
   if (!testPlatform) {
     const configuration: TwakePlatformConfiguration = {
-      services: config.services,
+      services: config.get("services"),
       servicesPath: pathResolve(__dirname, "../../../src/services/"),
     };
     const platform = new TwakePlatform(configuration);
@@ -92,7 +93,7 @@ export async function init(config: TestPlatformConfiguration): Promise<TestPlatf
       payload.sub = testPlatform.currentUser.id;
     }
 
-    if (testPlatform.currentUser.isWorkspaceAdmin) {
+    if (testPlatform.currentUser.isWorkspaceModerator) {
       payload.org = {};
       payload.org[testPlatform.workspace.company_id] = {
         role: "",

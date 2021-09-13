@@ -1,4 +1,4 @@
-import api from 'services/Api';
+import Api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers.js';
 import MultipleSecuredConnections from './MultipleSecuredConnections.js';
@@ -6,7 +6,6 @@ import LocalStorage from 'app/services/LocalStorage';
 /** Collection
  * Act like a doctrine repository and try to be allways in sync with server in realtime
  */
-import Globals from 'services/Globals';
 
 export default class Collection extends Observable {
   constructor(options) {
@@ -391,7 +390,7 @@ export default class Collection extends Observable {
     if (offset) data.options.offset = offset;
     if (limit) data.options.limit = limit;
 
-    api.post(base_url + '/get', data, res => {
+    Api.post('/ajax/' + base_url + '/get', data, res => {
       if (res.data) {
         var res_list = this.loadData(request_key, res.data);
 
@@ -488,7 +487,7 @@ export default class Collection extends Observable {
 
       this.doing_http_request++;
 
-      api.post(this.base_url + '/search', data, res => {
+      Api.post('/ajax/' + this.base_url + '/search', data, res => {
         if (res.data) {
           res.data.forEach(item => {
             item._loaded = true;
@@ -621,7 +620,7 @@ export default class Collection extends Observable {
 
     this.completeObject(object, object.front_id);
 
-    if (this.waiting_to_save_by_front_id[object.front_id] && !object._retrying) {
+    if (this.waiting_to_save_by_front_id[object.front_id] && !object._retrying && !object._failed) {
       this.completeObject({}, object.front_id);
       this.object_buffer_add(object, 'save', source_key);
       this.notify();
@@ -646,7 +645,7 @@ export default class Collection extends Observable {
     }
 
     if (base_url) {
-      api.post(base_url + '/save', data, res => {
+      Api.post('/ajax/' + base_url + '/save', data, res => {
         if (res.data && res.data.object) {
           if (this.use_retry) {
             clearTimeout(that.timeout_fail[object.front_id]);
@@ -683,6 +682,14 @@ export default class Collection extends Observable {
           }
 
           this.object_buffer_flush(res.data.object);
+        } else {
+          if (callback) {
+            object._failed = true;
+            object._updating = false;
+            object._creating = false;
+            this.completeObject({}, object);
+            callback(object);
+          }
         }
 
         this.doing_http_request += -1;
@@ -741,7 +748,7 @@ export default class Collection extends Observable {
       return;
     }
 
-    api.post(base_url + '/remove', data, res => {
+    Api.post('/ajax/' + base_url + '/remove', data, res => {
       var front_id = ((res.data || {}).object || {}).front_id || deleted_front_id;
 
       //Verify nothing more recent was done in the time interval
@@ -959,71 +966,72 @@ export default class Collection extends Observable {
 
   updateCache() {
     if (this.use_cache) {
-      var collection_cache_key = this.base_url + '/' + this.collection_id;
-      LocalStorage.getItem('collections_cache', collections_cache => {
-        try {
-          collections_cache = JSON.parse(collections_cache) || {};
-        } catch (e) {
-          collections_cache = {};
-        }
-        collections_cache[collection_cache_key] = {
-          objects: this.known_objects_by_front_id,
-          last_updated: new Date().getTime(),
-        };
-        LocalStorage.setItem('collections_cache', JSON.stringify(collections_cache));
-      });
+      const collection_cache_key = this.base_url + '/' + this.collection_id;
+      const collections_cache = this._getFromLocalStorage();
+
+      collections_cache[collection_cache_key] = {
+        objects: this.known_objects_by_front_id,
+        last_updated: new Date().getTime(),
+      };
+      LocalStorage.setItem('collections_cache', collections_cache);
     }
   }
 
   retrieveCache() {
-    var that = this;
-    LocalStorage.getItem('collections_cache', collections_cache => {
-      try {
-        collections_cache = JSON.parse(collections_cache) || {};
-      } catch (e) {
-        collections_cache = {};
+    let that = this;
+    let changes = false;
+    const collections_cache = this._getFromLocalStorage();
+    const collection_cache_key = this.base_url + '/' + this.collection_id;
+
+    //Read all cached lists and remove too old caches
+    Object.keys(collections_cache).forEach(item_key => {
+      var item = collections_cache[item_key];
+      if (
+        new Date().getTime() - item.last_updated > 20 * 24 * 60 * 60 * 1000 || //more than 20 days
+        (item_key === collection_cache_key && !this.use_cache) //Cache disabled but present in collection cache
+      ) {
+        //Remove cache data
+        delete collections_cache[item_key];
+        changes = true;
       }
-
-      var collection_cache_key = this.base_url + '/' + this.collection_id;
-
-      var changes = false;
-      //Read all cached lists and remove too old caches
-      Object.keys(collections_cache).forEach(item_key => {
-        var item = collections_cache[item_key];
-        if (
-          new Date().getTime() - item.last_updated > 20 * 24 * 60 * 60 * 1000 || //more than 20 days
-          (item_key === collection_cache_key && !this.use_cache) //Cache disabled but present in collection cache
-        ) {
-          //Remove cache data
-          delete collections_cache[item_key];
-          changes = true;
+      Object.values(item.objects).forEach(itemOfList => {
+        if (itemOfList._failed || itemOfList._retrying) {
+          that.retry(itemOfList);
         }
-        Object.values(item.objects).forEach(itemOfList => {
-          if (itemOfList._failed || itemOfList._retrying) {
-            that.retry(itemOfList);
-          }
-        });
       });
-
-      if (changes) {
-        Globals.localStorageSetItem('collections_cache', JSON.stringify(collections_cache));
-      }
-
-      if (this.use_cache && collections_cache[collection_cache_key]) {
-        var objects = collections_cache[collection_cache_key].objects;
-        Object.keys(objects).forEach(front_id => {
-          var item = objects[front_id];
-          // this.clearObjectState(item);
-          item._cached = true;
-          item._loaded = false;
-          item._cached_from = item._loaded_from;
-          item._loaded_from = null;
-          this.completeObject(item, item.front_id);
-        });
-        this._last_get_generated_list = undefined;
-        this.notify();
-      }
     });
+
+    if (changes) {
+      LocalStorage.setItem('collections_cache', collections_cache);
+    }
+
+    if (this.use_cache && collections_cache[collection_cache_key]) {
+      var objects = collections_cache[collection_cache_key].objects;
+      Object.keys(objects).forEach(front_id => {
+        var item = objects[front_id];
+        // this.clearObjectState(item);
+        item._cached = true;
+        item._loaded = false;
+        item._cached_from = item._loaded_from;
+        item._loaded_from = null;
+        this.completeObject(item, item.front_id);
+      });
+      this._last_get_generated_list = undefined;
+      this.notify();
+    }
+  }
+
+  _getFromLocalStorage() {
+    let collections_cache = LocalStorage.getItem('collections_cache');
+
+    if (!collections_cache) {
+      collections_cache = {};
+    }
+    if (typeof collections_cache === 'string') {
+      collections_cache = JSON.parse(collections_cache);
+    }
+
+    return collections_cache;
   }
 
   updateObject(updated, front_id) {

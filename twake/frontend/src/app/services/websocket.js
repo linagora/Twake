@@ -1,5 +1,5 @@
 import Number from 'services/utils/Numbers.js';
-import api from 'services/Api';
+import Api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import Collections from 'services/Collections/Collections';
 import LoginService from 'services/login/login';
@@ -63,7 +63,7 @@ class Websocket extends Observable {
       this.alive_timeout = setTimeout(() => {
         this.alive_connected = false;
       }, 5100);
-      api.post(
+      Api.post(
         'users/alive',
         { focus: this.didFocusedLastMinute },
         () => {
