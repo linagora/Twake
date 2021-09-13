@@ -36,6 +36,7 @@ export class NewWorkspaceProcessor implements PubsubHandler<ChannelActivityNotif
           visibility: ChannelVisibility.PUBLIC,
           is_default: true,
         } as Channel,
+        {},
         {
           workspace: {
             workspace_id: message.workspace_id,
