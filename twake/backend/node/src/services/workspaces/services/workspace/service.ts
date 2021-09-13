@@ -116,7 +116,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       workspaceToCreate.company_id,
       {
         company: { id: workspaceToCreate.company_id },
-        user: { id: context.user.id || "", server_request: true },
+        user: { id: context?.user?.id || "", server_request: true },
       },
     );
 
