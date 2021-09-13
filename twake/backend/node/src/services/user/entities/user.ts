@@ -46,7 +46,7 @@ export default class User {
   @Column("last_activity", "number")
   last_activity: number;
 
-  @Column("creation_date", "number")
+  @Column("creation_date", "twake_datetime")
   creation_date: number;
 
   @Column("notification_preference", "encoded_json")
