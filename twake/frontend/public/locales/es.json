@@ -976,6 +976,11 @@
     "scenes.apps.drive.right_preview.public_link.message": "Si elimina este enlace, los usuarios con este enlace ya no tendrán acceso.",
     "components.locked_features.locked_workspace_popup.title": "No se puede crear más espacio de trabajo",
     "components.locked_features.locked_workspace_popup.subtitle": "En la versión gratuita, solo puede tener 1 espacio de trabajo en su empresa.",
-    "components.locked_features.locked_workspace_popup.text": "¡Ups! Parece que desea crear un nuevo espacio de trabajo en su empresa. Es posible que desee considerar actualizar su plan si desea colaborar en varios espacios de trabajo. Explore nuestras opciones de precios y seleccione la mejor opción para las necesidades de colaboración de su equipo."
-
+    "components.locked_features.locked_workspace_popup.text": "¡Ups! Parece que desea crear un nuevo espacio de trabajo en su empresa. Es posible que desee considerar actualizar su plan si desea colaborar en varios espacios de trabajo. Explore nuestras opciones de precios y seleccione la mejor opción para las necesidades de colaboración de su equipo.",
+    "components.locked_features.locked_only_office_popup.title": "No puedes editar este archivo",
+    "components.locked_features.locked_only_office_popup.subtitle": "En la versión gratuita, no puede usar onlyoffice.",
+    "components.locked_features.locked_only_office_popup.text": "¡Ups! Parece que desea editar el archivo de Twake. Es posible que desee considerar la posibilidad de actualizar su plan si desea colaborar en torno a los archivos de Office. Explore nuestras opciones de precios y seleccione la mejor opción para las necesidades de colaboración de su equipo.",
+    "components.locked_features.locked_drive_popup.title": "No puedes subir mas archivos",
+    "components.locked_features.locked_drive_popup.subtitle": "En la versión gratuita, puede almacenar solo 6 GB.",
+    "components.locked_features.locked_drive_popup.text": "¡Ups! Parece que alcanzó el límite de conducción. Es posible que desee considerar actualizar su plan si desea compartir más archivos con su equipo. Explore nuestras opciones de precios y seleccione la mejor opción para las necesidades de colaboración de su equipo."
 }

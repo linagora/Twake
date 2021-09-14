@@ -1679,5 +1679,8 @@
     "general.email": "Email",
     "components.locked_features.locked_workspace_popup.title": "Vous ne pouvez pas créer plus d'espace de travail",
     "components.locked_features.locked_workspace_popup.subtitle": "Dans la version gratuite, vous ne pouvez avoir qu'un seul espace de travail dans votre entreprise.",
-    "components.locked_features.locked_workspace_popup.text": "Oups !! Il semble que vous souhaitiez créer un nouvel espace de travail dans votre entreprise. Vous pouvez envisager de mettre à niveau votre plan si vous souhaitez collaborer dans plusieurs espaces de travail. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe."
+    "components.locked_features.locked_workspace_popup.text": "Oups !! Il semble que vous souhaitiez créer un nouvel espace de travail dans votre entreprise. Vous pouvez envisager de mettre à niveau votre plan si vous souhaitez collaborer dans plusieurs espaces de travail. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe.",
+    "components.locked_features.locked_only_office_popup.title": "Vous ne pouvez pas éditer ce fichier",
+    "components.locked_features.locked_only_office_popup.subtitle": "Dans la version gratuite, vous ne pouvez pas utiliser Onlyoffice.",
+    "components.locked_features.locked_only_office_popup.text": "Oups !! Il semble que vous souhaitiez modifier le fichier à partir de Twake. Vous voudrez peut-être envisager de mettre à niveau votre plan si vous souhaitez collaborer autour de fichiers bureautiques. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe."
 }
