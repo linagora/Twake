@@ -11,6 +11,10 @@ import Button from 'components/Buttons/Button.js';
 import ElectronService from 'services/electron/electron.js';
 import './Viewer.scss';
 import { Typography } from 'antd';
+import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
+import ModalManager from 'app/components/Modal/ModalManager';
+import InitService from 'app/services/InitService';
+import LockedOnlyOfficePopup from 'app/components/LockedFeaturesComponents/LockedOnlyOfficePopup/LockedOnlyOfficePopup';
 
 type PropsType = { [key: string]: any };
 type StateType = { [key: string]: any };
@@ -111,7 +115,20 @@ export default class Viewer extends Component<PropsType, StateType> {
             {!DriveService.previewonly && editor_candidate.length === 1 && (
               <Button
                 className="small open-with"
-                onClick={() => this.openFile(editor_candidate[0])}
+                onClick={() => {
+                  if (FeatureTogglesService.isActiveFeatureName(FeatureNames.ONLY_OFFICE)) {
+                    this.openFile(editor_candidate[0]);
+                  } else {
+                    ModalManager.open(
+                      <LockedOnlyOfficePopup />,
+                      {
+                        position: 'center',
+                        size: { width: '600px' },
+                      },
+                      false,
+                    );
+                  }
+                }}
               >
                 {Languages.t(
                   'scenes.apps.drive.viewer.edit_with_button',

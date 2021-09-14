@@ -3,13 +3,14 @@ import ObjectModal from 'app/components/ObjectModal/ObjectModal';
 import { Button, Row, Typography } from 'antd';
 import ModalManager from 'app/components/Modal/ModalManager';
 import Languages from 'services/languages/languages';
+import InitService from 'app/services/InitService';
 
 type PropsType = {
   pricingPlanUrl: string;
 };
 
 const { Title, Text } = Typography;
-export default ({ pricingPlanUrl }: PropsType) => (
+export default () => (
   <ObjectModal
     titleCenter
     titleLevel={2}
@@ -24,7 +25,13 @@ export default ({ pricingPlanUrl }: PropsType) => (
           type="primary"
           size="large"
           style={{ marginTop: 8 }}
-          onClick={() => window.open(pricingPlanUrl, 'blank')}
+          onClick={() =>
+            window.open(
+              InitService.server_infos?.configuration?.accounts?.console
+                ?.company_subscription_url || '',
+              'blank',
+            )
+          }
         >
           {Languages.t('components.locked_features.locked_guests_popup.learn_more_button')}
         </Button>

@@ -281,12 +281,7 @@ export default class CurrentUser extends Component {
             ModalManagerDepreciated.open(<CreateWorkspacePage />);
           } else {
             ModalManager.open(
-              <LockedWorkspacePopup
-                pricingPlanUrl={
-                  InitService.server_infos?.configuration?.accounts?.console
-                    ?.company_subscription_url || ''
-                }
-              />,
+              <LockedWorkspacePopup />,
               {
                 position: 'center',
                 size: { width: '600px' },
