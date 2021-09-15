@@ -51,7 +51,13 @@ jobs:
       - run: 'echo "DOCKERTAGVERSION=2021.Q3.735" >> $GITHUB_ENV'
       - name: Set env to develop
         if: endsWith(github.ref, '/develop')
-        run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=${{ env.DOCKERTAGVERSION }}-develop" >> $GITHUB_ENV'
+        run: 'echo "DOCKERTAG=develop" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=develop" >> $GITHUB_ENV'
+      - name: Set env to develop
+        if: endsWith(github.ref, '/qa')
+        run: 'echo "DOCKERTAG=qa" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=qa" >> $GITHUB_ENV'
+      - name: Set env to develop
+        if: endsWith(github.ref, '/canary')
+        run: 'echo "DOCKERTAG=canary" >> $GITHUB_ENV; echo "DOCKERTAGVERSION=${{ env.DOCKERTAGVERSION }}-canary" >> $GITHUB_ENV'
       - name: Set env to production
         if: endsWith(github.ref, '/main')
         run: 'echo "DOCKERTAG=latest" >> $GITHUB_ENV'

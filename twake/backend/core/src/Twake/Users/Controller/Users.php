@@ -48,7 +48,9 @@ class Users extends BaseController
             $user = [];
             foreach($id as $singleId){
                 $obj = $this->get("app.users")->getById($singleId);
-                $obj = $this->get("app.users")->completeUserWithCompanies($obj, $this->getUser());
+                if($obj){
+                    $obj = $this->get("app.users")->completeUserWithCompanies($obj, $this->getUser());
+                }
                 $user[] = $obj;
             }
         }
