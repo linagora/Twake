@@ -2,7 +2,7 @@ name: backend-build
 
 on:
   pull_request:
-    branches: [main, "feature/*"]
+    branches: [main, develop, qa, canary]
     paths:
       - "twake/backend/core/**"
       - "twake/backend/node/**"

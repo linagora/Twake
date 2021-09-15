@@ -172,16 +172,30 @@ class UsersConnections extends BaseController
             $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
             $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
 
+            $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId() . "");
+
             //This is needed because node do some stuff when loading workspaces list
             $api = $this->app->getServices()->get("app.restclient");
             $groupManagerRepository = $this->get("app.twake_doctrine")->getRepository("Twake\Workspaces:GroupUser");
             $groupLinks = $groupManagerRepository->findBy(Array("user" => $this->getUser()));
             $groups_ids = Array();
+            $empty_groups_ids = Array();
             foreach($groupLinks as $group){
-                $groups_ids[] = $group->getGroup()->getId();
+                $gid = $group->getGroup()->getId();
+                $groups_ids[] = $gid;
+                $foundWorkspace = false;
+                foreach($workspaces_obj as $workspace_obj){
+                    if($workspace_obj["group"]["id"] === $gid){
+                        $foundWorkspace = true;
+                    }
+                }
+                if(!$foundWorkspace){
+                    $empty_groups_ids[] = $group->getGroup()->getId();
+                }
             }
             $groups_ids = array_values(array_unique($groups_ids));
-            foreach($groups_ids as $gid){
+            $empty_groups_ids = array_values(array_unique($empty_groups_ids));
+            foreach($empty_groups_ids as $gid){
                 $url = str_replace("/private", "/internal/services/workspaces/v1", $this->app->getContainer()->getParameter("node.api"));
                 $url = $url . "companies/".$gid."/workspaces";
                 $opt = [
@@ -212,7 +226,6 @@ class UsersConnections extends BaseController
                 $workspaces[] = $value;
 
                 $workspaces_ids[] = $value["id"];
-                $groups_ids[] = $value["group"]["id"];
             }
 
             $workspaces_ids = array_values(array_unique($workspaces_ids));
