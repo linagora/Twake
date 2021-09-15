@@ -37,12 +37,6 @@ export default class Company {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onCreationData: any;
 
-  @Column("is_blocked", "twake_boolean")
-  isBlocked: boolean;
-
-  @Column("is_private", "twake_boolean")
-  isPrivate: boolean;
-
   @Column("member_count", "number")
   memberCount: number;
 

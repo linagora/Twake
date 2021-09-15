@@ -185,7 +185,7 @@ class UsersConnections extends BaseController
                 $groups_ids[] = $gid;
                 $foundWorkspace = false;
                 foreach($workspaces_obj as $workspace_obj){
-                    if($workspace_obj["group"]["id"] === $gid){
+                    if($workspace_obj["workspace"]->getGroup() === $gid){
                         $foundWorkspace = true;
                     }
                 }
