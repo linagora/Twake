@@ -1,17 +1,22 @@
-import { UserType } from "app/models/User";
-import UserAPIClient from "./UserAPIClient";
+import { UserType } from 'app/models/User';
+import UserAPIClient from './UserAPIClient';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 
 const currentUserRequests: { [key: string]: PromiseLike<UserType | null> } = {};
 const usersCollection = Collections.get('users');
+const doNotRetry: Map<string, boolean> = new Map();
 
-export default async (id: string): Promise<UserType | null> => {
+export default async (id: string): Promise<UserType | null> => {
   if (
     usersCollection.known_objects_by_id[id] &&
     new Date(usersCollection.known_objects_by_id[id]?._last_modified || 0).getTime() >
       new Date().getTime() - 1000 * 60 * 60
   ) {
     return usersCollection.known_objects_by_id[id];
+  }
+
+  if (doNotRetry.get(id)) {
+    return null;
   }
 
   if (currentUserRequests[id]) {
@@ -25,6 +30,7 @@ export default async (id: string): Promise<UserType | null> => {
       const users = await UserAPIClient._list([id]);
       const user = users.length ? users[0] : null;
       user && usersCollection.updateObject(user);
+      if (!user || !user?.id) doNotRetry.set(id, true);
       resolve(user);
     });
     currentUserRequests[id] = userPromise;
