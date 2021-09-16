@@ -145,6 +145,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     let workspace = getWorkspaceInstance({
       ...item,
       ...{
+        company_id: (context.user.server_request ? item.company_id : null) || context.company_id,
         name: "",
         dateAdded: Date.now(),
         isArchived: false,

@@ -345,10 +345,12 @@ class Login extends Observable {
 
     AccessRightsService.resetLevels();
 
-    user.workspaces.forEach(workspace => {
-      Workspaces.addToUser(workspace);
-      Groups.addToUser(workspace.group);
-    });
+    user.workspaces
+      .filter(workspace => workspace?.group?.id)
+      .forEach(workspace => {
+        Workspaces.addToUser(workspace);
+        Groups.addToUser(workspace.group);
+      });
 
     this.state = 'app';
     this.notify();
