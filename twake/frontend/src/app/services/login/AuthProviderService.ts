@@ -17,6 +17,12 @@ class AuthProviderService extends Observable {
   private authProviderUserManager: Oidc.UserManager | null = null;
 
   getAuthProviderConfiguration(): AuthProviderConfiguration {
+    if (document.location.hostname === 'localhost') {
+      JWTStorage.init();
+      LoginService.updateUser(() => {});
+      return null as unknown as AuthProviderConfiguration;
+    }
+
     const consoleConfiguration = InitService.server_infos?.configuration?.accounts.console;
 
     (window as any).AuthProviderService = this;

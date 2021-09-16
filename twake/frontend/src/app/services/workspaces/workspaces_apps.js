@@ -34,11 +34,27 @@ class WorkspacesApps extends Observable {
   }
 
   getApps() {
-    return (
-      Object.keys(this.apps_by_workspace[Workspaces.currentWorkspaceId] || {}).map(
-        id => this.apps_by_workspace[Workspaces.currentWorkspaceId][id],
-      ) || []
-    );
+    var workspace_apps_channels = Collections.get('channels').findBy({
+      direct: false,
+      application: true,
+      original_workspace: Workspaces.currentWorkspaceId,
+    });
+
+    var workspace_apps = workspace_apps_channels
+      .filter(channel => channel)
+      .filter(
+        channel =>
+          channel.app_id &&
+          channel.members &&
+          channel.members.length &&
+          (channel.members || []).concat(channel.ext_members || []).indexOf(CurrentUser.get().id) >=
+            0,
+      )
+      .map(ch => {
+        return Collections.get('applications').find(ch.app_id);
+      });
+
+    return workspace_apps;
   }
 
   getApp(id, callback = undefined) {

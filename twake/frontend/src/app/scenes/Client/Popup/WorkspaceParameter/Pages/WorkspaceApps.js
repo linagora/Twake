@@ -58,64 +58,6 @@ export default class WorkspaceApps extends Component {
     var is_group_manager = WorkspaceUserRights.hasGroupPrivilege('MANAGE_APPS');
 
     if (is_group_manager) {
-      menu = [
-        {
-          text: Languages.t(
-            'scenes.app.popup.workspaceparameter.pages.forced_apps_text',
-            [],
-            "Forcer dans toute l'entreprise",
-          ),
-          onClick: () => {
-            AlertManager.confirm(() => WorkspacesApps.forceInEntreprise(app.id));
-          },
-        },
-        {
-          type: 'react-element',
-          reactElement: () => {
-            return (
-              <div>
-                <Switch
-                  label={Languages.t(
-                    'scenes.app.popup.workspaceparameter.pages.automatique_label',
-                    [],
-                    'Automatique',
-                  )}
-                  checked={ga.workspace_default}
-                  onChange={state =>
-                    WorkspacesApps.defaultForWorkspacesInEntreprise(app.id, !ga.workspace_default)
-                  }
-                />
-              </div>
-            );
-          },
-        },
-        {
-          type: 'text',
-          text: Languages.t(
-            'scenes.app.popup.workspaceparameter.pages.automatique_option_text',
-            [],
-            "Si vous activez 'Automatique', cette application sera automatiquement ajoutée dans les prochains espaces de travail de cette entreprise.",
-          ),
-        },
-        { type: 'separator' },
-      ];
-    }
-
-    if (in_workspace) {
-      menu.push({
-        text: Languages.t(
-          'scenes.app.popup.workspaceparameter.pages.remove_from_workspace_text',
-          [],
-          "Supprimer de l'espace",
-        ),
-        className: 'error',
-        onClick: () => {
-          AlertManager.confirm(() => WorkspacesApps.desactivateApp(app.id));
-        },
-      });
-    }
-
-    if (is_group_manager) {
       menu.push({
         text: Languages.t(
           'scenes.app.popup.workspaceparameter.pages.remove_from_company_text',
