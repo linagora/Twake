@@ -223,9 +223,10 @@ class UsersConnections extends BaseController
                 $value["_user_is_admin"] = $workspace_obj["_user_is_admin"];
                 $value["role"] = ($value["_user_is_admin"] || $value["_user_is_organization_administrator"]) ? "moderator" : $value["role"];
 
-                $workspaces[] = $value;
-
-                $workspaces_ids[] = $value["id"];
+                if($value["group"]){
+                    $workspaces[] = $value;
+                    $workspaces_ids[] = $value["id"];
+                }
             }
 
             $workspaces_ids = array_values(array_unique($workspaces_ids));

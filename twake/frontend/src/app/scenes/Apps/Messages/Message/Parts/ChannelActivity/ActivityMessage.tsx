@@ -158,7 +158,9 @@ export default (props: PropsType): JSX.Element => {
     if (activity.context.array) {
       const resource = activity.context.array[0].resource as TabType;
       // WorkspaceApps.getApp() doesn't work
-      const connector = WorkspacesApps.getApps().filter(app => app.id === resource.application_id);
+      const connector = WorkspacesApps.getApps().filter(
+        (app: any) => app.id === resource.application_id,
+      );
 
       if (activity.context.type === 'add') {
         return translateUsingReactNode(
@@ -200,7 +202,7 @@ export default (props: PropsType): JSX.Element => {
     if (activity.context.array) {
       const resource = activity.context.array[0].resource as ChannelType;
       // WorkspaceApps.getApp() doesn't work
-      const connector = WorkspacesApps.getApps().filter(app =>
+      const connector = WorkspacesApps.getApps().filter((app: any) =>
         resource.connectors?.includes(app.id),
       );
 

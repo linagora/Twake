@@ -37,7 +37,7 @@ export default () => {
 
   return (
     <RecoilRoot>
-      <UserContext/>
+      <UserContext />
       <Integration>
         <Router history={RouterServices.history}>
           <Switch>

@@ -103,8 +103,9 @@ export default (props: Props) => {
     }
 
     var apps =
-      WorkspacesApps.getApps().filter(app => ((app.display || {}).messages_module || {}).action) ||
-      [];
+      WorkspacesApps.getApps().filter(
+        (app: any) => ((app.display || {}).messages_module || {}).action,
+      ) || [];
     if (apps.length > 0) {
       menu.push({ type: 'separator' });
       menu.push({

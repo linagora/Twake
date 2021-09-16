@@ -130,7 +130,7 @@ class Messages extends Observable {
         let app: any = null;
         let app_name = value.split(' ')[0].slice(1);
         // eslint-disable-next-line array-callback-return
-        WorkspacesApps.getApps().map(_app => {
+        WorkspacesApps.getApps().map((_app: any) => {
           if (_app.simple_name === app_name) {
             app = _app;
           }
