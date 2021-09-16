@@ -381,9 +381,10 @@ class DriveFileSystem
 
         $workspace_id = $file->getWorkspaceId();
         $workspace = $this->em->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspace_id));
+        $group = $this->em->getRepository("Twake\Workspaces:Group")->findOneBy(["id" => $workspace->getGroup()]);
 
         $notification_data = Array(
-            "group" => $workspace->getGroup()->getAsArray(),
+            "group" => $group->getAsArray(),
             "workspace" => $workspace->getAsArray($this->em),
             "file" => $file->getAsArray(),
             "user" => $current_user
