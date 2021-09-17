@@ -1495,6 +1495,7 @@
     "scenes.apps.account.account.fullname": "Full name",
     "login.email_login": "E-mail / Login",
     "login.session.expired": "Session expired",
+    "login.session.expired.text": "Click on OK to reconnect",
     "scenes.apps.account.account.password_for_user": "Password for your user",
     "scenes.apps.account.account.send_info": "Send this credential information to your user.",
     "scenes.apps.account.account.save": "Save account",
