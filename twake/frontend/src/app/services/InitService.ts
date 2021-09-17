@@ -49,7 +49,7 @@ class InitService extends Observable {
   private logger = Logger.getLogger("InitService");
 
   async init() {
-    this.server_infos = (await Api.get('/internal/services/general/v1/server', null, false, {
+    this.server_infos = (await Api.get('/internal/services/general/v1/server', undefined, false, {
       disableJWTAuthentication: true,
     })) as ServerInfoType;
 
