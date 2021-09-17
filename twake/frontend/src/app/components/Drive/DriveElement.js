@@ -18,6 +18,10 @@ import Languages from 'services/languages/languages';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import RouterServices from 'services/RouterService';
 import { getAsFrontUrl } from 'app/services/utils/URLUtils';
+import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
+import ModalManager from 'app/components/Modal/ModalManager';
+import InitService from 'app/services/InitService';
+import LockedOnlyOfficePopup from 'app/components/LockedFeaturesComponents/LockedOnlyOfficePopup/LockedOnlyOfficePopup';
 
 const RenameInput = props => {
   const [value, setValue] = useState(props.value);
@@ -326,19 +330,30 @@ export default class DriveElement extends React.Component {
             'Editer avec $1',
           ),
           onClick: () => {
-            var app = editor_candidate[0];
-            if (app.url && app.is_url_file) {
-              window.open(app.url);
+            if (FeatureTogglesService.isActiveFeatureName(FeatureNames.ONLY_OFFICE)) {
+              var app = editor_candidate[0];
+              if (app.url && app.is_url_file) {
+                window.open(app.url);
+              }
+              var app = app.app;
+              DriveService.getFileUrlForEdition(
+                (app.display.drive_module.can_open_files || {}).url,
+                app,
+                this.state.element.id,
+                url => {
+                  window.open(url);
+                },
+              );
+            } else {
+              ModalManager.open(
+                <LockedOnlyOfficePopup />,
+                {
+                  position: 'center',
+                  size: { width: '600px' },
+                },
+                false,
+              );
             }
-            var app = app.app;
-            DriveService.getFileUrlForEdition(
-              (app.display.drive_module.can_open_files || {}).url,
-              app,
-              this.state.element.id,
-              url => {
-                window.open(url);
-              },
-            );
           },
         });
       }
