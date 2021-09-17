@@ -1,12 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Menu } from 'react-feather';
 import { Layout } from 'antd';
+import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import popupService from 'services/popupManager/popupManager.js';
-import ListenWorkspacesList from 'services/workspaces/listen_workspaces_list.js';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 import MainView from './MainView/MainView';
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
@@ -22,31 +22,26 @@ import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 import useRouteState from 'app/services/hooks/useRouteState';
+import { useCurrentUser } from 'app/state/recoil/atoms/CurrentUser';
 
 import './Client.scss';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId } = useRouteState(({ companyId, workspaceId }) => ({ companyId, workspaceId }));
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const currentUser = useCurrentUser();
 
   popupService.useListener(useState);
   Workspaces.useListener(useState);
   Languages.useListener(useState);
   LoginService.useListener(useState);
 
-  useEffect(() => {
-    LoginService.init();
-    ListenWorkspacesList.startListen();
-    return () => {
-      ListenWorkspacesList.cancelListen();
-    };
-  }, []);
-
   let page: JSX.Element = <></>;
+
   if (popupService.isOpen()) {
     page = <PopupComponent key="PopupComponent" />;
   } else {
-    if (LoginService.currentUserId) {
+    if (currentUser) {
       page = (
         <Layout className="appPage fade_in">
           <NewVersionComponent />
@@ -68,7 +63,14 @@ export default (): JSX.Element => {
             >
               <SideBars />
             </Layout.Sider>
-            <MainView className={menuIsOpen ? "collapsed" : ""} key={'mainview-' + companyId + '-' + workspaceId} />
+            <MainView
+              className={
+                classNames({
+                  "collapsed": menuIsOpen,
+                })
+              }
+              key={`mainview-${companyId}-${workspaceId}`}
+            />
           </Layout>
         </Layout>
       );
