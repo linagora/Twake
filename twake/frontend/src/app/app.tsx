@@ -13,6 +13,7 @@ import UserContext from './state/recoil/integration/UserContext';
 
 import 'app/ui.scss';
 import 'app/theme.less';
+import { useLogin } from './services/login/useLogin';
 
 export default () => {
   useEffect(() => {
@@ -20,6 +21,7 @@ export default () => {
   }, []);
 
   const server_infos_loaded = InitService.useWatcher(() => InitService.server_infos_loaded);
+  const { init } = useLogin();
 
   useEffect(() => {
     if (server_infos_loaded) {
@@ -29,6 +31,15 @@ export default () => {
     }
   }, [server_infos_loaded]);
 
+  useEffect(() => {
+    console.log("LOGIN FROM app.tsx", server_infos_loaded);
+    if (server_infos_loaded) {
+      if (AuthService.getAccountType() === 'console') {
+        init();
+      }
+    }
+  }, [server_infos_loaded, init]);
+
   if (!server_infos_loaded) {
     return <div />;
   }
@@ -37,6 +48,22 @@ export default () => {
     // TODO This can be moved as context provider and then used correctly in components
     AuthService.getProvider();
   }
+
+  // TODO: Check auth
+  // TODO: handle internal login
+  //if (AuthService.getAccountType() === 'internal') {
+  //  RouterService.replace(
+  //    `${
+  //      RouterService.pathnames.LOGIN
+  //    }?auto&${RouterService.history.location.search.substr(1)}`);
+  //    return <></>;
+  //}
+
+  //if (AuthService.getAccountType() === 'console') {
+  //  console.log("AUTH");
+  //  LoginService.init();
+  //  return <></>;
+  //}
 
   return (
     <RecoilRoot>
@@ -63,17 +90,20 @@ export default () => {
                 />
               );
             })}
-            <Route
-              path="/"
-              component={() => {
-                RouterService.replace(
-                  `${
-                    RouterService.pathnames.LOGIN
-                  }?auto&${RouterService.history.location.search.substr(1)}`,
-                );
-                return <div />;
-              }}
-            />
+            {//
+             // AuthService.getAccountType() === "internal" &&
+             // <Route
+             //   path="/"
+             //   component={() => {
+             //     RouterService.replace(
+             //       `${
+             //         RouterService.pathnames.LOGIN
+             //       }?auto&${RouterService.history.location.search.substr(1)}`,
+             //     );
+             //     return <div />;
+             //   }}
+             // />
+            }
           </Switch>
         </Router>
       </Integration>
