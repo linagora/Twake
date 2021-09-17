@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import mimes from "./services/processing/mime";
 import fs from "fs";
 
-export function getTmpFile() {
+export function getTmpFile(): string {
   const targetDir = "/storage/twake/files/tmp/";
   fs.mkdirSync(targetDir, { recursive: true });
   return `${targetDir}${uuidv4()}`;

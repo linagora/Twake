@@ -98,7 +98,7 @@ class Service implements FileServiceAPI {
 
     if (file) {
       // Detect a new file upload
-      // Only applications car overwrite a file.
+      // Only applications can overwrite a file.
       // Users alone can only write an empty file.
       if (applicationId || !entity.upload_data?.size || context.user.server_request) {
         if (
@@ -159,7 +159,7 @@ class Service implements FileServiceAPI {
           };
 
           entity.metadata.thumbnails_status = "waiting";
-          this.repository.save(entity);
+          await this.repository.save(entity);
 
           try {
             await this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
@@ -180,9 +180,9 @@ class Service implements FileServiceAPI {
             }
           } catch (err) {
             entity.metadata.thumbnails_status = "error";
-            this.repository.save(entity);
+            await this.repository.save(entity);
 
-            logger.warn({ err }, `Previewing - Error while sending `);
+            logger.warn({ err }, "Previewing - Error while sending ");
           }
         }
 

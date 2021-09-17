@@ -8,10 +8,11 @@ import { TwakeServiceOptions } from "./service-options";
 import { PREFIX_METADATA, CONSUMES_METADATA } from "./constants";
 import { logger } from "../logger";
 
-let pendingServices: any = {};
+const pendingServices: any = {};
 
 export abstract class TwakeService<T extends TwakeServiceProvider>
-  implements TwakeServiceInterface<TwakeServiceProvider> {
+  implements TwakeServiceInterface<TwakeServiceProvider>
+{
   state: BehaviorSubject<TwakeServiceState>;
   readonly name: string;
   protected readonly configuration: TwakeServiceConfiguration;
