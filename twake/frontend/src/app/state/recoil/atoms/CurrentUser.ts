@@ -1,4 +1,4 @@
-import { atom, AtomEffect } from "recoil";
+import { atom, AtomEffect, useRecoilValue } from "recoil";
 
 import { UserType } from "app/models/User";
 import UserContextState from "../../UserContextState";
@@ -14,3 +14,5 @@ export const CurrentUserState = atom<UserType | undefined>({
     currentUserEffect,
   ]
 });
+
+export const useCurrentUser = () => useRecoilValue(CurrentUserState);
