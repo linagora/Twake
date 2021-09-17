@@ -497,7 +497,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   async completeMessageFiles(message: Message, files: Message["files"]) {
-    if (files.length === 0 && message.files.length === 0) {
+    if (files.length === 0 && (message.files || []).length === 0) {
       return message;
     }
 
@@ -523,6 +523,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
     }
 
+    message.files = [];
+
     for (const file of message.files) {
       const entity =
         existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0] || new MessageFile();
@@ -544,6 +546,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
 
       entity.metadata = file.metadata;
+      message.files.push(file);
 
       //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
       await this.msgFilesRepository.save(entity);
