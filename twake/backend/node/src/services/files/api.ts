@@ -61,6 +61,9 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
    * @param context
    */
   get(id: string, context: CompanyExecutionContext): Promise<File>;
+
+  getThumbnailRoute(file: File, index: string): string;
+  getDownloadRoute(file: File): string;
 }
 
 export interface FilePubsubHandler<InputMessage, OutputMessage>
