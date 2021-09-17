@@ -2,7 +2,6 @@ import Oidc from 'oidc-client';
 
 import environment from '../../../../environment/environment';
 import { ConsoleConfiguration } from '../../../InitService';
-import JWT, { JWTDataType } from '../../../JWTService';
 import Observable from '../../../Observable/Observable';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../../../utils/URLUtils';
@@ -10,6 +9,7 @@ import { TwakeService } from '../../../Decorators/TwakeService';
 import EnvironmentService from '../../../EnvironmentService';
 import { AuthProvider, InitParameters } from '../AuthProvider';
 import ConsoleService from 'app/services/Console/ConsoleService';
+import { JWTDataType } from 'app/services/JWTService';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';
@@ -35,7 +35,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     }
 
     if (!this.userManager) {
-      Oidc.Log.logger = Logger.getLogger("OIDC");
+      Oidc.Log.logger = Logger.getLogger("OIDCClient");
       Oidc.Log.level = EnvironmentService.isProduction() ? Oidc.Log.WARN : Oidc.Log.DEBUG;
 
       this.userManager = new Oidc.UserManager({
@@ -46,7 +46,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         response_type: 'code',
         scope: 'openid profile email address phone offline_access',
         post_logout_redirect_uri: getAsFrontUrl(OIDC_SIGNOUT_URL),
-        silent_redirect_uri: getAsFrontUrl(OIDC_SILENT_URL),
+        //silent_redirect_uri: getAsFrontUrl(OIDC_SILENT_URL),
         automaticSilentRenew: true,
         loadUserInfo: true,
         accessTokenExpiringNotificationTime: 60,
@@ -69,24 +69,35 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
             return;
           }
 
-          jwt && JWT.update(jwt);
-          // TODO: LoginService.updateUser() ?;
+          params.onNewToken(jwt);
         });
       });
 
       this.userManager.events.addAccessTokenExpired(() => {
         this.logger.debug('OIDC access token expired listener');
-        this.silentLogin(() => {
-          this.logger.error('OIDC access token expired listener, error while getting the JWT from OIDC token');
-          params.onSessionExpired && params.onSessionExpired();
-        });
+        this.silentLogin(
+          () => {
+            this.logger.error('OIDC access token expired listener, error while getting the JWT from OIDC token');
+            params.onSessionExpired && params.onSessionExpired();
+          },
+          (token) => {
+            this.logger.error('OIDC access token expired listener, got a new token');
+            params.onNewToken(token);
+          }
+        );
       });
 
       this.userManager.events.addAccessTokenExpiring(() => {
         this.logger.debug('OIDC access token is expiring');
-        this.silentLogin(() => {
-          this.logger.error('OIDC access token expiring listener, error while doing a silent login');
-        });
+        this.silentLogin(
+          () => {
+            this.logger.error('OIDC access token expiring listener, error while doing a silent login');
+          },
+          (token) => {
+            this.logger.error('OIDC access token expiring listener, got a new token');
+            params.onNewToken(token);
+          }
+        );
       });
 
       this.userManager.events.addSilentRenewError(error => {
@@ -104,10 +115,16 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
       //This manage the initial sign-in when loading the app
       if (this.enforceFrontendUrl()) {
-        this.silentLogin(() => {
-          this.logger.error('OIDC Init error');
-          params.onSessionExpired && params.onSessionExpired();
-        });
+        this.silentLogin(
+          () => {
+            this.logger.error('OIDC Init, silent login error, redirecting to login');
+            this.userManager?.signinRedirect();
+          },
+          (token) => {
+            this.logger.error('OIDC Init, silent login got a new token');
+            params.onNewToken(token);
+          }
+        );
       }
     }
 
@@ -133,7 +150,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     return true;
   }
 
-  private async silentLogin(onError: () => void): Promise<void> {
+  private async silentLogin(onError: () => void, onNewToken: (token?: JWTDataType) => void): Promise<void> {
     if (!this.userManager) {
       this.logger.debug('silentLogin, no auth provider');
       return;
@@ -162,9 +179,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
               return;
             }
 
-            jwt && JWT.update(jwt);
-            // TODO: Do we need to update user from Login service?
-            //LoginService.updateUser();
+            onNewToken(jwt);
           });
         } else {
           //If no we try a redirect signin
@@ -181,6 +196,14 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
   async signIn(): Promise<void> {
     this.logger.info('Signin');
+    await this.silentLogin(
+      () => {
+        this.logger.error('Silent login error');
+      },
+      (token) => {
+        this.logger.info('Signin got a new token');
+      }
+    );
   }
 
   async signOut(): Promise<void> {
@@ -192,9 +215,9 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
     try {
       await this.userManager.signoutRedirect();
-      JWT.clear();
+      //JWT.clear();
       // FIXME: can reload to the OIDC signin window, not to the twake one to do not loose time...
-      window.location.reload();
+      //window.location.reload();
     } catch (err) {
       this.logger.error('Signout redirect error', err);
     }

@@ -8,14 +8,16 @@ import LocalStorage from 'services/LocalStorage';
 import Collections from 'services/Collections/Collections';
 import Application from 'services/Application';
 import RouterServices from 'services/RouterService';
-import JWT from 'services/JWTService';
+import JWT, { JWTDataType } from 'services/JWTService';
 import Logger from 'services/Logger';
 import WindowState from 'services/utils/window';
 import { UserType } from 'app/models/User';
 import AlertManager from '../AlertManager/AlertManager';
 import Languages from '../languages/languages';
+import UserAPIClient from '../user/UserAPIClient';
 
 export type LoginState = '' | 'app' | 'error' | 'signin' | 'verify_mail' | 'forgot_password' | 'logged_out' | 'logout';
+type InitState = '' | 'initializing' | 'initialized';
 @TwakeService('Login')
 class LoginService extends Observable {
   logger: Logger.Logger;
@@ -23,12 +25,11 @@ class LoginService extends Observable {
   userIsSet!: Promise<string>;
   login_loading: boolean = false;
   login_error: boolean = false;
+  initState: InitState = '';
+  currentUserId: string = '';
+  private _state: LoginState = '';
   // FIXME: Should be removed
   error_secondary_mail_already: boolean = false;
-  firstInit: boolean = false;
-  currentUserId: string = '';
-  initialized = false;
-  private _state: LoginState = '';
 
   constructor() {
     super();
@@ -50,37 +51,57 @@ class LoginService extends Observable {
    * The session expired and we are not able to slient renew it
    */
   onSessionExpired() {
-    this.logger.error('Session expired');
+    this.logger.error('Session expired, displaying alert');
     AlertManager.confirm(
       () => this.logout(),
-      () => this.logout(),
+      undefined,
       {
         title: Languages.t('login.session.expired', undefined, 'Session expired'),
+        text: Languages.t('login.session.expired.text', undefined, 'Click on OK to reconnect'),
       },
     );
-
   }
 
-  async init(): Promise<void> {
-    // TODO: Manage states from URL parameters for internal strategy
-    // FIXME: THis condition is false, we do not want to do it again and again
-    if (this.firstInit) {
+  async init(): Promise<UserType | null> {
+    return new Promise((resolve, reject) => {
+      this.logger.debug(`Initializing state=${this.initState}`);
+      if (['initializing', 'initialized'].includes(this.initState)) {
+        reject(new Error(`LoginService is ${this.initState}`));
+        return;
+      }
+
+      this.initState = 'initializing';
+
       this.getAuthProvider().init({
         onSessionExpired: () => this.onSessionExpired(),
+        onNewToken: async token => {
+          this.onNewToken(token);
+
+          if (this.initState === 'initializing') {
+            const user = await this.comleteInit();
+            this.initState = 'initialized';
+            resolve(user);
+            // TODO: move it to somewhere else...
+            RouterServices.push(RouterServices.generateRouteFromState({}));
+          }
+        },
       });
-      // basic auth
-      //this.reset();
-      await JWT.init();
-    } else {
-      this.updateUser();
+    });
+  }
+
+  onNewToken(token?: JWTDataType): void {
+    if (token) {
+      JWT.update(token);
+    // TODO: Update the user from API?
+    // this.updateUser();
     }
   }
 
-  async login(params: any): Promise<void> {
+  async login(params: any): Promise<UserType> {
     if (this.login_loading) {
       this.logger.debug('Login is already in progress');
 
-      return;
+      //return;
     }
 
     const provider = this.getAuthProvider();
@@ -88,7 +109,7 @@ class LoginService extends Observable {
     if (!provider.signIn) {
       this.logger.info('Selected provider does not support signIn');
 
-      return;
+      throw new Error('Selected provider does not support signIn');
     }
 
     this.login_error = false;
@@ -99,12 +120,12 @@ class LoginService extends Observable {
     return provider.signIn(params)
       .then(() => {
         this.logger.info('SignIn complete');
-        return this.updateUser();
       })
       .catch((err: Error) => {
         this.logger.error('Provider signIn Error', err);
         this.login_error = true;
       })
+      .then(() => UserAPIClient.getCurrent(true))
       .finally(() => {
         this.login_loading = false;
         this.notify();
@@ -120,6 +141,7 @@ class LoginService extends Observable {
     return new Promise((resolve, reject) => {
       Api.post('users/logout', {}, async () => {
         try {
+          // FIXME: Signout seems to redirect to / and so we loop...
           this.getAuthProvider().signOut && (await this.getAuthProvider().signOut!({ no_reload }));
           this.logger.debug('SignOut complete');
           this.state = 'logged_out';
@@ -136,43 +158,45 @@ class LoginService extends Observable {
     return AuthService.getProvider();
   }
 
-  updateUser(callback?: (user: UserType) => void): void {
+  updateUser(callback?: (user?: UserType) => void): void {
     this.logger.debug('Updating user');
     if (Globals.store_public_access_get_data) {
-      this.firstInit = true;
+      //this.initialized = false;
       this.state = 'logged_out';
       this.notify();
       return;
     }
 
-    this.fetchUser((res) => {
-      this.firstInit = true;
-      if (res.errors.length > 0) {
-        this.logger.debug('Error while fetching user', res.errors);
+    this.fetchUser(user => {
+      this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);
+      //this.firstInit = true;
+      if (!user) {
+      //if (!res.data || res.errors?.length) {
+        this.logger.debug('Error while fetching user');
         this.state = 'logged_out';
         WindowState.reset();
-        RouterServices.push(
-          RouterServices.addRedirection(
-            `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-          ),
-        );
+        // TODO: This is up to the strategy to redirect to the right path, the internal will return to this, the console will not...
+        //RouterServices.push(
+        //  RouterServices.addRedirection(
+        //    `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
+        //  ),
+        //);
       } else {
-        // TODO: DO not start app each time
-        this.startApp(res.data as UserType);
+        //this.startApp(user);
       }
 
-      callback && callback(res.data as UserType);
+      callback && callback(user);
     });
   }
 
-  private fetchUser(callback: (res: { errors: any[], data: UserType }) => void) {
-    Api.post(
-      'users/current/get',
-      { timezone: new Date().getTimezoneOffset() },
-      (res: { errors: any[], data: UserType }) => callback(res),
-      false,
-      { disableJWTAuthentication: true },
-    );
+  private fetchUser(callback: (user?: UserType) => void) {
+    this.logger.debug('fetchUser');
+    UserAPIClient.getCurrent(true)
+      .then(result => callback(result))
+      .catch(err => {
+        this.logger.error('Error while fetching user', err);
+        callback();
+      });
   }
 
   clear() {
@@ -200,12 +224,15 @@ class LoginService extends Observable {
     this.resetCurrentUser();
   }
 
-  startApp(user: UserType) {
+  private async comleteInit(): Promise<UserType | null> {
     this.logger.info('Starting application');
+    const user = await UserAPIClient.getCurrent(true);
+    this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);
     this.setCurrentUser(user);
-    Application.start(user);
+    await Application.start(user);
     this.state = 'app';
-    RouterServices.push(RouterServices.generateRouteFromState({}));
+
+    return user;
   }
 }
 

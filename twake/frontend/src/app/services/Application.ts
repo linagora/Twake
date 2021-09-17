@@ -10,9 +10,12 @@ import JWT from 'app/services/JWTService';
 import Collections from 'app/services/Collections/Collections';
 import Globals from 'app/services/Globals';
 import UserNotifications from 'app/services/user/UserNotifications';
+import WorkspacesListener from './workspaces/WorkspacesListener';
+import UserAPIClient from './user/UserAPIClient';
 
 class Application {
   private logger: Logger.Logger;
+  private started = false;
 
   constructor() {
     this.logger = Logger.getLogger('Application');
@@ -21,24 +24,32 @@ class Application {
   /**
    * Start the Twake application: Starting all the required services for the given user
    */
-  start(user: UserType): void {
-    this.logger.info('Starting application for user', user.id);
+  async start(user: UserType): Promise<void> {
+    if (this.started) {
+      this.logger.info('Application is already started');
+      return;
+    }
+    this.started = true;
+    this.logger.info('Starting application for user', user);
     this.configureCollections(user);
+
+    WorkspacesListener.startListen();
 
     DepreciatedCollections.get('users').updateObject(user);
     AccessRightsService.resetLevels();
 
-    user.workspaces.forEach((workspace: { group: any; }) => {
-      Workspaces.addToUser(workspace);
-      Groups.addToUser(workspace.group);
-    });
+    await this.setupWorkspaces();
 
     UserNotifications.start();
     CurrentUser.start();
     user.language && Languages.setLanguage(user.language);
   }
 
-  configureCollections(user: UserType) {
+  stop(): void {
+    WorkspacesListener.cancelListen();
+  }
+
+  private configureCollections(user: UserType) {
     if (user?.id) {
       Collections.setOptions({
         storageKey: user.id,
@@ -74,6 +85,17 @@ class Application {
       });
       Collections.connect();
     }
+  }
+
+  private async setupWorkspaces() {
+    // Legacy code, will need to be cleaned once we can have all the information in the new backend APIs...
+    const user = await UserAPIClient._fetchCurrent();
+
+    user?.workspaces?.forEach((workspace: { group: any; }) => {
+      this.logger.debug('Starting workspace', workspace);
+      Workspaces.addToUser(workspace);
+      Groups.addToUser(workspace.group);
+    });
   }
 }
 
