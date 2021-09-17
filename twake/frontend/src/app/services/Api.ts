@@ -43,13 +43,13 @@ class GroupedQueryApi {
 const GroupedQueryApiInstance = new GroupedQueryApi();
 
 export default class Api {
-  static get(
+  static get<T>(
     route: string,
-    callback: any = false,
+    callback?: (result: T) => void,
     raw: boolean = false,
     options: { disableJWTAuthentication?: boolean } = {},
-  ) {
-    return new Promise((resolve, reject) => {
+  ): Promise<T> {
+    return new Promise(resolve => {
       //@ts-ignore old code to fix
       route =
         //@ts-ignore old code to fix
@@ -62,26 +62,23 @@ export default class Api {
         route,
         '',
         (resp: any) => {
-          if (raw) {
-            resolve(resp);
-            if (callback) callback(resp);
-            return;
-          }
-          resolve(JSON.parse(resp));
-          if (callback) callback(JSON.parse(resp));
+          const result: T = raw ? resp : JSON.parse(resp);
+
+          resolve(result);
+          callback && callback(result);
         },
         options,
       );
     });
   }
 
-  static post(
+  static post<T>(
     route: string,
     data: any,
-    callback: any = false,
+    callback?: (result: any) => void,
     raw: boolean = false,
     options: { disableJWTAuthentication?: boolean } = {},
-  ) {
+  ): Promise<T> {
     return new Promise((resolve, reject) => {
       if (data && data._grouped && route === 'core/collections/init') {
         GroupedQueryApiInstance.post(route, data, callback);
