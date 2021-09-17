@@ -27,6 +27,7 @@ class JWT {
   constructor() {
     this.data = this.getInitialData();
     this.logger = Logger.getLogger('JWT');
+    this.init();
   }
 
   private getInitialData(): JWTDataType {
@@ -40,7 +41,8 @@ class JWT {
     };
   }
 
-  async init() {
+  private init() {
+    this.logger.debug('Init service');
     this.update(LocalStorage.getItem<JWTDataType>('jwt') as JWTDataType, { fromLocalStorage: true });
   }
 
@@ -92,7 +94,7 @@ class JWT {
   isAccessExpired(): boolean {
     const expired = new Date().getTime() / 1000 - this.data.expiration > 0;
 
-    expired && this.logger.debug('Access token expired!');
+    expired && this.logger.debug(`Access token expired, expiration time was ${this.data.expiration}`);
 
     return expired;
   }
@@ -100,7 +102,7 @@ class JWT {
   isRefreshExpired(): boolean {
     const expired = new Date().getTime() / 1000 - this.data.refresh_expiration > 0;
 
-    expired && this.logger.debug('Refresh token expired!');
+    expired && this.logger.debug(`Refresh token expired, expiration time was ${this.data.refresh_expiration}`);
 
     return expired;
   }
