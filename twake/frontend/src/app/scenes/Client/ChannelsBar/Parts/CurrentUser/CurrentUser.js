@@ -16,13 +16,15 @@ import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/Works
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import NotificationParameters from 'services/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/scenes/Client/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
-import CreateCompanyView from 'app/scenes/Client/Popup/CreateCompanyView/CreateCompanyView.js';
 import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
-import popupManager from 'services/popupManager/popupManager.js';
+import ModalManagerDepreciated from 'services/popupManager/popupManager';
 import Button from 'components/Buttons/Button.js';
 import InitService from 'app/services/InitService';
 import AccessRightsService from 'services/AccessRightsService';
 import Workspaces from 'services/workspaces/workspaces.js';
+import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
+import LockedWorkspacePopup from 'app/components/LockedFeaturesComponents/LockedWorkspacePopup/LockedWorkspacePopup';
+import ModalManager from 'app/components/Modal/ModalManager';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -166,7 +168,7 @@ export default class CurrentUser extends Component {
               '_blank',
             );
           } else {
-            popupManager.open(<UserParameter />);
+            ModalManagerDepreciated.open(<UserParameter />);
           }
         },
       },
@@ -194,7 +196,7 @@ export default class CurrentUser extends Component {
           ),
           icon: 'cog',
           onClick: () => {
-            popupManager.open(<WorkspaceParameter />, true, 'workspace_parameters');
+            ModalManagerDepreciated.open(<WorkspaceParameter />, true, 'workspace_parameters');
           },
         });
       }
@@ -209,7 +211,7 @@ export default class CurrentUser extends Component {
           ),
           icon: 'apps',
           onClick: () => {
-            popupManager.open(
+            ModalManagerDepreciated.open(
               <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
               true,
               'workspace_parameters',
@@ -227,7 +229,11 @@ export default class CurrentUser extends Component {
         ),
         icon: 'users-alt',
         onClick: () => {
-          popupManager.open(<WorkspaceParameter initial_page={2} />, true, 'workspace_parameters');
+          ModalManagerDepreciated.open(
+            <WorkspaceParameter initial_page={2} />,
+            true,
+            'workspace_parameters',
+          );
         },
       });
     } else {
@@ -271,7 +277,18 @@ export default class CurrentUser extends Component {
         ),
         icon: 'plus',
         onClick: () => {
-          popupManager.open(<CreateWorkspacePage />);
+          if (FeatureTogglesService.isActiveFeatureName(FeatureNames.MULTIPLE_WORKSPACES)) {
+            ModalManagerDepreciated.open(<CreateWorkspacePage />);
+          } else {
+            ModalManager.open(
+              <LockedWorkspacePopup />,
+              {
+                position: 'center',
+                size: { width: '600px' },
+              },
+              false,
+            );
+          }
         },
       });
     }
