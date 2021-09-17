@@ -155,7 +155,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     if (serverRequest || messageOwnerAndNotRemoved) {
-      message = await this.completeMessageFiles(message, item.files);
+      message = await this.completeMessageFiles(message, item.files || []);
     }
 
     this.onSaved(message, { created: messageCreated }, context);
