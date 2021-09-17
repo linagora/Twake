@@ -29,6 +29,7 @@ class AlertService {
       content: options?.text || Languages.t('components.alert.confirm_click'),
       onOk: onConfirm,
       onCancel: onClose,
+      cancelButtonProps: onClose ? {} : { style: { display: 'none' } },
     });
   }
 }
