@@ -36,7 +36,7 @@ export default () => {
   }
 
   return (
-    <div className={'loginPage'}>
+    <div className='loginPage'>
       {server_infos_loaded && !server_infos?.configuration?.branding?.name && (
         <div className="twake_logo" />
       )}
