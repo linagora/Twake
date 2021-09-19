@@ -101,7 +101,8 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
             stream = stream.pipe(decipher);
           }
         } catch (err) {
-          callback(new Error(`No such chunk ${chunk}`));
+          callback();
+          //          callback(new Error(`No such chunk ${chunk}`));
           return;
         }
         callback(null, stream);
@@ -111,6 +112,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
       return new Multistream(factory);
     } catch (err) {
       logger.error(err);
+      logger.error("An error occured with multistream");
       return null;
     }
   }
