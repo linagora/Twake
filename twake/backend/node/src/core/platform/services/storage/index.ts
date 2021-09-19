@@ -47,62 +47,72 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
   }
 
   async write(path: string, stream: Stream, options?: WriteOptions): Promise<WriteMetadata> {
-    if (options.encryptionKey) {
-      const [key, iv] = options.encryptionKey.split(".");
-      const cipher = createCipheriv(options.encryptionAlgo, key, iv);
-      stream = stream.pipe(cipher);
-    }
-    if (options.chunkNumber) path = `${path}/chunk${options.chunkNumber}`;
-
-    if (this.encryptionOptions.secret) {
-      try {
-        const cipher = createCipheriv(
-          this.algorithm,
-          this.encryptionOptions.secret,
-          this.encryptionOptions.iv,
-        );
+    try {
+      if (options.encryptionKey) {
+        const [key, iv] = options.encryptionKey.split(".");
+        const cipher = createCipheriv(options.encryptionAlgo, key, iv);
         stream = stream.pipe(cipher);
-      } catch (err) {
-        logger.error("Unable to createCipheriv: %s", err);
       }
+      if (options.chunkNumber) path = `${path}/chunk${options.chunkNumber}`;
+
+      if (this.encryptionOptions.secret) {
+        try {
+          const cipher = createCipheriv(
+            this.algorithm,
+            this.encryptionOptions.secret,
+            this.encryptionOptions.iv,
+          );
+          stream = stream.pipe(cipher);
+        } catch (err) {
+          logger.error("Unable to createCipheriv: %s", err);
+        }
+      }
+      return await this.getConnector().write(path, stream);
+    } catch (err) {
+      logger.error(err);
+      return null;
     }
-    return await this.getConnector().write(path, stream);
   }
 
   async read(path: string, options?: ReadOptions): Promise<Readable> {
-    const self = this;
+    try {
+      const self = this;
 
-    let decipher: Decipher;
-    if (options.encryptionKey) {
-      const [key, iv] = options.encryptionKey.split(".");
-      decipher = createDecipheriv(options.encryptionAlgo, key, iv);
-    }
-
-    const chunks = options.totalChunks;
-    let count = 1;
-    let stream;
-    async function factory(callback: (err?: Error, stream?: Stream) => unknown) {
-      if (count > chunks) {
-        callback();
-        return;
+      let decipher: Decipher;
+      if (options.encryptionKey) {
+        const [key, iv] = options.encryptionKey.split(".");
+        decipher = createDecipheriv(options.encryptionAlgo, key, iv);
       }
 
-      const chunk = options.totalChunks ? `${path}/chunk${count++}` : path;
-
-      try {
-        stream = await self._read(chunk);
-        if (decipher) {
-          stream = stream.pipe(decipher);
+      const chunks = options.totalChunks;
+      let count = 1;
+      let stream;
+      async function factory(callback: (err?: Error, stream?: Stream) => unknown) {
+        if (count > chunks) {
+          callback();
+          return;
         }
-      } catch (err) {
-        callback(new Error(`No such chunk ${chunk}`));
+
+        const chunk = options.totalChunks ? `${path}/chunk${count++}` : path;
+
+        try {
+          stream = await self._read(chunk);
+          if (decipher) {
+            stream = stream.pipe(decipher);
+          }
+        } catch (err) {
+          callback(new Error(`No such chunk ${chunk}`));
+          return;
+        }
+        callback(null, stream);
         return;
       }
-      callback(null, stream);
-      return;
-    }
 
-    return new Multistream(factory);
+      return new Multistream(factory);
+    } catch (err) {
+      logger.error(err);
+      return null;
+    }
   }
 
   async _read(path: string) {
