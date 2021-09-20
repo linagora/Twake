@@ -45,7 +45,8 @@ class ConsoleService {
     workspace_id: string;
     company_id: string;
     emails: string[];
-    role?: ConsoleMemberRole;
+    workspace_role?: 'moderator' | 'member';
+    company_role?: ConsoleMemberRole;
   }) {
     const res: any = await Api.post(
       `/internal/services/workspaces/v1/companies/${data.company_id}/workspaces/${data.workspace_id}/users/invite`,
@@ -53,8 +54,8 @@ class ConsoleService {
         invitations: [
           ...data.emails.map(email => ({
             email,
-            role: 'member',
-            company_role: 'member',
+            role: data.workspace_role || 'member',
+            company_role: data.company_role || 'member',
           })),
         ],
       },

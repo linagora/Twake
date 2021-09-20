@@ -81,7 +81,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         inviter: { email: user.inviterEmail },
       };
 
-      return this.client
+      const result = await this.client
         .post(`/api/companies/${company.code}/users/invitation`, invitationData, {
           auth: this.auth(),
           headers: {
@@ -89,6 +89,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
           },
         })
         .then(({ data }) => data);
+
+      return result;
     }
   }
 
@@ -105,7 +107,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       };
     }
 
-    return this.client
+    const result = await this.client
       .put(
         `/api/companies/${company.code}/users/${user.id}`,
         { role: user.role },
@@ -117,6 +119,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         },
       )
       .then(({ data }) => data);
+
+    return result;
   }
 
   async createCompany(company: CreateConsoleCompany): Promise<CreatedConsoleCompany> {
@@ -126,7 +130,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       return company;
     }
 
-    return this.client
+    const result = await this.client
       .post("/api/companies", company, {
         auth: this.auth(),
         headers: {
@@ -134,6 +138,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         },
       })
       .then(({ data }) => data);
+
+    return result;
   }
 
   addUserToTwake(user: CreateConsoleUser): Promise<User> {
