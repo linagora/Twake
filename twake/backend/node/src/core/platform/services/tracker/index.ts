@@ -5,6 +5,7 @@ import TrackerAPI from "./provider";
 import { localEventBus } from "../../framework/pubsub";
 import { IdentifyObjectType, TrackedEventType, TrackerConfiguration } from "./types";
 import { ResourceEventsPayload } from "../../../../utils/types";
+import { md5 } from "src/core/crypto";
 
 @Consumes([])
 export default class Tracker extends TwakeService<TrackerAPI> implements TrackerAPI {
@@ -108,7 +109,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
   ): Promise<void> {
     const analiticsIdentity = {
       userId: identity.user?.allow_tracking ? identity.user.identity_provider_id : undefined,
-      anonymousId: "anonymous",
+      anonymousId: "anonymous-" + md5(identity.user.identity_provider_id),
       ...identity, //Fixme: right now we use this to send onboarding emails so user is not completely anonymous yet
     };
 
