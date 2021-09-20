@@ -12,7 +12,8 @@ import StorageAPI from "../../../../core/platform/services/storage/provider";
  * Generate thumbnails when the upload is finished
  */
 export class PreviewProcessor
-  implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback> {
+  implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback>
+{
   constructor(
     service: PreviewServiceAPI,
     private pubsub: PubsubServiceAPI,
@@ -53,6 +54,10 @@ export class PreviewProcessor
       encryptionAlgo: message.document.encryption_algo,
       encryptionKey: message.document.encryption_key,
     });
+    if (!readable) {
+      return { document: message.document, thumbnails: [] };
+    }
+
     const inputPath = getTmpFile();
     const writable = fs.createWriteStream(inputPath);
     readable.pipe(writable);
