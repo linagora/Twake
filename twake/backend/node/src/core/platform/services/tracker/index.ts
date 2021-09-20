@@ -109,7 +109,7 @@ export default class Tracker extends TwakeService<TrackerAPI> implements Tracker
   ): Promise<void> {
     const analiticsIdentity = {
       userId: identity.user?.allow_tracking ? identity.user.identity_provider_id : undefined,
-      anonymousId: "anonymous-" + md5(identity.user.identity_provider_id),
+      anonymousId: `anonymous-${md5(identity.user.identity_provider_id)}`,
       ...identity, //Fixme: right now we use this to send onboarding emails so user is not completely anonymous yet
     };
 
