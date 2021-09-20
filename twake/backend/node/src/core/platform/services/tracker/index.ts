@@ -5,7 +5,7 @@ import TrackerAPI from "./provider";
 import { localEventBus } from "../../framework/pubsub";
 import { IdentifyObjectType, TrackedEventType, TrackerConfiguration } from "./types";
 import { ResourceEventsPayload } from "../../../../utils/types";
-import { md5 } from "src/core/crypto";
+import { md5 } from "../../../../core/crypto";
 
 @Consumes([])
 export default class Tracker extends TwakeService<TrackerAPI> implements TrackerAPI {
