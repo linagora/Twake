@@ -16,6 +16,7 @@ import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
 
 import './Input.scss';
+import ChatUploadService from 'app/components/ChatUploads/ChatUploadService';
 
 type FileType = { [key: string]: any };
 
@@ -214,6 +215,12 @@ export default (props: Props) => {
     return attachements.length ? limit - attachements.length : limit;
   };
 
+  const onAddFiles = async (files: File[]) => {
+    const chatUploadService = new ChatUploadService();
+
+    await chatUploadService.upload(files);
+  };
+
   const disabled = isEmpty() || isTooLong;
   return (
     <div
@@ -237,6 +244,7 @@ export default (props: Props) => {
         multiple={true}
         allowPaste={true}
         filesLimit={getFilesLimit()}
+        onAddFiles={onAddFiles}
       >
         <EphemeralMessages
           channelId={props.channelId}
