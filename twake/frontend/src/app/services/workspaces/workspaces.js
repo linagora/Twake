@@ -251,38 +251,20 @@ class Workspaces extends Observable {
         that.addToUser(res.data.workspace);
         workspace = res.data.workspace;
         if (wsMembers.length > 0) {
-          if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
-            //Invite using console
-            ConsoleService.addMailsInWorkspace({
-              workspace_id: res.data.workspace.id || '',
-              company_id: res.data.workspace.group.id || '',
-              emails: wsMembers,
-            }).finally(() => {
-              that.loading = false;
-              popupManager.close();
-              if (workspace) {
-                that.select(workspace);
-              } else {
-                that.notify();
-              }
-            });
-          } else {
-            var data = {
-              workspaceId: res.data.workspace.id,
-              list: wsMembers.join(','),
-              asExterne: false,
-            };
-
-            Api.post('/ajax/workspace/members/addlist', data, () => {
-              that.loading = false;
-              popupManager.close();
-              if (workspace) {
-                that.select(workspace);
-              } else {
-                that.notify();
-              }
-            });
-          }
+          //Invite using console
+          ConsoleService.addMailsInWorkspace({
+            workspace_id: res.data.workspace.id || '',
+            company_id: res.data.workspace.group.id || '',
+            emails: wsMembers,
+          }).finally(() => {
+            that.loading = false;
+            popupManager.close();
+            if (workspace) {
+              that.select(workspace);
+            } else {
+              that.notify();
+            }
+          });
         } else {
           that.loading = false;
           popupManager.close();

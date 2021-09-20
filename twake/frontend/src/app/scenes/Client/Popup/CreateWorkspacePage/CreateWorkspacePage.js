@@ -88,6 +88,7 @@ export default class CreateWorkspacePage extends Component {
         <AddUserByEmail
           inline
           onChange={members => {
+            this.state.members = member;
             this.setState({ members });
             this.setState({});
           }}
@@ -111,7 +112,7 @@ export default class CreateWorkspacePage extends Component {
         this.did_create_workspace = true;
         WorkspaceService.createWorkspace(
           this.state.name,
-          this.state.members,
+          this.state.members || [],
           GroupService.currentGroupId,
         );
       }
