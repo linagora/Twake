@@ -70,4 +70,5 @@ jobs:
           git push
       - uses: actions-ecosystem/action-add-labels@v1
         with:
-          labels: "staging:main"
+          labels: "staging:canary"
+          #In the future: add main in the list of cherry-picked environments
