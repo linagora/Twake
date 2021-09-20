@@ -88,7 +88,7 @@ export default class CreateWorkspacePage extends Component {
         <AddUserByEmail
           inline
           onChange={members => {
-            this.state.members = member;
+            this.state.members = members;
             this.setState({ members });
             this.setState({});
           }}

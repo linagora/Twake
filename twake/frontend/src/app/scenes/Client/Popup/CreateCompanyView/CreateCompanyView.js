@@ -328,7 +328,7 @@ export default class CreateCompanyView extends Component {
         <AddUserByEmail
           inline
           onChange={members => {
-            this.state.members = member;
+            this.state.members = members;
             this.setState({ members: members });
           }}
           previous={() => this.previous()}
