@@ -54,3 +54,23 @@ jobs:
       - uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "staging:canary"
+
+  request-priority-1:
+    if: github.event.label.name == 'priority:1' && github.event.pull_request.merged == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: cherry-picking
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git fetch
+          git switch qa 
+          git cherry-pick ${github.event.pull_request.merge_commit_sha}
+          git push
+          git switch canary 
+          git cherry-pick ${github.event.pull_request.merge_commit_sha}
+          git push
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "staging:main"
