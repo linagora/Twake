@@ -1,0 +1,82 @@
+name: labels
+
+on:
+  pull_request:
+    types:
+      - labeled
+  push:
+    branches:
+      - develop
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: log-all
+        run: |
+          echo ref: ${{github.ref}}
+          echo merged: ${{github.event.pull_request.merged}}
+          echo label: ${{github.event.label.name}}
+
+  set-staging-develop:
+    if: github.ref == 'refs/heads/develop' && github.event.pull_request.merged == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "staging:develop"
+
+  request-qa:
+    if: github.event.label.name == 'qa:ready' && github.event.pull_request.merged == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: cherry-picking
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git fetch
+          git switch qa 
+          git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
+          git push
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "staging:qa"
+
+  request-canary:
+    if: github.event.label.name == 'canary:ready' && github.event.pull_request.merged == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: cherry-picking
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git fetch
+          git switch canary 
+          git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
+          git push
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "staging:canary"
+
+  request-priority-1:
+    if: github.event.label.name == 'priority:1' && github.event.pull_request.merged == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: cherry-picking
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
+          git fetch
+          git switch qa 
+          git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
+          git push
+          git switch canary 
+          git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
+          git push
+      - uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: "staging:main"
