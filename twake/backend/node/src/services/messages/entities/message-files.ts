@@ -11,11 +11,11 @@ export const TYPE = "message_files";
 export class MessageFile {
   @Type(() => String)
   @Column("message_id", "timeuuid", { order: "DESC" })
-  message_id: string;
+  message_id?: string;
 
   @Type(() => String)
   @Column("id", "timeuuid", { order: "DESC" })
-  id: string;
+  id?: string;
 
   @Column("metadata", "encoded_json")
   metadata: MessageFileMetadata;
@@ -25,10 +25,10 @@ export type MessageFileMetadata = {
   source: "internal" | "drive" | string; //Uuid of the corresponding connector
   external_id: string | any;
 
-  name: string; //Original file name
-  type: string; //Original file mime
-  size: number; //Original file weight
-  thumbnails: (Thumbnail & { url: string })[]; //Url to thumbnail (or set it to undefined if no relevant)
+  name?: string; //Original file name
+  type?: string; //Original file mime
+  size?: number; //Original file weight
+  thumbnails?: (Thumbnail & { url: string })[]; //Url to thumbnail (or set it to undefined if no relevant)
 };
 
 export type MessageFilePrimaryKey = Pick<MessageFile, "message_id" | "id">;
