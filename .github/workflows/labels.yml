@@ -31,9 +31,6 @@ jobs:
           git switch qa 
           git cherry-pick ${github.event.pull_request.merge_commit_sha}
           git push
-        with:
-          branch: qa
-          github.event.pull_request.merge_commit_sha
       - uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "staging:qa"
