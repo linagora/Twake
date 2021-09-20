@@ -12,7 +12,8 @@ import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 import MainView from './MainView/MainView';
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
 import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
-import UploadViewer from 'components/Uploads/UploadViewer.js';
+import DriveUploadViewer from 'components/Uploads/UploadViewer.js';
+import ChatUploadsViewer from 'components/ChatUploads/UploadsViewer';
 import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
 import Viewer from 'scenes/Apps/Drive/Viewer/Viewer';
 import ModalComponent from 'app/components/Modal/ModalComponent';
@@ -27,7 +28,10 @@ import useRouteState from 'app/services/hooks/useRouteState';
 import './Client.scss';
 
 export default (): JSX.Element => {
-  const { companyId, workspaceId } = useRouteState(({ companyId, workspaceId }) => ({ companyId, workspaceId }));
+  const { companyId, workspaceId } = useRouteState(({ companyId, workspaceId }) => ({
+    companyId,
+    workspaceId,
+  }));
   const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   popupService.useListener(useState);
@@ -60,7 +64,7 @@ export default (): JSX.Element => {
               theme="light"
               width={290}
               onCollapse={(collapsed, type) => {
-                if(type === 'responsive'){
+                if (type === 'responsive') {
                   setMenuIsOpen(false);
                   return;
                 }
@@ -84,12 +88,13 @@ export default (): JSX.Element => {
       {page}
       <MenusBodyLayer />
       <DraggableBodyLayer />
-      <UploadViewer />
+      <DriveUploadViewer />
       <ConfigBodyLayer />
       <Viewer />
       <ModalComponent />
       <SearchPopup />
       <ConnectionIndicator />
+      <ChatUploadsViewer />
     </>
   );
 };
