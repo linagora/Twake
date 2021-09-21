@@ -2,6 +2,7 @@ import AuthServiceAPI, { JwtConfiguration } from "./provider";
 import jwt from "jsonwebtoken";
 import { AccessToken, JWTObject, uuid } from "../../../../utils/types";
 import assert from "assert";
+import { JwtType } from "../types";
 
 export class AuthService implements AuthServiceAPI {
   version: "1";
@@ -22,7 +23,11 @@ export class AuthService implements AuthServiceAPI {
     return jwt.verify(token, this.configuration.secret) as JWTObject;
   }
 
-  generateJWT(userId: uuid, email: string, allow_tracking: boolean = false): AccessToken {
+  generateJWT(
+    userId: uuid,
+    email: string,
+    options = { track: false, provider_id: "" },
+  ): AccessToken {
     const now = Math.round(new Date().getTime() / 1000); // Current time in UTC
     assert(this.configuration.expiration, "jwt.expiration is missing");
     assert(this.configuration.refresh_expiration, "jwt.refresh_expiration is missing");
@@ -40,16 +45,19 @@ export class AuthService implements AuthServiceAPI {
         nbf: now - 60 * 10,
         sub: userId,
         email: email,
-        track: allow_tracking,
-      }),
+        track: options.track,
+        provider_id: options.provider_id,
+      } as JwtType),
       refresh: this.sign({
         exp: jwtRefreshExpiration,
         type: "refresh",
         iat: now - 60 * 10,
         nbf: now - 60 * 10,
         sub: userId,
-        track: allow_tracking,
-      }),
+        email: email,
+        track: options.track,
+        provider_id: options.provider_id,
+      } as JwtType),
       type: "Bearer",
     };
   }
