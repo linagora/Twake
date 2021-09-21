@@ -1,6 +1,8 @@
-const unoconv = require("unoconv-promise");
-import { unlink } from "fs/promises";
+import * as unoconv from "unoconv-promise";
+import { promises as fsPromise } from "fs";
 import { logger } from "../../../../core/platform/framework/logger";
+
+const { unlink } = fsPromise;
 
 export async function convertFromOffice(
   path: string,

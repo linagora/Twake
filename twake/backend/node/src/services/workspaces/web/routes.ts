@@ -39,7 +39,7 @@ const routes: FastifyPluginCallback<{
     options.service.console,
   );
 
-  const accessControl = async (request: FastifyRequest) => {
+  const accessControl = async () => {
     // TODO
     const authorized = true;
 
