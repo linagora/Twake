@@ -34,6 +34,30 @@ class UserAPIClient {
       });
     });
   }
+
+  async getCurrent(disableJWTAuthentication = false): Promise<UserType> {
+    return Api.get<{resource: UserType}>(
+      '/internal/services/users/v1/users/me',
+      undefined,
+      false,
+      { disableJWTAuthentication },
+    ).then(result => result.resource);
+  }
+
+  /**
+   * Legacy API, will have to be removed!
+   *
+   * @returns
+   */
+  async _fetchCurrent(): Promise<UserType> {
+    return Api.post<{ timezone: number }, { data: UserType }>(
+      'users/current/get',
+      { timezone: new Date().getTimezoneOffset() },
+      undefined,
+      false,
+      { disableJWTAuthentication: true },
+    ).then(result => result.data);
+  }
 }
 
 export default new UserAPIClient();

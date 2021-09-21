@@ -43,13 +43,13 @@ class GroupedQueryApi {
 const GroupedQueryApiInstance = new GroupedQueryApi();
 
 export default class Api {
-  static get(
+  static get<Response>(
     route: string,
-    callback: any = false,
+    callback?: (result: Response) => void,
     raw: boolean = false,
     options: { disableJWTAuthentication?: boolean } = {},
-  ) {
-    return new Promise((resolve, reject) => {
+  ): Promise<Response> {
+    return new Promise(resolve => {
       route = Globals.api_root_url + route;
 
       Requests.request(
@@ -57,47 +57,44 @@ export default class Api {
         route,
         '',
         (resp: any) => {
-          if (raw) {
-            resolve(resp);
-            if (callback) callback(resp);
-            return;
-          }
-          resolve(JSON.parse(resp));
-          if (callback) callback(JSON.parse(resp));
+          const result: Response = raw ? resp : JSON.parse(resp);
+
+          resolve(result);
+          callback && callback(result);
         },
         options,
       );
     });
   }
 
-  static put(
+  static put<Request, Response>(
     route: string,
-    data: any,
-    callback: any = false,
+    data: Request,
+    callback?: (result: Response) => void,
     raw: boolean = false,
     options: {
       disableJWTAuthentication?: boolean;
     } = {},
   ) {
-    return Api.request(route, data, callback, raw, { ...options, requestType: 'put' });
+    return Api.request<Request, Response>(route, data, callback, raw, { ...options, requestType: 'put' });
   }
 
-  static post(
+  static post<Request, Response>(
     route: string,
-    data: any,
-    callback: any = false,
+    data: Request,
+    callback?: (result: Response) => void,
     raw: boolean = false,
     options: {
       disableJWTAuthentication?: boolean;
     } = {},
-  ) {
-    return Api.request(route, data, callback, raw, { ...options, requestType: 'post' });
+  ): Promise<Response> {
+    return Api.request<Request, Response>(route, data, callback, raw, { ...options, requestType: 'post' });
   }
 
-  static delete(
+  static delete<Request, Response>(
     route: string,
-    data: any,
-    callback: any = false,
+    data: Request,
+    callback?: (result: Response) => void,
     raw: boolean = false,
     options: {
       disableJWTAuthentication?: boolean;
@@ -106,16 +103,16 @@ export default class Api {
     return Api.request(route, data, callback, raw, { ...options, requestType: 'delete' });
   }
 
-  static request(
+  static request<Request extends { _grouped?: unknown }, Response>(
     route: string,
-    data: any,
+    data: Request,
     callback: any = false,
     raw: boolean = false,
     options: {
       disableJWTAuthentication?: boolean;
       requestType?: 'post' | 'get' | 'put' | 'delete';
     } = {},
-  ) {
+  ): Promise<Response> {
     return new Promise((resolve, reject) => {
       if (data && data._grouped && route === 'core/collections/init') {
         GroupedQueryApiInstance.post(route, data, callback);

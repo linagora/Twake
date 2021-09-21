@@ -6,7 +6,7 @@ import { Layout } from 'antd';
 import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import popupService from 'services/popupManager/popupManager.js';
-import ListenWorkspacesList from 'services/workspaces/listen_workspaces_list.js';
+import WorkspacesListener from 'services/workspaces/WorkspacesListener';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 import MainView from './MainView/MainView';
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
@@ -36,9 +36,9 @@ export default (): JSX.Element => {
 
   useEffect(() => {
     LoginService.init();
-    ListenWorkspacesList.startListen();
+    WorkspacesListener.startListen();
     return () => {
-      ListenWorkspacesList.cancelListen();
+      WorkspacesListener.cancelListen();
     };
   }, []);
 
