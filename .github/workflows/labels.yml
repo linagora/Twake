@@ -15,13 +15,20 @@ jobs:
       - name: log-all
         run: |
           echo ref: ${{github.ref}}
-          echo merged: ${{github.event.pull_request.merged == 'true'}} ${{github.event.pull_request.merged}}
+          echo merged: ${{github.event.pull_request.merged == true}} ${{github.event.pull_request.merged}}
           echo action: ${{github.event.action}}
           echo label: ${{github.event.label.name}}
           echo action-is-closed: ${{github.event.action == 'closed'}}
-          echo set-staging-develop: ${{github.ref == 'refs/heads/develop' && github.event.action == 'closed' && github.event.pull_request.merged == 'true'}}
-          echo request-qa: ${{github.event.label.name == 'qa:ready' && github.event.pull_request.merged == 'true'}}
+          echo set-staging-develop: ${{github.ref == 'refs/heads/develop' && github.event.action == 'closed' && github.event.pull_request.merged == true}}
+          echo request-qa: ${{github.event.label.name == 'qa:ready' && github.event.pull_request.merged == true}}
           echo is backend label: ${{github.event.label.name == 'backend'}}
+
+  test-merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: good
+        run: echo 'merged'
 
   test-label:
     if: github.event.label.name == 'qa:ready'
@@ -31,7 +38,7 @@ jobs:
         run: echo 'qa:ready'
 
   set-staging-develop:
-    if: github.ref == 'refs/heads/develop' && github.event.action == 'closed' && github.event.pull_request.merged == 'true'
+    if: github.ref == 'refs/heads/develop' && github.event.action == 'closed' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -40,7 +47,7 @@ jobs:
           labels: "staging:develop"
 
   request-qa:
-    if: github.event.label.name == 'qa:ready' && github.event.pull_request.merged == 'true'
+    if: github.event.label.name == 'qa:ready' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -57,7 +64,7 @@ jobs:
           labels: "staging:qa"
 
   request-canary:
-    if: github.event.label.name == 'canary:ready' && github.event.pull_request.merged == 'true'
+    if: github.event.label.name == 'canary:ready' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -74,7 +81,7 @@ jobs:
           labels: "staging:canary"
 
   request-priority-1:
-    if: github.event.label.name == 'priority:1' && github.event.pull_request.merged == 'true'
+    if: github.event.label.name == 'priority:1' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
