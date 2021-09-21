@@ -48,7 +48,10 @@ export class ConsoleController {
       access_token: this.authService.generateJWT(
         request.currentUser.id,
         request.currentUser.email,
-        request.currentUser?.allow_tracking || false,
+        {
+          track: request.currentUser?.allow_tracking || false,
+          provider_id: request.currentUser.identity_provider_id,
+        },
       ),
     };
   }
@@ -177,11 +180,10 @@ export class ConsoleController {
     if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
       throw CrudExeption.forbidden("Password doesn't match");
     }
-    return this.authService.generateJWT(
-      user.id,
-      user.email_canonical,
-      user.preferences?.allow_tracking || false,
-    );
+    return this.authService.generateJWT(user.id, user.email_canonical, {
+      track: user?.preferences?.allow_tracking || false,
+      provider_id: user.identity_provider_id,
+    });
   }
 
   private async authByToken(accessToken: string): Promise<AccessToken> {
@@ -191,11 +193,10 @@ export class ConsoleController {
     if (!user) {
       throw CrudExeption.notFound(`User details not found for access token ${accessToken}`);
     }
-    return this.authService.generateJWT(
-      user.id,
-      user.email_canonical,
-      user.preferences?.allow_tracking || false,
-    );
+    return this.authService.generateJWT(user.id, user.email_canonical, {
+      track: user?.preferences?.allow_tracking || false,
+      provider_id: user.identity_provider_id,
+    });
   }
 }
 
