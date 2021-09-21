@@ -19,7 +19,11 @@ export default interface AuthServiceAPI extends TwakeServiceProvider {
    */
   verifyToken(token: string): JWTObject;
 
-  generateJWT(userId: uuid, email: string, enableTracking?: boolean): AccessToken;
+  generateJWT(
+    userId: uuid,
+    email: string,
+    options: { track: boolean; provider_id: string },
+  ): AccessToken;
 }
 
 export interface JwtConfiguration {
