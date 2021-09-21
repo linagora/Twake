@@ -1,11 +1,13 @@
 import { PDFImage } from "pdf-image";
-import { unlink } from "fs/promises";
+import { promises as fsPromise } from "fs";
+
+const { unlink } = fsPromise;
 
 export async function convertFromPdf(
   inputPath: string,
   numberOfPages: number,
 ): Promise<{ output: string[]; done: boolean }> {
-  let pages: string[] = [];
+  const pages: string[] = [];
 
   try {
     const pdfImage = new PDFImage(inputPath);

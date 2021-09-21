@@ -1,7 +1,9 @@
 import sharp from "sharp";
-import { unlink } from "fs/promises";
+import { promises as fsPromise } from "fs";
 import { getTmpFile } from "../../utils";
 import { PreviewPubsubRequest, ThumbnailResult } from "../../types";
+
+const { unlink } = fsPromise;
 
 export async function generatePreview(
   inputPaths: string[],
@@ -10,10 +12,10 @@ export async function generatePreview(
   output: ThumbnailResult[];
   done: boolean;
 }> {
-  let output: ThumbnailResult[] = [];
+  const output: ThumbnailResult[] = [];
 
   for (const inputPath of inputPaths) {
-    var result: sharp.OutputInfo;
+    let result: sharp.OutputInfo;
 
     try {
       const outputPath = getTmpFile();
@@ -47,12 +49,9 @@ function computeNewFormat(
 ): { width: number; height: number } {
   const maxOutputWidth = options?.width || 300;
   const maxOutputHeight = options?.height || 200;
-
   const inputWidth = inputMetadata.width;
   const inputHeight = inputMetadata.height;
-
   const scale = Math.max(inputWidth / maxOutputWidth, inputHeight / maxOutputHeight);
-  let output = { width: Math.round(inputWidth / scale), height: Math.round(inputHeight / scale) };
 
-  return output;
+  return { width: Math.round(inputWidth / scale), height: Math.round(inputHeight / scale) };
 }

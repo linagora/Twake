@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+import { v1 as uuidv1 } from "uuid";
 import { ConsoleServiceClient } from "../client-interface";
 import {
   ConsoleCompany,
@@ -13,18 +14,14 @@ import {
   UpdatedConsoleUserRole,
 } from "../types";
 
-import { v1 as uuidv1 } from "uuid";
 import User, { getInstance } from "../../user/entities/user";
 import { ConsoleServiceAPI } from "../api";
 import Company, {
-  CompanyPrimaryKey,
   CompanySearchKey,
   getInstance as getCompanyInstance,
 } from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
-import { memoize } from "lodash";
 import UserServiceAPI from "../../user/api";
-import { ExternalGroupPrimaryKey } from "../../user/entities/external_company";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
 
@@ -49,7 +46,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company: ConsoleCompany,
     user: CreateConsoleUser,
   ): Promise<CreatedConsoleUser> {
-    logger.info(`Remote: addUserToCompany`);
+    logger.info("Remote: addUserToCompany");
 
     if (this.dryRun) {
       return {
@@ -98,7 +95,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company: ConsoleCompany,
     user: UpdateConsoleUserRole,
   ): Promise<UpdatedConsoleUserRole> {
-    logger.info(`Remote: updateUserRole`);
+    logger.info("Remote: updateUserRole");
 
     if (this.dryRun) {
       return {
@@ -124,7 +121,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   async createCompany(company: CreateConsoleCompany): Promise<CreatedConsoleCompany> {
-    logger.info(`Remote: createCompany`);
+    logger.info("Remote: createCompany");
 
     if (this.dryRun) {
       return company;
@@ -142,14 +139,15 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     return result;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addUserToTwake(user: CreateConsoleUser): Promise<User> {
-    logger.info(`Remote: addUserToTwake`);
+    logger.info("Remote: addUserToTwake");
     //should do noting for real console
     return Promise.resolve(undefined);
   }
 
   async updateLocalCompanyFromConsole(partialCompanyDTO: ConsoleHookCompany): Promise<Company> {
-    logger.info(`Remote: updateLocalCompanyFromConsole`);
+    logger.info("Remote: updateLocalCompanyFromConsole");
 
     const companyDTO = await this.fetchCompanyInfo(partialCompanyDTO.details.code);
 
@@ -190,7 +188,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   async updateLocalUserFromConsole(partialUserDTO: ConsoleHookUser): Promise<User> {
-    logger.info(`Remote: updateLocalUserFromConsole`);
+    logger.info("Remote: updateLocalUserFromConsole");
 
     const userDTO = await this.fetchUserInfo(partialUserDTO._id);
 
@@ -286,7 +284,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   async removeCompanyUser(consoleUserId: string, company: Company): Promise<void> {
-    logger.info(`Remote: removeCompanyUser`);
+    logger.info("Remote: removeCompanyUser");
 
     const user = await this.userService.users.getByConsoleId(consoleUserId);
     if (!user) {
@@ -296,9 +294,9 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   async removeUser(consoleUserId: string): Promise<void> {
-    logger.info(`Remote: removeUser`);
+    logger.info("Remote: removeUser");
 
-    let user = await this.userService.users.getByConsoleId(consoleUserId);
+    const user = await this.userService.users.getByConsoleId(consoleUserId);
 
     if (!user) {
       throw new Error("User does not exists on Twake.");
@@ -313,7 +311,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   async removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
-    logger.info(`Remote: removeCompany`);
+    logger.info("Remote: removeCompany");
     await this.userService.companies.removeCompany(companySearchKey);
   }
 
@@ -354,19 +352,17 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   getUserByAccessToken(accessToken: string): Promise<ConsoleHookUser> {
-    logger.info(`Remote: getUserByAccessToken`);
+    logger.info("Remote: getUserByAccessToken");
     return this.client
       .get("/api/users/profile", {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + accessToken,
+          Authorization: `Bearer ${accessToken}`,
         },
       })
-      .then(({ data }) => {
-        return data;
-      })
+      .then(({ data }) => data)
       .catch(e => {
-        if (e.response.status === 401) {
+        if (e.response?.status === 401) {
           throw CrudExeption.forbidden("Bad access token credentials");
         }
         throw e;
@@ -374,7 +370,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   }
 
   async resendVerificationEmail(email: string) {
-    logger.info(`Remote: resendVerificationEmail`);
+    logger.info("Remote: resendVerificationEmail");
     return this.client
       .post(
         "/api/users/resend-verification-email",
@@ -388,9 +384,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
           },
         },
       )
-      .then(({ data }) => {
-        return data;
-      })
+      .then(({ data }) => data)
       .catch(e => {
         if (e.response.status === 401) {
           throw CrudExeption.forbidden("Bad credentials");

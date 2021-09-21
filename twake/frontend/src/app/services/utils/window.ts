@@ -113,6 +113,11 @@ class WindowState {
     }
     return result;
   }
+
+  public reset() {
+    this.setPrefix();
+    this.setSuffix();
+  }
 }
 
 export default new WindowState();

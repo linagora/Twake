@@ -1,13 +1,13 @@
+import fs from "fs";
+import { promises as fsPromise } from "fs";
 import { PreviewPubsubHandler, PreviewServiceAPI } from "../../api";
 import { logger, TwakeContext } from "../../../../core/platform/framework";
-import _ from "lodash";
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { PreviewPubsubCallback, PreviewPubsubRequest, ThumbnailResult } from "../../types";
 import { getTmpFile } from "../../utils";
-import fs from "fs";
-import { unlink } from "fs/promises";
 import StorageAPI from "../../../../core/platform/services/storage/provider";
 
+const { unlink } = fsPromise;
 /**
  * Generate thumbnails when the upload is finished
  */

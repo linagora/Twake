@@ -1,5 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
-import ClientPage from 'app/scenes/Client/Client';
+
+import Client from 'app/scenes/Client/Client';
 import InitService from 'app/services/InitService';
 
 export default () => {
@@ -9,5 +11,5 @@ export default () => {
     return <div />;
   }
 
-  return <ClientPage />;
+  return <Client />;
 };
