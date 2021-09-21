@@ -4,7 +4,7 @@ on:
   pull_request:
     types:
       - labeled
-  push:
+      - closed
     branches:
       - develop
 
@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: log-all
         run: |
-          echo ref: ${{github.ref}}
+          echo ref: ${{github.ref}} 
           echo merged: ${{github.event.pull_request.merged == true}} ${{github.event.pull_request.merged}}
           echo action: ${{github.event.action}}
           echo label: ${{github.event.label.name}}
@@ -22,24 +22,9 @@ jobs:
           echo set-staging-develop: ${{github.ref == 'refs/heads/develop' && github.event.action == 'closed' && github.event.pull_request.merged == true}}
           echo request-qa: ${{github.event.label.name == 'qa:ready' && github.event.pull_request.merged == true}}
           echo is backend label: ${{github.event.label.name == 'backend'}}
-          echo sha: ${{github.event.pull_request.merge_commit_sha}}
-
-  test-merged:
-    if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    steps:
-      - name: good
-        run: echo 'merged'
-
-  test-label:
-    if: github.event.label.name == 'qa:ready'
-    runs-on: ubuntu-latest
-    steps:
-      - name: good
-        run: echo 'qa:ready'
 
   set-staging-develop:
-    if: github.ref == 'refs/heads/develop' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
