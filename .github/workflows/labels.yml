@@ -22,6 +22,7 @@ jobs:
           echo set-staging-develop: ${{github.ref == 'refs/heads/develop' && github.event.action == 'closed' && github.event.pull_request.merged == true}}
           echo request-qa: ${{github.event.label.name == 'qa:ready' && github.event.pull_request.merged == true}}
           echo is backend label: ${{github.event.label.name == 'backend'}}
+          echo sha: ${{github.event.pull_request.merge_commit_sha}}
 
   test-merged:
     if: github.event.pull_request.merged == true
