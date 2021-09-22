@@ -32,10 +32,16 @@ export type FileType = {
   user_id: string;
 };
 
-export type PendingFileType = {
-  resumable: typeof Resumable | null; //Contain the resumable instance in charge of this file
+export type PendingFileStateType = {
+  id: string;
   file: FileType | null; //Will contain the final object returned by API
-  tmpFile: File; //Will be used to get filename, temporary thumbnail
-  status: 'pending' | 'error' | 'success';
+  status: 'pending' | 'error' | 'success' | 'pause';
   progress: number; //Between 0 and 1
+};
+
+export type PendingFileType = {
+  id: string;
+  resumable: typeof Resumable | null; //Contain the resumable instance in charge of this file
+  state: PendingFileStateType;
+  tmpFile: File; //Will be used to get filename, temporary thumbnail
 };

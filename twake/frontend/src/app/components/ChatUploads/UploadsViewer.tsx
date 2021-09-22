@@ -1,25 +1,27 @@
-import { PendingFilesListState } from 'app/state/recoil/atoms/PendingFilesList';
 import React, { useEffect } from 'react';
+import { PendingFilesListState } from 'app/state/recoil/atoms/PendingFilesList';
 import { useRecoilState } from 'recoil';
-import ChatUploadService from './ChatUploadService';
+import ChatUploadServiceManager, { ChatUploadService } from './ChatUploadService';
 
 import PendingFilesList from 'app/components/FileComponents/PendingFilesList';
 
 let chatUploadService: ChatUploadService;
-
-export default (): JSX.Element => {
-  const [pendingFilesList, setPendingFilesList] = useRecoilState(PendingFilesListState);
+const ChatUploadsViewer = (): JSX.Element => {
+  const [pendingFilesListState, setPendingFilesListState] = useRecoilState(PendingFilesListState);
 
   useEffect(() => {
-    chatUploadService = new ChatUploadService();
-    chatUploadService.setHandler(setPendingFilesList);
+    chatUploadService = ChatUploadServiceManager.get();
+    chatUploadService.setHandler(setPendingFilesListState);
 
     return chatUploadService.destroy.bind(chatUploadService);
-  }, [setPendingFilesList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  return pendingFilesList && pendingFilesList?.length > 0 ? (
-    <PendingFilesList files={pendingFilesList} />
+  return pendingFilesListState && pendingFilesListState?.length > 0 ? (
+    <PendingFilesList pendingFilesState={pendingFilesListState} />
   ) : (
     <></>
   );
 };
+
+export default ChatUploadsViewer;

@@ -1,5 +1,5 @@
 import { CompanyType } from 'app/models/Company';
-import { PendingFileType } from 'app/models/File';
+import { PendingFileStateType } from 'app/models/File';
 import { UserType } from 'app/models/User';
 import { UserContext } from 'app/models/UserContext';
 import { WorkspaceType } from 'app/models/Workspace';
@@ -12,7 +12,7 @@ class UserContextState implements UserContext {
   private _user: UserType | undefined;
   private _company: CompanyType | undefined;
   private _workspace: WorkspaceType | undefined;
-  private _pending_files_list: PendingFileType[] | undefined;
+  private _pending_files_list: PendingFileStateType[] | undefined;
 
   set user(user: UserType | undefined) {
     user && (this._user = { ...user });
@@ -38,12 +38,12 @@ class UserContextState implements UserContext {
     return this._workspace as WorkspaceType;
   }
 
-  set pending_files_list(pendingFilesList: PendingFileType[] | undefined) {
+  set pending_files_list(pendingFilesList: PendingFileStateType[] | undefined) {
     pendingFilesList && (this._pending_files_list = pendingFilesList);
   }
 
   get pending_files_list() {
-    return this._pending_files_list as PendingFileType[];
+    return this._pending_files_list as PendingFileStateType[];
   }
 }
 

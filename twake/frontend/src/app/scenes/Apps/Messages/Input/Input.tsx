@@ -16,7 +16,7 @@ import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
 
 import './Input.scss';
-import ChatUploadService from 'app/components/ChatUploads/ChatUploadService';
+import ChatUploadServiceManager from 'app/components/ChatUploads/ChatUploadService';
 
 type FileType = { [key: string]: any };
 
@@ -216,7 +216,7 @@ export default (props: Props) => {
   };
 
   const onAddFiles = async (files: File[]) => {
-    const chatUploadService = new ChatUploadService();
+    const chatUploadService = ChatUploadServiceManager.get();
 
     await chatUploadService.upload(files);
   };

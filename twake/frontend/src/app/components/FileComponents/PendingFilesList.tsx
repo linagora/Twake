@@ -4,53 +4,45 @@ import { Minus, Plus } from 'react-feather';
 import './styles.scss';
 import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
-import { PendingFileType } from 'app/models/File';
+import { PendingFileStateType } from 'app/models/File';
+import ChatUploadServiceManager from '../ChatUploads/ChatUploadService';
 
 type PropsType = {
-  files: PendingFileType[];
+  pendingFilesState: PendingFileStateType[];
 };
 
 const { Text } = Typography;
 const { Header, Content } = Layout;
-export default ({ files }: PropsType) => {
-  const [hidePendingFiles, setHidePendingFiles] = useState<boolean>(false);
-  return files.length > 0 ? (
+export default ({ pendingFilesState }: PropsType) => {
+  const chatUploadService = ChatUploadServiceManager.get();
+  const [hiddenPendingFiles, setHiddenPendingFiles] = useState<boolean>(false);
+  return pendingFilesState.length > 0 ? (
     <Layout className="pending-files-list-layout">
       <Header
         className="pending-files-list-header"
-        style={{ borderRadius: !hidePendingFiles ? '8px 8px 0 0' : 8 }}
+        style={{ borderRadius: hiddenPendingFiles ? 8 : '8px 8px 0 0', cursor: 'pointer' }}
+        onClick={() => setHiddenPendingFiles(!hiddenPendingFiles)}
       >
         <Row justify="space-between" align="middle">
           <Col>
             <Text style={{ color: 'var(--white)' }}>
+              {/* TODO add the total number of pendingFiles uploaded */}
               {Languages.t('components.drive_dropzone.uploading')}
             </Text>
           </Col>
           <Col style={{ display: 'flex', alignItems: 'center' }}>
-            {!hidePendingFiles ? (
-              <Minus
-                size={18}
-                onClick={() => setHidePendingFiles(!hidePendingFiles)}
-                style={{ cursor: 'pointer' }}
-              />
-            ) : (
-              <Plus
-                size={18}
-                onClick={() => setHidePendingFiles(!hidePendingFiles)}
-                style={{ cursor: 'pointer' }}
-              />
-            )}
+            {hiddenPendingFiles ? <Plus size={18} /> : <Minus size={18} />}
           </Col>
         </Row>
       </Header>
-      {!hidePendingFiles && (
+      {!hiddenPendingFiles && (
         <Content className="pending-files-list-content">
-          {files.length > 0 &&
-            files.map((pendingFile, index) => (
+          {pendingFilesState.length > 0 &&
+            pendingFilesState.map((pendingFileState, index) => (
               <PendingFileRow
-                key={`${pendingFile.file?.id}-${index}`}
-                pendingFile={pendingFile}
-                onCancel={() => console.log(pendingFile)}
+                key={`${pendingFileState.file?.id}-${index}`}
+                pendingFileState={pendingFileState}
+                pendingFile={chatUploadService.getPendingFile(pendingFileState.id)}
               />
             ))}
         </Content>

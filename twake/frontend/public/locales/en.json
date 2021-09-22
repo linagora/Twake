@@ -1745,5 +1745,7 @@
     "components.locked_features.locked_only_office_popup.text": "Whoops!! Seems like you want to edit the file from Twake. You might want to consider upgrading your plan if you want to collaborate around office files. Explore our pricing options and select the best option for your team collaboration needs.",
     "components.locked_features.locked_drive_popup.title": "You have just reached the drive limit",
     "components.locked_features.locked_drive_popup.subtitle": "In the free version, you can store only 6GB.",
-    "components.locked_features.locked_drive_popup.text": "Whoops!! Seems like you reached the drive limit. You might want to consider upgrading your plan if you want to share more file with your team. Explore our pricing options and select the best option for your team collaboration needs."
+    "components.locked_features.locked_drive_popup.text": "Whoops!! Seems like you reached the drive limit. You might want to consider upgrading your plan if you want to share more file with your team. Explore our pricing options and select the best option for your team collaboration needs.",
+    "general.resume": "Resume",
+    "general.pause": "Pause"
 }

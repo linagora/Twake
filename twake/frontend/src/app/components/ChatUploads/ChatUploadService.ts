@@ -1,14 +1,15 @@
-import { FileType, PendingFileType } from 'app/models/File';
+import { FileType, PendingFileStateType, PendingFileType } from 'app/models/File';
 import Api from 'app/services/Api';
 import JWTStorage from 'app/services/JWTStorage';
+import _ from 'lodash';
 import { SetterOrUpdater } from 'recoil';
 import RouterServices from 'services/RouterService';
 import Resumable from 'services/uploadManager/resumable';
-
+import { v1 as uuid } from 'uuid';
 type ResponseFileType = { resource: FileType };
 
-export default class ChatUploadService {
-  private handler: SetterOrUpdater<PendingFileType[] | undefined> = () => [];
+export class ChatUploadService {
+  private handler: SetterOrUpdater<PendingFileStateType[] | undefined> = () => [];
 
   prefixUrl: string = '/internal/services/files/v1';
 
@@ -17,81 +18,128 @@ export default class ChatUploadService {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {}
 
-  public setHandler(handler: SetterOrUpdater<PendingFileType[] | undefined>) {
+  public setHandler(handler: SetterOrUpdater<PendingFileStateType[] | undefined>) {
     this.handler = handler;
   }
 
+  private notify() {
+    this.handler(this.pendingFiles.map(f => _.cloneDeep(f.state)));
+  }
+
+  // TODO Limit the number of simultaneous requests
   public async upload(fileList: File[]): Promise<void> {
     const { companyId } = RouterServices.getStateFromRoute();
 
-    const file: File | undefined = fileList[0];
+    if (!fileList) return;
 
-    if (!file) return;
+    fileList.forEach(async file => {
+      if (!file) return;
 
-    // First we create the file object
-    const uploadFileRoute = `${this.prefixUrl}/companies/${companyId}/files?filename=${file.name}&type=${file.type}&total_size=${file.size}`;
-    const resource = ((await Api.post(uploadFileRoute, undefined)) as ResponseFileType)
-      ?.resource as FileType;
-    if (!resource) {
-      throw new Error('A server error occured');
-    }
+      const sharedId = uuid();
+      const pendingFile: PendingFileType = {
+        id: sharedId,
+        tmpFile: file,
+        state: {
+          id: sharedId,
+          file: null,
+          status: 'pending',
+          progress: 0,
+        },
+        resumable: null,
+      };
 
-    let pendingFile: PendingFileType = {
-      tmpFile: file,
-      file: null,
-      resumable: null,
-      status: 'pending',
-      progress: 0,
-    };
+      this.pendingFiles.push(pendingFile);
 
-    pendingFile.file = resource;
+      this.notify();
 
-    this.pendingFiles.push(pendingFile);
-    //Update front (recoil ?)
-    this.handler(this.pendingFiles);
+      // First we create the file object
+      const uploadFileRoute = `${this.prefixUrl}/companies/${companyId}/files?filename=${file.name}&type=${file.type}&total_size=${file.size}`;
+      const resource = ((await Api.post(uploadFileRoute, undefined)) as ResponseFileType)
+        ?.resource as FileType;
+      if (!resource) {
+        throw new Error('A server error occured');
+      }
 
-    // Then we overwrite the file object with resumable
-    pendingFile.resumable = this.getResumableInstance({
-      target: Api.route(`${this.prefixUrl}/companies/${companyId}/files/${pendingFile.file.id}`),
-      query: {
-        thumbnail_sync: 1,
-      },
-      headers: {
-        Authorization: JWTStorage.getAutorizationHeader(),
-      },
+      pendingFile.state.file = resource;
+      this.notify();
+
+      // Then we overwrite the file object with resumable
+      pendingFile.resumable = this.getResumableInstance({
+        target: Api.route(
+          `${this.prefixUrl}/companies/${companyId}/files/${pendingFile.state.file.id}`,
+        ),
+        query: {
+          thumbnail_sync: 1,
+        },
+        headers: {
+          Authorization: JWTStorage.getAutorizationHeader(),
+        },
+      });
+
+      pendingFile.resumable.addFile(file);
+
+      pendingFile.resumable.on('fileAdded', (f: any, message: any) =>
+        pendingFile.resumable.upload(),
+      );
+
+      pendingFile.resumable.on('fileProgress', (f: any, ratio: number) => {
+        pendingFile.state.file = f;
+
+        pendingFile.state.progress = f.progress();
+
+        this.notify();
+      });
+
+      pendingFile.resumable.on('fileSuccess', (f: any, message: string) => {
+        pendingFile.state.file = JSON.parse(message).resource;
+        pendingFile.state.status = 'success';
+
+        this.pendingFiles = this.pendingFiles.filter(
+          p => p.state.file?.id !== pendingFile.state.file?.id,
+        );
+
+        this.notify();
+      });
+
+      pendingFile.resumable.on('fileError', (f: any, message: any) => {
+        pendingFile.state.status = 'error';
+
+        pendingFile.resumable.cancel();
+        this.pendingFiles = this.pendingFiles.filter(
+          p => p.state.file?.id !== pendingFile.state.file?.id,
+        );
+      });
     });
+  }
 
-    pendingFile.resumable.addFile(file);
+  public getPendingFile(id: string): PendingFileType {
+    return this.pendingFiles.filter(f => f.id === id)[0];
+  }
 
-    pendingFile.resumable.on('fileAdded', (file: any, message: any) =>
-      pendingFile.resumable.upload(),
-    );
+  public cancel(id: string) {
+    const fileToCancel = this.pendingFiles.filter(f => f.id === id)[0];
 
-    pendingFile.resumable.on('fileProgress', (file: any, ratio: number) => {
-      pendingFile.progress = file.progress();
-      //TODO Trigger update frontend
+    fileToCancel.resumable.cancel();
+    fileToCancel.state.status = 'error';
+    this.notify();
 
-      this.handler(this.pendingFiles);
-    });
+    setTimeout(() => {
+      this.pendingFiles = this.pendingFiles.filter(f => f.id !== id);
+      this.notify();
+    }, 1000);
+  }
 
-    pendingFile.resumable.on('fileSuccess', (file: any, message: string) => {
-      pendingFile.file = JSON.parse(message).resource; //TODO check if this is right
-      pendingFile.status = 'success';
-      //TODO Trigger update frontend
+  public pauseOrResume(id: string) {
+    const fileToCancel = this.pendingFiles.filter(f => f.id === id)[0];
 
-      this.pendingFiles = this.pendingFiles.filter(p => p.file?.id !== pendingFile.file?.id);
+    fileToCancel.state.status !== 'pause'
+      ? (fileToCancel.state.status = 'pause')
+      : (fileToCancel.state.status = 'pending');
+    fileToCancel.state.status === 'pause'
+      ? fileToCancel.resumable.pause()
+      : fileToCancel.resumable.upload();
 
-      this.handler(this.pendingFiles);
-    });
-
-    pendingFile.resumable.on('fileError', (file: any, message: any) => {
-      console.error('fileError =>', file, message);
-      pendingFile.status = 'error';
-      //TODO Trigger update frontend
-
-      pendingFile.resumable.cancel();
-      this.pendingFiles = this.pendingFiles.filter(p => p.file?.id !== pendingFile.file?.id);
-    });
+    this.notify();
   }
 
   private getResumableInstance({
@@ -129,5 +177,17 @@ export default class ChatUploadService {
 
     //Reset handler to nothing
     this.handler = () => [];
+  }
+}
+
+export default class ChatUploadServiceManager {
+  static instance: ChatUploadService;
+
+  public static get() {
+    if (!this.instance) {
+      this.instance = new ChatUploadService();
+    }
+
+    return this.instance;
   }
 }
