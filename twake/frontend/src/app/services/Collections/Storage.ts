@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import minimongo from 'minimongo';
+import minimongo, { MinimongoDb } from 'minimongo';
 import Logger from '../Logger';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -31,8 +31,8 @@ export class CollectionStorage implements CollectionStore {
   private database: { [type: string]: { [id: string]: any } } = {};
   private frontIdToIdTransform: { [frontId: string]: string } = {};
 
-  static miniMongoInstance: minimongo.MinimongoDb;
-  public mongoDb: minimongo.MinimongoDb | null = null;
+  static miniMongoInstance: MinimongoDb;
+  public mongoDb: MinimongoDb | null = null;
 
   constructor() {
     (window as any).storage = this;
@@ -156,12 +156,12 @@ export default function getStore(key: string): CollectionStore {
 
 export async function getDB(
   options: { namespace: string } = { namespace: 'twake' },
-): Promise<minimongo.MinimongoDb> {
+): Promise<MinimongoDb> {
   if (CollectionStorage.miniMongoInstance) {
     return CollectionStorage.miniMongoInstance;
   }
 
-  return new Promise<minimongo.MinimongoDb>(resolve => {
+  return new Promise<MinimongoDb>(resolve => {
     if (isIndexedDBSupported()) {
       const mongo = new minimongo.IndexedDb(
         //@ts-ignore typescript doesn't find autoselectLocalDb even if it exists
@@ -175,7 +175,7 @@ export async function getDB(
     } else {
       resolve(new minimongo.MemoryDb());
     }
-  }).then((db: minimongo.MinimongoDb) => {
+  }).then((db: MinimongoDb) => {
     CollectionStorage.miniMongoInstance = db;
 
     return CollectionStorage.miniMongoInstance;

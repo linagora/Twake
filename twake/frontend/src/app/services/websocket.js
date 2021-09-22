@@ -3,12 +3,13 @@ import Api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
 import Collections from 'services/Collections/Collections';
 import LoginService from 'services/login/login';
-
+import Logger from 'app/services/Logger';
 import Globals from 'services/Globals';
 
 class Websocket extends Observable {
   constructor() {
     super();
+    this.logger = Logger.getLogger('Websocket');
     this.setObservableName('websockets');
 
     this.ws = null;
@@ -98,6 +99,7 @@ class Websocket extends Observable {
 
   //Subscribe to channel
   subscribe(route, callback, key) {
+    this.logger.debug(`Subscribe to ${route}`);
     route = (route || '').split('previous::').pop();
     if (!key) {
       key = callback.name;
@@ -127,6 +129,7 @@ class Websocket extends Observable {
 
   //Unsubscribe from channel
   unsubscribe(route, callback, key) {
+    this.logger.debug(`Unsubscribe from ${route}`);
     route = (route || '').split('previous::').pop();
     if (!key && callback) {
       key = callback.name;
@@ -152,6 +155,7 @@ class Websocket extends Observable {
   }
 
   publish(route, value) {
+    this.logger.debug(`Publish to ${route}`);
     Collections.getTransport()
       .getSocket()
       .emit('previous::' + route, value);
@@ -188,5 +192,4 @@ class Websocket extends Observable {
   }
 }
 
-var ws = new Websocket();
-export default ws;
+export default new Websocket();

@@ -22,6 +22,14 @@ export default () => {
 
   const server_infos_loaded = InitService.useWatcher(() => InitService.server_infos_loaded);
 
+  useEffect(() => {
+    if (server_infos_loaded) {
+      try {
+        window.document.getElementById('app_loader')?.remove();
+      } catch (err) {}
+    }
+  }, [server_infos_loaded]);
+
   if (!server_infos_loaded) {
     return <div />;
   }
@@ -32,8 +40,6 @@ export default () => {
   ) {
     AuthProviderService.getAuthProviderConfiguration();
   }
-
-  InitService.removeLoader();
 
   return (
     <RecoilRoot>

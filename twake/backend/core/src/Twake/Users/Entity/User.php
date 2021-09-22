@@ -129,6 +129,11 @@ class User extends SearchableObject
     protected $workspaces_preference = "{}";
 
     /**
+     * @ORM\Column(name="preferences", type="twake_text")
+     */
+    protected $preferences = "{}";
+
+    /**
      * @ORM\Column(name="tutorial_status", type="twake_text")
      */
     protected $tutorial_status = "{}";
@@ -451,6 +456,15 @@ class User extends SearchableObject
     public function getIdentityProviderId()
     {
         return $this->identity_provider_id;
+    }
+
+    public function getTrack()
+    {
+        $allow = true;
+        try{
+            $allow = json_decode($this->preferences, 1)["allow_tracking"];
+        }catch(Error $err){}
+        return $allow;
     }
 
     public function setIdentityProviderId($identity_provider_id)

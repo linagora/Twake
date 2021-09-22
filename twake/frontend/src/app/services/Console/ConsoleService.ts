@@ -4,9 +4,15 @@ import InitService from '../InitService';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from '../Toaster';
 import { ConsoleMemberRole } from './types';
-import logger from 'app/services/Logger';
+import Logger from 'app/services/Logger';
+import { JWTDataType } from '../JWTService';
 
 class ConsoleService {
+  logger: Logger.Logger;
+  constructor() {
+    this.logger = Logger.getLogger('Console');
+  }
+
   public getCompanyManagementUrl(companyId: string) {
     const identity_provider_id =
       DepreciatedCollections.get('groups').find(companyId)?.identity_provider_id;
@@ -45,7 +51,8 @@ class ConsoleService {
     workspace_id: string;
     company_id: string;
     emails: string[];
-    role?: ConsoleMemberRole;
+    workspace_role?: 'moderator' | 'member';
+    company_role?: ConsoleMemberRole;
   }) {
     const res: any = await Api.post(
       `/internal/services/workspaces/v1/companies/${data.company_id}/workspaces/${data.workspace_id}/users/invite`,
@@ -53,15 +60,15 @@ class ConsoleService {
         invitations: [
           ...data.emails.map(email => ({
             email,
-            role: 'member',
-            company_role: 'member',
+            role: data.workspace_role || 'member',
+            company_role: data.company_role || 'member',
           })),
         ],
       },
     );
 
     if (!res?.resources || !res.resources.length) {
-      logger.error('Error while adding emails');
+      this.logger.error('Error while adding emails');
       return Toaster.error(Languages.t('services.console_services.toaster.add_emails_error'));
     }
 
@@ -72,7 +79,7 @@ class ConsoleService {
           // possible error messages are
           // 1. "User already belonged to the company" (Good typo in it...)
           // 2. "Unable to invite user ${user.email} to company ${company.code}"
-          logger.error('Error while adding email', email, message);
+          this.logger.error('Error while adding email', email, message);
 
           Toaster.warning(
             Languages.t('services.console_services.toaster.add_email_error_message', [
@@ -91,6 +98,25 @@ class ConsoleService {
     }
 
     return res;
+  }
+
+  public getNewAccessToken(currentToken: { access_token: string }, callback: (err?: Error, access_token?: JWTDataType) => void): void {
+    this.logger.debug(`getNewAccessToken, get new token from current token ${JSON.stringify(currentToken)}`);
+    Api.post('/internal/services/console/v1/login',
+      { remote_access_token: currentToken.access_token },
+      (response: { access_token: JWTDataType, message: string; error: string; statusCode: number }) => {
+
+        if (response.statusCode && !response.access_token) {
+          this.logger.error('getNewAccessToken, Can not retrieve access_token from console. Response was', response);
+          callback(new Error('Can not retrieve access_token from console'));
+          return;
+        }
+        // the input access_token is potentially expired and so the response contains an error.
+        // we should be able to refresh the token or renew it in some way...
+
+        callback(undefined, response.access_token);
+      }
+    );
   }
 }
 
