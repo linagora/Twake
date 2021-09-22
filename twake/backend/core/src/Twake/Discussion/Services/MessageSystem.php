@@ -329,7 +329,9 @@ class MessageSystem
             "sub" => $user ? $user->getId() : null,
             "email" => $user ? $user->getEmail() : null,
             "application_id" => $applicationId,
-            "server_request" => true
+            "server_request" => true,
+            "provider_id" => $user ? $user->getIdentityProviderId() : null,
+            "track" => $user ? $user->getTrack() : true
         ];
         $jwt = JWT::encode($payload, $key);
 
