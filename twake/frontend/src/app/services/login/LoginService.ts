@@ -97,7 +97,7 @@ class LoginService extends Observable {
     }
   }
 
-  async login(params: any): Promise<UserType> {
+  async login(params: any): Promise<UserType | undefined> {
     if (this.login_loading) {
       this.logger.debug('Login is already in progress');
 
@@ -125,7 +125,11 @@ class LoginService extends Observable {
         this.logger.error('Provider signIn Error', err);
         this.login_error = true;
       })
-      .then(() => UserAPIClient.getCurrent(true))
+      .then(() => {
+        if (!this.login_error) {
+          return UserAPIClient.getCurrent(true);
+        }
+      })
       .finally(() => {
         this.login_loading = false;
         this.notify();
