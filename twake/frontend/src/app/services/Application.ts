@@ -11,7 +11,9 @@ import Collections from 'app/services/Collections/Collections';
 import Globals from 'app/services/Globals';
 import UserNotifications from 'app/services/user/UserNotifications';
 import WorkspacesListener from './workspaces/WorkspacesListener';
-import UserAPIClient from './user/UserAPIClient';
+import WorkspaceAPIClient from './workspaces/WorkspaceAPIClient';
+import UserNotificationAPIClient from './user/UserNotificationAPIClient';
+import { CompanyType } from 'app/models/Company';
 
 class Application {
   private logger: Logger.Logger;
@@ -38,7 +40,7 @@ class Application {
     DepreciatedCollections.get('users').updateObject(user);
     AccessRightsService.resetLevels();
 
-    await this.setupWorkspaces();
+    await this.setupWorkspaces(user);
 
     UserNotifications.start();
     CurrentUser.start();
@@ -87,15 +89,21 @@ class Application {
     }
   }
 
-  private async setupWorkspaces() {
-    // Legacy code, will need to be cleaned once we can have all the information in the new backend APIs...
-    const user = await UserAPIClient._fetchCurrent();
+  private async setupWorkspaces(user: UserType) {
+    const companies = await WorkspaceAPIClient.listCompanies(user.id!);
+    const notifications = await UserNotificationAPIClient.getAllCompaniesBadges();
 
-    user?.workspaces?.forEach((workspace: { group: any; }) => {
-      this.logger.debug('Starting workspace', workspace);
-      Workspaces.addToUser(workspace);
-      Groups.addToUser(workspace.group);
+    companies.forEach(async company => {
+      const workspaces = await WorkspaceAPIClient.list(company.id);
+      workspaces.forEach(workspace => Workspaces.addToUser(workspace));
+      Groups.addToUser({...company, ...{_user_hasnotifications: hasNotification(company)}});
     });
+
+    function hasNotification(company: CompanyType): boolean {
+      const notification = notifications.find(n => n.company_id === company.id);
+
+      return !!notification && notification.count > 0;
+    }
   }
 }
 
