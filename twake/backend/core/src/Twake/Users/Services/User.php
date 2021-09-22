@@ -307,6 +307,8 @@ class User
             "nbf" => intval(date("U")) - 60*10,
             "sub" => $user->getId(),
             "email" => $user->getEmail(),
+            "provider_id" => $user ? $user->getIdentityProviderId() : null,
+            "track" => $user ? $user->getTrack() : true
         ];
         $jwt = JWT::encode($payload, $key);
 
@@ -316,7 +318,9 @@ class User
             "type" => "refresh",
             "iat" => intval(date("U")) - 60*10,
             "nbf" => intval(date("U")) - 60*10,
-            "sub" => $user->getId()
+            "sub" => $user->getId(),
+            "provider_id" => $user ? $user->getIdentityProviderId() : null,
+            "track" => $user ? $user->getTrack() : true
         ];
         $jwt_refresh = JWT::encode($payload, $key);
 
