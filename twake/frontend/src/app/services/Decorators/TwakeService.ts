@@ -1,5 +1,7 @@
 import ServiceRegistry from 'services/ServiceRegistry';
 
+const SERVICE_SUFFIX = 'Service';
+
 export function TwakeService(name: string): ClassDecorator {
   return function DecoratedTwakeService(target: any): any {
     const originalConstrutor = target;
@@ -8,8 +10,9 @@ export function TwakeService(name: string): ClassDecorator {
       const newService = new originalConstrutor(...args);
 
       if (name) {
-        ServiceRegistry.register(name, newService);
-        console.log(ServiceRegistry.services);
+        const serviceName = name.endsWith(SERVICE_SUFFIX) || name.endsWith(SERVICE_SUFFIX.toLowerCase()) ? name : `${name}${SERVICE_SUFFIX}`;
+
+        ServiceRegistry.register(serviceName, newService);
       }
       return newService;
     };
