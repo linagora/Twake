@@ -48,15 +48,16 @@ export default class InternalAuthProviderService extends Observable implements A
     return new Promise((resolve, reject) => {
       this.signinIn = true;
       Api.post(
-        'users/login',
+        // This is temporary until the backend has its basic auth endpoint...
+        '/internal/services/console/v1/login',
         {
-          username: params.username,
+          email: params.username,
           password: params.password,
           remember_me: params.remember_me,
           device: {},
         },
         (res: any) => {
-          if (res && res.data && res.data.status === 'connected') {
+          if (res && res.access_token) {
             resolve();
           } else {
             this.logger.error('Error on login', res);
