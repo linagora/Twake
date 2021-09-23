@@ -546,10 +546,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
 
       entity.metadata = file.metadata;
-      message.files.push(file);
 
       //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
       await this.msgFilesRepository.save(entity);
+
+      message.files.push(entity);
     }
 
     return message;
