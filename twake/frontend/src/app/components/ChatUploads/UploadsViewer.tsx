@@ -1,8 +1,8 @@
 import React from 'react';
 
-import PendingFilesList from 'app/components/FileComponents/PendingFilesList';
 import { useChatUploadService } from 'app/state/recoil/hooks/useChatUploadService';
 import ChatUploadService from './ChatUploadService';
+import PendingFilesList from './PendingFileComponents/PendingFilesList';
 
 const ChatUploadsViewer = (): JSX.Element => {
   const [pendingFilesListState] = useChatUploadService();

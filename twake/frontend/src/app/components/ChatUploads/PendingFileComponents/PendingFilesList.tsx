@@ -5,7 +5,7 @@ import './styles.scss';
 import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
 import { PendingFileStateType } from 'app/models/File';
-import ChatUploadService from '../ChatUploads/ChatUploadService';
+import ChatUploadService from '../ChatUploadService';
 
 type PropsType = {
   pendingFilesState: PendingFileStateType[];

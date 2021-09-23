@@ -2,11 +2,8 @@ import React from 'react';
 import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
 import { Pause, Play, X } from 'react-feather';
 import { PendingFileStateType, PendingFileType } from 'app/models/File';
-import ChatUploadService from '../ChatUploads/ChatUploadService';
-import {
-  isPendingFileStatusError,
-  isPendingFileStatusPause,
-} from '../ChatUploads/utils/PendingFiles';
+import ChatUploadService from '../ChatUploadService';
+import { isPendingFileStatusError, isPendingFileStatusPause } from '../utils/PendingFiles';
 import Languages from 'services/languages/languages';
 
 type PropsType = {
