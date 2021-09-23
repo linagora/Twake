@@ -3,7 +3,11 @@ import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
 import { Pause, Play, X } from 'react-feather';
 import { PendingFileStateType, PendingFileType } from 'app/models/File';
 import ChatUploadService from '../ChatUploadService';
-import { isPendingFileStatusError, isPendingFileStatusPause } from '../utils/PendingFiles';
+import {
+  isPendingFileStatusError,
+  isPendingFileStatusPause,
+  isPendingFileStatusSuccess,
+} from '../utils/PendingFiles';
 import Languages from 'services/languages/languages';
 
 type PropsType = {
@@ -23,6 +27,20 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
   const pauseOrResume = (id: PendingFileStateType['id']) => ChatUploadService.pauseOrResume(id);
 
   const cancel = (id: PendingFileStateType['id']) => ChatUploadService.cancel(id);
+
+  const setStatus = () => {
+    switch (pendingFileState.status) {
+      case 'error':
+      case 'pause':
+        return 'exception';
+      case 'pending':
+        return 'active';
+      case 'success':
+        return 'success';
+      default:
+        return 'normal';
+    }
+  };
 
   return (
     <>
@@ -55,45 +73,45 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
             type="line"
             percent={pendingFileState.progress * 100}
             showInfo={false}
-            status={
-              isPendingFileStatusPause(pendingFileState.status) ||
-              isPendingFileStatusError(pendingFileState.status)
-                ? 'exception'
-                : 'active'
-            }
+            status={setStatus()}
             strokeColor={getProgressStrokeColor(pendingFileState.status)}
           />
         </Col>
 
         <Col flex={1} style={{ display: 'flex', alignItems: 'center', lineHeight: '16px' }}>
           {pendingFileState.id ? (
-            <Tooltip
-              placement="top"
-              title={
-                isPendingFileStatusPause(pendingFileState.status)
-                  ? Languages.t('general.resume')
-                  : Languages.t('general.pause')
-              }
-            >
-              <Button
-                type="link"
-                shape="circle"
-                disabled={isPendingFileStatusError(pendingFileState.status)}
-                icon={
-                  isPendingFileStatusPause(pendingFileState.status) ? (
-                    <Play size={14} style={{ marginLeft: 4 }} />
-                  ) : (
-                    <Pause size={14} />
-                  )
+            !isPendingFileStatusSuccess(pendingFileState.status) &&
+            !isPendingFileStatusError(pendingFileState.status) ? (
+              <Tooltip
+                placement="top"
+                title={
+                  isPendingFileStatusPause(pendingFileState.status)
+                    ? Languages.t('general.resume')
+                    : Languages.t('general.pause')
                 }
-                onClick={() => pauseOrResume(pendingFileState.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              />
-            </Tooltip>
+              >
+                <Button
+                  type="link"
+                  shape="circle"
+                  disabled={isPendingFileStatusError(pendingFileState.status)}
+                  icon={
+                    isPendingFileStatusPause(pendingFileState.status) ? (
+                      <Play size={14} style={{ marginLeft: 4 }} />
+                    ) : (
+                      <Pause size={14} />
+                    )
+                  }
+                  onClick={() => pauseOrResume(pendingFileState.id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                />
+              </Tooltip>
+            ) : (
+              <div style={{ width: 32 }} />
+            )
           ) : (
             <div
               style={{
@@ -108,15 +126,20 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
         </Col>
 
         <Col flex={1} style={{ display: 'flex', alignItems: 'center', lineHeight: '16px' }}>
-          <Tooltip title={Languages.t('general.cancel')} placement="top">
-            <Button
-              type="link"
-              shape="circle"
-              icon={<X size={16} color={'var(--error)'} />}
-              onClick={() => cancel(pendingFileState.id)}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            />
-          </Tooltip>
+          {!isPendingFileStatusSuccess(pendingFileState.status) &&
+          !isPendingFileStatusError(pendingFileState.status) ? (
+            <Tooltip title={Languages.t('general.cancel')} placement="top">
+              <Button
+                type="link"
+                shape="circle"
+                icon={<X size={16} color={'var(--error)'} />}
+                onClick={() => cancel(pendingFileState.id)}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              />
+            </Tooltip>
+          ) : (
+            <div style={{ width: 32 }} />
+          )}
         </Col>
       </Row>
       <Divider style={{ margin: 0 }} />
