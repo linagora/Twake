@@ -61,6 +61,8 @@ describe("The Messages Threads feature", () => {
         response.body,
       );
 
+      console.log(result.resource.message.files);
+
       expect(result.resource.message.files.length).toBe(1);
       expect(result.resource.message.files[0].id).not.toBeFalsy();
       expect(result.resource.message.files[0].message_id).not.toBeFalsy();

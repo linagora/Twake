@@ -24,11 +24,14 @@ export class CompanyApplicationController
 
   async get(
     request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
-    reply: FastifyReply,
   ): Promise<ResourceGetResponse<Application>> {
     const context = getCompanyExecutionContext(request);
+    const resource = await this.service.companyApplications.get(
+      { application_id: request.params.application_id, company_id: context.company.id },
+      context,
+    );
     return {
-      resource: null,
+      resource: resource?.application,
     };
   }
 
@@ -39,9 +42,14 @@ export class CompanyApplicationController
     }>,
   ): Promise<ResourceListResponse<Application>> {
     const context = getCompanyExecutionContext(request);
-
+    const resources = await this.service.companyApplications.list(
+      request.query,
+      { search: request.query.search },
+      context,
+    );
     return {
-      resources: [],
+      resources: resources.getEntities().map(ca => ca.application),
+      next_page_token: resources.nextPage.page_token,
     };
   }
 
@@ -50,12 +58,14 @@ export class CompanyApplicationController
       Params: { company_id: string; application_id: string };
       Body: Application;
     }>,
-    reply: FastifyReply,
   ): Promise<ResourceGetResponse<Application>> {
     const context = getCompanyExecutionContext(request);
-
+    const resource = await this.service.companyApplications.save(
+      { application_id: request.params.application_id, company_id: context.company.id },
+      context,
+    );
     return {
-      resource: null,
+      resource: resource.entity.application,
     };
   }
 
@@ -64,18 +74,12 @@ export class CompanyApplicationController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getCompanyExecutionContext(request);
-    const deleteResult: any = {};
-
-    if (deleteResult.deleted) {
-      reply.code(204);
-
-      return {
-        status: "success",
-      };
-    }
-
+    const resource = await this.service.companyApplications.delete(
+      { application_id: request.params.application_id, company_id: context.company.id },
+      context,
+    );
     return {
-      status: "error",
+      status: resource.deleted ? "success" : "error",
     };
   }
 }

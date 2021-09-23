@@ -12,7 +12,6 @@ import {
   DeleteResult,
   ExecutionContext,
   ListResult,
-  Paginable,
   Pagination,
   SaveResult,
   UpdateResult,
@@ -73,7 +72,9 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     options?: ListOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Application>> {
-    const entities = await this.repository.find({}, { pagination });
+    //Todo: add search
+
+    const entities = await this.repository.find({ pagination }, { pagination });
     entities.filterEntities(app => app.publication.published);
     return entities;
   }

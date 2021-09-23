@@ -1,4 +1,5 @@
 import {
+  DeleteResult,
   ExecutionContext,
   ListResult,
   Pagination,
@@ -8,7 +9,10 @@ import { CRUDService } from "../../core/platform/framework/api/crud-service";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
 import Application, { ApplicationPrimaryKey } from "./entities/application";
 import { CompanyExecutionContext } from "./web/types";
-import CompanyApplication, { CompanyApplicationPrimaryKey } from "./entities/company-application";
+import CompanyApplication, {
+  CompanyApplicationPrimaryKey,
+  CompanyApplicationWithApplication,
+} from "./entities/company-application";
 
 export interface ApplicationServiceAPI extends TwakeServiceProvider, Initializable {
   applications: MarketplaceApplicationServiceAPI;
@@ -29,12 +33,26 @@ export interface MarketplaceApplicationServiceAPI
 export interface CompanyApplicationServiceAPI
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<CompanyApplication, CompanyApplicationPrimaryKey, CompanyExecutionContext> {
+    CRUDService<
+      CompanyApplicationWithApplication,
+      CompanyApplicationPrimaryKey,
+      CompanyExecutionContext
+    > {
   initWithDefaultApplications(companyId: string, context: CompanyExecutionContext): Promise<void>;
 
   save<SaveOptions>(
     item: Pick<CompanyApplicationPrimaryKey, "company_id" | "application_id">,
     _?: SaveOptions,
     context?: CompanyExecutionContext,
-  ): Promise<SaveResult<CompanyApplication>>;
+  ): Promise<SaveResult<CompanyApplicationWithApplication>>;
+
+  get(
+    item: Pick<CompanyApplicationPrimaryKey, "company_id" | "application_id">,
+    context?: CompanyExecutionContext,
+  ): Promise<CompanyApplicationWithApplication>;
+
+  delete(
+    item: Pick<CompanyApplicationPrimaryKey, "company_id" | "application_id">,
+    context?: CompanyExecutionContext,
+  ): Promise<DeleteResult<CompanyApplicationWithApplication>>;
 }

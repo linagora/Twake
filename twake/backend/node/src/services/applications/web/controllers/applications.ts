@@ -37,8 +37,14 @@ export class ApplicationController
     }>,
   ): Promise<ResourceListResponse<Application>> {
     const context = getExecutionContext(request);
+    const entities = await this.service.applications.list(
+      request.query,
+      { search: request.query.search },
+      context,
+    );
     return {
-      resources: [],
+      resources: entities.getEntities(),
+      next_page_token: entities.nextPage.page_token,
     };
   }
 
