@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Layout, Row, Col, Typography } from 'antd';
 import { Minus, Plus } from 'react-feather';
 import './styles.scss';
 import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
 import { PendingFileStateType } from 'app/models/File';
-import ChatUploadServiceManager from '../ChatUploads/ChatUploadService';
-import { isEqual } from 'lodash';
+import ChatUploadService from '../ChatUploads/ChatUploadService';
 
 type PropsType = {
   pendingFilesState: PendingFileStateType[];
@@ -15,20 +14,10 @@ type PropsType = {
 const { Text } = Typography;
 const { Header, Content } = Layout;
 export default ({ pendingFilesState }: PropsType) => {
-  const chatUploadService = ChatUploadServiceManager.get();
   const [hiddenPendingFiles, setHiddenPendingFiles] = useState<boolean>(false);
-  const [counter, setCounter] = useState<{ total: number; completed: number }>({
-    total: 0,
-    completed: 0,
-  });
 
-  useEffect(() => {
-    const c = chatUploadService.counter;
-
-    if (!isEqual(counter, c)) {
-      setCounter(c);
-    }
-  }, [chatUploadService.counter, counter]);
+  const uploadTaskTotalFiles = pendingFilesState.length;
+  const uploadTaskUploadedFiles = pendingFilesState.filter(f => f.status === 'success').length;
 
   return pendingFilesState.length > 0 ? (
     <Layout className="pending-files-list-layout">
@@ -40,7 +29,7 @@ export default ({ pendingFilesState }: PropsType) => {
         <Row justify="space-between" align="middle">
           <Col>
             <Text style={{ color: 'var(--white)' }}>
-              {counter.total > 0 && `${counter.completed}/${counter.total} `}
+              {uploadTaskTotalFiles > 0 && `${uploadTaskUploadedFiles}/${uploadTaskTotalFiles} `}
               {Languages.t('components.drive_dropzone.uploading')}
             </Text>
           </Col>
@@ -56,7 +45,7 @@ export default ({ pendingFilesState }: PropsType) => {
               <PendingFileRow
                 key={`${pendingFileState.file?.id}-${index}`}
                 pendingFileState={pendingFileState}
-                pendingFile={chatUploadService.getPendingFile(pendingFileState.id)}
+                pendingFile={ChatUploadService.getPendingFile(pendingFileState.id)}
               />
             ))}
         </Content>

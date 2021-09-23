@@ -1,24 +1,22 @@
-import React, { useEffect } from 'react';
-import { PendingFilesListState } from 'app/state/recoil/atoms/PendingFilesList';
-import { useRecoilState } from 'recoil';
-import ChatUploadServiceManager, { ChatUploadService } from './ChatUploadService';
+import React from 'react';
 
 import PendingFilesList from 'app/components/FileComponents/PendingFilesList';
+import { useChatUploadService } from 'app/state/recoil/hooks/useChatUploadService';
+import ChatUploadService from './ChatUploadService';
 
-let chatUploadService: ChatUploadService;
 const ChatUploadsViewer = (): JSX.Element => {
-  const [pendingFilesListState, setPendingFilesListState] = useRecoilState(PendingFilesListState);
+  const [pendingFilesListState] = useChatUploadService();
 
-  useEffect(() => {
-    chatUploadService = ChatUploadServiceManager.get();
-    chatUploadService.setHandler(setPendingFilesListState);
+  const currentTaskFiles = (pendingFilesListState || []).filter(
+    f =>
+      ChatUploadService.getPendingFile(f.id).uploadTaskId === ChatUploadService.currentTaskId ||
+      f.status === 'error',
+  );
 
-    return chatUploadService.destroy.bind(chatUploadService);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const tasksEnded = currentTaskFiles.every(f => f.status === 'success');
 
-  return pendingFilesListState && pendingFilesListState?.length > 0 ? (
-    <PendingFilesList pendingFilesState={pendingFilesListState} />
+  return !!currentTaskFiles && currentTaskFiles?.length > 0 && !tasksEnded ? (
+    <PendingFilesList pendingFilesState={currentTaskFiles} />
   ) : (
     <></>
   );

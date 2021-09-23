@@ -40,8 +40,8 @@ export type PendingFileStateType = {
 };
 
 export type PendingFileType = {
-  id: string;
+  uploadTaskId: string;
   resumable: typeof Resumable | null; //Contain the resumable instance in charge of this file
   state: PendingFileStateType;
-  tmpFile: File; //Will be used to get filename, temporary thumbnail
+  originalFile: File; //Will be used to get filename, temporary thumbnail
 };

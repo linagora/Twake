@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
 import { Pause, Play, X } from 'react-feather';
 import { PendingFileStateType, PendingFileType } from 'app/models/File';
-import ChatUploadServiceManager from '../ChatUploads/ChatUploadService';
+import ChatUploadService from '../ChatUploads/ChatUploadService';
 import {
   isPendingFileStatusError,
   isPendingFileStatusPause,
@@ -16,8 +16,6 @@ type PropsType = {
 
 const { Text } = Typography;
 export default ({ pendingFileState, pendingFile }: PropsType) => {
-  const chatUploadService = ChatUploadServiceManager.get();
-
   const getProgressStrokeColor = (status: PendingFileStateType['status']) => {
     if (isPendingFileStatusError(status)) return 'var(--error)';
     if (isPendingFileStatusPause(status)) return 'var(--warning)';
@@ -25,9 +23,9 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
     return 'var(--success)';
   };
 
-  const pauseOrResume = (id: PendingFileStateType['id']) => chatUploadService.pauseOrResume(id);
+  const pauseOrResume = (id: PendingFileStateType['id']) => ChatUploadService.pauseOrResume(id);
 
-  const cancel = (id: PendingFileStateType['id']) => chatUploadService.cancel(id);
+  const cancel = (id: PendingFileStateType['id']) => ChatUploadService.cancel(id);
 
   return (
     <>
@@ -41,9 +39,9 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
         }}
       >
         <Col className="small-left-margin" flex={3} style={{ lineHeight: '16px' }}>
-          {pendingFile.tmpFile.name ? (
+          {pendingFile.originalFile.name ? (
             <Text ellipsis style={{ width: 160, verticalAlign: 'middle' }}>
-              {pendingFile.tmpFile.name}
+              {pendingFile.originalFile.name}
             </Text>
           ) : (
             <div

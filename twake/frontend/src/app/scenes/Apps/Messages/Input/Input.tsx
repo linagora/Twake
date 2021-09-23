@@ -14,9 +14,9 @@ import Languages from 'app/services/languages/languages';
 import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
+import ChatUploadService from 'app/components/ChatUploads/ChatUploadService';
 
 import './Input.scss';
-import ChatUploadServiceManager from 'app/components/ChatUploads/ChatUploadService';
 
 type FileType = { [key: string]: any };
 
@@ -216,9 +216,7 @@ export default (props: Props) => {
   };
 
   const onAddFiles = async (files: File[]) => {
-    const chatUploadService = ChatUploadServiceManager.get();
-
-    await chatUploadService.upload(files);
+    await ChatUploadService.upload(files);
   };
 
   const disabled = isEmpty() || isTooLong;
