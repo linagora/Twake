@@ -96,6 +96,8 @@ export default class User {
     timezone?: number;
     language?: string;
     allow_tracking?: boolean;
+    tutorial_done?: boolean;
+    channel_ordering?: "chronological" | "alphabetical";
   };
 
   @Column("cache", "encoded_json")

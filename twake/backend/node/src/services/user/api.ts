@@ -55,6 +55,10 @@ export interface UsersServiceAPI
   setPassword(userPrimaryKey: UserPrimaryKey, password: string): Promise<void>;
   getHashedPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]>;
   anonymizeAndDelete(user: UserPrimaryKey, context?: ExecutionContext): Promise<void>;
+  setPreferences(
+    user: UserPrimaryKey,
+    preferences: User["preferences"],
+  ): Promise<User["preferences"]>;
 }
 
 /**

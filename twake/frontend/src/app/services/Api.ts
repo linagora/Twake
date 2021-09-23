@@ -76,7 +76,10 @@ export default class Api {
       disableJWTAuthentication?: boolean;
     } = {},
   ) {
-    return Api.request<Request, Response>(route, data, callback, raw, { ...options, requestType: 'put' });
+    return Api.request<Request, Response>(route, data, callback, raw, {
+      ...options,
+      requestType: 'put',
+    });
   }
 
   static post<Request, Response>(
@@ -88,7 +91,10 @@ export default class Api {
       disableJWTAuthentication?: boolean;
     } = {},
   ): Promise<Response> {
-    return Api.request<Request, Response>(route, data, callback, raw, { ...options, requestType: 'post' });
+    return Api.request<Request, Response>(route, data, callback, raw, {
+      ...options,
+      requestType: 'post',
+    });
   }
 
   static delete<Request, Response>(
@@ -225,10 +231,9 @@ export default class Api {
                     collectionService,
                     callback,
                   );
-                } else {
-                  callback && callback(res.data);
                 }
 
+                callback && callback(res.data);
                 this.searching_http[search_key] = false;
               }
             },
