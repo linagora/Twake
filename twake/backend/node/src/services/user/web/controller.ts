@@ -70,6 +70,16 @@ export class UsersCrudController
     };
   }
 
+  async setPreferences(
+    request: FastifyRequest<{ Body: User["preferences"] }>,
+  ): Promise<User["preferences"]> {
+    const preferences = await this.service.users.setPreferences(
+      { id: request.currentUser.id },
+      request.body,
+    );
+    return preferences;
+  }
+
   async list(
     request: FastifyRequest<{ Querystring: UserListQueryParameters }>,
   ): Promise<ResourceListResponse<UserObject>> {

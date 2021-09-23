@@ -41,7 +41,7 @@ export default class WorkspaceAppsSearch extends Component {
     };
 
     var source = {
-      http: 'market/app/search',
+      http: '/ajax/market/app/search',
       http_data: data,
       collection: 'applications',
       collection_filter: (item, query) => {
