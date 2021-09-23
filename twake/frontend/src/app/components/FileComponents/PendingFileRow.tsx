@@ -40,9 +40,9 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
           width: '100%',
         }}
       >
-        <Col className="small-left-margin" flex="auto" style={{ lineHeight: '16px' }}>
+        <Col className="small-left-margin" flex={3} style={{ lineHeight: '16px' }}>
           {pendingFile.tmpFile.name ? (
-            <Text ellipsis style={{ maxWidth: 160, verticalAlign: 'middle' }}>
+            <Text ellipsis style={{ width: 160, verticalAlign: 'middle' }}>
               {pendingFile.tmpFile.name}
             </Text>
           ) : (

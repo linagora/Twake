@@ -10,16 +10,19 @@ type ResponseFileType = { resource: FileType };
 
 export class ChatUploadService {
   private handler: SetterOrUpdater<PendingFileStateType[] | undefined> = () => [];
-
-  prefixUrl: string = '/internal/services/files/v1';
-
-  pendingFiles: PendingFileType[] = [];
+  private readonly prefixUrl: string = '/internal/services/files/v1';
+  private pendingFiles: PendingFileType[] = [];
+  public counter: { total: number; completed: number } = { total: 0, completed: 0 };
 
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor() {}
 
   public setHandler(handler: SetterOrUpdater<PendingFileStateType[] | undefined>) {
     this.handler = handler;
+  }
+
+  private setCounter({ total, completed }: { total: number; completed: number }) {
+    this.counter = { total, completed };
   }
 
   private notify() {
@@ -31,6 +34,8 @@ export class ChatUploadService {
     const { companyId } = RouterServices.getStateFromRoute();
 
     if (!fileList) return;
+
+    this.setCounter({ total: fileList.length, completed: 0 });
 
     fileList.forEach(async file => {
       if (!file) return;
@@ -99,6 +104,8 @@ export class ChatUploadService {
         );
 
         this.notify();
+
+        this.setCounter({ total: this.counter.total, completed: this.counter.completed + 1 });
       });
 
       pendingFile.resumable.on('fileError', (f: any, message: any) => {
@@ -108,6 +115,8 @@ export class ChatUploadService {
         this.pendingFiles = this.pendingFiles.filter(
           p => p.state.file?.id !== pendingFile.state.file?.id,
         );
+
+        this.setCounter({ total: this.counter.total - 1, completed: this.counter.completed });
       });
     });
   }
@@ -126,6 +135,7 @@ export class ChatUploadService {
     setTimeout(() => {
       this.pendingFiles = this.pendingFiles.filter(f => f.id !== id);
       this.notify();
+      this.setCounter({ total: this.counter.total - 1, completed: this.counter.completed });
     }, 1000);
   }
 
