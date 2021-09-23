@@ -61,7 +61,7 @@ class WorkspacesApps
                 } else {
 
 
-                    $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
+                    $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroupEntity($this->doctrine), "app_id" => $app->getId()));
 
                     if($groupapp){
 
@@ -101,7 +101,7 @@ class WorkspacesApps
 
             //Search WorkspaceApp targeting the app
             $groupappsRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupApp");
-            $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
+            $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroupEntity($this->doctrine), "app_id" => $app->getId()));
 
 
             $groupapp->setWorkspacesCount($groupapp->getWorkspacesCount() - 1);
@@ -172,6 +172,9 @@ class WorkspacesApps
 
     public function enableApp($workspaceId, $applicationId, $currentUserId = null)
     {
+
+        
+
         $current_user_id = $currentUserId;
 
         $workspaceRepository = $this->doctrine->getRepository("Twake\Workspaces:Workspace");
@@ -191,10 +194,10 @@ class WorkspacesApps
 
             //Search in  GroupApp if the targeted app exists
             $groupappsRepository = $this->doctrine->getRepository("Twake\Workspaces:GroupApp");
-            $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
+            $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroupEntity($this->doctrine), "app_id" => $app->getId()));
 
             if ($groupapp == null) {
-                $groupapp = new GroupApp($workspace->getGroup(), $app->getId());
+                $groupapp = new GroupApp($workspace->getGroupEntity($this->doctrine), $app->getId());
                 $this->doctrine->persist($groupapp);
             }
 

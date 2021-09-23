@@ -228,6 +228,12 @@ class Workspace extends SearchableObject
         return $this->group;
     }
 
+    public function getGroupEntity($em)
+    {
+        $groupRepository = $em->getRepository("Twake\Workspaces:Group");
+        return $groupRepository->findOneBy(Array("id" => $this->getGroup()));
+    }
+
     /**
      * @param mixed $group
      */
