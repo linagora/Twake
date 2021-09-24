@@ -14,6 +14,7 @@ import WorkspacesListener from './workspaces/WorkspacesListener';
 import WorkspaceAPIClient from './workspaces/WorkspaceAPIClient';
 import UserNotificationAPIClient from './user/UserNotificationAPIClient';
 import { CompanyType } from 'app/models/Company';
+import { WorkspaceType } from 'app/models/Workspace';
 
 class Application {
   private logger: Logger.Logger;
@@ -60,16 +61,15 @@ class Application {
             url: Globals.environment.websocket_url,
             authenticate: async () => {
               let token = JWT.getToken();
+
               if (JWT.isAccessExpired()) {
-                await new Promise(resolve => {
-                  // FIXME: This lives in login.js...
-                  // FIXME: This must update the user
-                  console.log("FIXME, update user");
-                  resolve(null);
-                  //this.updateUser(resolve);
-                });
-                token = JWT.getToken();
+                try {
+                  token = (await JWT.renew()).value;
+                } catch(err) {
+                  this.logger.error('Can not get a new JWT token for WS collection');
+                }
               }
+
               return {
                 token,
               };
@@ -91,13 +91,24 @@ class Application {
 
   private async setupWorkspaces(user: UserType) {
     const companies = await WorkspaceAPIClient.listCompanies(user.id!);
+    const workspaces = new Map<string, WorkspaceType[]>();
     const notifications = await UserNotificationAPIClient.getAllCompaniesBadges();
 
-    companies.forEach(async company => {
-      const workspaces = await WorkspaceAPIClient.list(company.id);
-      workspaces.forEach(workspace => Workspaces.addToUser(workspace));
+    for(const company of companies) {
+      const companyWorkspaces = await WorkspaceAPIClient.list(company.id);
+
+      companyWorkspaces.forEach(workspace => Workspaces.addToUser(workspace));
+      workspaces.set(company.id, companyWorkspaces || []);
       Groups.addToUser({...company, ...{_user_hasnotifications: hasNotification(company)}});
-    });
+    }
+
+    const defaultCompany = companies[0];
+    const defaultCompanyWorkspaces = workspaces.get(defaultCompany.id);
+    // TODO: get default workspace
+    const defaultWorkspace = defaultCompanyWorkspaces?.length ? defaultCompanyWorkspaces[0] : '';
+
+    Groups.select(defaultCompany);
+    Workspaces.select(defaultWorkspace, true);
 
     function hasNotification(company: CompanyType): boolean {
       const notification = notifications.find(n => n.company_id === company.id);
