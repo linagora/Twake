@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu } from 'react-feather';
 import { Layout } from 'antd';
+import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -68,7 +69,10 @@ export default (): JSX.Element => {
             >
               <SideBars />
             </Layout.Sider>
-            <MainView className={menuIsOpen ? "collapsed" : ""} key={'mainview-' + companyId + '-' + workspaceId} />
+            <MainView
+              className={classNames({ collapsed: menuIsOpen })}
+              key={`mainview-${companyId}-${workspaceId}`}
+            />
           </Layout>
         </Layout>
       );
