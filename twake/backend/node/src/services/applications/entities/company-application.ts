@@ -36,5 +36,5 @@ export type CompanyApplicationPrimaryKey = Pick<
 
 export class CompanyApplicationWithApplication extends CompanyApplication {
   //Not in database but attached to this object
-  application?: Application;
+  application?: Partial<Application>;
 }

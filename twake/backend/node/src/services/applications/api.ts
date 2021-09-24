@@ -9,7 +9,7 @@ import { CRUDService } from "../../core/platform/framework/api/crud-service";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
 import Application, { ApplicationPrimaryKey } from "./entities/application";
 import { CompanyExecutionContext } from "./web/types";
-import CompanyApplication, {
+import {
   CompanyApplicationPrimaryKey,
   CompanyApplicationWithApplication,
 } from "./entities/company-application";
@@ -22,12 +22,12 @@ export interface ApplicationServiceAPI extends TwakeServiceProvider, Initializab
 export interface MarketplaceApplicationServiceAPI
   extends TwakeServiceProvider,
     Initializable,
-    CRUDService<Application, ApplicationPrimaryKey, ExecutionContext> {
+    CRUDService<Partial<Application>, ApplicationPrimaryKey, ExecutionContext> {
   listDefaults<ListOptions>(
     pagination?: Pagination,
     options?: ListOptions,
     context?: ExecutionContext,
-  ): Promise<ListResult<Application>>;
+  ): Promise<ListResult<Partial<Application>>>;
 }
 
 export interface CompanyApplicationServiceAPI

@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { merge } from "lodash";
+import _, { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import search from "./application.search";
 
@@ -25,6 +25,7 @@ export default class Application {
   @Column("identity", "json")
   identity: ApplicationIdentity;
 
+  //This information is private to the application, make shure not to disclose it
   @Column("api", "encoded_json")
   api: ApplicationApi;
 
@@ -39,6 +40,20 @@ export default class Application {
 
   @Column("stats", "json")
   stats: ApplicationStatistics;
+
+  getPublicObject(): Partial<Application> {
+    return _.pick(
+      this,
+      "id",
+      "company_id",
+      "is_default",
+      "identity",
+      "access",
+      "display",
+      "publication",
+      "stats",
+    );
+  }
 }
 
 export type ApplicationPrimaryKey = { id: string };

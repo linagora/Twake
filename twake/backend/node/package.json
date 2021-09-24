@@ -21,7 +21,7 @@
     "start": "npm run serve",
     "test": "jest --forceExit --coverage --detectOpenHandles --maxWorkers=1 --verbose false | pino-pretty",
     "test:watch": "npm run test -- --watchAll --verbose false | pino-pretty",
-    "test:e2e": "jest test/e2e --forceExit --coverage --detectOpenHandles --maxWorkers=1 --testTimeout=60000 --verbose false",
+    "test:e2e": "jest test/e2e/messages/messages.files.spec.ts --forceExit --coverage --detectOpenHandles --maxWorkers=1 --testTimeout=60000 --verbose false",
     "test:unit": "jest test/unit --forceExit --coverage --detectOpenHandles --maxWorkers=1 --testTimeout=30000 --verbose false",
     "test:unit:watch": "npm run test:unit -- --watchAll --verbose false | pino-pretty",
     "kill": "kill $(lsof -t -i:3000) | exit 0"
