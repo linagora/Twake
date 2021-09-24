@@ -560,6 +560,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       message.files.push(entity);
     }
 
+    await this.repository.save(message);
+
     return message;
   }
 }
