@@ -8,14 +8,14 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import Application from "../../entities/application";
+import Application, { PublicApplication } from "../../entities/application";
 import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
 export class ApplicationController
   implements
     CrudController<
-      ResourceGetResponse<Application>,
-      ResourceUpdateResponse<Application>,
-      ResourceListResponse<Application>,
+      ResourceGetResponse<PublicApplication>,
+      ResourceUpdateResponse<PublicApplication>,
+      ResourceListResponse<PublicApplication>,
       ResourceDeleteResponse
     >
 {
@@ -23,8 +23,7 @@ export class ApplicationController
 
   async get(
     request: FastifyRequest<{ Params: { application_id: string } }>,
-    reply: FastifyReply,
-  ): Promise<ResourceGetResponse<Application>> {
+  ): Promise<ResourceGetResponse<PublicApplication>> {
     const context = getExecutionContext(request);
     return {
       resource: null,
@@ -35,7 +34,7 @@ export class ApplicationController
     request: FastifyRequest<{
       Querystring: PaginationQueryParameters & { search: string };
     }>,
-  ): Promise<ResourceListResponse<Application>> {
+  ): Promise<ResourceListResponse<PublicApplication>> {
     const context = getExecutionContext(request);
     const entities = await this.service.applications.list(
       request.query,
@@ -51,7 +50,7 @@ export class ApplicationController
   async save(
     request: FastifyRequest<{ Params: { application_id: string }; Body: Application }>,
     reply: FastifyReply,
-  ): Promise<ResourceGetResponse<Application>> {
+  ): Promise<ResourceGetResponse<PublicApplication>> {
     const context = getExecutionContext(request);
 
     return {

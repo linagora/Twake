@@ -9,14 +9,14 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import Application from "../../entities/application";
+import Application, { PublicApplication } from "../../entities/application";
 
 export class CompanyApplicationController
   implements
     CrudController<
-      ResourceGetResponse<Application>,
-      ResourceUpdateResponse<Application>,
-      ResourceListResponse<Application>,
+      ResourceGetResponse<PublicApplication>,
+      ResourceUpdateResponse<PublicApplication>,
+      ResourceListResponse<PublicApplication>,
       ResourceDeleteResponse
     >
 {
@@ -24,7 +24,7 @@ export class CompanyApplicationController
 
   async get(
     request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
-  ): Promise<ResourceGetResponse<Application>> {
+  ): Promise<ResourceGetResponse<PublicApplication>> {
     const context = getCompanyExecutionContext(request);
     const resource = await this.service.companyApplications.get(
       { application_id: request.params.application_id, company_id: context.company.id },
@@ -40,7 +40,7 @@ export class CompanyApplicationController
       Params: { company_id: string };
       Querystring: PaginationQueryParameters & { search: string };
     }>,
-  ): Promise<ResourceListResponse<Application>> {
+  ): Promise<ResourceListResponse<PublicApplication>> {
     const context = getCompanyExecutionContext(request);
     const resources = await this.service.companyApplications.list(
       request.query,
@@ -56,9 +56,9 @@ export class CompanyApplicationController
   async save(
     request: FastifyRequest<{
       Params: { company_id: string; application_id: string };
-      Body: Application;
+      Body: PublicApplication;
     }>,
-  ): Promise<ResourceGetResponse<Application>> {
+  ): Promise<ResourceGetResponse<PublicApplication>> {
     const context = getCompanyExecutionContext(request);
     const resource = await this.service.companyApplications.save(
       { application_id: request.params.application_id, company_id: context.company.id },

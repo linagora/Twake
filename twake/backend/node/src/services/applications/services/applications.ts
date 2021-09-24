@@ -3,7 +3,11 @@ import { DatabaseServiceAPI } from "../../../core/platform/services/database/api
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { MarketplaceApplicationServiceAPI } from "../api";
 import StorageAPI from "../../../core/platform/services/storage/provider";
-import Application, { ApplicationPrimaryKey, TYPE } from "../entities/application";
+import Application, {
+  ApplicationPrimaryKey,
+  TYPE,
+  PublicApplication,
+} from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { logger } from "../../../core/platform/framework";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
@@ -40,7 +44,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     return this;
   }
 
-  async get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<Partial<Application>> {
+  async get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<PublicApplication> {
     const entity = await this.repository.findOne(pk);
     return entity.getPublicObject();
   }
@@ -49,7 +53,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     pagination: Pagination,
     options?: ListOptions,
     context?: ExecutionContext,
-  ): Promise<ListResult<Partial<Application>>> {
+  ): Promise<ListResult<PublicApplication>> {
     //Todo: add search
 
     const entities = await this.repository.find({ pagination }, { pagination });
@@ -63,7 +67,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     pagination: Pagination,
     options?: ListOptions,
     context?: ExecutionContext,
-  ): Promise<ListResult<Partial<Application>>> {
+  ): Promise<ListResult<PublicApplication>> {
     //Fixme: this is not great if we have a lot of applications in the future
 
     const entities = [];

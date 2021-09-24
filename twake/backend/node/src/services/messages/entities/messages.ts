@@ -137,5 +137,5 @@ export function getInstance(message: Partial<Message>): Message {
 
 export class MessageWithUsers extends Message {
   users: UserObject[];
-  application?: Application;
+  application?: Partial<Application>;
 }

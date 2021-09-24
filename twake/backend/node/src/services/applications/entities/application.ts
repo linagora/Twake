@@ -41,7 +41,7 @@ export default class Application {
   @Column("stats", "json")
   stats: ApplicationStatistics;
 
-  getPublicObject(): Partial<Application> {
+  getPublicObject(): PublicApplication {
     return _.pick(
       this,
       "id",
@@ -55,6 +55,11 @@ export default class Application {
     );
   }
 }
+
+export type PublicApplication = Pick<
+  Application,
+  "id" | "company_id" | "is_default" | "identity" | "access" | "display" | "publication" | "stats"
+>;
 
 export type ApplicationPrimaryKey = { id: string };
 
