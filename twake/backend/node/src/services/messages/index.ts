@@ -8,9 +8,10 @@ import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 import UserServiceAPI from "../user/api";
 import ChannelServiceAPI from "../channels/provider";
 import { FileServiceAPI } from "../files/api";
+import { ApplicationServiceAPI } from "../applications/api";
 
 @Prefix("/internal/services/messages/v1")
-@Consumes(["webserver", "database", "pubsub", "channels", "user", "files"])
+@Consumes(["webserver", "database", "pubsub", "channels", "user", "files", "applications"])
 export default class MessageService extends TwakeService<MessageServiceAPI> {
   version = "1";
   name = "messages";
@@ -27,8 +28,9 @@ export default class MessageService extends TwakeService<MessageServiceAPI> {
     const user = this.context.getProvider<UserServiceAPI>("user");
     const channels = this.context.getProvider<ChannelServiceAPI>("channels");
     const files = this.context.getProvider<FileServiceAPI>("files");
+    const applications = this.context.getProvider<ApplicationServiceAPI>("applications");
 
-    this.service = getService(database, pubsub, user, channels, files);
+    this.service = getService(database, pubsub, user, channels, files, applications);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {

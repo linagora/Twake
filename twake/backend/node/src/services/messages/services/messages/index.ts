@@ -4,13 +4,15 @@ import { DatabaseServiceAPI } from "../../../../core/platform/services/database/
 import { MessageServiceAPI, MessageThreadMessagesServiceAPI } from "../../api";
 import { ThreadMessagesService } from "./service";
 import { FileServiceAPI } from "../../../files/api";
+import { ApplicationServiceAPI } from "../../../applications/api";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
   user: UserServiceAPI,
   channel: ChannelServiceAPI,
   files: FileServiceAPI,
+  applications: ApplicationServiceAPI,
   service: MessageServiceAPI,
 ): MessageThreadMessagesServiceAPI {
-  return new ThreadMessagesService(databaseService, user, channel, files, service);
+  return new ThreadMessagesService(databaseService, user, channel, files, applications, service);
 }

@@ -43,6 +43,7 @@ import UserServiceAPI from "../../../user/api";
 import ChannelServiceAPI from "../../../channels/provider";
 import { UserObject } from "../../../user/web/types";
 import { FileServiceAPI } from "../../../files/api";
+import { ApplicationServiceAPI } from "../../../applications/api";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -55,6 +56,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     private user: UserServiceAPI,
     private channel: ChannelServiceAPI,
     private files: FileServiceAPI,
+    private applications: ApplicationServiceAPI,
     private service: MessageServiceAPI,
   ) {
     this.operations = new ThreadMessagesOperationsService(database, service, this);
@@ -428,7 +430,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       );
     }
 
-    let messageWithUsers = { ...message, users };
+    let application = null;
+    if (message.application_id) {
+      application = await this.applications.applications.get({ id: message.application_id });
+    }
+
+    let messageWithUsers = { ...message, users, application };
     return messageWithUsers;
   }
 

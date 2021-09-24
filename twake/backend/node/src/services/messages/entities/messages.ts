@@ -5,6 +5,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 import { Block } from "../blocks-types";
 import { UserObject } from "../../user/web/types";
 import { MessageFile } from "./message-files";
+import Application from "../../applications/entities/application";
 
 export const TYPE = "messages";
 @Entity(TYPE, {
@@ -136,4 +137,5 @@ export function getInstance(message: Partial<Message>): Message {
 
 export class MessageWithUsers extends Message {
   users: UserObject[];
+  application?: Application;
 }
