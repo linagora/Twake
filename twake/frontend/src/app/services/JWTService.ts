@@ -3,6 +3,7 @@ import LoginService from 'services/login/LoginService';
 import WindowService from 'services/utils/window';
 import Logger from 'services/Logger';
 import { TwakeService } from './Decorators/TwakeService';
+import ConsoleAPIClient from './Console/ConsoleAPIClient';
 
 export type JWTDataType = {
   time: 0;
@@ -117,6 +118,18 @@ class JWT {
     }
 
     callback && callback();
+  }
+
+  async renew(): Promise<JWTDataType> {
+    const token = await ConsoleAPIClient.getNewAccessToken();
+
+    if (!token) {
+      throw new Error('Can not get a new access token');
+    }
+
+    this.update(token);
+
+    return token;
   }
 }
 
