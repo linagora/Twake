@@ -201,7 +201,6 @@
     "react-swipeable": "^5.5.1",
     "react-test-renderer": "^17.0.0",
     "react-textarea-autosize": "^8.2.0",
-    "react-touch": "^0.4.4",
     "react-transition-group": "^4.4.1",
     "react-virtualized": "^9.22.2",
     "react-virtuoso": "1.10.3",
