@@ -532,7 +532,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     message.files = [];
 
-    for (const file of message.files) {
+    for (const file of files) {
       const entity =
         existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0] || new MessageFile();
       entity.message_id = file.message_id;
