@@ -558,10 +558,13 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       await this.msgFilesRepository.save(entity);
 
       message.files.push(entity);
+
+      console.log("addfile: ", entity);
     }
 
     await this.repository.save(message);
 
+    console.log("allfiles: ", message.files);
     return message;
   }
 }
