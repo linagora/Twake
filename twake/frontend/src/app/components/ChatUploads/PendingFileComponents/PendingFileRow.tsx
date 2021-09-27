@@ -2,13 +2,13 @@ import React from 'react';
 import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
 import { Pause, Play, X } from 'react-feather';
 import { PendingFileStateType, PendingFileType } from 'app/models/File';
-import ChatUploadService from '../ChatUploadService';
 import {
   isPendingFileStatusError,
   isPendingFileStatusPause,
   isPendingFileStatusSuccess,
 } from '../utils/PendingFiles';
 import Languages from 'services/languages/languages';
+import { useUploadHook } from 'app/state/recoil/hooks/useChatUploadService';
 
 type PropsType = {
   pendingFileState: PendingFileStateType;
@@ -17,16 +17,14 @@ type PropsType = {
 
 const { Text } = Typography;
 export default ({ pendingFileState, pendingFile }: PropsType) => {
+  const { pauseOrResumeUpload, cancelUpload } = useUploadHook();
+
   const getProgressStrokeColor = (status: PendingFileStateType['status']) => {
     if (isPendingFileStatusError(status)) return 'var(--error)';
     if (isPendingFileStatusPause(status)) return 'var(--warning)';
 
     return 'var(--success)';
   };
-
-  const pauseOrResume = (id: PendingFileStateType['id']) => ChatUploadService.pauseOrResume(id);
-
-  const cancel = (id: PendingFileStateType['id']) => ChatUploadService.cancel(id);
 
   const setStatus = () => {
     switch (pendingFileState.status) {
@@ -101,7 +99,7 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
                       <Pause size={14} />
                     )
                   }
-                  onClick={() => pauseOrResume(pendingFileState.id)}
+                  onClick={() => pauseOrResumeUpload(pendingFileState.id)}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -133,7 +131,7 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
                 type="link"
                 shape="circle"
                 icon={<X size={16} color={'var(--error)'} />}
-                onClick={() => cancel(pendingFileState.id)}
+                onClick={() => cancelUpload(pendingFileState.id)}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               />
             </Tooltip>

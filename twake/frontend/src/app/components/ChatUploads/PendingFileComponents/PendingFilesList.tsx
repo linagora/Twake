@@ -5,7 +5,7 @@ import './styles.scss';
 import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
 import { PendingFileStateType } from 'app/models/File';
-import ChatUploadService from '../ChatUploadService';
+import { useUploadHook } from 'app/state/recoil/hooks/useChatUploadService';
 
 type PropsType = {
   pendingFilesState: PendingFileStateType[];
@@ -14,10 +14,8 @@ type PropsType = {
 const { Text } = Typography;
 const { Header, Content } = Layout;
 export default ({ pendingFilesState }: PropsType) => {
+  const { getOnePendingFile, currentUploadTask } = useUploadHook();
   const [hiddenPendingFiles, setHiddenPendingFiles] = useState<boolean>(false);
-
-  const uploadTaskTotalFiles = pendingFilesState.length;
-  const uploadTaskUploadedFiles = pendingFilesState.filter(f => f.status === 'success').length;
 
   return pendingFilesState.length > 0 ? (
     <Layout className="pending-files-list-layout">
@@ -29,7 +27,8 @@ export default ({ pendingFilesState }: PropsType) => {
         <Row justify="space-between" align="middle">
           <Col>
             <Text style={{ color: 'var(--white)' }}>
-              {uploadTaskTotalFiles > 0 && `${uploadTaskUploadedFiles}/${uploadTaskTotalFiles} `}
+              {currentUploadTask.total > 0 &&
+                `${currentUploadTask.completed}/${currentUploadTask.total} `}
               {Languages.t('components.drive_dropzone.uploading')}
             </Text>
           </Col>
@@ -45,7 +44,7 @@ export default ({ pendingFilesState }: PropsType) => {
               <PendingFileRow
                 key={`${pendingFileState.file?.id}-${index}`}
                 pendingFileState={pendingFileState}
-                pendingFile={ChatUploadService.getPendingFile(pendingFileState.id)}
+                pendingFile={getOnePendingFile(pendingFileState.id)}
               />
             ))}
         </Content>

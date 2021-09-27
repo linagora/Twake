@@ -1,19 +1,9 @@
 import React from 'react';
-
-import { useChatUploadService } from 'app/state/recoil/hooks/useChatUploadService';
-import ChatUploadService from './ChatUploadService';
+import { useUploadHook } from 'app/state/recoil/hooks/useChatUploadService';
 import PendingFilesList from './PendingFileComponents/PendingFilesList';
 
 const ChatUploadsViewer = (): JSX.Element => {
-  const [pendingFilesListState] = useChatUploadService();
-
-  const currentTaskFiles = (pendingFilesListState || []).filter(
-    f =>
-      ChatUploadService.getPendingFile(f.id).uploadTaskId === ChatUploadService.currentTaskId ||
-      f.status === 'error',
-  );
-
-  const tasksEnded = currentTaskFiles.every(f => f.status === 'success');
+  const { currentTaskFiles, tasksEnded } = useUploadHook();
 
   return !!currentTaskFiles && currentTaskFiles?.length > 0 && !tasksEnded ? (
     <PendingFilesList pendingFilesState={currentTaskFiles} />

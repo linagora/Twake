@@ -1,29 +1,26 @@
-import { FileType, PendingFileStateType, PendingFileType } from 'app/models/File';
+import { FileType, PendingFileType } from 'app/models/File';
 import Api from 'app/services/Api';
 import JWTStorage from 'app/services/JWTStorage';
-import _ from 'lodash';
-import { SetterOrUpdater } from 'recoil';
+import EventEmitter from 'events';
 import RouterServices from 'services/RouterService';
 import Resumable from 'services/uploadManager/resumable';
 import { v1 as uuid } from 'uuid';
 import { isPendingFileStatusPending } from './utils/PendingFiles';
 type ResponseFileType = { resource: FileType };
 
-export class ChatUploadService {
-  private handler: SetterOrUpdater<PendingFileStateType[] | undefined> = () => [];
+export enum Events {
+  ON_CHANGE = 'onChange',
+}
+
+export class ChatUploadService extends EventEmitter {
   private readonly prefixUrl: string = '/internal/services/files/v1';
   private pendingFiles: PendingFileType[] = [];
   public currentTaskId: string = '';
 
-  public setHandler(handler: SetterOrUpdater<PendingFileStateType[] | undefined>) {
-    this.handler = handler;
+  onChange() {
+    this.emit(Events.ON_CHANGE, this.pendingFiles);
   }
 
-  private notify() {
-    this.handler(this.pendingFiles.map(f => _.cloneDeep(f.state)));
-  }
-
-  // TODO Limit the number of simultaneous requests
   public async upload(fileList: File[]): Promise<void> {
     const { companyId } = RouterServices.getStateFromRoute();
 
@@ -51,7 +48,7 @@ export class ChatUploadService {
 
       this.pendingFiles.push(pendingFile);
 
-      this.notify();
+      this.onChange();
 
       // First we create the file object
       const uploadFileRoute = `${this.prefixUrl}/companies/${companyId}/files?filename=${file.name}&type=${file.type}&total_size=${file.size}`;
@@ -62,7 +59,7 @@ export class ChatUploadService {
       }
 
       pendingFile.state.file = resource;
-      this.notify();
+      this.onChange();
 
       // Then we overwrite the file object with resumable
       pendingFile.resumable = this.getResumableInstance({
@@ -86,19 +83,19 @@ export class ChatUploadService {
       pendingFile.resumable.on('fileProgress', (f: any, ratio: number) => {
         pendingFile.state.file = f;
         pendingFile.state.progress = f.progress();
-        this.notify();
+        this.onChange();
       });
 
       pendingFile.resumable.on('fileSuccess', (f: any, message: string) => {
         pendingFile.state.file = JSON.parse(message).resource;
         pendingFile.state.status = 'success';
-        this.notify();
+        this.onChange();
       });
 
       pendingFile.resumable.on('fileError', (f: any, message: any) => {
         pendingFile.state.status = 'error';
         pendingFile.resumable.cancel();
-        this.notify();
+        this.onChange();
       });
     });
   }
@@ -112,11 +109,11 @@ export class ChatUploadService {
 
     fileToCancel.resumable.cancel();
     fileToCancel.state.status = 'error';
-    this.notify();
+    this.onChange();
 
     setTimeout(() => {
       this.pendingFiles = this.pendingFiles.filter(f => f.state.id !== id);
-      this.notify();
+      this.onChange();
     }, 1000);
   }
 
@@ -130,7 +127,7 @@ export class ChatUploadService {
       ? fileToCancel.resumable.pause()
       : fileToCancel.resumable.upload();
 
-    this.notify();
+    this.onChange();
   }
 
   private getResumableInstance({
@@ -159,15 +156,6 @@ export class ChatUploadService {
       maxChunkRetries: maxChunkRetries || 2,
       query,
     });
-  }
-
-  /** When upload is no longer needed */
-  public destroy() {
-    //Cancel all current uploads
-    //TODO
-
-    //Reset handler to nothing
-    this.handler = () => [];
   }
 }
 

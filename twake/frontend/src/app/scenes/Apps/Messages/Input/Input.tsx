@@ -14,7 +14,7 @@ import Languages from 'app/services/languages/languages';
 import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
-import ChatUploadService from 'app/components/ChatUploads/ChatUploadService';
+import { useUploadHook } from 'app/state/recoil/hooks/useChatUploadService';
 
 import './Input.scss';
 
@@ -41,6 +41,7 @@ type Props = {
 };
 
 export default (props: Props) => {
+  const { uploadFiles } = useUploadHook();
   const editorPlugins = props.editorPlugins || ['emoji', 'mention', 'channel', 'command'];
   const editorId = `channel:${props.channelId || ''}/thread:${props.threadId || ''}/message:${
     props.messageId || ''
@@ -216,7 +217,7 @@ export default (props: Props) => {
   };
 
   const onAddFiles = async (files: File[]) => {
-    await ChatUploadService.upload(files);
+    await uploadFiles(files);
   };
 
   const disabled = isEmpty() || isTooLong;
