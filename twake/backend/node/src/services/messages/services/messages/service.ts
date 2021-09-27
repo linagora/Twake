@@ -517,7 +517,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   //Complete message with all missing information and cache
-  async completeMessage(message: Message, options?: { files?: Message["files"] } = {}) {
+  async completeMessage(message: Message, options: { files?: Message["files"] } = {}) {
     if (options.files) message = await this.completeMessageFiles(message, options.files || []);
     return message;
   }
