@@ -1,5 +1,6 @@
-import { PDFImage } from "pdf-image";
+import { fromPath } from "pdf2pic";
 import { promises as fsPromise } from "fs";
+import { getTmpFile } from "../../utils";
 
 const { unlink } = fsPromise;
 
@@ -10,13 +11,16 @@ export async function convertFromPdf(
   const pages: string[] = [];
 
   try {
-    const pdfImage = new PDFImage(inputPath);
-
-    numberOfPages = 1; //Fixme: We cannot generate more page because of a library bug right now
-
-    for (let i = 0; i < numberOfPages; i++) {
-      const newPage = await pdfImage.convertPage(i);
-      pages.push(newPage);
+    const options = {
+      density: 100,
+      saveFilename: "output",
+      savePath: getTmpFile(),
+      format: "png",
+    };
+    const storeAsImage = fromPath(inputPath, options);
+    const images = await storeAsImage.bulk(numberOfPages);
+    for (const image of images) {
+      pages.push(`${options.savePath}/${options.saveFilename}.${image.page}.${options.format}`);
     }
   } catch (error) {
     console.error("there was an error:", error.message);

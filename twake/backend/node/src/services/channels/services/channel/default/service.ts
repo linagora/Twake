@@ -181,6 +181,10 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
         user,
       );
 
+      if (!companyUser) {
+        return [];
+      }
+
       // Do not add guest in default channels
       if (companyUser.role === "guest") {
         logger.debug(

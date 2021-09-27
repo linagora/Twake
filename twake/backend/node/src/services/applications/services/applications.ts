@@ -3,7 +3,11 @@ import { DatabaseServiceAPI } from "../../../core/platform/services/database/api
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { MarketplaceApplicationServiceAPI } from "../api";
 import StorageAPI from "../../../core/platform/services/storage/provider";
-import Application, { ApplicationPrimaryKey, TYPE } from "../entities/application";
+import Application, {
+  ApplicationPrimaryKey,
+  TYPE,
+  PublicApplication,
+} from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { logger } from "../../../core/platform/framework";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
@@ -12,7 +16,6 @@ import {
   DeleteResult,
   ExecutionContext,
   ListResult,
-  Paginable,
   Pagination,
   SaveResult,
   UpdateResult,
@@ -41,10 +44,49 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     return this;
   }
 
-  create?(item: Application, context?: ExecutionContext): Promise<CreateResult<Application>> {
-    throw new Error("Method not implemented.");
+  async get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<PublicApplication> {
+    const entity = await this.repository.findOne(pk);
+    return entity.getPublicObject();
   }
-  get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<Application> {
+
+  async list<ListOptions>(
+    pagination: Pagination,
+    options?: ListOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<PublicApplication>> {
+    //Todo: add search
+
+    const entities = await this.repository.find({ pagination }, { pagination });
+    entities.filterEntities(app => app.publication.published);
+
+    const applications = entities.getEntities().map(app => app.getPublicObject());
+    return new ListResult(entities.type, applications, entities.nextPage);
+  }
+
+  async listDefaults<ListOptions>(
+    pagination: Pagination,
+    options?: ListOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<PublicApplication>> {
+    //Fixme: this is not great if we have a lot of applications in the future
+
+    const entities = [];
+
+    let page: Pagination = { limitStr: "100" };
+    do {
+      const applicationListResult = await this.repository.find({}, { pagination: page });
+      page = applicationListResult.nextPage as Pagination;
+      applicationListResult.filterEntities(app => app.publication.published && app.is_default);
+
+      for (const application of applicationListResult.getEntities()) {
+        entities.push(application.getPublicObject());
+      }
+    } while (page.page_token);
+
+    return new ListResult(TYPE, entities);
+  }
+
+  create?(item: Application, context?: ExecutionContext): Promise<CreateResult<Application>> {
     throw new Error("Method not implemented.");
   }
   update?(
@@ -66,38 +108,5 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     context?: ExecutionContext,
   ): Promise<DeleteResult<Application>> {
     throw new Error("Method not implemented.");
-  }
-
-  async list<ListOptions>(
-    pagination: Pagination,
-    options?: ListOptions,
-    context?: ExecutionContext,
-  ): Promise<ListResult<Application>> {
-    const entities = await this.repository.find({}, { pagination });
-    entities.filterEntities(app => app.publication.published);
-    return entities;
-  }
-
-  async listDefaults<ListOptions>(
-    pagination: Pagination,
-    options?: ListOptions,
-    context?: ExecutionContext,
-  ): Promise<ListResult<Application>> {
-    //Fixme: this is not great if we have a lot of applications in the future
-
-    const entities = [];
-
-    let page: Pagination = { limitStr: "100" };
-    do {
-      const applicationListResult = await this.repository.find({}, { pagination: page });
-      page = applicationListResult.nextPage as Pagination;
-      applicationListResult.filterEntities(app => app.publication.published && app.is_default);
-
-      for (const application of applicationListResult.getEntities()) {
-        entities.push(application);
-      }
-    } while (page.page_token);
-
-    return new ListResult(TYPE, entities);
   }
 }

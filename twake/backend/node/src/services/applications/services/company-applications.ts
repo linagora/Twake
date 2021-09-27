@@ -13,6 +13,7 @@ import {
   ListResult,
   OperationType,
   Paginable,
+  Pagination,
   SaveResult,
   UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
@@ -48,24 +49,21 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     return this;
   }
 
-  create?(
-    item: CompanyApplicationPrimaryKey,
-    context?: CompanyExecutionContext,
-  ): Promise<CreateResult<CompanyApplication>> {
-    throw new Error("Method not implemented.");
-  }
-  get(
+  async get(
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<CompanyApplicationWithApplication> {
-    throw new Error("Method not implemented.");
-  }
-  update?(
-    pk: CompanyApplicationPrimaryKey,
-    item: CompanyApplication,
-    context?: CompanyExecutionContext,
-  ): Promise<UpdateResult<CompanyApplication>> {
-    throw new Error("Method not implemented.");
+    let companyApplication = await this.repository.findOne({
+      group_id: context.company.id,
+      app_id: pk.application_id,
+    });
+
+    const application = await this.applicationService.get({ id: pk.application_id });
+
+    return {
+      ...companyApplication,
+      application: application,
+    };
   }
 
   async save<SaveOptions>(
@@ -107,18 +105,53 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     }
   }
 
-  delete(
-    pk: ApplicationPrimaryKey,
+  async delete(
+    pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<DeleteResult<CompanyApplication>> {
-    throw new Error("Method not implemented.");
+    let companyApplication = await this.repository.findOne({
+      group_id: context.company.id,
+      app_id: pk.application_id,
+    });
+
+    let deleted = false;
+    if (companyApplication) {
+      this.repository.remove(companyApplication);
+      deleted = true;
+    }
+
+    return new DeleteResult(TYPE, companyApplication, deleted);
   }
 
-  list<ListOptions>(
-    pagination: Paginable,
+  async list<ListOptions>(
+    pagination: Pagination,
     options?: ListOptions,
     context?: CompanyExecutionContext,
   ): Promise<ListResult<CompanyApplicationWithApplication>> {
-    throw new Error("Method not implemented.");
+    let companyApplications = await this.repository.find(
+      {
+        group_id: context.company.id,
+      },
+      { pagination },
+    );
+
+    let applications = [];
+
+    for (const companyApplication of companyApplications.getEntities()) {
+      const application = await this.applicationService.get({
+        id: companyApplication.application_id,
+      });
+      if (application)
+        applications.push({
+          ...companyApplication,
+          application: application,
+        });
+    }
+
+    return new ListResult<CompanyApplicationWithApplication>(
+      TYPE,
+      applications,
+      companyApplications.nextPage,
+    );
   }
 }
