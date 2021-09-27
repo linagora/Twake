@@ -509,7 +509,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     files = files.map(f => {
-      f.message_id = f.message_id || message.id;
+      f.message_id = message.id;
       return f;
     });
 
@@ -517,12 +517,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       return a.external_id == b.external_id && a.source == b.source;
     };
 
+    //Delete all existing msg files not in the new files object
     const existingMsgFiles = (
       await this.msgFilesRepository.find({
         message_id: message.id,
       })
     ).getEntities();
-
     for (const entity of existingMsgFiles) {
       if (!files.some(f => sameFile(f.metadata, entity.metadata))) {
         //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
@@ -530,18 +530,19 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
     }
 
+    //Ensure all files in the file object are in the message
     message.files = [];
-
     for (const file of files) {
       const entity =
         existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0] || new MessageFile();
-      entity.message_id = file.message_id;
+      entity.message_id = message.id;
+      entity.id = file.id || undefined;
 
-      //For internal files, we have a special additionnal sync
-      if (entity.metadata.source == "internal") {
-        const original = await this.files.get(entity.metadata.external_id?.id as string, {
+      //For internal files, we have a special additional sync
+      if (file.metadata?.source == "internal") {
+        const original = await this.files.get(file.metadata.external_id?.id as string, {
           user: { id: "", server_request: true },
-          company: { id: entity.metadata.external_id?.company_id as string },
+          company: { id: file.metadata.external_id?.company_id as string },
         });
         if (original) {
           file.metadata = { ...file.metadata, ...original.metadata };
