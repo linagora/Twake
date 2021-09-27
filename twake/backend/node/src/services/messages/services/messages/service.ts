@@ -339,7 +339,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   async getSingleMessage(pk: Pick<Message, "thread_id" | "id">) {
     let message = await this.repository.findOne(pk);
-    message = await this.completeMessage(message, { files: message.files || [] });
+    if (message) {
+      message = await this.completeMessage(message, { files: message.files || [] });
+    }
     return message;
   }
 
@@ -372,7 +374,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let lastReplies: Message[] = [];
     for (const lastReply of lastRepliesUncompleted) {
-      lastReplies.push(await this.completeMessage(lastReply, { files: lastReply.files || [] }));
+      if (lastReply)
+        lastReplies.push(await this.completeMessage(lastReply, { files: lastReply.files || [] }));
     }
 
     let firstMessage = await this.getSingleMessage({
