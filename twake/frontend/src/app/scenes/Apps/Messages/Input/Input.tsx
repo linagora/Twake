@@ -14,7 +14,7 @@ import Languages from 'app/services/languages/languages';
 import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
-import { useUploadHook } from 'app/state/recoil/hooks/useChatUploadService';
+import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
 
 import './Input.scss';
 

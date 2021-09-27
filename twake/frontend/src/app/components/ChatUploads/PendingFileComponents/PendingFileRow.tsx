@@ -8,7 +8,7 @@ import {
   isPendingFileStatusSuccess,
 } from '../utils/PendingFiles';
 import Languages from 'services/languages/languages';
-import { useUploadHook } from 'app/state/recoil/hooks/useChatUploadService';
+import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
 
 type PropsType = {
   pendingFileState: PendingFileStateType;
