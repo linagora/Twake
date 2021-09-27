@@ -372,9 +372,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let lastReplies: Message[] = [];
     for (const lastReply of lastRepliesUncompleted) {
-      lastRepliesUncompleted.push(
-        await this.completeMessage(lastReply, { files: lastReply.files || [] }),
-      );
+      lastReplies.push(await this.completeMessage(lastReply, { files: lastReply.files || [] }));
     }
 
     let firstMessage = await this.getSingleMessage({
