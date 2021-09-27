@@ -351,7 +351,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     if (thread) {
       return await this.getThread(thread);
     } else {
-      return this.getSingleMessage(pk);
+      return await this.getSingleMessage(pk);
     }
   }
 
