@@ -65,11 +65,7 @@ export default class WorkspaceParameter extends Component {
       return <WorkspacePartner />;
     }
     if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page === 3) {
-      var options = this.state.options;
-      if (this.state.options === 'open_search_apps') {
-        this.setState({ option: undefined });
-      }
-      return <WorkspaceApps searchApps={options === 'open_search_apps'} />;
+      return <WorkspaceApps />;
     }
     if (WorkspaceUserRights.hasGroupPrivilege('MANAGE_DATA') && this.state.page === 4) {
       return <CompanyIdendity />;

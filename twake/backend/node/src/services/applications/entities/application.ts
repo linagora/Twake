@@ -19,6 +19,9 @@ export default class Application {
   @Column("group_id", "timeuuid")
   company_id: string;
 
+  @Column("is_default", "boolean")
+  is_default: boolean;
+
   @Column("identity", "json")
   identity: ApplicationIdentity;
 

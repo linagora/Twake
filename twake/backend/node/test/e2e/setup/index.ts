@@ -46,7 +46,7 @@ let testPlatform: TestPlatform = null;
 export async function init(testConfig?: TestPlatformConfiguration): Promise<TestPlatform> {
   if (!testPlatform) {
     const configuration: TwakePlatformConfiguration = {
-      services: testConfig && testConfig.services ? testConfig.services : config.get("services"),
+      services: config.get("services"),
       servicesPath: pathResolve(__dirname, "../../../src/services/"),
     };
     const platform = new TwakePlatform(configuration);

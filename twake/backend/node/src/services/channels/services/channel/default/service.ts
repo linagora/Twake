@@ -206,6 +206,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
       return (await this.channelService.members.addUserToChannels(user, channels)).getEntities();
     } catch (err) {
       logger.error({ err }, "Error while adding user for default channels");
+      throw new Error("Error while adding user for default channels");
     }
   }
 

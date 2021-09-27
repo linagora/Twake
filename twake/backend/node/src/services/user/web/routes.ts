@@ -9,6 +9,7 @@ import {
   getUserSchema,
   getUsersSchema,
   postDevicesSchema,
+  setUserPreferencesSchema,
 } from "./schemas";
 
 const usersUrl = "/users";
@@ -33,6 +34,15 @@ const routes: FastifyPluginCallback<{
     preValidation: [fastify.authenticate],
     schema: getUserSchema,
     handler: usersController.get.bind(usersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${usersUrl}/me/preferences`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: setUserPreferencesSchema,
+    handler: usersController.setPreferences.bind(usersController),
   });
 
   fastify.route({

@@ -93,6 +93,20 @@ export const getUserSchema = {
   },
 };
 
+export const setUserPreferencesSchema = {
+  request: {
+    properties: {
+      tutorial_done: { type: "boolean" },
+      channel_ordering: { type: "string" },
+    },
+  },
+  response: {
+    "2xx": {
+      type: "object",
+    },
+  },
+};
+
 export const getUsersSchema = {
   type: "object",
   properties: {

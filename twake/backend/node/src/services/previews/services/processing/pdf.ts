@@ -7,7 +7,7 @@ export async function convertFromPdf(
   numberOfPages: number,
   deleteInputFile: boolean,
 ): Promise<{ output: string[]; done: boolean }> {
-  let pages: string[] = [];
+  const pages: string[] = [];
 
   try {
     const pdfImage = new PDFImage(inputPath);

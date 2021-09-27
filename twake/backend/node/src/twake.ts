@@ -19,7 +19,7 @@ async function run(services: string[] = []): Promise<TwakePlatform> {
 
       return platform;
     } catch (err) {
-      console.error(err);
+      console.error("Will exit process because of: ", err);
       process.exit(-1);
     }
   };

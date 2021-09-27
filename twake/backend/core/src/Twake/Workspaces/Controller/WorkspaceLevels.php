@@ -27,7 +27,7 @@ class WorkspaceLevels extends BaseController
         $workspaceId = $request->request->get("workspaceId");
 
         $levels = $this->get("app.workspace_levels")->getLevels($workspaceId, $this->getUser()->getId());
-        $workspaceApps = $this->get("app.workspaces_apps")->getApps($workspaceId, $this->getUser()->getId(), false, true);
+        $workspaceApps = $this->get("app.group_apps")->getApps($workspaceId, $this->getUser()->getId(), false, true);
 
         if ($levels == null) {
             $response["errors"] = "notauthorized";

@@ -157,7 +157,7 @@ class User {
     setTimeout(
       () => {
         Api.post(
-          'users/all/search',
+          '/ajax/users/all/search',
           {
             options: {
               scope: scope,

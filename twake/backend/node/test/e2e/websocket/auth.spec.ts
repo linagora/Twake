@@ -18,6 +18,7 @@ describe("The Websocket authentication", () => {
         "user",
         "websocket",
         "webserver",
+        "applications",
         "auth",
         "realtime",
         "channels" /* FIXME: platform is not started if a business service is not in dependencies */,

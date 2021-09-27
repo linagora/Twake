@@ -14,10 +14,8 @@ import {
   WorkspacesListRequest,
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import Workspace from "../../entities/workspace";
 import { CompaniesServiceAPI } from "../../../user/api";
-import { merge } from "lodash";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { plainToClass } from "class-transformer";
 import { hasCompanyAdminLevel, hasCompanyMemberLevel } from "../../../../utils/company";
@@ -30,8 +28,7 @@ export class WorkspacesCrudController
       ResourceCreateResponse<WorkspaceObject>,
       ResourceListResponse<WorkspaceObject>,
       ResourceDeleteResponse
-    >
-{
+    > {
   constructor(
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
@@ -213,7 +210,10 @@ export class WorkspacesCrudController
       }
     }
 
-    const deleteResult = await this.workspaceService.delete({ id: request.params.id }, context);
+    const deleteResult = await this.workspaceService.delete(
+      { id: request.params.id, company_id: context.company_id },
+      context,
+    );
 
     if (deleteResult.deleted) {
       reply.code(204);

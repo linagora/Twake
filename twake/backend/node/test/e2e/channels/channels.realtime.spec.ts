@@ -29,6 +29,7 @@ describe("The Channels Realtime feature", () => {
         "user",
         "search",
         "websocket",
+        "applications",
         "webserver",
         "channels",
         "auth",

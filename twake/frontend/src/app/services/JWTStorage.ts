@@ -30,7 +30,10 @@ class JWTStorage {
   };
 
   async init() {
-    this.updateJWT(LocalStorage.getItem<JWTDataType>('jwt') as JWTDataType, { fromLocalStorage: true });
+    this.updateJWT(LocalStorage.getItem<JWTDataType>('jwt') as JWTDataType, {
+      fromLocalStorage: true,
+    });
+    (window as any).JWTStorage = this;
   }
 
   clear() {

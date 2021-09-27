@@ -12,7 +12,7 @@ export async function generatePreview(
   done: boolean;
   error?: string;
 }> {
-  let output: ThumbnailResult[] = [];
+  const output: ThumbnailResult[] = [];
 
   for (const inputPath of inputPaths) {
     var result: sharp.OutputInfo;
@@ -49,10 +49,8 @@ function computeNewFormat(
 ): { width: number; height: number } {
   const maxOutputWidth = options?.width || 300;
   const maxOutputHeight = options?.height || 200;
-
   const inputWidth = inputMetadata.width;
   const inputHeight = inputMetadata.height;
-
   const scale = Math.max(inputWidth / maxOutputWidth, inputHeight / maxOutputHeight);
   return { width: Math.round(inputWidth / scale), height: Math.round(inputHeight / scale) };
 }

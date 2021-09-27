@@ -2,7 +2,7 @@ name: docker-build
 
 on:
   pull_request:
-    branches: [main, "feature/*"]
+    branches: [main, develop, qa, canary]
     paths:
       - "twake/docker/**"
 

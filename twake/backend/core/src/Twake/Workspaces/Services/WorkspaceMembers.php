@@ -702,7 +702,7 @@ class WorkspaceMembers
                     "ishidden" => $workspaceMember->getisHidden(),
                     "isfavorite" => $workspaceMember->getisFavorite(),
                     "_user_is_admin" => $isAdmin || $companyAdmin,
-                    "_user_is_guest" => $workspaceMember->getExterne() || ($groupUser ? $groupUser->getExterne() : true),
+                    "_user_is_guest" => $groupUser ? $groupUser->getExterne() : $workspaceMember->getExterne(),
                     "_user_is_organization_administrator" => $companyAdmin,
                     "hasnotifications" => $workspaceMember->getHasNotifications(),
                     "isArchived" => $workspaceMember->getWorkspace($this->doctrine)->getIsArchived()

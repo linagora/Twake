@@ -27,9 +27,7 @@ class ApplicationMigrator {
     const phpRepository = await this.database.getRepository(phpTYPE, PhpApplication);
     const repository = await this.database.getRepository(TYPE, Application);
 
-    // Get all companies
     let page: Pagination = { limitStr: "100" };
-    // For each companies find applications
     do {
       const applicationListResult = await phpRepository.find({}, { pagination: page });
       page = applicationListResult.nextPage as Pagination;
@@ -37,7 +35,6 @@ class ApplicationMigrator {
       for (const application of applicationListResult.getEntities()) {
         if (
           !(await repository.findOne({
-            group_id: application.group_id,
             id: application.id,
           })) ||
           options.replaceExisting
@@ -105,6 +102,7 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
 
   newApplication.id = application.id;
   newApplication.company_id = application.group_id;
+  newApplication.is_default = application.is_default;
 
   if (!newApplication.identity?.name) {
     newApplication.identity = {
@@ -118,24 +116,32 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
   }
 
   if (newApplication.publication?.published === undefined) {
+    //@ts-ignore
+    newApplication.publication = newApplication.publication || {};
     newApplication.publication.published = application.depreciated_is_available_to_public;
     newApplication.publication.pending =
       application.depreciated_public && !application.depreciated_twake_team_validation;
   }
 
   if (!newApplication.stats?.version) {
+    //@ts-ignore
+    newApplication.stats = newApplication.stats || {};
     newApplication.stats.version = 1;
     newApplication.stats.createdAt = Date.now();
     newApplication.stats.updatedAt = Date.now();
   }
 
   if (!newApplication.api?.privateKey) {
+    //@ts-ignore
+    newApplication.api = newApplication.api || {};
     newApplication.api.hooksUrl = application.depreciated_api_events_url;
     newApplication.api.allowedIps = application.depreciated_api_allowed_ip;
     newApplication.api.privateKey = application.depreciated_api_private_key;
   }
 
   if (newApplication.access?.capabilities === undefined) {
+    //@ts-ignore
+    newApplication.access = newApplication.access || {};
     try {
       newApplication.access.capabilities =
         JSON.parse(application.depreciated_capabilities || "[]") || [];

@@ -84,6 +84,7 @@ export class TestDbService {
         logo: "workspace_logo",
         company_id: workspacePk.company_id,
       }),
+      { user: { id: "", server_request: true } },
     );
 
     const createdWorkspace = await this.workspaceService.workspaces.get({

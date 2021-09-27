@@ -36,8 +36,10 @@ export default class Workspace {
   dateAdded: number;
 }
 
-export type WorkspacePrimaryKey = Partial<Pick<Workspace, "company_id" | "id">>;
+export type WorkspacePrimaryKey = Pick<Workspace, "company_id" | "id">;
 
-export function getInstance(workspace: Partial<Workspace> & WorkspacePrimaryKey): Workspace {
+export function getInstance(
+  workspace: Partial<Workspace> & Partial<WorkspacePrimaryKey>,
+): Workspace {
   return merge(new Workspace(), workspace);
 }

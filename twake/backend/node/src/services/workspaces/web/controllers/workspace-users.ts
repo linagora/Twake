@@ -129,7 +129,7 @@ export class WorkspaceUsersCrudController
     const context = getExecutionContext(request);
     let nextPageToken: string | null = null;
 
-    let allWorkspaceUsers: WorkspaceUser[];
+    let allWorkspaceUsers: WorkspaceUser[] = [];
     if (request.query.search) {
       const users: ListResult<User> = await this.usersService.search(
         new Pagination(request.query.page_token, request.query.limit),
@@ -283,7 +283,11 @@ export class WorkspaceUsersCrudController
     } else {
       // ON ADD
       if (!workspaceUser) {
-        await this.workspaceService.addUser({ id: context.workspace_id }, { id: userId }, role);
+        await this.workspaceService.addUser(
+          { id: context.workspace_id, company_id: context.company_id },
+          { id: userId },
+          role,
+        );
       }
     }
 
@@ -410,10 +414,19 @@ export class WorkspaceUsersCrudController
           inviterEmail: context.user.email,
         };
 
-        await consoleClient.addUserToCompany(
-          { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
-          createUser,
-        );
+        try {
+          await consoleClient.addUserToCompany(
+            { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
+            createUser,
+          );
+        } catch (err) {
+          responses.push({
+            email: invitation.email,
+            status: "error",
+            message: "Unable to invite this user to your company",
+          });
+          return;
+        }
       }
 
       const userInWorkspace = Boolean(

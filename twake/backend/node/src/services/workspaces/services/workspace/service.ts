@@ -26,7 +26,7 @@ import Workspace, {
   WorkspacePrimaryKey,
 } from "../../../workspaces/entities/workspace";
 import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
-import { UserPrimaryKey } from "../../../user/entities/user";
+import User, { UserPrimaryKey } from "../../../user/entities/user";
 import { CompanyPrimaryKey } from "../../../user/entities/company";
 import _, { merge } from "lodash";
 import WorkspacePendingUser, {
@@ -44,6 +44,7 @@ import {
 } from "../../entities/workspace_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
+import { ApplicationServiceAPI } from "../../../applications/api";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -56,6 +57,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     private platformServices: PlatformServicesAPI,
     private users: UsersServiceAPI,
     private companies: CompaniesServiceAPI,
+    private applications: ApplicationServiceAPI,
   ) {}
 
   async init(): Promise<this> {
@@ -108,8 +110,23 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       },
     });
 
-    await this.workspaceRepository.save(workspaceToCreate);
-    return new CreateResult<Workspace>(TYPE, workspaceToCreate);
+    const userId = context?.user?.id || "";
+
+    const created = await this.save(
+      workspaceToCreate,
+      {},
+      { company_id: workspace.company_id, user: { id: userId, server_request: true } },
+    );
+
+    await this.applications.companyApplications.initWithDefaultApplications(
+      created.entity.company_id,
+      {
+        company: { id: created.entity.company_id },
+        user: { id: userId, server_request: true },
+      },
+    );
+
+    return new CreateResult<Workspace>(TYPE, created.entity);
   }
 
   update?(
@@ -128,6 +145,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     let workspace = getWorkspaceInstance({
       ...item,
       ...{
+        company_id: (context.user.server_request ? item.company_id : null) || context.company_id,
         name: "",
         dateAdded: Date.now(),
         isArchived: false,
@@ -135,7 +153,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       },
     });
 
-    if (item.id) {
+    if (item.id && !context?.user?.server_request) {
       // ON UPDATE
       workspace = await this.get({
         id: item.id,
@@ -156,7 +174,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
     await this.workspaceRepository.save(workspace);
 
-    if (!item.id) {
+    if (!item.id && context.user.id) {
       await this.addUser(
         { id: workspace.id, company_id: workspace.company_id },
         { id: context.user.id },
@@ -324,10 +342,38 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     });
   }
 
+  async processPendingUser(user: User): Promise<void> {
+    const userCompanies = await this.companies.getAllForUser(user.id);
+    for (const userCompany of userCompanies) {
+      const workspaces = await this.getAllForCompany(userCompany.group_id);
+      for (const workspace of workspaces) {
+        const pendingUserPk = {
+          workspace_id: workspace.id,
+          email: user.email_canonical,
+        };
+        const pendingUser = await this.getPendingUser(pendingUserPk);
+
+        if (pendingUser) {
+          await this.removePendingUser(pendingUserPk);
+          await this.addUser(
+            { id: workspace.id, company_id: workspace.company_id },
+            { id: user.id },
+            pendingUser.role,
+          );
+        }
+      }
+    }
+  }
+
   async getAllForUser(
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
     companyId: CompanyPrimaryKey,
   ): Promise<WorkspaceUser[]> {
+    //Process pending invitation to workspace for this user
+    const user = await this.users.get({ id: userId.userId });
+    await this.processPendingUser(user);
+
+    //Get all workspaces for this user
     const allCompanyWorkspaces = await this.getAllForCompany(companyId.id);
     let userWorkspaces = (
       await Promise.all(
@@ -340,7 +386,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       )
     ).filter(uw => uw);
 
-    //If user is in no workspace, then it must be invited in the default workspaces
+    //If user is in no workspace, then it must be invited in the default workspaces, expect if he's guest
     if (userWorkspaces.length === 0) {
       for (const workspace of allCompanyWorkspaces) {
         if (workspace.isDefault && !workspace.isArchived && !workspace.isDeleted) {
@@ -353,13 +399,15 @@ export class WorkspaceService implements WorkspaceServiceAPI {
             let role: WorkspaceUserRole = "member";
             if (companyRole.role == "admin" || companyRole.role == "owner") role = "moderator";
 
-            await this.addUser(workspace, { id: userId.userId }, role);
-            const uw = await this.workspaceUserRepository.findOne({
-              user_id: userId.userId,
-              workspace_id: workspace.id,
-            });
-            if (uw) {
-              userWorkspaces.push(uw);
+            if (companyRole.role !== "guest") {
+              await this.addUser(workspace, { id: userId.userId }, role);
+              const uw = await this.workspaceUserRepository.findOne({
+                user_id: userId.userId,
+                workspace_id: workspace.id,
+              });
+              if (uw) {
+                userWorkspaces.push(uw);
+              }
             }
           } catch (err) {
             console.log(err);

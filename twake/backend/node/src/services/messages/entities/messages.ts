@@ -75,7 +75,7 @@ export class Message {
   blocks: Block[];
 
   @Column("files", "encoded_json")
-  files: null | string[];
+  files: null | { company_id: string; id: string }[];
 
   @Column("context", "encoded_json")
   context: any;

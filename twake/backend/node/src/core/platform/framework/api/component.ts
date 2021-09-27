@@ -39,7 +39,7 @@ export class TwakeComponent {
     recursionDepth?: number,
   ): Promise<void> {
     if (recursionDepth > 10) {
-      logger.error("Maximum recursion depth exceeded");
+      logger.error("Maximum recursion depth exceeded (will exit process)");
       process.exit(1);
     }
 

@@ -38,13 +38,13 @@ export default (props: Props) => {
   const addon_files: any[] = [];
   const addon_calls: any[] = [];
   const apps = WorkspacesApps.getApps().filter(
-    app => app.display?.messages_module?.in_plus || app.display?.messages_module?.right_icon,
+    (app: any) => app.display?.messages_module?.in_plus || app.display?.messages_module?.right_icon,
   );
 
   if (props.triggerApp) {
     if (apps.length > 0) {
       // eslint-disable-next-line array-callback-return
-      apps.map(app => {
+      apps.map((app: any) => {
         if (app) {
           let icon = WorkspacesApps.getAppIcon(app);
           let emoji = '';

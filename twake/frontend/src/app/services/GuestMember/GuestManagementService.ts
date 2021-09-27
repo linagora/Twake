@@ -95,7 +95,7 @@ class GuestManagementService {
       company_id,
       workspace_id,
       emails: [email],
-      role: 'guest',
+      company_role: 'guest',
     });
 
     return pendingEmailCollection.upsert(resourceToAdd);

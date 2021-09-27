@@ -39,6 +39,7 @@ describe("The console API auth", () => {
         "database",
         "pubsub",
         "search",
+        "applications",
         "webserver",
         "user",
         "workspaces",

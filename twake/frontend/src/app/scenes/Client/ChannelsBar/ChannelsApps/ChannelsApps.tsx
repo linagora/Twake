@@ -70,6 +70,7 @@ export default class ChannelsApps extends Component {
       application: true,
       original_workspace: Workspaces.currentWorkspaceId,
     });
+
     workspace_apps_channels = workspace_apps_channels
       .filter((channel: any) => channel)
       .filter(

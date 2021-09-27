@@ -1,18 +1,19 @@
+import fs from "fs";
+import { promises as fsPromise } from "fs";
 import { PreviewPubsubHandler, PreviewServiceAPI } from "../../api";
 import { logger, TwakeContext } from "../../../../core/platform/framework";
-import _ from "lodash";
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { PreviewPubsubCallback, PreviewPubsubRequest, ThumbnailResult } from "../../types";
 import { getTmpFile } from "../../utils";
-import fs from "fs";
-import { unlink } from "fs/promises";
 import StorageAPI from "../../../../core/platform/services/storage/provider";
 
+const { unlink } = fsPromise;
 /**
  * Generate thumbnails when the upload is finished
  */
 export class PreviewProcessor
-  implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback> {
+  implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback>
+{
   constructor(
     readonly service: PreviewServiceAPI,
     private pubsub: PubsubServiceAPI,
@@ -51,6 +52,10 @@ export class PreviewProcessor
       encryptionAlgo: message.document.encryption_algo,
       encryptionKey: message.document.encryption_key,
     });
+    if (!readable) {
+      return { document: message.document, thumbnails: [] };
+    }
+
     const inputPath = getTmpFile();
     const writable = fs.createWriteStream(inputPath);
     readable.pipe(writable);
