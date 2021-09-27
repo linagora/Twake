@@ -58,7 +58,11 @@ export class FileUploadService extends EventEmitter {
 
       // Then we overwrite the file object with resumable
       pendingFile.resumable = this.getResumableInstance({
-        target: FileUploadAPIClient.getRoute({ companyId, fileId: pendingFile.backendFile.id }),
+        target: `${FileUploadAPIClient.getRoute({
+          companyId,
+          fileId: pendingFile.backendFile.id,
+          fullApiRouteUrl: true,
+        })}`,
         query: {
           thumbnail_sync: 1,
         },
