@@ -177,6 +177,19 @@ export class UserService implements UsersServiceAPI {
     );
   }
 
+  async setPreferences(
+    pk: UserPrimaryKey,
+    preferences: User["preferences"],
+  ): Promise<User["preferences"]> {
+    const user = await this.repository.findOne(pk);
+    if (!user.preferences) user.preferences = {};
+    for (const key in preferences) {
+      //@ts-ignore
+      user.preferences[key] = preferences[key];
+    }
+    return user.preferences;
+  }
+
   async get(pk: UserPrimaryKey): Promise<User> {
     return await this.repository.findOne(pk);
   }
