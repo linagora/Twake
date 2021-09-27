@@ -4,9 +4,9 @@ import { InternalConfiguration } from '../../../InitService';
 import Observable from '../../../Observable/Observable';
 import { TwakeService } from '../../../Decorators/TwakeService';
 import { AuthProvider } from '../AuthProvider';
-import Api from 'app/services/Api';
 import Globals from 'app/services/Globals';
 import RouterService from 'app/services/RouterService';
+import ConsoleAPIClient from 'app/services/Console/ConsoleAPIClient';
 
 export type SignInParameters = {
   username: string;
@@ -45,29 +45,22 @@ export default class InternalAuthProviderService extends Observable implements A
       return Promise.reject('"username" and "password" are required');
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.signinIn = true;
-      Api.post(
-        // This is temporary until the backend has its basic auth endpoint...
-        '/internal/services/console/v1/login',
-        {
-          email: params.username,
-          password: params.password,
-          remember_me: params.remember_me,
-          device: {},
-        },
-        (res: any) => {
-          if (res && res.access_token) {
-            resolve();
-          } else {
-            this.logger.error('Error on login', res);
-            reject(new Error('Can not login'));
-          }
-          this.signinIn = false;
-        },
-        false,
-        { disableJWTAuthentication: true },
-      );
+
+      ConsoleAPIClient.login({
+        email: params.username,
+        password: params.password,
+        remember_me: params.remember_me,
+      }, true)
+      .then(accessToken => accessToken ? resolve() : reject(new Error('Can not login')))
+      .catch(err => {
+        this.logger.error('Error on login', err);
+        reject(new Error('Can not login'));
+      })
+      .finally(() => {
+        this.signinIn = false;
+      });
     });
   }
 
