@@ -4,6 +4,8 @@ import User from "../../user/entities/user";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { Block } from "../blocks-types";
 import { UserObject } from "../../user/web/types";
+import { MessageFile } from "./message-files";
+import Application from "../../applications/entities/application";
 
 export const TYPE = "messages";
 @Entity(TYPE, {
@@ -75,7 +77,7 @@ export class Message {
   blocks: Block[];
 
   @Column("files", "encoded_json")
-  files: null | { company_id: string; id: string }[];
+  files: null | MessageFile[];
 
   @Column("context", "encoded_json")
   context: any;
@@ -135,4 +137,5 @@ export function getInstance(message: Partial<Message>): Message {
 
 export class MessageWithUsers extends Message {
   users: UserObject[];
+  application?: Partial<Application>;
 }

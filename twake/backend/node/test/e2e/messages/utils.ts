@@ -1,18 +1,8 @@
-import { result } from "lodash";
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
-import { ChannelMember } from "../../../src/services/channels/entities";
-import { Channel } from "../../../src/services/channels/entities/channel";
-import {
-  ChannelExecutionContext,
-  ChannelVisibility,
-  WorkspaceExecutionContext,
-} from "../../../src/services/channels/types";
 import {
   getInstance as getMessageInstance,
   Message,
 } from "../../../src/services/messages/entities/messages";
 import { ParticipantObject } from "../../../src/services/messages/entities/threads";
-import { User } from "../../../src/utils/types";
 import { TestPlatform } from "../setup";
 
 const url = "/internal/services/messages/v1";

@@ -17,6 +17,7 @@ import { MessagesEngine } from "./engine";
 import UserServiceAPI from "../../user/api";
 import ChannelServiceAPI from "../../channels/provider";
 import { FileServiceAPI } from "../../files/api";
+import { ApplicationServiceAPI } from "../../applications/api";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -24,8 +25,9 @@ export function getService(
   user: UserServiceAPI,
   channel: ChannelServiceAPI,
   files: FileServiceAPI,
+  applications: ApplicationServiceAPI,
 ): Service {
-  return new Service(databaseService, pubsub, user, channel, files);
+  return new Service(databaseService, pubsub, user, channel, files, applications);
 }
 
 export default class Service implements MessageServiceAPI {
@@ -43,9 +45,17 @@ export default class Service implements MessageServiceAPI {
     user: UserServiceAPI,
     channel: ChannelServiceAPI,
     files: FileServiceAPI,
+    applications: ApplicationServiceAPI,
   ) {
     this.userBookmarks = getMessageUserBookmarksServiceAPI(databaseService);
-    this.messages = getMessageThreadMessagesServiceAPI(databaseService, user, channel, files, this);
+    this.messages = getMessageThreadMessagesServiceAPI(
+      databaseService,
+      user,
+      channel,
+      files,
+      applications,
+      this,
+    );
     this.threads = getMessageThreadsServiceAPI(databaseService, this);
     this.views = getMessageViewsServiceAPI(databaseService, this);
     this.engine = new MessagesEngine(databaseService, pubsub, user, channel, this);
