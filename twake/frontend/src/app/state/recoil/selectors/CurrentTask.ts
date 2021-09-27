@@ -1,4 +1,4 @@
-import ChatUploadService from 'app/components/ChatUploads/ChatUploadService';
+import FileUploadService from 'app/components/FileUploads/FileUploadService';
 import { selector } from 'recoil';
 import { PendingFilesListState } from '../atoms/PendingFilesList';
 
@@ -10,8 +10,8 @@ export const CurrentTaskSelector = selector({
     const currentTaskFiles = list
       ? list.filter(
           f =>
-            ChatUploadService.getPendingFile(f.id).uploadTaskId ===
-              ChatUploadService.currentTaskId || f.status === 'error',
+            FileUploadService.getPendingFile(f.id).uploadTaskId ===
+              FileUploadService.currentTaskId || f.status === 'error',
         )
       : [];
 

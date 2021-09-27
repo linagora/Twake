@@ -12,7 +12,7 @@ export enum Events {
   ON_CHANGE = 'onChange',
 }
 
-export class ChatUploadService extends EventEmitter {
+export class FileUploadService extends EventEmitter {
   private readonly prefixUrl: string = '/internal/services/files/v1';
   private pendingFiles: PendingFileType[] = [];
   public currentTaskId: string = '';
@@ -26,7 +26,7 @@ export class ChatUploadService extends EventEmitter {
 
     if (!fileList) return;
 
-    if (!this.pendingFiles.some(f => isPendingFileStatusPending(f.state.status))) {
+    if (!this.pendingFiles.some(f => isPendingFileStatusPending(f.status))) {
       //New upload task when all previous task is finished
       this.currentTaskId = uuid();
     }
@@ -35,14 +35,12 @@ export class ChatUploadService extends EventEmitter {
       if (!file) return;
 
       const pendingFile: PendingFileType = {
-        state: {
-          id: uuid(),
-          file: null,
-          status: 'pending',
-          progress: 0,
-        },
+        id: uuid(),
+        status: 'pending',
+        progress: 0,
         uploadTaskId: this.currentTaskId,
         originalFile: file,
+        backendFile: null,
         resumable: null,
       };
 
@@ -58,13 +56,13 @@ export class ChatUploadService extends EventEmitter {
         throw new Error('A server error occured');
       }
 
-      pendingFile.state.file = resource;
+      pendingFile.backendFile = resource;
       this.onChange();
 
       // Then we overwrite the file object with resumable
       pendingFile.resumable = this.getResumableInstance({
         target: Api.route(
-          `${this.prefixUrl}/companies/${companyId}/files/${pendingFile.state.file.id}`,
+          `${this.prefixUrl}/companies/${companyId}/files/${pendingFile.backendFile.id}`,
         ),
         query: {
           thumbnail_sync: 1,
@@ -81,19 +79,19 @@ export class ChatUploadService extends EventEmitter {
       );
 
       pendingFile.resumable.on('fileProgress', (f: any, ratio: number) => {
-        pendingFile.state.file = f;
-        pendingFile.state.progress = f.progress();
+        pendingFile.backendFile = f;
+        pendingFile.progress = f.progress();
         this.onChange();
       });
 
       pendingFile.resumable.on('fileSuccess', (f: any, message: string) => {
-        pendingFile.state.file = JSON.parse(message).resource;
-        pendingFile.state.status = 'success';
+        pendingFile.backendFile = JSON.parse(message).resource;
+        pendingFile.status = 'success';
         this.onChange();
       });
 
       pendingFile.resumable.on('fileError', (f: any, message: any) => {
-        pendingFile.state.status = 'error';
+        pendingFile.status = 'error';
         pendingFile.resumable.cancel();
         this.onChange();
       });
@@ -101,29 +99,31 @@ export class ChatUploadService extends EventEmitter {
   }
 
   public getPendingFile(id: string): PendingFileType {
-    return this.pendingFiles.filter(f => f.state.id === id)[0];
+    return this.pendingFiles.filter(f => f.id === id)[0];
   }
 
   public cancel(id: string) {
-    const fileToCancel = this.pendingFiles.filter(f => f.state.id === id)[0];
+    const fileToCancel = this.pendingFiles.filter(f => f.id === id)[0];
+
+    //TODO delete file
 
     fileToCancel.resumable.cancel();
-    fileToCancel.state.status = 'error';
+    fileToCancel.status = 'error';
     this.onChange();
 
     setTimeout(() => {
-      this.pendingFiles = this.pendingFiles.filter(f => f.state.id !== id);
+      this.pendingFiles = this.pendingFiles.filter(f => f.id !== id);
       this.onChange();
     }, 1000);
   }
 
   public pauseOrResume(id: string) {
-    const fileToCancel = this.pendingFiles.filter(f => f.state.id === id)[0];
+    const fileToCancel = this.pendingFiles.filter(f => f.id === id)[0];
 
-    fileToCancel.state.status !== 'pause'
-      ? (fileToCancel.state.status = 'pause')
-      : (fileToCancel.state.status = 'pending');
-    fileToCancel.state.status === 'pause'
+    fileToCancel.status !== 'pause'
+      ? (fileToCancel.status = 'pause')
+      : (fileToCancel.status = 'pending');
+    fileToCancel.status === 'pause'
       ? fileToCancel.resumable.pause()
       : fileToCancel.resumable.upload();
 
@@ -159,4 +159,4 @@ export class ChatUploadService extends EventEmitter {
   }
 }
 
-export default new ChatUploadService();
+export default new FileUploadService();

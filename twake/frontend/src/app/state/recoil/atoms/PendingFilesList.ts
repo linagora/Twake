@@ -1,15 +1,7 @@
-import { atom, AtomEffect } from 'recoil';
-import { PendingFileStateType } from 'app/models/File';
-import UserContextState from 'app/state/UserContextState';
+import { atom } from 'recoil';
+import { PendingFileRecoilType } from 'app/models/File';
 
-const currentPendingFilesListEffect: AtomEffect<PendingFileStateType[] | undefined> = ({
-  onSet,
-}) => {
-  onSet(pendingFilesList => (UserContextState.pending_files_list = pendingFilesList));
-};
-
-export const PendingFilesListState = atom<PendingFileStateType[] | undefined>({
+export const PendingFilesListState = atom<PendingFileRecoilType[] | undefined>({
   key: 'PendingFilesListState',
   default: undefined,
-  effects_UNSTABLE: [currentPendingFilesListEffect],
 });

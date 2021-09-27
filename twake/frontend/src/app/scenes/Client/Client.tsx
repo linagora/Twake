@@ -13,7 +13,7 @@ import MainView from './MainView/MainView';
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
 import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
 import DriveUploadViewer from 'components/Uploads/UploadViewer.js';
-import ChatUploadsViewer from 'components/ChatUploads/UploadsViewer';
+import ChatUploadsViewer from 'app/components/FileUploads/UploadsViewer';
 import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
 import Viewer from 'scenes/Apps/Drive/Viewer/Viewer';
 import ModalComponent from 'app/components/Modal/ModalComponent';

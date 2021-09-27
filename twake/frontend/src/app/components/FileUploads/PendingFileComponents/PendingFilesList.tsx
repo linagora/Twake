@@ -4,11 +4,11 @@ import { Minus, Plus } from 'react-feather';
 import './styles.scss';
 import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
-import { PendingFileStateType } from 'app/models/File';
+import { PendingFileRecoilType } from 'app/models/File';
 import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
 
 type PropsType = {
-  pendingFilesState: PendingFileStateType[];
+  pendingFilesState: PendingFileRecoilType[];
 };
 
 const { Text } = Typography;

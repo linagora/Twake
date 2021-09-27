@@ -1,18 +1,12 @@
 import { CompanyType } from 'app/models/Company';
-import { PendingFileStateType } from 'app/models/File';
 import { UserType } from 'app/models/User';
 import { UserContext } from 'app/models/UserContext';
 import { WorkspaceType } from 'app/models/Workspace';
 
-/**
- * This is a temporary state maintained by recoil atom effects until all the code base is moved to hooks and recoil
- * Note that these objects are not reactive and will not cause rendering. They are just here for read access.
- */
 class UserContextState implements UserContext {
   private _user: UserType | undefined;
   private _company: CompanyType | undefined;
   private _workspace: WorkspaceType | undefined;
-  private _pending_files_list: PendingFileStateType[] | undefined;
 
   set user(user: UserType | undefined) {
     user && (this._user = { ...user });
@@ -36,14 +30,6 @@ class UserContextState implements UserContext {
 
   get workspace() {
     return this._workspace as WorkspaceType;
-  }
-
-  set pending_files_list(pendingFilesList: PendingFileStateType[] | undefined) {
-    pendingFilesList && (this._pending_files_list = pendingFilesList);
-  }
-
-  get pending_files_list() {
-    return this._pending_files_list as PendingFileStateType[];
   }
 }
 

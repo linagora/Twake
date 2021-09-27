@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
 import { Pause, Play, X } from 'react-feather';
-import { PendingFileStateType, PendingFileType } from 'app/models/File';
+import { PendingFileRecoilType, PendingFileType } from 'app/models/File';
 import {
   isPendingFileStatusError,
   isPendingFileStatusPause,
@@ -11,7 +11,7 @@ import Languages from 'services/languages/languages';
 import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
 
 type PropsType = {
-  pendingFileState: PendingFileStateType;
+  pendingFileState: PendingFileRecoilType;
   pendingFile: PendingFileType;
 };
 
@@ -19,7 +19,7 @@ const { Text } = Typography;
 export default ({ pendingFileState, pendingFile }: PropsType) => {
   const { pauseOrResumeUpload, cancelUpload } = useUploadHook();
 
-  const getProgressStrokeColor = (status: PendingFileStateType['status']) => {
+  const getProgressStrokeColor = (status: PendingFileRecoilType['status']) => {
     if (isPendingFileStatusError(status)) return 'var(--error)';
     if (isPendingFileStatusPause(status)) return 'var(--warning)';
 
