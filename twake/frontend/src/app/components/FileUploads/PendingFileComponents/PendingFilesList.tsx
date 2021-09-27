@@ -6,6 +6,7 @@ import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
 import { PendingFileRecoilType } from 'app/models/File';
 import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
+import classNames from 'classnames';
 
 type PropsType = {
   pendingFilesState: PendingFileRecoilType[];
@@ -20,8 +21,9 @@ export default ({ pendingFilesState }: PropsType) => {
   return pendingFilesState.length > 0 ? (
     <Layout className="pending-files-list-layout">
       <Header
-        className="pending-files-list-header"
-        style={{ borderRadius: hiddenPendingFiles ? 8 : '8px 8px 0 0', cursor: 'pointer' }}
+        className={classNames('pending-files-list-header', {
+          hidden: hiddenPendingFiles,
+        })}
         onClick={() => setHiddenPendingFiles(!hiddenPendingFiles)}
       >
         <Row justify="space-between" align="middle">
