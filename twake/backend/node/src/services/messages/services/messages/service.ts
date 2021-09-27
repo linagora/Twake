@@ -157,7 +157,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     if (serverRequest || messageOwnerAndNotRemoved) {
-      message = await this.completeMessageFiles(message, item.files || []);
+      message = await this.completeMessage(message, { files: item.files || [] });
     }
 
     this.onSaved(message, { created: messageCreated }, context);
@@ -337,6 +337,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return new DeleteResult<Message>("message", message, true);
   }
 
+  async getSingleMessage(pk: Pick<Message, "thread_id" | "id">) {
+    let message = await this.repository.findOne(pk);
+    message = await this.completeMessage(message, { files: message.files || [] });
+    return message;
+  }
+
   async get(
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
@@ -345,7 +351,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     if (thread) {
       return await this.getThread(thread);
     } else {
-      return await this.repository.findOne(pk);
+      return this.getSingleMessage(pk);
     }
   }
 
@@ -353,7 +359,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     thread: Thread,
     options: MessagesGetThreadOptions = {},
   ): Promise<MessageWithReplies> {
-    const last_replies = (
+    const lastRepliesUncompleted = (
       await this.repository.find(
         {
           thread_id: thread.id,
@@ -364,18 +370,25 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       )
     ).getEntities();
 
-    const first_message = await this.repository.findOne({
+    let lastReplies: Message[] = [];
+    for (const lastReply of lastRepliesUncompleted) {
+      lastRepliesUncompleted.push(
+        await this.completeMessage(lastReply, { files: lastReply.files || [] }),
+      );
+    }
+
+    let firstMessage = await this.getSingleMessage({
       thread_id: thread.id,
       id: thread.id,
     });
 
     return {
-      ...first_message,
+      ...firstMessage,
       stats: {
-        replies: last_replies.length === 1 ? 1 : thread.answers, //This line ensure the thread can be deleted by user if there is no replies
+        replies: lastReplies.length === 1 ? 1 : thread.answers, //This line ensure the thread can be deleted by user if there is no replies
         last_activity: thread.last_activity,
       },
-      last_replies: last_replies.sort((a, b) => a.created_at - b.created_at),
+      last_replies: lastReplies.sort((a, b) => a.created_at - b.created_at),
     };
   }
 
@@ -503,6 +516,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return this.operations.bookmark(operation, options, context);
   }
 
+  //Complete message with all missing information and cache
+  async completeMessage(message: Message, options?: { files?: Message["files"] } = {}) {
+    if (options.files) message = await this.completeMessageFiles(message, options.files || []);
+    return message;
+  }
+
   async completeMessageFiles(message: Message, files: Message["files"]) {
     if (files.length === 0 && (message.files || []).length === 0) {
       return message;
@@ -559,13 +578,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       await this.msgFilesRepository.save(entity);
 
       message.files.push(entity);
-
-      console.log("addfile: ", entity);
     }
 
     await this.repository.save(message);
 
-    console.log("allfiles: ", message.files);
     return message;
   }
 }

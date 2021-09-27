@@ -61,8 +61,6 @@ describe("The Messages Threads feature", () => {
         response.body,
       );
 
-      console.log(result.resource.message.files);
-
       expect(result.resource.message.files.length).toBe(1);
       expect(result.resource.message.files[0].id).not.toBeFalsy();
       expect(result.resource.message.files[0].message_id).not.toBeFalsy();
@@ -71,13 +69,23 @@ describe("The Messages Threads feature", () => {
 
       done();
     });
-    /*
+
     it("did not deduplicate files", async done => {
       const file: MessageFile = {
         metadata: {
           source: "linshare",
           external_id: "1234",
           name: "My LinShare File",
+          type: "image/png",
+          thumbnails: [],
+        },
+      };
+
+      const file2: MessageFile = {
+        metadata: {
+          source: "linshare2",
+          external_id: "5678",
+          name: "My LinShare 2 File",
           type: "image/png",
           thumbnails: [],
         },
@@ -93,8 +101,31 @@ describe("The Messages Threads feature", () => {
         response.body,
       );
 
+      const message = result.resource.message;
+      const firstFileId = message.files[0].id;
+
+      message.files.push(file2);
+
+      const messageUpdatedRaw = await platform.app.inject({
+        method: "POST",
+        url: `${url}/companies/${platform.workspace.company_id}/threads/${message.thread_id}/messages/${message.id}`,
+        headers: {
+          authorization: `Bearer ${await platform.auth.getJWTToken()}`,
+        },
+        payload: {
+          resource: message,
+        },
+      });
+      const messageUpdated: ResourceUpdateResponse<Message> = deserialize(
+        ResourceUpdateResponse,
+        messageUpdatedRaw.body,
+      );
+
+      expect(messageUpdated.resource.files.length).toBe(2);
+      expect(messageUpdated.resource.files.filter(f => f.id === firstFileId).length).toBe(1);
+
       done();
-    });*/
+    });
   });
 });
 
