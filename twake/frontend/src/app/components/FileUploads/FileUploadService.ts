@@ -1,19 +1,17 @@
-import { FileType, PendingFileType } from 'app/models/File';
-import Api from 'app/services/Api';
+import { PendingFileType } from 'app/models/File';
 import JWTStorage from 'app/services/JWTStorage';
 import EventEmitter from 'events';
 import RouterServices from 'services/RouterService';
 import Resumable from 'services/uploadManager/resumable';
 import { v1 as uuid } from 'uuid';
+import FileUploadAPIClient from './FileUploadAPIClient';
 import { isPendingFileStatusPending } from './utils/PendingFiles';
-type ResponseFileType = { resource: FileType };
 
 export enum Events {
   ON_CHANGE = 'onChange',
 }
 
 export class FileUploadService extends EventEmitter {
-  private readonly prefixUrl: string = '/internal/services/files/v1';
   private pendingFiles: PendingFileType[] = [];
   public currentTaskId: string = '';
 
@@ -24,7 +22,7 @@ export class FileUploadService extends EventEmitter {
   public async upload(fileList: File[]): Promise<void> {
     const { companyId } = RouterServices.getStateFromRoute();
 
-    if (!fileList) return;
+    if (!fileList || !companyId) return;
 
     if (!this.pendingFiles.some(f => isPendingFileStatusPending(f.status))) {
       //New upload task when all previous task is finished
@@ -49,9 +47,8 @@ export class FileUploadService extends EventEmitter {
       this.onChange();
 
       // First we create the file object
-      const uploadFileRoute = `${this.prefixUrl}/companies/${companyId}/files?filename=${file.name}&type=${file.type}&total_size=${file.size}`;
-      const resource = (await Api.post<undefined, ResponseFileType>(uploadFileRoute, undefined))
-        ?.resource;
+      const resource = (await FileUploadAPIClient.uploadOneFile(file, { companyId }))?.resource;
+
       if (!resource) {
         throw new Error('A server error occured');
       }
@@ -61,9 +58,7 @@ export class FileUploadService extends EventEmitter {
 
       // Then we overwrite the file object with resumable
       pendingFile.resumable = this.getResumableInstance({
-        target: Api.route(
-          `${this.prefixUrl}/companies/${companyId}/files/${pendingFile.backendFile.id}`,
-        ),
+        target: FileUploadAPIClient.getRoute({ companyId, fileId: pendingFile.backendFile.id }),
         query: {
           thumbnail_sync: 1,
         },
@@ -102,11 +97,10 @@ export class FileUploadService extends EventEmitter {
     return this.pendingFiles.filter(f => f.id === id)[0];
   }
 
-  public cancel(id: string) {
+  public cancel(id: string, timeout = 1000) {
     const fileToCancel = this.pendingFiles.filter(f => f.id === id)[0];
 
     //TODO delete file
-
     fileToCancel.resumable.cancel();
     fileToCancel.status = 'error';
     this.onChange();
@@ -114,7 +108,7 @@ export class FileUploadService extends EventEmitter {
     setTimeout(() => {
       this.pendingFiles = this.pendingFiles.filter(f => f.id !== id);
       this.onChange();
-    }, 1000);
+    }, timeout);
   }
 
   public pauseOrResume(id: string) {
