@@ -9,7 +9,7 @@ import { TwakeService } from '../../../Decorators/TwakeService';
 import EnvironmentService from '../../../EnvironmentService';
 import { AuthProvider, InitParameters } from '../AuthProvider';
 import ConsoleService from 'app/services/Console/ConsoleService';
-import { JWTDataType } from 'app/services/JWTService';
+import { JWTDataType } from 'app/services/JWTStorage';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';

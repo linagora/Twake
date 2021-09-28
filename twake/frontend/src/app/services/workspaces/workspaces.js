@@ -17,10 +17,10 @@ import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
 import UserNotifications from 'app/services/user/UserNotifications';
 import AccessRightsService from 'services/AccessRightsService';
 import loginService from 'services/login/login.js';
-import InitService from 'app/services/InitService';
 import Globals from 'services/Globals';
 import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
+import WorkspaceAPIClient from './WorkspaceAPIClient';
 
 class Workspaces extends Observable {
   constructor() {
@@ -44,28 +44,37 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId, notify = false) {
-    if (this.currentWorkspaceId !== workspaceId && workspaceId && loginService.state === 'app') {
-      this.currentWorkspaceId = workspaceId;
+    if (this.currentWorkspaceId !== workspaceId && workspaceId) {
       const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
-      if (workspace) this.currentWorkspaceIdByGroup[workspace.group.id] = workspaceId;
+      if (!workspace) {
+        return;
+      }
+
+      this.currentWorkspaceId = workspaceId;
+      this.currentWorkspaceIdByGroup[workspace.company_id] = workspaceId;
 
       if (!this.getting_details[workspaceId]) {
         this.getting_details[workspaceId] = true;
 
         workspacesApps.unload(this.currentWorkspaceId);
-        Api.post('/ajax/workspace/get', { workspaceId: workspaceId }, res => {
-          if (res && res.data) {
-            DepreciatedCollections.get('workspaces').updateObject(res.data);
-            DepreciatedCollections.get('groups').updateObject(res.data.group);
-            workspacesApps.load(workspaceId, false, { apps: res.data.apps });
+        WorkspaceAPIClient.get(workspace.company_id, workspaceId)
+          .then(workspace => {
+            if (!workspace) {
+              this.removeFromUser(workspaceId);
+            }
+            DepreciatedCollections.get('workspaces').updateObject(workspace);
+            // FIXME: Is it useful?
+            //DepreciatedCollections.get('groups').updateObject(res.data.group);
             notify && this.notify();
-          } else {
+
+            // FIXME: What is this???
+            setTimeout(() => {
+              this.getting_details[workspaceId] = false;
+            }, 10000);
+          })
+          .catch(() => {
             this.removeFromUser(workspaceId);
-          }
-          setTimeout(() => {
-            this.getting_details[workspaceId] = false;
-          }, 10000);
-        });
+          });
       }
     }
   }
@@ -186,8 +195,10 @@ class Workspaces extends Observable {
 
     AccessRightsService.updateLevel(
       workspace.id,
-      workspace._user_is_admin ? 'moderator' : workspace._user_is_guest ? 'guest' : 'member',
+      workspace.role,
     );
+    // TODO: Move to another service
+    // TODO: _user_is_organization_administrator does not exist, get from company role
     if (workspace._user_is_organization_administrator !== undefined) {
       AccessRightsService.updateCompanyLevel(
         workspace.group.id,
@@ -224,7 +235,7 @@ class Workspaces extends Observable {
       .forEach(e => {
         // eslint-disable-next-line no-redeclare
         var e = this.user_workspaces[e];
-        if (!group_id || e?.group?.id === group_id) {
+        if (!group_id || e?.company_id === group_id) {
           object.push(e);
         }
       });
