@@ -397,6 +397,9 @@ class User extends SearchableObject
      */
     public function getLanguage()
     {
+        try{
+            $this->language = json_decode($this->preferences, 1)["language"] ?: $this->language;
+        }catch(Error $err){}
         return $this->language;
     }
 
@@ -1226,6 +1229,9 @@ class User extends SearchableObject
      */
     public function getTimezone()
     {
+        try{
+            $this->timezone = json_decode($this->preferences, 1)["timezone"] ?: $this->timezone;
+        }catch(Error $err){}
         return $this->timezone;
     }
 
