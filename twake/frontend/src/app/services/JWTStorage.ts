@@ -1,7 +1,9 @@
 import LocalStorage from 'services/LocalStorage';
 import LoginService from 'services/login/login';
 import WindowService from 'services/utils/window';
+import ConsoleAPIClient from './Console/ConsoleAPIClient';
 import { TwakeService } from './Decorators/TwakeService';
+import Logger from './Logger';
 
 export type JWTDataType = {
   time: 0;
@@ -28,12 +30,17 @@ class JWTStorage {
     refresh: '',
     type: 'Bearer',
   };
+  logger: Logger.Logger;
 
-  async init() {
+  constructor() {
+    this.logger = Logger.getLogger("JWT");
+    this.init();
+  }
+
+  private init() {
     this.updateJWT(LocalStorage.getItem<JWTDataType>('jwt') as JWTDataType, {
       fromLocalStorage: true,
     });
-    (window as any).JWTStorage = this;
   }
 
   clear() {
@@ -85,7 +92,11 @@ class JWTStorage {
   }
 
   isAccessExpired() {
-    return new Date().getTime() / 1000 - this.jwtData.expiration > 0;
+     const expired = new Date().getTime() / 1000 - this.jwtData.expiration > 0;
+
+    expired && this.logger.debug(`Access token expired, expiration time was ${this.jwtData.expiration}`);
+
+    return expired;
   }
 
   isRefreshExpired() {
@@ -98,6 +109,18 @@ class JWTStorage {
     } else {
       callback();
     }
+  }
+
+  async renew(): Promise<JWTDataType> {
+    const token = await ConsoleAPIClient.getNewAccessToken();
+
+    if (!token) {
+      throw new Error('Can not get a new access token');
+    }
+
+    this.updateJWT(token);
+
+    return token;
   }
 }
 

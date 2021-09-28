@@ -1,6 +1,6 @@
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
-import { JWTDataType } from '../JWTService';
+import { JWTDataType } from '../JWTStorage';
 
 type LoginParams = {
   email: string;
