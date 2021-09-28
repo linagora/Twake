@@ -1,5 +1,5 @@
 import Login from 'services/login/login';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections, { Collection } from 'app/services/Depreciated/Collections/Collections';
 import Api from 'services/Api';
 import Languages from 'services/languages/languages';
 import { UserType } from 'app/models/User';
@@ -15,7 +15,7 @@ type SearchQueryType = {
 
 @TwakeService('UserService')
 class User {
-  private users_repository: typeof Collections;
+  private users_repository: Collection;
   private searchQueries: SearchQueryType;
 
   constructor() {
@@ -171,7 +171,7 @@ class User {
             this.searchQueries.searching = false;
             if (res.data && res.data.users) {
               res.data.users.forEach((item: any) => {
-                this.users_repository.updateObject(item[0]);
+                this.users_repository.updateObject(item[0], null);
               });
               this.search(query, options, callback, true, true);
             }
