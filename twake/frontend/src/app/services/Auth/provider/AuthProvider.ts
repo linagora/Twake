@@ -1,4 +1,4 @@
-import { JWTDataType } from "app/services/JWTService";
+import { JWTDataType } from "app/services/JWTStorage";
 
 type AuthEvent = 'userLoaded' | 'userUnloaded' | 'userSignedOut' | 'accessTokenExpiring' | 'accessTokenExpired' | 'silentRenewError';
 
