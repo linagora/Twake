@@ -198,7 +198,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     } else {
       company.plan.name = "standard";
     }
-    company.plan.features = { ...companyDTO.limits, ...planFeatures };
+    company.plan.features = { ...planFeatures, ...companyDTO.limits };
 
     company.stats = coalesce(companyDTO.stats, company.stats);
 
