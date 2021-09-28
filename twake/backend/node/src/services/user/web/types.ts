@@ -67,11 +67,7 @@ export interface UserObject {
 
 export interface CompanyPlanObject {
   name: string;
-  limits: {
-    members: number;
-    guests: number;
-    storage: number;
-  };
+  features: any;
 }
 
 export interface CompanyStatsObject {
