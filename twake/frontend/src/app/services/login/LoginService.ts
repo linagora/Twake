@@ -7,8 +7,7 @@ import { AuthProvider } from 'services/Auth/provider/AuthProvider';
 import LocalStorage from 'services/LocalStorage';
 import Collections from 'services/Collections/Collections';
 import Application from 'services/Application';
-import RouterServices from 'services/RouterService';
-import JWT, { JWTDataType } from 'services/JWTService';
+import JWT, { JWTDataType } from 'services/JWTStorage';
 import Logger from 'services/Logger';
 import WindowState from 'services/utils/window';
 import { UserType } from 'app/models/User';
@@ -47,6 +46,10 @@ class LoginService extends Observable {
     return this._state;
   }
 
+  isInitialized() {
+    return this.initState === 'initialized';
+  }
+
   /**
    * The session expired and we are not able to slient renew it
    */
@@ -63,10 +66,10 @@ class LoginService extends Observable {
   }
 
   async init(): Promise<UserType | null> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.logger.debug(`Initializing state=${this.initState}`);
       if (['initializing', 'initialized'].includes(this.initState)) {
-        reject(new Error(`LoginService is ${this.initState}`));
+        this.logger.debug(`LoginService is already in ${this.initState}`);
         return;
       }
 
@@ -77,21 +80,24 @@ class LoginService extends Observable {
         onNewToken: async token => {
           this.onNewToken(token);
 
+          // TODO: Change the basic auth to return this new token on init
           if (this.initState === 'initializing') {
             const user = await this.comleteInit();
             this.initState = 'initialized';
             resolve(user);
             // TODO: move it to somewhere else...
-            RouterServices.push(RouterServices.generateRouteFromState({}));
+            //RouterServices.push(RouterServices.generateRouteFromState());
           }
         },
       });
+      this.initState = 'initialized';
+      resolve(null);
     });
   }
 
   onNewToken(token?: JWTDataType): void {
     if (token) {
-      JWT.update(token);
+      JWT.updateJWT(token);
     // TODO: Update the user from API?
     // this.updateUser();
     }
@@ -237,6 +243,19 @@ class LoginService extends Observable {
     this.state = 'app';
 
     return user;
+  }
+
+  getIsPublicAccess(): boolean {
+    let publicAccess = false;
+    const viewParameter = WindowState.findGetParameter('view') || '';
+    if (
+      (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
+      Globals.store_public_access_get_data
+    ) {
+      publicAccess = true;
+      Globals.store_public_access_get_data = WindowState.allGetParameter();
+    }
+    return publicAccess;
   }
 }
 
