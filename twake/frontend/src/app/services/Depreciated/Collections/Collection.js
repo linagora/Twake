@@ -235,7 +235,7 @@ export default class Collection extends Observable {
    * @param whenNotFound an optional function to be called when resource is not found
    * @returns
    */
-  find(id, whenNotFound) {
+  find(id, whenNotFound = null) {
     const result = this.known_objects_by_id[id];
 
     if (!result && whenNotFound) {
@@ -550,7 +550,7 @@ export default class Collection extends Observable {
    * Get an editable object (view will be updated during edition because original object is modified)
    * return the requested object for edition
    */
-  edit(object) {
+  edit(object = null) {
     if (!object || !object.front_id) {
       object = {
         front_id: Number.unid(),
@@ -608,7 +608,7 @@ export default class Collection extends Observable {
    * Save object, add it if no id is requested
    * return the new object
    */
-  save(object, source_key, callback) {
+  save(object, source_key, callback = null) {
     var source = this.sources[source_key];
     var base_url = (source || {}).http_base_url || this.base_url;
 
