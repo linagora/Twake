@@ -18,7 +18,6 @@ class AuthProviderService extends Observable {
 
   getAuthProviderConfiguration(): AuthProviderConfiguration {
     if (document.location.hostname === 'localhost') {
-      JWTStorage.init();
       LoginService.updateUser(() => {});
       return null as unknown as AuthProviderConfiguration;
     }
