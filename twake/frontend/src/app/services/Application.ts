@@ -6,7 +6,7 @@ import Groups from 'app/services/workspaces/groups';
 import AccessRightsService from 'app/services/AccessRightsService';
 import CurrentUser from 'app/services/user/CurrentUser';
 import Languages from 'app/services/languages/languages';
-import JWT from 'app/services/JWTService';
+import JWT from 'app/services/JWTStorage';
 import Collections from 'app/services/Collections/Collections';
 import Globals from 'app/services/Globals';
 import UserNotifications from 'app/services/user/UserNotifications';
@@ -60,7 +60,7 @@ class Application {
           socket: {
             url: Globals.environment.websocket_url,
             authenticate: async () => {
-              let token = JWT.getToken();
+              let token = JWT.getJWT();
 
               if (JWT.isAccessExpired()) {
                 try {
