@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import { Channel } from "../../entities/channel";
+import { ChannelActivity } from "../../entities/channel-activity";
 
 export type NewUserInWorkspaceNotification = {
   user_id: string;
@@ -8,7 +9,8 @@ export type NewUserInWorkspaceNotification = {
 };
 
 export class ChannelObject extends Channel {
-  last_activity: number;
+  last_activity?: ChannelActivity["last_activity"];
+  last_message?: ChannelActivity["last_message"];
 
   constructor() {
     super();
@@ -18,7 +20,7 @@ export class ChannelObject extends Channel {
     if (!channel) {
       return null;
     }
-    
+
     return merge(new ChannelObject(), {
       ...{ last_activity: 0 },
       ...channel,
