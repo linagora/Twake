@@ -179,7 +179,7 @@ class RouterServices extends Observable {
     });
 
     //Retrocompatibility with old code
-    state.companyId = Collections.get('workspaces').find(state.workspaceId)?.group?.id || '';
+    state.companyId = Collections.get('workspaces').find(state.workspaceId) ? Collections.get('workspaces').find(state.workspaceId).company_id : '';
     Workspaces.updateCurrentWorkspaceId(state.workspaceId, true);
     Workspaces.updateCurrentCompanyId(state.companyId, true);
     Groups.currentGroupId = state.companyId;
@@ -192,7 +192,7 @@ class RouterServices extends Observable {
    * Generate UUID to shortened and create url
    */
   generateRouteFromState(
-    params: ClientStateType,
+    params: ClientStateType = {},
     options: { replace?: boolean; keepSearch?: boolean } = {},
   ): string {
     const currentState = this.getStateFromRoute();
