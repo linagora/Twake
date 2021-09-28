@@ -47,7 +47,7 @@ export class FileUploadService extends EventEmitter {
       this.onChange();
 
       // First we create the file object
-      const resource = (await FileUploadAPIClient.uploadOneFile(file, { companyId }))?.resource;
+      const resource = (await FileUploadAPIClient.upload(file, { companyId }))?.resource;
 
       if (!resource) {
         throw new Error('A server error occured');
@@ -58,11 +58,11 @@ export class FileUploadService extends EventEmitter {
 
       // Then we overwrite the file object with resumable
       pendingFile.resumable = this.getResumableInstance({
-        target: `${FileUploadAPIClient.getRoute({
+        target: FileUploadAPIClient.getRoute({
           companyId,
           fileId: pendingFile.backendFile.id,
           fullApiRouteUrl: true,
-        })}`,
+        }),
         query: {
           thumbnail_sync: 1,
         },
@@ -84,9 +84,13 @@ export class FileUploadService extends EventEmitter {
       });
 
       pendingFile.resumable.on('fileSuccess', (f: any, message: string) => {
-        pendingFile.backendFile = JSON.parse(message).resource;
-        pendingFile.status = 'success';
-        this.onChange();
+        try {
+          pendingFile.backendFile = JSON.parse(message).resource;
+          pendingFile.status = 'success';
+          this.onChange();
+        } catch (e) {
+          console.error(e);
+        }
       });
 
       pendingFile.resumable.on('fileError', (f: any, message: any) => {
