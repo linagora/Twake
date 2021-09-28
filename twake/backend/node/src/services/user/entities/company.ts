@@ -19,7 +19,10 @@ export default class Company {
   displayName: string;
 
   @Column("plan", "encoded_json")
-  plan: any;
+  plan?: {
+    name: string;
+    features: any;
+  };
 
   @Column("stats", "encoded_json")
   stats: any;

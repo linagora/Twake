@@ -116,7 +116,7 @@ export default class Viewer extends Component<PropsType, StateType> {
               <Button
                 className="small open-with"
                 onClick={() => {
-                  if (FeatureTogglesService.isActiveFeatureName(FeatureNames.ONLY_OFFICE)) {
+                  if (FeatureTogglesService.isActiveFeatureName(FeatureNames.EDIT_FILES)) {
                     this.openFile(editor_candidate[0]);
                   } else {
                     ModalManager.open(

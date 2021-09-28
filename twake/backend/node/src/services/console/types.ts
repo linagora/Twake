@@ -132,7 +132,7 @@ export type ConsoleOptions = {
 
 export type ConsoleHookCompany = {
   stats: string;
-  plan: { name: string; limits: any };
+  limits: any;
   value: string;
   details: {
     code: string;
@@ -169,6 +169,12 @@ export type ConsoleHookUser = {
 export type ConsoleHookBodyContent = {
   company: ConsoleHookCompany;
   user: ConsoleHookUser;
+};
+
+export type ConsoleHookPreferenceContent = {
+  preference: {
+    targetCode: string;
+  };
 };
 
 export type ConsoleHookBody = {

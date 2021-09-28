@@ -179,7 +179,27 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
           : companyDTO.value || "");
     }
 
-    company.plan = companyDTO.plan;
+    if (!company.plan) {
+      company.plan = { name: "", features: {} };
+    }
+
+    //FIXME this is a hack right now!
+    let planFeatures: any = {};
+    if (company.plan.features.members < 0) {
+      //Hack to say this is free version
+      planFeatures = {
+        "chat:guests": false,
+        "chat:message_history": false,
+        "chat:multiple_workspaces": false,
+        "chat:edit_files": false,
+        "chat:unlimited_storage": false, //Currently inactive
+      };
+      company.plan.name = "free";
+    } else {
+      company.plan.name = "standard";
+    }
+    company.plan.features = { ...companyDTO.limits, ...planFeatures };
+
     company.stats = coalesce(companyDTO.stats, company.stats);
 
     await this.userService.companies.updateCompany(company);
@@ -187,10 +207,10 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     return company;
   }
 
-  async updateLocalUserFromConsole(partialUserDTO: ConsoleHookUser): Promise<User> {
+  async updateLocalUserFromConsole(code: string): Promise<User> {
     logger.info("Remote: updateLocalUserFromConsole");
 
-    const userDTO = await this.fetchUserInfo(partialUserDTO._id);
+    const userDTO = await this.fetchUserInfo(code);
 
     if (!userDTO) {
       throw CrudExeption.badRequest("User not found on Console");
