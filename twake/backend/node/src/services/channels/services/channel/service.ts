@@ -231,11 +231,19 @@ export class Service implements ChannelService {
       channelToSave.owner = context.user.id;
     }
 
+    const channelActivity = await this.activityRepository.findOne({
+      channel_id: channel.id,
+    });
+
     logger.info("Saving channel %o", channelToSave);
     await this.channelRepository.save(channelToSave);
     const saveResult = new SaveResult<ChannelObject>(
       "channel",
-      ChannelObject.mapTo(channelToSave),
+      {
+        ...ChannelObject.mapTo(channelToSave),
+        last_activity: channelActivity?.last_activity || 0,
+        last_message: channelActivity?.last_message || {},
+      },
       mode,
     );
 
