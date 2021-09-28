@@ -519,8 +519,23 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   //Complete message with all missing information and cache
   async completeMessage(message: Message, options: { files?: Message["files"] } = {}) {
+    this.fixReactionsFormat(message);
     if (options.files) message = await this.completeMessageFiles(message, options.files || []);
     return message;
+  }
+
+  //Fix https://github.com/linagora/Twake/issues/1559
+  async fixReactionsFormat(message: Message) {
+    if (message.reactions?.length > 0) {
+      let foundError = false;
+      message.reactions.map(r => {
+        if (!(r.users?.length > 0)) {
+          foundError = true;
+          r.users = Object.values(r.users);
+        }
+      });
+      if (foundError) await this.repository.save(message);
+    }
   }
 
   async completeMessageFiles(message: Message, files: Message["files"]) {

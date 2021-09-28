@@ -53,7 +53,7 @@ export interface ConsoleServiceClient {
 
   updateLocalCompanyFromConsole(companyDTO: ConsoleHookCompany): Promise<Company>;
 
-  updateLocalUserFromConsole(userDTO: ConsoleHookUser): Promise<User>;
+  updateLocalUserFromConsole(code: string): Promise<User>;
 
   removeCompanyUser(consoleUserId: string, company: Company): Promise<void>;
 

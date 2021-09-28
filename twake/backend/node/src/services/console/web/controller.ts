@@ -7,6 +7,7 @@ import {
   ConsoleHookBody,
   ConsoleHookBodyContent,
   ConsoleHookCompany,
+  ConsoleHookPreferenceContent,
   ConsoleHookResponse,
   ConsoleHookUser,
 } from "../types";
@@ -100,7 +101,12 @@ export class ConsoleController {
           await this.userDisabled(request.body.content as ConsoleHookBodyContent);
           break;
         case "user_updated":
-          await this.userUpdated(request.body.content as ConsoleHookBodyContent);
+          await this.userUpdated((request.body.content as ConsoleHookBodyContent).user._id);
+          break;
+        case "user_preference_updated":
+          await this.userUpdated(
+            (request.body.content as unknown as ConsoleHookPreferenceContent).preference.targetCode,
+          );
           break;
         case "user_deleted":
           await this.userRemoved(request.body.content as ConsoleHookUser);
@@ -134,7 +140,7 @@ export class ConsoleController {
 
   private async userAdded(content: ConsoleHookBodyContent): Promise<void> {
     const userDTO = content.user;
-    await this.consoleService.getClient().updateLocalUserFromConsole(userDTO);
+    await this.consoleService.getClient().updateLocalUserFromConsole(userDTO._id);
   }
 
   private async userDisabled(content: ConsoleHookBodyContent): Promise<void> {
@@ -146,9 +152,8 @@ export class ConsoleController {
     await this.consoleService.getClient().removeUser(content._id);
   }
 
-  private async userUpdated(content: ConsoleHookBodyContent) {
-    const user = await this.consoleService.getClient().updateLocalUserFromConsole(content.user);
-
+  private async userUpdated(code: string) {
+    const user = await this.consoleService.getClient().updateLocalUserFromConsole(code);
     await this.consoleService.processPendingUser(user);
   }
 
@@ -189,7 +194,7 @@ export class ConsoleController {
   private async authByToken(accessToken: string): Promise<AccessToken> {
     const client = this.consoleService.getClient();
     const userDTO = await client.getUserByAccessToken(accessToken);
-    const user = await client.updateLocalUserFromConsole(userDTO);
+    const user = await client.updateLocalUserFromConsole(userDTO._id);
     if (!user) {
       throw CrudExeption.notFound(`User details not found for access token ${accessToken}`);
     }

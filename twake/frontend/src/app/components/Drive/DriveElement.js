@@ -330,7 +330,7 @@ export default class DriveElement extends React.Component {
             'Editer avec $1',
           ),
           onClick: () => {
-            if (FeatureTogglesService.isActiveFeatureName(FeatureNames.ONLY_OFFICE)) {
+            if (FeatureTogglesService.isActiveFeatureName(FeatureNames.EDIT_FILES)) {
               var app = editor_candidate[0];
               if (app.url && app.is_url_file) {
                 window.open(app.url);
