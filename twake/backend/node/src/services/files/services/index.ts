@@ -12,6 +12,7 @@ import { logger } from "../../../core/platform/framework";
 import { PreviewPubsubRequest } from "../../../../src/services/previews/types";
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
+import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -169,7 +170,7 @@ class Service implements FileServiceAPI {
               for (let i = 1; i < 10; i++) {
                 entity = await this.repository.findOne({
                   company_id: context.company.id,
-                  id: id,
+                  id: entity.id,
                 });
                 if (entity.metadata.thumbnails_status === "done") {
                   break;
@@ -246,6 +247,14 @@ class Service implements FileServiceAPI {
 
   async get(id: string, context: CompanyExecutionContext): Promise<File> {
     return this.repository.findOne({ company_id: context.company.id, id });
+  }
+
+  getThumbnailRoute(file: File, index: string) {
+    return getThumbnailRoute(file, index);
+  }
+
+  getDownloadRoute(file: File) {
+    return getDownloadRoute(file);
   }
 }
 

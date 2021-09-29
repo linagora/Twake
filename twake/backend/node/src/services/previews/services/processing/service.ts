@@ -1,7 +1,7 @@
 import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
-import { isFileType } from "../../utils";
+import { cleanFiles, isFileType } from "../../utils";
 import { pdfExtensions, officeExtensions, imageExtensions } from "./mime";
 import StorageAPI from "../../../../core/platform/services/storage/provider";
 import { PreviewPubsubRequest, ThumbnailResult } from "../../types";
@@ -18,26 +18,37 @@ export class PreviewProcessService {
     deleteTmpFile: boolean,
   ): Promise<ThumbnailResult[]> {
     if (isFileType(document.mime, document.filename, officeExtensions)) {
-      const pdfPath = await convertFromOffice(document.path, options.pages, deleteTmpFile);
-      const thumbnailPath = await convertFromPdf(pdfPath.output, options.pages, deleteTmpFile);
-      return (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile)).output;
+      const pdfPath = await convertFromOffice(document.path, {
+        numberOfPages: options.pages,
+      });
+      await cleanFiles([document.path]);
+      const thumbnailPath = await convertFromPdf(pdfPath.output, {
+        numberOfPages: options.pages,
+      });
+      await cleanFiles([pdfPath.output]);
+      const images = (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile))
+        .output;
+      await cleanFiles(thumbnailPath.output);
+      return images;
     }
 
     if (isFileType(document.mime, document.filename, pdfExtensions)) {
-      const thumbnailPath = await convertFromPdf(document.path, options.pages, deleteTmpFile);
-      return (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile)).output;
+      const thumbnailPath = await convertFromPdf(document.path, {
+        numberOfPages: options.pages,
+      });
+      await cleanFiles([document.path]);
+      const images = (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile))
+        .output;
+      await cleanFiles(thumbnailPath.output);
+      return images;
     }
 
     if (isFileType(document.mime, document.filename, imageExtensions)) {
-      return (await thumbnailsFromImages([document.path], options, deleteTmpFile)).output;
+      const images = (await thumbnailsFromImages([document.path], options, deleteTmpFile)).output;
+      await cleanFiles([document.path]);
+      return images;
     }
 
-    if (
-      !isFileType(document.mime, document.filename, officeExtensions) &&
-      !isFileType(document.mime, document.filename, pdfExtensions) &&
-      !isFileType(document.mime, document.filename, imageExtensions)
-    ) {
-      throw "Can not proccess, file type can't be defined";
-    }
+    throw "Can not proccess, file type can't be defined";
   }
 }

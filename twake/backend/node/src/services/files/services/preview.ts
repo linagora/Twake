@@ -40,9 +40,6 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
       `${this.name} - Updating file metadata with preview generation ${message.thumbnails}`,
     );
 
-    if (!this.validate(message)) {
-      throw new Error("Missing required fields");
-    }
     const pk: { company_id: string; id: string } = JSON.parse(message.document.id);
     const entity = await this.repository.findOne(pk);
 

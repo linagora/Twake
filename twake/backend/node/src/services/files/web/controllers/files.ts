@@ -3,7 +3,7 @@ import { Multipart } from "fastify-multipart";
 import { ResourceDeleteResponse } from "../../../../utils/types";
 import { CompanyExecutionContext } from "../types";
 import { FileServiceAPI, UploadOptions } from "../../api";
-import { File } from "../../entities/file";
+import { File, PublicFile } from "../../entities/file";
 
 export class FileController {
   constructor(protected service: FileServiceAPI) {}
@@ -14,8 +14,7 @@ export class FileController {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       Querystring: any;
     }>,
-    response: FastifyReply,
-  ): Promise<void> {
+  ): Promise<{ resource: PublicFile }> {
     const context = getCompanyExecutionContext(request);
 
     let file: null | Multipart = null;
@@ -35,9 +34,9 @@ export class FileController {
     const id = request.params.id;
     const result = await this.service.save(id, file, options, context);
 
-    response.send({
-      resource: result,
-    });
+    return {
+      resource: result.getPublicObject(),
+    };
   }
 
   async download(
@@ -64,7 +63,7 @@ export class FileController {
     const data = await this.service.thumbnail(params.id, params.index, context);
 
     response.header("Content-disposition", "inline");
-    if (data.size && response.header("Content-Length", data.size)) {
+    if (data.size) {
       response.header("Content-Length", data.size);
     }
     response.type(data.type);
@@ -73,12 +72,12 @@ export class FileController {
 
   async get(
     request: FastifyRequest<{ Params: { company_id: string; id: string } }>,
-  ): Promise<{ resource: File }> {
+  ): Promise<{ resource: PublicFile }> {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
     const resource = await this.service.get(params.id, context);
 
-    return { resource };
+    return { resource: resource.getPublicObject() };
   }
 
   async delete(): Promise<ResourceDeleteResponse> {

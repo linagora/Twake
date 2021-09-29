@@ -4,7 +4,6 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
-  Paginable,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
@@ -17,6 +16,11 @@ import {
   MessageWithUsers,
   TYPE as MessageTableName,
 } from "../../entities/messages";
+import {
+  getInstance as getMsgfileInstance,
+  MessageFile,
+  TYPE as MsgFileTableName,
+} from "../../entities/message-files";
 import {
   BookmarkOperation,
   MessageLocalEvent,
@@ -39,10 +43,12 @@ import UserServiceAPI from "../../../user/api";
 import ChannelServiceAPI from "../../../channels/provider";
 import { UserObject } from "../../../user/web/types";
 import { FileServiceAPI } from "../../../files/api";
+import { ApplicationServiceAPI } from "../../../applications/api";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
   repository: Repository<Message>;
+  msgFilesRepository: Repository<MessageFile>;
   operations: ThreadMessagesOperationsService;
 
   constructor(
@@ -50,6 +56,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     private user: UserServiceAPI,
     private channel: ChannelServiceAPI,
     private files: FileServiceAPI,
+    private applications: ApplicationServiceAPI,
     private service: MessageServiceAPI,
   ) {
     this.operations = new ThreadMessagesOperationsService(database, service, this);
@@ -57,6 +64,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   async init(context: TwakeContext): Promise<this> {
     this.repository = await this.database.getRepository<Message>(MessageTableName, Message);
+    this.msgFilesRepository = await this.database.getRepository<MessageFile>(
+      MsgFileTableName,
+      MessageFile,
+    );
     await this.operations.init(context);
     return this;
   }
@@ -124,7 +135,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       subtype: serverRequest,
       text: serverRequest || messageOwnerAndNotRemoved,
       blocks: serverRequest || messageOwnerAndNotRemoved,
-      files: serverRequest || messageOwnerAndNotRemoved,
       context: serverRequest || messageOwnerAndNotRemoved,
       override: serverRequest || (messageOwnerAndNotRemoved && !!applicationRequest),
     };
@@ -146,9 +156,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       logger.info(`Did not save ephemeral message in thread ${message.thread_id}`);
     }
 
-    this.onSaved(message, { created: messageCreated }, context);
+    if (serverRequest || messageOwnerAndNotRemoved) {
+      message = await this.completeMessage(message, { files: item.files || [] });
+    }
 
-    message = await this.completeMessageFiles(message);
+    this.onSaved(message, { created: messageCreated }, context);
 
     return new SaveResult<Message>(
       "message",
@@ -325,6 +337,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return new DeleteResult<Message>("message", message, true);
   }
 
+  async getSingleMessage(pk: Pick<Message, "thread_id" | "id">) {
+    let message = await this.repository.findOne(pk);
+    if (message) {
+      message = await this.completeMessage(message, { files: message.files || [] });
+    }
+    return message;
+  }
+
   async get(
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
@@ -333,7 +353,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     if (thread) {
       return await this.getThread(thread);
     } else {
-      return await this.repository.findOne(pk);
+      return await this.getSingleMessage(pk);
     }
   }
 
@@ -341,7 +361,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     thread: Thread,
     options: MessagesGetThreadOptions = {},
   ): Promise<MessageWithReplies> {
-    const last_replies = (
+    const lastRepliesUncompleted = (
       await this.repository.find(
         {
           thread_id: thread.id,
@@ -352,18 +372,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       )
     ).getEntities();
 
-    const first_message = await this.repository.findOne({
+    let lastReplies: Message[] = [];
+    for (const lastReply of lastRepliesUncompleted) {
+      if (lastReply)
+        lastReplies.push(await this.completeMessage(lastReply, { files: lastReply.files || [] }));
+    }
+
+    let firstMessage = await this.getSingleMessage({
       thread_id: thread.id,
       id: thread.id,
     });
 
     return {
-      ...first_message,
+      ...firstMessage,
       stats: {
-        replies: last_replies.length === 1 ? 1 : thread.answers, //This line ensure the thread can be deleted by user if there is no replies
+        replies: lastReplies.length === 1 ? 1 : thread.answers, //This line ensure the thread can be deleted by user if there is no replies
         last_activity: thread.last_activity,
       },
-      last_replies: last_replies.sort((a, b) => a.created_at - b.created_at),
+      last_replies: lastReplies.sort((a, b) => a.created_at - b.created_at),
     };
   }
 
@@ -418,7 +444,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       );
     }
 
-    let messageWithUsers = { ...message, users };
+    let application = null;
+    if (message.application_id) {
+      application = await this.applications.applications.get({ id: message.application_id });
+    }
+
+    let messageWithUsers = { ...message, users, application };
     return messageWithUsers;
   }
 
@@ -486,8 +517,72 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return this.operations.bookmark(operation, options, context);
   }
 
-  async completeMessageFiles(message: Message) {
-    //TODO complete message file with all the data of the included files
+  //Complete message with all missing information and cache
+  async completeMessage(message: Message, options: { files?: Message["files"] } = {}) {
+    if (options.files) message = await this.completeMessageFiles(message, options.files || []);
+    return message;
+  }
+
+  async completeMessageFiles(message: Message, files: Message["files"]) {
+    if (files.length === 0 && (message.files || []).length === 0) {
+      return message;
+    }
+
+    files = files.map(f => {
+      f.message_id = message.id;
+      return f;
+    });
+
+    const sameFile = (a: MessageFile["metadata"], b: MessageFile["metadata"]) => {
+      return a.external_id == b.external_id && a.source == b.source;
+    };
+
+    //Delete all existing msg files not in the new files object
+    const existingMsgFiles = (
+      await this.msgFilesRepository.find({
+        message_id: message.id,
+      })
+    ).getEntities();
+    for (const entity of existingMsgFiles) {
+      if (!files.some(f => sameFile(f.metadata, entity.metadata))) {
+        //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
+        await this.msgFilesRepository.remove(entity);
+      }
+    }
+
+    //Ensure all files in the file object are in the message
+    message.files = [];
+    for (const file of files) {
+      const entity =
+        existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0] || new MessageFile();
+      entity.message_id = message.id;
+      entity.id = file.id || undefined;
+
+      //For internal files, we have a special additional sync
+      if (file.metadata?.source == "internal") {
+        const original = await this.files.get(file.metadata.external_id?.id as string, {
+          user: { id: "", server_request: true },
+          company: { id: file.metadata.external_id?.company_id as string },
+        });
+        if (original) {
+          file.metadata = { ...file.metadata, ...original.metadata };
+          file.metadata.thumbnails = (file.metadata.thumbnails || []).map((t, index) => {
+            t.url = this.files.getThumbnailRoute(original, (t.index || index).toString());
+            return t;
+          });
+        }
+      }
+
+      entity.metadata = file.metadata;
+
+      //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
+      await this.msgFilesRepository.save(entity);
+
+      message.files.push(entity);
+    }
+
+    await this.repository.save(message);
+
     return message;
   }
 }

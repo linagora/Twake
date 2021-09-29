@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import { cleanFile, getTmpFile } from "../../utils";
+import { cleanFiles, getTmpFile } from "../../utils";
 import { PreviewPubsubRequest, ThumbnailResult } from "../../types";
 import { logger } from "../../../../core/platform/framework/logger";
 
@@ -31,10 +31,9 @@ export async function generatePreview(
       });
     } catch (error) {
       logger.info(`sharp cant process ${error}`);
-      cleanFile(outputPath);
+      cleanFiles([outputPath]);
       throw Error("Can't resize thumnail with Sharp");
     }
-    if (deleteInputFile) cleanFile(inputPath);
   }
 
   return {

@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 import mimes from "./services/processing/mime";
-import fs from "fs";
+import fs, { existsSync } from "fs";
 import { unlink } from "fs/promises";
 
 export function getTmpFile() {
-  const targetDir = "/storage/twake/files/tmp/";
+  const targetDir = "/tmp/";
   fs.mkdirSync(targetDir, { recursive: true });
   return `${targetDir}${uuidv4()}`;
 }
@@ -16,6 +16,8 @@ export function isFileType(fileMime: string, fileName: string, requiredExtension
   return fileExtensions.some(e => requiredExtensions.includes(e));
 }
 
-export async function cleanFile(path: string) {
-  await unlink(path);
+export async function cleanFiles(paths: string[]) {
+  for (const path of paths) {
+    if (existsSync(path)) await unlink(path);
+  }
 }

@@ -43,9 +43,23 @@ export class PreviewProcessor
   async process(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
     logger.info(`${this.name} - Processing preview generation ${message.document.id}`);
 
-    if (!this.validate(message)) {
-      throw new Error("Missing required fields");
+    let res: PreviewPubsubCallback = { document: message.document, thumbnails: [] };
+    try {
+      res = await this.generate(message);
+    } catch (err) {
+      logger.error(`${this.name} - Can't generate thumbnails ${err}`);
     }
+
+    logger.info(
+      `${this.name} - Generated ${res.thumbnails.length} thumbnails from ${
+        message.document.filename || message.document.id
+      }`,
+    );
+
+    return res;
+  }
+
+  async generate(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
     //Download original file
     const readable = await this.storage.read(message.document.path, {
       totalChunks: message.document.chunks,

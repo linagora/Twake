@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
-import Application from "./application";
+import Application, { PublicApplication } from "./application";
 
 export const TYPE = "group_app";
 
@@ -36,5 +36,5 @@ export type CompanyApplicationPrimaryKey = Pick<
 
 export class CompanyApplicationWithApplication extends CompanyApplication {
   //Not in database but attached to this object
-  application?: Application;
+  application?: PublicApplication;
 }
