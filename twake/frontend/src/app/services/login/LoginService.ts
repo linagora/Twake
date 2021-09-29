@@ -130,26 +130,27 @@ class Login extends Observable {
     this.notify();
   }
 
-  login(username: string, password: string, remember_me: boolean, hide_load = false) {
+  login(params: any, hide_load = false) {
     if (!hide_load) {
       this.login_loading = true;
     }
     this.login_error = false;
     this.notify();
 
-    AuthService.login({
-      username,
-      password,
-      remember_me,
-    }).then(async (result) => {
-      this.login_loading = false;
-      if (!result) {
-        this.login_error = true;
-        this.notify();
-        return;
-      }
-      await this.updateUser();
-    });
+    AuthService.login(params)
+      .then(async (result) => {
+        this.login_loading = false;
+        if (!result) {
+          this.login_error = true;
+          this.notify();
+          return;
+        }
+        await this.updateUser();
+      })
+      .catch(err => {
+        this.logger.error('Can not login', err);
+        // TODO display a message
+      });
   }
 
   clearLogin() {
