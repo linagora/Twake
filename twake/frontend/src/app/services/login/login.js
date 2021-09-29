@@ -9,7 +9,6 @@ import Globals from 'services/Globals';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import LocalStorage from 'services/LocalStorage';
-import authProviderService from './AuthProviderService';
 // temporary integration
 import LoginService from "./LoginService";
 import Application from '../Application';
@@ -57,7 +56,7 @@ class Login extends Observable {
   async init(did_wait = false) {
     if (!did_wait) {
       LocalStorage.getItem('api_root_url');
-      this.init(true);
+      await this.init(true);
 
       return;
     }
@@ -66,17 +65,17 @@ class Login extends Observable {
     if (!LoginService.isInitialized()) {
       this.reset();
       await LoginService.init();
-      this.updateUser();
+      this.updateUser((err, user) => {
+        console.log("User is updated", err, user);
+        // TODO: Return Promise
+      });
     }
 
     ws.onReconnect('login', () => {
       if (this.firstInit && this.currentUserId) {
-        this.updateUser();
+        //this.updateUser();
       }
     });
-
-    // TODO: GET THE USER ON FIRST INIT TO CHECK IS WE ARE ALREADY LOGGED IN
-    // TODO: Try to get the user only when we do not know if we are logged in.
   }
 
   async updateUser(callback) {
@@ -88,6 +87,7 @@ class Login extends Observable {
     }
 
     LoginService.updateUser(async user => {
+      this.logger.debug('User update result', user);
       if (!user) {
         this.firstInit = true;
         this.state = 'logged_out';
@@ -108,7 +108,7 @@ class Login extends Observable {
         RouterServices.push(RouterServices.generateRouteFromState());
       }
 
-      callback && callback();
+      callback && callback(null, user);
     });
   }
 
@@ -159,7 +159,7 @@ class Login extends Observable {
 
     Api.post('/ajax/users/logout', {}, function () {
       if (identity_provider === 'console') {
-        authProviderService.signOut();
+        // FIXME: Signout from provider
       } else {
         if (!no_reload) {
           Globals.window.location.reload();

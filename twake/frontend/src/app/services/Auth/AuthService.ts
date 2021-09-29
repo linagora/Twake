@@ -43,7 +43,10 @@ class AuthService {
   }
 
   private getDefaultProvider() {
-    return new InternalAuthProviderService().init();
+    return new InternalAuthProviderService().init({
+      onNewToken: () => {},
+      onInitialized: () => {},
+    });
   }
 
   getAccountType(): AccountType | undefined {

@@ -85,13 +85,14 @@ class LoginService extends Observable {
             const user = await this.comleteInit();
             this.initState = 'initialized';
             resolve(user);
-            // TODO: move it to somewhere else...
-            //RouterServices.push(RouterServices.generateRouteFromState());
           }
         },
+        onInitialized: () => {
+          this.logger.info("Auth provider is initialized");
+          this.initState = 'initialized';
+          resolve(null);
+        }
       });
-      this.initState = 'initialized';
-      resolve(null);
     });
   }
 
@@ -185,14 +186,7 @@ class LoginService extends Observable {
         this.logger.debug('Error while fetching user');
         this.state = 'logged_out';
         WindowState.reset();
-        // TODO: This is up to the strategy to redirect to the right path, the internal will return to this, the console will not...
-        //RouterServices.push(
-        //  RouterServices.addRedirection(
-        //    `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-        //  ),
-        //);
-      } else {
-        //this.startApp(user);
+        // TODO: Redirect
       }
 
       callback && callback(user);
@@ -238,9 +232,12 @@ class LoginService extends Observable {
     this.logger.info('Starting application');
     const user = await UserAPIClient.getCurrent(true);
     this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);
-    this.setCurrentUser(user);
-    await Application.start(user);
-    this.state = 'app';
+
+    if (user) {
+      this.setCurrentUser(user);
+      await Application.start(user);
+      this.state = 'app';
+    }
 
     return user;
   }
