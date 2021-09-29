@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterEach } from "@jest/globals";
+import { describe, it, beforeAll, afterAll } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import io from "socket.io-client";
 import { UnauthorizedError } from "socketio-jwt";
@@ -7,7 +7,7 @@ describe("The Websocket authentication", () => {
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 
-  beforeEach(async ends => {
+  beforeAll(async ends => {
     platform = await init({
       services: [
         "webserver",
@@ -32,11 +32,11 @@ describe("The Websocket authentication", () => {
     ends();
   });
 
-  afterEach(async ends => {
-    platform && (await platform.tearDown());
-    platform = null;
+  afterAll(async ends => {
     socket && socket.close();
     socket = null;
+    platform && (await platform.tearDown());
+    platform = null;
     ends();
   });
 
