@@ -1,29 +1,5 @@
 {
-  "services": [
-    "auth",
-    "push",
-    "storage",
-    "webserver",
-    "websocket",
-    "database",
-    "search",
-    "pubsub",
-    "realtime",
-    "phpnode",
-    "tracker",
-    "general",
-    "user",
-    "applications",
-    "channels",
-    "notifications",
-    "messages",
-    "files",
-    "workspaces",
-    "console",
-    "previews",
-    "platform-services",
-    "counter"
-  ],
+  "services": [],
   "webserver": {
     "port": 3000,
     "logger": {

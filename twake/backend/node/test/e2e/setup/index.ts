@@ -44,39 +44,38 @@ export interface TestPlatformConfiguration {
 let testPlatform: TestPlatform = null;
 
 export async function init(testConfig?: TestPlatformConfiguration): Promise<TestPlatform> {
-  if (testPlatform) {
-    testPlatform.app.server.close();
-    await testPlatform.pubsub.processor.stop();
-    await testPlatform.platform.stop();
+  if (!testPlatform) {
+    const configuration: TwakePlatformConfiguration = {
+      services: config.get("services"),
+      servicesPath: pathResolve(__dirname, "../../../src/services/"),
+    };
+    const platform = new TwakePlatform(configuration);
+
+    await platform.init();
+    await platform.start();
+
+    const app = platform.getProvider<WebServerAPI>("webserver").getServer();
+    const database = platform.getProvider<DatabaseServiceAPI>("database");
+    const pubsub = platform.getProvider<PubsubServiceAPI>("pubsub");
+    const auth = platform.getProvider<AuthServiceAPI>("auth");
+
+    testPlatform = {
+      platform,
+      app,
+      pubsub,
+      database,
+      workspace: { company_id: "", workspace_id: "" },
+      currentUser: { id: "" },
+      authService: auth,
+      auth: {
+        getJWTToken,
+      },
+      tearDown,
+    };
   }
 
-  const configuration: TwakePlatformConfiguration = {
-    services: config.get("services"),
-    servicesPath: pathResolve(__dirname, "../../../src/services/"),
-  };
-  const platform = new TwakePlatform(configuration);
-
-  await platform.init();
-  await platform.start();
-
-  const app = platform.getProvider<WebServerAPI>("webserver").getServer();
-  const database = platform.getProvider<DatabaseServiceAPI>("database");
-  const pubsub = platform.getProvider<PubsubServiceAPI>("pubsub");
-  const auth = platform.getProvider<AuthServiceAPI>("auth");
-
-  testPlatform = {
-    platform,
-    app,
-    pubsub,
-    database,
-    workspace: { company_id: "", workspace_id: "" },
-    currentUser: { id: "" },
-    authService: auth,
-    auth: {
-      getJWTToken,
-    },
-    tearDown,
-  };
+  testPlatform.app.server.close();
+  await testPlatform.pubsub.processor.stop();
 
   testPlatform.currentUser = { id: uuidv1() };
   testPlatform.workspace = {
@@ -84,6 +83,7 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
     workspace_id: uuidv1(),
   };
 
+  testPlatform.app.server.listen(3000);
   await testPlatform.pubsub.processor.start();
 
   async function getJWTToken(
@@ -105,8 +105,8 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
 
   async function tearDown(): Promise<void> {
     if (testPlatform) {
+      testPlatform.app.server.close();
       await testPlatform.pubsub.processor.stop();
-      await testPlatform.platform.stop();
     }
   }
 
