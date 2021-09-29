@@ -1,4 +1,4 @@
-import Login from 'services/login/login';
+import Login from 'app/services/login/LoginService';
 import Collections, { Collection } from 'app/services/Depreciated/Collections/Collections';
 import Api from 'services/Api';
 import Languages from 'services/languages/languages';

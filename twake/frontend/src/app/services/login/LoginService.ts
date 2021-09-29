@@ -9,10 +9,27 @@ import JWTStorage from 'services/JWTStorage';
 import LocalStorage from 'services/LocalStorage';
 import AuthService from "services/Auth/AuthService";
 import Application from '../Application';
+import { UserType } from 'app/models/User';
 
 class Login extends Observable {
   // Promise resolved when user is defined
-  userIsSet;
+  userIsSet!: Promise<string>;
+  resolveUser!: (userId: string) => void;
+
+  logger: Logger.Logger;
+  firstInit: boolean;
+  currentUserId: string = '';
+  emailInit: string;
+  server_infos_loaded: boolean;
+  server_infos: { branding: {}; ready: {}; auth: {}; help_url: boolean; };
+  error_secondary_mail_already: boolean;
+  addmail_token: string;
+  external_login_error: boolean;
+  state: string = '';
+  login_loading: boolean = false;
+  login_error: boolean = false;
+  parsed_error_code: any;
+  error_code: any;
 
   constructor() {
     super();
@@ -20,7 +37,7 @@ class Login extends Observable {
     this.setObservableName('login');
     this.logger = Logger.getLogger('Login');
     this.firstInit = false;
-    this.currentUserId = null;
+    this.currentUserId = '';
     this.emailInit = '';
     this.server_infos_loaded = false;
     this.server_infos = {
@@ -32,7 +49,6 @@ class Login extends Observable {
     this.parsed_error_code = null;
     this.error_code = null;
 
-    Globals.window.login = this;
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
     this.external_login_error = false;
@@ -45,7 +61,7 @@ class Login extends Observable {
     this.resetCurrentUser();
   }
 
-  changeState(state) {
+  changeState(state: string) {
     this.state = state;
     this.notify();
   }
@@ -75,7 +91,7 @@ class Login extends Observable {
     });
   }
 
-  async updateUser(callback = () => {}) {
+  async updateUser(callback?: (err: Error | null, user?: UserType) => void): Promise<void> {
     if (Globals.store_public_access_get_data) {
       this.firstInit = true;
       this.state = 'logged_out';
@@ -109,12 +125,12 @@ class Login extends Observable {
     });
   }
 
-  setPage(page) {
+  setPage(page: string) {
     this.state = page;
     this.notify();
   }
 
-  login(username, password, remember_me, hide_load) {
+  login(username: string, password: string, remember_me: boolean, hide_load = false) {
     if (!hide_load) {
       this.login_loading = true;
     }
@@ -137,7 +153,7 @@ class Login extends Observable {
   }
 
   clearLogin() {
-    this.currentUserId = null;
+    this.currentUserId = '';
     LocalStorage.clear();
     Collections.clear();
     JWTStorage.clear();
@@ -152,22 +168,22 @@ class Login extends Observable {
     await AuthService.logout();
 
     // in case the auth service provider does nothing, do it
-      if (!no_reload) {
-        Globals.window.location.reload();
-      } else {
-        RouterServices.push(
-          `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-        );
-      }
+    if (!no_reload) {
+      Globals.window.location.reload();
+    } else {
+      RouterServices.push(
+        `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
+      );
+    }
   }
 
-  setCurrentUser(user) {
-    this.currentUserId = user.id;
+  setCurrentUser(user: UserType) {
+    this.currentUserId = user.id || '';
     this.resolveUser(this.currentUserId);
   }
 
   resetCurrentUser() {
-    this.currentUserId = null;
+    this.currentUserId = '';
     this.userIsSet = new Promise(resolve => (this.resolveUser = resolve));
   }
 
@@ -176,10 +192,10 @@ class Login extends Observable {
     const viewParameter = WindowState.findGetParameter('view') || '';
     if (
       (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
-      Globals.store_publicAccess_get_data
+      Globals.store_public_access_get_data
     ) {
       publicAccess = true;
-      Globals.store_publicAccess_get_data = WindowState.allGetParameter();
+      Globals.store_public_access_get_data = WindowState.allGetParameter();
     }
     return publicAccess;
   }

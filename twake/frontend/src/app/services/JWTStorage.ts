@@ -1,5 +1,5 @@
 import LocalStorage from 'services/LocalStorage';
-import LoginService from 'services/login/login';
+import LoginService from 'app/services/login/LoginService';
 import WindowService from 'services/utils/window';
 import ConsoleAPIClient from './Console/ConsoleAPIClient';
 import { TwakeService } from './Decorators/TwakeService';

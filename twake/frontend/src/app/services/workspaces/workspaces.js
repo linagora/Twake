@@ -16,7 +16,7 @@ import RouterServices from 'app/services/RouterService';
 import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
 import UserNotifications from 'app/services/user/UserNotifications';
 import AccessRightsService from 'services/AccessRightsService';
-import loginService from 'services/login/login.js';
+import loginService from 'app/services/login/LoginService';
 import Globals from 'services/Globals';
 import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
