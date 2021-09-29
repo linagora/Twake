@@ -6,7 +6,8 @@ export type InitParameters = {
   onSessionExpired?: () => void;
   onNewToken: (token?: JWTDataType) => void;
   onInitialized: () => void;
-}
+};
+
 export interface AuthProvider<SignInParameters, SignOutParameters> {
   init(params?: InitParameters): this;
 

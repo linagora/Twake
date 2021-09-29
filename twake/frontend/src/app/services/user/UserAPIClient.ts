@@ -62,6 +62,10 @@ class UserAPIClient {
     ).then(result => result.resource);
   }
 
+  async logout() {
+    return Api.post('users/logout', {});
+  }
+
   /**
    * Legacy API, will have to be removed!
    *

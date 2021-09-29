@@ -1,16 +1,13 @@
 import Logger from 'app/services/Logger';
 import Observable from 'app/services/Depreciated/observable.js';
-import Api from 'services/Api';
 import WindowState from 'services/utils/window';
 import Collections from 'app/services/Collections/Collections';
-import CurrentUser from 'app/services/user/CurrentUser';
 import ws from 'services/websocket.js';
 import Globals from 'services/Globals';
 import RouterServices from '../RouterService';
 import JWTStorage from 'services/JWTStorage';
 import LocalStorage from 'services/LocalStorage';
-// temporary integration
-import LoginService from "./LoginService";
+import AuthService from "services/Auth/AuthService";
 import Application from '../Application';
 
 class Login extends Observable {
@@ -62,9 +59,9 @@ class Login extends Observable {
     }
 
     // TODO: Do it on first init onlu
-    if (!LoginService.isInitialized()) {
+    if (!AuthService.isInitialized()) {
       this.reset();
-      await LoginService.init();
+      await AuthService.init();
       this.updateUser((err, user) => {
         console.log("User is updated", err, user);
         // TODO: Return Promise
@@ -78,7 +75,7 @@ class Login extends Observable {
     });
   }
 
-  async updateUser(callback) {
+  async updateUser(callback = () => {}) {
     if (Globals.store_public_access_get_data) {
       this.firstInit = true;
       this.state = 'logged_out';
@@ -86,7 +83,7 @@ class Login extends Observable {
       return;
     }
 
-    LoginService.updateUser(async user => {
+    AuthService.updateUser(async user => {
       this.logger.debug('User update result', user);
       if (!user) {
         this.firstInit = true;
@@ -124,7 +121,7 @@ class Login extends Observable {
     this.login_error = false;
     this.notify();
 
-    LoginService.login({
+    AuthService.login({
       username,
       password,
       remember_me,
@@ -136,8 +133,6 @@ class Login extends Observable {
         return;
       }
       await this.updateUser();
-      // This is strange to do it again here...
-      //return RouterServices.replace(RouterServices.pathnames.LOGIN);
     });
   }
 
@@ -148,28 +143,22 @@ class Login extends Observable {
     JWTStorage.clear();
   }
 
-  logout(no_reload = false) {
-    var identity_provider = CurrentUser.get()
-      ? (CurrentUser.get() || {}).identity_provider
-      : 'internal';
-
+  async logout(no_reload = false) {
     this.clearLogin();
+    this.resetCurrentUser();
 
     document.body.classList.add('fade_out');
 
-    Api.post('/ajax/users/logout', {}, function () {
-      if (identity_provider === 'console') {
-        // FIXME: Signout from provider
+    await AuthService.logout();
+
+    // in case the auth service provider does nothing, do it
+      if (!no_reload) {
+        Globals.window.location.reload();
       } else {
-        if (!no_reload) {
-          Globals.window.location.reload();
-        } else {
-          RouterServices.push(
-            `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-          );
-        }
+        RouterServices.push(
+          `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
+        );
       }
-    });
   }
 
   setCurrentUser(user) {
