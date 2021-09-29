@@ -8,8 +8,6 @@ import Integration from 'app/scenes/Integration/Integration';
 import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
-import AuthProviderService from './services/login/AuthProviderService';
-import LoginService from './services/login/login';
 import UserContext from './state/recoil/integration/UserContext';
 
 import 'app/ui.scss';
@@ -31,14 +29,8 @@ export default () => {
   }, [server_infos_loaded]);
 
   if (!server_infos_loaded) {
+    // TODO: Display a loading message...
     return <div />;
-  }
-
-  if (
-    InitService.server_infos?.configuration?.accounts.type === 'console' &&
-    !LoginService.getIsPublicAccess()
-  ) {
-    AuthProviderService.getAuthProviderConfiguration();
   }
 
   return (
@@ -47,36 +39,36 @@ export default () => {
       <Integration>
         <Router history={RouterServices.history}>
           <Switch>
-            {RouterServices.routes.map((route: RouteType, index: number) => {
-              return (
-                <Route
-                  key={`${route.key}_${index}`}
-                  exact={route.exact ? route.exact : false}
-                  path={route.path}
-                  component={() => {
-                    if (route.options?.withErrorBoundary === true) {
-                      return (
-                        <ErrorBoundary key={route.key}>
-                          <route.component />
-                        </ErrorBoundary>
-                      );
-                    }
-                    return <route.component key={route.key} />;
-                  }}
-                />
-              );
-            })}
-            <Route
-              path="/"
-              component={() => {
-                RouterServices.replace(
-                  `${
-                    RouterServices.pathnames.LOGIN
-                  }?auto&${RouterServices.history.location.search.substr(1)}`,
-                );
-                return <div />;
-              }}
-            />
+            {RouterServices.getRoutes(InitService.server_infos?.configuration?.accounts.type).map((route: RouteType, index: number) =>
+              <Route
+                key={`${route.key}_${index}`}
+                exact={route.exact ? route.exact : false}
+                path={route.path}
+                component={() => {
+                  if (route.options?.withErrorBoundary === true) {
+                    return (
+                      <ErrorBoundary key={route.key}>
+                        <route.component />
+                      </ErrorBoundary>
+                    );
+                  }
+                  return <route.component key={route.key} />;
+                }}
+              />
+            )}
+            {
+              <Route
+                path="/"
+                component={() => {
+                  RouterServices.replace(
+                    `${
+                      RouterServices.pathnames.LOGIN
+                    }?auto&${RouterServices.history.location.search.substr(1)}`,
+                  );
+                  return <div />;
+                }}
+              />
+            }
           </Switch>
         </Router>
       </Integration>

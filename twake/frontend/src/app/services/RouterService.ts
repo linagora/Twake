@@ -12,6 +12,7 @@ import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
 import PublicMainView from 'scenes/Client/MainView/PublicMainView';
 import Observable from './Observable/Observable';
+import ConsoleLogin from './login/ConsoleLogin';
 
 export type RouteType = {
   path: string;
@@ -76,16 +77,27 @@ class RouterServices extends Observable {
     'documentId',
   ];
 
-  routes: Readonly<RouteType[]> = [
-    {
-      path: this.pathnames.LOGIN,
-      exact: true,
-      key: 'login',
-      component: Login,
-      options: {
-        withErrorBoundary: true,
-      },
+  private internalLogin: RouteType = {
+    path: this.pathnames.LOGIN,
+    exact: true,
+    key: 'login',
+    component: Login,
+    options: {
+      withErrorBoundary: true,
     },
+  };
+
+  private consoleLogin: RouteType = {
+    path: this.pathnames.LOGIN,
+    exact: true,
+    key: 'login',
+    component: ConsoleLogin,
+    options: {
+      withErrorBoundary: true,
+    },
+  };
+
+  private routes: RouteType[] = [
     {
       path: this.pathnames.CLIENT,
       key: 'client',
@@ -116,6 +128,11 @@ class RouterServices extends Observable {
     this.history.listen(() => {
       this.notify();
     });
+  }
+
+  getRoutes(auth?: 'console' | 'internal'): RouteType[] {
+    const loginRoute = auth && auth === 'console' ? this.consoleLogin : this.internalLogin;
+    return [...[loginRoute], ...this.routes];
   }
 
   useRouteState(observedScope?: (state: ClientStateType) => ClientStateType): ClientStateType {
