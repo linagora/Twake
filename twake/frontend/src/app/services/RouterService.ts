@@ -12,7 +12,7 @@ import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
 import PublicMainView from 'scenes/Client/MainView/PublicMainView';
 import Observable from './Observable/Observable';
-import ConsoleLogin from './login/ConsoleLogin';
+import ConsoleLogin from './Console/components/ConsoleLogin';
 
 export type RouteType = {
   path: string;
