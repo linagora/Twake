@@ -174,7 +174,7 @@ export interface MemberService
    * @param channel Channel to add users to
    */
   addUsersToChannel(
-    users: User[],
+    users: Pick<User, "id">[],
     channel: ChannelPrimaryKey,
   ): Promise<ListResult<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 
@@ -186,7 +186,7 @@ export interface MemberService
    * @param channels the channels to add the user to
    */
   addUserToChannels(
-    user: User,
+    user: Pick<User, "id">,
     channels: ChannelPrimaryKey[],
   ): Promise<ListResult<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 }
