@@ -82,8 +82,8 @@
         }
       }
 
-      #beta_tag {
-        background-image: url("/public/img/beta.png");
+      #canary_tag {
+        background-image: url("/public/img/canary.png");
         width: 48px;
         height: 48px;
         position: absolute;
@@ -107,7 +107,6 @@
     <svg id="app_loader" class="circular" height="50" width="50">
       <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
     </svg>
-    <div id="beta_tag"></div>
 
     <script type="text/javascript">
       window.electron_config = {};
@@ -132,13 +131,19 @@
       }
     </script>
     <script async src="https://cdn.headwayapp.co/widget.js"></script>
-
     <script>
       if(location.origin.indexOf("twake.app") >= 0){
         !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware"];analytics.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);analytics.push(t);return analytics}};for(var e=0;e<analytics.methods.length;e++){var key=analytics.methods[e];analytics[key]=analytics.factory(key)}analytics.load=function(key,e){var t=document.createElement("script");t.type="text/javascript";t.async=!0;t.src="https://cdn.segment.com/analytics.js/v1/" + key + "/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(t,n);analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.13.1";
         analytics.load("Vl5xpgcpGRe4BmSYp9xPlAeQdqLP5lLe");
         analytics.page();
         }}();
+      }
+    </script>
+    <script>
+      if(location.origin.indexOf("canary.twake.app") >= 0){
+        const canaryTag = document.createElement("div");
+        canaryTag.id = "canary_tag";
+        document.body.appendChild(canaryTag);
       }
     </script>
   </body>

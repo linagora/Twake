@@ -1,10 +1,10 @@
 // Define feature names here
 export enum FeatureNames {
-  GUESTS = 'guests',
-  MESSAGE_HISTORY = 'message_history',
-  MULTIPLE_WORKSPACES = 'multiple_workspaces',
-  ONLY_OFFICE = 'app_only_office',
-  UNLIMITED_STORAGE = 'unlimited_storage',
+  GUESTS = 'chat:guests',
+  MESSAGE_HISTORY = 'chat:message_history',
+  MULTIPLE_WORKSPACES = 'chat:multiple_workspaces',
+  EDIT_FILES = 'chat:edit_files',
+  UNLIMITED_STORAGE = 'chat:unlimited_storage', //Currently inactive
 }
 
 // Define available features here
@@ -12,7 +12,7 @@ const availableFeatures = [
   FeatureNames.GUESTS,
   FeatureNames.MESSAGE_HISTORY,
   FeatureNames.MULTIPLE_WORKSPACES,
-  FeatureNames.ONLY_OFFICE,
+  FeatureNames.EDIT_FILES,
   FeatureNames.UNLIMITED_STORAGE,
 ];
 
@@ -26,11 +26,11 @@ class FeatureTogglesService {
     this.activeFeatureNames = [];
   }
 
-  public setFeaturesFromCompanyPlan(plan: { [key: string]: boolean }): void {
+  public setFeaturesFromCompanyPlan(plan: { features: { [key: string]: boolean } }): void {
     availableFeatures.forEach(featureName => {
       return this.setActiveFeatureName(
         featureName,
-        plan[featureName] !== undefined ? plan[featureName] : true,
+        plan.features[featureName] !== undefined ? plan.features[featureName] : true,
       );
     });
   }

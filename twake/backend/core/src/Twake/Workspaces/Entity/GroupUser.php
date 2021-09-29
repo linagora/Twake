@@ -135,6 +135,15 @@ class GroupUser
      */
     public function getLevel()
     {
+        if($this->getRole() == "admin" || $this->getRole() == "owner"){
+            return 2;
+        }
+        if($this->getRole() == "member"){
+            return 1;
+        }
+        if($this->getRole() == "guest"){
+            return 0;
+        }
         return $this->level;
     }
 

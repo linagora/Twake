@@ -58,13 +58,8 @@ const companyObjectSchema = {
       type: ["object", "null"],
       properties: {
         name: { type: "string" },
-        limits: {
+        features: {
           type: "object",
-          properties: {
-            members: { type: "number" },
-            guests: { type: "number" },
-            storage: { type: "number" },
-          },
         },
       },
     },
