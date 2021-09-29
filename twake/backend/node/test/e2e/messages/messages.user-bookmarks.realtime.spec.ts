@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { describe, expect, it, beforeEach, afterEach, afterAll } from "@jest/globals";
 import io from "socket.io-client";
 import { TestPlatform, init } from "../setup";
 import { MessageServiceAPI } from "../../../src/services/messages/api";
@@ -43,6 +43,11 @@ describe("The Bookmarks Realtime feature", () => {
     socket = io.connect("http://localhost:3000", { path: "/socket" });
     socket.connect();
   }
+
+  afterAll(async done => {
+    socket && socket.close();
+    socket = null;
+  });
 
   describe("On bookmark creation", () => {
     it("should notify the client", async done => {
