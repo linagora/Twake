@@ -88,7 +88,7 @@ class JWTStorage {
     if (this.isAccessExpired()) {
       value = this.jwtData.refresh;
     }
-    return this.jwtData.type + ' ' + value;
+    return `${this.jwtData.type} ${value}`;
   }
 
   isAccessExpired() {
@@ -100,15 +100,21 @@ class JWTStorage {
   }
 
   isRefreshExpired() {
-    return new Date().getTime() / 1000 - this.jwtData.refresh_expiration > 0;
+    const expired = new Date().getTime() / 1000 - this.jwtData.refresh_expiration > 0;
+
+    expired && this.logger.debug(`Refresh token expired, expiration time was ${this.jwtData.refresh_expiration}`);
+
+    return expired;
   }
 
-  authenticateCall(callback: () => void) {
+  authenticateCall(callback?: () => void) {
     if (this.isAccessExpired() && LoginService.currentUserId) {
+      this.logger.debug('authenticateCall: Updating user because the access token expired');
       LoginService.updateUser(callback);
-    } else {
-      callback();
+      return;
     }
+
+    callback && callback();
   }
 
   async renew(): Promise<JWTDataType> {
