@@ -105,7 +105,7 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
 
   async function tearDown(): Promise<void> {
     if (testPlatform) {
-      await new Promise(r => testPlatform.app.server.close(r));
+      testPlatform.app.server.close();
       await testPlatform.pubsub.processor.stop();
     }
   }

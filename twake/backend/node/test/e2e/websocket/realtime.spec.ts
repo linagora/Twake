@@ -35,6 +35,7 @@ describe("The Realtime API", () => {
     platform = null;
     socket && socket.close();
     socket = null;
+
     ends();
   });
 
