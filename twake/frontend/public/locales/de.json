@@ -1682,5 +1682,8 @@
     "scenes.login.authprovider.error.text": "Keine Panik, wir versuchen es noch einmal. Bitte klicken Sie auf \"OK\", um sich erneut anzumelden.",
     "scenes.login.authprovider.error.title": "Ihr Account konnte nicht eröffnet werden",
     "scenes.app.popup.workspaceparameter.pages.error_workspace_member": "Sie müssen die einzige Person im Arbeitsbereich sein, um ihn entfernen zu können. Entfernen Sie alle Mitglieder und versuchen Sie es erneut.",
-    "general.retry": "Wiederholen"
+    "general.retry": "Wiederholen",
+    "components.locked_features.locked_only_office_popup.text": "Hoppla!! Es sieht so aus, als wollten Sie die Datei in twake bearbeiten. Wenn Sie Office-Dateien bearbeiten möchten, müssen Sie ein Upgrade Ihres Tarifs durchführen. Informieren Sie sich über unsere Preisoptionen und wählen Sie die beste Option für Ihre Anforderungen an die Zusammenarbeit im Team.",
+    "components.locked_features.locked_only_office_popup.subtitle": "Onlyoffice ist in der freien Version nicht verfügbar.",
+    "components.locked_features.locked_only_office_popup.title": "Sie können diese Datei nicht bearbeiten"
 }
