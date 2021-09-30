@@ -365,7 +365,7 @@ export class Service implements MemberService {
   }
 
   async addUsersToChannel(
-    users: User[] = [],
+    users: Pick<User, "id">[] = [],
     channel: ChannelEntity,
   ): Promise<
     ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
@@ -426,7 +426,7 @@ export class Service implements MemberService {
   }
 
   async addUserToChannels(
-    user: User,
+    user: Pick<User, "id">,
     channels: ChannelEntity[],
   ): Promise<
     ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
