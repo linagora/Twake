@@ -185,7 +185,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     //FIXME this is a hack right now!
     let planFeatures: any = {};
-    if (company.plan.features.members < 0) {
+    if (companyDTO.limits.members < 0) {
       //Hack to say this is free version
       planFeatures = {
         "chat:guests": false,
