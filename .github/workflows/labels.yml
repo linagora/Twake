@@ -40,6 +40,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: qa
+          fetch-depth: 0
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
@@ -58,6 +59,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: canary
+          fetch-depth: 0
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
@@ -75,6 +77,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: qa
+          fetch-depth: 0
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
@@ -84,6 +87,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: canary
+          fetch-depth: 0
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
