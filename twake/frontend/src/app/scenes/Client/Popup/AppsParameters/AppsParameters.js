@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'app/services/login/LoginService';
-import loginService from 'app/services/login/LoginService';
 import popupManager from 'services/popupManager/popupManager.js';
 import userService from 'services/user/UserService';
 import currentUserService from 'app/services/user/CurrentUser';
@@ -21,7 +20,6 @@ export default class AppsParameters extends Component {
       login: LoginService,
       i18n: Languages,
       users_repository: Collections.get('users'),
-      loginService: loginService,
       currentUserService: currentUserService,
       page: props.initial_page || 1,
       attributeOpen: 0,
