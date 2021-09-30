@@ -7,7 +7,7 @@ import { File } from "../../../src/services/files/entities/file";
 import { deserialize } from "class-transformer";
 import formAutoContent from "form-auto-content";
 
-describe.skip("The Files feature", () => {
+describe("The Files feature", () => {
   const url = "/internal/services/files/v1";
   let platform: TestPlatform;
 
