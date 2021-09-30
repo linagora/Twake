@@ -1,4 +1,4 @@
-import { describe, it, beforeAll, afterAll, expect } from "@jest/globals";
+import { describe, it, beforeEach, afterEach, expect } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import io from "socket.io-client";
 
@@ -6,7 +6,7 @@ describe("The Realtime API", () => {
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 
-  beforeAll(async ends => {
+  beforeEach(async ends => {
     platform = await init({
       services: [
         "webserver",
@@ -30,12 +30,11 @@ describe("The Realtime API", () => {
     ends();
   });
 
-  afterAll(async ends => {
-    socket && socket.close();
-    socket = null;
+  afterEach(async ends => {
     await platform.tearDown();
     platform = null;
-
+    socket && socket.close();
+    socket = null;
     ends();
   });
 
