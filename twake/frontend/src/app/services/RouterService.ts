@@ -3,7 +3,7 @@ import { matchPath, match } from 'react-router';
 import short, { Translator } from 'short-uuid';
 
 import App from 'app/scenes/App';
-import Login from 'app/scenes/Login/login';
+import Login from 'app/scenes/Login/Login';
 import Error from 'app/scenes/Error/Error';
 import Collections from 'services/Depreciated/Collections/Collections';
 
@@ -12,7 +12,6 @@ import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
 import PublicMainView from 'scenes/Client/MainView/PublicMainView';
 import Observable from './Observable/Observable';
-import ConsoleLogin from './Console/components/ConsoleLogin';
 
 export type RouteType = {
   path: string;
@@ -77,27 +76,16 @@ class RouterServices extends Observable {
     'documentId',
   ];
 
-  private internalLogin: RouteType = {
-    path: this.pathnames.LOGIN,
-    exact: true,
-    key: 'login',
-    component: Login,
-    options: {
-      withErrorBoundary: true,
+  readonly routes: RouteType[] = [
+    {
+      path: this.pathnames.LOGIN,
+      exact: true,
+      key: 'login',
+      component: Login,
+      options: {
+        withErrorBoundary: true,
+      },
     },
-  };
-
-  private consoleLogin: RouteType = {
-    path: this.pathnames.LOGIN,
-    exact: true,
-    key: 'login',
-    component: ConsoleLogin,
-    options: {
-      withErrorBoundary: true,
-    },
-  };
-
-  private routes: RouteType[] = [
     {
       path: this.pathnames.CLIENT,
       key: 'client',
@@ -128,11 +116,6 @@ class RouterServices extends Observable {
     this.history.listen(() => {
       this.notify();
     });
-  }
-
-  getRoutes(auth?: 'console' | 'internal'): RouteType[] {
-    const loginRoute = auth && auth === 'console' ? this.consoleLogin : this.internalLogin;
-    return [...[loginRoute], ...this.routes];
   }
 
   useRouteState(observedScope?: (state: ClientStateType) => ClientStateType): ClientStateType {

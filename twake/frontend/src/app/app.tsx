@@ -39,7 +39,7 @@ export default () => {
       <Integration>
         <Router history={RouterServices.history}>
           <Switch>
-            {RouterServices.getRoutes(InitService.server_infos?.configuration?.accounts.type).map((route: RouteType, index: number) =>
+            {RouterServices.routes.map((route: RouteType, index: number) =>
               <Route
                 key={`${route.key}_${index}`}
                 exact={route.exact ? route.exact : false}
