@@ -38,12 +38,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: qa
       - name: cherry-picking
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git fetch
-          git switch qa 
+          git config user.name "Labels Bot"
+          git config user.email "labels-bot@github.com"
+          git status
           git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
           git push
       - uses: actions-ecosystem/action-add-labels@v1
@@ -55,12 +56,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: canary
       - name: cherry-picking
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git fetch
-          git switch canary 
+          git config user.name "Labels Bot"
+          git config user.email "labels-bot@github.com"
           git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
           git push
       - uses: actions-ecosystem/action-add-labels@v1
@@ -72,17 +73,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: qa
       - name: cherry-picking
         run: |
-          git config user.name "GitHub Actions Bot"
-          git config user.email "<>"
-          git fetch
-          git switch qa 
+          git config user.name "Labels Bot"
+          git config user.email "labels-bot@github.com"
           git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
           git push
-          git switch canary 
+      - uses: actions/checkout@v2
+        with:
+          ref: canary
+      - name: cherry-picking
+        run: |
+          git config user.name "Labels Bot"
+          git config user.email "labels-bot@github.com"
           git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
           git push
       - uses: actions-ecosystem/action-add-labels@v1
         with:
-          labels: "staging:main"
+          labels: "staging:canary"
