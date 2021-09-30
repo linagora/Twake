@@ -136,6 +136,13 @@ export class ChannelCrudController
       const context = getExecutionContext(request);
       const channelResult = await this.service.save(entity, options, context);
 
+      await this.membersService.addUsersToChannel(
+        options.members.map(userId => {
+          return { id: userId };
+        }),
+        channelResult.entity,
+      );
+
       logger.debug("reqId: %s - save - Channel %s created", request.id, channelResult.entity.id);
 
       const member = await this.membersService.get(
