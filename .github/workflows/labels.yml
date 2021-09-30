@@ -51,6 +51,11 @@ jobs:
       - uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "staging:qa"
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            "qa:ready"
+            "staging:develop"
 
   request-canary:
     if: github.event.label.name == 'canary:ready' && github.event.pull_request.merged == true
@@ -69,6 +74,11 @@ jobs:
       - uses: actions-ecosystem/action-add-labels@v1
         with:
           labels: "staging:canary"
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            "canary:ready"
+            "staging:qa"
 
   request-priority-1:
     if: github.event.label.name == 'priority:1' && github.event.pull_request.merged == true
@@ -94,6 +104,23 @@ jobs:
           git config user.email "labels-bot@github.com"
           git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
           git push
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: cherry-picking
+        run: |
+          git config user.name "Labels Bot"
+          git config user.email "labels-bot@github.com"
+          git cherry-pick ${{github.event.pull_request.merge_commit_sha}}
+          git push
       - uses: actions-ecosystem/action-add-labels@v1
         with:
-          labels: "staging:canary"
+          labels: "staging:main"
+      - uses: actions-ecosystem/action-remove-labels@v1
+        with:
+          labels: |
+            "staging:develop"
+            "staging:qa"
+            "staging:canary"
+            "request-priority-1"
