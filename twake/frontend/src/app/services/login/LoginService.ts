@@ -1,11 +1,8 @@
 import Logger from 'app/services/Logger';
 import Observable from 'app/services/Depreciated/observable.js';
 import WindowState from 'services/utils/window';
-import Collections from 'app/services/Collections/Collections';
-import ws from 'services/websocket.js';
 import Globals from 'services/Globals';
 import RouterServices from '../RouterService';
-import JWTStorage from 'services/JWTStorage';
 import LocalStorage from 'services/LocalStorage';
 import AuthService from "services/Auth/AuthService";
 import Application from '../Application';
@@ -18,6 +15,7 @@ class Login extends Observable {
 
   logger: Logger.Logger;
   firstInit: boolean;
+  // FIXME: Make it private and force to use User.getCurrentId() or similar, but this has not too be exposed and used by others...
   currentUserId: string = '';
   emailInit: string;
   server_infos_loaded: boolean;
@@ -48,7 +46,6 @@ class Login extends Observable {
     };
     this.parsed_error_code = null;
     this.error_code = null;
-
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
     this.external_login_error = false;
@@ -74,21 +71,11 @@ class Login extends Observable {
       return;
     }
 
-    // TODO: Do it on first init onlu
     if (!AuthService.isInitialized()) {
       this.reset();
       await AuthService.init();
-      this.updateUser((err, user) => {
-        console.log("User is updated", err, user);
-        // TODO: Return Promise
-      });
+      this.updateUser((err, user) => this.logger.debug('User is updated', err, user));
     }
-
-    ws.onReconnect('login', () => {
-      if (this.firstInit && this.currentUserId) {
-        //this.updateUser();
-      }
-    });
   }
 
   async updateUser(callback?: (err: Error | null, user?: UserType) => void): Promise<void> {
@@ -149,20 +136,13 @@ class Login extends Observable {
       })
       .catch(err => {
         this.logger.error('Can not login', err);
-        // TODO display a message
+        // TODO display a modal message
       });
   }
 
-  clearLogin() {
-    this.currentUserId = '';
-    LocalStorage.clear();
-    Collections.clear();
-    JWTStorage.clear();
-  }
-
   async logout(no_reload = false) {
-    this.clearLogin();
     this.resetCurrentUser();
+    Application.stop();
 
     document.body.classList.add('fade_out');
 

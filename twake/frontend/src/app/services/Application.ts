@@ -10,11 +10,13 @@ import JWT from 'app/services/JWTStorage';
 import Collections from 'app/services/Collections/Collections';
 import Globals from 'app/services/Globals';
 import UserNotifications from 'app/services/user/UserNotifications';
+import ws from 'app/services/websocket';
 import WorkspacesListener from './workspaces/WorkspacesListener';
 import WorkspaceAPIClient from './workspaces/WorkspaceAPIClient';
 import UserNotificationAPIClient from './user/UserNotificationAPIClient';
 import { CompanyType } from 'app/models/Company';
 import { WorkspaceType } from 'app/models/Workspace';
+import LocalStorage from './LocalStorage';
 
 class Application {
   private logger: Logger.Logger;
@@ -46,10 +48,18 @@ class Application {
     UserNotifications.start();
     CurrentUser.start();
     user.language && Languages.setLanguage(user.language);
+
+    ws.onReconnect('login', () => {
+      this.logger.info('WS Reconnected');
+      // TODO: Get the last user data
+    });
   }
 
   stop(): void {
     WorkspacesListener.cancelListen();
+    LocalStorage.clear();
+    Collections.clear();
+    JWT.clear();
   }
 
   private configureCollections(user: UserType) {
@@ -66,7 +76,7 @@ class Application {
                 try {
                   token = (await JWT.renew()).value;
                 } catch(err) {
-                  this.logger.error('Can not get a new JWT token for WS collection');
+                  this.logger.error('Can not get a new JWT token for WS collection', err);
                 }
               }
 

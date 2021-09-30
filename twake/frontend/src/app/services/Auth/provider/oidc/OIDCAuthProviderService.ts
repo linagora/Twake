@@ -189,9 +189,6 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
     try {
       await this.userManager.signoutRedirect();
-      //JWT.clear();
-      // FIXME: can reload to the OIDC signin window, not to the twake one to do not loose time...
-      //window.location.reload();
     } catch (err) {
       this.logger.error('Signout redirect error', err);
     }

@@ -10,7 +10,6 @@ import { UserType } from 'app/models/User';
 import JWT, { JWTDataType } from 'services/JWTStorage';
 import UserAPIClient from '../user/UserAPIClient';
 import WindowState from 'services/utils/window';
-import Globals from 'services/Globals';
 import Application from 'services/Application';
 import LocalStorage from 'services/LocalStorage';
 import Collections from 'services/Collections/Collections';
@@ -23,13 +22,8 @@ type InitState = '' | 'initializing' | 'initialized';
 class AuthService {
   private provider: AuthProvider<any, any> | null = null;
   private logger: Logger.Logger;
-  resolveUser!: (userId: string) => void;
-  userIsSet!: Promise<string>;
-  initState: InitState = '';
-  private _state: LoginState = '';
+  private initState: InitState = '';
   currentUserId: string = '';
-  login_loading: boolean = false;
-  login_error: boolean = false;
 
   constructor() {
     this.logger = Logger.getLogger('AuthService');
@@ -72,23 +66,13 @@ class AuthService {
     return InitService.server_infos?.configuration?.accounts.type;
   }
 
-  ///
-
-  set state(value: LoginState) {
-    this._state = value;
-    this.notify();
-  }
-
-  get state() {
-    return this._state;
-  }
-
   isInitialized() {
     return this.initState === 'initialized';
   }
 
   /**
    * The session expired and we are not able to slient renew it
+   * TODO: This must be done in the LoginService, not here
    */
   onSessionExpired() {
     this.logger.error('Session expired, displaying alert');
@@ -142,12 +126,6 @@ class AuthService {
   }
 
   async login(params: any): Promise<UserType | undefined> {
-    if (this.login_loading) {
-      this.logger.debug('Login is already in progress');
-
-      //return;
-    }
-
     const provider = this.getProvider();
 
     if (!provider.signIn) {
@@ -156,27 +134,18 @@ class AuthService {
       throw new Error('Selected provider does not support signIn');
     }
 
-    this.login_error = false;
-    this.login_loading = true;
-
-    this.notify();
+    let error = false;
 
     return provider.signIn(params)
-      .then(() => {
-        this.logger.info('SignIn complete');
-      })
+      .then(() => this.logger.info('SignIn complete'))
       .catch((err: Error) => {
         this.logger.error('Provider signIn Error', err);
-        this.login_error = true;
+        error = true;
       })
       .then(() => {
-        if (!this.login_error) {
+        if (!error) {
           return UserAPIClient.getCurrent(true);
         }
-      })
-      .finally(() => {
-        this.login_loading = false;
-        this.notify();
       });
   }
 
@@ -188,7 +157,6 @@ class AuthService {
           await UserAPIClient.logout();
           this.getProvider().signOut && (await this.getProvider().signOut!({ no_reload }));
           this.logger.debug('SignOut complete');
-          this.state = 'logged_out';
           resolve();
         } catch (err) {
           this.logger.error('Error while signin out', err);
@@ -199,12 +167,6 @@ class AuthService {
 
   updateUser(callback?: (user?: UserType) => void): void {
     this.logger.debug('Updating user');
-    if (Globals.store_public_access_get_data) {
-      //this.initialized = false;
-      this.state = 'logged_out';
-      this.notify();
-      return;
-    }
 
     this.fetchUser(user => {
       this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);
@@ -212,7 +174,6 @@ class AuthService {
       if (!user) {
       //if (!res.data || res.errors?.length) {
         this.logger.debug('Error while fetching user');
-        this.state = 'logged_out';
         WindowState.reset();
         // TODO: Redirect
       }
@@ -241,21 +202,17 @@ class AuthService {
   setCurrentUser(user: UserType) {
     this.logger.debug('Current user', user);
     this.currentUserId = user.id || '';
-    this.resolveUser(this.currentUserId);
   }
 
   resetCurrentUser() {
     this.currentUserId = '';
-    this.userIsSet = new Promise(resolve => (this.resolveUser = resolve));
   }
 
   reset() {
-    this.state = '';
-    this.login_loading = false;
-    this.login_error = false;
     this.resetCurrentUser();
   }
 
+  // TODO: Do we need to do it here?
   private async comleteInit(): Promise<UserType | null> {
     this.logger.info('Starting application');
     const user = await UserAPIClient.getCurrent(true);
@@ -264,14 +221,9 @@ class AuthService {
     if (user) {
       this.setCurrentUser(user);
       await Application.start(user);
-      this.state = 'app';
     }
 
     return user;
-  }
-
-  notify() {
-    // TODO: From observable
   }
 }
 
