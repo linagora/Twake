@@ -184,7 +184,13 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     }
 
     //FIXME this is a hack right now!
-    let planFeatures: any = {};
+    let planFeatures: any = {
+      "chat:guests": true,
+      "chat:message_history": true,
+      "chat:multiple_workspaces": true,
+      "chat:edit_files": true,
+      "chat:unlimited_storage": true,
+    };
     if (companyDTO.limits.members < 0) {
       //Hack to say this is free version
       planFeatures = {

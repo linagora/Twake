@@ -1,0 +1,11 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "ABCDX.com.twake",
+                "paths": ["*"]
+            }
+        ]
+    }
+}

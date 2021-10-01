@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "twake",
+      "package_name": "com.twake",
+      "sha256_cert_fingerprints": ["05:9F:DF:59:4B:..."]
+    }
+  }
+]
