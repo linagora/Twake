@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Router } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
@@ -12,25 +12,42 @@ import UserContext from './state/recoil/integration/UserContext';
 
 import 'app/ui.scss';
 import 'app/theme.less';
+import useTimeout from './services/hooks/useTimeout';
+import ApplicationLoader from './components/Loader/ApplicationLoader';
+
+const delayMessage = 5000;
 
 export default () => {
+  const [displayDelayLoader, setDisplayDelayLoader] = useState(false);
+  const [firstRenderDate] = useState(Date.now());
+
   useEffect(() => {
     InitService.init();
   }, []);
 
   const server_infos_loaded = InitService.useWatcher(() => InitService.server_infos_loaded);
 
+  useTimeout(() => {
+    if (!server_infos_loaded && Date.now() >= firstRenderDate + delayMessage) {
+      setDisplayDelayLoader(true);
+    }
+  }, delayMessage);
+
   useEffect(() => {
     if (server_infos_loaded) {
+      setDisplayDelayLoader(false);
       try {
         window.document.getElementById('app_loader')?.remove();
       } catch (err) {}
     }
   }, [server_infos_loaded]);
 
+  if (displayDelayLoader && !server_infos_loaded) {
+    return <ApplicationLoader></ApplicationLoader>;
+  }
+
   if (!server_infos_loaded) {
-    // TODO: Display a loading message...
-    return <div />;
+    return <></>;
   }
 
   return (
@@ -44,16 +61,15 @@ export default () => {
                 key={`${route.key}_${index}`}
                 exact={route.exact ? route.exact : false}
                 path={route.path}
-                component={() => {
-                  if (route.options?.withErrorBoundary === true) {
-                    return (
-                      <ErrorBoundary key={route.key}>
-                        <route.component />
-                      </ErrorBoundary>
-                    );
-                  }
-                  return <route.component key={route.key} />;
-                }}
+                component={() =>
+                  route.options?.withErrorBoundary
+                  ?
+                  <ErrorBoundary key={route.key}>
+                    <route.component />
+                  </ErrorBoundary>
+                  :
+                  <route.component key={route.key} />
+                }
               />
             )}
             {
