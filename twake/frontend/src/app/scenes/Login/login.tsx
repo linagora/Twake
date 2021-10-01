@@ -2,8 +2,8 @@
 import React, { lazy, Suspense } from 'react';
 
 import InitService from 'app/services/InitService';
-const InternalLogin = lazy(() => import('./Internal/InternalLogin'));
-const ConsoleLogin = lazy(() => import('./Console/ConsoleLogin'));
+const InternalLogin = lazy(() => import('app/scenes/Login/Internal/InternalLogin'));
+const ConsoleLogin = lazy(() => import('app/scenes/Login/Console/ConsoleLogin'));
 
 export default () =>
   <Suspense fallback={<></>}>
