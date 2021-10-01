@@ -1,0 +1,11 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "1257653795.twake",
+                "paths": ["*"]
+            }
+        ]
+    }
+}
