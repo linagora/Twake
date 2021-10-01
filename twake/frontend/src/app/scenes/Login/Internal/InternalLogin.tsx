@@ -25,6 +25,7 @@ export default () => {
 
   useEffect(() => {
     LoginService.init();
+    document.body.classList.remove('fade_out');
     document.body.classList.add('fade_in');
     return () => {
       document.body.classList.remove('fade_in');

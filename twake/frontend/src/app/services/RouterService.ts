@@ -4,6 +4,7 @@ import short, { Translator } from 'short-uuid';
 
 import App from 'app/scenes/App';
 import Login from 'app/scenes/Login/Login';
+import Logout from 'app/scenes/Login/Logout';
 import Error from 'app/scenes/Error/Error';
 import Collections from 'services/Depreciated/Collections/Collections';
 
@@ -62,6 +63,7 @@ class RouterServices extends Observable {
     CLIENT: '/client',
     SHARED: '/shared/:workspaceId/:appName/:documentId/t/:token',
     LOGIN: '/login',
+    LOGOUT: '/logout',
     ERROR: '/error',
   };
 
@@ -82,6 +84,15 @@ class RouterServices extends Observable {
       exact: true,
       key: 'login',
       component: Login,
+      options: {
+        withErrorBoundary: true,
+      },
+    },
+    {
+      path: this.pathnames.LOGOUT,
+      exact: true,
+      key: 'logout',
+      component: Logout,
       options: {
         withErrorBoundary: true,
       },

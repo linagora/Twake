@@ -21,6 +21,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
   private logger: Logger.Logger;
   private userManager: Oidc.UserManager | null = null;
   private initialized: boolean = false;
+  private user!: Oidc.User;
 
   constructor(private configuration?: ConsoleConfiguration) {
     super();
@@ -63,6 +64,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
       this.userManager.events.addUserLoaded(user => {
         // fires each time the user is loaded or updated
         this.logger.debug('OIDC user loaded listener', user);
+        this.user = user;
 
         this.getJWTFromOidcToken(user, (err, jwt) => {
           if (err) {
@@ -188,7 +190,14 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     }
 
     try {
-      await this.userManager.signoutRedirect();
+      // in some cases/providers we have to call remove to be sure to logout
+      await this.userManager.removeUser();
+    } catch (err) {
+      this.logger.error('Can not delete user in signout', err);
+    }
+
+    try {
+      await this.userManager.signoutRedirect({ id_token_hint: this.user?.id_token });
     } catch (err) {
       this.logger.error('Signout redirect error', err);
     }

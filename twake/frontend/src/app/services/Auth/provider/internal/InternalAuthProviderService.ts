@@ -15,7 +15,7 @@ export type SignInParameters = {
 };
 
 export type SignOutParameters = {
-  no_reload: boolean;
+  reload: boolean;
 };
 
 @TwakeService("InternalAuthProvider")
@@ -66,12 +66,12 @@ export default class InternalAuthProviderService extends Observable implements A
   }
 
   async signOut(params: SignOutParameters): Promise<void> {
-    if (!params.no_reload) {
+    const notOnLogoutRoute = window.location.pathname !== '/logout';
+
+    if (params.reload && notOnLogoutRoute) {
       Globals.window.location.reload();
     } else {
-      RouterService.push(
-        `${RouterService.pathnames.LOGIN}${RouterService.history.location.search}`,
-      );
+      Globals.window.location.assign(`${RouterService.pathnames.LOGIN}${RouterService.history.location.search}`);
     }
   }
 }

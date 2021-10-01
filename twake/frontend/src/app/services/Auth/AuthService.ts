@@ -149,13 +149,15 @@ class AuthService {
       });
   }
 
-  logout(no_reload: boolean = false): Promise<void> {
+  logout(reload: boolean = true): Promise<void> {
     this.clear();
+
+    const shouldReload = reload && window.location.pathname !== '/logout';
 
     return new Promise(async (resolve) => {
       try {
           await UserAPIClient.logout();
-          this.getProvider().signOut && (await this.getProvider().signOut!({ no_reload }));
+          this.getProvider().signOut && (await this.getProvider().signOut!({ reload: shouldReload }));
           this.logger.debug('SignOut complete');
           resolve();
         } catch (err) {

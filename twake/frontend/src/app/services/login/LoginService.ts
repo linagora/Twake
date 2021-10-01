@@ -140,22 +140,13 @@ class Login extends Observable {
       });
   }
 
-  async logout(no_reload = false) {
+  async logout(reload = false) {
     this.resetCurrentUser();
     Application.stop();
 
     document.body.classList.add('fade_out');
 
-    await AuthService.logout();
-
-    // in case the auth service provider does nothing, do it
-    if (!no_reload) {
-      Globals.window.location.reload();
-    } else {
-      RouterServices.push(
-        `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-      );
-    }
+    await AuthService.logout(reload);
   }
 
   setCurrentUser(user: UserType) {
