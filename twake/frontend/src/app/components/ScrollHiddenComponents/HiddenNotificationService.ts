@@ -60,6 +60,10 @@ class HiddenNotificationService extends Observable {
     if (!this.scroller.node) return;
 
     setTimeout(() => {
+      if (!this.scroller.node) {
+        return;
+      }
+
       const hidden: any = {
         beaconTop: [],
         beaconBottom: [],
