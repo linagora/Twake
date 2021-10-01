@@ -125,11 +125,9 @@ export default class Api {
         return;
       }
 
-      route = Globals.api_root_url + route;
-
       Requests.request(
         options.requestType ? options.requestType : 'post',
-        route,
+        new URL(route, Globals.api_root_url).toString(),
         JSON.stringify(data),
         (resp: any) => {
           if (raw) {

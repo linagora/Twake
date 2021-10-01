@@ -1,6 +1,9 @@
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React, { useEffect } from 'react';
+import classNames from 'classnames';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout } from 'antd';
+
 import CurrentUser from './Parts/CurrentUser/CurrentUser.js';
 import ChannelsApps from './ChannelsApps/ChannelsApps';
 import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
@@ -10,7 +13,7 @@ import RouterServices from 'app/services/RouterService';
 import './ChannelsBar.scss';
 import Shortcuts, { defaultShortcutsMap, ShortcutType } from 'app/services/ShortcutService';
 import AddUserButton from 'components/AddUserButton/AddUserButton';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'services/workspaces/workspaces';
 import ModalManager from 'app/components/Modal/ModalManager';
 import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
@@ -18,13 +21,35 @@ import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/Hid
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import AccessRightsService from 'app/services/AccessRightsService';
 
+const LoadingChannels = () => {
+  return (
+    <div style={{ paddingTop: 8 }}>
+      <div className="channel" />
+      <div className="channel" />
+      <div className="channel" />
+      <div className="channel_category" />
+      <div className="channel" />
+      <div className="channel" />
+      <div className="channel_category" />
+      <div className="channel" />
+      <div className="channel" />
+      <div className="channel" />
+      <div className="channel" />
+      <div className="channel_category" />
+      <div className="channel" />
+      <div className="channel" />
+      <div className="channel" />
+    </div>
+  );
+};
+
 export default () => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
 
   const ready = ChannelsBarService.useWatcher(() => {
     return (
       ChannelsBarService.isReady(companyId, workspaceId) &&
-      ChannelsBarService.isReady(companyId, workspaceId, ['applications']) &&
+      //ChannelsBarService.isReady(companyId, workspaceId, ['applications']) &&
       ChannelsBarService.isReady(companyId, 'direct')
     );
   });
@@ -33,12 +58,16 @@ export default () => {
     shortcut: defaultShortcutsMap.SEARCH_CHANNEL,
     handler: (event: any) => {
       event.preventDefault();
-      if (ModalManager.isOpen() === false) {
-        return ModalManager.open(<WorkspaceChannelList />, {
-          position: 'center',
-          size: { width: '500px' },
-        });
-      } else return ModalManager.close();
+      if (ModalManager.isOpen()) {
+        ModalManager.close();
+
+        return;
+      }
+
+      ModalManager.open(<WorkspaceChannelList />, {
+        position: 'center',
+        size: { width: '500px' },
+      });
     },
   };
 
@@ -56,30 +85,18 @@ export default () => {
     <Layout.Sider
       theme="light"
       width={220}
-      className={'channels_view ' + (ready ? '' : 'loading loading_render')}
+      className={classNames(
+        'channels_view',
+        {
+          'loading': !ready,
+          'loading_render': !ready,
+        }
+      )}
       style={{ height: '100%' }}
     >
       <CurrentUser />
 
-      {!ready && (
-        <div style={{ paddingTop: 8 }}>
-          <div className="channel" />
-          <div className="channel" />
-          <div className="channel" />
-          <div className="channel_category" />
-          <div className="channel" />
-          <div className="channel" />
-          <div className="channel_category" />
-          <div className="channel" />
-          <div className="channel" />
-          <div className="channel" />
-          <div className="channel" />
-          <div className="channel_category" />
-          <div className="channel" />
-          <div className="channel" />
-          <div className="channel" />
-        </div>
-      )}
+      {!ready && <LoadingChannels/>}
 
       <ScrollWithHiddenComponents
         disabled={!ready}
@@ -89,7 +106,7 @@ export default () => {
       >
         <PerfectScrollbar options={{ suppressScrollX: true }}>
           <ChannelsApps key={workspaceId} />
-          <ChannelsWorkspace key={'workspace_chans_' + workspaceId} />
+          <ChannelsWorkspace key={`workspace_chans_${workspaceId}`} />
           <ChannelsUser key={companyId} />
           {AccessRightsService.hasLevel(workspaceId, 'moderator') &&
             Workspaces.getCurrentWorkspace().stats.total_members <= 5 && <AddUserButton />}

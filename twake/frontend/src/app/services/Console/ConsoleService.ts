@@ -5,7 +5,7 @@ import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from '../Toaster';
 import { ConsoleMemberRole } from './types';
 import Logger from 'app/services/Logger';
-import { JWTDataType } from '../JWTService';
+import { JWTDataType } from '../JWTStorage';
 
 class ConsoleService {
   logger: Logger.Logger;
@@ -100,6 +100,11 @@ class ConsoleService {
     return res;
   }
 
+  /**
+   * @deprecated use ConsoleServiceAPIClient.getNewAccessToken
+   * @param currentToken 
+   * @param callback 
+   */
   public getNewAccessToken(currentToken: { access_token: string }, callback: (err?: Error, access_token?: JWTDataType) => void): void {
     this.logger.debug(`getNewAccessToken, get new token from current token ${JSON.stringify(currentToken)}`);
     Api.post('/internal/services/console/v1/login',

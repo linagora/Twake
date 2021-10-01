@@ -5,7 +5,7 @@ import { CompanyType } from "app/models/Company";
 import { CurrentCompanyState } from "../atoms/CurrentCompany";
 import { CurrentUserState } from "../atoms/CurrentUser";
 import { CurrentWorkspaceState } from "../atoms/CurrentWorkspace";
-import LoginService from "app/services/login/login";
+import LoginService from "app/services/login/LoginService";
 import WorkspaceService from "app/services/workspaces/workspaces";
 import CurrentUserService from "app/services/user/CurrentUser";
 

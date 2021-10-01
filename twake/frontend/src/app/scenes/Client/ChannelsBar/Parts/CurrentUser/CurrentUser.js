@@ -6,7 +6,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'services/user/UserService';
 import CurrentUserService from 'app/services/user/CurrentUser';
 import MenusManager from 'app/components/Menus/MenusManager.js';
-import LoginService from 'services/login/login.js';
+import LoginService from 'app/services/login/LoginService';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import ListenUsers from 'services/user/ListenUsers';

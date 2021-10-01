@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import LoginService from 'services/login/login.js';
+import LoginService from 'app/services/login/LoginService';
 import Emojione from 'components/Emojione/Emojione';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
@@ -18,16 +18,6 @@ export default class LoginView extends Component {
 
     LoginService.addListener(this);
     Languages.addListener(this);
-  }
-  componentDidMount() {
-    if (
-      InitService.server_infos?.configuration?.accounts?.type !== 'internal' &&
-      !(LoginService.external_login_error || false)
-    ) {
-      LoginService.loginWithExternalProvider(
-        InitService.server_infos?.configuration?.accounts?.type,
-      );
-    }
   }
   componentWillUnmount() {
     LoginService.removeListener(this);
@@ -82,7 +72,7 @@ export default class LoginView extends Component {
                 placeholder={this.state.i18n.t('scenes.login.home.email')}
                 onKeyDown={e => {
                   if (e.keyCode === 13 && !this.state.login.login_loading) {
-                    LoginService.login(this.state.form_login, this.state.form_password, true);
+                    LoginService.login({ username: this.state.form_login, password: this.state.form_password, remember_me: true });
                   }
                 }}
                 onChange={evt => this.setState({ form_login: evt.target.value })}
@@ -98,7 +88,7 @@ export default class LoginView extends Component {
                 placeholder={this.state.i18n.t('scenes.login.home.password')}
                 onKeyDown={e => {
                   if (e.keyCode === 13 && !this.state.login.login_loading) {
-                    LoginService.login(this.state.form_login, this.state.form_password, true);
+                    LoginService.login({ username: this.state.form_login, password: this.state.form_password, remember_me: true });
                   }
                 }}
                 onChange={evt => this.setState({ form_password: evt.target.value })}
@@ -117,7 +107,7 @@ export default class LoginView extends Component {
                 style={{ marginBottom: 8 }}
                 disabled={this.state.login.login_loading}
                 onClick={() =>
-                  LoginService.login(this.state.form_login, this.state.form_password, true)
+                  LoginService.login({ username: this.state.form_login, password: this.state.form_password, remember_me: true })
                 }
               >
                 {this.state.i18n.t('scenes.login.home.login_btn')}

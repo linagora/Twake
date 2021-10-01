@@ -1,220 +1,54 @@
-import Observable from 'app/services/Depreciated/observable';
-import Api from 'services/Api';
-import { TwakeService } from 'services/Decorators/TwakeService';
-import Globals from 'services/Globals';
-import AuthService from 'services/Auth/AuthService';
-import { AuthProvider } from 'services/Auth/provider/AuthProvider';
-import LocalStorage from 'services/LocalStorage';
-import Collections from 'services/Collections/Collections';
-import Application from 'services/Application';
-import RouterServices from 'services/RouterService';
-import JWT, { JWTDataType } from 'services/JWTService';
-import Logger from 'services/Logger';
+import Logger from 'app/services/Logger';
+import Observable from 'app/services/Depreciated/observable.js';
 import WindowState from 'services/utils/window';
+import Globals from 'services/Globals';
+import RouterServices from '../RouterService';
+import LocalStorage from 'services/LocalStorage';
+import AuthService from "services/Auth/AuthService";
+import Application from '../Application';
 import { UserType } from 'app/models/User';
-import AlertManager from '../AlertManager/AlertManager';
-import Languages from '../languages/languages';
-import UserAPIClient from '../user/UserAPIClient';
 
-export type LoginState = '' | 'app' | 'error' | 'signin' | 'verify_mail' | 'forgot_password' | 'logged_out' | 'logout';
-type InitState = '' | 'initializing' | 'initialized';
-@TwakeService('Login')
-class LoginService extends Observable {
-  logger: Logger.Logger;
-  resolveUser!: (userId: string) => void;
+class Login extends Observable {
+  // Promise resolved when user is defined
   userIsSet!: Promise<string>;
+  resolveUser!: (userId: string) => void;
+
+  logger: Logger.Logger;
+  firstInit: boolean;
+  // FIXME: Make it private and force to use User.getCurrentId() or similar, but this has not too be exposed and used by others...
+  currentUserId: string = '';
+  emailInit: string;
+  server_infos_loaded: boolean;
+  server_infos: { branding: {}; ready: {}; auth: {}; help_url: boolean; };
+  error_secondary_mail_already: boolean;
+  addmail_token: string;
+  external_login_error: boolean;
+  state: string = '';
   login_loading: boolean = false;
   login_error: boolean = false;
-  initState: InitState = '';
-  currentUserId: string = '';
-  private _state: LoginState = '';
-  // FIXME: Should be removed
-  error_secondary_mail_already: boolean = false;
+  parsed_error_code: any;
+  error_code: any;
 
   constructor() {
     super();
+    this.reset();
     this.setObservableName('login');
     this.logger = Logger.getLogger('Login');
-    this.reset();
-  }
-
-  set state(value: LoginState) {
-    this._state = value;
-    this.notify();
-  }
-
-  get state() {
-    return this._state;
-  }
-
-  /**
-   * The session expired and we are not able to slient renew it
-   */
-  onSessionExpired() {
-    this.logger.error('Session expired, displaying alert');
-    AlertManager.confirm(
-      () => this.logout(),
-      undefined,
-      {
-        title: Languages.t('login.session.expired', undefined, 'Session expired'),
-        text: Languages.t('login.session.expired.text', undefined, 'Click on OK to reconnect'),
-      },
-    );
-  }
-
-  async init(): Promise<UserType | null> {
-    return new Promise((resolve, reject) => {
-      this.logger.debug(`Initializing state=${this.initState}`);
-      if (['initializing', 'initialized'].includes(this.initState)) {
-        reject(new Error(`LoginService is ${this.initState}`));
-        return;
-      }
-
-      this.initState = 'initializing';
-
-      this.getAuthProvider().init({
-        onSessionExpired: () => this.onSessionExpired(),
-        onNewToken: async token => {
-          this.onNewToken(token);
-
-          if (this.initState === 'initializing') {
-            const user = await this.comleteInit();
-            this.initState = 'initialized';
-            resolve(user);
-            // TODO: move it to somewhere else...
-            RouterServices.push(RouterServices.generateRouteFromState({}));
-          }
-        },
-      });
-    });
-  }
-
-  onNewToken(token?: JWTDataType): void {
-    if (token) {
-      JWT.update(token);
-    // TODO: Update the user from API?
-    // this.updateUser();
-    }
-  }
-
-  async login(params: any): Promise<UserType> {
-    if (this.login_loading) {
-      this.logger.debug('Login is already in progress');
-
-      //return;
-    }
-
-    const provider = this.getAuthProvider();
-
-    if (!provider.signIn) {
-      this.logger.info('Selected provider does not support signIn');
-
-      throw new Error('Selected provider does not support signIn');
-    }
-
-    this.login_error = false;
-    this.login_loading = true;
-
-    this.notify();
-
-    return provider.signIn(params)
-      .then(() => {
-        this.logger.info('SignIn complete');
-      })
-      .catch((err: Error) => {
-        this.logger.error('Provider signIn Error', err);
-        this.login_error = true;
-      })
-      .then(() => UserAPIClient.getCurrent(true))
-      .finally(() => {
-        this.login_loading = false;
-        this.notify();
-      });
-  }
-
-  logout(no_reload: boolean = false): Promise<void> {
-    this.clear();
-
-    // TODO: This should be in context and linked to current state
-    document.body.classList.add('fade_out');
-
-    return new Promise((resolve, reject) => {
-      Api.post('users/logout', {}, async () => {
-        try {
-          // FIXME: Signout seems to redirect to / and so we loop...
-          this.getAuthProvider().signOut && (await this.getAuthProvider().signOut!({ no_reload }));
-          this.logger.debug('SignOut complete');
-          this.state = 'logged_out';
-          resolve();
-        } catch (err) {
-          this.logger.error('Error while signin out', err);
-          reject(err);
-        }
-      });
-    });
-  }
-
-  getAuthProvider(): AuthProvider<any, any> {
-    return AuthService.getProvider();
-  }
-
-  updateUser(callback?: (user?: UserType) => void): void {
-    this.logger.debug('Updating user');
-    if (Globals.store_public_access_get_data) {
-      //this.initialized = false;
-      this.state = 'logged_out';
-      this.notify();
-      return;
-    }
-
-    this.fetchUser(user => {
-      this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);
-      //this.firstInit = true;
-      if (!user) {
-      //if (!res.data || res.errors?.length) {
-        this.logger.debug('Error while fetching user');
-        this.state = 'logged_out';
-        WindowState.reset();
-        // TODO: This is up to the strategy to redirect to the right path, the internal will return to this, the console will not...
-        //RouterServices.push(
-        //  RouterServices.addRedirection(
-        //    `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-        //  ),
-        //);
-      } else {
-        //this.startApp(user);
-      }
-
-      callback && callback(user);
-    });
-  }
-
-  private fetchUser(callback: (user?: UserType) => void) {
-    this.logger.debug('fetchUser');
-    UserAPIClient.getCurrent(true)
-      .then(result => callback(result))
-      .catch(err => {
-        this.logger.error('Error while fetching user', err);
-        callback();
-      });
-  }
-
-  clear() {
-    this.resetCurrentUser();
-    LocalStorage.clear();
-    Collections.clear();
-    JWT.clear();
-  }
-
-  setCurrentUser(user: UserType) {
-    this.logger.debug('Current user', user);
-    this.currentUserId = user.id || '';
-    this.resolveUser(this.currentUserId);
-  }
-
-  resetCurrentUser() {
+    this.firstInit = false;
     this.currentUserId = '';
-    this.userIsSet = new Promise(resolve => (this.resolveUser = resolve));
+    this.emailInit = '';
+    this.server_infos_loaded = false;
+    this.server_infos = {
+      branding: {},
+      ready: {},
+      auth: {},
+      help_url: false,
+    };
+    this.parsed_error_code = null;
+    this.error_code = null;
+    this.error_secondary_mail_already = false;
+    this.addmail_token = '';
+    this.external_login_error = false;
   }
 
   reset() {
@@ -224,16 +58,119 @@ class LoginService extends Observable {
     this.resetCurrentUser();
   }
 
-  private async comleteInit(): Promise<UserType | null> {
-    this.logger.info('Starting application');
-    const user = await UserAPIClient.getCurrent(true);
-    this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);
-    this.setCurrentUser(user);
-    await Application.start(user);
-    this.state = 'app';
+  changeState(state: string) {
+    this.state = state;
+    this.notify();
+  }
 
-    return user;
+  async init(did_wait = false) {
+    if (!did_wait) {
+      LocalStorage.getItem('api_root_url');
+      await this.init(true);
+
+      return;
+    }
+
+    if (!AuthService.isInitialized()) {
+      this.reset();
+      await AuthService.init();
+      this.updateUser((err, user) => this.logger.debug('User is updated', err, user));
+    }
+  }
+
+  async updateUser(callback?: (err: Error | null, user?: UserType) => void): Promise<void> {
+    if (Globals.store_public_access_get_data) {
+      this.firstInit = true;
+      this.state = 'logged_out';
+      this.notify();
+      return;
+    }
+
+    AuthService.updateUser(async user => {
+      this.logger.debug('User update result', user);
+      if (!user) {
+        this.firstInit = true;
+        this.state = 'logged_out';
+        this.notify();
+
+        WindowState.setPrefix();
+        WindowState.setSuffix();
+        RouterServices.push(
+          RouterServices.addRedirection(
+            `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
+            ),
+          );
+      } else {
+        this.setCurrentUser(user);
+        await Application.start(user);
+        this.state = 'app';
+        this.notify();
+        RouterServices.push(RouterServices.generateRouteFromState());
+      }
+
+      callback && callback(null, user);
+    });
+  }
+
+  setPage(page: string) {
+    this.state = page;
+    this.notify();
+  }
+
+  login(params: any, hide_load = false) {
+    if (!hide_load) {
+      this.login_loading = true;
+    }
+    this.login_error = false;
+    this.notify();
+
+    AuthService.login(params)
+      .then(async (result) => {
+        this.login_loading = false;
+        if (!result) {
+          this.login_error = true;
+          this.notify();
+          return;
+        }
+        await this.updateUser();
+      })
+      .catch(err => {
+        this.logger.error('Can not login', err);
+        // TODO display a modal message
+      });
+  }
+
+  async logout(reload = false) {
+    this.resetCurrentUser();
+    Application.stop();
+
+    document.body.classList.add('fade_out');
+
+    await AuthService.logout(reload);
+  }
+
+  setCurrentUser(user: UserType) {
+    this.currentUserId = user.id || '';
+    this.resolveUser(this.currentUserId);
+  }
+
+  resetCurrentUser() {
+    this.currentUserId = '';
+    this.userIsSet = new Promise(resolve => (this.resolveUser = resolve));
+  }
+
+  getIsPublicAccess() {
+    let publicAccess = false;
+    const viewParameter = WindowState.findGetParameter('view') || '';
+    if (
+      (viewParameter && ['drive_publicAccess'].indexOf(viewParameter) >= 0) ||
+      Globals.store_public_access_get_data
+    ) {
+      publicAccess = true;
+      Globals.store_public_access_get_data = WindowState.allGetParameter();
+    }
+    return publicAccess;
   }
 }
 
-export default new LoginService();
+export default new Login();

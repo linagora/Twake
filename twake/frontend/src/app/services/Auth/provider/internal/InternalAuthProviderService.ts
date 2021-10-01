@@ -3,10 +3,10 @@ import Logger from 'app/services/Logger';
 import { InternalConfiguration } from '../../../InitService';
 import Observable from '../../../Observable/Observable';
 import { TwakeService } from '../../../Decorators/TwakeService';
-import { AuthProvider } from '../AuthProvider';
-import Api from 'app/services/Api';
+import { AuthProvider, InitParameters } from '../AuthProvider';
 import Globals from 'app/services/Globals';
 import RouterService from 'app/services/RouterService';
+import ConsoleAPIClient from 'app/services/Console/ConsoleAPIClient';
 
 export type SignInParameters = {
   username: string;
@@ -15,7 +15,7 @@ export type SignInParameters = {
 };
 
 export type SignOutParameters = {
-  no_reload: boolean;
+  reload: boolean;
 };
 
 @TwakeService("InternalAuthProvider")
@@ -30,13 +30,14 @@ export default class InternalAuthProviderService extends Observable implements A
     this.logger.debug('Internal configuration', configuration);
   }
 
-  init(): this {
+  init(params: InitParameters): this {
     if (this.initialized) {
       this.logger.warn('Already initialized');
       return this;
     }
 
     this.initialized = true;
+    params.onInitialized();
     return this;
   }
 
@@ -45,38 +46,32 @@ export default class InternalAuthProviderService extends Observable implements A
       return Promise.reject('"username" and "password" are required');
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.signinIn = true;
-      Api.post(
-        'users/login',
-        {
-          username: params.username,
-          password: params.password,
-          remember_me: params.remember_me,
-          device: {},
-        },
-        (res: any) => {
-          if (res && res.data && res.data.status === 'connected') {
-            resolve();
-          } else {
-            this.logger.error('Error on login', res);
-            reject(new Error('Can not login'));
-          }
-          this.signinIn = false;
-        },
-        false,
-        { disableJWTAuthentication: true },
-      );
+
+      ConsoleAPIClient.login({
+        email: params.username,
+        password: params.password,
+        remember_me: params.remember_me,
+      }, true)
+      .then(accessToken => accessToken ? resolve() : reject(new Error('Can not login')))
+      .catch(err => {
+        this.logger.error('Error on login', err);
+        reject(new Error('Can not login'));
+      })
+      .finally(() => {
+        this.signinIn = false;
+      });
     });
   }
 
   async signOut(params: SignOutParameters): Promise<void> {
-    if (!params.no_reload) {
+    const notOnLogoutRoute = window.location.pathname !== '/logout';
+
+    if (params.reload && notOnLogoutRoute) {
       Globals.window.location.reload();
     } else {
-      RouterService.push(
-        `${RouterService.pathnames.LOGIN}${RouterService.history.location.search}`,
-      );
+      Globals.window.location.assign(`${RouterService.pathnames.LOGIN}${RouterService.history.location.search}`);
     }
   }
 }

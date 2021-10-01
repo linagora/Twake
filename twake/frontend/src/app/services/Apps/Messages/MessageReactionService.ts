@@ -1,13 +1,13 @@
 import { Message, ReactionType } from 'app/models/Message';
 import UserService from 'app/services/user/UserService';
 import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections, { Collection } from 'app/services/Depreciated/Collections/Collections.js';
 
 /**
  * Service that allow you to manage message reactions
  */
 class MessageReactionService {
-  collection: typeof DepreciatedCollections;
+  collection: Collection;
 
   constructor() {
     this.collection = DepreciatedCollections.get('messages');
@@ -80,7 +80,7 @@ class MessageReactionService {
     this.realtimeReactionsUpdate(message, reactionName, userId);
 
     this.collection.completeObject({ _user_reaction: userReactionsNames }, message.front_id);
-    this.collection.save(message, messagesCollectionKey);
+    this.collection.save(message, messagesCollectionKey, () => {});
     MessageEditorManager.get(message?.channel_id || '').closeEditor();
   }
 }

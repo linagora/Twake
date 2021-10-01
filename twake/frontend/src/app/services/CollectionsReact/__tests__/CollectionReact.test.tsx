@@ -1,10 +1,10 @@
 import React from 'react';
-import Login from 'services/login/login';
+import Login from 'app/services/login/LoginService';
 import { Resource, Collection } from '../Collections';
 import OriginalCollections from '../../Collections/Collections';
 import { shallow } from 'enzyme';
 
-Login.userIsSet = true;
+Login.userIsSet = Promise.resolve('1');
 
 /** Messages example component */
 

@@ -30,6 +30,7 @@
     "general.connexion_status.disconnected": "Vous êtes hors ligne",
     "general.connexion_status.connected": "Vous êtes connecté",
     "general.connexion_status.connecting": "Reconnexion en cours…",
+    "application.load.longer": "Le serveur met plus de temps que prévu à répondre, veuillez attendre ou rechargez la page...",
     "twake_not_on_device": "Twake ne fonctionne pas sur votre appareil.",
     "twake_not_on_device_mobile": "Vous pouvez télécharger la version téléphone de Twake sur les stores Android et Apple.",
     "twake_not_on_device_browser": "Vous devez mettre à jour votre navigateur ou télécharger Twake pour ordinateur.",

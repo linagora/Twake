@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Menu } from 'react-feather';
 import { Layout } from 'antd';
+import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -17,7 +18,7 @@ import Viewer from 'scenes/Apps/Drive/Viewer/Viewer';
 import ModalComponent from 'app/components/Modal/ModalComponent';
 import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
-import LoginService from 'services/login/login';
+import LoginService from 'app/services/login/LoginService';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
@@ -68,7 +69,10 @@ export default (): JSX.Element => {
             >
               <SideBars />
             </Layout.Sider>
-            <MainView className={menuIsOpen ? "collapsed" : ""} key={'mainview-' + companyId + '-' + workspaceId} />
+            <MainView
+              className={classNames({ collapsed: menuIsOpen })}
+              key={`mainview-${companyId}-${workspaceId}`}
+            />
           </Layout>
         </Layout>
       );

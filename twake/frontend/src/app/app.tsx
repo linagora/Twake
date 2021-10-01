@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Router } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
@@ -8,37 +8,46 @@ import Integration from 'app/scenes/Integration/Integration';
 import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
-import AuthProviderService from './services/login/AuthProviderService';
-import LoginService from './services/login/login';
 import UserContext from './state/recoil/integration/UserContext';
 
 import 'app/ui.scss';
 import 'app/theme.less';
+import useTimeout from './services/hooks/useTimeout';
+import ApplicationLoader from './components/Loader/ApplicationLoader';
+
+const delayMessage = 5000;
 
 export default () => {
+  const [displayDelayLoader, setDisplayDelayLoader] = useState(false);
+  const [firstRenderDate] = useState(Date.now());
+
   useEffect(() => {
     InitService.init();
   }, []);
 
   const server_infos_loaded = InitService.useWatcher(() => InitService.server_infos_loaded);
 
+  useTimeout(() => {
+    if (!server_infos_loaded && Date.now() >= firstRenderDate + delayMessage) {
+      setDisplayDelayLoader(true);
+    }
+  }, delayMessage);
+
   useEffect(() => {
     if (server_infos_loaded) {
+      setDisplayDelayLoader(false);
       try {
         window.document.getElementById('app_loader')?.remove();
       } catch (err) {}
     }
   }, [server_infos_loaded]);
 
-  if (!server_infos_loaded) {
-    return <div />;
+  if (displayDelayLoader && !server_infos_loaded) {
+    return <ApplicationLoader></ApplicationLoader>;
   }
 
-  if (
-    InitService.server_infos?.configuration?.accounts.type === 'console' &&
-    !LoginService.getIsPublicAccess()
-  ) {
-    AuthProviderService.getAuthProviderConfiguration();
+  if (!server_infos_loaded) {
+    return <></>;
   }
 
   return (
@@ -47,36 +56,35 @@ export default () => {
       <Integration>
         <Router history={RouterServices.history}>
           <Switch>
-            {RouterServices.routes.map((route: RouteType, index: number) => {
-              return (
-                <Route
-                  key={`${route.key}_${index}`}
-                  exact={route.exact ? route.exact : false}
-                  path={route.path}
-                  component={() => {
-                    if (route.options?.withErrorBoundary === true) {
-                      return (
-                        <ErrorBoundary key={route.key}>
-                          <route.component />
-                        </ErrorBoundary>
-                      );
-                    }
-                    return <route.component key={route.key} />;
-                  }}
-                />
-              );
-            })}
-            <Route
-              path="/"
-              component={() => {
-                RouterServices.replace(
-                  `${
-                    RouterServices.pathnames.LOGIN
-                  }?auto&${RouterServices.history.location.search.substr(1)}`,
-                );
-                return <div />;
-              }}
-            />
+            {RouterServices.routes.map((route: RouteType, index: number) =>
+              <Route
+                key={`${route.key}_${index}`}
+                exact={route.exact ? route.exact : false}
+                path={route.path}
+                component={() =>
+                  route.options?.withErrorBoundary
+                  ?
+                  <ErrorBoundary key={route.key}>
+                    <route.component />
+                  </ErrorBoundary>
+                  :
+                  <route.component key={route.key} />
+                }
+              />
+            )}
+            {
+              <Route
+                path="/"
+                component={() => {
+                  RouterServices.replace(
+                    `${
+                      RouterServices.pathnames.LOGIN
+                    }?auto&${RouterServices.history.location.search.substr(1)}`,
+                  );
+                  return <div />;
+                }}
+              />
+            }
           </Switch>
         </Router>
       </Integration>

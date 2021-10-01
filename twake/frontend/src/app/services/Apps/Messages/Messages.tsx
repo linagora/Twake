@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import UserService from 'services/user/UserService';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections, { Collection } from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -28,7 +28,7 @@ class Messages extends Observable {
   writing_status: { [key: string]: any };
   my_writing_status: { [key: string]: any };
   writingTimeout?: ReturnType<typeof setTimeout>;
-  collection: typeof DepreciatedCollections;
+  collection: Collection;
 
   constructor() {
     super();
@@ -156,7 +156,7 @@ class Messages extends Observable {
           command: value.split(' ').slice(1).join(' '),
           channel: channel.data,
           parent_message: options.parent_message_id
-            ? this.collection.find(options.parent_message_id) || null
+            ? this.collection.find(options.parent_message_id, () => {}) || null
             : null,
         };
 
@@ -168,7 +168,7 @@ class Messages extends Observable {
 
       options = options || {};
 
-      let message = this.collection.edit();
+      let message = this.collection.edit(null);
       let val = PseudoMarkdownCompiler.compileToJSON(value);
 
       const editorManager = MessageEditorManager.get(options.channel_id);
@@ -398,7 +398,7 @@ class Messages extends Observable {
 
     message.subtype = 'deleted';
 
-    this.collection.remove(message, messagesCollectionKey);
+    this.collection.remove(message, messagesCollectionKey, null);
     this.collection.completeObject(message, message.front_id);
   }
 

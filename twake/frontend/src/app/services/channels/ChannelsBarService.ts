@@ -27,11 +27,7 @@ class ChannelsBarService extends Observable {
   }
 
   collectionIsReady(companyId: string, workspaceId: string, suffix?: string[]): void {
-    let callbackId = this.getCallbackId(companyId, workspaceId);
-
-    if (suffix && suffix.length) {
-      callbackId = [callbackId, ...suffix].join('+');
-    }
+    const callbackId = this.getCallbackId(companyId, workspaceId, suffix);
 
     if (!this.ready.has(callbackId)) {
       this.ready.set(callbackId, true);
@@ -40,13 +36,7 @@ class ChannelsBarService extends Observable {
   }
 
   isReady(companyId: string = '', workspaceId: string = '', suffix?: string[]): boolean {
-    let key = this.getCallbackId(companyId, workspaceId);
-
-    if (suffix && suffix.length) {
-      key = [key, ...suffix].join('+');
-    }
-
-    return !!this.ready.get(key);
+    return !!this.ready.get(this.getCallbackId(companyId, workspaceId, suffix));
   }
 
   updateCurrentChannelId(
@@ -78,8 +68,14 @@ class ChannelsBarService extends Observable {
     return `${companyId}:${workspaceId}:channel`;
   }
 
-  private getCallbackId(companyId: string, workspaceId: string): string {
-    return `${companyId}+${workspaceId}`;
+  private getCallbackId(companyId: string, workspaceId: string, suffix?: string[]): string {
+    let key = `${companyId}+${workspaceId}`;
+
+    if (suffix && suffix.length) {
+      key = [key, ...suffix].join('+');
+    }
+
+    return key;
   }
 }
 

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Globals from 'services/Globals';
 import Languages from 'services/languages/languages';
 import InitService from 'services/InitService';
-import LoginService from 'services/login/login.js';
+import LoginService from 'app/services/login/LoginService';
 import Icon from 'components/Icon/Icon.js';
 import InteractiveLoginBackground from 'components/InteractiveLoginBackground/InteractiveLoginBackground.js';
 import './login.scss';
@@ -25,6 +25,7 @@ export default () => {
 
   useEffect(() => {
     LoginService.init();
+    document.body.classList.remove('fade_out');
     document.body.classList.add('fade_in');
     return () => {
       document.body.classList.remove('fade_in');

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React, { useState } from 'react';
 
 import { ChannelMemberType, ChannelResource, ChannelMemberResource } from 'app/models/Channel';
@@ -112,7 +113,7 @@ export default (props: Props): JSX.Element => {
   };
 
   const redirectToWorkspace = () => {
-    const url = RouterServices.generateRouteFromState({ workspaceId: workspaceId, channelId: '' });
+    const url = RouterServices.generateRouteFromState({ workspaceId, channelId: '' });
     return RouterServices.push(url);
   };
 
