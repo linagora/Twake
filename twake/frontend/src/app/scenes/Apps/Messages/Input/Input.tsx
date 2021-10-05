@@ -14,6 +14,7 @@ import Languages from 'app/services/languages/languages';
 import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
+import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
 
 import './Input.scss';
 
@@ -40,6 +41,7 @@ type Props = {
 };
 
 export default (props: Props) => {
+  const { uploadFiles } = useUploadHook();
   const editorPlugins = props.editorPlugins || ['emoji', 'mention', 'channel', 'command'];
   const editorId = `channel:${props.channelId || ''}/thread:${props.threadId || ''}/message:${
     props.messageId || ''
@@ -214,6 +216,10 @@ export default (props: Props) => {
     return attachements.length ? limit - attachements.length : limit;
   };
 
+  const onAddFiles = async (files: File[]) => {
+    await uploadFiles(files);
+  };
+
   const disabled = isEmpty() || isTooLong;
   return (
     <div
@@ -237,6 +243,7 @@ export default (props: Props) => {
         multiple={true}
         allowPaste={true}
         filesLimit={getFilesLimit()}
+        onAddFiles={onAddFiles}
       >
         <EphemeralMessages
           channelId={props.channelId}

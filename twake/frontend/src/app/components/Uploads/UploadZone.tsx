@@ -113,12 +113,12 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
    *
    * @param event
    */
-  change(event: DragEvent) {
-    if (this.props.disabled) {
-      return;
-    }
+  change(event: any) {
+    if (this.props.disabled) return;
 
     event.preventDefault();
+
+    if (this.props.onAddFiles) return this.props.onAddFiles([...event.target.files]);
 
     this.hover(false);
 

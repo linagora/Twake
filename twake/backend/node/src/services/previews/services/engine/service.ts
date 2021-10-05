@@ -14,17 +14,7 @@ const { unlink } = fsPromise;
 export class PreviewProcessor
   implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback>
 {
-  constructor(
-    service: PreviewServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    readonly storage: StorageAPI,
-  ) {
-    this.service = service;
-  }
-  service: PreviewServiceAPI;
-  init?(context?: TwakeContext): Promise<this> {
-    throw new Error("Method not implemented.");
-  }
+  readonly name = "PreviewProcessor";
 
   readonly topics = {
     in: "services:preview",
@@ -36,7 +26,18 @@ export class PreviewProcessor
     ack: true,
   };
 
-  name = "PreviewProcessor";
+  constructor(
+    service: PreviewServiceAPI,
+    private pubsub: PubsubServiceAPI,
+    readonly storage: StorageAPI,
+  ) {
+    this.service = service;
+  }
+  service: PreviewServiceAPI;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  init?(context?: TwakeContext): Promise<this> {
+    throw new Error("Method not implemented.");
+  }
 
   validate(message: PreviewPubsubRequest): boolean {
     return !!(message && message.document && message.output);
@@ -60,10 +61,13 @@ export class PreviewProcessor
 
     const inputPath = getTmpFile();
     const writable = fs.createWriteStream(inputPath);
+
     readable.pipe(writable);
+
     await new Promise(r => {
       writable.on("finish", r);
     });
+
     writable.end();
 
     //Generate previews
@@ -88,6 +92,7 @@ export class PreviewProcessor
         encryptionAlgo: message.output.encryption_algo,
         encryptionKey: message.output.encryption_key,
       });
+
       thumbnails.push({
         path: uploadThumbnailPath,
         size: localThumbnails[i].size,
@@ -95,9 +100,10 @@ export class PreviewProcessor
         width: localThumbnails[i].width,
         height: localThumbnails[i].height,
       });
+
       await unlink(localThumbnails[i].path);
     }
 
-    return { document: message.document, thumbnails: thumbnails };
+    return { document: message.document, thumbnails };
   }
 }
