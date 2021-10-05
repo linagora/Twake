@@ -9,15 +9,20 @@ services:
     volumes:
       - ./docker-data/scylladb:/var/lib/scylla
 
+  rabbitmq:
+    image: rabbitmq:3
+
   node:
     image: twaketech/twake-node:2021.Q2.505
     environment:
       - NODE_ENV=production
+      - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
     volumes:
       - ./configuration/backend-node/production.json:/usr/src/app/config/production.json
       - ./docker-data/documents/:/storage/
     depends_on:
       - scylladb
+      - rabbitmq
     links:
       - scylladb
 
@@ -34,6 +39,7 @@ services:
       - ./docker-data/uploads/:/twake-core/web/upload/
     depends_on:
       - scylladb
+      - rabbitmq
     links:
       - scylladb
 
