@@ -126,27 +126,24 @@ export class UsersCrudController
   ): Promise<ResourceListResponse<CompanyObject>> {
     const context = getExecutionContext(request);
 
-    const user = await this.service.users.get(
-      { id: request.params.id },
-      getExecutionContext(request),
-    );
+    const user = await this.service.users.get({ id: request.params.id }, context);
 
     if (!user) {
       reply.notFound(`User ${request.params.id} not found`);
       return;
     }
 
-    const [currentUserCompanies, requestedUserCompanies] = (await Promise.all(
+    const [currentUserCompanies, requestedUserCompanies] = await Promise.all(
       [context.user.id, request.params.id].map(userId =>
         this.service.users.getUserCompanies({ id: userId }),
       ),
-    )) as [CompanyUser[], CompanyUser[]];
+    );
 
     const currentUserCompaniesIds = new Set(currentUserCompanies.map(a => a.group_id));
 
     const companiesCache = new Map<string, Company>();
     const retrieveCompanyCached = async (companyId: string): Promise<Company> => {
-      const company: Company =
+      const company =
         companiesCache.get(companyId) ||
         (await this.service.companies.getCompany({ id: companyId }));
       companiesCache.set(companyId, company);
