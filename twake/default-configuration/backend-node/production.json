@@ -3,10 +3,6 @@
     "secret": "api_supersecret"
   },
   "websocket": {
-    "path": "/socket/",
-    "adapters": {
-      "types": []
-    },
     "auth": {
       "jwt": {
         "secret": "supersecret"
@@ -31,9 +27,6 @@
     }
   },
   "pubsub": {
-    "type": "amqp",
-    "amqp": {
-      "urls": ["amqp://guest:guest@rabbitmq:5672"]
-    }
+    "type": "local"
   }
 }
