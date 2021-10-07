@@ -58,8 +58,6 @@ class InitService extends Observable {
       }
     );
 
-    this.server_infos_loaded = true;
-
     if (this.server_infos?.status !== 'ready') {
       this.logger.debug('Server is not ready', this.server_infos);
       this.app_ready = false;
@@ -69,6 +67,7 @@ class InitService extends Observable {
       }, 1000);
     } else {
       this.logger.debug('Server is ready', this.server_infos);
+      this.server_infos_loaded = true;
       this.app_ready = true;
       this.notify();
     }

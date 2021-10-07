@@ -1,7 +1,7 @@
-import Login from 'services/login/login';
+import Login from 'app/services/login/LoginService';
 import Collections, { Resource } from '../Collections';
 
-Login.userIsSet = true;
+Login.userIsSet = Promise.resolve('1');
 
 type TaskType = {
   id?: string;

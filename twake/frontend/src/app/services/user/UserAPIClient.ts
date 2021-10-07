@@ -1,6 +1,9 @@
+import { CompanyType } from 'app/models/Company';
 import { UserType } from 'app/models/User';
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
+import WorkspaceAPIClient from '../workspaces/WorkspaceAPIClient';
+import CurrentUser from './CurrentUser';
 
 @TwakeService('UserAPIClientService')
 class UserAPIClient {
@@ -18,6 +21,21 @@ class UserAPIClient {
         },
       );
     });
+  }
+
+  async getCurrentUserCompanies(): Promise<CompanyType[]> {
+    return this.listCompanies(CurrentUser.get()?.id || '');
+  }
+
+  /**
+   * Get all the companies of the given user.
+   * If the user is not the current one, it will return the companies intersection.
+   *
+   * @param userId
+   * @returns
+   */
+  async listCompanies(userId: string): Promise<CompanyType[]> {
+    return WorkspaceAPIClient.listCompanies(userId);
   }
 
   /**
@@ -42,6 +60,10 @@ class UserAPIClient {
       false,
       { disableJWTAuthentication },
     ).then(result => result.resource);
+  }
+
+  async logout() {
+    return Api.post('users/logout', {});
   }
 
   /**

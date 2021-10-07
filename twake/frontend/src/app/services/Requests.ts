@@ -1,6 +1,13 @@
 import JWTStorage from 'services/JWTStorage';
+import Logger from './Logger';
 
 class Requests {
+  logger: Logger.Logger;
+
+  constructor() {
+    this.logger = Logger.getLogger('HTTPRequest');
+  }
+
   request(
     type: 'post' | 'get' | 'put' | 'delete',
     route: string,
@@ -8,6 +15,7 @@ class Requests {
     callback: (result: string | any) => void,
     options: { disableJWTAuthentication?: boolean } = {},
   ) {
+    this.logger.trace(`${type} ${route}`);
     if (options?.disableJWTAuthentication) {
       fetch(route, {
         credentials: 'same-origin',
@@ -19,21 +27,19 @@ class Requests {
         },
         body: type === 'post' ? data || '{}' : undefined,
       })
-        .then(response => {
-          response.text().then(text => {
-            this.retrieveJWTToken(text);
-            if (callback) {
-              callback(text);
-            }
-          });
-        })
-        .catch(err => {
-          if (callback) {
-            callback(JSON.stringify({ errors: [err] }));
-          }
+      .then(response => {
+        response.text().then(text => {
+          this.retrieveJWTToken(text);
+          callback && callback(text);
         });
+      })
+      .catch(err => {
+        this.logger.error('Error while sending HTTP request', err);
+        callback && callback(JSON.stringify({ errors: [err] }));
+      });
       return;
     }
+
     JWTStorage.authenticateCall(() => {
       options = options || {};
       options.disableJWTAuthentication = true;
@@ -53,5 +59,4 @@ class Requests {
   }
 }
 
-const requests = new Requests();
-export default requests;
+export default new Requests();

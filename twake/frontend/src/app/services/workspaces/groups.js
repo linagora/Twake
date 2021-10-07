@@ -62,7 +62,7 @@ class Groups extends Observable {
     this.notify();
     Api.post(
       '/ajax/workspace/group/data/name',
-      { groupId: this.currentGroupId, name: name },
+      { groupId: this.currentGroupId, name },
       res => {
         if (res.errors.length === 0) {
           var group = { id: that.currentGroupId, name: name };

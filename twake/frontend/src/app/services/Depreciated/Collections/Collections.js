@@ -1,12 +1,7 @@
-import Collection from './Collection.js';
-/** Collections
- */
-import Globals from 'services/Globals';
+import Collection from './Collection';
 
 class Collections {
   constructor() {
-    Globals.window.collections = this;
-
     this.collections = {};
   }
 
@@ -14,7 +9,7 @@ class Collections {
     this.collections = {};
   }
 
-  get(entity, options) {
+  get(entity, options = null) {
     if (!this.collections[entity]) {
       var manager = new Collection();
       manager.setObservableName(entity + '_repository');
@@ -54,5 +49,6 @@ class Collections {
   }
 }
 
-Globals.services.collectionsService = Globals.services.collectionsService || new Collections();
-export default Globals.services.collectionsService;
+export { Collections, Collection };
+
+export default new Collections();

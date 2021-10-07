@@ -10,14 +10,13 @@ services:
       - ./docker-data/scylladb:/var/lib/scylla
 
   rabbitmq:
-    image: library/rabbitmq:3.8.9-management-alpine
-    ports:
-      - 15672:15672
+    image: rabbitmq:3
 
   node:
-    image: twaketech/twake-node:latest
+    image: twaketech/twake-node:2021.Q2.505
     environment:
       - NODE_ENV=production
+      - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
     volumes:
       - ./configuration/backend-node/production.json:/usr/src/app/config/production.json
       - ./docker-data/documents/:/storage/
@@ -28,7 +27,7 @@ services:
       - scylladb
 
   php:
-    image: twaketech/twake-php:latest
+    image: twaketech/twake-php:2021.Q2.505
     environment:
       - DEV=production
     volumes:
@@ -45,7 +44,7 @@ services:
       - scylladb
 
   nginx:
-    image: twaketech/twake-nginx:latest
+    image: twaketech/twake-nginx:2021.Q2.505
     environment:
       - DEV=production
     ports:

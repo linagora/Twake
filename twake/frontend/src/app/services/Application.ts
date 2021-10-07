@@ -6,12 +6,17 @@ import Groups from 'app/services/workspaces/groups';
 import AccessRightsService from 'app/services/AccessRightsService';
 import CurrentUser from 'app/services/user/CurrentUser';
 import Languages from 'app/services/languages/languages';
-import JWT from 'app/services/JWTService';
+import JWT from 'app/services/JWTStorage';
 import Collections from 'app/services/Collections/Collections';
 import Globals from 'app/services/Globals';
 import UserNotifications from 'app/services/user/UserNotifications';
+import ws from 'app/services/websocket';
 import WorkspacesListener from './workspaces/WorkspacesListener';
-import UserAPIClient from './user/UserAPIClient';
+import WorkspaceAPIClient from './workspaces/WorkspaceAPIClient';
+import UserNotificationAPIClient from './user/UserNotificationAPIClient';
+import { CompanyType } from 'app/models/Company';
+import { WorkspaceType } from 'app/models/Workspace';
+import LocalStorage from './LocalStorage';
 
 class Application {
   private logger: Logger.Logger;
@@ -38,15 +43,23 @@ class Application {
     DepreciatedCollections.get('users').updateObject(user);
     AccessRightsService.resetLevels();
 
-    await this.setupWorkspaces();
+    await this.setupWorkspaces(user);
 
     UserNotifications.start();
     CurrentUser.start();
     user.language && Languages.setLanguage(user.language);
+
+    ws.onReconnect('login', () => {
+      this.logger.info('WS Reconnected');
+      // TODO: Get the last user data
+    });
   }
 
   stop(): void {
     WorkspacesListener.cancelListen();
+    LocalStorage.clear();
+    Collections.clear();
+    JWT.clear();
   }
 
   private configureCollections(user: UserType) {
@@ -57,17 +70,16 @@ class Application {
           socket: {
             url: Globals.environment.websocket_url,
             authenticate: async () => {
-              let token = JWT.getToken();
+              let token = JWT.getJWT();
+
               if (JWT.isAccessExpired()) {
-                await new Promise(resolve => {
-                  // FIXME: This lives in login.js...
-                  // FIXME: This must update the user
-                  console.log("FIXME, update user");
-                  resolve(null);
-                  //this.updateUser(resolve);
-                });
-                token = JWT.getToken();
+                try {
+                  token = (await JWT.renew()).value;
+                } catch(err) {
+                  this.logger.error('Can not get a new JWT token for WS collection', err);
+                }
               }
+
               return {
                 token,
               };
@@ -87,15 +99,32 @@ class Application {
     }
   }
 
-  private async setupWorkspaces() {
-    // Legacy code, will need to be cleaned once we can have all the information in the new backend APIs...
-    const user = await UserAPIClient._fetchCurrent();
+  private async setupWorkspaces(user: UserType) {
+    const companies = await WorkspaceAPIClient.listCompanies(user.id!);
+    const workspaces = new Map<string, WorkspaceType[]>();
+    const notifications = await UserNotificationAPIClient.getAllCompaniesBadges();
 
-    user?.workspaces?.forEach((workspace: { group: any; }) => {
-      this.logger.debug('Starting workspace', workspace);
-      Workspaces.addToUser(workspace);
-      Groups.addToUser(workspace.group);
-    });
+    for(const company of companies) {
+      const companyWorkspaces = await WorkspaceAPIClient.list(company.id);
+
+      companyWorkspaces.forEach(workspace => Workspaces.addToUser(workspace));
+      workspaces.set(company.id, companyWorkspaces || []);
+      Groups.addToUser({...company, ...{_user_hasnotifications: hasNotification(company)}});
+    }
+
+    const defaultCompany = companies[0];
+    const defaultCompanyWorkspaces = workspaces.get(defaultCompany.id);
+    // TODO: get default workspace
+    const defaultWorkspace = defaultCompanyWorkspaces?.length ? defaultCompanyWorkspaces[0] : '';
+
+    Groups.select(defaultCompany);
+    Workspaces.select(defaultWorkspace, true);
+
+    function hasNotification(company: CompanyType): boolean {
+      const notification = notifications.find(n => n.company_id === company.id);
+
+      return !!notification && notification.count > 0;
+    }
   }
 }
 

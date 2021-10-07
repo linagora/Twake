@@ -3,7 +3,7 @@ import mimes from "./services/processing/mime";
 import fs, { existsSync } from "fs";
 import { unlink } from "fs/promises";
 
-export function getTmpFile() {
+export function getTmpFile(): string {
   const targetDir = "/tmp/";
   fs.mkdirSync(targetDir, { recursive: true });
   return `${targetDir}${uuidv4()}`;

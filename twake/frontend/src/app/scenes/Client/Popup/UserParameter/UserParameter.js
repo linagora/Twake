@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import LoginService from 'services/login/login.js';
-import loginService from 'services/login/login.js';
+import LoginService from 'app/services/login/LoginService';
 import popupManager from 'services/popupManager/popupManager.js';
 import userService from 'services/user/UserService';
 import currentUserService from 'app/services/user/CurrentUser';
@@ -23,7 +22,6 @@ export default class UserParameter extends Component {
       login: LoginService,
       i18n: Languages,
       users_repository: Collections.get('users'),
-      loginService: loginService,
       currentUserService: currentUserService,
       page: popupManager.popupStates['user_parameters'] || props.defaultPage || 1,
       attributeOpen: 0,

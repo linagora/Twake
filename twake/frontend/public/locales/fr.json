@@ -30,6 +30,7 @@
     "general.connexion_status.disconnected": "Vous êtes hors ligne",
     "general.connexion_status.connected": "Vous êtes connecté",
     "general.connexion_status.connecting": "Reconnexion en cours…",
+    "application.load.longer": "Le serveur met plus de temps que prévu à répondre, veuillez attendre ou rechargez la page...",
     "twake_not_on_device": "Twake ne fonctionne pas sur votre appareil.",
     "twake_not_on_device_mobile": "Vous pouvez télécharger la version téléphone de Twake sur les stores Android et Apple.",
     "twake_not_on_device_browser": "Vous devez mettre à jour votre navigateur ou télécharger Twake pour ordinateur.",
@@ -1685,5 +1686,7 @@
     "components.locked_features.locked_only_office_popup.text": "Oups !! Vous souhaitez modifier le fichier à partir de Twake. Vous voudrez peut-être envisager de mettre à niveau votre plan si vous souhaitez collaborer autour de fichiers bureautiques. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe.",
     "components.locked_features.locked_drive_popup.title": "Vous venez d'atteindre la limite d'importation",
     "components.locked_features.locked_drive_popup.subtitle": "Dans la version gratuite, vous ne pouvez stocker que 6 Go.",
-    "components.locked_features.locked_drive_popup.text": "Oups !! On dirait que vous avez atteint la limite de stockage. Vous pouvez envisager de mettre à niveau votre plan si vous souhaitez partager plus de fichiers avec votre équipe. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe."
+    "components.locked_features.locked_drive_popup.text": "Oups !! On dirait que vous avez atteint la limite de stockage. Vous pouvez envisager de mettre à niveau votre plan si vous souhaitez partager plus de fichiers avec votre équipe. Explorez nos options de tarification et sélectionnez la meilleure option pour les besoins de collaboration de votre équipe.",
+    "general.resume": "Reprendre",
+    "general.pause": "Pause"
 }

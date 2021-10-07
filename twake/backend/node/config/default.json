@@ -3,10 +3,18 @@
     "help_url": false,
     "pricing_plan_url": "",
     "accounts": {
+      "_type": "console",
       "type": "internal",
       "internal": {
         "disable_account_creation": false,
         "disable_email_verification": true
+      },
+      "console": {
+        "account_management_url": "http://web.twake-console.local/profile",
+        "authority": "http://auth.example.com/",
+        "client_id": "twakeweb",
+        "collaborators_management_url": "http://web.twake-console.local/compaies/{company_id}/users",
+        "company_management_url": "http://web.twake-console.local/companies/{company_id}"
       }
     }
   },

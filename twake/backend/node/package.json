@@ -127,7 +127,7 @@
     "multistream": "^4.1.0",
     "node-fetch": "^2.6.1",
     "node-uuid": "^1.4.8",
-    "ora": "^6.0.0",
+    "ora": "^5.4.0",
     "pdf2pic": "^2.1.4",
     "pino": "^6.8.0",
     "reflect-metadata": "^0.1.13",

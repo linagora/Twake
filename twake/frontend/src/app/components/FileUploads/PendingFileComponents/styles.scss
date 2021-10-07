@@ -1,0 +1,30 @@
+.pending-files-list-layout {
+  border: 1px solid var(--black-alpha-70);
+  box-shadow: var(--box-shadow-base);
+  width: 256px;
+
+  border-radius: var(--border-radius-base);
+  position: absolute;
+  bottom: 8px;
+  right: 24px;
+
+  .pending-files-list-header {
+    color: var(--white);
+    padding: 0 8px;
+    background-color: var(--primary);
+    height: 32px;
+    line-height: 32px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+
+    &.hidden {
+      border-radius: 8px;
+    }
+  }
+
+  .pending-files-list-content {
+    min-height: 32px;
+    max-height: 180px;
+    overflow-y: scroll;
+  }
+}

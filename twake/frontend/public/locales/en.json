@@ -30,6 +30,7 @@
     "general.connexion_status.disconnected": "You are offline",
     "general.connexion_status.connected": "You are online",
     "general.connexion_status.connecting": "Reconnecting…",
+    "application.load.longer": "Server takes longer than expected to reply, please wait or reload the page...",
     "twake_not_on_device": "Twake doesn't work on your device.",
     "twake_not_on_device_mobile": "You can download our mobile app on the Android and Apple stores.",
     "twake_not_on_device_browser": "You must use an updated browser or download Twake desktop.",
@@ -1744,5 +1745,7 @@
     "components.locked_features.locked_only_office_popup.text": "Whoops!! Seems like you want to edit the file from Twake. You might want to consider upgrading your plan if you want to collaborate around office files. Explore our pricing options and select the best option for your team collaboration needs.",
     "components.locked_features.locked_drive_popup.title": "You have just reached the drive limit",
     "components.locked_features.locked_drive_popup.subtitle": "In the free version, you can store only 6GB.",
-    "components.locked_features.locked_drive_popup.text": "Whoops!! Seems like you reached the drive limit. You might want to consider upgrading your plan if you want to share more file with your team. Explore our pricing options and select the best option for your team collaboration needs."
+    "components.locked_features.locked_drive_popup.text": "Whoops!! Seems like you reached the drive limit. You might want to consider upgrading your plan if you want to share more file with your team. Explore our pricing options and select the best option for your team collaboration needs.",
+    "general.resume": "Resume",
+    "general.pause": "Pause"
 }

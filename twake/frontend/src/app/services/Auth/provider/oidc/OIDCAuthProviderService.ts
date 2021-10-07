@@ -9,7 +9,7 @@ import { TwakeService } from '../../../Decorators/TwakeService';
 import EnvironmentService from '../../../EnvironmentService';
 import { AuthProvider, InitParameters } from '../AuthProvider';
 import ConsoleService from 'app/services/Console/ConsoleService';
-import { JWTDataType } from 'app/services/JWTService';
+import { JWTDataType } from 'app/services/JWTStorage';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';
@@ -21,6 +21,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
   private logger: Logger.Logger;
   private userManager: Oidc.UserManager | null = null;
   private initialized: boolean = false;
+  private user!: Oidc.User;
 
   constructor(private configuration?: ConsoleConfiguration) {
     super();
@@ -30,7 +31,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
   init(params: InitParameters): this {
     if (this.initialized) {
-      this.logger.warn('Alreay initialized');
+      this.logger.warn('Already initialized');
       return this;
     }
 
@@ -54,50 +55,43 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
       });
 
       // For logout if signout or logout endpoint called
+      // FIXME: This is not called, we must create the routes for it
       if ([OIDC_SIGNOUT_URL, '/logout'].includes(document.location.pathname)) {
         this.logger.debug('Redirect signout');
         this.signOut();
       }
 
       this.userManager.events.addUserLoaded(user => {
-        // fires each time the user is updated
+        // fires each time the user is loaded or updated
         this.logger.debug('OIDC user loaded listener', user);
+        this.user = user;
+
         this.getJWTFromOidcToken(user, (err, jwt) => {
           if (err) {
-            this.logger.error('OIDC user loaded listener, error while getting the JWT from OIDC token');
-            params.onSessionExpired && params.onSessionExpired();
-            return;
+            this.logger.error('OIDC user loaded listener, error while getting the JWT from OIDC token', err);
+            // FIXME: Should we return?
+            //return;
           }
 
-          params.onNewToken(jwt);
+          if (!this.initialized) {
+            // FIXME: Do we need to send back the user?
+            params.onInitialized();
+            this.initialized = true;
+          } else {
+            jwt && params.onNewToken(jwt);
+          }
         });
       });
 
       this.userManager.events.addAccessTokenExpired(() => {
         this.logger.debug('OIDC access token expired listener');
-        this.silentLogin(
-          () => {
-            this.logger.error('OIDC access token expired listener, error while getting the JWT from OIDC token');
-            params.onSessionExpired && params.onSessionExpired();
-          },
-          (token) => {
-            this.logger.error('OIDC access token expired listener, got a new token');
-            params.onNewToken(token);
-          }
-        );
+        this.silentLogin();
+        // FIXME: use params.onSessionExpired() if we can not renew
       });
 
       this.userManager.events.addAccessTokenExpiring(() => {
         this.logger.debug('OIDC access token is expiring');
-        this.silentLogin(
-          () => {
-            this.logger.error('OIDC access token expiring listener, error while doing a silent login');
-          },
-          (token) => {
-            this.logger.error('OIDC access token expiring listener, got a new token');
-            params.onNewToken(token);
-          }
-        );
+        this.silentLogin();
       });
 
       this.userManager.events.addSilentRenewError(error => {
@@ -115,26 +109,17 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
       //This manage the initial sign-in when loading the app
       if (this.enforceFrontendUrl()) {
-        this.silentLogin(
-          () => {
-            this.logger.error('OIDC Init, silent login error, redirecting to login');
-            this.userManager?.signinRedirect();
-          },
-          (token) => {
-            this.logger.error('OIDC Init, silent login got a new token');
-            params.onNewToken(token);
-          }
-        );
+        this.silentLogin();
       }
     }
 
-    this.initialized = true;
     return this;
   }
 
   //Redirect to valid frontend url to make sure oidc will work as expected
   private enforceFrontendUrl() {
     const frontUrl = (getDomain(environment.front_root_url || '') || '').toLocaleLowerCase();
+
     if (frontUrl && document.location.host.toLocaleLowerCase() !== frontUrl) {
       document.location.replace(
         document.location.protocol +
@@ -150,7 +135,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     return true;
   }
 
-  private async silentLogin(onError: () => void, onNewToken: (token?: JWTDataType) => void): Promise<void> {
+  private async silentLogin(): Promise<void> {
     if (!this.userManager) {
       this.logger.debug('silentLogin, no auth provider');
       return;
@@ -159,8 +144,11 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     //Try to use the in-url sign-in response from oidc if exists
     try {
       this.logger.debug('silentLogin, trying to get user from redirect callback');
+      // This has to be called when we are in a redirect callback, not on other URLs
+      // if so, we catch the error which will be 'No state in response' and we try to silently signin
       await this.userManager.signinRedirectCallback();
-      this.userManager.getUser();
+      // calling this will fire the userloaded event listener above
+      await this.userManager.getUser();
     } catch (e) {
       this.logger.debug('silentLogin, not a signin response, trying to signin now', e);
       //There is no sign-in response, so we can try to silent login and use refresh token
@@ -169,26 +157,21 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
         let user = await this.userManager.getUser();
         if (user) {
           this.logger.debug('silentLogin, user is already defined, launching silent signin', user);
-          //If yes we try a silent signin
+          // If user is defined, we try a silent signin
+          // This will raise a userLoaded event, and so call some code in the listener above...
           user = await this.userManager.signinSilent();
           this.logger.debug('silentLogin, user from silent signin', user);
-          this.getJWTFromOidcToken(user, (err, jwt) => {
-            if (err) {
-              this.logger.debug('silentLogin, error while getting new token', err);
-              onError();
-              return;
-            }
-
-            onNewToken(jwt);
-          });
+          // Note: the userloaded listener above should be called from the signinSilent call
+          // if not get the JWT from the user and store the result in the JWT service with the help of callbacks
         } else {
-          //If no we try a redirect signin
+          //If no user defined,  we try a redirect signin
           this.logger.debug('silentLogin, user not defined, launching a signin redirect');
           this.userManager.signinRedirect();
         }
       } catch (e) {
         this.logger.debug('silentLogin error, launching a signin redirect', e);
-        //In any case if it doesn't work we do a redirect signin
+        // FIXME: We should also be able to show a message to the user with the onSessionExpired listener
+        // In any case if it doesn't work we do a redirect signin
         this.userManager.signinRedirect();
       }
     }
@@ -196,14 +179,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
   async signIn(): Promise<void> {
     this.logger.info('Signin');
-    await this.silentLogin(
-      () => {
-        this.logger.error('Silent login error');
-      },
-      (token) => {
-        this.logger.info('Signin got a new token');
-      }
-    );
+    await this.silentLogin();
   }
 
   async signOut(): Promise<void> {
@@ -214,10 +190,14 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     }
 
     try {
-      await this.userManager.signoutRedirect();
-      //JWT.clear();
-      // FIXME: can reload to the OIDC signin window, not to the twake one to do not loose time...
-      //window.location.reload();
+      // in some cases/providers we have to call remove to be sure to logout
+      await this.userManager.removeUser();
+    } catch (err) {
+      this.logger.error('Can not delete user in signout', err);
+    }
+
+    try {
+      await this.userManager.signoutRedirect({ id_token_hint: this.user?.id_token });
     } catch (err) {
       this.logger.error('Signout redirect error', err);
     }
@@ -228,7 +208,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
    * Call the backend with the OIDC token, it will use it to get a new token from console
    */
   private async getJWTFromOidcToken(
-    user: Oidc.User | null,
+    user: Oidc.User,
     callback: (err?: Error, accessToken?: JWTDataType) => void,
   ): Promise<void> {
     if (!user) {

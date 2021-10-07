@@ -3,7 +3,8 @@ import { matchPath, match } from 'react-router';
 import short, { Translator } from 'short-uuid';
 
 import App from 'app/scenes/App';
-import Login from 'app/scenes/Login/login';
+import Login from 'app/scenes/Login/Login';
+import Logout from 'app/scenes/Login/Logout';
 import Error from 'app/scenes/Error/Error';
 import Collections from 'services/Depreciated/Collections/Collections';
 
@@ -62,6 +63,7 @@ class RouterServices extends Observable {
     CLIENT: '/client',
     SHARED: '/shared/:workspaceId/:appName/:documentId/t/:token',
     LOGIN: '/login',
+    LOGOUT: '/logout',
     ERROR: '/error',
   };
 
@@ -76,12 +78,21 @@ class RouterServices extends Observable {
     'documentId',
   ];
 
-  routes: Readonly<RouteType[]> = [
+  readonly routes: RouteType[] = [
     {
       path: this.pathnames.LOGIN,
       exact: true,
       key: 'login',
       component: Login,
+      options: {
+        withErrorBoundary: true,
+      },
+    },
+    {
+      path: this.pathnames.LOGOUT,
+      exact: true,
+      key: 'logout',
+      component: Logout,
       options: {
         withErrorBoundary: true,
       },
@@ -179,7 +190,7 @@ class RouterServices extends Observable {
     });
 
     //Retrocompatibility with old code
-    state.companyId = Collections.get('workspaces').find(state.workspaceId)?.group?.id || '';
+    state.companyId = Collections.get('workspaces').find(state.workspaceId) ? Collections.get('workspaces').find(state.workspaceId).company_id : '';
     Workspaces.updateCurrentWorkspaceId(state.workspaceId, true);
     Workspaces.updateCurrentCompanyId(state.companyId, true);
     Groups.currentGroupId = state.companyId;
@@ -192,7 +203,7 @@ class RouterServices extends Observable {
    * Generate UUID to shortened and create url
    */
   generateRouteFromState(
-    params: ClientStateType,
+    params: ClientStateType = {},
     options: { replace?: boolean; keepSearch?: boolean } = {},
   ): string {
     const currentState = this.getStateFromRoute();
