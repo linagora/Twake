@@ -16,8 +16,8 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
     private repository: Repository<File>,
   ) {}
 
-  init(context?: TwakeContext): Promise<this> {
-    throw new Error("Method not implemented.");
+  async init(context?: TwakeContext): Promise<this> {
+    return this;
   }
 
   readonly topics = {
