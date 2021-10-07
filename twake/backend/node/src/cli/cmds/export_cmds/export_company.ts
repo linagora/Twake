@@ -8,7 +8,7 @@ import WorkspaceUser from "../../../services/workspaces/entities/workspace_user"
 import { ApplicationServiceAPI } from "../../../services/applications/api";
 import ChannelServiceAPI from "../../../services/channels/provider";
 import { ChannelVisibility } from "../../../services/channels/types";
-import { Channel } from "../../../services/channels/entities";
+import { Channel, ChannelMember } from "../../../services/channels/entities";
 import { MessageServiceAPI } from "../../../services/messages/api";
 import { Thread } from "../../../services/messages/entities/threads";
 import { Message } from "../../../services/messages/entities/messages";
@@ -137,10 +137,35 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     writeFileSync(`${output}/direct_channels.json`, JSON.stringify(directChannels));
     writeFileSync(`${output}/public_channels.json`, JSON.stringify(publicChannels));
 
+    //Channels users
+    mkdirSync(`${output}/channel_users`);
+    for (const channel of [...publicChannels /*, ...directChannels*/]) {
+      let members: ChannelMember[] = [];
+      let pagination = new Pagination();
+      while (pagination.page_token) {
+        const page = await channelService.members.list(
+          pagination,
+          {},
+          {
+            user: { id: "", server_request: true },
+            channel: {
+              company_id: channel.company_id,
+              workspace_id: channel.workspace_id,
+              id: channel.id,
+            },
+          },
+        );
+        members = [...members, ...page.getEntities()] as ChannelMember[];
+        pagination = page.nextPage as Pagination;
+      }
+      writeFileSync(`${output}/channel_users/${channel.id}.json`, JSON.stringify(members));
+    }
+
     //Messages
     mkdirSync(`${output}/messages`);
     const messageService = platform.getProvider<MessageServiceAPI>("messages");
-    for (const channel of [...publicChannels, ...directChannels]) {
+    //Note: direct channels content is private and not needed for R&D
+    for (const channel of [...publicChannels /*, ...directChannels*/]) {
       let threads: MessageWithReplies[] = [];
       let messages: Message[] = [];
       let pagination = new Pagination();
