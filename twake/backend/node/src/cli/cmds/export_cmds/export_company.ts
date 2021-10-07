@@ -27,6 +27,8 @@ const services = [
   "counter",
   "pubsub",
   "user",
+  "files",
+  "messages",
   "workspaces",
   "platform-services",
   "console",
@@ -63,38 +65,48 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       return "No such company";
     }
 
+    console.log(`Start export for company ${company.id}`);
+
     const output = (argv.output as string) || `export-${company.id}`;
     mkdirSync(output);
 
     //Company
+    console.log(`- Create company json file`);
     writeFileSync(`${output}/company.json`, JSON.stringify(userService.formatCompany(company)));
 
     //Workspaces
-    const workspaceService = platform.getProvider<WorkspaceServiceAPI>("workspaces");
-    const workspaces = await workspaceService.getAllForCompany(company.id);
+    console.log(`- Create workspaces json file`);
+    const workspaces = await userService.workspaces.getAllForCompany(company.id);
     writeFileSync(`${output}/workspaces.json`, JSON.stringify(workspaces));
 
     //Users
+    console.log(`- Create users json file`);
     let users = [];
+    let workspace_users = [];
     for (const workspace of workspaces) {
       let workspaceUsers: WorkspaceUser[] = [];
       let pagination = new Pagination();
-      while (pagination.page_token) {
-        const res = await workspaceService.getUsers({ workspaceId: workspace.id }, pagination);
+      do {
+        const res = await userService.workspaces.getUsers(
+          { workspaceId: workspace.id },
+          pagination,
+        );
         workspaceUsers = [...workspaceUsers, ...res.getEntities()];
         pagination = res.nextPage as Pagination;
-      }
+      } while (pagination.page_token);
       for (const workspaceUser of workspaceUsers) {
-        const user = await userService.users.get({ id: workspaceUser.id });
-        users.push({
-          ...workspaceUser,
-          user: userService.formatUser(user),
-        });
+        const user = await userService.users.get({ id: workspaceUser.userId });
+        if (user) {
+          users.push(await userService.formatUser(user));
+          workspace_users.push(workspaceUser);
+        }
       }
     }
     writeFileSync(`${output}/users.json`, JSON.stringify(users));
+    writeFileSync(`${output}/workspace_users.json`, JSON.stringify(workspace_users));
 
     //Applications
+    console.log(`- Create applications json file`);
     const applicationService = platform.getProvider<ApplicationServiceAPI>("applications");
     const applications = await applicationService.companyApplications.list(
       new Pagination(),
@@ -104,22 +116,23 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     writeFileSync(`${output}/applications.json`, JSON.stringify(applications));
 
     //Channels
+    console.log(`- Create channels json file`);
     let publicChannels: Channel[] = [];
     let directChannels: Channel[] = [];
     const channelService = platform.getProvider<ChannelServiceAPI>("channels");
     for (const workspace of workspaces) {
       let pagination = new Pagination();
-      while (pagination.page_token) {
+      do {
         const page = await channelService.channels.getDirectChannelsInCompany(
           pagination,
           company.id,
         );
         directChannels = [...directChannels, ...page.getEntities()] as Channel[];
         pagination = page.nextPage as Pagination;
-      }
+      } while (pagination.page_token);
 
       pagination = new Pagination();
-      while (pagination.page_token) {
+      do {
         const page = await channelService.channels.list(
           pagination,
           {},
@@ -133,17 +146,18 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
           ...page.getEntities().filter(c => c.visibility == ChannelVisibility.PUBLIC),
         ];
         pagination = page.nextPage as Pagination;
-      }
+      } while (pagination.page_token);
     }
     writeFileSync(`${output}/direct_channels.json`, JSON.stringify(directChannels));
     writeFileSync(`${output}/public_channels.json`, JSON.stringify(publicChannels));
 
     //Channels users
+    console.log(`- Create channels users json file`);
     mkdirSync(`${output}/channel_users`);
     for (const channel of [...publicChannels /*, ...directChannels*/]) {
       let members: ChannelMember[] = [];
       let pagination = new Pagination();
-      while (pagination.page_token) {
+      do {
         const page = await channelService.members.list(
           pagination,
           {},
@@ -158,11 +172,12 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
         );
         members = [...members, ...page.getEntities()] as ChannelMember[];
         pagination = page.nextPage as Pagination;
-      }
+      } while (pagination.page_token);
       writeFileSync(`${output}/channel_users/${channel.id}.json`, JSON.stringify(members));
     }
 
     //Messages
+    console.log(`- Create messages json file`);
     mkdirSync(`${output}/messages`);
     const messageService = platform.getProvider<MessageServiceAPI>("messages");
     //Note: direct channels content is private and not needed for R&D
@@ -170,37 +185,41 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       let threads: MessageWithReplies[] = [];
       let messages: Message[] = [];
       let pagination = new Pagination();
-      while (pagination.page_token) {
-        const page = await messageService.views.listChannel(
-          pagination,
-          {
-            include_users: false,
-            replies_per_thread: 10000,
-            emojis: false,
-          },
-          {
-            user: { id: "", server_request: true },
-            channel: {
-              company_id: channel.company_id,
-              workspace_id: channel.workspace_id,
-              id: channel.id,
+      try {
+        do {
+          const page = await messageService.views.listChannel(
+            pagination,
+            {
+              include_users: false,
+              replies_per_thread: 10000,
+              emojis: false,
             },
-          },
-        );
+            {
+              user: { id: "", server_request: true },
+              channel: {
+                company_id: channel.company_id,
+                workspace_id: channel.workspace_id,
+                id: channel.id,
+              },
+            },
+          );
 
-        for (const thread of page.getEntities()) {
-          messages = [...messages, ...thread.last_replies];
-        }
+          for (const thread of page.getEntities()) {
+            messages = [...messages, ...thread.last_replies];
+          }
 
-        threads = [
-          ...threads,
-          ...page.getEntities().map(thread => {
-            thread.last_replies = undefined;
-            return thread;
-          }),
-        ];
+          threads = [
+            ...threads,
+            ...page.getEntities().map(thread => {
+              thread.last_replies = undefined;
+              return thread;
+            }),
+          ];
 
-        pagination = page.nextPage as Pagination;
+          pagination = page.nextPage as Pagination;
+        } while (pagination.page_token);
+      } catch (err) {
+        console.log(`-- Error on the channel ${channel.id}`);
       }
       writeFileSync(`${output}/messages/${channel.id}-threads.json`, JSON.stringify(threads));
       writeFileSync(`${output}/messages/${channel.id}.json`, JSON.stringify(messages));
