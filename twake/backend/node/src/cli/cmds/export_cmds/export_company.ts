@@ -22,6 +22,7 @@ type CLIArgs = {
 };
 
 const services = [
+  "auth",
   "storage",
   "counter",
   "pubsub",
