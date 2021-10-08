@@ -12,6 +12,7 @@ import { WorkspaceServiceAPI } from "../../workspaces/api";
 import {
   CompanyObject,
   CompanyShort,
+  CompanyStatsObject,
   CompanyUserObject,
   CompanyUserRole,
   CompanyUserStatus,
@@ -21,6 +22,7 @@ import Company from "../entities/company";
 import User from "../entities/user";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../applications/api";
+import { StatisticsAPI } from "../../../core/platform/services/statistics/types";
 
 export function getService(
   platformServices: PlatformServicesAPI,
@@ -35,6 +37,7 @@ class Service implements UserServiceAPI {
   companies: CompaniesServiceAPI;
   external: UserExternalLinksServiceAPI;
   workspaces: WorkspaceServiceAPI;
+  statistics: StatisticsAPI;
 
   constructor(platformServices: PlatformServicesAPI, readonly applications: ApplicationServiceAPI) {
     this.users = getUserService(platformServices);
@@ -46,6 +49,7 @@ class Service implements UserServiceAPI {
       this.companies,
       this.applications,
     );
+    this.statistics = platformServices.statistics;
   }
 
   async init(context: TwakeContext): Promise<this> {
@@ -119,20 +123,23 @@ class Service implements UserServiceAPI {
 
   public formatCompany(
     companyEntity: Company,
-    companyUserObject?: CompanyUserObject,
+    companyUserObject: CompanyUserObject,
+    companyStats: CompanyStatsObject,
   ): CompanyObject {
     const res: CompanyObject = {
       id: companyEntity.id,
       name: companyEntity.name,
       logo: companyEntity.logo,
       plan: companyEntity.plan,
-      stats: companyEntity.stats,
+      // stats: companyEntity.stats,
     };
 
     if (companyUserObject) {
       res.status = "active"; // FIXME: with real status
       res.role = companyUserObject.role;
     }
+
+    res.stats = companyStats;
 
     return res;
   }

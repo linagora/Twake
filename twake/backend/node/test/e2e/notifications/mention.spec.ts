@@ -41,6 +41,7 @@ describe("The notification for user mentions", () => {
         "push",
         "notifications",
         "counter",
+        "statistics",
         "platform-services",
       ],
     });

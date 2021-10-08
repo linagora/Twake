@@ -20,7 +20,8 @@ export class MessagesController
       ResourceUpdateResponse<Message>,
       ResourceListResponse<Message>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(protected service: MessageServiceAPI) {}
 
   async save(
@@ -63,6 +64,10 @@ export class MessagesController
         {},
         context,
       );
+
+      if (!request.params.message_id) {
+        this.service.statistics.increase(context.company.id, "messages"); // no wait
+      }
 
       let entity = result.entity;
 

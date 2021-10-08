@@ -18,47 +18,55 @@ import UserServiceAPI from "../../user/api";
 import ChannelServiceAPI from "../../channels/provider";
 import { FileServiceAPI } from "../../files/api";
 import { ApplicationServiceAPI } from "../../applications/api";
+import { StatisticsAPI } from "../../../core/platform/services/statistics/types";
+import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 
 export function getService(
-  databaseService: DatabaseServiceAPI,
-  pubsub: PubsubServiceAPI,
+  platformServices: PlatformServicesAPI,
   user: UserServiceAPI,
   channel: ChannelServiceAPI,
   files: FileServiceAPI,
   applications: ApplicationServiceAPI,
 ): Service {
-  return new Service(databaseService, pubsub, user, channel, files, applications);
+  return new Service(platformServices, user, channel, files, applications);
 }
 
 export default class Service implements MessageServiceAPI {
   version: "1";
-
   userBookmarks: MessageUserBookmarksServiceAPI;
   threads: MessageThreadsServiceAPI;
   messages: MessageThreadMessagesServiceAPI;
   views: MessageViewsServiceAPI;
   engine: MessagesEngine;
+  statistics: StatisticsAPI;
 
   constructor(
-    databaseService: DatabaseServiceAPI,
-    pubsub: PubsubServiceAPI,
+    platformServices: PlatformServicesAPI,
     user: UserServiceAPI,
     channel: ChannelServiceAPI,
     files: FileServiceAPI,
     applications: ApplicationServiceAPI,
   ) {
-    this.userBookmarks = getMessageUserBookmarksServiceAPI(databaseService);
+    this.userBookmarks = getMessageUserBookmarksServiceAPI(platformServices.database);
     this.messages = getMessageThreadMessagesServiceAPI(
-      databaseService,
+      platformServices.database,
       user,
       channel,
       files,
       applications,
       this,
     );
-    this.threads = getMessageThreadsServiceAPI(databaseService, this);
-    this.views = getMessageViewsServiceAPI(databaseService, this);
-    this.engine = new MessagesEngine(databaseService, pubsub, user, channel, this);
+    this.threads = getMessageThreadsServiceAPI(platformServices.database, this);
+    this.views = getMessageViewsServiceAPI(platformServices.database, this);
+    this.engine = new MessagesEngine(
+      platformServices.database,
+      platformServices.pubsub,
+      user,
+      channel,
+      this,
+    );
+
+    this.statistics = platformServices.statistics;
   }
 
   async init(context: TwakeContext): Promise<this> {

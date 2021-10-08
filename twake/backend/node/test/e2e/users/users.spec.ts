@@ -36,6 +36,7 @@ describe("The /users API", () => {
         "counter",
         "console",
         "workspaces",
+        "statistics",
         "platform-services",
       ],
     });
@@ -340,13 +341,12 @@ describe("The /users API", () => {
         });
       }
 
-      if (json.resource.stats) {
-        expect(json.resource.stats).toMatchObject({
-          created_at: expect.any(Number),
-          total_members: expect.any(Number),
-          total_guests: expect.any(Number),
-        });
-      }
+      expect(json.resource.stats).toMatchObject({
+        created_at: expect.any(Number),
+        total_members: expect.any(Number),
+        total_guests: expect.any(Number),
+        total_messages: expect.any(Number),
+      });
 
       done();
     });

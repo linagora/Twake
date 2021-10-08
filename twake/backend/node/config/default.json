@@ -151,6 +151,7 @@
     "console",
     "previews",
     "platform-services",
-    "counter"
+    "counter",
+    "statistics"
   ]
 }
