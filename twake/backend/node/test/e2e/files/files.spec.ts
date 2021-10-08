@@ -11,6 +11,8 @@ describe.skip("The Files feature", () => {
   const url = "/internal/services/files/v1";
   let platform: TestPlatform;
 
+  console.log("nothing");
+
   beforeEach(async () => {
     platform = await init({
       services: [
