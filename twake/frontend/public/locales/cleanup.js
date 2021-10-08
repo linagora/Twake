@@ -60,7 +60,7 @@ if (!dryRun) {
             for (const remove of notFound) {
                 delete content[remove];
             }
-            fs.writeFileSync(__dirname + '/' + file, JSON.stringify(content, null, 2));
+            fs.writeFileSync(__dirname + '/' + file, JSON.stringify(content, null, 4));
         }
     }
 }
