@@ -54,7 +54,7 @@ class WorkspacesApps extends Observable {
         return Collections.get('applications').find(ch.app_id);
       });
 
-    return workspace_apps;
+    return workspace_apps.filter(a => a);
   }
 
   getApp(id, callback = undefined) {
