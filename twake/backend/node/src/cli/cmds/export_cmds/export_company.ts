@@ -68,7 +68,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     console.log(`Start export for company ${company.id}`);
 
     const output = (argv.output as string) || `export-${company.id}`;
-    mkdirSync(output);
+    mkdirSync(output, { recursive: true });
 
     //Company
     console.log(`- Create company json file`);
@@ -101,7 +101,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
           workspace_users.push({ ...workspaceUser, user });
         }
       }
-      mkdirSync(`${output}/workspaces/${workspace.id}`);
+      mkdirSync(`${output}/workspaces/${workspace.id}`, { recursive: true });
       writeFileSync(
         `${output}/workspaces/${workspace.id}/users.json`,
         JSON.stringify(workspace_users),
@@ -152,7 +152,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
         pagination = page.nextPage as Pagination;
       } while (pagination.page_token);
 
-      mkdirSync(`${output}/workspaces/${workspace.id}`);
+      mkdirSync(`${output}/workspaces/${workspace.id}`, { recursive: true });
       writeFileSync(
         `${output}/workspaces/${workspace.id}/channels.json`,
         JSON.stringify(publicChannels),
@@ -162,7 +162,6 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
 
     //Channels users
     console.log(`- Create channels users json file`);
-    mkdirSync(`${output}/channel_users`);
     for (const channel of [...allPublicChannels /*, ...directChannels*/]) {
       let members: ChannelMember[] = [];
       let pagination = new Pagination();
@@ -183,7 +182,9 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
         pagination = page.nextPage as Pagination;
       } while (pagination.page_token);
 
-      mkdirSync(`${output}/workspaces/${channel.workspace_id}/channels/${channel.id}`);
+      mkdirSync(`${output}/workspaces/${channel.workspace_id}/channels/${channel.id}`, {
+        recursive: true,
+      });
       writeFileSync(
         `${output}/workspaces/${channel.workspace_id}/channels/${channel.id}/members.json`,
         JSON.stringify(members),
@@ -192,7 +193,6 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
 
     //Messages
     console.log(`- Create messages json file`);
-    mkdirSync(`${output}/messages`);
     const messageService = platform.getProvider<MessageServiceAPI>("messages");
     //Note: direct channels content is private and not needed for R&D
     for (const channel of [...allPublicChannels /*, ...directChannels*/]) {
@@ -236,13 +236,15 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
         console.log(`-- Error on the channel ${channel.id}`);
       }
 
-      mkdirSync(`${output}/workspaces/${channel.workspace_id}/messages/${channel.id}`);
+      mkdirSync(`${output}/workspaces/${channel.workspace_id}/channels/${channel.id}`, {
+        recursive: true,
+      });
       writeFileSync(
-        `${output}/workspaces/${channel.workspace_id}/messages/${channel.id}/threads.json`,
+        `${output}/workspaces/${channel.workspace_id}/channels/${channel.id}/threads.json`,
         JSON.stringify(threads),
       );
       writeFileSync(
-        `${output}/workspaces/${channel.workspace_id}/messages/${channel.id}/messages.json`,
+        `${output}/workspaces/${channel.workspace_id}/channels/${channel.id}/messages.json`,
         JSON.stringify(messages),
       );
     }
