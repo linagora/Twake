@@ -64,16 +64,9 @@ class Websocket extends Observable {
       this.alive_timeout = setTimeout(() => {
         this.alive_connected = false;
       }, 5100);
-      Api.post(
-        '/ajax/users/alive',
-        { focus: this.didFocusedLastMinute },
-        () => {
-          this.reconnectIfNeeded();
-          clearTimeout(this.alive_timeout);
-          this.alive_connected = true;
-        },
-        false,
-      );
+      this.reconnectIfNeeded();
+      clearTimeout(this.alive_timeout);
+      this.alive_connected = true;
       this.didFocusedLastMinute = Globals.isReactNative || Globals.window.document.hasFocus();
     }
   }

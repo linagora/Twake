@@ -9,6 +9,7 @@ import Languages from 'services/languages/languages';
 import Globals from 'services/Globals';
 import ModalManager from 'app/components/Modal/ModalManager';
 import NewVersionModal from './NewVersionModal';
+import { ServerInfoType } from 'app/services/InitService';
 
 let lastScrape: number = 0;
 
@@ -29,10 +30,17 @@ const NewVersionComponent = (): JSX.Element => {
     }
     lastScrape = new Date().getTime();
 
-    const config = (await Api.get('/ajax/core/version')) as ConfigurationResource;
+    const config = await Api.get<ServerInfoType>(
+      '/internal/services/general/v1/server',
+      undefined,
+      false,
+      {
+        disableJWTAuthentication: true,
+      },
+    );
     const currentVersion: string = Globals.version.version_detail;
-    const newestVersion: string = config.data.version?.current || '';
-    const minimalWebVersion: string = config.data.version?.minimal?.web || '';
+    const newestVersion: string = config?.version?.current || '';
+    const minimalWebVersion: string = config?.version?.minimal?.web || '';
 
     const shouldDisplayModal: boolean =
       minimalWebVersion && compareVersion(minimalWebVersion, currentVersion) > 0 ? true : false;

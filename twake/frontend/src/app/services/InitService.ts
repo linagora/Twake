@@ -17,7 +17,7 @@ export type InternalConfiguration = {
   disable_email_verification: boolean;
 };
 
-type ServerInfoType = null | {
+export type ServerInfoType = null | {
   status: 'ready';
   version: {
     current: string;
@@ -28,7 +28,7 @@ type ServerInfoType = null | {
   };
   branding?: {
     logo: string;
-  },
+  };
   auth: Array<string>;
   configuration: {
     branding: any;
@@ -46,7 +46,7 @@ class InitService extends Observable {
   public server_infos: ServerInfoType = null;
   public server_infos_loaded: boolean = false;
   public app_ready: boolean = false;
-  private logger = Logger.getLogger("InitService");
+  private logger = Logger.getLogger('InitService');
 
   async init() {
     this.server_infos = await Api.get<ServerInfoType>(
@@ -55,7 +55,7 @@ class InitService extends Observable {
       false,
       {
         disableJWTAuthentication: true,
-      }
+      },
     );
 
     if (this.server_infos?.status !== 'ready') {
