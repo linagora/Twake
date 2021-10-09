@@ -1671,9 +1671,9 @@
     "scenes.app.sidemenu.channels.public": "öffentlich",
     "scenes.apps.messages.message.copy_link": "Link zur Nachricht kopieren",
     "scenes.apps.messages.message.unpin_button": "Nachricht lösen",
-    "components.locked_features.locked_workspace_popup.title": "Sie können keinen weiteren Arbeitsbereich erstellen",
+    "components.locked_features.locked_workspace_popup.title": "Sie können keine weiteren Arbeitsbereiche erstellen",
     "components.locked_features.locked_workspace_popup.subtitle": "In der kostenlosen Version können Sie nur 1 Arbeitsbereich in Ihrem Unternehmen haben.",
-    "components.locked_features.locked_workspace_popup.text": "Hoppla!! Anscheinend möchten Sie einen neuen Arbeitsbereich in Ihrem Unternehmen erstellen. Wenn Sie in mehreren Arbeitsbereichen zusammenarbeiten möchten, sollten Sie ein Upgrade Ihres Plans in Betracht ziehen. Entdecken Sie unsere Preisoptionen und wählen Sie die beste Option für Ihre Anforderungen an die Teamzusammenarbeit aus.",
+    "components.locked_features.locked_workspace_popup.text": "Hoppla!! Möchten Sie einen neuen Arbeitsbereich in Ihrer Organisation erstellen? Sie sollten ein Upgrade Ihres Plans in Betracht ziehen. Prüfen Sie unsere Preisoptionen und wählen Sie die beste Wahl für Ihre Anforderungen aus.",
     "components.locked_features.locked_drive_popup.title": "Du hast gerade das Fahrlimit erreicht",
     "components.locked_features.locked_drive_popup.subtitle": "In der kostenlosen Version können Sie nur 6 GB speichern.",
     "components.locked_features.locked_drive_popup.text": "Hoppla!! Sieht aus, als hättest du das Drive-Limit erreicht. Wenn Sie mehr Dateien für Ihr Team freigeben möchten, sollten Sie ein Upgrade Ihres Plans in Betracht ziehen. Entdecken Sie unsere Preisoptionen und wählen Sie die beste Option für Ihre Anforderungen an die Teamzusammenarbeit aus.",
@@ -1685,5 +1685,8 @@
     "general.retry": "Wiederholen",
     "components.locked_features.locked_only_office_popup.text": "Hoppla!! Es sieht so aus, als wollten Sie die Datei in twake bearbeiten. Wenn Sie Office-Dateien bearbeiten möchten, müssen Sie ein Upgrade Ihres Tarifs durchführen. Informieren Sie sich über unsere Preisoptionen und wählen Sie die beste Option für Ihre Anforderungen an die Zusammenarbeit im Team.",
     "components.locked_features.locked_only_office_popup.subtitle": "Onlyoffice ist in der freien Version nicht verfügbar.",
-    "components.locked_features.locked_only_office_popup.title": "Sie können diese Datei nicht bearbeiten"
+    "components.locked_features.locked_only_office_popup.title": "Sie können diese Datei nicht bearbeiten",
+    "application.load.longer": "Der Server braucht länger zum antworten als erwartet, bitte warten Sie oder laden Sie die Seite erneut",
+    "general.resume": "Fortsetzen",
+    "general.pause": "Pause"
 }
