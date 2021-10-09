@@ -18,5 +18,8 @@
     "general.edit": "Sửa",
     "general.create": "Tạo",
     "general.cancel": "Hủy",
-    "general.save": "Lưu"
+    "general.save": "Lưu",
+    "scenes.app.workspaces.create_company.group_data.group_size.50_100": "50 - 99 người",
+    "general.retry": "Thử lại",
+    "scenes.app.workspaces.create_company.group_data.group_size.10_50": "11 - 49 người"
 }
