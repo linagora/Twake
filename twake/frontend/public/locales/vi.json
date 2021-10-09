@@ -18,5 +18,14 @@
     "general.edit": "Sửa",
     "general.create": "Tạo",
     "general.cancel": "Hủy",
-    "general.save": "Lưu"
+    "general.copy": "Sao chép",
+    "general.save": "Lưu",
+    "general.closed": "Đã đóng",
+    "ads.workspace_is_free_version": "Bạn muốn dùng thêm các tính năng khác? Hãy nâng cấp tài khoản để thêm nhiều thành viên, workspace với khả năng lưu trữ không giới hạn...",
+    "scenes.app.workspaces.create_company.group_data.group_size.50_100": "50 - 99 người",
+    "general.retry": "Thử lại",
+    "scenes.app.workspaces.create_company.group_data.group_size.10_50": "11 - 49 người",
+    "components.filepicker.new_file": "Tập tin mới",
+    "components.drive_dropzone.detached_modal.detached_text": "Xin đừng tải lên Drive. Tài liệu sẽ không thể truy cập được trên Drive.",
+    "scenes.app.workspaces.create_company.group_data.text": "Nhóm của bạn sẽ chứa nhiều workspace  tương ứng với mỗi dự án hoặc đội ngũ. Một nhóm có thể là một công ty, tổ chức hay phòng ban."
 }
