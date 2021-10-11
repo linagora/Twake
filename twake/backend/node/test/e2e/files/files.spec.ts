@@ -33,8 +33,9 @@ describe("The Files feature", () => {
       "assets/sample.gif",
       "assets/sample.pdf",
       "assets/sample.doc",
+      "assets/sample.zip",
     ].map(p => `${__dirname}/${p}`);
-    const thumbnails = [1, 1, 2, 5];
+    const thumbnails = [1, 1, 2, 5, 0];
 
     it(`should save file and generate previews`, async done => {
       for (const i in files) {
@@ -56,7 +57,7 @@ describe("The Files feature", () => {
         );
 
         console.log(`Finished testing file ${file}`, new Date());
-        console.log(`Result ${JSON.stringify(filesUpload.resource.thumbnails)}`);
+        console.log(`Result ${JSON.stringify(filesUpload.resource)}`);
 
         expect(filesUpload.resource.id).not.toBeFalsy();
         expect(filesUpload.resource.encryption_key).toBeFalsy(); //This must not be disclosed
