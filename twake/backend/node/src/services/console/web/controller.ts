@@ -189,6 +189,8 @@ export class ConsoleController {
       if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
         throw CrudExeption.forbidden("Password doesn't match");
       }
+    } else if (process.env.NODE_ENV === "development") {
+      logger.warn("ERROR_NOTONPROD: YOU ARE RUNNING IN DEVELOPMENT MODE, AUTH IS DISABLED!!!");
     }
 
     return this.authService.generateJWT(user.id, user.email_canonical, {
