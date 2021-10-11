@@ -78,6 +78,8 @@ export class FileController {
       response.statusCode = 500;
       response.send("");
     }
+
+    console.log("Finished controller");
   }
 
   async get(
