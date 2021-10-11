@@ -1,7 +1,7 @@
+import { WebsocketEvents } from 'app/services/WebSocket/WebSocketService';
 import { merge } from 'lodash';
 import Collections, { Resource } from '../Collections';
 import CollectionTransport from './CollectionTransport';
-import { WebsocketEvents } from './TransportSocket';
 
 type WebsocketResourceEvent = {
   action:
