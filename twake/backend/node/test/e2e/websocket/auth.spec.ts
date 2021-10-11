@@ -3,7 +3,7 @@ import { TestPlatform, init } from "../setup";
 import io from "socket.io-client";
 import { UnauthorizedError } from "socketio-jwt";
 
-describe.skip("The Websocket authentication", () => {
+describe("The Websocket authentication", () => {
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 

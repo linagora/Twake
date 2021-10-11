@@ -2,7 +2,7 @@ import { describe, it, beforeEach, afterEach, expect } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import io from "socket.io-client";
 
-describe.skip("The Realtime API", () => {
+describe("The Realtime API", () => {
   let platform: TestPlatform;
   let socket: SocketIOClient.Socket;
 
