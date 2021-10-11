@@ -63,6 +63,10 @@ export class FileController {
     try {
       const data = await this.service.thumbnail(params.id, params.index, context);
 
+      data.file.on("end", () => {
+        console.log("end reading file");
+      });
+
       response.header("Content-disposition", "inline");
       if (data.size) {
         response.header("Content-Length", data.size);
