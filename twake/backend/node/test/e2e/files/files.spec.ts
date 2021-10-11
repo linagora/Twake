@@ -56,6 +56,7 @@ describe("The Files feature", () => {
         expect(filesUpload.resource.encryption_key).toBeFalsy(); //This must not be disclosed
         expect(filesUpload.resource.thumbnails.length).toBe(thumbnails[i]);
         console.log(`Finished testing file ${file}`);
+        console.log(`Result ${JSON.stringify(filesUpload.resource.thumbnails)}`);
       }
 
       done();
