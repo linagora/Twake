@@ -14,13 +14,14 @@ describe("The Files feature", () => {
   console.log("nothing");
 
   beforeAll(async () => {
+    console.log("ENTERED before all", new Date());
     platform = await init({
       services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
     });
   });
 
   afterAll(async done => {
-    console.log("ENTERED after all");
+    console.log("ENTERED after all", new Date());
     await platform?.tearDown();
     platform = null;
     done();
@@ -39,6 +40,8 @@ describe("The Files feature", () => {
       for (const i in files) {
         const file = files[i];
 
+        console.log(`Testing file ${file}`, new Date());
+
         const form = formAutoContent({ file: fs.createReadStream(file) });
         form.headers["authorization"] = `Bearer ${await platform.auth.getJWTToken()}`;
 
@@ -52,12 +55,12 @@ describe("The Files feature", () => {
           filesUploadRaw.body,
         );
 
-        console.log(`Testing file ${file}`);
+        console.log(`Finished testing file ${file}`, new Date());
+        console.log(`Result ${JSON.stringify(filesUpload.resource.thumbnails)}`);
+
         expect(filesUpload.resource.id).not.toBeFalsy();
         expect(filesUpload.resource.encryption_key).toBeFalsy(); //This must not be disclosed
         expect(filesUpload.resource.thumbnails.length).toBe(thumbnails[i]);
-        console.log(`Finished testing file ${file}`);
-        console.log(`Result ${JSON.stringify(filesUpload.resource.thumbnails)}`);
 
         for (const thumb of filesUpload.resource.thumbnails) {
           const thumbnails = await platform.app.inject({
