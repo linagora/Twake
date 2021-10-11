@@ -221,15 +221,20 @@ class Service implements FileServiceAPI {
     index: string,
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; type: string; size: number }> {
+    console.log("A");
+
     const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
     if (!entity) {
       throw "File not found";
     }
+    console.log("B");
 
     const thumbnail = entity.thumbnails[parseInt(index)];
     if (!thumbnail) {
       throw `Thumbnail ${parseInt(index)} not found`;
     }
+
+    console.log("C");
 
     const thumbnailPath = `${getFilePath(entity)}/thumbnails/${thumbnail.id}`;
 
@@ -237,6 +242,8 @@ class Service implements FileServiceAPI {
       encryptionAlgo: this.algorithm,
       encryptionKey: entity.encryption_key,
     });
+
+    console.log("D");
 
     return {
       file: readable,

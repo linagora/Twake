@@ -60,14 +60,20 @@ export class FileController {
   ): Promise<void> {
     const context = getCompanyExecutionContext(request);
     const params = request.params;
-    const data = await this.service.thumbnail(params.id, params.index, context);
+    try {
+      const data = await this.service.thumbnail(params.id, params.index, context);
 
-    response.header("Content-disposition", "inline");
-    if (data.size) {
-      response.header("Content-Length", data.size);
+      response.header("Content-disposition", "inline");
+      if (data.size) {
+        response.header("Content-Length", data.size);
+      }
+      response.type(data.type);
+      response.send(data.file);
+    } catch (err) {
+      console.log(err);
+      response.statusCode = 500;
+      response.send("");
     }
-    response.type(data.type);
-    response.send(data.file);
   }
 
   async get(
