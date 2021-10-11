@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { describe, it, beforeEach, afterEach, expect } from "@jest/globals";
+import { describe, it, beforeAll, afterAll, expect } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import { ResourceUpdateResponse } from "../../../src/utils/types";
 import fs from "fs";
@@ -13,13 +13,14 @@ describe("The Files feature", () => {
 
   console.log("nothing");
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     platform = await init({
       services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
     });
   });
 
-  afterEach(async done => {
+  afterAll(async done => {
+    console.log("ENTERED after all");
     await platform?.tearDown();
     platform = null;
     done();
@@ -57,8 +58,17 @@ describe("The Files feature", () => {
         expect(filesUpload.resource.thumbnails.length).toBe(thumbnails[i]);
         console.log(`Finished testing file ${file}`);
         console.log(`Result ${JSON.stringify(filesUpload.resource.thumbnails)}`);
+
+        for (const thumb of filesUpload.resource.thumbnails) {
+          const thumbnails = await platform.app.inject({
+            method: "GET",
+            url: `${url}/companies/${platform.workspace.company_id}/files/${filesUpload.resource.id}/thumbnails/${thumb.index}`,
+          });
+          expect(thumbnails.statusCode).toBe(200);
+        }
       }
 
+      console.log("DID finish");
       done();
     }, 120000);
   });
