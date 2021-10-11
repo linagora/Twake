@@ -8,12 +8,9 @@ import {
 import WebServerAPI from "../webserver/provider";
 import { DatabaseServiceAPI } from "../database/api";
 import { SearchServiceAPI } from "../search/api";
-import { ConsoleServiceAPI } from "../../../../services/console/api";
 import { PubsubServiceAPI } from "../pubsub/api";
-import StorageService from "../storage";
 import StorageAPI from "../storage/provider";
 import { CounterAPI } from "../counter/types";
-import { StatisticsAPI } from "../statistics/types";
 
 export interface PlatformServicesAPI extends TwakeServiceProvider, Initializable {
   fastify: WebServerAPI;
@@ -22,11 +19,10 @@ export interface PlatformServicesAPI extends TwakeServiceProvider, Initializable
   storage: StorageAPI;
   pubsub: PubsubServiceAPI;
   counter: CounterAPI;
-  statistics: StatisticsAPI;
 }
 
 @ServiceName("platform-services")
-@Consumes(["webserver", "database", "search", "storage", "pubsub", "counter", "statistics"])
+@Consumes(["webserver", "database", "search", "storage", "pubsub", "counter"])
 export default class PlatformService extends TwakeService<PlatformServicesAPI> {
   version = "1";
   name = "platform-services";
@@ -37,7 +33,6 @@ export default class PlatformService extends TwakeService<PlatformServicesAPI> {
   public storage: StorageAPI;
   public pubsub: PubsubServiceAPI;
   public counter: CounterAPI;
-  public statistics: StatisticsAPI;
 
   public async doInit(): Promise<this> {
     this.fastify = this.context.getProvider<WebServerAPI>("webserver");
@@ -46,7 +41,6 @@ export default class PlatformService extends TwakeService<PlatformServicesAPI> {
     this.storage = this.context.getProvider<StorageAPI>("storage");
     this.pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
     this.counter = this.context.getProvider<CounterAPI>("counter");
-    this.statistics = this.context.getProvider<StatisticsAPI>("statistics");
     return this;
   }
 

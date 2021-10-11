@@ -1,11 +1,11 @@
-import { Consumes, TwakeService } from "../../framework";
+import { Consumes, TwakeService } from "../../core/platform/framework";
 import { StatisticsAPI } from "./types";
-import { DatabaseServiceAPI } from "../database/api";
+import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import StatisticsEntity, {
   getInstance as getStatisticsEntityInstance,
   TYPE as StatisticsEntityType,
 } from "./entities/statistics";
-import Repository from "../database/services/orm/repository/repository";
+import Repository from "../../core/platform/services/database/services/orm/repository/repository";
 
 @Consumes(["database"])
 export default class StatisticsService

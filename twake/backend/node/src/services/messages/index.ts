@@ -9,8 +9,8 @@ import UserServiceAPI from "../user/api";
 import ChannelServiceAPI from "../channels/provider";
 import { FileServiceAPI } from "../files/api";
 import { ApplicationServiceAPI } from "../applications/api";
-import { StatisticsAPI } from "../../core/platform/services/statistics/types";
 import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
+import { StatisticsAPI } from "../statistics/types";
 
 @Prefix("/internal/services/messages/v1")
 @Consumes([
@@ -22,6 +22,7 @@ import { PlatformServicesAPI } from "../../core/platform/services/platform-servi
   "files",
   "applications",
   "platform-services",
+  "statistics",
 ])
 export default class MessageService extends TwakeService<MessageServiceAPI> {
   version = "1";
@@ -34,15 +35,14 @@ export default class MessageService extends TwakeService<MessageServiceAPI> {
 
   public async doInit(): Promise<this> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
-    const database = this.context.getProvider<DatabaseServiceAPI>("database");
-    const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
     const user = this.context.getProvider<UserServiceAPI>("user");
     const channels = this.context.getProvider<ChannelServiceAPI>("channels");
     const files = this.context.getProvider<FileServiceAPI>("files");
     const applications = this.context.getProvider<ApplicationServiceAPI>("applications");
     const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
+    const statistics = this.context.getProvider<StatisticsAPI>("statistics");
 
-    this.service = getService(platformServices, user, channels, files, applications);
+    this.service = getService(platformServices, user, channels, files, applications, statistics);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {

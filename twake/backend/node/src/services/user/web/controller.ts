@@ -188,8 +188,8 @@ export class UsersCrudController
   private async getCompanyStats(company: Company): Promise<CompanyStatsObject> {
     return {
       created_at: company.dateAdded,
-      total_members: 0,
-      total_guests: 0,
+      total_members: company.stats?.total_members || 0,
+      total_guests: company.stats?.total_guests || 0,
       total_messages: await this.service.statistics.get(company.id, "messages"),
     };
   }

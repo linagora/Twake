@@ -18,8 +18,8 @@ import UserServiceAPI from "../../user/api";
 import ChannelServiceAPI from "../../channels/provider";
 import { FileServiceAPI } from "../../files/api";
 import { ApplicationServiceAPI } from "../../applications/api";
-import { StatisticsAPI } from "../../../core/platform/services/statistics/types";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
+import { StatisticsAPI } from "../../statistics/types";
 
 export function getService(
   platformServices: PlatformServicesAPI,
@@ -27,8 +27,9 @@ export function getService(
   channel: ChannelServiceAPI,
   files: FileServiceAPI,
   applications: ApplicationServiceAPI,
+  statistics: StatisticsAPI,
 ): Service {
-  return new Service(platformServices, user, channel, files, applications);
+  return new Service(platformServices, user, channel, files, applications, statistics);
 }
 
 export default class Service implements MessageServiceAPI {
@@ -46,6 +47,7 @@ export default class Service implements MessageServiceAPI {
     channel: ChannelServiceAPI,
     files: FileServiceAPI,
     applications: ApplicationServiceAPI,
+    statistics: StatisticsAPI,
   ) {
     this.userBookmarks = getMessageUserBookmarksServiceAPI(platformServices.database);
     this.messages = getMessageThreadMessagesServiceAPI(
@@ -66,7 +68,7 @@ export default class Service implements MessageServiceAPI {
       this,
     );
 
-    this.statistics = platformServices.statistics;
+    this.statistics = statistics;
   }
 
   async init(context: TwakeContext): Promise<this> {

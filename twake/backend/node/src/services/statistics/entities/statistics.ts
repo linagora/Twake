@@ -1,6 +1,5 @@
-import { Column, Entity } from "../../database/services/orm/decorators";
 import { merge } from "lodash";
-import Company, { CompanyPrimaryKey } from "../../../../../services/user/entities/company";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 export const TYPE = "statistics";
 

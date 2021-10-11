@@ -22,13 +22,14 @@ import Company from "../entities/company";
 import User from "../entities/user";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../applications/api";
-import { StatisticsAPI } from "../../../core/platform/services/statistics/types";
+import { StatisticsAPI } from "../../statistics/types";
 
 export function getService(
   platformServices: PlatformServicesAPI,
   applications: ApplicationServiceAPI,
+  statistics: StatisticsAPI,
 ): UserServiceAPI {
-  return new Service(platformServices, applications);
+  return new Service(platformServices, applications, statistics);
 }
 
 class Service implements UserServiceAPI {
@@ -37,9 +38,12 @@ class Service implements UserServiceAPI {
   companies: CompaniesServiceAPI;
   external: UserExternalLinksServiceAPI;
   workspaces: WorkspaceServiceAPI;
-  statistics: StatisticsAPI;
 
-  constructor(platformServices: PlatformServicesAPI, readonly applications: ApplicationServiceAPI) {
+  constructor(
+    platformServices: PlatformServicesAPI,
+    readonly applications: ApplicationServiceAPI,
+    readonly statistics: StatisticsAPI,
+  ) {
     this.users = getUserService(platformServices);
     this.external = getExternalService(platformServices.database);
     this.companies = getCompanyService(platformServices);
@@ -49,7 +53,6 @@ class Service implements UserServiceAPI {
       this.companies,
       this.applications,
     );
-    this.statistics = platformServices.statistics;
   }
 
   async init(context: TwakeContext): Promise<this> {

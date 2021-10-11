@@ -1,4 +1,4 @@
-import { TwakeServiceProvider } from "../../framework";
+import { TwakeServiceProvider } from "../../core/platform/framework";
 
 export interface StatisticsAPI extends TwakeServiceProvider {
   increase(companyId: string, eventName: string): Promise<unknown>;

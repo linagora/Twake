@@ -22,7 +22,7 @@ import {
 import { WorkspaceServiceAPI } from "../workspaces/api";
 import { uuid } from "../../utils/types";
 import Device from "./entities/device";
-import { StatisticsAPI } from "../../core/platform/services/statistics/types";
+import { StatisticsAPI } from "../statistics/types";
 
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
