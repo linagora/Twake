@@ -3,7 +3,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   AuthRequest,
   AuthResponse,
-  ConsoleExecutionContext,
   ConsoleHookBody,
   ConsoleHookBodyContent,
   ConsoleHookCompany,
@@ -14,7 +13,7 @@ import {
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
 import PasswordEncoder from "../../../utils/password-encoder";
-import { AccessToken, JWTObject } from "../../../utils/types";
+import { AccessToken } from "../../../utils/types";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import UserServiceAPI from "../../user/api";
 import assert from "assert";
@@ -31,10 +30,7 @@ export class ConsoleController {
     this.passwordEncoder = new PasswordEncoder();
   }
 
-  async auth(
-    request: FastifyRequest<{ Body: AuthRequest }>,
-    reply: FastifyReply,
-  ): Promise<AuthResponse> {
+  async auth(request: FastifyRequest<{ Body: AuthRequest }>): Promise<AuthResponse> {
     if (request.body.remote_access_token) {
       return { access_token: await this.authByToken(request.body.remote_access_token) };
     } else if (request.body.email && request.body.password) {
@@ -44,7 +40,7 @@ export class ConsoleController {
     }
   }
 
-  async tokenRenewal(request: FastifyRequest, reply: FastifyReply): Promise<AuthResponse> {
+  async tokenRenewal(request: FastifyRequest): Promise<AuthResponse> {
     return {
       access_token: this.authService.generateJWT(
         request.currentUser.id,
@@ -57,9 +53,13 @@ export class ConsoleController {
     };
   }
 
-  async resendVerificationEmail(request: FastifyRequest) {
+  async resendVerificationEmail(
+    request: FastifyRequest,
+  ): Promise<{ success: boolean; email: string }> {
     const user = await this.userService.users.get({ id: request.currentUser.id });
+
     await this.consoleService.getClient().resendVerificationEmail(user.email_canonical);
+
     return {
       success: true,
       email: user.email_canonical,
@@ -87,8 +87,6 @@ export class ConsoleController {
     reply: FastifyReply,
   ): Promise<ConsoleHookResponse> {
     try {
-      const context = getExecutionContext(request, this.consoleService);
-
       logger.info(`Received event ${request.body.type}`);
 
       switch (request.body.type) {
@@ -122,7 +120,7 @@ export class ConsoleController {
           await this.companyUpdated(request.body.content as ConsoleHookBodyContent);
           break;
         default:
-          logger.info(`Event not recognized`);
+          logger.info("Event not recognized");
           reply.notImplemented("Unimplemented");
           return;
       }
@@ -178,13 +176,23 @@ export class ConsoleController {
 
   private async authByPassword(email: string, password: string): Promise<AccessToken> {
     const user = await this.userService.users.getByEmail(email);
-    if (user == null) {
+    if (!user) {
       throw CrudExeption.forbidden("User doesn't exists");
     }
-    const [storedPassword, salt] = await this.userService.users.getHashedPassword({ id: user.id });
-    if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
-      throw CrudExeption.forbidden("Password doesn't match");
+
+    // allow to login in development mode with any password. This can be used to test without the console provider because the password is not stored locally...
+    if (process.env.NODE_ENV !== "development") {
+      const [storedPassword, salt] = await this.userService.users.getHashedPassword({
+        id: user.id,
+      });
+
+      if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
+        throw CrudExeption.forbidden("Password doesn't match");
+      }
+    } else if (process.env.NODE_ENV === "development") {
+      logger.warn("ERROR_NOTONPROD: YOU ARE RUNNING IN DEVELOPMENT MODE, AUTH IS DISABLED!!!");
     }
+
     return this.authService.generateJWT(user.id, user.email_canonical, {
       track: user?.preferences?.allow_tracking || false,
       provider_id: user.identity_provider_id,
@@ -203,17 +211,4 @@ export class ConsoleController {
       provider_id: user.identity_provider_id,
     });
   }
-}
-
-function getExecutionContext(
-  request: FastifyRequest<{ Body: ConsoleHookBody }>,
-  service: ConsoleServiceAPI,
-): ConsoleExecutionContext {
-  return {
-    user: request.currentUser,
-    url: request.url,
-    method: request.routerMethod,
-    transport: "http",
-    options: service.consoleOptions,
-  };
 }
