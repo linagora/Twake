@@ -15,25 +15,7 @@ describe("The Files feature", () => {
 
   beforeEach(async () => {
     platform = await init({
-      services: [
-        "webserver",
-        "database",
-        "applications",
-        "search",
-        "storage",
-        "pubsub",
-        "user",
-        "search",
-        "files",
-        "previews",
-        "websocket",
-        "messages",
-        "auth",
-        "realtime",
-        "channels",
-        "counter",
-        "platform-services",
-      ],
+      services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
     });
   });
 
