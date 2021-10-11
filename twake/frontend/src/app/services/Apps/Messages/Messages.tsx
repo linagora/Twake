@@ -3,7 +3,9 @@ import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import UserService from 'services/user/UserService';
-import DepreciatedCollections, { Collection } from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections, {
+  Collection,
+} from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -16,7 +18,10 @@ import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServic
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
-import { Message } from '../../../models/Message';
+import { Message, MessageFileType } from '../../../models/Message';
+import FileUploadService from 'app/components/FileUploads/FileUploadService';
+import { PendingFileType } from 'app/models/File';
+import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -121,7 +126,12 @@ class Messages extends Observable {
     } else return [{ type: 'br' }];
   }
 
-  async sendMessage(value: string, options: { [key: string]: any }, collectionKey: string) {
+  async sendMessage(
+    value: string,
+    options: { [key: string]: any },
+    collectionKey: string,
+    attachements: string[],
+  ) {
     return new Promise(async resolve => {
       value = PseudoMarkdownCompiler.transformChannelsUsers(value);
       let channel = await this.findChannel(options.channel_id);
@@ -171,30 +181,6 @@ class Messages extends Observable {
       let message = this.collection.edit(null);
       let val = PseudoMarkdownCompiler.compileToJSON(value);
 
-      const editorManager = MessageEditorManager.get(options.channel_id);
-      let filesAttachements =
-        editorManager.filesAttachements[options.parent_message_id || 'main'] || [];
-
-      const filesAttachementsToTwacode =
-        filesAttachements.map(id => {
-          return {
-            type: 'file',
-            mode: filesAttachements.length > 1 ? 'mini' : 'preview',
-            content: id,
-          };
-        }) || {};
-
-      const fileSystemMessage = this.getFileSystemMessage(
-        val.original_str.length,
-        filesAttachementsToTwacode.length > 1,
-      );
-
-      const preparedFiles = filesAttachementsToTwacode.length
-        ? [...fileSystemMessage, ...filesAttachementsToTwacode]
-        : [];
-
-      val.files = preparedFiles;
-      val.prepared.push({ type: 'nop', content: preparedFiles });
       message.channel_id = options.channel_id;
       message.parent_message_id = options.parent_message_id || '';
       message.sender = CurrentUser.get().id;
@@ -204,6 +190,26 @@ class Messages extends Observable {
       message.hidden_data = {};
       message.pinned = false;
       message.responses_count = 0;
+
+      message.files = [
+        ...attachements
+          .filter(id => isPendingFileStatusSuccess(FileUploadService.getPendingFile(id).status))
+          .map(id => {
+            const pendingFile = FileUploadService.getPendingFile(id);
+            return {
+              id: pendingFile.backendFile?.id,
+              company_id: pendingFile.backendFile?.company_id,
+              metadata: {
+                source: 'internal',
+                name: pendingFile.originalFile.name,
+                external_id: pendingFile.backendFile?.id || '',
+                size: pendingFile.originalFile.size, //Original weight
+                type: pendingFile.originalFile.type,
+                thumbnails: pendingFile.backendFile?.thumbnails || [],
+              },
+            };
+          }),
+      ];
 
       message.creation_date = new Date().getTime() / 1000 + 10; //To be on the bottom
       message.content = val;

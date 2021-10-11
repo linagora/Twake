@@ -1,4 +1,4 @@
-import { PendingFileType } from 'app/models/File';
+import { FileType, PendingFileType } from 'app/models/File';
 import JWTStorage from 'app/services/JWTStorage';
 import EventEmitter from 'events';
 import RouterServices from 'services/RouterService';
@@ -11,7 +11,7 @@ export enum Events {
   ON_CHANGE = 'onChange',
 }
 
-export class FileUploadService extends EventEmitter {
+class FileUploadService extends EventEmitter {
   private pendingFiles: PendingFileType[] = [];
   public currentTaskId: string = '';
 
@@ -19,10 +19,13 @@ export class FileUploadService extends EventEmitter {
     this.emit(Events.ON_CHANGE, this.pendingFiles);
   }
 
-  public async upload(fileList: File[]): Promise<void> {
+  public async upload(fileList: File[]): Promise<PendingFileType[]> {
     const { companyId } = RouterServices.getStateFromRoute();
 
-    if (!fileList || !companyId) return;
+    if (!fileList || !companyId) {
+      console.error(`FileList or companyId is undefined`);
+      return [];
+    }
 
     if (!this.pendingFiles.some(f => isPendingFileStatusPending(f.status))) {
       //New upload task when all previous task is finished
@@ -99,10 +102,26 @@ export class FileUploadService extends EventEmitter {
         this.onChange();
       });
     });
+
+    return this.pendingFiles.filter(f => f.uploadTaskId === this.currentTaskId);
+  }
+
+  public async getFile({
+    companyId,
+    fileId,
+  }: {
+    fileId: string;
+    companyId: string;
+  }): Promise<FileType> {
+    return (await FileUploadAPIClient.get({ fileId, companyId }))?.resource;
   }
 
   public getPendingFile(id: string): PendingFileType {
     return this.pendingFiles.filter(f => f.id === id)[0];
+  }
+
+  public getPendingFileByBackendId(id: string): PendingFileType {
+    return this.pendingFiles.filter(f => f.backendFile?.id && f.backendFile.id === id)[0];
   }
 
   public cancel(id: string, timeout = 1000) {
@@ -112,6 +131,12 @@ export class FileUploadService extends EventEmitter {
     fileToCancel.resumable.cancel();
     fileToCancel.status = 'error';
     this.onChange();
+
+    if (fileToCancel.backendFile)
+      this.deleteOneFile({
+        companyId: fileToCancel.backendFile.company_id,
+        fileId: fileToCancel.backendFile.id,
+      });
 
     setTimeout(() => {
       this.pendingFiles = this.pendingFiles.filter(f => f.id !== id);
@@ -158,6 +183,26 @@ export class FileUploadService extends EventEmitter {
       maxChunkRetries: maxChunkRetries || 2,
       query,
     });
+  }
+
+  public getFileThumbnailUrl({
+    companyId,
+    fileId,
+    thumbnailId,
+  }: {
+    companyId: string;
+    fileId: string;
+    thumbnailId: string;
+  }): string {
+    return FileUploadAPIClient.getFileThumbnailUrl({
+      companyId,
+      fileId,
+      thumbnailId,
+    });
+  }
+
+  public deleteOneFile({ companyId, fileId }: { companyId: string; fileId: string }): void {
+    return FileUploadAPIClient.delete({ companyId, fileId });
   }
 }
 

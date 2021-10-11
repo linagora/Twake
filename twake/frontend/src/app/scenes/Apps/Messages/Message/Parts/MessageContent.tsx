@@ -12,6 +12,9 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import { Message } from 'app/models/Message';
 import DeletedContent from './DeletedContent';
 import RetryButtons from './RetryButtons';
+import FileComponent from 'app/components/File/FileComponent';
+import { Row } from 'antd';
+import Globals from 'services/Globals';
 
 type Props = {
   message: Message;
@@ -114,6 +117,35 @@ export default (props: Props) => {
                   onAction(type, id, context, passives, evt)
                 }
               />
+              {props.message?.files && props.message?.files?.length > 0 && (
+                <Row justify="start" align="middle" className="small-top-margin" wrap>
+                  {props.message.files.map((f, i) =>
+                    f.metadata ? (
+                      <FileComponent
+                        key={i}
+                        className="small-right-margin small-bottom-margin"
+                        data={{
+                          type: 'message',
+                          file: {
+                            id: f.metadata.external_id,
+                            name: f.metadata.name,
+                            size: f.metadata.size,
+                            thumbnail: {
+                              // TODO Get route using a service ?
+                              url: f.metadata.thumbnails[0]?.url
+                                ? `${Globals.api_root_url}/internal/services/files/v1${f.metadata.thumbnails[0].url}`
+                                : undefined,
+                            },
+                            type: f.metadata.type,
+                          },
+                        }}
+                      />
+                    ) : (
+                      <></>
+                    ),
+                  )}
+                </Row>
+              )}
               {!messageSaveFailed && (
                 <Reactions message={props.message} collectionKey={props.collectionKey} />
               )}

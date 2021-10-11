@@ -3,6 +3,7 @@ import Resumable from 'services/uploadManager/resumable';
 export type MetaDataType = {
   name: string;
   mime: string;
+  thumbnails_status?: string;
 };
 
 export type ThumbnailObjectType = {

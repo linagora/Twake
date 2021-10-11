@@ -1,16 +1,26 @@
-import FileUploadService, { Events } from 'app/components/FileUploads/FileUploadService';
+import FileUploadService, {
+  Events as FileUploadEvents,
+} from 'app/components/FileUploads/FileUploadService';
 import { PendingFileType } from 'app/models/File';
+import MessagePendingUploadZonesService from 'app/services/Apps/Messages/MessagePendingUploadZonesService';
 import { cloneDeep } from 'lodash';
 import { useEffect, useRef } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { PendingFilesListState } from '../atoms/PendingFilesList';
 import { CurrentTaskSelector } from '../selectors/CurrentTask';
+import RouterServices from 'services/RouterService';
 
 type HandleUploadChangeType = (list: PendingFileType[]) => void;
 
-export const useUploadHook = () => {
+export const useUpload = () => {
+  const { companyId } = RouterServices.getStateFromRoute();
+  // State
   const [pendingFilesListState, setPendingFilesListState] = useRecoilState(PendingFilesListState);
+
+  // Selector
   const currentTask = useRecoilValue(CurrentTaskSelector);
+
+  // Handler
   const handleUploadChange = useRef<HandleUploadChangeType>(list => {
     const updatedState = list.map(f =>
       cloneDeep({
@@ -24,12 +34,14 @@ export const useUploadHook = () => {
   });
 
   useEffect(() => {
-    const current = handleUploadChange.current;
+    const currentHandleUploadChange = handleUploadChange.current;
 
-    if (current) FileUploadService.addListener(Events.ON_CHANGE, current);
+    if (currentHandleUploadChange) {
+      FileUploadService.addListener(FileUploadEvents.ON_CHANGE, currentHandleUploadChange);
+    }
 
     return () => {
-      FileUploadService.removeListener(Events.ON_CHANGE, current);
+      FileUploadService.removeListener(FileUploadEvents.ON_CHANGE, currentHandleUploadChange);
     };
   }, []);
 
@@ -39,7 +51,12 @@ export const useUploadHook = () => {
 
   const getOnePendingFile = (id: string) => FileUploadService.getPendingFile(id);
 
-  const uploadFiles = async (list: File[]) => await FileUploadService.upload(list);
+  const uploadFiles = async (editorId: string, list: File[]) =>
+    await MessagePendingUploadZonesService.add(editorId, list);
+
+  const deleteOneFile = (id: string) => {
+    if (companyId) FileUploadService.deleteOneFile({ companyId, fileId: id });
+  };
 
   return {
     pendingFilesListState,
@@ -48,5 +65,6 @@ export const useUploadHook = () => {
     getOnePendingFile,
     uploadFiles,
     currentTask,
+    deleteOneFile,
   };
 };

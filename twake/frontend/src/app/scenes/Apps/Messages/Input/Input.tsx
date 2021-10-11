@@ -7,18 +7,21 @@ import InputOptions from './Parts/InputOptions';
 import EphemeralMessages from './Parts/EphemeralMessages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import MessagesService from 'services/Apps/Messages/Messages';
-import AttachedFiles from './Parts/AttachedFiles';
+import PendingAttachments from './Parts/PendingAttachments';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import { EditorView } from 'app/components/RichTextEditor';
 import Languages from 'app/services/languages/languages';
 import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
-import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
-
+import { useUpload } from 'app/state/recoil/hooks/useUpload';
 import './Input.scss';
-
-type FileType = { [key: string]: any };
+import Attachments from './Parts/Attachments';
+import FileUploadService from 'app/components/FileUploads/FileUploadService';
+import RouterService from 'app/services/RouterService';
+import { FileType } from 'app/models/File';
+import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
+import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 
 type Props = {
   messageId?: string;
@@ -41,11 +44,12 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const { uploadFiles } = useUploadHook();
   const editorPlugins = props.editorPlugins || ['emoji', 'mention', 'channel', 'command'];
   const editorId = `channel:${props.channelId || ''}/thread:${props.threadId || ''}/message:${
     props.messageId || ''
   }`;
+  const { uploadFiles, getOnePendingFile } = useUpload();
+  const { currentUploadZoneFilesList, clearZone } = useUploadZones(editorId);
   const format = props.format || 'markdown';
   const editorRef = useRef<EditorView>(null);
   const submitRef = useRef<HTMLDivElement>(null);
@@ -128,9 +132,13 @@ export default (props: Props) => {
       {
         channel_id: props.channelId,
         parent_message_id: props.threadId || '',
+        editor_id: editorId,
       },
       props.collectionKey,
+      currentUploadZoneFilesList,
     ).then((message: any) => {
+      clearZone(editorId);
+
       if (message) {
         if (
           messageEditorService.currentEditor ===
@@ -210,14 +218,14 @@ export default (props: Props) => {
   };
 
   const getFilesLimit = () => {
-    const attachements = messageEditorService.getAttachements(props.threadId) || [];
+    const attachements = messageEditorService.getAttachements(editorId) || [];
     const limit = messageEditorService.ATTACHEMENTS_LIMIT;
 
     return attachements.length ? limit - attachements.length : limit;
   };
 
   const onAddFiles = async (files: File[]) => {
-    await uploadFiles(files);
+    await uploadFiles(editorId, files);
   };
 
   const disabled = isEmpty() || isTooLong;
@@ -261,7 +269,8 @@ export default (props: Props) => {
           }}
         />
 
-        <AttachedFiles channelId={props.channelId} threadId={props.threadId} />
+        <PendingAttachments zoneId={editorId} />
+        <Attachments files={[]} />
 
         {!hasEphemeralMessage && (
           <div className="editorview-submit">

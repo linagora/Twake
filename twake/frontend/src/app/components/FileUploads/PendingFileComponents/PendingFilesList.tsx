@@ -5,8 +5,8 @@ import './styles.scss';
 import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
 import { PendingFileRecoilType } from 'app/models/File';
-import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
 import classNames from 'classnames';
+import { useUpload } from 'app/state/recoil/hooks/useUpload';
 
 type PropsType = {
   pendingFilesState: PendingFileRecoilType[];
@@ -15,7 +15,7 @@ type PropsType = {
 const { Text } = Typography;
 const { Header, Content } = Layout;
 export default ({ pendingFilesState }: PropsType) => {
-  const { getOnePendingFile, currentTask } = useUploadHook();
+  const { getOnePendingFile, currentTask } = useUpload();
   const [hiddenPendingFiles, setHiddenPendingFiles] = useState<boolean>(false);
 
   return pendingFilesState.length > 0 ? (

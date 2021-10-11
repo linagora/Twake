@@ -216,15 +216,18 @@ class Service implements FileServiceAPI {
     };
   }
 
+  // ici thumbnail
   async thumbnail(
     id: string,
     index: string,
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; type: string; size: number }> {
     const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+
     if (!entity) {
       throw "File not found";
     }
+    console.log("un log ici", entity.thumbnails);
 
     const thumbnail = entity.thumbnails[parseInt(index)];
     if (!thumbnail) {
@@ -246,7 +249,7 @@ class Service implements FileServiceAPI {
   }
 
   async get(id: string, context: CompanyExecutionContext): Promise<File> {
-    return this.repository.findOne({ company_id: context.company.id, id });
+    return await this.repository.findOne({ id, company_id: context.company.id });
   }
 
   getThumbnailRoute(file: File, index: string) {
@@ -255,6 +258,12 @@ class Service implements FileServiceAPI {
 
   getDownloadRoute(file: File) {
     return getDownloadRoute(file);
+  }
+
+  // TODO
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  delete(id: string, context: CompanyExecutionContext) {
+    throw new Error("Not implemented");
   }
 }
 

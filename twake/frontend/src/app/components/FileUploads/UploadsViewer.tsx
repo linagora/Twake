@@ -1,9 +1,9 @@
 import React from 'react';
-import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
+import { useUpload } from 'app/state/recoil/hooks/useUpload';
 import PendingFilesList from './PendingFileComponents/PendingFilesList';
 
 const ChatUploadsViewer = (): JSX.Element => {
-  const { currentTask } = useUploadHook();
+  const { currentTask } = useUpload();
 
   return !!currentTask && currentTask.files.length > 0 && !currentTask.completed ? (
     <PendingFilesList pendingFilesState={currentTask.files} />

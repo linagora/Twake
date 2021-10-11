@@ -8,7 +8,7 @@ import {
   isPendingFileStatusSuccess,
 } from '../utils/PendingFiles';
 import Languages from 'services/languages/languages';
-import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
+import { useUpload } from 'app/state/recoil/hooks/useUpload';
 
 type PropsType = {
   pendingFileState: PendingFileRecoilType;
@@ -17,7 +17,7 @@ type PropsType = {
 
 const { Text } = Typography;
 export default ({ pendingFileState, pendingFile }: PropsType) => {
-  const { pauseOrResumeUpload, cancelUpload } = useUploadHook();
+  const { pauseOrResumeUpload, cancelUpload } = useUpload();
 
   const getProgressStrokeColor = (status: PendingFileRecoilType['status']) => {
     if (isPendingFileStatusError(status)) return 'var(--error)';

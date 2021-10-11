@@ -79,6 +79,7 @@ export class FileController {
     return { resource };
   }
 
+  // TODO
   async delete(): Promise<ResourceDeleteResponse> {
     throw new Error("Not implemented");
   }

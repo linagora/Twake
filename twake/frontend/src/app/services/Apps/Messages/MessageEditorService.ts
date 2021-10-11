@@ -1,7 +1,9 @@
+import FileUploadService from 'app/components/FileUploads/FileUploadService';
 import Observable from 'app/services/Depreciated/observable';
 import LocalStorage from 'app/services/LocalStorage';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import Languages from 'services/languages/languages';
+import MessagePendingUploadZonesService from './MessagePendingUploadZonesService';
 
 // FIX ME use real File type instead
 type FileType = { [key: string]: any };
@@ -40,7 +42,7 @@ export class MessageEditorService extends Observable {
     const editorId = this.getEditorId(threadId, messageId);
 
     if (!messageId) {
-      const all = LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY) || {} as any;
+      const all = LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY) || ({} as any);
       all[this.getCacheId(threadId)] = [content, new Date().getTime()];
       LocalStorage.setItem(MessageEditorService.LOCALSTORAGE_KEY, all);
     }
@@ -58,7 +60,9 @@ export class MessageEditorService extends Observable {
     const editorId = this.getEditorId(threadId, messageId);
 
     if (!messageId) {
-      const all = this.cleanSavedInputContents(LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY) || {});
+      const all = this.cleanSavedInputContents(
+        LocalStorage.getItem(MessageEditorService.LOCALSTORAGE_KEY) || {},
+      );
       const res = (all[this.getCacheId(threadId)] || {})[0];
       if (res) {
         this.editorsContents[editorId] = res;
@@ -137,6 +141,31 @@ export class MessageEditorService extends Observable {
     this.filesAttachements[id].push(file.id);
 
     this.notify();
+  }
+
+  setAttachments(threadId: string, list: string[]) {
+    const id = this.getThreadId(threadId);
+    list.forEach(pendingFileId => {
+      const file = FileUploadService.getPendingFile(pendingFileId);
+
+      if (this.shouldLimitAttachements(threadId)) {
+        return Toaster.error(
+          Languages.t('services.apps.messages.message_editor_service.upload_error_toaster', [
+            file.originalFile.name,
+            this.ATTACHEMENTS_LIMIT,
+          ]),
+          4,
+        );
+      }
+
+      if (!this.filesAttachements[id]) {
+        this.filesAttachements[id] = [];
+      }
+
+      this.filesAttachements[id].push(file.id);
+
+      this.notify();
+    });
   }
 
   onRemoveAttachement(threadId: string, fileId: string) {
