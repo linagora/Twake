@@ -36,19 +36,6 @@ export class PreviewProcessor
     ack: true,
   };
 
-  constructor(
-    service: PreviewServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    readonly storage: StorageAPI,
-  ) {
-    this.service = service;
-  }
-  service: PreviewServiceAPI;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  init?(context?: TwakeContext): Promise<this> {
-    throw new Error("Method not implemented.");
-  }
-
   validate(message: PreviewPubsubRequest): boolean {
     return !!(message && message.document && message.output);
   }
