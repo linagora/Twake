@@ -64,11 +64,13 @@ describe("The Files feature", () => {
         expect(filesUpload.resource.thumbnails.length).toBe(thumbnails[i]);
 
         for (const thumb of filesUpload.resource.thumbnails) {
+          console.log(`Get thumbnail ${thumb.id}`, new Date());
           const thumbnails = await platform.app.inject({
             method: "GET",
             url: `${url}/companies/${platform.workspace.company_id}/files/${filesUpload.resource.id}/thumbnails/${thumb.index}`,
           });
           expect(thumbnails.statusCode).toBe(200);
+          console.log(`Did get thumbnail ${thumb.id}`, new Date());
         }
       }
 
