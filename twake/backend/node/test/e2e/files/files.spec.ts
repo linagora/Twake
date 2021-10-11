@@ -26,8 +26,6 @@ describe("The Files feature", () => {
   });
 
   describe("On user send files", () => {
-    return;
-
     const files = [
       "assets/sample.png",
       "assets/sample.gif",
