@@ -17,6 +17,7 @@ export default (props: PropsType) =>
       top: 'calc(50% + 50px)',
       width: '100%',
       color: 'var(--white)',
+      textAlign: 'center',
     }}
   >
     <div>

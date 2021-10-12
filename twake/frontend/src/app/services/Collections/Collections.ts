@@ -4,6 +4,7 @@ import Collection, { CollectionOptions } from './Collection';
 import Resource from './Resource';
 import Transport from './Transport/Transport';
 import { clearCurrentDatabase } from './Storage';
+import { TransportOptions } from './Transport/TransportAPI';
 
 export { default as Collection } from './Collection';
 export { default as Resource } from './Resource';
@@ -11,27 +12,18 @@ export { default as EventEmitter } from './EventEmitter';
 
 type Options = {
   storageKey?: string;
-  transport?: {
-    rest?: {
-      url?: string; //Rest API prefix, like http://localhost:8000/internal
-      headers?: { [key: string]: string };
-    };
-    socket?: {
-      url?: string; //Socket API, like http://localhost:8000/internal/sockets
-      authenticate?: () => Promise<any>;
-    };
-  };
+  transport: TransportOptions;
 };
 
 const logger = Logger.getLogger('Collections');
 
 class Collections {
   private collections = new Map<string, Collection<Resource<any>>>();
-  private options: Options = { transport: {}, storageKey: 'none' };
+  private options: Options = { transport: {} as TransportOptions, storageKey: 'none' };
   protected transport: Transport = new Transport();
   private started: boolean = false;
 
-  public setOptions(options: Options) {
+  private setOptions(options: Options) {
     this.options = assign(this.options, options);
   }
 
@@ -39,9 +31,9 @@ class Collections {
     return this.options;
   }
 
-  public connect(options?: Options) {
+  public connect(options: Options) {
     options && this.setOptions(options);
-    this.transport.connect();
+    this.transport.connect(this.options.transport);
     this.started = true;
   }
 
