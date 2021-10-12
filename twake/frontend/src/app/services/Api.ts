@@ -47,7 +47,7 @@ export default class Api {
     route: string,
     callback?: (result: Response) => void,
     raw: boolean = false,
-    options: { disableJWTAuthentication?: boolean } = {},
+    options: { disableJWTAuthentication?: boolean; fileDownload?: boolean } = {},
   ): Promise<Response> {
     return new Promise(resolve => {
       route = Globals.api_root_url + route;

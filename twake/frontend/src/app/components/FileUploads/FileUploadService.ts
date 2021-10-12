@@ -1,16 +1,19 @@
+import { v1 as uuid } from 'uuid';
+import EventEmitter from 'events';
+
 import { FileType, PendingFileType } from 'app/models/File';
 import JWTStorage from 'app/services/JWTStorage';
-import EventEmitter from 'events';
 import RouterServices from 'services/RouterService';
 import Resumable from 'services/uploadManager/resumable';
-import { v1 as uuid } from 'uuid';
 import FileUploadAPIClient from './FileUploadAPIClient';
 import { isPendingFileStatusPending } from './utils/PendingFiles';
+import Logger from 'app/services/Logger';
 
 export enum Events {
   ON_CHANGE = 'onChange',
 }
 
+const logger = Logger.getLogger('Services/FileUploadService');
 class FileUploadService extends EventEmitter {
   private pendingFiles: PendingFileType[] = [];
   public currentTaskId: string = '';
@@ -23,7 +26,7 @@ class FileUploadService extends EventEmitter {
     const { companyId } = RouterServices.getStateFromRoute();
 
     if (!fileList || !companyId) {
-      console.error(`FileList or companyId is undefined`);
+      logger.log('FileList or companyId is undefined', [fileList, companyId]);
       return [];
     }
 
@@ -201,8 +204,21 @@ class FileUploadService extends EventEmitter {
     });
   }
 
-  public deleteOneFile({ companyId, fileId }: { companyId: string; fileId: string }): void {
+  public deleteOneFile({
+    companyId,
+    fileId,
+  }: {
+    companyId: string;
+    fileId: string;
+  }): Promise<unknown> {
     return FileUploadAPIClient.delete({ companyId, fileId });
+  }
+
+  public download({ companyId, fileId }: { companyId: string; fileId: string }): Promise<Blob> {
+    return FileUploadAPIClient.download({
+      companyId: companyId,
+      fileId: fileId,
+    });
   }
 }
 

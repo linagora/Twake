@@ -1,8 +1,9 @@
 import React from 'react';
 import { Image } from 'antd';
-import { DataFileType } from '../types';
-import { FileText, Film } from 'react-feather';
 import classNames from 'classnames';
+import { FileText, Film } from 'react-feather';
+
+import { DataFileType } from '../types';
 
 type PropsType = {
   data: DataFileType;
@@ -12,6 +13,7 @@ export const FileThumbnail = ({ data }: PropsType): JSX.Element => {
   const type = data.file.type.split('/')[0];
   const isImageType = type === 'image';
   const isDocumentType = type === 'document';
+  const isApplicationType = type === 'application';
   const isVideoType = type === 'video';
 
   return (
@@ -22,8 +24,8 @@ export const FileThumbnail = ({ data }: PropsType): JSX.Element => {
     >
       {isImageType ? (
         <Image
-          width={31}
-          height={31}
+          width={32}
+          height={32}
           className="file-thumbnail-component"
           preview={false}
           src={data.file.thumbnail.url}
@@ -34,9 +36,9 @@ export const FileThumbnail = ({ data }: PropsType): JSX.Element => {
         <></>
       )}
 
-      {isDocumentType ? <FileText size={31} /> : <></>}
+      {isDocumentType || isApplicationType ? <FileText size={32} /> : <></>}
 
-      {isVideoType ? <Film size={31} /> : <></>}
+      {isVideoType ? <Film size={32} /> : <></>}
     </div>
   );
 };

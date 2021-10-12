@@ -227,7 +227,6 @@ class Service implements FileServiceAPI {
     if (!entity) {
       throw "File not found";
     }
-    console.log("un log ici", entity.thumbnails);
 
     const thumbnail = entity.thumbnails[parseInt(index)];
     if (!thumbnail) {
@@ -248,8 +247,8 @@ class Service implements FileServiceAPI {
     };
   }
 
-  async get(id: string, context: CompanyExecutionContext): Promise<File> {
-    return await this.repository.findOne({ id, company_id: context.company.id });
+  get(id: string, context: CompanyExecutionContext): Promise<File> {
+    return this.repository.findOne({ id, company_id: context.company.id });
   }
 
   getThumbnailRoute(file: File, index: string) {

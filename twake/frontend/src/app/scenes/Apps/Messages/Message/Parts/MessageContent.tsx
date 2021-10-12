@@ -15,6 +15,7 @@ import RetryButtons from './RetryButtons';
 import FileComponent from 'app/components/File/FileComponent';
 import { Row } from 'antd';
 import Globals from 'services/Globals';
+import RouterService from 'app/services/RouterService';
 
 type Props = {
   message: Message;
@@ -28,6 +29,7 @@ type Props = {
 export default (props: Props) => {
   const [active, setActive] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
+  const { companyId } = RouterService.getStateFromRoute();
   let loading_interaction_timeout: any = 0;
 
   Collections.get('messages').useListener(useState, [
@@ -130,6 +132,7 @@ export default (props: Props) => {
                             id: f.metadata.external_id,
                             name: f.metadata.name,
                             size: f.metadata.size,
+                            company_id: f.company_id || companyId,
                             thumbnail: {
                               // TODO Get route using a service ?
                               url: f.metadata.thumbnails[0]?.url

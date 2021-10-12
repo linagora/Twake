@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography } from 'antd';
 import { capitalize } from 'lodash';
+
 import Numbers from 'app/services/utils/Numbers';
 import { DataFileType } from '../types';
 

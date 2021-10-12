@@ -1,8 +1,10 @@
 import React from 'react';
-import { FileThumbnail, FileDetails, FileActions, FileProgress } from './parts';
 import classNames from 'classnames';
+
+import { FileThumbnail, FileDetails, FileActions, FileProgress } from './parts';
 import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
 import { DataFileType } from './types';
+
 import './File.scss';
 
 type PropsType = {

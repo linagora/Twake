@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Layout, Row, Col, Typography } from 'antd';
+import classNames from 'classnames';
 import { Minus, Plus } from 'react-feather';
-import './styles.scss';
+import { Layout, Row, Col, Typography } from 'antd';
+
 import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
 import { PendingFileRecoilType } from 'app/models/File';
-import classNames from 'classnames';
 import { useUpload } from 'app/state/recoil/hooks/useUpload';
+
+import './styles.scss';
 
 type PropsType = {
   pendingFilesState: PendingFileRecoilType[];

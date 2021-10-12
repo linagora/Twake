@@ -1,5 +1,6 @@
 import React from 'react';
 import { Progress } from 'antd';
+
 import { DataFileType } from '../types';
 import { PendingFileRecoilType } from 'app/models/File';
 import {
@@ -31,7 +32,7 @@ export const FileProgress = ({ data }: PropsType): JSX.Element => {
 
     if (isPendingFileStatusError(data.file.status)) return 'var(--error)';
     if (isPendingFileStatusPause(data.file.status)) return 'var(--warning)';
-    if (isPendingFileStatusPending(data.file.status)) return '#58C3FF';
+    if (isPendingFileStatusPending(data.file.status)) return 'var(--progress-bar-color)';
 
     return 'var(--success)';
   };
@@ -45,7 +46,7 @@ export const FileProgress = ({ data }: PropsType): JSX.Element => {
         showInfo={false}
         status={setStatus(data.file.status)}
         strokeColor={setProgressStrokeColor()}
-        trailColor="#EFEFE"
+        trailColor="var(--progress-bar-background)"
       />
     </div>
   ) : (

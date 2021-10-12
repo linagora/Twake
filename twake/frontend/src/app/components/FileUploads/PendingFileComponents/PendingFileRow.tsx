@@ -1,6 +1,7 @@
 import React from 'react';
-import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
 import { Pause, Play, X } from 'react-feather';
+import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
+
 import { PendingFileRecoilType, PendingFileType } from 'app/models/File';
 import {
   isPendingFileStatusError,

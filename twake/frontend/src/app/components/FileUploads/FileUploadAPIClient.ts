@@ -1,11 +1,12 @@
-import { FileType } from 'app/models/File';
 import Api from 'app/services/Api';
+import { FileType } from 'app/models/File';
 
 type ResponseFileType = { resource: FileType };
 
 type BaseContentType = { companyId: string };
 type GetContextType = BaseContentType & { fileId: string };
 type DeleteContextType = BaseContentType & { fileId: string };
+type DownloadContextType = BaseContentType & { fileId: string };
 
 class FileUploadAPIClient {
   private readonly prefixUrl: string = '/internal/services/files/v1';
@@ -18,23 +19,25 @@ class FileUploadAPIClient {
     return Api.post<undefined, ResponseFileType>(uploadFileRoute, undefined);
   }
 
-  public async get({ companyId, fileId }: GetContextType): Promise<ResponseFileType> {
+  public get({ companyId, fileId }: GetContextType): Promise<ResponseFileType> {
     const getFileRoute = this.getRoute({ fileId, companyId });
 
-    return await Api.get<ResponseFileType>(getFileRoute);
+    return Api.get<ResponseFileType>(getFileRoute);
   }
 
   public getRoute({
     companyId,
     fileId = undefined,
     fullApiRouteUrl = false,
+    download,
   }: {
     companyId: string;
     fileId?: string;
     fullApiRouteUrl?: boolean;
+    download?: boolean;
   }): string {
     const route = `${this.prefixUrl}/companies/${companyId}/files${
-      fileId !== undefined ? `/${fileId}` : ''
+      fileId !== undefined ? `/${fileId}${download ? '/download' : ''}` : ''
     }`;
 
     return fullApiRouteUrl ? Api.route(route) : route;
@@ -56,10 +59,17 @@ class FileUploadAPIClient {
     })}/thumbnails/${thumbnailId}`;
   }
 
-  public delete({ companyId, fileId }: DeleteContextType): void {
+  public delete({ companyId, fileId }: DeleteContextType): Promise<unknown> {
     const deleteFileRoute = this.getRoute({ companyId, fileId });
 
-    Api.delete<undefined, undefined>(deleteFileRoute, undefined);
+    return Api.delete<undefined, undefined>(deleteFileRoute, undefined);
+  }
+
+  public download({ companyId, fileId }: DownloadContextType): Promise<Blob> {
+    const downloadFileRoute = this.getRoute({ companyId, fileId, download: true });
+    return Api.get<Blob>(downloadFileRoute, undefined, true, {
+      fileDownload: true,
+    });
   }
 }
 

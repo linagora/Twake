@@ -8,6 +8,7 @@ export type DataFileType = {
     thumbnail: {
       url?: string;
     };
+    company_id?: string;
     size: number;
     type: string;
     status?: PendingFileRecoilType['status'];

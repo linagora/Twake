@@ -1,10 +1,11 @@
+import { useEffect, useRef } from 'react';
+import { cloneDeep } from 'lodash';
 import FileUploadService, {
   Events as FileUploadEvents,
 } from 'app/components/FileUploads/FileUploadService';
+
 import { PendingFileType } from 'app/models/File';
 import MessagePendingUploadZonesService from 'app/services/Apps/Messages/MessagePendingUploadZonesService';
-import { cloneDeep } from 'lodash';
-import { useEffect, useRef } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { PendingFilesListState } from '../atoms/PendingFilesList';
 import { CurrentTaskSelector } from '../selectors/CurrentTask';
@@ -58,6 +59,32 @@ export const useUpload = () => {
     if (companyId) FileUploadService.deleteOneFile({ companyId, fileId: id });
   };
 
+  const downloadOneFile = async ({
+    companyId,
+    fileId,
+    fileName,
+  }: {
+    companyId: string;
+    fileId: string;
+    fileName: string;
+  }) => {
+    const blob = await FileUploadService.download({
+      companyId,
+      fileId,
+    });
+
+    if (blob) {
+      // This is the best way that i found to simulate a download by clicking
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a); // We need to append the element to the dom -> otherwise it will not work in firefox
+      a.click();
+      a.remove(); // Afterwards we remove the element again
+    }
+  };
+
   return {
     pendingFilesListState,
     pauseOrResumeUpload,
@@ -66,5 +93,6 @@ export const useUpload = () => {
     uploadFiles,
     currentTask,
     deleteOneFile,
+    downloadOneFile,
   };
 };
