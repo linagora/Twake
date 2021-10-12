@@ -1,12 +1,14 @@
 import Number from 'services/utils/Numbers.js';
-import Api from 'services/Api';
 import Observable from 'app/services/Depreciated/observable.js';
-import Collections from 'services/Collections/Collections';
 import LoginService from 'app/services/login/LoginService';
 import Logger from 'app/services/Logger';
 import Globals from 'services/Globals';
+import WebSocket from './WebSocket/WebSocket';
 
-class Websocket extends Observable {
+/**
+ * @deprecated Keeps old PHP websocket working doing the bridge with the new implementation
+ */
+class DeprecatedWebsocket extends Observable {
   constructor() {
     super();
     this.logger = Logger.getLogger('Websocket');
@@ -104,9 +106,7 @@ class Websocket extends Observable {
     if (this.subscribed[route].length === 1) {
       const unid = Number.unid();
       this.subscribedKey[route] = unid;
-      Collections.getTransport()
-        .getSocket()
-        .join('previous::' + route, '', (type, data) => {
+      WebSocket.get().join('previous::' + route, '', (type, data) => {
           if (type === 'realtime:event') {
             this.message(unid, data.name, data.data);
           }
@@ -141,17 +141,13 @@ class Websocket extends Observable {
     });
     this.subscribed[route] = remaining;
     if (this.subscribed[route].length === 0) {
-      Collections.getTransport()
-        .getSocket()
-        .leave('previous::' + route, '');
+      WebSocket.get().leave('previous::' + route, '');
     }
   }
 
   publish(route, value) {
     this.logger.debug(`Publish to ${route}`);
-    Collections.getTransport()
-      .getSocket()
-      .emit('previous::' + route, value);
+    WebSocket.get().emit('previous::' + route, value);
   }
 
   reconnectIfNeeded(seconds = 30) {
@@ -185,4 +181,4 @@ class Websocket extends Observable {
   }
 }
 
-export default new Websocket();
+export default new DeprecatedWebsocket();

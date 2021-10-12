@@ -1,29 +1,17 @@
 import io from 'socket.io-client';
 import Logger from 'services/Logger';
+import { WebsocketEvents, WebSocketListener, WebsocketRoomActions } from './WebSocket';
 
-type WebSocketOptions = {
+export type WebSocketOptions = {
   url: string;
   authenticateHandler: () => Promise<any>;
 };
 
-export enum WebsocketActions {
-  Join = 'realtime:join',
-  Leave = 'realtime:leave',
-}
-
-export enum WebsocketEvents {
-  Connected = 'connected',
-  Disconnected = 'disconnected',
-  JoinSuccess = 'realtime:join:success',
-  JoinError = 'realtime:join:error',
-  Resource = 'realtime:resource',
-  Event = 'realtime:event',
-};
-
-type WebSocketListener = <T>(type: WebsocketEvents, event: T) => void;
+const CONNECT_TIMEOUT = 30000;
 
 class WebSocketService {
   private logger: Logger.Logger;
+  private lastConnection: number = 0;
   private wsListeners: {
     [path: string]: { [tag: string]: WebSocketListener };
   } = {};
@@ -32,6 +20,31 @@ class WebSocketService {
 
   constructor(private options: WebSocketOptions) {
     this.logger = Logger.getLogger('WebsocketService');
+    this.addEventListeners();
+  }
+
+  private addEventListeners(): void {
+    const reconnectWhenNeeded = () => {
+      if(!this.isConnected()) {
+        this.connect();
+      }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+      // TODO: Check visibility
+      reconnectWhenNeeded();
+    });
+
+    document.addEventListener('focus', () => {
+      reconnectWhenNeeded();
+    });
+
+    setInterval(() => {
+      if (new Date().getTime() - this.lastConnection > CONNECT_TIMEOUT) {
+        this.lastConnection = new Date().getTime();
+        reconnectWhenNeeded();
+      }
+    }, CONNECT_TIMEOUT);
   }
 
   isConnected(): boolean {
@@ -149,7 +162,7 @@ class WebSocketService {
     this.logger.debug(`Join room with name='${name}' and tag='${tag}'`);
 
     if (this.socket) {
-      this.socket.emit(WebsocketActions.Join, { name, token: 'twake' });
+      this.socket.emit(WebsocketRoomActions.Join, { name, token: 'twake' });
     }
 
     this.wsListeners[name] = this.wsListeners[name] || {};
@@ -165,7 +178,7 @@ class WebSocketService {
     if (Object.keys(this.wsListeners[name]).length === 0) {
       if (this.socket) {
         this.logger.debug(`Leave room with name='${name}' and tag='${tag}'`);
-        this.socket.emit(WebsocketActions.Leave, { name });
+        this.socket.emit(WebsocketRoomActions.Leave, { name });
       }
       delete this.wsListeners[name];
     }

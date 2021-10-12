@@ -1,4 +1,4 @@
-import { WebsocketEvents } from 'app/services/WebSocket/WebSocketService';
+import { WebsocketEvents } from 'app/services/WebSocket/WebSocket';
 import { merge } from 'lodash';
 import Collections, { Resource } from '../Collections';
 import CollectionTransport from './CollectionTransport';
@@ -40,7 +40,7 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
           .join(
             definition.room,
             this.transport.collection.getPath(),
-            async (type: WebsocketEvents, event: WebsocketResourceEvent & WebsocketJoinEvent) => {
+            async (type: WebsocketEvents | string, event: WebsocketResourceEvent & WebsocketJoinEvent) => {
               switch (type) {
                 case WebsocketEvents.Disconnected:
                   this.lastConnectedTime = new Date().getTime();
