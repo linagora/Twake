@@ -89,6 +89,14 @@ const routes: FastifyPluginCallback<{ service: ApplicationServiceAPI }> = (
     handler: companyApplicationController.save.bind(applicationController),
   });
 
+  //Application event triggered by a user
+  fastify.route({
+    method: "POST",
+    url: `${applicationsUrl}/:application_id/event`,
+    preValidation: [fastify.authenticate],
+    handler: applicationController.event.bind(applicationController),
+  });
+
   next();
 };
 

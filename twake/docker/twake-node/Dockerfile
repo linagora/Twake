@@ -11,6 +11,9 @@ RUN apt-get update && apt-get install -y imagemagick
 RUN apt-get update && apt-get install -y --force-yes unoconv libxml2-dev
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN apt-get update && apt-get install -y libc6
+RUN ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
+
 WORKDIR /usr/src/app
 COPY package*.json ./
 
@@ -24,9 +27,12 @@ COPY . .
 # Development Stage
 FROM node-base as development
 
+RUN npm install -g pino-pretty
+RUN npm install -g tsc-watch
 RUN npm install
 COPY . .
-RUN npm run build
+
+CMD ["npm", "run", "dev"]
 
 # Production Stage
 FROM node-base as production
@@ -36,6 +42,7 @@ ENV NODE_ENV=${NODE_ENV}
 RUN npm install --only=production
 COPY . .
 COPY --from=development /usr/src/app/dist ./dist
+RUN rm -R node_modules
 
 EXPOSE 3000
 

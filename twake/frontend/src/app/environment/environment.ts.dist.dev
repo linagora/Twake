@@ -1,7 +1,6 @@
 export default {
   env_dev: true,
   sentry_dsn: false,
-  version_detail: "0.Q0.0",
   front_root_url: 'http://localhost:3000',
   api_root_url: 'http://localhost:8000',
   websocket_url: 'ws://localhost:8000'

@@ -139,20 +139,20 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
     newApplication.api.privateKey = application.depreciated_api_private_key;
   }
 
-  if (newApplication.access?.capabilities === undefined) {
+  if (newApplication.access?.write === undefined) {
     //@ts-ignore
     newApplication.access = newApplication.access || {};
     try {
-      newApplication.access.capabilities =
-        JSON.parse(application.depreciated_capabilities || "[]") || [];
+      newApplication.access.write = JSON.parse(application.depreciated_capabilities || "[]") || [];
+      newApplication.access.delete = JSON.parse(application.depreciated_capabilities || "[]") || [];
     } catch (e) {
-      newApplication.access.capabilities = [];
+      newApplication.access.write = [];
+      newApplication.access.delete = [];
     }
     try {
-      newApplication.access.privileges =
-        JSON.parse(application.depreciated_privileges || "[]") || [];
+      newApplication.access.read = JSON.parse(application.depreciated_privileges || "[]") || [];
     } catch (e) {
-      newApplication.access.privileges = [];
+      newApplication.access.read = [];
     }
     try {
       newApplication.access.hooks = JSON.parse(application.depreciated_hooks || "[]") || [];

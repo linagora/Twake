@@ -93,10 +93,19 @@ type ApplicationApi = {
   privateKey: string;
 };
 
+type ApplicationScopes =
+  | "files"
+  | "applications"
+  | "workspaces"
+  | "users"
+  | "messages"
+  | "channels";
+
 type ApplicationAccess = {
-  privileges: string[];
-  capabilities: string[];
-  hooks: string[];
+  read: ApplicationScopes[];
+  write: ApplicationScopes[];
+  delete: ApplicationScopes[];
+  hooks: ApplicationScopes[];
 };
 
 type ApplicationDisplay = {
