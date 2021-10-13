@@ -49,6 +49,9 @@
     },
     "cors": {
       "origin": "*"
+    },
+    "static": {
+      "root": "./public"
     }
   },
   "phpnode": {

@@ -54,7 +54,7 @@ export default (props: { filter: string }) => {
   const deletePendingEmail = (col: ColumnObjectType) => {
     const removePendingEmailRoute = `/internal/services/workspaces/v1/companies/${companyId}/workspaces/${workspaceId}/pending/${col.email}`;
     setLoading(true);
-    Api.delete(removePendingEmailRoute, null).finally(() => {
+    Api.delete(removePendingEmailRoute).finally(() => {
       refreshPendingEmails();
       setLoading(false);
     });
