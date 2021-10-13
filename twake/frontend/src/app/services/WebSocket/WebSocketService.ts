@@ -31,8 +31,9 @@ class WebSocketService {
     };
 
     document.addEventListener('visibilitychange', () => {
-      // TODO: Check visibility
-      reconnectWhenNeeded();
+      if (document.visibilityState === 'visible') {
+        reconnectWhenNeeded();
+      }
     });
 
     document.addEventListener('focus', () => {
