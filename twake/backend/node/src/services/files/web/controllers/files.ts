@@ -63,14 +63,8 @@ export class FileController {
     try {
       const data = await this.service.thumbnail(params.id, params.index, context);
 
-      data.file.on("end", () => {
-        console.log("end reading file");
-      });
-
       response.header("Content-disposition", "inline");
-      if (data.size) {
-        response.header("Content-Length", data.size);
-      }
+      if (data.size) response.header("Content-Length", data.size);
       response.type(data.type);
       response.send(data.file);
     } catch (err) {
@@ -78,8 +72,6 @@ export class FileController {
       response.statusCode = 500;
       response.send("");
     }
-
-    console.log("Finished controller");
   }
 
   async get(
