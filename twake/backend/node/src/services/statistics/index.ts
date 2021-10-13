@@ -1,5 +1,5 @@
 import { Consumes, TwakeService } from "../../core/platform/framework";
-import { StatisticsAPI } from "./types";
+import { STATISTICS_GLOBAL_KEY, StatisticsAPI } from "./types";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
 import StatisticsEntity, {
   getInstance as getStatisticsEntityInstance,
@@ -15,7 +15,6 @@ export default class StatisticsService
   name = "statistics";
   version = "1";
   private repository: Repository<StatisticsEntity>;
-  private GLOBAL = "global";
 
   api(): StatisticsAPI {
     return this;
@@ -30,21 +29,21 @@ export default class StatisticsService
     return this;
   }
 
-  async increase(companyId: string, eventName: string): Promise<unknown> {
+  async increase(companyId: string, eventName: string): Promise<void> {
     const now = new Date();
     const monthId = +(now.getFullYear() + now.getMonth().toString().padStart(2, "0")); // format 202108
 
-    await this.dbIncrement(this.GLOBAL, eventName, monthId);
-    await this.dbIncrement(this.GLOBAL, eventName, 0);
+    await this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, monthId);
+    await this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, 0);
     await this.dbIncrement(companyId, eventName, monthId);
     await this.dbIncrement(companyId, eventName, 0);
 
     return null;
   }
 
-  async get(companyId: string | null, eventName: string): Promise<number> {
+  async get(companyId: string = STATISTICS_GLOBAL_KEY, eventName: string): Promise<number> {
     const res = await this.repository.findOne({
-      company_id: companyId || this.GLOBAL,
+      company_id: companyId,
       event_name: eventName,
       month_id: 0,
     });
@@ -63,7 +62,6 @@ export default class StatisticsService
     });
 
     entity.value = 1;
-
     return this.repository.save(entity);
   }
 }

@@ -66,6 +66,7 @@ export default class Service implements MessageServiceAPI {
       user,
       channel,
       this,
+      statistics,
     );
 
     this.statistics = statistics;

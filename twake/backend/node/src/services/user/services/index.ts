@@ -134,7 +134,6 @@ class Service implements UserServiceAPI {
       name: companyEntity.name,
       logo: companyEntity.logo,
       plan: companyEntity.plan,
-      // stats: companyEntity.stats,
     };
 
     if (companyUserObject) {

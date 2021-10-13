@@ -65,10 +65,6 @@ export class MessagesController
         context,
       );
 
-      if (!request.params.message_id) {
-        this.service.statistics.increase(context.company.id, "messages"); // no wait
-      }
-
       let entity = result.entity;
 
       if (request.query.include_users) {

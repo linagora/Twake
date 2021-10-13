@@ -2,34 +2,40 @@
 // @ts-nocheck
 import { beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "./setup";
-import { StatisticsAPI } from "../../src/core/platform/services/statistics/types";
-import { StatisticsPrimaryKey } from "../../src/core/platform/services/statistics/entities/statistics";
+
 import { v1 as uuidv1 } from "uuid";
+import ChannelServiceAPI from "../../src/services/channels/provider";
+import {
+  createMessage,
+  createParticipant,
+  e2e_createMessage,
+  e2e_createThread,
+} from "./messages/utils";
+import { Thread } from "../../src/services/messages/entities/threads";
+import { deserialize } from "class-transformer";
+import { WorkspaceExecutionContext } from "../../src/services/channels/types";
+import { ChannelUtils, get as getChannelUtils } from "./channels/utils";
+import { StatisticsAPI } from "../../src/services/statistics/types";
+import { ResourceUpdateResponse } from "../../src/utils/types";
 
 describe("Statistics implementation", () => {
   let platform: TestPlatform;
   // let database: DatabaseServiceAPI;
   let statisticsAPI: StatisticsAPI;
-
-  // const workspaceId = uuidv1();
-  //
-  // const counterPk: WorkspaceCounterPrimaryKey = {
-  //   id: workspaceId,
-  //   counter_type: "members",
-  // };
+  let channelUtils: ChannelUtils;
 
   beforeAll(async ends => {
     platform = await init({
       services: ["database", "statistics", "webserver", "auth"],
     });
 
-    // database = platform.platform.getProvider<DatabaseServiceAPI>("database");
     await platform.database.getConnector().drop();
 
     statisticsAPI = platform.platform.getProvider<StatisticsAPI>("statistics");
     expect(statisticsAPI).toBeTruthy();
 
     ends();
+    channelUtils = getChannelUtils(platform);
   });
 
   afterAll(done => {
@@ -46,12 +52,92 @@ describe("Statistics implementation", () => {
 
     expect(await statisticsAPI.get(platform.workspace.company_id, "test")).toEqual(2);
     expect(await statisticsAPI.get(secondCompanyId, "test")).toEqual(2);
-    expect(await statisticsAPI.get(null, "test")).toEqual(4);
+    expect(await statisticsAPI.get(undefined, "test")).toEqual(4);
 
     expect(await statisticsAPI.get(platform.workspace.company_id, "test2")).toEqual(1);
     expect(await statisticsAPI.get(secondCompanyId, "test2")).toEqual(0);
-    expect(await statisticsAPI.get(null, "test2")).toEqual(1);
+    expect(await statisticsAPI.get(undefined, "test2")).toEqual(1);
 
     done();
+  });
+
+  function getContext(user?: User): WorkspaceExecutionContext {
+    return {
+      workspace: platform.workspace,
+      user: user || platform.currentUser,
+    };
+  }
+
+  async function sleep(timeout = 0) {
+    return new Promise(r => setTimeout(r, timeout));
+  }
+
+  describe("On user use messages in channel view", () => {
+    it("should create a message and retrieve it in channel view", async () => {
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+      const channel = channelUtils.getChannel();
+      await channelService.channels.save(channel, {}, getContext());
+      const channelId = channel.id;
+
+      const response = await e2e_createThread(
+        platform,
+        [
+          createParticipant(
+            {
+              type: "channel",
+              id: channelId,
+            },
+            platform,
+          ),
+        ],
+        createMessage({ text: "Initial thread 1 message" }),
+      );
+
+      await sleep();
+
+      const result: ResourceUpdateResponse<Thread> = deserialize(
+        ResourceUpdateResponse,
+        response.body,
+      );
+      const threadId = result.resource.id;
+
+      await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 1" }));
+
+      await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 2" }));
+      await e2e_createThread(
+        platform,
+        [
+          createParticipant(
+            {
+              type: "channel",
+              id: channelId,
+            },
+            platform,
+          ),
+        ],
+        createMessage({ text: "Initial thread 2 message" }),
+      );
+
+      await e2e_createMessage(platform, threadId, createMessage({ text: "Reply 3" }));
+
+      await e2e_createThread(
+        platform,
+        [
+          createParticipant(
+            {
+              type: "channel",
+              id: channelId,
+            },
+            platform,
+          ),
+        ],
+        createMessage({ text: "Initial thread 3 message" }),
+      );
+
+      await new Promise(r => setTimeout(r, 5000));
+
+      expect(await statisticsAPI.get(platform.workspace.company_id, "messages")).toEqual(6);
+      expect(await statisticsAPI.get(undefined, "messages")).toEqual(6);
+    });
   });
 });

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import _ from "lodash";
+import _, { isEqual, uniqWith } from "lodash";
 import { Connector } from "./connectors";
-import { getEntityDefinition, fromMongoDbOrderable, unwrapPrimarykey } from "./utils";
+import { getEntityDefinition, unwrapPrimarykey } from "./utils";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
 import { logger } from "../../../../framework";
 import { DatabaseEntitiesRemovedEvent, DatabaseEntitiesSavedEvent } from "./types";
@@ -85,6 +85,8 @@ export default class EntityManager<EntityType extends Record<string, any>> {
     localEventBus.publish("database:entities:saved", {
       entities: this.toRemove.map(e => _.cloneDeep(e)),
     } as DatabaseEntitiesRemovedEvent);
+
+    this.toPersist = uniqWith(this.toPersist, isEqual);
 
     await this.connector.upsert(this.toPersist);
     await this.connector.remove(this.toRemove);

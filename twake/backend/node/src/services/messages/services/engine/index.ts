@@ -17,6 +17,8 @@ import { ResourceEventsPayload } from "../../../../utils/types";
 import UserServiceAPI from "../../../user/api";
 import ChannelServiceAPI from "../../../channels/provider";
 import _ from "lodash";
+import { StatisticsMessageProcessor } from "../../../statistics/pubsub/messages";
+import { StatisticsAPI } from "../../../statistics/types";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -34,6 +36,7 @@ export class MessagesEngine implements Initializable {
     private user: UserServiceAPI,
     private channel: ChannelServiceAPI,
     private service: MessageServiceAPI,
+    private statistics: StatisticsAPI,
   ) {
     this.channelViewProcessor = new ChannelViewProcessor(this.database, this.service);
     this.channelMarkedViewProcessor = new ChannelMarkedViewProcessor(this.database, this.service);
@@ -58,6 +61,7 @@ export class MessagesEngine implements Initializable {
     await this.userMarkedViewProcessor.init();
     await this.filesViewProcessor.init();
     this.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor(this.service));
+    this.pubsub.processor.addHandler(new StatisticsMessageProcessor(this.statistics));
 
     localEventBus.subscribe("message:saved", async (e: MessageLocalEvent) => {
       const thread = await this.threadRepository.findOne({
