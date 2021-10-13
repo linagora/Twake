@@ -49,7 +49,9 @@ RUN rm -R node_modules
 
 # Add frontend into node
 COPY frontend/package*.json public/
-RUN cd public && yarn install
+RUN cp public/src/app/environment/environment.ts.dist public/src/app/environment/environment.ts
+RUN cd public && yarn install --network-timeout 1000000000
+RUN yarn global add webpack && yarn global add webpack-cli
 RUN cd public && yarn build
 RUN cd public && rm -R node_modules
 RUN mv public/build/* public/
