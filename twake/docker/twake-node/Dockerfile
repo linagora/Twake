@@ -44,7 +44,7 @@ ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 RUN npm install --only=production
 COPY backend/node/ .
-RUN npm build
+RUN npm run build
 RUN rm -R node_modules
 
 # Add frontend into node
