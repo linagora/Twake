@@ -89,6 +89,7 @@ export type PubsubAdapter = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
   type: string;
   init?(): Promise<PubsubAdapter>;
   start?(): Promise<PubsubAdapter>;
+  stop?(): Promise<PubsubAdapter>;
 };
 
 export type PubsubClient = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
@@ -164,7 +165,8 @@ export abstract class PubsubServiceSubscription {
 
 export class PubsubServiceProcessor<In, Out>
   extends PubsubServiceSubscription
-  implements Initializable {
+  implements Initializable
+{
   constructor(protected handler: PubsubHandler<In, Out>, protected pubsub: PubsubServiceAPI) {
     super();
   }
