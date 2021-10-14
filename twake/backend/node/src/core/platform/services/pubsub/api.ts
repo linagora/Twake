@@ -85,6 +85,7 @@ export interface PubsubServiceAPI extends TwakeServiceProvider {
   processor: Processor;
 
   stop(): Promise<this>;
+  start(): Promise<this>;
 }
 
 export type PubsubAdapter = Pick<PubsubServiceAPI, "publish" | "subscribe"> & {
