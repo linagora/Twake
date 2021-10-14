@@ -41,7 +41,7 @@ jobs:
         with:
           ref: qa
           fetch-depth: 0
-          token: ${{ WORKFLOW_GIT_TOKEN }}
+          token: ${{ secrets.WORKFLOW_GIT_TOKEN }}
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
@@ -66,7 +66,7 @@ jobs:
         with:
           ref: canary
           fetch-depth: 0
-          token: ${{ WORKFLOW_GIT_TOKEN }}
+          token: ${{ secrets.WORKFLOW_GIT_TOKEN }}
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
@@ -90,7 +90,7 @@ jobs:
         with:
           ref: qa
           fetch-depth: 0
-          token: ${{ WORKFLOW_GIT_TOKEN }}
+          token: ${{ secrets.WORKFLOW_GIT_TOKEN }}
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
@@ -101,7 +101,7 @@ jobs:
         with:
           ref: canary
           fetch-depth: 0
-          token: ${{ WORKFLOW_GIT_TOKEN }}
+          token: ${{ secrets.WORKFLOW_GIT_TOKEN }}
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
@@ -112,7 +112,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-          token: ${{ WORKFLOW_GIT_TOKEN }}
+          token: ${{ secrets.WORKFLOW_GIT_TOKEN }}
       - name: cherry-picking
         run: |
           git config user.name "Labels Bot"
