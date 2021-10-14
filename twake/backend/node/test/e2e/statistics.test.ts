@@ -43,20 +43,20 @@ describe("Statistics implementation", () => {
   });
 
   it("Check statistics counters", async done => {
-    await statisticsAPI.increase(platform.workspace.company_id, "test");
-    await statisticsAPI.increase(platform.workspace.company_id, "test");
+    await statisticsAPI.increase(platform.workspace.company_id, "counter-test");
+    await statisticsAPI.increase(platform.workspace.company_id, "counter-test");
     const secondCompanyId = uuidv1();
-    await statisticsAPI.increase(secondCompanyId, "test");
-    await statisticsAPI.increase(secondCompanyId, "test");
-    await statisticsAPI.increase(platform.workspace.company_id, "test2");
+    await statisticsAPI.increase(secondCompanyId, "counter-test");
+    await statisticsAPI.increase(secondCompanyId, "counter-test");
+    await statisticsAPI.increase(platform.workspace.company_id, "counter-test2");
 
-    expect(await statisticsAPI.get(platform.workspace.company_id, "test")).toEqual(2);
-    expect(await statisticsAPI.get(secondCompanyId, "test")).toEqual(2);
-    expect(await statisticsAPI.get(undefined, "test")).toEqual(4);
+    expect(await statisticsAPI.get(platform.workspace.company_id, "counter-test")).toEqual(2);
+    expect(await statisticsAPI.get(secondCompanyId, "counter-test")).toEqual(2);
+    expect(await statisticsAPI.get(undefined, "counter-test")).toEqual(4);
 
-    expect(await statisticsAPI.get(platform.workspace.company_id, "test2")).toEqual(1);
-    expect(await statisticsAPI.get(secondCompanyId, "test2")).toEqual(0);
-    expect(await statisticsAPI.get(undefined, "test2")).toEqual(1);
+    expect(await statisticsAPI.get(platform.workspace.company_id, "counter-test2")).toEqual(1);
+    expect(await statisticsAPI.get(secondCompanyId, "counter-test2")).toEqual(0);
+    expect(await statisticsAPI.get(undefined, "counter-test2")).toEqual(1);
 
     done();
   });
@@ -78,6 +78,10 @@ describe("Statistics implementation", () => {
       const channel = channelUtils.getChannel();
       await channelService.channels.save(channel, {}, getContext());
       const channelId = channel.id;
+
+      //Reset global value because messages could have been created somewhere else
+      const value = await statisticsAPI.get(undefined, "messages");
+      await statisticsAPI.increase(undefined, "messages", -value);
 
       const response = await e2e_createThread(
         platform,

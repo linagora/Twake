@@ -29,14 +29,14 @@ export default class StatisticsService
     return this;
   }
 
-  async increase(companyId: string, eventName: string): Promise<void> {
+  async increase(companyId: string, eventName: string, value: number = 1): Promise<void> {
     const now = new Date();
     const monthId = +(now.getFullYear() + now.getMonth().toString().padStart(2, "0")); // format 202108
 
-    await this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, monthId);
-    await this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, 0);
-    await this.dbIncrement(companyId, eventName, monthId);
-    await this.dbIncrement(companyId, eventName, 0);
+    await this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, monthId, value);
+    await this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, 0, value);
+    await this.dbIncrement(companyId, eventName, monthId, value);
+    await this.dbIncrement(companyId, eventName, 0, value);
 
     return null;
   }
@@ -54,14 +54,19 @@ export default class StatisticsService
     return 0;
   }
 
-  private dbIncrement(companyId: string, eventName: string, monthId: number): Promise<void> {
+  private dbIncrement(
+    companyId: string,
+    eventName: string,
+    monthId: number,
+    value: number = 1,
+  ): Promise<void> {
     const entity = getStatisticsEntityInstance({
       company_id: companyId,
       event_name: eventName,
       month_id: monthId,
     });
 
-    entity.value = 1;
+    entity.value = value;
     return this.repository.save(entity);
   }
 }
