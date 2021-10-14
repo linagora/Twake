@@ -19,11 +19,6 @@ export default class EntityManager<EntityType extends Record<string, any>> {
       logger.error("Can not persist this object %o", entity);
       throw Error("Cannot persist this object: it is not an entity.");
     }
-    
-    //TODO: remove me (Debug counters)
-    if(entity.value){
-      console.log("persist: ", entity);
-    }
 
     // --- Generate ids on primary keys elements (if not defined) ---
     const { columnsDefinition, entityDefinition } = getEntityDefinition(entity);
@@ -85,10 +80,7 @@ export default class EntityManager<EntityType extends Record<string, any>> {
   public async flush(): Promise<this> {
     
     this.toPersist = uniqWith(this.toPersist, isEqual);
-    //TODO: remove me (Debug counters)
-    if(this.toPersist[0] && this.toPersist[0].value){
-      console.log("toPersist: ", this.toPersist);
-    }
+    this.toRemove = uniqWith(this.toRemove, isEqual);
     
     localEventBus.publish("database:entities:saved", {
       entities: this.toPersist.map(e => _.cloneDeep(e)),
