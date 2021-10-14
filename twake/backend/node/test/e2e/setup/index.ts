@@ -75,7 +75,7 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
   }
 
   testPlatform.app.server.close();
-  await testPlatform.pubsub.processor.stop();
+  await testPlatform.pubsub.stop();
 
   testPlatform.currentUser = { id: uuidv1() };
   testPlatform.workspace = {
@@ -106,7 +106,7 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
   async function tearDown(): Promise<void> {
     if (testPlatform) {
       testPlatform.app.server.close();
-      await testPlatform.pubsub.processor.stop();
+      await testPlatform.pubsub.stop();
     }
   }
 
