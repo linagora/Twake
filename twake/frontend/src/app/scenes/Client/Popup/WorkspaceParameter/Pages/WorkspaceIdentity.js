@@ -1,6 +1,7 @@
+// eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import i18n from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import workspaceService from 'services/workspaces/workspaces';
 import uploadService from 'services/uploadManager/uploadManager';
@@ -17,24 +18,18 @@ export default class WorkspaceIdentity extends Component {
     super();
     var workspace = Collections.get('workspaces').find(workspaceService.currentWorkspaceId);
     this.state = {
-      i18n: Languages,
       workspace: Collections.get('workspaces'),
-      workspaceService: workspaceService,
       attributeOpen: 0,
       subMenuOpened: 0,
       workspaceName: workspace ? workspace.name : '',
-      groupName: workspace ? workspace.group.name : '',
       workspaceLogo: workspace ? workspace.logo : '',
       deleteWorkspaceName: '',
     };
     this.inputWorkspaceName = null;
     workspaceService.addListener(this);
-    Languages.addListener(this);
   }
-  componentWillMount() {}
   componentWillUnmount() {
     workspaceService.removeListener(this);
-    Languages.removeListener(this);
   }
   open() {
     this.fileinput.click();
@@ -61,7 +56,7 @@ export default class WorkspaceIdentity extends Component {
     return (
       <div className="workspaceParameter">
         <div className="title">
-          {Languages.t(
+          {i18n.t(
             'scenes.app.popup.workspaceparameter.pages.title',
             [],
             "Paramètres de l'espace de travail",
@@ -70,7 +65,7 @@ export default class WorkspaceIdentity extends Component {
 
         <div className="group_section">
           <div className="subtitle">
-            {Languages.t(
+            {i18n.t(
               'scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle',
               [],
               "Préférences d'affichage",
@@ -78,12 +73,12 @@ export default class WorkspaceIdentity extends Component {
           </div>
 
           <Attribute
-            label={Languages.t(
+            label={i18n.t(
               'scenes.app.popup.workspaceparameter.pages.name_label',
               [],
               "Nom de l'espace",
             )}
-            description={Languages.t(
+            description={i18n.t(
               'scenes.app.popup.workspaceparameter.pages.name_description',
               [],
               'Modifiez le nom de cet espace de travail',
@@ -94,7 +89,7 @@ export default class WorkspaceIdentity extends Component {
               <Input
                 medium
                 refInput={node => (this.inputWorkspaceName = node)}
-                className={this.state.workspaceService.errorUsernameExist ? 'error' : ''}
+                className={workspaceService.errorUsernameExist ? 'error' : ''}
                 type="text"
                 value={this.state.workspaceName}
                 onKeyDown={e => {
@@ -105,31 +100,31 @@ export default class WorkspaceIdentity extends Component {
                 onChange={ev => this.setState({ workspaceName: ev.target.value })}
               />
 
-              {this.state.workspaceService.errorName && (
+              {workspaceService.errorName && (
                 <span className="text error">
-                  {this.state.i18n.t('scenes.login.create_account.username_already_exist')}
+                  {i18n.t('scenes.login.create_account.username_already_exist')}
                 </span>
               )}
 
               <ButtonWithTimeout
                 className="small buttonValidation"
-                disabled={this.state.workspaceService.loading}
+                disabled={workspaceService.loading}
                 onClick={() =>
-                  this.state.workspaceService.updateWorkspaceName(this.state.workspaceName)
+                  workspaceService.updateWorkspaceName(this.state.workspaceName)
                 }
-                loading={this.state.workspaceService.loading}
-                value={this.state.i18n.t('general.update')}
+                loading={workspaceService.loading}
+                value={i18n.t('general.update')}
               />
             </div>
           </Attribute>
 
           <Attribute
-            label={Languages.t(
+            label={i18n.t(
               'scenes.app.popup.workspaceparameter.pages.logo_subtitle',
               [],
               'Logo',
             )}
-            description={Languages.t(
+            description={i18n.t(
               'scenes.app.popup.workspaceparameter.pages.logo_modify_description',
               [],
               "Modifiez l'image de cet espace de travail",
@@ -156,7 +151,7 @@ export default class WorkspaceIdentity extends Component {
               </div>
             </div>
             <div className="smalltext">
-              {Languages.t(
+              {i18n.t(
                 'scenes.app.popup.workspaceparameter.pages.weight_max_small_text',
                 [],
                 'Poids maximum 5 mo.',
@@ -169,28 +164,28 @@ export default class WorkspaceIdentity extends Component {
                   this.setState({ workspaceLogo: null });
                 }}
               >
-                {Languages.t('general.delete', [], 'Supprimer')}
+                {i18n.t('general.delete', [], 'Supprimer')}
               </a>
             </div>
             <div>
               <ButtonWithTimeout
                 className="small buttonValidation"
-                disabled={this.state.workspaceService.loading}
+                disabled={workspaceService.loading}
                 onClick={() =>
-                  this.state.workspaceService.updateWorkspaceLogo(this.state.workspaceLogo)
+                  workspaceService.updateWorkspaceLogo(this.state.workspaceLogo)
                 }
-                loading={this.state.workspaceService.loading}
-                value={this.state.i18n.t('general.update')}
+                loading={workspaceService.loading}
+                value={i18n.t('general.update')}
               />
             </div>
           </Attribute>
           <Attribute
-            label={Languages.t(
+            label={i18n.t(
               'scenes.app.popup.workspaceparameter.pages.deleteworkspace',
               [],
               "Supprimer l'espace",
             )}
-            description={Languages.t(
+            description={i18n.t(
               'scenes.app.popup.workspaceparameter.pages.deleteworkspace_description',
               [],
               'Supprimer cet espace de travail',
@@ -201,10 +196,10 @@ export default class WorkspaceIdentity extends Component {
               <Input
                 medium
                 refInput={node => (this.inputDeleteWorkspace = node)}
-                className={this.state.workspaceService.errorUsernameExist ? 'error' : ''}
+                className={workspaceService.errorUsernameExist ? 'error' : ''}
                 type="text"
                 placeholder={
-                  Languages.t('scenes.app.popup.workspaceparameter.pages.enter', [], 'Entrer ') +
+                  i18n.t('scenes.app.popup.workspaceparameter.pages.enter', [], 'Entrer ') +
                   workspace.name
                 }
                 value={this.state.deleteWorkspaceName}
@@ -213,21 +208,21 @@ export default class WorkspaceIdentity extends Component {
               <ButtonWithTimeout
                 className="small buttonValidation"
                 disabled={
-                  this.state.workspaceService.loading ||
+                  workspaceService.loading ||
                   workspace.name !== this.state.deleteWorkspaceName
                 }
                 onClick={() => {
                   AlertManager.confirm(() => {
-                    this.state.workspaceService.deleteWorkspace();
+                    workspaceService.deleteWorkspace();
                   });
                 }}
-                loading={this.state.workspaceService.loading}
-                value={this.state.i18n.t('general.delete')}
+                loading={workspaceService.loading}
+                value={i18n.t('general.delete')}
               />
             </div>
-            {this.state.workspaceService.errorDeleteWorkspaceMember && (
+            {workspaceService.errorDeleteWorkspaceMember && (
               <span className="text error">
-                {Languages.t(
+                {i18n.t(
                   'scenes.app.popup.workspaceparameter.pages.error_workspace_member',
                   [],
                   'You must be alone in the workspace to remove it. Remove your collaborators and try again.',
