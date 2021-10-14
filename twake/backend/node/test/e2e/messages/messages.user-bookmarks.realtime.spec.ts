@@ -29,6 +29,7 @@ describe("The Bookmarks Realtime feature", () => {
         "realtime",
         "channels",
         "counter",
+        "statistics",
         "platform-services",
       ],
     });

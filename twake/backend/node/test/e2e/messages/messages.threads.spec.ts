@@ -35,6 +35,7 @@ describe("The Messages Threads feature", () => {
         "realtime",
         "channels",
         "counter",
+        "statistics",
         "platform-services",
       ],
     });

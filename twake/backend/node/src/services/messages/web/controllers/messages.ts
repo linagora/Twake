@@ -20,7 +20,8 @@ export class MessagesController
       ResourceUpdateResponse<Message>,
       ResourceListResponse<Message>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(protected service: MessageServiceAPI) {}
 
   async save(

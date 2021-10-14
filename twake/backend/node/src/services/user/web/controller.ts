@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
+  CrudExeption,
   ExecutionContext,
   ListResult,
-  CrudExeption,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
 
@@ -13,16 +13,14 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../utils/types";
-import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../api";
+import UserServiceAPI from "../api";
 
 import User from "../entities/user";
 import {
   CompanyObject,
   CompanyParameters,
-  CompanyShort,
+  CompanyStatsObject,
   CompanyUserObject,
-  CompanyUserRole,
-  CompanyUserStatus,
   DeregisterDeviceParams,
   RegisterDeviceBody,
   RegisterDeviceParams,
@@ -32,7 +30,6 @@ import {
 } from "./types";
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
-import { WorkspaceUsersRequest } from "../../workspaces/web/types";
 
 export class UsersCrudController
   implements
@@ -153,8 +150,14 @@ export class UsersCrudController
     const combos = (await Promise.all(
       requestedUserCompanies
         .filter(a => currentUserCompaniesIds.has(a.group_id))
-        .map((uc: CompanyUser) => retrieveCompanyCached(uc.group_id).then((c: Company) => [c, uc])),
-    )) as [Company, CompanyUserObject][];
+        .map((uc: CompanyUser) =>
+          retrieveCompanyCached(uc.group_id).then(async (c: Company) => [
+            c,
+            uc,
+            await this.getCompanyStats(c),
+          ]),
+        ),
+    )) as [Company, CompanyUserObject, CompanyStatsObject][];
 
     return {
       resources: combos.map(combo => this.service.formatCompany(...combo)),
@@ -174,8 +177,17 @@ export class UsersCrudController
     }
 
     return {
-      resource: this.service.formatCompany(company),
+      resource: this.service.formatCompany(company, null, await this.getCompanyStats(company)),
       websocket: undefined, // empty for now
+    };
+  }
+
+  private async getCompanyStats(company: Company): Promise<CompanyStatsObject> {
+    return {
+      created_at: company.dateAdded,
+      total_members: company.stats?.total_members || 0,
+      total_guests: company.stats?.total_guests || 0,
+      total_messages: await this.service.statistics.get(company.id, "messages"),
     };
   }
 
