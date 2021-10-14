@@ -1,26 +1,31 @@
+import { TransportAPI, TransportOptions, WebSocketTransport } from './TransportAPI';
 import TransportHTTP from './TransportHTTP';
 import TransportSocket from './TransportSocket';
 
-export default class Transport {
+export default class Transport implements TransportAPI {
   public apiOptions: any = {
     headers: {
       'Content-Type': 'application/json',
     },
   };
-  private readonly http: TransportHTTP = new TransportHTTP(this);
-  private readonly socket: TransportSocket = new TransportSocket(this);
+  private http: TransportHTTP;
+  private socket: TransportSocket;
 
-  /** Transport API */
+  constructor() {
+    this.http = new TransportHTTP(this);
+    this.socket = new TransportSocket();
+  }
 
-  public connect() {
-    this.socket.connect();
+  public connect(options: TransportOptions) {
+    this.socket.configure(options.socket);
+    this.http.configure(options?.rest);
   }
 
   public getHttp() {
     return this.http;
   }
 
-  public getSocket() {
+  public getSocket(): WebSocketTransport {
     return this.socket;
   }
 }

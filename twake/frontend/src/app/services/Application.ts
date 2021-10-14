@@ -17,6 +17,7 @@ import UserNotificationAPIClient from './user/UserNotificationAPIClient';
 import { CompanyType } from 'app/models/Company';
 import { WorkspaceType } from 'app/models/Workspace';
 import LocalStorage from './LocalStorage';
+import WebSocket from './WebSocket/WebSocket';
 
 class Application {
   private logger: Logger.Logger;
@@ -36,6 +37,8 @@ class Application {
     }
     this.started = true;
     this.logger.info('Starting application for user', user);
+
+    await WebSocket.get().connect();
     this.configureCollections(user);
 
     WorkspacesListener.startListen();
@@ -64,27 +67,10 @@ class Application {
 
   private configureCollections(user: UserType) {
     if (user?.id) {
-      Collections.setOptions({
+      const options = {
         storageKey: user.id,
         transport: {
-          socket: {
-            url: Globals.environment.websocket_url,
-            authenticate: async () => {
-              let token = JWT.getJWT();
-
-              if (JWT.isAccessExpired()) {
-                try {
-                  token = (await JWT.renew()).value;
-                } catch(err) {
-                  this.logger.error('Can not get a new JWT token for WS collection', err);
-                }
-              }
-
-              return {
-                token,
-              };
-            },
-          },
+          socket: WebSocket.get(),
           rest: {
             url: `${Globals.api_root_url}/internal/services`,
             headers: {
@@ -94,8 +80,8 @@ class Application {
             },
           },
         },
-      });
-      Collections.connect();
+      };
+      Collections.connect(options);
     }
   }
 

@@ -47,6 +47,7 @@ describe("The console API auth", () => {
         "console",
         "storage",
         "counter",
+        "statistics",
         "platform-services",
       ],
     });

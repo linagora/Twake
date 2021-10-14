@@ -46,14 +46,6 @@ class Languages extends Observable {
     await i18n.changeLanguage(language);
     DateTime.setCurrentLanguage(language);
 
-    if (oldLanguage && language !== oldLanguage) {
-      Api.post(
-        '/ajax/users/account/language',
-        { language: language, sentByLanguageService: true },
-        (_: any) => {},
-      );
-    }
-
     this.notify();
   }
 

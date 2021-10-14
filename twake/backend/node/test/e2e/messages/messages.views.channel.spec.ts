@@ -36,6 +36,7 @@ describe("The Messages feature", () => {
         "realtime",
         "channels",
         "counter",
+        "statistics",
         "platform-services",
       ],
     });

@@ -141,7 +141,7 @@ class Account {
     }
     this.waitForVerificationTimeout = setTimeout(() => {
       this.waitForVerification(username, password, th);
-      this.login(username, password, 1, true);
+      Login.login({ username, password }, true);
     }, 2000);
   }
 

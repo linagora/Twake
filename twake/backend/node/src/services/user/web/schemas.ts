@@ -69,6 +69,7 @@ const companyObjectSchema = {
         created_at: { type: "number" },
         total_members: { type: "number" },
         total_guests: { type: "number" },
+        total_messages: { type: "number" },
       },
     },
     role: { type: "string", enum: ["owner", "admin", "member", "guest"] },
