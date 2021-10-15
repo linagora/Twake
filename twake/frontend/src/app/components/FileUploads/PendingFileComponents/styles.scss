@@ -11,7 +11,7 @@
   .pending-files-list-header {
     color: var(--white);
     padding: 0 8px;
-    background-color: var(--primary);
+    background-color: var(--secondary);
     height: 32px;
     line-height: 32px;
     border-radius: 8px 8px 0 0;
@@ -24,7 +24,7 @@
 
   .pending-files-list-content {
     min-height: 32px;
-    max-height: 180px;
-    overflow-y: scroll;
+    max-height: 176px;
+    overflow-y: none;
   }
 }

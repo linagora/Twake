@@ -42,6 +42,8 @@ class FileUploadService extends EventEmitter {
         id: uuid(),
         status: 'pending',
         progress: 0,
+        lastProgress: new Date().getTime(),
+        speed: 0,
         uploadTaskId: this.currentTaskId,
         originalFile: file,
         backendFile: null,
@@ -84,7 +86,16 @@ class FileUploadService extends EventEmitter {
       );
 
       pendingFile.resumable.on('fileProgress', (f: any, ratio: number) => {
+        const bytesDelta = (f.progress() - pendingFile.progress) * pendingFile.originalFile.size;
+        const timeDelta = new Date().getTime() - pendingFile.lastProgress;
+
+        // To avoid jumping time ?
+        if (timeDelta > 1000) {
+          pendingFile.speed = bytesDelta / timeDelta;
+        }
+
         pendingFile.backendFile = f;
+        pendingFile.lastProgress = new Date().getTime();
         pendingFile.progress = f.progress();
         this.onChange();
       });
@@ -95,7 +106,7 @@ class FileUploadService extends EventEmitter {
           pendingFile.status = 'success';
           this.onChange();
         } catch (e) {
-          console.error(e);
+          logger.error(`Error on fileSuccess Event`, e);
         }
       });
 
@@ -130,9 +141,8 @@ class FileUploadService extends EventEmitter {
   public cancel(id: string, timeout = 1000) {
     const fileToCancel = this.pendingFiles.filter(f => f.id === id)[0];
 
-    //TODO delete file
+    fileToCancel.status = 'cancel';
     fileToCancel.resumable.cancel();
-    fileToCancel.status = 'error';
     this.onChange();
 
     if (fileToCancel.backendFile)
@@ -145,6 +155,17 @@ class FileUploadService extends EventEmitter {
       this.pendingFiles = this.pendingFiles.filter(f => f.id !== id);
       this.onChange();
     }, timeout);
+  }
+
+  public retry(id: string) {
+    const fileToRetry = this.pendingFiles.filter(f => f.id === id)[0];
+
+    if (fileToRetry.status === 'error') {
+      fileToRetry.status = 'pending';
+      fileToRetry.resumable.upload();
+
+      this.onChange();
+    }
   }
 
   public pauseOrResume(id: string) {
@@ -204,18 +225,32 @@ class FileUploadService extends EventEmitter {
     });
   }
 
-  public deleteOneFile({
+  public async deleteOneFile({
     companyId,
     fileId,
   }: {
     companyId: string;
     fileId: string;
-  }): Promise<unknown> {
-    return FileUploadAPIClient.delete({ companyId, fileId });
+  }): Promise<void> {
+    const response = await FileUploadAPIClient.delete({ companyId, fileId });
+
+    if (response.status === 'success') {
+      this.pendingFiles = this.pendingFiles.filter(f => f.backendFile?.id !== fileId);
+      this.onChange();
+    } else {
+      logger.error(`Error while processing delete for file`, fileId);
+    }
   }
 
   public download({ companyId, fileId }: { companyId: string; fileId: string }): Promise<Blob> {
     return FileUploadAPIClient.download({
+      companyId: companyId,
+      fileId: fileId,
+    });
+  }
+
+  public getDownloadRoute({ companyId, fileId }: { companyId: string; fileId: string }): string {
+    return FileUploadAPIClient.getDownloadRoute({
       companyId: companyId,
       fileId: fileId,
     });

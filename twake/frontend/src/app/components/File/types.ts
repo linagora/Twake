@@ -13,5 +13,6 @@ export type DataFileType = {
     type: string;
     status?: PendingFileRecoilType['status'];
     progress?: number;
+    backendFileId?: string;
   };
 };

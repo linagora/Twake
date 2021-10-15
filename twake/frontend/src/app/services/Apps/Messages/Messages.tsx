@@ -193,9 +193,14 @@ class Messages extends Observable {
 
       message.files = [
         ...attachements
-          .filter(id => isPendingFileStatusSuccess(FileUploadService.getPendingFile(id).status))
+          .filter(
+            id =>
+              FileUploadService.getPendingFile(id)?.status &&
+              isPendingFileStatusSuccess(FileUploadService.getPendingFile(id).status),
+          )
           .map(id => {
             const pendingFile = FileUploadService.getPendingFile(id);
+            console.log({ id, pendingFile });
             return {
               id: pendingFile.backendFile?.id,
               company_id: pendingFile.backendFile?.company_id,

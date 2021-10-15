@@ -25,6 +25,10 @@
     }
   }
 
+  &.file-component-error {
+    background: var(--error-background);
+  }
+
   .file-info-container {
     display: flex;
     flex-direction: row;
@@ -49,24 +53,6 @@
     }
   }
 
-  .file-progress-bar-container {
-    display: flex;
-
-    .file-progress-bar {
-      .ant-progress-outer {
-        height: 2px;
-        display: flex;
-
-        .ant-progress-inner {
-          .ant-progress-bg {
-            border-radius: 0 0 8px 8px;
-            height: 2px !important;
-          }
-        }
-      }
-    }
-  }
-
   .file-menu {
     display: flex;
 
@@ -74,11 +60,32 @@
     justify-content: space-between;
 
     .ant-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       &:hover {
         color: var(--black);
       }
       color: var(--grey-dark);
       background-color: transparent;
+    }
+  }
+}
+
+.file-progress-bar-container {
+  display: flex;
+
+  .file-progress-bar {
+    .ant-progress-outer {
+      height: 2px;
+      display: flex;
+
+      .ant-progress-inner {
+        .ant-progress-bg {
+          border-radius: 0 0 8px 8px;
+          height: 2px !important;
+        }
+      }
     }
   }
 }

@@ -1,15 +1,20 @@
 import React from 'react';
-import { Pause, Play, X } from 'react-feather';
+import { PauseCircle, PlayCircle, Trash2, X } from 'react-feather';
 import { Row, Col, Typography, Divider, Progress, Button, Tooltip } from 'antd';
+import { capitalize } from 'lodash';
 
-import { PendingFileRecoilType, PendingFileType } from 'app/models/File';
 import {
+  isPendingFileStatusCancel,
   isPendingFileStatusError,
   isPendingFileStatusPause,
+  isPendingFileStatusPending,
   isPendingFileStatusSuccess,
 } from '../utils/PendingFiles';
 import Languages from 'services/languages/languages';
 import { useUpload } from 'app/state/recoil/hooks/useUpload';
+import { PendingFileRecoilType, PendingFileType } from 'app/models/File';
+
+import '../../File/File.scss';
 
 type PropsType = {
   pendingFileState: PendingFileRecoilType;
@@ -21,8 +26,10 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
   const { pauseOrResumeUpload, cancelUpload } = useUpload();
 
   const getProgressStrokeColor = (status: PendingFileRecoilType['status']) => {
+    if (isPendingFileStatusCancel(status)) return 'var(--error)';
     if (isPendingFileStatusError(status)) return 'var(--error)';
     if (isPendingFileStatusPause(status)) return 'var(--warning)';
+    if (isPendingFileStatusPending(status)) return 'var(--progress-bar-color)';
 
     return 'var(--success)';
   };
@@ -31,6 +38,7 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
     switch (pendingFileState.status) {
       case 'error':
       case 'pause':
+      case 'cancel':
         return 'exception';
       case 'pending':
         return 'active';
@@ -42,21 +50,43 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
   };
 
   return (
-    <>
+    <div
+      style={{
+        backgroundColor:
+          isPendingFileStatusCancel(pendingFileState.status) ||
+          isPendingFileStatusError(pendingFileState.status)
+            ? 'var(--error-background)'
+            : undefined,
+      }}
+    >
       <Row
-        justify="space-around"
+        justify="space-between"
         align="middle"
         wrap={false}
         style={{
-          padding: '4px 4px',
+          height: 39,
           width: '100%',
         }}
       >
-        <Col className="small-left-margin" flex={3} style={{ lineHeight: '16px' }}>
+        <Col className="small-left-margin" flex="auto" style={{ lineHeight: '16px' }}>
           {pendingFile.originalFile.name ? (
-            <Text ellipsis style={{ width: 160, verticalAlign: 'middle' }}>
-              {pendingFile.originalFile.name}
-            </Text>
+            <Row justify="start" align="middle" wrap={false}>
+              <Text
+                ellipsis
+                style={{
+                  maxWidth: isPendingFileStatusPause(pendingFile.status) ? 130 : 160,
+                  verticalAlign: 'middle',
+                }}
+              >
+                {capitalize(pendingFile.originalFile.name)}
+              </Text>
+              {isPendingFileStatusPause(pendingFile.status) && (
+                <Text type="secondary" style={{ verticalAlign: 'middle', marginLeft: 4 }}>
+                  {/* TODO Add translation here */}
+                  (paused)
+                </Text>
+              )}
+            </Row>
           ) : (
             <div
               style={{
@@ -68,16 +98,16 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
               }}
             />
           )}
-          <Progress
-            type="line"
-            percent={pendingFileState.progress * 100}
-            showInfo={false}
-            status={setStatus()}
-            strokeColor={getProgressStrokeColor(pendingFileState.status)}
-          />
         </Col>
 
-        <Col flex={1} style={{ display: 'flex', alignItems: 'center', lineHeight: '16px' }}>
+        <Col
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            lineHeight: '16px',
+          }}
+        >
           {pendingFileState.id ? (
             !isPendingFileStatusSuccess(pendingFileState.status) &&
             !isPendingFileStatusError(pendingFileState.status) ? (
@@ -95,9 +125,9 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
                   disabled={isPendingFileStatusError(pendingFileState.status)}
                   icon={
                     isPendingFileStatusPause(pendingFileState.status) ? (
-                      <Play size={14} style={{ marginLeft: 4 }} />
+                      <PlayCircle size={16} color="var(--black)" />
                     ) : (
-                      <Pause size={14} />
+                      <PauseCircle size={16} color="var(--black)" />
                     )
                   }
                   onClick={() => pauseOrResumeUpload(pendingFileState.id)}
@@ -124,14 +154,21 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
           )}
         </Col>
 
-        <Col flex={1} style={{ display: 'flex', alignItems: 'center', lineHeight: '16px' }}>
+        <Col
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            lineHeight: '16px',
+          }}
+        >
           {!isPendingFileStatusSuccess(pendingFileState.status) &&
           !isPendingFileStatusError(pendingFileState.status) ? (
             <Tooltip title={Languages.t('general.cancel')} placement="top">
               <Button
                 type="link"
                 shape="circle"
-                icon={<X size={16} color={'var(--error)'} />}
+                icon={<Trash2 size={16} color={'var(--black)'} />}
                 onClick={() => cancelUpload(pendingFileState.id)}
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
               />
@@ -141,7 +178,18 @@ export default ({ pendingFileState, pendingFile }: PropsType) => {
           )}
         </Col>
       </Row>
+      <div className="file-progress-bar-container">
+        <Progress
+          type="line"
+          className="file-progress-bar"
+          percent={pendingFileState.progress * 100}
+          showInfo={false}
+          trailColor="var(--white)"
+          status={setStatus()}
+          strokeColor={getProgressStrokeColor(pendingFileState.status)}
+        />
+      </div>
       <Divider style={{ margin: 0 }} />
-    </>
+    </div>
   );
 };

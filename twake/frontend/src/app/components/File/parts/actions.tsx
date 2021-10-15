@@ -1,11 +1,13 @@
 import React, { useRef } from 'react';
 import { Button } from 'antd';
-import { MoreHorizontal, X } from 'react-feather';
+import { MoreHorizontal, RotateCw, X } from 'react-feather';
 
 import {
   isPendingFileStatusPending,
   isPendingFileStatusPause,
   isPendingFileStatusSuccess,
+  isPendingFileStatusError,
+  isPendingFileStatusCancel,
 } from 'app/components/FileUploads/utils/PendingFiles';
 import Languages from 'services/languages/languages';
 import { useUpload } from 'app/state/recoil/hooks/useUpload';
@@ -17,13 +19,8 @@ type PropsType = {
 };
 
 export const FileActions = ({ data }: PropsType): JSX.Element => {
-  const { cancelUpload, deleteOneFile, downloadOneFile } = useUpload();
+  const { cancelUpload, deleteOneFile, downloadOneFile, retryUpload } = useUpload();
   const menuRef = useRef<HTMLElement>();
-  const shouldDisplayCancelBtn =
-    data.file.status &&
-    (isPendingFileStatusPending(data.file.status) ||
-      isPendingFileStatusPause(data.file.status) ||
-      isPendingFileStatusSuccess(data.file.status));
 
   const onClickDownload = async () =>
     data.file.company_id &&
@@ -51,25 +48,57 @@ export const FileActions = ({ data }: PropsType): JSX.Element => {
     );
   };
 
-  const onClickCancel = () =>
-    data.file.status && isPendingFileStatusSuccess(data.file.status)
-      ? deleteOneFile(data.file.id)
-      : cancelUpload(data.file.id);
+  const onClickCancel = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+    e.preventDefault();
+    e.stopPropagation();
 
-  return (
-    <div className="file-menu">
-      {shouldDisplayCancelBtn ? (
-        <Button shape="circle" icon={<X size={16} />} onClick={onClickCancel} />
-      ) : (
+    data.file.status && isPendingFileStatusSuccess(data.file.status)
+      ? data.file.backendFileId && deleteOneFile(data.file.backendFileId)
+      : cancelUpload(data.file.id);
+  };
+
+  const onClickRetry = () => {
+    retryUpload(data.file.id);
+  };
+
+  const setActions = () => {
+    if (data.type === 'message') {
+      return (
         <Button
           ref={node => node && (menuRef.current = node)}
           shape="circle"
           icon={<MoreHorizontal size={16} />}
           onClick={buildMenu}
         />
-      )}
-    </div>
-  );
+      );
+    }
+
+    if (data.type === 'input' && data.file.status) {
+      if (isPendingFileStatusError(data.file.status)) {
+        return (
+          <Button
+            shape="circle"
+            icon={<RotateCw size={16} color="var(--error)" />}
+            onClick={onClickRetry}
+          />
+        );
+      }
+
+      if (
+        isPendingFileStatusPending(data.file.status) ||
+        isPendingFileStatusPause(data.file.status) ||
+        isPendingFileStatusSuccess(data.file.status)
+      ) {
+        return <Button shape="circle" icon={<X size={16} />} onClick={onClickCancel} />;
+      }
+
+      if (isPendingFileStatusCancel(data.file.status)) {
+        return <></>;
+      }
+    }
+  };
+
+  return <div className="file-menu">{setActions()}</div>;
 };
 
 export default FileActions;

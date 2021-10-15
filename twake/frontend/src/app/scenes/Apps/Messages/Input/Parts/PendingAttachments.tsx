@@ -10,18 +10,20 @@ type PropsType = {
 };
 
 export default ({ zoneId }: PropsType) => {
-  const { getOnePendingFile, currentTask } = useUpload();
+  const { getOnePendingFile, pendingFilesListState } = useUpload();
   const { currentUploadZoneFilesList } = useUploadZones(zoneId);
 
   return currentUploadZoneFilesList.length > 0 ? (
     <Row className="attached-files-container small-y-margin" justify="start">
       {currentUploadZoneFilesList.map((id, index) => {
         const pendingFile = getOnePendingFile(id);
-        const pendingFileState = currentTask.files.filter(o => o.id === id)[0] || undefined;
-        return pendingFile?.id && pendingFileState ? (
-          <Col key={pendingFile.id}>
+        const pendingFileState = pendingFilesListState?.filter(o => o.id === id)[0] || undefined;
+
+        console.log(pendingFile);
+        return pendingFile && pendingFileState ? (
+          <Col key={`${pendingFile.id}_${index}`}>
             <FileComponent
-              key={pendingFile.id}
+              key={`${pendingFile.id}_${index}`}
               className="small-right-margin small-bottom-margin"
               data={{
                 type: 'input',
@@ -33,6 +35,7 @@ export default ({ zoneId }: PropsType) => {
                   type: pendingFile.originalFile.type,
                   status: pendingFileState.status || undefined,
                   progress: pendingFile.progress,
+                  backendFileId: pendingFile?.backendFile?.id,
                 },
               }}
             />

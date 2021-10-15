@@ -8,6 +8,7 @@ import {
   isPendingFileStatusPause,
   isPendingFileStatusSuccess,
   isPendingFileStatusError,
+  isPendingFileStatusCancel,
 } from 'app/components/FileUploads/utils/PendingFiles';
 
 type PropsType = {
@@ -30,6 +31,7 @@ export const FileProgress = ({ data }: PropsType): JSX.Element => {
   const setProgressStrokeColor = (): string => {
     if (!data.file.status) return '';
 
+    if (isPendingFileStatusCancel(data.file.status)) return 'var(--error)';
     if (isPendingFileStatusError(data.file.status)) return 'var(--error)';
     if (isPendingFileStatusPause(data.file.status)) return 'var(--warning)';
     if (isPendingFileStatusPending(data.file.status)) return 'var(--progress-bar-color)';

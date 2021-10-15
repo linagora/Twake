@@ -35,7 +35,7 @@ export type FileType = {
 
 export type PendingFileRecoilType = {
   id: string;
-  status: 'pending' | 'error' | 'success' | 'pause';
+  status: 'pending' | 'error' | 'success' | 'pause' | 'cancel';
   progress: number; //Between 0 and 1
   file: FileType | null;
 };
@@ -44,8 +44,10 @@ export type PendingFileType = {
   resumable: typeof Resumable | null; //Contain the resumable instance in charge of this file
   uploadTaskId: string;
   id: string;
-  status: 'pending' | 'error' | 'success' | 'pause';
+  status: 'pending' | 'error' | 'success' | 'pause' | 'cancel';
   progress: number; //Between 0 and 1
   originalFile: File; //Will be used to get filename, temporary thumbnail
   backendFile: FileType | null; //Will contain the final object returned by API
+  lastProgress: number;
+  speed: number;
 };

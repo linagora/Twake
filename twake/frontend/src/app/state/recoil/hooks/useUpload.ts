@@ -59,31 +59,30 @@ export const useUpload = () => {
     if (companyId) FileUploadService.deleteOneFile({ companyId, fileId: id });
   };
 
-  const downloadOneFile = async ({
+  const downloadOneFile = ({
     companyId,
     fileId,
     fileName,
+    blob,
   }: {
     companyId: string;
     fileId: string;
     fileName: string;
+    blob?: boolean;
   }) => {
-    const blob = await FileUploadService.download({
+    if (blob) {
+      return FileUploadService.download({ companyId, fileId });
+    }
+
+    const url = FileUploadService.getDownloadRoute({
       companyId,
       fileId,
     });
 
-    if (blob) {
-      // This is the best way that i found to simulate a download by clicking
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a); // We need to append the element to the dom -> otherwise it will not work in firefox
-      a.click();
-      a.remove(); // Afterwards we remove the element again
-    }
+    url && (window.location.href = url);
   };
+
+  const retryUpload = (id: string) => FileUploadService.retry(id);
 
   return {
     pendingFilesListState,
@@ -94,5 +93,6 @@ export const useUpload = () => {
     currentTask,
     deleteOneFile,
     downloadOneFile,
+    retryUpload,
   };
 };

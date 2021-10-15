@@ -13,7 +13,7 @@ class Requests {
     route: string,
     data: string,
     callback: (result: string | any) => void,
-    options: { disableJWTAuthentication?: boolean; fileDownload?: boolean } = {},
+    options: { disableJWTAuthentication?: boolean; withBlob?: boolean } = {},
   ) {
     this.logger.trace(`${type} ${route}`);
     if (options?.disableJWTAuthentication) {
@@ -28,7 +28,7 @@ class Requests {
         body: type === 'post' ? data || '{}' : undefined,
       })
         .then(response => {
-          if (options.fileDownload) {
+          if (options.withBlob) {
             response.blob().then(blob => {
               this.retrieveJWTToken(JSON.stringify(blob));
               callback && callback(blob);

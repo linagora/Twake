@@ -2,6 +2,7 @@ import Api from 'app/services/Api';
 import { FileType } from 'app/models/File';
 
 type ResponseFileType = { resource: FileType };
+type ResponseDeleteFileType = { status: 'success' | 'error' };
 
 type BaseContentType = { companyId: string };
 type GetContextType = BaseContentType & { fileId: string };
@@ -59,17 +60,21 @@ class FileUploadAPIClient {
     })}/thumbnails/${thumbnailId}`;
   }
 
-  public delete({ companyId, fileId }: DeleteContextType): Promise<unknown> {
+  public delete({ companyId, fileId }: DeleteContextType): Promise<ResponseDeleteFileType> {
     const deleteFileRoute = this.getRoute({ companyId, fileId });
 
-    return Api.delete<undefined, undefined>(deleteFileRoute, undefined);
+    return Api.delete<undefined, ResponseDeleteFileType>(deleteFileRoute, undefined);
   }
 
   public download({ companyId, fileId }: DownloadContextType): Promise<Blob> {
     const downloadFileRoute = this.getRoute({ companyId, fileId, download: true });
     return Api.get<Blob>(downloadFileRoute, undefined, true, {
-      fileDownload: true,
+      withBlob: true,
     });
+  }
+
+  public getDownloadRoute({ companyId, fileId }: DownloadContextType): string {
+    return this.getRoute({ companyId, fileId, download: true, fullApiRouteUrl: true });
   }
 }
 
