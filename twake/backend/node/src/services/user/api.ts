@@ -34,8 +34,8 @@ export default interface UserServiceAPI extends TwakeServiceProvider, Initializa
   formatUser(user: User, options?: { includeCompanies?: boolean }): Promise<UserObject>;
   formatCompany(
     companyEntity: Company,
-    companyUserObject: CompanyUserObject,
-    companyStats: CompanyStatsObject,
+    companyUserObject?: CompanyUserObject,
+    companyStats?: CompanyStatsObject,
   ): CompanyObject;
 }
 
