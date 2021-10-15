@@ -76,6 +76,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
 
   async read(path: string, options?: ReadOptions): Promise<Readable> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
 
       let decipher: Decipher;
@@ -116,7 +117,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     }
   }
 
-  async _read(path: string) {
+  async _read(path: string): Promise<Readable> {
     let stream = await this.getConnector().read(path);
     if (this.encryptionOptions.secret) {
       try {
@@ -140,5 +141,9 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     };
 
     return this;
+  }
+
+  async delete(path: string): Promise<void> {
+    return await this.getConnector().delete(path);
   }
 }

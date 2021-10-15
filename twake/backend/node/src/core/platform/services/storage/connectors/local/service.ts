@@ -1,7 +1,9 @@
 import { Readable } from "stream";
 import { createWriteStream, createReadStream, existsSync, mkdirSync, statSync } from "fs";
-import { StorageConnectorAPI, WriteMetadata } from "../../provider";
 import p from "path";
+import { rm } from "fs/promises"; // Do not change the import, this is not the same function import { rm } from "fs"
+
+import { StorageConnectorAPI, WriteMetadata } from "../../provider";
 
 export type LocalConfiguration = {
   path: string;
@@ -46,5 +48,9 @@ export default class LocalConnectorService implements StorageConnectorAPI {
 
   private getFullPath(path: string): string {
     return `${this.configuration.path}/${path}`.replace(/\/{2,}/g, "/");
+  }
+
+  delete(path: string): Promise<void> {
+    return rm(this.getFullPath(path), { recursive: true, force: true });
   }
 }

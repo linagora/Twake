@@ -13,6 +13,7 @@ import { PreviewPubsubRequest } from "../../../../src/services/previews/types";
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
+import { DeleteResult, CrudExeption } from "../../../core/platform/framework/api/crud-service";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -259,10 +260,20 @@ class Service implements FileServiceAPI {
     return getDownloadRoute(file);
   }
 
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  delete(id: string, context: CompanyExecutionContext) {
-    throw new Error("Not implemented");
+  async delete(id: string, context: CompanyExecutionContext): Promise<DeleteResult<File>> {
+    const fileToDelete = await this.repository.findOne({ id, company_id: context.company.id });
+
+    if (!fileToDelete) {
+      throw new CrudExeption("File not found", 404);
+    }
+
+    await this.repository.remove(fileToDelete);
+
+    const path = getFilePath(fileToDelete);
+
+    await this.storage.delete(path);
+
+    return new DeleteResult("files", fileToDelete, true);
   }
 }
 

@@ -33,4 +33,8 @@ export default class S3ConnectorService implements StorageConnectorAPI {
   async read(path: string): Promise<Readable> {
     return this.client.getObject(this.minioConfiguration.bucket, path);
   }
+
+  delete(path: string): Promise<void> {
+    return this.client.removeObject(this.minioConfiguration.bucket, path);
+  }
 }

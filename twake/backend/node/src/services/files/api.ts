@@ -4,6 +4,7 @@ import { TwakeServiceProvider, Initializable } from "../../core/platform/framewo
 import { CompanyExecutionContext } from "./web/types";
 import { File } from "./entities/file";
 import { PubsubHandler, PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
+import { DeleteResult } from "../../core/platform/framework/api/crud-service";
 
 export type UploadOptions = {
   filename: string;
@@ -61,6 +62,14 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
    * @param context
    */
   get(id: string, context: CompanyExecutionContext): Promise<File>;
+
+  /**
+   * Delete a file entity from its id
+   *
+   * @param id
+   * @param context
+   */
+  delete(id: string, context: CompanyExecutionContext): Promise<DeleteResult<File>>;
 
   getThumbnailRoute(file: File, index: string): string;
   getDownloadRoute(file: File): string;

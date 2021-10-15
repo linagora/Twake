@@ -79,9 +79,15 @@ export class FileController {
     return { resource };
   }
 
-  // TODO
-  async delete(): Promise<ResourceDeleteResponse> {
-    throw new Error("Not implemented");
+  async delete(
+    request: FastifyRequest<{ Params: { company_id: string; id: string } }>,
+  ): Promise<ResourceDeleteResponse> {
+    const params = request.params;
+    const context = getCompanyExecutionContext(request);
+
+    const deleteResult = await this.service.delete(params.id, context);
+
+    return { status: deleteResult.deleted ? "success" : "error" };
   }
 }
 
