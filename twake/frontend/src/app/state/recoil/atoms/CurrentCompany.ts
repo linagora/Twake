@@ -1,4 +1,4 @@
-import { atom, AtomEffect, useRecoilValue } from "recoil";
+import { atom, AtomEffect } from "recoil";
 
 import { CompanyType } from "app/models/Company";
 import UserContextState from "../../UserContextState";

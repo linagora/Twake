@@ -1,5 +1,4 @@
 import Observable from 'app/services/Depreciated/observable';
-import Api from 'services/Api';
 import DateTime from 'services/utils/datetime';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
