@@ -11,17 +11,13 @@ describe("The Files feature", () => {
   const url = "/internal/services/files/v1";
   let platform: TestPlatform;
 
-  console.log("nothing");
-
   beforeAll(async () => {
-    console.log("ENTERED before all", new Date());
     platform = await init({
       services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
     });
   });
 
   afterAll(async done => {
-    console.log("ENTERED after all", new Date());
     await platform?.tearDown();
     platform = null;
     done();
@@ -41,8 +37,6 @@ describe("The Files feature", () => {
       for (const i in files) {
         const file = files[i];
 
-        console.log(`Testing file ${file}`, new Date());
-
         const form = formAutoContent({ file: fs.createReadStream(file) });
         form.headers["authorization"] = `Bearer ${await platform.auth.getJWTToken()}`;
 
@@ -56,28 +50,19 @@ describe("The Files feature", () => {
           filesUploadRaw.body,
         );
 
-        console.log(`Finished testing file ${file}`, new Date());
-        console.log(`Result ${JSON.stringify(filesUpload.resource)}`);
-
         expect(filesUpload.resource.id).not.toBeFalsy();
         expect(filesUpload.resource.encryption_key).toBeFalsy(); //This must not be disclosed
         expect(filesUpload.resource.thumbnails.length).toBe(thumbnails[i]);
 
         for (const thumb of filesUpload.resource.thumbnails) {
-          console.log(`Get thumbnail ${thumb.id}`, new Date());
-          console.log(
-            `${url}/companies/${platform.workspace.company_id}/files/${filesUpload.resource.id}/thumbnails/${thumb.index}`,
-          );
           const thumbnails = await platform.app.inject({
             method: "GET",
             url: `${url}/companies/${platform.workspace.company_id}/files/${filesUpload.resource.id}/thumbnails/${thumb.index}`,
           });
           expect(thumbnails.statusCode).toBe(200);
-          console.log(`Did get thumbnail ${thumb.id}`, new Date());
         }
       }
 
-      console.log("DID finish");
       done();
     }, 120000);
   });

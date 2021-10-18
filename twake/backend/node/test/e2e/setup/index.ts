@@ -83,7 +83,7 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
   };
 
   testPlatform.app.server.listen(3000);
-  await testPlatform.pubsub.start();
+  //await testPlatform.pubsub.start();
 
   async function getJWTToken(
     payload: TokenPayload = { sub: testPlatform.currentUser.id },
@@ -105,7 +105,7 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
   async function tearDown(): Promise<void> {
     if (testPlatform) {
       testPlatform.app.server.close();
-      await testPlatform.pubsub.stop();
+      //await testPlatform.pubsub.stop();
     }
   }
 
