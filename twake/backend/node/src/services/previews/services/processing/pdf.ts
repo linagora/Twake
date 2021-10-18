@@ -31,7 +31,6 @@ export async function convertFromPdf(
     }
   } catch (error) {
     console.error(error);
-    console.error("there was an error:", error.message);
     for (const file of pages) {
       cleanFiles([file]);
     }
