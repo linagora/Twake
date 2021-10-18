@@ -3,8 +3,6 @@ import { PubsubHandler, PubsubServiceAPI, PubsubServiceProcessor } from "./api";
 
 const LOG_PREFIX = "service.pubsub.Processor";
 
-let count = 1;
-
 export class Processor {
   // TODO: Add state
   private registry: ProcessorRegistry;
@@ -40,13 +38,6 @@ export class Processor {
     if (!handler) {
       throw new Error(`${LOG_PREFIX} - Can not add null handler`);
     }
-
-    let i = count++;
-    console.log(`Created handler ${i}`);
-    handler.process = e => {
-      console.log(`Called handler ${i}`);
-      handler.process(e);
-    };
 
     logger.info(`${LOG_PREFIX} - Adding pubsub handler ${handler.name}`);
     this.registry.register(handler);
