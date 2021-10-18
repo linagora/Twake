@@ -66,5 +66,5 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
 
   console.log(`\nResults: ${passed} passed, ${failed} failed, total ${failed + passed}`);
 
-  process.exit(withErrors ? 1 : 0);
+  process.exit(failed > 0 ? 1 : 0);
 })();
