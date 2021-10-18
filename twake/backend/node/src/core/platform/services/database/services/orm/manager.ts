@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import _, { isEqual, uniqWith } from "lodash";
+import _ from "lodash";
 import { Connector } from "./connectors";
 import { getEntityDefinition, unwrapPrimarykey } from "./utils";
 import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
@@ -78,10 +78,9 @@ export default class EntityManager<EntityType extends Record<string, any>> {
   }
 
   public async flush(): Promise<this> {
-    
-    this.toPersist = uniqWith(this.toPersist, isEqual);
-    this.toRemove = uniqWith(this.toRemove, isEqual);
-    
+    this.toPersist = _.uniqWith(this.toPersist, _.isEqual);
+    this.toRemove = _.uniqWith(this.toRemove, _.isEqual);
+
     localEventBus.publish("database:entities:saved", {
       entities: this.toPersist.map(e => _.cloneDeep(e)),
     } as DatabaseEntitiesSavedEvent);

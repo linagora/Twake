@@ -16,7 +16,7 @@ import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
-  const apps = WorkspacesApps.getApps().filter((app: any) => (app.display || {}).channel);
+  const apps = WorkspacesApps.getApps().filter((app: any) => (app?.display || {}).channel);
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
 
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;

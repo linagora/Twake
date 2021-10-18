@@ -14,6 +14,10 @@ class MessageHistoryService {
     return isFirstMessageOlderOrEqualThanDelay && !isActiveFeature && messagesCount >= MIN_MESSAGES;
   }
 
+  getLimitCompanyMessages(): number | undefined {
+     return FeatureTogglesService.isActiveFeatureName(FeatureNames.MESSAGE_HISTORY) ? 0 : 10000;
+  }
+
   getLimitChannelMessageObject(): Message {
     return {
       id: '0000000-0000-1000-0000-00000000',
