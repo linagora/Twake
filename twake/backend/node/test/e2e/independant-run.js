@@ -8,16 +8,20 @@ function exec(command, args) {
   return new Promise(done => {
     const cmd = cp.spawn(command, args);
 
+    let data = "";
+    let error = "";
+
     cmd.stdout.on("data", function (data) {
-      console.log(data.toString());
+      data += data.toString() + "\n";
     });
 
     cmd.stderr.on("data", function (data) {
-      console.log(data.toString());
+      data += data.toString() + "\n";
+      error += data.toString() + "\n";
     });
 
     cmd.on("exit", function (code) {
-      done({ code });
+      done({ code, data, error });
     });
   });
 }
@@ -45,11 +49,15 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
     } --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose false`;
     try {
       const out = await exec("jest", args.split(" "));
-      if (out !== 0) {
+      if (out.code !== 0) {
+        console.log(out.data);
+        console.log(out.error);
+        console.log(`Ended ${path} with error!`);
         withErrors++;
       }
     } catch (err) {
       console.log(`Error with command: ${err}`);
+      withErrors++;
     }
     console.log(`Ended ${path}\n\n\n\n`);
   }
