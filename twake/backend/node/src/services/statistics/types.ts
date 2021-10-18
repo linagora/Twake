@@ -1,7 +1,7 @@
 import { TwakeServiceProvider } from "../../core/platform/framework";
 
 export interface StatisticsAPI extends TwakeServiceProvider {
-  increase(companyId: string, eventName: string, value?: number): Promise<void>;
+  increase(companyId: string, eventName: string, value?: number): void;
   get(companyId: string | null, eventName: string): Promise<number>;
 }
 

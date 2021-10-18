@@ -63,8 +63,7 @@ class UserAPIClient {
   }
 
   async getCompany(companyId: string): Promise<CompanyType> {
-    return Api.get(`/internal/services/users/v1/companies/${companyId}`)
-      .then((res:any)=> res.resource);
+    return Api.get<{resource:CompanyType}>(`/internal/services/users/v1/companies/${companyId}`).then(a=>a.resource);
   }
 
   async logout() {

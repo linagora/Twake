@@ -178,11 +178,7 @@ export default class CurrentUser extends Component {
       {
         type: 'react-element',
         className: 'menu-cancel-left-padding',
-        reactElement: () => {
-          return (
-            <CompanyMessagesCounter />
-          );
-        },
+        reactElement: () => <CompanyMessagesCounter />
       },
       {
         type: 'text',
