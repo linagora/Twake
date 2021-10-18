@@ -126,8 +126,8 @@ class Service implements UserServiceAPI {
 
   public formatCompany(
     companyEntity: Company,
-    companyUserObject: CompanyUserObject,
-    companyStats: CompanyStatsObject,
+    companyUserObject?: CompanyUserObject,
+    companyStats?: CompanyStatsObject,
   ): CompanyObject {
     const res: CompanyObject = {
       id: companyEntity.id,
@@ -141,7 +141,9 @@ class Service implements UserServiceAPI {
       res.role = companyUserObject.role;
     }
 
-    res.stats = companyStats;
+    if (companyStats) {
+      res.stats = companyStats;
+    }
 
     return res;
   }
