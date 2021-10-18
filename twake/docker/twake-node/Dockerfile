@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y graphicsmagick
 #Unoconv
 RUN apt-get update && apt-get install -y --force-yes unoconv libxml2-dev
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN unoconv --version
+RUN ls /usr/lib/libreoffice
 
 WORKDIR /usr/src/app
 COPY package*.json ./

@@ -51,6 +51,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
     } catch (err) {
       console.log(`Error with command: ${err}`);
     }
+    console.log(`Ended ${path}\n\n\n\n`);
   }
 
   process.exit(withErrors ? 1 : 0);
