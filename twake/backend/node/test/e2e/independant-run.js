@@ -40,7 +40,8 @@ throughDirectory(srcPath);
 srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.ts") >= 0);
 
 (async () => {
-  let withErrors = 0;
+  let failed = 0;
+  let passed = 0;
 
   for (const path of srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
@@ -51,17 +52,19 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
         console.log(out.data);
         console.log(out.error);
         console.log(`FAIL ${testName}`);
-        withErrors++;
+        failed++;
       } else {
+        passed++;
         console.log(`PASS ${testName}`);
       }
     } catch (err) {
       console.log(`Error with command: ${err}`);
       console.log(`ERROR ${testName}`);
-      withErrors++;
+      failed++;
     }
-    console.log("\n");
   }
+
+  console.log(`\nResults: ${passed} passed, ${failed} failed, total ${failed + passed}`);
 
   process.exit(withErrors ? 1 : 0);
 })();
