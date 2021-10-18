@@ -43,23 +43,26 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   let withErrors = 0;
 
   for (const path of srcFiles) {
-    console.log(`Running ${path}...`);
-    const args = `test/e2e/${
-      path.split("test/e2e/")[1]
-    } --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose false`;
+    const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
+    console.log("\n\n\n\n");
+    console.log(`START ${testName}`);
+    const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose false`;
     try {
       const out = await exec("jest", args.split(" "));
       if (out.code !== 0) {
         console.log(out.data);
         console.log(out.error);
-        console.log(`Ended ${path} with error!`);
+        console.log(`FAIL ${testName}`);
         withErrors++;
+      } else {
+        console.log(`PASS ${testName}`);
       }
     } catch (err) {
+      console.log(`ERROR ${testName}`);
       console.log(`Error with command: ${err}`);
       withErrors++;
     }
-    console.log(`Ended ${path}\n\n\n\n`);
+    console.log(`END ${path}`);
   }
 
   process.exit(withErrors ? 1 : 0);
