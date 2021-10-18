@@ -14,10 +14,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: unit-test
         run: cd twake && docker-compose -f docker-compose.yml.dist.tests run -e NODE_OPTIONS=--unhandled-rejections=warn node npm run test:unit
-      - name: e2e-mongo-test
-        run: cd twake && docker-compose -f docker-compose.yml.dist.tests run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e
       - name: e2e-cassandra-test
         run: cd twake && docker-compose -f docker-compose.yml.dist.tests up -d scylladb elasticsearch rabbitmq && sleep 60 && docker-compose -f docker-compose.yml.dist.tests run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=elasticsearch -e DB_DRIVER=cassandra node npm run test:e2e
+      - name: e2e-mongo-test
+        run: cd twake && docker-compose -f docker-compose.yml.dist.tests run -e NODE_OPTIONS=--unhandled-rejections=warn -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb -e PUBSUB_TYPE=local node npm run test:e2e
   build:
     runs-on: ubuntu-20.04
     steps:
