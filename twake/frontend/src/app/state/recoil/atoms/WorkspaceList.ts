@@ -1,4 +1,5 @@
-import { atomFamily, selectorFamily, useRecoilCallback, useRecoilState, useSetRecoilState } from "recoil";
+import { atomFamily, selectorFamily, useSetRecoilState } from "recoil";
+
 import { WorkspaceType } from "app/models/Workspace";
 import WorkspaceAPIClient from "app/services/workspaces/WorkspaceAPIClient";
 import Logger from "app/services/Logger";
@@ -37,7 +38,7 @@ export const WorkspaceGetOrFetch = selectorFamily<WorkspaceType | undefined, {co
 
 export const fetchCompanyWorkspaces = selectorFamily<WorkspaceType[], string>({
   key: 'fetchCompanyWorkspaces',
-  get: (companyId) => async ({ get }) => {
+  get: (companyId) => async () => {
     logger.debug("fetchCompanyWorkspaces", companyId);
     return await WorkspaceAPIClient.list(companyId) || [];
   }
@@ -46,7 +47,18 @@ export const fetchCompanyWorkspaces = selectorFamily<WorkspaceType[], string>({
 export const getWorkspacesForCompany = selectorFamily<WorkspaceType[], string>({
   key: 'getWorkspacesForCompany',
   get: (companyId) => ({ get }) => {
+    logger.debug('getWorkspacesForCompany', companyId);
+
     return get(WorkspaceListStateFamily(companyId)).filter(ws => ws.company_id === companyId);
   }
 });
 
+export const getWorkspaceInCompany = selectorFamily<WorkspaceType | undefined, { companyId: string, workspaceId: string }>({
+  key: 'getWorkspaceInCompany',
+  get: ({ companyId, workspaceId }) => ({ get }) => {
+    logger.debug('getWorkspaceInCompany', companyId, workspaceId);
+    const workspaces = get(getWorkspacesForCompany(companyId));
+
+    return (workspaces || []).find(ws => ws.id === workspaceId);
+  }
+});
