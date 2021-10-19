@@ -299,12 +299,10 @@ class Workspaces extends Observable {
     try {
       const result = await WorkspaceAPIClient.update(this.currentGroupId, this.currentWorkspaceId, { name });
       this.logger.debug('Workspace updated', result);
-      const workspace = {
+      DepreciatedCollections.get('workspaces').updateObject({
         id: this.currentWorkspaceId,
         name,
-      };
-      DepreciatedCollections.get('workspaces').updateObject(workspace);
-      ws.publish(`workspace/${workspace.id}`, { workspace });
+      });
     } catch (err) {
       this.logger.error('Can not update the workspace', err);
     }
