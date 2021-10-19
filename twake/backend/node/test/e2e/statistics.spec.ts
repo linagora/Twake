@@ -140,8 +140,8 @@ describe("Statistics implementation", () => {
 
       await new Promise(r => setTimeout(r, 5000));
 
-      expect(await statisticsAPI.get(platform.workspace.company_id, "messages")).toEqual(6);
       expect(await statisticsAPI.get(undefined, "messages")).toEqual(6);
+      expect(await statisticsAPI.get(platform.workspace.company_id, "messages")).toEqual(6);
     });
   });
 });

@@ -56,6 +56,12 @@ export class AMQPPubsubService implements PubsubAdapter {
     return this;
   }
 
+  async stop(): Promise<PubsubAdapter> {
+    logger.info("Closing pubsub service");
+    await this.clientProxy.close();
+    return this;
+  }
+
   publish<T>(topic: string, message: PubsubMessage<T>): Promise<void> {
     return this.clientProxy.publish(topic, message);
   }

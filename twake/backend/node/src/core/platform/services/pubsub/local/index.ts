@@ -43,6 +43,12 @@ export class LocalPubsubService implements PubsubAdapter {
     return this;
   }
 
+  async stop(): Promise<PubsubAdapter> {
+    logger.info("Closing pubsub service");
+    await this.clientProxy.close();
+    return this;
+  }
+
   async subscribe<T>(topic: string, listener: PubsubListener<T>): Promise<void> {
     return this.clientProxy.subscribe(topic, listener);
   }

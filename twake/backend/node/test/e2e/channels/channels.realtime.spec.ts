@@ -90,10 +90,13 @@ describe("The Channels Realtime feature", () => {
             socket.on(
               "realtime:resource",
               (event: { type: any; action: any; resource: { name: any } }) => {
-                expect(event.type).toEqual("channel");
-                expect(event.action).toEqual("saved");
-                expect(event.resource.name).toEqual(channelName);
-                done();
+                // we can also receive other types of events (channel_activity etc)
+                if (event.type === "channel") {
+                  expect(event.type).toEqual("channel");
+                  expect(event.action).toEqual("saved");
+                  expect(event.resource.name).toEqual(channelName);
+                  done();
+                }
               },
             );
           })
@@ -128,8 +131,9 @@ describe("The Channels Realtime feature", () => {
             socket.on(
               "realtime:resource",
               (event: { action: string; type: any; path: any; resource: { id: any } }) => {
-                if (event.action !== "deleted") {
+                if (event.action !== "deleted" || event.type !== "channel") {
                   // we can receive event when resource is created...
+                  // we can also receive other types of events (channel_activity etc)
                   return;
                 }
 
