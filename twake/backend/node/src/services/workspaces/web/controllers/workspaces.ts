@@ -20,6 +20,7 @@ import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
 import { plainToClass } from "class-transformer";
 import { hasCompanyAdminLevel, hasCompanyMemberLevel } from "../../../../utils/company";
 import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
+import { getWorkspaceRooms } from "../../realtime";
 
 export class WorkspacesCrudController
   implements
@@ -28,7 +29,8 @@ export class WorkspacesCrudController
       ResourceCreateResponse<WorkspaceObject>,
       ResourceListResponse<WorkspaceObject>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
@@ -139,6 +141,7 @@ export class WorkspacesCrudController
           ),
         ),
       ),
+      websockets: getWorkspaceRooms(context),
     };
   }
 

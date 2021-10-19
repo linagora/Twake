@@ -1,4 +1,5 @@
 import io from 'socket.io-client';
+import { EventEmitter } from 'events';
 import Logger from 'services/Logger';
 import { WebsocketEvents, WebSocketListener, WebsocketRoomActions } from './WebSocket';
 
@@ -9,7 +10,7 @@ export type WebSocketOptions = {
 
 const CONNECT_TIMEOUT = 30000;
 
-class WebSocketService {
+class WebSocketService extends EventEmitter {
   private logger: Logger.Logger;
   private lastConnection: number = 0;
   private wsListeners: {
@@ -19,6 +20,7 @@ class WebSocketService {
   private connectTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(private options: WebSocketOptions) {
+    super();
     this.logger = Logger.getLogger('WebsocketService');
     this.addEventListeners();
   }
@@ -31,8 +33,9 @@ class WebSocketService {
     };
 
     document.addEventListener('visibilitychange', () => {
-      // TODO: Check visibility
-      reconnectWhenNeeded();
+      if (document.visibilityState === 'visible') {
+        reconnectWhenNeeded();
+      }
     });
 
     document.addEventListener('focus', () => {
@@ -101,6 +104,7 @@ class WebSocketService {
           this.logger.debug('Authenticated');
           this.rejoinAll(true);
           connected(true);
+          this.emit(WebsocketEvents.Connected, { url: this.options.url });
         })
         .on('unauthorized', (err: any) => {
           this.logger.warn('Websocket is not authorized', err);
@@ -134,6 +138,10 @@ class WebSocketService {
         this.logger.debug('New Websocket event', event.name);
         event.name && this.notify(event.name, WebsocketEvents.Event, event);
       });
+
+      this.socket?.on('disconnect', () => {
+        this.emit(WebsocketEvents.Disconnected, { url: this.options.url });
+      });
     });
 
     return promise;
@@ -150,13 +158,24 @@ class WebSocketService {
     });
   }
 
-  notify(path: string, type: WebsocketEvents, event: any) {
+  private notify(path: string, type: WebsocketEvents, event: any) {
     if (this.wsListeners[path]) {
       Object.values(this.wsListeners[path]).forEach(callback => callback?.(type, event));
     }
   }
 
-  join(path: string, tag: string, callback: <T>(type: WebsocketEvents, event: T) => void) {
+  public getSocket():  SocketIOClient.Socket | null {
+    return this.socket;
+  }
+
+  /**
+   * Join a room. callback will be called when a message is received on the given room
+   *
+   * @param path
+   * @param tag
+   * @param callback
+   */
+  public join(path: string, tag: string, callback: (type: WebsocketEvents, event: any) => void) {
     const name = path.replace(/\/$/, '');
 
     this.logger.debug(`Join room with name='${name}' and tag='${tag}'`);
@@ -169,7 +188,13 @@ class WebSocketService {
     this.wsListeners[name][tag] = callback;
   }
 
-  leave(path: string, tag: string) {
+  /**
+   * Leave a room
+   *
+   * @param path
+   * @param tag
+   */
+  public leave(path: string, tag: string) {
     const name = path.replace(/\/$/, '');
 
     this.wsListeners[name] = this.wsListeners[name] || {};
@@ -184,11 +209,16 @@ class WebSocketService {
     }
   }
 
-  emit<T>(path: string, data: T) {
+  /**
+   * Send data as {name: path, data} in the realtime:event topic.
+   *
+   * @param path
+   * @param data
+   */
+  public send<T>(path: string, data: T): void {
     const name = path.replace(/\/$/, '');
-    this.logger.debug(`Emit realtime:event with name='${name}'`);
+    this.logger.debug(`Send realtime:event with name='${name}'`);
 
-    // TODO: Buffer
     if (this.socket) {
       this.socket.emit('realtime:event', { name, data });
     }

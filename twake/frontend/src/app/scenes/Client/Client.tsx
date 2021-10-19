@@ -24,6 +24,7 @@ import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 import useRouteState from 'app/services/hooks/useRouteState';
+import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
 
 import './Client.scss';
 
@@ -33,6 +34,7 @@ export default (): JSX.Element => {
     workspaceId,
   }));
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const user = useCurrentUser();
 
   popupService.useListener(useState);
   Workspaces.useListener(useState);
@@ -51,7 +53,7 @@ export default (): JSX.Element => {
   if (popupService.isOpen()) {
     page = <PopupComponent key="PopupComponent" />;
   } else {
-    if (LoginService.currentUserId) {
+    if (user?.id) {
       page = (
         <Layout className="appPage fade_in">
           <NewVersionComponent />
