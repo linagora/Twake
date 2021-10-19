@@ -29,16 +29,16 @@ export default class StatisticsService
     return this;
   }
 
-  async increase(companyId: string, eventName: string, value: number = 1) {
+  async increase(companyId: string, eventName: string, value: number = 1): Promise<void> {
     const now = new Date();
     const monthId = +(now.getFullYear() + now.getMonth().toString().padStart(2, "0")); // format 202108
 
-    Promise.all([
+    return Promise.all([
       this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, monthId, value),
       this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, 0, value),
       this.dbIncrement(companyId, eventName, monthId, value),
       this.dbIncrement(companyId, eventName, 0, value),
-    ]);
+    ]).then(() => null);
   }
 
   async get(companyId: string = STATISTICS_GLOBAL_KEY, eventName: string): Promise<number> {
