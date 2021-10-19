@@ -21,6 +21,7 @@ import Globals from 'services/Globals';
 import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
 import WorkspaceAPIClient from './WorkspaceAPIClient';
+import Logger from 'services/Logger';
 
 class Workspaces extends Observable {
   constructor() {
@@ -28,6 +29,7 @@ class Workspaces extends Observable {
     Globals.window.workspaceService = this;
 
     this.setObservableName('workspaces');
+    this.logger = Logger.getLogger('services/Workspaces');
 
     this.currentWorkspaceId = '';
     this.currentWorkspaceIdByGroup = {};
@@ -290,27 +292,24 @@ class Workspaces extends Observable {
     });
   }
 
-  updateWorkspaceName(name) {
+  async updateWorkspaceName(name) {
     this.loading = true;
     this.notify();
-    var that = this;
-    Api.post(
-      '/ajax/workspace/data/name',
-      { workspaceId: this.currentWorkspaceId, name: name },
-      function (res) {
-        if (res.errors.length === 0) {
-          var update = {
-            id: that.currentWorkspaceId,
-            name: name,
-          };
-          DepreciatedCollections.get('workspaces').updateObject(update);
-          ws.publish('workspace/' + update.id, { workspace: update });
-        }
-        that.loading = false;
-        that.notify();
-      },
-    );
+
+    try {
+      const result = await WorkspaceAPIClient.update(this.currentGroupId, this.currentWorkspaceId, { name });
+      this.logger.debug('Workspace updated', result);
+      DepreciatedCollections.get('workspaces').updateObject({
+        id: this.currentWorkspaceId,
+        name,
+      });
+    } catch (err) {
+      this.logger.error('Can not update the workspace', err);
+    }
+    this.loading = false;
+    this.notify();
   }
+
   updateWorkspaceLogo(logo) {
     this.loading = true;
     this.notify();

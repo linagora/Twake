@@ -1,3 +1,4 @@
+import { webSocketSchema } from "../../../utils/types";
 import { userObjectSchema } from "../../user/web/schemas";
 
 const workspaceObjectSchema = {
@@ -26,6 +27,7 @@ export const getWorkspacesSchema = {
       type: "object",
       properties: {
         resources: { type: "array", items: workspaceObjectSchema },
+        websockets: { type: "array", items: webSocketSchema },
       },
       required: ["resources"],
     },

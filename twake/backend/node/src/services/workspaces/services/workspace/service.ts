@@ -45,6 +45,9 @@ import {
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
 import { ApplicationServiceAPI } from "../../../applications/api";
+import { RealtimeSaved } from "../../../../core/platform/framework";
+import { ResourcePath } from "../../../../core/platform/services/realtime/types";
+import { getRoomName, getWorkspacePath } from "../../realtime";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -137,7 +140,15 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  async save?<SaveOptions>(
+  @RealtimeSaved<Workspace>((workspace, context) => [
+    {
+      // FIXME: For now the room is defined at the company level
+      // It meay be good to have a special room where just some users are receiving this event
+      room: ResourcePath.get(getRoomName(workspace)),
+      path: getWorkspacePath(workspace, context as WorkspaceExecutionContext),
+    },
+  ])
+  async save<SaveOptions>(
     item: Partial<Workspace>,
     options?: SaveOptions,
     context?: WorkspaceExecutionContext,
@@ -375,7 +386,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
     //Get all workspaces for this user
     const allCompanyWorkspaces = await this.getAllForCompany(companyId.id);
-    let userWorkspaces = (
+    const userWorkspaces = (
       await Promise.all(
         allCompanyWorkspaces.map(workspace =>
           this.workspaceUserRepository.findOne({

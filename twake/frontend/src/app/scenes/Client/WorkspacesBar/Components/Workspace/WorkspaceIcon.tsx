@@ -10,7 +10,7 @@ import { WorkspaceType } from 'app/models/Workspace';
 type Props = {
   workspace: WorkspaceType;
   selected: boolean;
-  onClick: () => {};
+  onClick: () => void;
 }
 
 export default (props: Props): JSX.Element => {
