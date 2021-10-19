@@ -5,13 +5,6 @@ import { PreviewProcessService } from "./services/processing/service";
 export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
   pubsub: PubsubServiceAPI;
   previewProcess: PreviewProcessService;
-  /**
-   * Get a file entity from its id
-   *
-   * @param mime
-   * @param inputPath
-   * @param outputPath
-   */
 }
 
 /**
