@@ -20,6 +20,15 @@ export type PreviewPubsubRequest = {
   };
 };
 
+export type PreviewClearPubsubRequest = {
+  document: {
+    id: string;
+    provider: string;
+    path: string;
+    thumbnails_number: number;
+  };
+};
+
 export type PreviewPubsubCallback = {
   document: {
     id: string;

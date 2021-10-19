@@ -98,7 +98,8 @@ class MessageSystem
 
     public function save($object, $options, $current_user = null, $application = null)
     {
-        $channel = $this->getInfosFromChannel($object["channel_id"]);   
+        $channel = $this->getInfosFromChannel($object["channel_id"]);
+        
         if(!$channel){
             return;
         }

@@ -13,51 +13,54 @@ import FileUploadService from '../FileUploads/FileUploadService';
 import RouterService from 'app/services/RouterService';
 
 import './File.scss';
+import { PendingFileRecoilType } from 'app/models/File';
 
 type PropsType = {
   className?: string;
-  data: DataFileType;
+  file: DataFileType;
+  type: 'input' | 'message' | 'drive';
+  progress?: number;
+  status?: PendingFileRecoilType['status'];
 };
 
-export default ({ data, className }: PropsType) => {
+export default ({ file, className, type, progress, status }: PropsType) => {
   const { companyId } = RouterService.getStateFromRoute();
   const classNameArguments: Argument[] = [
     'file-component',
     className,
     {
       'file-component-error':
-        data.type === 'input' &&
-        data.file.status &&
-        (isPendingFileStatusError(data.file.status) || isPendingFileStatusCancel(data.file.status)),
-      'file-component-uploading':
-        data.type === 'input' && data.file.status && !isPendingFileStatusSuccess(data.file.status),
+        type === 'input' &&
+        status &&
+        (isPendingFileStatusError(status) || isPendingFileStatusCancel(status)),
+      'file-component-uploading': type === 'input' && status && !isPendingFileStatusSuccess(status),
     },
   ];
 
   const onClickFile = (data: DataFileType, companyId: string) =>
     DriveService.viewDocument(
       {
-        id: data.file.id,
-        name: data.file.name,
+        id: file.id,
+        name: file.name,
         url:
           data.type === 'input' // Allow instant preview even if the download is not complete
-            ? data.file.thumbnail.url
-            : FileUploadService.getDownloadRoute({ companyId, fileId: data.file.id }),
-        extension: data.file.name.split('.').pop(),
+            ? file.thumbnail
+            : FileUploadService.getDownloadRoute({ companyId, fileId: file.id }),
+        extension: file.name.split('.').pop(),
       },
       true,
     );
   return (
     <div
       className={classNames(classNameArguments)}
-      onClick={() => companyId && onClickFile(data, companyId)}
+      onClick={() => companyId && onClickFile(file, companyId)}
     >
       <div className="file-info-container">
-        <FileThumbnail data={data} />
-        <FileDetails data={data} />
-        <FileActions data={data} />
+        <FileThumbnail file={file} />
+        <FileDetails file={file} />
+        <FileActions type={type} status={status} file={file} />
       </div>
-      <FileProgress data={data} />
+      <FileProgress progress={progress} status={status} file={file} />
     </div>
   );
 };

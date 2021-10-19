@@ -53,7 +53,7 @@ export const useUpload = () => {
   const getOnePendingFile = (id: string) => FileUploadService.getPendingFile(id);
 
   const uploadFiles = async (editorId: string, list: File[]) =>
-    await MessagePendingUploadZonesService.add(editorId, list);
+    await MessagePendingUploadZonesService.upload(editorId, list);
 
   const deleteOneFile = (id: string) => {
     if (companyId) FileUploadService.deleteOneFile({ companyId, fileId: id });

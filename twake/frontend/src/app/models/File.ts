@@ -1,18 +1,10 @@
 import Resumable from 'services/uploadManager/resumable';
+import { ThumbnailType } from './Message';
 
 export type MetaDataType = {
   name: string;
   mime: string;
   thumbnails_status?: string;
-};
-
-export type ThumbnailObjectType = {
-  index: number;
-  id: string;
-  size: number;
-  type: string;
-  width: number;
-  height: number;
 };
 
 export type FileUploadDataObjectType = {
@@ -27,7 +19,7 @@ export type FileType = {
   created_at: number;
   encryption_key: string;
   metadata: MetaDataType;
-  thumbnails: ThumbnailObjectType[];
+  thumbnails: ThumbnailType[];
   updated_at: number;
   upload_data: FileUploadDataObjectType;
   user_id: string;

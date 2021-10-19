@@ -12,7 +12,9 @@ import {
 } from 'app/components/FileUploads/utils/PendingFiles';
 
 type PropsType = {
-  data: DataFileType;
+  file: DataFileType;
+  status?: PendingFileRecoilType['status'];
+  progress?: number;
 };
 
 const setStatus = (status: PendingFileRecoilType['status']): 'normal' | 'exception' | 'active' => {
@@ -27,26 +29,26 @@ const setStatus = (status: PendingFileRecoilType['status']): 'normal' | 'excepti
   }
 };
 
-export const FileProgress = ({ data }: PropsType): JSX.Element => {
+export const FileProgress = ({ file, status, progress }: PropsType): JSX.Element => {
   const setProgressStrokeColor = (): string => {
-    if (!data.file.status) return '';
+    if (!status) return '';
 
-    if (isPendingFileStatusCancel(data.file.status)) return 'var(--error)';
-    if (isPendingFileStatusError(data.file.status)) return 'var(--error)';
-    if (isPendingFileStatusPause(data.file.status)) return 'var(--warning)';
-    if (isPendingFileStatusPending(data.file.status)) return 'var(--progress-bar-color)';
+    if (isPendingFileStatusCancel(status)) return 'var(--error)';
+    if (isPendingFileStatusError(status)) return 'var(--error)';
+    if (isPendingFileStatusPause(status)) return 'var(--warning)';
+    if (isPendingFileStatusPending(status)) return 'var(--progress-bar-color)';
 
     return 'var(--success)';
   };
 
-  return data.file.status && !isPendingFileStatusSuccess(data.file.status) && data.file.progress ? (
+  return status && !isPendingFileStatusSuccess(status) && progress ? (
     <div className="file-progress-bar-container">
       <Progress
         type="line"
         className="file-progress-bar"
-        percent={data.file.progress * 100}
+        percent={progress * 100}
         showInfo={false}
-        status={setStatus(data.file.status)}
+        status={setStatus(status)}
         strokeColor={setProgressStrokeColor()}
         trailColor="var(--progress-bar-background)"
       />

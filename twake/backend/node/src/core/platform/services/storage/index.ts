@@ -5,6 +5,7 @@ import { Consumes, logger, TwakeService } from "../../framework";
 import LocalConnectorService, { LocalConfiguration } from "./connectors/local/service";
 import S3ConnectorService, { S3Configuration } from "./connectors/S3/service";
 import StorageAPI, {
+  DeleteOptions,
   ReadOptions,
   StorageConnectorAPI,
   WriteMetadata,
@@ -143,7 +144,28 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return this;
   }
 
-  async delete(path: string): Promise<void> {
-    return await this.getConnector().delete(path);
+  async delete(path: string, options?: DeleteOptions): Promise<void> {
+    const pathList = this.getPathList(path, options?.totalChunks);
+
+    if (pathList.length > 0) {
+      pathList.forEach(async p => await this.getConnector().delete(p));
+    }
+
+    console.log("pathList in delete", pathList);
+  }
+
+  getPathList(path: string, totalChunks?: number): string[] {
+    const pathList: string[] = [];
+
+    // First iteration for chunks paths
+    if (totalChunks) {
+      for (let count = 1; count <= totalChunks; count++) {
+        pathList.push(`${path}/chunk${count}`);
+      }
+    } else {
+      pathList.push(path);
+    }
+
+    return pathList;
   }
 }

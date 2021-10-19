@@ -13,21 +13,24 @@ import Languages from 'services/languages/languages';
 import { useUpload } from 'app/state/recoil/hooks/useUpload';
 import { DataFileType } from '../types';
 import MenuManager from 'app/components/Menus/MenusManager';
+import { PendingFileRecoilType } from 'app/models/File';
 
 type PropsType = {
-  data: DataFileType;
+  file: DataFileType;
+  status?: PendingFileRecoilType['status'];
+  type?: string;
 };
 
-export const FileActions = ({ data }: PropsType): JSX.Element => {
+export const FileActions = ({ file, status, type }: PropsType): JSX.Element => {
   const { cancelUpload, deleteOneFile, downloadOneFile, retryUpload } = useUpload();
   const menuRef = useRef<HTMLElement>();
 
   const onClickDownload = async () =>
-    data.file.company_id &&
+    file.company_id &&
     (await downloadOneFile({
-      companyId: data.file.company_id,
-      fileId: data.file.id,
-      fileName: data.file.name,
+      companyId: file.company_id,
+      fileId: file.id,
+      fileName: file.name,
     }));
 
   const buildMenu = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -52,17 +55,17 @@ export const FileActions = ({ data }: PropsType): JSX.Element => {
     e.preventDefault();
     e.stopPropagation();
 
-    data.file.status && isPendingFileStatusSuccess(data.file.status)
-      ? data.file.backendFileId && deleteOneFile(data.file.backendFileId)
-      : cancelUpload(data.file.id);
+    status && isPendingFileStatusSuccess(status)
+      ? file.id && deleteOneFile(file.id)
+      : cancelUpload(file.id);
   };
 
   const onClickRetry = () => {
-    retryUpload(data.file.id);
+    retryUpload(file.id);
   };
 
   const setActions = () => {
-    if (data.type === 'message') {
+    if (type === 'message') {
       return (
         <Button
           ref={node => node && (menuRef.current = node)}
@@ -73,8 +76,8 @@ export const FileActions = ({ data }: PropsType): JSX.Element => {
       );
     }
 
-    if (data.type === 'input' && data.file.status) {
-      if (isPendingFileStatusError(data.file.status)) {
+    if (type === 'input' && status) {
+      if (isPendingFileStatusError(status)) {
         return (
           <Button
             shape="circle"
@@ -85,14 +88,14 @@ export const FileActions = ({ data }: PropsType): JSX.Element => {
       }
 
       if (
-        isPendingFileStatusPending(data.file.status) ||
-        isPendingFileStatusPause(data.file.status) ||
-        isPendingFileStatusSuccess(data.file.status)
+        isPendingFileStatusPending(status) ||
+        isPendingFileStatusPause(status) ||
+        isPendingFileStatusSuccess(status)
       ) {
         return <Button shape="circle" icon={<X size={16} />} onClick={onClickCancel} />;
       }
 
-      if (isPendingFileStatusCancel(data.file.status)) {
+      if (isPendingFileStatusCancel(status)) {
         return <></>;
       }
     }

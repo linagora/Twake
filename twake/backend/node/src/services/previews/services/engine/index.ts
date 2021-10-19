@@ -2,6 +2,7 @@ import StorageAPI from "../../../../../src/core/platform/services/storage/provid
 import { Initializable } from "../../../../core/platform/framework";
 import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { PreviewServiceAPI } from "../../api";
+import { ClearProcessor } from "./clear";
 import { PreviewProcessor } from "./service";
 
 /**
@@ -16,6 +17,7 @@ export class PreviewEngine implements Initializable {
 
   async init(): Promise<this> {
     this.pubsub.processor.addHandler(new PreviewProcessor(this.service, this.pubsub, this.storage));
+    this.pubsub.processor.addHandler(new ClearProcessor(this.service, this.pubsub, this.storage));
 
     return this;
   }

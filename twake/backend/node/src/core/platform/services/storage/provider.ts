@@ -17,6 +17,10 @@ export type ReadOptions = {
   encryptionAlgo?: string;
 };
 
+export type DeleteOptions = {
+  totalChunks?: number;
+};
+
 export interface StorageConnectorAPI {
   /**
    * Write a stream to a path
@@ -34,11 +38,11 @@ export interface StorageConnectorAPI {
   read(path: string, options?: ReadOptions): Promise<Readable>;
 
   /**
-   * Read a path and returns its stream
+   * Read a path and delete his stream
    *
    * @param path
    */
-  delete(path: string): Promise<void>;
+  delete(path: string, options?: DeleteOptions): Promise<void>;
 }
 
 export default interface StorageAPI extends TwakeServiceProvider, StorageConnectorAPI {

@@ -15,6 +15,10 @@ export type UploadOptions = {
   waitForThumbnail: boolean;
 };
 
+export type DeleteOptions = {
+  totalChunks?: number;
+};
+
 export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
   pubsub: PubsubServiceAPI;
   /**

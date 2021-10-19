@@ -1,7 +1,8 @@
+import { MessageFileType } from 'app/models/Message';
 import { selectorFamily } from 'recoil';
 import { PendingUploadZonesListState } from '../atoms/PendingUploadZonesList';
 
-export const CurrentUploadZoneSelector = selectorFamily<string[] | undefined, string>({
+export const CurrentUploadZoneSelector = selectorFamily<MessageFileType[] | undefined, string>({
   key: 'CurrentUploadZoneSelector',
   get:
     id =>

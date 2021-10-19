@@ -22,6 +22,7 @@ import { Message, MessageFileType } from '../../../models/Message';
 import FileUploadService from 'app/components/FileUploads/FileUploadService';
 import { PendingFileType } from 'app/models/File';
 import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
+import MessageAPIClient from './MessageAPIClient';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -130,7 +131,7 @@ class Messages extends Observable {
     value: string,
     options: { [key: string]: any },
     collectionKey: string,
-    attachements: string[],
+    attachements: MessageFileType[],
   ) {
     return new Promise(async resolve => {
       value = PseudoMarkdownCompiler.transformChannelsUsers(value);
@@ -148,17 +149,10 @@ class Messages extends Observable {
 
         if (!app) {
           AlertManager.alert(() => {}, {
-            text: Languages.t(
-              'services.apps.messages.no_command_possible',
-              [value, app_name],
-              "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes.",
-            ),
-            title: Languages.t(
-              'services.apps.messages.no_app',
-              [],
-              "Cette application n'existe pas.",
-            ),
+            text: Languages.t('services.apps.messages.no_command_possible', [value, app_name]),
+            title: Languages.t('services.apps.messages.no_app'),
           });
+
           resolve(false);
           return;
         }
@@ -178,9 +172,10 @@ class Messages extends Observable {
 
       options = options || {};
 
-      let message = this.collection.edit(null);
+      let message: Message = this.collection.edit(null);
       let val = PseudoMarkdownCompiler.compileToJSON(value);
 
+      message.text = value;
       message.channel_id = options.channel_id;
       message.parent_message_id = options.parent_message_id || '';
       message.sender = CurrentUser.get().id;
@@ -192,33 +187,12 @@ class Messages extends Observable {
       message.responses_count = 0;
 
       message.files = [
-        ...attachements
-          .filter(
-            id =>
-              FileUploadService.getPendingFile(id)?.status &&
-              isPendingFileStatusSuccess(FileUploadService.getPendingFile(id).status),
-          )
-          .map(id => {
-            const pendingFile = FileUploadService.getPendingFile(id);
-            console.log({ id, pendingFile });
-            return {
-              id: pendingFile.backendFile?.id,
-              company_id: pendingFile.backendFile?.company_id,
-              metadata: {
-                source: 'internal',
-                name: pendingFile.originalFile.name,
-                external_id: pendingFile.backendFile?.id || '',
-                size: pendingFile.originalFile.size, //Original weight
-                type: pendingFile.originalFile.type,
-                thumbnails: pendingFile.backendFile?.thumbnails || [],
-              },
-            };
-          }),
+        ...attachements.filter(f => f.metadata?.type !== 'pending').map(file => file),
       ];
 
       message.creation_date = new Date().getTime() / 1000 + 10; //To be on the bottom
       message.content = val;
-
+      /*
       ChannelsService.markFrontAsRead(channel.id, message.creation_date);
       this.collection.save(message, collectionKey, (message: Message) => {
         if (message) {
@@ -227,7 +201,9 @@ class Messages extends Observable {
         }
         resolve(message);
       });
+      */
 
+      MessageAPIClient.save(message);
       CurrentUser.updateTutorialStatus('first_message_sent');
     });
   }

@@ -9,7 +9,10 @@ import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
-import { PreviewPubsubRequest } from "../../../../src/services/previews/types";
+import {
+  PreviewClearPubsubRequest,
+  PreviewPubsubRequest,
+} from "../../../../src/services/previews/types";
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
@@ -217,7 +220,6 @@ class Service implements FileServiceAPI {
     };
   }
 
-  // ici thumbnail
   async thumbnail(
     id: string,
     index: string,
@@ -271,7 +273,22 @@ class Service implements FileServiceAPI {
 
     const path = getFilePath(fileToDelete);
 
-    await this.storage.delete(path);
+    await this.storage.delete(path, {
+      totalChunks: fileToDelete.upload_data.chunks,
+    });
+
+    if (fileToDelete.thumbnails.length > 0) {
+      await this.pubsub.publish<PreviewClearPubsubRequest>("services:preview:clear", {
+        data: {
+          document: {
+            id: JSON.stringify(_.pick(fileToDelete, "id", "company_id")),
+            provider: this.storage.getConnectorType(),
+            path: `${path}/thumbnails/`,
+            thumbnails_number: fileToDelete.thumbnails.length,
+          },
+        },
+      });
+    }
 
     return new DeleteResult("files", fileToDelete, true);
   }

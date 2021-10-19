@@ -6,22 +6,21 @@ import Numbers from 'app/services/utils/Numbers';
 import { DataFileType } from '../types';
 
 type PropsType = {
-  data: DataFileType;
+  file: DataFileType;
 };
 
-const setRealFileSize = ({ data }: PropsType): string =>
-  Numbers.humanFileSize(data.file.size, true);
+const setRealFileSize = ({ file }: PropsType): string => Numbers.humanFileSize(file.size, true);
 
-const setFileType = ({ data }: PropsType): string => capitalize(data.file.type.split('/')[0]);
+const setFileType = ({ file }: PropsType): string => capitalize(file.type.split('/')[0]);
 
 const { Text } = Typography;
-export const FileDetails = ({ data }: PropsType): JSX.Element => (
+export const FileDetails = ({ file }: PropsType): JSX.Element => (
   <div className="file-component-details">
     <Text ellipsis style={{ verticalAlign: 'middle' }}>
-      {data.file.name}
+      {file.name}
     </Text>
     <Text type="secondary" ellipsis style={{ verticalAlign: 'middle' }}>
-      {setRealFileSize({ data })} {setFileType({ data })}
+      {setRealFileSize({ file })} {setFileType({ file })}
     </Text>
   </div>
 );

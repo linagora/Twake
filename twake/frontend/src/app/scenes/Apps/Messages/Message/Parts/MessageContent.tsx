@@ -126,21 +126,17 @@ export default (props: Props) => {
                       <FileComponent
                         key={i}
                         className="small-right-margin small-bottom-margin"
-                        data={{
-                          type: 'message',
-                          file: {
-                            id: f.metadata.external_id,
-                            name: f.metadata.name,
-                            size: f.metadata.size,
-                            company_id: f.company_id || companyId,
-                            thumbnail: {
-                              // TODO Get route using a service ?
-                              url: f.metadata.thumbnails[0]?.url
-                                ? `${Globals.api_root_url}/internal/services/files/v1${f.metadata.thumbnails[0].url}`
-                                : undefined,
-                            },
-                            type: f.metadata.type,
-                          },
+                        type="message"
+                        file={{
+                          id: f.metadata.external_id,
+                          name: f.metadata.name || '',
+                          size: f.metadata.size || 0,
+                          company_id: f.company_id || companyId,
+                          // TODO Get route using a service ?
+                          thumbnail: f.metadata?.thumbnails?.[0]?.url
+                            ? `${Globals.api_root_url}/internal/services/files/v1${f.metadata.thumbnails[0].url}`
+                            : undefined,
+                          type: f.metadata.type || '',
                         }}
                       />
                     ) : (

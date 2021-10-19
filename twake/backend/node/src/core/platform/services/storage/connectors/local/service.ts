@@ -51,6 +51,6 @@ export default class LocalConnectorService implements StorageConnectorAPI {
   }
 
   delete(path: string): Promise<void> {
-    return rm(this.getFullPath(path), { recursive: true, force: true });
+    return rm(this.getFullPath(path), { recursive: false, force: true });
   }
 }

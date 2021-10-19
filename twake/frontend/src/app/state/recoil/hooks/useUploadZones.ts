@@ -1,3 +1,4 @@
+import { MessageFileType } from 'app/models/Message';
 import MessagePendingUploadZonesService, {
   Events as PendingUploadZonesEvents,
 } from 'app/services/Apps/Messages/MessagePendingUploadZonesService';
@@ -5,7 +6,7 @@ import { useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import { PendingUploadZonesListState } from '../atoms/PendingUploadZonesList';
 
-type handleUploadZonesChangeType = (list: Map<string, string[]>) => void;
+type handleUploadZonesChangeType = (list: Map<string, MessageFileType[]>) => void;
 
 export const useUploadZones = (zoneId: string) => {
   const [uploadZonesListState, setUploadZonesListState] = useRecoilState(
@@ -33,7 +34,7 @@ export const useUploadZones = (zoneId: string) => {
     };
   }, []);
 
-  let currentUploadZoneFilesList: string[] = [];
+  let currentUploadZoneFilesList: MessageFileType[] = [];
 
   if (uploadZonesListState?.get(zoneId)) {
     currentUploadZoneFilesList = uploadZonesListState.get(zoneId) || [];
