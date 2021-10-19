@@ -45,8 +45,7 @@ class AuthService {
     const config = InitService.server_infos?.configuration?.accounts[accountType];
 
     if (accountType === 'console') {
-      this.provider = new InternalAuthProviderService(config as InternalConfiguration);
-      // this.provider = new OIDCAuthProviderService(config as ConsoleConfiguration);
+      this.provider = new OIDCAuthProviderService(config as ConsoleConfiguration);
     } else if (accountType === 'internal') {
       this.provider = new InternalAuthProviderService(config as InternalConfiguration);
     } else {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Divider, Progress, Row, Typography } from 'antd';
 import './CompanyMessagesCounter.scss';
+import i18n from 'i18next';
 
 import Languages from 'services/languages/languages';
 import { useRecoilState } from 'recoil';
@@ -19,16 +20,6 @@ const CompanyMessagesCounter = () => {
     InitService.server_infos?.configuration.accounts.console?.company_subscription_url || '';
 
   const onClickLink = () => window.open(companySubscriptionUrl, 'blank');
-
-  const formatPrice = (n: number) =>
-    n
-      .toString()
-      .split('')
-      .reverse()
-      .map((n, s) => (~s % 3 ? n : ' ' + n))
-      .reverse()
-      .join('')
-      .trim();
 
   useEffect(() => {
     if (companyMessagesLimit && company) {
@@ -55,7 +46,7 @@ const CompanyMessagesCounter = () => {
           </Title>
           <Text className="info">
             {Languages.t('scenes.app.channelsbar.currentuser.company_messages_counter_info', [
-              formatPrice(companyMessagesLimit),
+              Intl.NumberFormat(i18n.language).format(companyMessagesLimit)
             ])}
           </Text>
           <div className="link">
