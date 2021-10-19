@@ -1,0 +1,17 @@
+{
+    "general.save": "සුරකින්න",
+    "general.close": "වසන්න",
+    "general.help.documentation": "ප්‍රලේඛනය",
+    "general.remove": "ඉවත් කරන්න",
+    "general.cancel": "අවලංගු",
+    "general.continue": "ඉදිරියට",
+    "general.back": "ආපසු",
+    "general.help": "උදව්",
+    "general.send": "පණිවිඩය යවන්න",
+    "general.create": "සාදන්න",
+    "general.edit": "සංස්කරණය",
+    "general.help.support": "සහාය",
+    "scenes.app.workspaces.create_company.group_data.group_type.other_group": "වෙනත්",
+    "scenes.app.workspaces.create_company.group_data.group_size": "සමූහයේ ප්‍රමාණය",
+    "general.update": "යාවත්කාල"
+}

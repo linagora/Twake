@@ -1,32 +1,40 @@
 import { fromPath } from "pdf2pic";
-import { promises as fsPromise } from "fs";
-import { getTmpFile } from "../../utils";
-
-const { unlink } = fsPromise;
+import { existsSync, mkdirSync } from "fs";
+import { cleanFiles, getTmpFile } from "../../utils";
 
 export async function convertFromPdf(
   inputPath: string,
-  numberOfPages: number,
+  options: {
+    numberOfPages: number;
+  },
 ): Promise<{ output: string[]; done: boolean }> {
   const pages: string[] = [];
 
   try {
-    const options = {
+    const pdfOptions = {
       density: 100,
       saveFilename: "output",
       savePath: getTmpFile(),
       format: "png",
     };
-    const storeAsImage = fromPath(inputPath, options);
-    const images = await storeAsImage.bulk(numberOfPages);
-    for (const image of images) {
-      pages.push(`${options.savePath}/${options.saveFilename}.${image.page}.${options.format}`);
+    mkdirSync(pdfOptions.savePath, { recursive: true });
+    const storeAsImage = fromPath(inputPath, pdfOptions);
+    try {
+      for (let i = 1; i <= options.numberOfPages; i++) {
+        const image = await storeAsImage(i);
+        pages.push(
+          `${pdfOptions.savePath}/${pdfOptions.saveFilename}.${image.page}.${pdfOptions.format}`,
+        );
+      }
+    } catch (err) {
+      //Just no more page to convert
     }
   } catch (error) {
-    console.error("there was an error:", error.message);
-    return { output: [], done: false };
+    console.error(error);
+    for (const file of pages) {
+      cleanFiles([file]);
+    }
+    throw Error("Can't convert file with pdf-image.");
   }
-  await unlink(inputPath);
-
   return { output: pages, done: true };
 }

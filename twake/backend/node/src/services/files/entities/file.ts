@@ -1,4 +1,5 @@
 import { Type } from "class-transformer";
+import _ from "lodash";
 import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
 
 @Entity("files", {
@@ -45,7 +46,35 @@ export class File {
     size: number;
     chunks: number;
   };
+
+  getPublicObject(): PublicFile {
+    return _.pick(
+      this,
+      "company_id",
+      "id",
+      "user_id",
+      "application_id",
+      "updated_at",
+      "created_at",
+      "metadata",
+      "thumbnails",
+      "upload_data",
+    );
+  }
 }
+
+export type PublicFile = Pick<
+  File,
+  | "company_id"
+  | "id"
+  | "user_id"
+  | "application_id"
+  | "updated_at"
+  | "created_at"
+  | "metadata"
+  | "thumbnails"
+  | "upload_data"
+>;
 
 export type Thumbnail = {
   index: number;

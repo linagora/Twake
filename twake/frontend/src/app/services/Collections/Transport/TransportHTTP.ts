@@ -1,24 +1,30 @@
 import Logger from 'services/Logger';
-import Collections from '../Collections';
 import Transport from './Transport';
+import { TransportOptions } from './TransportAPI';
 
 const logger = Logger.getLogger('Collections/Transport/HTTP');
 
 type HTTPMethod = 'post' | 'delete' | 'get' | 'put';
 
 export default class TransportHTTP {
+  private options?: TransportOptions["rest"];
+
   constructor(private readonly transport: Transport) {}
+
+  public configure(options: TransportOptions["rest"]) {
+    this.options = options;
+  }
 
   private async request(method: HTTPMethod, route: string, options: any) {
     logger.debug(`${method.toUpperCase()} ${route}`);
-    const prefix = Collections.getOptions().transport?.rest?.url;
+    const prefix = this.options?.url;
     if (!prefix) {
       return { offline: true };
     }
     route = `${prefix}${route}`;
 
     const headers = {
-      ...Collections.getOptions().transport?.rest?.headers,
+      ...this.options?.headers,
       ...this.transport.apiOptions?.headers,
       ...options?.headers,
     };

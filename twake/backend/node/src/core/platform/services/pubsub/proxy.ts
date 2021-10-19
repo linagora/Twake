@@ -99,7 +99,7 @@ export default class PubsubProxyService implements PubsubProxy {
    */
   async close(): Promise<void> {
     try {
-      this.client?.close?.();
+      await this.client?.close?.();
     } catch (err) {
       logger.debug({ err }, `${LOG_PREFIX} Error on closing the pubsub layer`);
     }

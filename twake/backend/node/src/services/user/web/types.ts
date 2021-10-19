@@ -74,6 +74,7 @@ export interface CompanyStatsObject {
   created_at: number;
   total_members: number;
   total_guests: number;
+  total_messages: number;
 }
 
 export interface CompanyObject {

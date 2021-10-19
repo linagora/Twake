@@ -5,8 +5,7 @@ FROM node:16-bullseye-slim as node-base
 
 #Imagick
 RUN apt-get update && apt-get install -y ghostscript && apt-get clean
-RUN apt-get update && apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
-RUN apt-get update && apt-get install -y imagemagick 
+RUN apt-get update && apt-get install -y graphicsmagick
 
 #Unoconv
 RUN apt-get update && apt-get install -y --force-yes unoconv libxml2-dev

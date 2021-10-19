@@ -26,6 +26,7 @@ import {
 
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
+import { StatisticsAPI } from "../statistics/types";
 
 export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
   userBookmarks: MessageUserBookmarksServiceAPI;
@@ -33,6 +34,7 @@ export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
   messages: MessageThreadMessagesServiceAPI;
   views: MessageViewsServiceAPI;
   engine: MessagesEngine;
+  statistics: StatisticsAPI;
 }
 
 export interface MessageUserBookmarksServiceAPI

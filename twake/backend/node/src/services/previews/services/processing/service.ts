@@ -1,7 +1,7 @@
 import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
-import { isFileType } from "../../utils";
+import { cleanFiles, isFileType } from "../../utils";
 import { pdfExtensions, officeExtensions, imageExtensions } from "./mime";
 import StorageAPI from "../../../../core/platform/services/storage/provider";
 import { PreviewPubsubRequest, ThumbnailResult } from "../../types";
@@ -15,20 +15,40 @@ export class PreviewProcessService {
   async generateThumbnails(
     document: Pick<PreviewPubsubRequest["document"], "filename" | "mime" | "path">,
     options: PreviewPubsubRequest["output"],
+    deleteTmpFile: boolean,
   ): Promise<ThumbnailResult[]> {
     if (isFileType(document.mime, document.filename, officeExtensions)) {
-      const pdfPath = await convertFromOffice(document.path, options.pages);
-      const thumbnailPath = await convertFromPdf(pdfPath.output, options.pages);
-      return (await thumbnailsFromImages(thumbnailPath.output, options)).output;
+      const pdfPath = await convertFromOffice(document.path, {
+        numberOfPages: options.pages,
+      });
+      await cleanFiles([document.path]);
+      const thumbnailPath = await convertFromPdf(pdfPath.output, {
+        numberOfPages: options.pages,
+      });
+      await cleanFiles([pdfPath.output]);
+      const images = (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile))
+        .output;
+      await cleanFiles(thumbnailPath.output);
+      return images;
     }
 
     if (isFileType(document.mime, document.filename, pdfExtensions)) {
-      const thumbnailPath = await convertFromPdf(document.path, options.pages);
-      return (await thumbnailsFromImages(thumbnailPath.output, options)).output;
+      const thumbnailPath = await convertFromPdf(document.path, {
+        numberOfPages: options.pages,
+      });
+      await cleanFiles([document.path]);
+      const images = (await thumbnailsFromImages(thumbnailPath.output, options, deleteTmpFile))
+        .output;
+      await cleanFiles(thumbnailPath.output);
+      return images;
     }
 
     if (isFileType(document.mime, document.filename, imageExtensions)) {
-      return (await thumbnailsFromImages([document.path], options)).output;
+      const images = (await thumbnailsFromImages([document.path], options, deleteTmpFile)).output;
+      await cleanFiles([document.path]);
+      return images;
     }
+
+    throw "Can not proccess, file type can't be defined";
   }
 }

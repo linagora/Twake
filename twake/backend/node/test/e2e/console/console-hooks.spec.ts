@@ -53,6 +53,7 @@ describe("The console API hooks", () => {
         "applications",
         "storage",
         "counter",
+        "statistics",
         "platform-services",
       ],
     });

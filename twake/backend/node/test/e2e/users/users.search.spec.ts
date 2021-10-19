@@ -22,6 +22,7 @@ describe("The /users API", () => {
         "counter",
         "workspaces",
         "console",
+        "statistics",
         "platform-services",
       ],
     });

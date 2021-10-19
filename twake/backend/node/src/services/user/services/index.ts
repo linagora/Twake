@@ -12,6 +12,7 @@ import { WorkspaceServiceAPI } from "../../workspaces/api";
 import {
   CompanyObject,
   CompanyShort,
+  CompanyStatsObject,
   CompanyUserObject,
   CompanyUserRole,
   CompanyUserStatus,
@@ -21,12 +22,14 @@ import Company from "../entities/company";
 import User from "../entities/user";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../applications/api";
+import { StatisticsAPI } from "../../statistics/types";
 
 export function getService(
   platformServices: PlatformServicesAPI,
   applications: ApplicationServiceAPI,
+  statistics: StatisticsAPI,
 ): UserServiceAPI {
-  return new Service(platformServices, applications);
+  return new Service(platformServices, applications, statistics);
 }
 
 class Service implements UserServiceAPI {
@@ -36,7 +39,11 @@ class Service implements UserServiceAPI {
   external: UserExternalLinksServiceAPI;
   workspaces: WorkspaceServiceAPI;
 
-  constructor(platformServices: PlatformServicesAPI, readonly applications: ApplicationServiceAPI) {
+  constructor(
+    platformServices: PlatformServicesAPI,
+    readonly applications: ApplicationServiceAPI,
+    readonly statistics: StatisticsAPI,
+  ) {
     this.users = getUserService(platformServices);
     this.external = getExternalService(platformServices.database);
     this.companies = getCompanyService(platformServices);
@@ -120,18 +127,22 @@ class Service implements UserServiceAPI {
   public formatCompany(
     companyEntity: Company,
     companyUserObject?: CompanyUserObject,
+    companyStats?: CompanyStatsObject,
   ): CompanyObject {
     const res: CompanyObject = {
       id: companyEntity.id,
       name: companyEntity.name,
       logo: companyEntity.logo,
       plan: companyEntity.plan,
-      stats: companyEntity.stats,
     };
 
     if (companyUserObject) {
       res.status = "active"; // FIXME: with real status
       res.role = companyUserObject.role;
+    }
+
+    if (companyStats) {
+      res.stats = companyStats;
     }
 
     return res;

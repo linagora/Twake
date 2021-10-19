@@ -16,6 +16,16 @@ export class PreviewProcessor
 {
   readonly name = "PreviewProcessor";
 
+  constructor(
+    readonly service: PreviewServiceAPI,
+    private pubsub: PubsubServiceAPI,
+    readonly storage: StorageAPI,
+  ) {}
+
+  init?(context?: TwakeContext): Promise<this> {
+    throw new Error("Method not implemented.");
+  }
+
   readonly topics = {
     in: "services:preview",
     out: "services:preview:callback",
@@ -26,19 +36,6 @@ export class PreviewProcessor
     ack: true,
   };
 
-  constructor(
-    service: PreviewServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    readonly storage: StorageAPI,
-  ) {
-    this.service = service;
-  }
-  service: PreviewServiceAPI;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  init?(context?: TwakeContext): Promise<this> {
-    throw new Error("Method not implemented.");
-  }
-
   validate(message: PreviewPubsubRequest): boolean {
     return !!(message && message.document && message.output);
   }
@@ -46,9 +43,23 @@ export class PreviewProcessor
   async process(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
     logger.info(`${this.name} - Processing preview generation ${message.document.id}`);
 
-    if (!this.validate(message)) {
-      throw new Error("Missing required fields");
+    let res: PreviewPubsubCallback = { document: message.document, thumbnails: [] };
+    try {
+      res = await this.generate(message);
+    } catch (err) {
+      logger.error(`${this.name} - Can't generate thumbnails ${err}`);
     }
+
+    logger.info(
+      `${this.name} - Generated ${res.thumbnails.length} thumbnails from ${
+        message.document.filename || message.document.id
+      }`,
+    );
+
+    return res;
+  }
+
+  async generate(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
     //Download original file
     const readable = await this.storage.read(message.document.path, {
       totalChunks: message.document.chunks,
@@ -77,9 +88,12 @@ export class PreviewProcessor
       localThumbnails = await this.service.previewProcess.generateThumbnails(
         { path: inputPath, mime: message.document.mime, filename: message.document.filename },
         message.output,
+        true,
       );
     } catch (err) {
+      logger.error(`${this.name} - Can't generate thumbnails ${err}`);
       localThumbnails = [];
+      throw Error("Can't generate thumbnails.");
     }
 
     const thumbnails: PreviewPubsubCallback["thumbnails"] = [];
