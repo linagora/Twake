@@ -8,9 +8,6 @@ import WorkspacesBar from './WorkspacesBar/WorkspacesBar';
 export default () => {
   return (
     <Layout style={{ height: '100%', backgroundColor: 'var(--secondary)' }}>
-      {
-        // TODO Loading component
-      }
       <Suspense fallback={<></>}>
         <WorkspacesBar key='workspacebar' />
       </Suspense>
