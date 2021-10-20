@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Col, Divider, Progress, Row, Typography } from 'antd';
-import './CompanyMessagesCounter.scss';
-import i18n from 'i18next';
+import React, { useEffect, useState } from "react";
+import { Col, Divider, Progress, Row, Typography } from "antd";
+import "./CompanyMessagesCounter.scss";
+import i18n from "i18next";
 
-import Languages from 'services/languages/languages';
-import { useRecoilState } from 'recoil';
-import { CurrentCompanyState } from 'app/state/recoil/atoms/CurrentCompany';
-import UserAPIClient from 'services/user/UserAPIClient';
-import MessageHistoryService from 'services/Apps/Messages/MessageHistoryService';
-import InitService from 'services/InitService';
+import Languages from "services/languages/languages";
+import MessageHistoryService from "services/Apps/Messages/MessageHistoryService";
+import InitService from "services/InitService";
 import { useCurrentCompany } from "app/state/recoil/hooks/useCurrentCompany";
 
 const { Text, Title, Link } = Typography;
