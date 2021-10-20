@@ -9,12 +9,14 @@ import { CurrentCompanyState } from 'app/state/recoil/atoms/CurrentCompany';
 import UserAPIClient from 'services/user/UserAPIClient';
 import MessageHistoryService from 'services/Apps/Messages/MessageHistoryService';
 import InitService from 'services/InitService';
+import { useCurrentCompany } from "app/state/recoil/hooks/useCurrentCompany";
 
 const { Text, Title, Link } = Typography;
 const CompanyMessagesCounter = () => {
-  const [company] = useRecoilState(CurrentCompanyState);
   const [messagesCount, setMessagesCount] = useState<number>();
-  const companyMessagesLimit = MessageHistoryService.getLimitCompanyMessages();
+  let companyMessagesLimit = MessageHistoryService.getLimitCompanyMessages();
+
+  const [company] = useCurrentCompany();
 
   const companySubscriptionUrl =
     InitService.server_infos?.configuration.accounts.console?.company_subscription_url || '';
@@ -22,10 +24,8 @@ const CompanyMessagesCounter = () => {
   const onClickLink = () => window.open(companySubscriptionUrl, 'blank');
 
   useEffect(() => {
-    if (companyMessagesLimit && company) {
-      UserAPIClient.getCompany(company.id).then(res =>
-        setMessagesCount(res.stats?.total_messages || 0),
-      );
+    if(companyMessagesLimit && company){
+      setMessagesCount(company.stats?.total_messages || 0);
     }
   }, [company, companyMessagesLimit]);
 
@@ -58,7 +58,7 @@ const CompanyMessagesCounter = () => {
         <Col>
           <Progress
             type="circle"
-            format={percent => (messagesCount / 1000).toFixed(1) + 'k'}
+            format={() => (messagesCount / 1000).toFixed(1) + 'k'}
             percent={(messagesCount / companyMessagesLimit) * 100}
             width={55}
           />

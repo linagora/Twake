@@ -8,6 +8,7 @@ import { CurrentWorkspaceState } from "../atoms/CurrentWorkspace";
 import LoginService from "app/services/login/LoginService";
 import WorkspaceService from "app/services/workspaces/workspaces";
 import CurrentUserService from "app/services/user/CurrentUser";
+import UserAPIClient from "services/user/UserAPIClient";
 
 export const useTwakeContext = () => {
   const [user, setUser] = useRecoilState(CurrentUserState);
@@ -39,7 +40,9 @@ export const useTwakeContext = () => {
   useEffect(() => {
     const listener = WorkspaceService.addListener((data: {workspaces: {currentGroupId: string}}) => {
       if (data.workspaces.currentGroupId) {
-        setCompany({ id: data.workspaces.currentGroupId } as CompanyType);
+        UserAPIClient.getCompany(data.workspaces.currentGroupId).then(company=>{
+          setCompany(company as CompanyType);
+        });
       }
     });
 
