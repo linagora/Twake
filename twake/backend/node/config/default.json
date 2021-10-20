@@ -145,6 +145,7 @@
     "tracker",
     "general",
     "user",
+    "applicationsapi",
     "applications",
     "channels",
     "notifications",

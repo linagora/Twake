@@ -20,6 +20,7 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
+import SearchRepository from "../../../core/platform/services/search/repository";
 
 export function getService(platformService: PlatformServicesAPI): MarketplaceApplicationServiceAPI {
   return new ApplicationService(platformService);
@@ -28,11 +29,16 @@ export function getService(platformService: PlatformServicesAPI): MarketplaceApp
 class ApplicationService implements MarketplaceApplicationServiceAPI {
   version: "1";
   repository: Repository<Application>;
+  searchRepository: SearchRepository<Application>;
 
   constructor(readonly platformService: PlatformServicesAPI) {}
 
   async init(): Promise<this> {
     try {
+      this.searchRepository = this.platformService.search.getRepository<Application>(
+        TYPE,
+        Application,
+      );
       this.repository = await this.platformService.database.getRepository<Application>(
         TYPE,
         Application,
@@ -51,12 +57,23 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
 
   async list<ListOptions>(
     pagination: Pagination,
-    options?: ListOptions,
+    options?: { search?: string },
     context?: ExecutionContext,
   ): Promise<ListResult<PublicApplication>> {
-    //Todo: add search
-
-    const entities = await this.repository.find({ pagination }, { pagination });
+    let entities: ListResult<Application>;
+    if (options.search) {
+      entities = await this.searchRepository.search(
+        {},
+        {
+          pagination,
+          $text: {
+            $search: options.search,
+          },
+        },
+      );
+    } else {
+      entities = await this.repository.find({}, { pagination });
+    }
     entities.filterEntities(app => app.publication.published);
 
     const applications = entities.getEntities().map(app => app.getPublicObject());

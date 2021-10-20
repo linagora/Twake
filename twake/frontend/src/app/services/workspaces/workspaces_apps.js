@@ -104,19 +104,6 @@ class WorkspacesApps extends Observable {
       options = {};
     }
 
-    var group_id = Collections.get('workspaces').find(workspace_id).group.id;
-
-    if (!this.apps_by_group[group_id]) {
-      this.apps_by_group[group_id] = {};
-    }
-    if (!this.apps_by_workspace[workspace_id]) {
-      this.apps_by_workspace[workspace_id] = {};
-    }
-
-    ws.subscribe('workspace_apps/' + workspace_id, (route, res) => {
-      this.recieveWS(res);
-    });
-
     if (this.loading_by_workspace[workspace_id]) {
       return false;
     }
@@ -166,6 +153,8 @@ class WorkspacesApps extends Observable {
             workspace_default: item.workspace_default,
             app: item.app,
           };
+          if (!this.apps_by_group) this.apps_by_group = {};
+          if (!this.apps_by_group[item.group_id]) this.apps_by_group[item.group_id] = {};
           this.apps_by_group[item.group_id][item.app.id] = app_link;
         });
 

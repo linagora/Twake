@@ -9,7 +9,7 @@ import { getService } from "./services";
 @Consumes(["platform-services", "applications"])
 export default class ApplicationsApiService extends TwakeService<ApplicationsApiServiceAPI> {
   version = "1";
-  name = "api";
+  name = "applicationsapi";
   service: ApplicationsApiServiceAPI
 
   api(): ApplicationsApiServiceAPI {
