@@ -13,6 +13,8 @@ import { MessageNotification } from "../services/messages/types";
 
 export type uuid = string;
 
+export type Maybe<T> = T | undefined;
+
 /**
  * User in platform:
  *
