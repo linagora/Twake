@@ -36,6 +36,7 @@ export default class CurrentUser extends Component {
 
     this.state = {
       new_status: ['', ''],
+      showingMenu: false,
     };
 
     this.preferedEmojisStatus = [
@@ -85,7 +86,17 @@ export default class CurrentUser extends Component {
     this.setState({ new_status: ['', ''] });
     MenusManager.notify();
   }
+
   onClickUser(evt) {
+    this.state.showingMenu ? this.hideMenu() : this.showMenu();
+    this.setState({ showingMenu: !this.state.showingMenu });
+  }
+
+  hideMenu() {
+    MenusManager.closeMenu();
+  }
+
+  showMenu() {
     var current_user = this.users_repository.known_objects_by_id[this.user_id];
     var usermenu = [
       {

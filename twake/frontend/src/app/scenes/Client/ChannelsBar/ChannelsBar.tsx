@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout } from 'antd';
 
-import CurrentUser from './Parts/CurrentUser/CurrentUser.js';
+import CurrentUser from './Parts/CurrentUser/CurrentUser';
 import ChannelsApps from './ChannelsApps/ChannelsApps';
 import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
 import ChannelsUser from './ChannelsUser/ChannelsUser';
