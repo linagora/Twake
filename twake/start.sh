@@ -1,4 +1,4 @@
-cp -n docker-compose.yml.dist.onpremise docker-compose.yml
+cp -n docker-compose.onpremise.yml docker-compose.yml
 
 if [ ! -d ./configuration ]; then #create configuration folder
   cp -nR ./default-configuration ./configuration
