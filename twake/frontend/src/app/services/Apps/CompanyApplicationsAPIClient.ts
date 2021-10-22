@@ -1,6 +1,6 @@
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
-import { AppType } from 'app/models/App';
+import { Application } from 'app/models/App';
 
 const PREFIX = '/internal/services/applications/v1/companies';
 
@@ -11,9 +11,9 @@ class CompanyApplicationsAPIClient {
    *
    * @param companyId
    */
-  async list(companyId: string): Promise<AppType[]> {
-    return Api.get<{ resources: AppType[] }>(`${PREFIX}/${companyId}/applications`).then(result =>
-      result.resources && result.resources.length ? result.resources : [],
+  async list(companyId: string): Promise<Application[]> {
+    return Api.get<{ resources: Application[] }>(`${PREFIX}/${companyId}/applications`).then(
+      result => (result.resources && result.resources.length ? result.resources : []),
     );
   }
 
@@ -24,8 +24,8 @@ class CompanyApplicationsAPIClient {
    * @param applicationId
    * @returns
    */
-  async get(companyId: string, applicationId: string): Promise<AppType> {
-    return Api.get<{ resource: AppType }>(
+  async get(companyId: string, applicationId: string): Promise<Application> {
+    return Api.get<{ resource: Application }>(
       `${PREFIX}/${companyId}/applications/${applicationId}`,
     ).then(result => result.resource);
   }
@@ -37,9 +37,12 @@ class CompanyApplicationsAPIClient {
    * @param applicationId
    * @returns
    */
-  async add(companyId: string, applicationId: string): Promise<AppType> {
-    return Api.post<{}, { resource: AppType }>(
+  async add(companyId: string, applicationId: string): Promise<Application> {
+    return Api.post<{}, { resource: Application }>(
       `${PREFIX}/${companyId}/applications/${applicationId}`,
+      {},
+      undefined,
+      false,
       {},
     ).then(result => result.resource);
   }
@@ -51,10 +54,10 @@ class CompanyApplicationsAPIClient {
    * @param applicationId
    * @returns
    */
-  async remove(companyId: string, applicationId: string): Promise<AppType> {
-    return Api.delete<{ resource: AppType }>(
+  async remove(companyId: string, applicationId: string): Promise<boolean> {
+    return Api.delete<{ resource: { status: 'error' | 'success' } }>(
       `${PREFIX}/${companyId}/applications/${applicationId}`,
-    ).then(result => result.resource);
+    ).then(result => (result.resource?.status === 'success' ? true : false));
   }
 }
 

@@ -496,7 +496,7 @@
     "scenes.app.popup.workspaceparameter.pages.logo_subtitle": "Logo",
     "scenes.app.popup.workspaceparameter.pages.apps_company_small_text": "Aplicaciones de su empresa",
     "scenes.apps.calendar.modals.title_placeholder": "Título",
-    "scenes.app.popup.workspaceparameter.pages.apps_connectors_title": "Aplicaciones y conectores",
+    "scenes.app.popup.workspaceparameter.pages.apps_connectors_title": "Integraciones",
     "scenes.app.popup.workspaceparameter.pages.collaboraters_adding_button": "Invitar usuarios",
     "scenes.app.popup.workspaceparameter.pages.researching_apps_button": "Buscar aplicaciones...",
     "scenes.app.popup.workspaceparameter.pages.configure_button": "Configurar",

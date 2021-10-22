@@ -405,7 +405,7 @@
     "scenes.app.popup.workspaceparameter.pages.alert_impossible_removing": "Impossible de quitter l'espace de travail car vous êtes le dernier administrateur. Vous pouvez définir un nouvel administrateur ou bien supprimer / archiver cet espace de travail.",
     "scenes.app.popup.workspaceparameter.pages.all_apps_small_text": "Toutes les applications",
     "scenes.app.popup.workspaceparameter.pages.apps_company_small_text": "Applications de votre entreprise",
-    "scenes.app.popup.workspaceparameter.pages.apps_connectors_title": "Applications et connecteurs",
+    "scenes.app.popup.workspaceparameter.pages.apps_connectors_title": "Intégrations",
     "scenes.app.popup.workspaceparameter.pages.apps_research_title": "Rechercher des applications",
     "scenes.app.popup.workspaceparameter.pages.apps_small_text": "Applications de cet espace de travail",
     "scenes.app.popup.workspaceparameter.pages.back_to_search_button": "Retour à la recherche",

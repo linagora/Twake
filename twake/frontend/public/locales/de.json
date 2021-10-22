@@ -372,7 +372,7 @@
     "scenes.app.popup.workspaceparameter.pages.alert_impossible_removing": "Sie können den Arbeitsbereich nicht verlassen, da Sie der letzte Moderator sind. Sie können einen neuen Moderator definieren oder diesen Arbeitsbereich löschen / archivieren.",
     "scenes.app.popup.workspaceparameter.pages.all_apps_small_text": "Alle Anwendungen",
     "scenes.app.popup.workspaceparameter.pages.apps_company_small_text": "Bewerbungen Ihres Unternehmens",
-    "scenes.app.popup.workspaceparameter.pages.apps_connectors_title": "Anwendungen und Anschlüsse",
+    "scenes.app.popup.workspaceparameter.pages.apps_connectors_title": "Integrationen",
     "scenes.app.popup.workspaceparameter.pages.apps_research_title": "Suchen Sie nach Anwendungen",
     "scenes.app.popup.workspaceparameter.pages.apps_small_text": "Anwendungen dieses Arbeitsbereichs",
     "scenes.app.popup.workspaceparameter.pages.back_to_search_button": "Zurück zur Suche",

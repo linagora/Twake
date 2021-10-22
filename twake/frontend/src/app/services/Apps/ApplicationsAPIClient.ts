@@ -1,6 +1,6 @@
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
-import { AppType } from 'app/models/App';
+import { Application } from 'app/models/App';
 
 const PREFIX = '/internal/services/applications/v1/applications';
 
@@ -9,10 +9,10 @@ class ApplicationsAPIClient {
   /**
    * Search all applications
    */
-  async search(search: string = ''): Promise<AppType[]> {
-    return Api.get<{ resources: AppType[] }>(`${PREFIX}?search=${search}`).then(result =>
-      result.resources && result.resources.length ? result.resources : [],
-    );
+  async search(search?: string): Promise<Application[]> {
+    return Api.get<{ resources: Application[] }>(
+      `${PREFIX}${search ? `?search=${search}` : ''}`,
+    ).then(result => (result.resources && result.resources.length ? result.resources : []));
   }
 
   /**
@@ -21,8 +21,8 @@ class ApplicationsAPIClient {
    * @param applicationId
    * @returns
    */
-  async get(applicationId: string): Promise<AppType> {
-    return Api.get<{ resource: AppType }>(`${PREFIX}/${applicationId}`).then(
+  async get(applicationId: string): Promise<Application> {
+    return Api.get<{ resource: Application }>(`${PREFIX}/${applicationId}`).then(
       result => result.resource,
     );
   }
