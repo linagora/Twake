@@ -1,21 +1,17 @@
-import { Message, NodeMessage } from 'app/models/Message';
-import Api from 'app/services/Api';
-import RouterServices from 'services/RouterService';
-import { TwakeService } from '../../Decorators/TwakeService';
+import { TwakeService } from '../../../Decorators/TwakeService';
+import { NodeMessage } from 'app/models/Message';
 import MessageViewAPIClient from './MessageViewAPIClient';
+import MessageThreadAPIClient from './MessageThreadAPIClient';
+import Api from 'app/services/Api';
 
-type ResponseFileType = { resource: any };
-type ResponseDeleteFileType = { status: 'success' | 'error' };
-
-type BaseContentType = { companyId: string };
-type GetContextType = BaseContentType & { fileId: string };
-type DeleteContextType = BaseContentType & { fileId: string };
-type DownloadContextType = BaseContentType & { fileId: string };
-
+/**
+ * This service is to get, update, create, list messages in a thread
+ */
 @TwakeService('MessageAPIClientService')
 class MessageAPIClient {
   private readonly prefixUrl: string = '/internal/services/messages/v1';
-  private readonly viewService = MessageViewAPIClient;
+  private readonly _viewService = MessageViewAPIClient;
+  private readonly threadService = MessageThreadAPIClient;
 
   async list(
     companyId: string,
@@ -83,38 +79,23 @@ class MessageAPIClient {
   async save(
     companyId: string,
     threadId: string,
-    message: Message,
+    message: NodeMessage,
     {
       movedFromThread = undefined,
     }: {
       movedFromThread?: string;
-      channels?: {
-        channelId: string;
-        workspaceId: string;
-      }[];
     } = {},
   ) {
-    /*
-    const route = this.getRoute({ companyId, threadId: message?.parent_message_id });
-
-    console.log({ route, message });
-    // We are on a thread
-    if (message.parent_message_id && workspaceId) {
-      console.log('We are on thread, we should add the message', { resource: message });
-    } else {
-      // We create a new thread
-      const requestObj = this.buildRequestObj({
-        type: 'channel',
-        company_id: companyId,
-        thread_id: message.id,
-        workspace_id: workspaceId,
-        message,
-      });
-
-      console.log('We create a new thread, we should add the requestObj', { ...requestObj });
-
-      Api.post<typeof requestObj, any>(route, requestObj);
-    }*/
+    const response = await Api.post<
+      { resource: NodeMessage; options: { previous_thread?: string } },
+      { resource: NodeMessage }
+    >(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages${
+        message.id ? '/' + message.id : ''
+      }`,
+      { resource: message, options: { previous_thread: movedFromThread } },
+    );
+    return response.resource;
   }
 }
 

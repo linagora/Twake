@@ -78,6 +78,22 @@ export type DeprecatedMessageKeys = {
   parent_message_id?: string | null;
 };
 
+export type Thread = {
+  company_id: string;
+  thread_id: string;
+  created_at: number;
+  last_activity: number;
+  answers: number;
+  participants: Participant[];
+};
+
+export type Participant = {
+  type: 'user' | 'channel';
+  id: string;
+  company_id: string;
+  workspace_id: string | 'direct';
+};
+
 export enum NodeMessageType {
   MESSAGE = 'message', // Classic message
   EVENT = 'event', // Hidden events like key changes, or other system events
@@ -173,4 +189,12 @@ export type NodeMessage = {
   override: string | null;
 
   files?: MessageFileType[];
+};
+
+export type MessageWithReplies = NodeMessage & {
+  last_replies: NodeMessage[];
+  stats: {
+    last_activity: number;
+    replies: number;
+  };
 };

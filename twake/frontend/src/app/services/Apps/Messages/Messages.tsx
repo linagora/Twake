@@ -22,7 +22,7 @@ import { Message, MessageFileType } from '../../../models/Message';
 import FileUploadService from 'app/components/FileUploads/FileUploadService';
 import { PendingFileType } from 'app/models/File';
 import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
-import MessageAPIClient from './MessageAPIClient';
+import MessageAPIClient from './clients/MessageAPIClient';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -203,8 +203,7 @@ class Messages extends Observable {
       });
       */
 
-      MessageAPIClient.save(message);
-      CurrentUser.updateTutorialStatus('first_message_sent');
+      //TODO      MessageAPIClient.save("", "", message);
     });
   }
 
