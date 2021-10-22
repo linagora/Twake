@@ -10,19 +10,14 @@ import { File } from "../entities/file";
  * Update the file metadata and upload the thumbnails in storage
  */
 export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsubCallback, string> {
-  repository: Repository<File>;
-
   constructor(
     readonly service: FileServiceAPI,
     private pubsub: PubsubServiceAPI,
-    repository: Repository<File>,
-  ) {
-    this.service = service;
-    this.repository = repository;
-  }
+    private repository: Repository<File>,
+  ) {}
 
-  init?(context?: TwakeContext): Promise<this> {
-    throw new Error("Method not implemented.");
+  async init(context?: TwakeContext): Promise<this> {
+    return this;
   }
 
   readonly topics = {
@@ -45,9 +40,6 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
       `${this.name} - Updating file metadata with preview generation ${message.thumbnails}`,
     );
 
-    if (!this.validate(message)) {
-      throw new Error("Missing required fields");
-    }
     const pk: { company_id: string; id: string } = JSON.parse(message.document.id);
     const entity = await this.repository.findOne(pk);
 

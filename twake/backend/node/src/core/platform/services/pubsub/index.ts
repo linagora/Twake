@@ -38,6 +38,12 @@ export default class Pubsub extends TwakeService<PubsubServiceAPI> {
     return this;
   }
 
+  async doStop(): Promise<this> {
+    await this.service.stop();
+
+    return this;
+  }
+
   api(): PubsubServiceAPI {
     return this.service;
   }
@@ -64,6 +70,15 @@ export class PubsubService implements PubsubServiceAPI {
     logger.info("Starting pubsub adapter %o", this.adapter.type);
     await this.adapter?.start?.();
     await this.processor.start();
+
+    return this;
+  }
+
+  @SkipCLI()
+  async stop(): Promise<this> {
+    logger.info("Stopping pubsub adapter %o", this.adapter.type);
+    await this.adapter?.stop?.();
+    await this.processor.stop();
 
     return this;
   }

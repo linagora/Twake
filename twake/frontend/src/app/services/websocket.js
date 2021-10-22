@@ -147,7 +147,7 @@ class DeprecatedWebsocket extends Observable {
 
   publish(route, value) {
     this.logger.debug(`Publish to ${route}`);
-    WebSocket.get().emit('previous::' + route, value);
+    WebSocket.get().send('previous::' + route, value);
   }
 
   reconnectIfNeeded(seconds = 30) {

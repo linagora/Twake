@@ -78,10 +78,9 @@ export default class EntityManager<EntityType extends Record<string, any>> {
   }
 
   public async flush(): Promise<this> {
-    
     this.toPersist = uniqWith(this.toPersist, isEqual);
     this.toRemove = uniqWith(this.toRemove, isEqual);
-    
+
     localEventBus.publish("database:entities:saved", {
       entities: this.toPersist.map(e => _.cloneDeep(e)),
     } as DatabaseEntitiesSavedEvent);

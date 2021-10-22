@@ -86,7 +86,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
         decipher = createDecipheriv(options.encryptionAlgo, key, iv);
       }
 
-      const chunks = options.totalChunks;
+      const chunks = options.totalChunks || 1;
       let count = 1;
       let stream;
       async function factory(callback: (err?: Error, stream?: Stream) => unknown) {
@@ -95,7 +95,8 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
           return;
         }
 
-        const chunk = options.totalChunks ? `${path}/chunk${count++}` : path;
+        const chunk = options.totalChunks ? `${path}/chunk${count}` : path;
+        count += 1;
 
         try {
           stream = await self._read(chunk);

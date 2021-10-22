@@ -174,7 +174,7 @@ class Service implements FileServiceAPI {
               for (let i = 1; i < 10; i++) {
                 entity = await this.repository.findOne({
                   company_id: context.company.id,
-                  id: id,
+                  id: entity.id,
                 });
                 if (entity.metadata.thumbnails_status === "done") {
                   break;

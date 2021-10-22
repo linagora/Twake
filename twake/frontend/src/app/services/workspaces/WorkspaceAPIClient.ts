@@ -5,6 +5,15 @@ import { TwakeService } from '../Decorators/TwakeService';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
 
+export type WorkspaceUpdateResource = Pick<
+  WorkspaceType,
+  "name" | "logo" | "default" | "archived"
+>;
+
+export type UpdateWorkspaceBody = {
+  resource: WorkspaceUpdateResource;
+};
+
 @TwakeService('WorkspaceAPIClientService')
 class WorkspaceAPIClient {
 
@@ -32,7 +41,22 @@ class WorkspaceAPIClient {
       `${PREFIX}/${companyId}/workspaces/${workspaceId}`,
     )
     .then(result => result.resource);
+  }
 
+  /**
+   * Update a given workspace
+   *
+   * @param companyId
+   * @param workspaceId
+   * @param workspace
+   * @returns the updated workspace
+   */
+  update(companyId: string, workspaceId: string, workspace: WorkspaceUpdateResource): Promise<WorkspaceType> {
+    return Api.post<UpdateWorkspaceBody, { resource: WorkspaceType }>(
+      `${PREFIX}/${companyId}/workspaces/${workspaceId}`,
+      { resource: workspace },
+    )
+    .then(result => result.resource);
   }
 
   /**
