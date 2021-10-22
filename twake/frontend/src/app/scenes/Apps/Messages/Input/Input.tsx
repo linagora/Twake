@@ -270,7 +270,6 @@ export default (props: Props) => {
         />
 
         <PendingAttachments zoneId={editorId} />
-        <Attachments files={[]} />
 
         {!hasEphemeralMessage && (
           <div className="editorview-submit">

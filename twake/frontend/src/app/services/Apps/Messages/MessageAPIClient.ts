@@ -1,6 +1,8 @@
-import { Message } from 'app/models/Message';
+import { Message, NodeMessage } from 'app/models/Message';
 import Api from 'app/services/Api';
 import RouterServices from 'services/RouterService';
+import { TwakeService } from '../../Decorators/TwakeService';
+import MessageViewAPIClient from './MessageViewAPIClient';
 
 type ResponseFileType = { resource: any };
 type ResponseDeleteFileType = { status: 'success' | 'error' };
@@ -10,62 +12,89 @@ type GetContextType = BaseContentType & { fileId: string };
 type DeleteContextType = BaseContentType & { fileId: string };
 type DownloadContextType = BaseContentType & { fileId: string };
 
+@TwakeService('MessageAPIClientService')
 class MessageAPIClient {
   private readonly prefixUrl: string = '/internal/services/messages/v1';
+  private readonly viewService = MessageViewAPIClient;
 
-  public getRoute({
-    companyId,
-    threadId = undefined,
-    fullApiRouteUrl = false,
-  }: {
-    companyId: string;
-    threadId?: string | null;
-    fullApiRouteUrl?: boolean;
-  }): string {
-    const route = `${this.prefixUrl}/companies/${companyId}/threads${
-      threadId !== undefined ? `/${threadId}` : ''
-    }`;
-
-    return fullApiRouteUrl ? Api.route(route) : route;
+  async list(
+    companyId: string,
+    threadId: string,
+    {
+      limit = 25,
+      pageToken = '',
+      direction = 'future',
+    }: { limit?: number; pageToken?: string; direction?: 'future' | 'history' } = {},
+  ) {
+    const response = await Api.get<{ resources: NodeMessage[] }>(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages?limit=${limit}&page_token=${pageToken}&direction=${direction}`,
+    );
+    return response.resources;
   }
 
-  private buildRequestObj({
-    type,
-    company_id,
-    workspace_id = 'direct',
-    message_id,
-    thread_id,
-    message,
-  }: {
-    thread_id?: string;
-    message_id?: string;
-    company_id: string;
-    type: 'user' | 'channel';
-    workspace_id?: 'direct' | string;
-    message?: Message;
-  }) {
-    return {
-      resource: {
-        participants: [
-          {
-            type,
-            id: thread_id || message_id,
-            company_id,
-            workspace_id, //: "uuid" | "direct", //type=channels only
-          },
-        ],
-      },
-      options: {
-        message,
-      },
-    };
+  async get(companyId: string, threadId: string, messageId: string) {
+    const response = await Api.get<{ resource: NodeMessage }>(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}`,
+    );
+    return response.resource;
   }
 
-  public save(message: Message) {
-    const { workspaceId, companyId } = RouterServices.getStateFromRoute();
+  async reaction(companyId: string, threadId: string, messageId: string, reactions: string[] = []) {
+    const response = await Api.post<{ reactions: string[] }, { resource: NodeMessage }>(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/reaction`,
+      { reactions },
+    );
+    return response.resource;
+  }
 
-    if (!companyId) return;
+  async bookmark(
+    companyId: string,
+    threadId: string,
+    messageId: string,
+    bookmarkId: string,
+    active: boolean = true,
+  ) {
+    const response = await Api.post<
+      { bookmark_id: string; active: boolean },
+      { resource: NodeMessage }
+    >(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/bookmark`,
+      { bookmark_id: bookmarkId, active },
+    );
+    return response.resource;
+  }
 
+  async pin(companyId: string, threadId: string, messageId: string, pin: boolean = true) {
+    const response = await Api.post<{ pin: boolean }, { resource: NodeMessage }>(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/pin`,
+      { pin },
+    );
+    return response.resource;
+  }
+
+  async delete(companyId: string, threadId: string, messageId: string) {
+    const response = await Api.post<{}, { resource: NodeMessage }>(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/delete`,
+      {},
+    );
+    return response.resource;
+  }
+
+  async save(
+    companyId: string,
+    threadId: string,
+    message: Message,
+    {
+      movedFromThread = undefined,
+    }: {
+      movedFromThread?: string;
+      channels?: {
+        channelId: string;
+        workspaceId: string;
+      }[];
+    } = {},
+  ) {
+    /*
     const route = this.getRoute({ companyId, threadId: message?.parent_message_id });
 
     console.log({ route, message });
@@ -85,7 +114,7 @@ class MessageAPIClient {
       console.log('We create a new thread, we should add the requestObj', { ...requestObj });
 
       Api.post<typeof requestObj, any>(route, requestObj);
-    }
+    }*/
   }
 }
 

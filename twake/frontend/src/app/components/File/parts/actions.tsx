@@ -18,10 +18,11 @@ import { PendingFileRecoilType } from 'app/models/File';
 type PropsType = {
   file: DataFileType;
   status?: PendingFileRecoilType['status'];
-  type?: string;
+  deletable?: boolean;
+  actionMenu?: boolean;
 };
 
-export const FileActions = ({ file, status, type }: PropsType): JSX.Element => {
+export const FileActions = ({ file, status, deletable, actionMenu }: PropsType): JSX.Element => {
   const { cancelUpload, deleteOneFile, downloadOneFile, retryUpload } = useUpload();
   const menuRef = useRef<HTMLElement>();
 
@@ -65,7 +66,7 @@ export const FileActions = ({ file, status, type }: PropsType): JSX.Element => {
   };
 
   const setActions = () => {
-    if (type === 'message') {
+    if (actionMenu) {
       return (
         <Button
           ref={node => node && (menuRef.current = node)}
@@ -76,7 +77,7 @@ export const FileActions = ({ file, status, type }: PropsType): JSX.Element => {
       );
     }
 
-    if (type === 'input' && status) {
+    if (deletable && status) {
       if (isPendingFileStatusError(status)) {
         return (
           <Button

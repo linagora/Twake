@@ -10,10 +10,16 @@ export function TwakeService(name: string): ClassDecorator {
       const newService = new originalConstrutor(...args);
 
       if (name) {
-        const serviceName = name.endsWith(SERVICE_SUFFIX) || name.endsWith(SERVICE_SUFFIX.toLowerCase()) ? name : `${name}${SERVICE_SUFFIX}`;
+        const serviceName =
+          name.endsWith(SERVICE_SUFFIX) || name.endsWith(SERVICE_SUFFIX.toLowerCase())
+            ? name
+            : `${name}${SERVICE_SUFFIX}`;
 
         ServiceRegistry.register(serviceName, newService);
       }
+
+      (window as any)[name] = newService;
+
       return newService;
     };
 
