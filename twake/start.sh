@@ -1,5 +1,10 @@
 cp -n docker-compose.yml.dist.onpremise docker-compose.yml
-cp -nR default-configuration/* configuration/
+
+if [ ! -d ./configuration ]; then #create configuration folder
+  cp -nR ./default-configuration ./configuration
+else
+  cp -nR ./default-configuration/* ./configuration
+fi
 
 docker-compose pull
 
