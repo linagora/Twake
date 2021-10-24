@@ -1,5 +1,15 @@
 cp -n docker-compose.yml.dist.onpremise docker-compose.yml
-cp -nR default-configuration/* configuration/
+
+if [ ! -d ./configuration ]; then #create configuration folder
+  cp -nR ./default-configuration ./configuration
+else
+  cp -nR ./default-configuration/* ./configuration
+fi
+
+data_folders=(./docker-data ./docker-data/documents ./docker-data/drive ./docker-data/drive-preview \
+			  ./docker-data/fpm ./docker-data/letsencrypt ./docker-data/logs ./docker-data/logs/nginx \
+			  ./docker-data/scylladb ./docker-data/uploads ./connectors)
+for folder in "${data_folders[@]}"; do if [ ! -d "$folder" ]; then mkdir "$folder"; fi; done #create mounted folders
 
 docker-compose pull
 
