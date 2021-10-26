@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 import Logger from 'app/services/Logger';
+import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import { CompanyApplicationsStateFamily } from '../atoms/CurrentCompanyApplications';
 import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
@@ -39,8 +40,11 @@ export function useCurrentCompanyApplications(companyId: string) {
       await CompanyApplicationsAPIClient.remove(companyId, applicationId);
 
       handleCompanyApplicationsChanges.current(companyId);
-
-      Toaster.success(`Successfully deleted ${application.identity.name} from your company`);
+      Toaster.success(
+        Languages.t('app.state.recoil.hooks.use_current_company_applications.toaster_delete', [
+          application.identity.name,
+        ]),
+      );
     } catch (e) {
       logger.error(`Error while trying to delete one company application`, e);
     }
@@ -58,8 +62,11 @@ export function useCurrentCompanyApplications(companyId: string) {
       handleCompanyApplicationsChanges.current(companyId);
 
       const application = await CompanyApplicationsAPIClient.get(companyId, applicationId);
-
-      Toaster.success(`Successfully added ${application.identity.name} in your company`);
+      Toaster.success(
+        Languages.t('app.state.recoil.hooks.use_current_company_applications.toaster_add', [
+          application.identity.name,
+        ]),
+      );
     } catch (e) {
       logger.error(`Error while trying to add one company application`, e);
     }

@@ -35,6 +35,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    &:hover,
+    &.ant-btn-loading {
+      background: var(--success);
+      opacity: 0.8;
+
+      color: var(--white);
+    }
   }
 
   .company-application-popup-installed-tag {

@@ -1,26 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { MoreHorizontal } from 'react-feather';
 import { ColumnsType } from 'antd/lib/table';
-import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
-import { Avatar, Image, Divider, Table, Typography, Row, Col, Button } from 'antd';
+import { MoreHorizontal } from 'react-feather';
+import { Divider, Table, Typography, Row, Col, Button, Grid } from 'antd';
 
-//import Languages from 'services/languages/languages';
 import { Application } from 'app/models/App';
-
+import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/Modal/ModalManager';
 import MenuManager from 'app/components/Menus/MenusManager';
 import AvatarComponent from 'app/components/Avatar/Avatar';
+import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
 import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
-import CompanyApplicationPopup from './CompanyApplicationPopup';
 
 import './ApplicationsStyles.scss';
 
 type ColumnObjectType = { key: number } & Application;
 
 const DEFAULT_PAGE_SIZE = 5;
-
+const { useBreakpoint } = Grid;
 export default () => {
   const [company] = useCurrentCompany();
 
@@ -51,7 +49,9 @@ export default () => {
       [
         {
           type: 'menu',
-          text: 'Show',
+          text: Languages.t(
+            'scenes.app.integrations_parameters.company_applications_table.more_menu.show_application',
+          ),
           onClick: () =>
             ModalManager.open(
               <CompanyApplicationPopup
@@ -68,7 +68,9 @@ export default () => {
         {
           type: 'menu',
           className: 'error',
-          text: 'Remove from the company',
+          text: Languages.t(
+            'scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application',
+          ),
           onClick: () => deleteOneCompanyApplication(application.id),
         },
       ],
@@ -93,7 +95,7 @@ export default () => {
 
   const columns: ColumnsType<ColumnObjectType> = [
     {
-      title: 'Name', // TODO translation here
+      title: Languages.t('scenes.app.integrations_parameters.company_applications_table.name'),
       dataIndex: 'name',
       width: 550,
       render: (
@@ -132,8 +134,9 @@ export default () => {
       <Divider />
       <Row justify="start" wrap={false}>
         <Col>
-          {/* // TODO translation here */}
-          <Typography.Title level={3}>Installed in your company</Typography.Title>
+          <Typography.Title level={3}>
+            {Languages.t('scenes.app.integrations_parameters.company_applications_table.title')}
+          </Typography.Title>
         </Col>
       </Row>
       <div>

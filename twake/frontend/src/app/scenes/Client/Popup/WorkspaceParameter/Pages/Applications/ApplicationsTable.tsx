@@ -5,9 +5,8 @@ import { ColumnsType } from 'antd/lib/table';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { Divider, Table, Typography, Row, Input, Col, Button } from 'antd';
 
-//import Languages from 'services/languages/languages';
-
 import { Application } from 'app/models/App';
+import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { useApplications } from 'app/services/Apps/useApplications';
 import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
@@ -61,7 +60,7 @@ export default () => {
 
   const columns: ColumnsType<ColumnObjectType> = [
     {
-      title: 'Name', // TODO translation here
+      title: Languages.t('scenes.app.integrations_parameters.applications_table.name'),
       dataIndex: 'name',
       width: 550,
       render: (
@@ -105,13 +104,15 @@ export default () => {
     <>
       <Row justify="space-between" wrap={false}>
         <Col>
-          {/* // TODO translation here */}
-          <Typography.Title level={3}>Twake Market</Typography.Title>
+          <Typography.Title level={3}>
+            {Languages.t('scenes.app.integrations_parameters.applications_table.title')}
+          </Typography.Title>
         </Col>
         <Col>
           <Input
-            // TODO translation here
-            placeholder="Search application"
+            placeholder={Languages.t(
+              'scenes.app.integrations_parameters.applications_table.search_placeholder',
+            )}
             onChange={e => {
               const value = e.target?.value;
               delayRequest(

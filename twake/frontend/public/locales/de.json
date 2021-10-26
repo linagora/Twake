@@ -809,5 +809,22 @@
     "components.locked_features.locked_only_office_popup.title": "Sie können diese Datei nicht bearbeiten",
     "application.load.longer": "Der Server braucht länger zum antworten als erwartet, bitte warten Sie oder laden Sie die Seite erneut",
     "general.resume": "Fortsetzen",
-    "general.pause": "Pause"
+    "general.pause": "Pause",
+    "scenes.app.integrations_parameters.title" :"Integrationen",
+    "scenes.app.integrations_parameters.applications_table.name": "Name",
+    "scenes.app.integrations_parameters.applications_table.title": "Andere Integrationen",
+    "scenes.app.integrations_parameters.applications_table.search_placeholder" : "Anwendung suchen",
+    "scenes.app.integrations_parameters.company_application_popup.tag": "Eingerichtet",
+    "scenes.app.integrations_parameters.company_application_popup.btn": "Installieren",
+    "scenes.app.integrations_parameters.company_application_popup.tab_btn_info": "Informationen",
+    "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.description_item": "Beschreibung",
+    "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.website_item": "Webseite",
+    "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.created_item": "Erstellungsdatum",
+    "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.version_item": "Ausführung",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.show_application": "Zeigen",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application" : "Aus dem Unternehmen entfernen",
+    "scenes.app.integrations_parameters.company_applications_table.name" : "Name",
+    "scenes.app.integrations_parameters.company_applications_table.title": "In Ihrem Unternehmen installiert",
+    "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "{{$1}} erfolgreich aus Ihrem Unternehmen gelöscht",
+    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} erfolgreich zu Ihrem Unternehmen hinzugefügt"
 }
