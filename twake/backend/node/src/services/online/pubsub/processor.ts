@@ -26,20 +26,18 @@ export class UserOnlineProcessor implements PubsubHandler<UsersOnlineMessage, vo
   }
 
   validate(message: UsersOnlineMessage): boolean {
-    return !!(message && message.ids && message.ids.length);
+    return !!(message && message.length);
   }
 
   async process(message: UsersOnlineMessage): Promise<void> {
-    this.logger.debug(`Pushing user online status for users ${message.ids.join(",")}`);
+    this.logger.debug(`Pushing user online status for users ${message.map(u => u[0]).join(",")}`);
 
     // TODO: We can not push all users to all websockets, we need to categorize them per company and then push them in specific topic per company
 
     eventBus.publish(RealtimeEntityActionType.Event, {
       type: "user:online",
       room: ResourcePath.get("/users/online"),
-      entity: {
-        ids: message.ids,
-      },
+      entity: message,
       resourcePath: null,
       result: null,
     });

@@ -73,7 +73,9 @@ export default class RoomManager implements RealtimeRoomManager {
    * @return Promise<boolean> true if can join, false otherwise. Never rejects.
    */
   async userCanJoinRoom(user: WebSocketUser, joinEvent: JoinRoomEvent): Promise<boolean> {
-    logger.info(`Checking if user ${user.id} can join room ${joinEvent.name}`);
+    logger.info(
+      `Checking if user ${user.id} can join room ${joinEvent.name} with token ${joinEvent.token}`,
+    );
 
     // FIXME: We will use JWT to validate the token
     return joinEvent.token && joinEvent.token === "twake";

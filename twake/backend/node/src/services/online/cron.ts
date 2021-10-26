@@ -26,8 +26,9 @@ export default class OnlineJob implements Initializable {
         "connected",
       ) as unknown as WebSocket[];
 
-      await this.onlineService.setOnline(
+      await this.onlineService.setLastSeenOnline(
         connectedWebsockets.map(ws => this.websocket.getUser(ws)).map(user => user.id),
+        Date.now(),
       );
     });
     this.logger.debug("Status Job has been submitted", task.id);

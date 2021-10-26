@@ -2,13 +2,17 @@ import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
 import { CronAPI } from "../../core/platform/services/cron/api";
 import WebSocketAPI from "../../core/platform/services/websocket/provider";
-import { OnlineServiceAPI } from "./api";
+import Repository from "../../core/platform/services/database/services/orm/repository/repository";
+import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
+
+import { OnlineGetRequest, OnlineGetResponse, OnlineServiceAPI } from "./api";
 import OnlineJob from "./cron";
 import { OnlinePubsubService } from "./pubsub";
 import { DISCONNECTED_DELAY } from "./constants";
+import UserOnline, { TYPE as ONLINE_TYPE, getInstance } from "./entities/user-online";
 
 @Prefix("/internal/services/online/v1")
-@Consumes(["webserver", "websocket", "cron", "pubsub"])
+@Consumes(["webserver", "websocket", "cron", "pubsub", "database"])
 export default class OnlineService
   extends TwakeService<OnlineServiceAPI>
   implements OnlineServiceAPI
@@ -17,8 +21,8 @@ export default class OnlineService
   name = "online";
   service: OnlineServiceAPI;
   private job: OnlineJob;
-  private connected: Map<string, number> = new Map();
   private pubsubService: OnlinePubsubService;
+  onlineRepository: Repository<UserOnline>;
 
   api(): OnlineServiceAPI {
     return this.service;
@@ -28,6 +32,9 @@ export default class OnlineService
     const websocket = this.context.getProvider<WebSocketAPI>("websocket");
     const cron = this.context.getProvider<CronAPI>("cron");
     const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
+    const database = this.context.getProvider<DatabaseServiceAPI>("database");
+
+    this.onlineRepository = await database.getRepository(ONLINE_TYPE, UserOnline);
 
     this.pubsubService = new OnlinePubsubService(pubsub);
     this.job = new OnlineJob(cron, websocket, this);
@@ -38,51 +45,69 @@ export default class OnlineService
     websocket.onUserConnected(event => {
       this.logger.info("User connected", event.user.id);
       // save the last connection date
-      this.setOnline([event.user.id]);
+      this.setLastSeenOnline([event.user.id], Date.now());
       // broadcast to global pubsub so that everyone can publish to websockets
-      this.pubsubService.broadcastOnline([event.user.id]);
+      this.pubsubService.broadcastOnline([[event.user.id, true]]);
+
+      event.socket.on(
+        "online:get",
+        async (request: OnlineGetRequest, ack: (response: OnlineGetResponse) => void) => {
+          this.logger.debug(
+            `Got an online:get request for users "[${(request.data || []).join(",")}]"`,
+          );
+
+          ack({ data: await this.getOnlineStatuses(request.data) });
+        },
+      );
     });
 
     websocket.onUserDisconnected(event => {
       this.logger.info("User disconnected", event.user.id);
-      this.setOffline([event.user.id]);
+      // Since the user can be connected on several nodes, we cannot directly set it status to offline
+      // We do nothing, the cron will do the job...
     });
 
     return this;
   }
 
-  public async doStart(): Promise<this> {
-    return this;
+  private async getOnlineStatuses(ids: Array<string> = []): Promise<Array<[string, boolean]>> {
+    return this.areOnline(ids);
   }
 
-  async setOnline(userIds: Array<string>): Promise<void> {
-    const date = Date.now();
+  async setLastSeenOnline(userIds: Array<string> = [], date: number): Promise<void> {
+    this.logger.debug(`setLastSeenOnline ${userIds.join(",")}`);
+    if (!userIds.length) {
+      return;
+    }
+    const last_seen = date || Date.now();
     const uniqueIds = new Set<string>(userIds);
     this.logger.info(`Update last active state for users ${userIds.join(",")}`);
-
-    // TODO REAL DB
-    for (const id of uniqueIds) {
-      this.connected.set(id, date);
-    }
-  }
-
-  async setOffline(userIds: Array<string>): Promise<void> {
-    const uniqueIds = new Set<string>(userIds);
-    this.logger.info(`Update last active state for users ${userIds.join(",")}`);
-
-    for (const id of uniqueIds) {
-      this.connected.delete(id);
-    }
+    const onlineUsers: UserOnline[] = Array.from(uniqueIds.values()).map(user_id =>
+      getInstance({ user_id, last_seen }),
+    );
+    await this.onlineRepository.saveAll(onlineUsers);
   }
 
   async isOnline(userId: string): Promise<boolean> {
-    const date = this.connected.get(userId);
+    const user = await this.onlineRepository.findOne({ user_id: userId });
 
-    if (!date) {
+    if (!user) {
       return false;
     }
 
-    // let's say that a user is connected when its last connection is < 1 minute
+    return Date.now() - user.last_seen < DISCONNECTED_DELAY;
+  }
+
+  private async areOnline(ids: Array<string> = []): Promise<Array<[string, boolean]>> {
+    const users = await this.onlineRepository.find({}, { $in: [["user_id", ids]] });
+
+    return users.getEntities().map(user => [user.user_id, this.isStillConnected(user.last_seen)]);
+  }
+
+  /**
+   * let's say that a user is connected when its last connection is more than some delay ago
+   */
+  private isStillConnected(date: number): boolean {
     return Date.now() - date < DISCONNECTED_DELAY;
   }
 }

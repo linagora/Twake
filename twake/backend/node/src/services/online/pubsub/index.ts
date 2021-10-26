@@ -15,16 +15,15 @@ export class OnlinePubsubService implements Initializable {
     return this;
   }
 
-  async broadcastOnline(userIds: Array<string> = []): Promise<void> {
-    this.logger.debug(`Publishing online users ${userIds.join(",")}`);
-    if (!userIds || !userIds.length) {
+  async broadcastOnline(online: UsersOnlineMessage = []): Promise<void> {
+    if (!online.length) {
       return;
     }
 
+    this.logger.debug(`Publishing online users ${online.map(u => u[0]).join(",")}`);
+
     return this.pubsub.publish<UsersOnlineMessage>(ONLINE_TOPIC, {
-      data: {
-        ids: userIds,
-      },
+      data: online,
     });
   }
 }
