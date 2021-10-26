@@ -1,4 +1,12 @@
-cp -n docker-compose.yml.dist.onpremise docker-compose.yml
+#!/bin/sh
+set -e
+
+if [ "$(id -u)" != "0" ]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
+cp -n docker-compose.onpremise.yml docker-compose.yml
 
 if [ ! -d ./configuration ]; then #create configuration folder
   cp -nR ./default-configuration ./configuration
