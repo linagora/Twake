@@ -1,34 +1,17 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
-import User from "../../user/entities/user";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { Block } from "../blocks-types";
 import { UserObject } from "../../user/web/types";
 import { MessageFile } from "./message-files";
 import Application from "../../applications/entities/application";
+import search from "./messages.search";
 
 export const TYPE = "messages";
 @Entity(TYPE, {
   primaryKey: [["thread_id"], "id"],
   type: TYPE,
-  search: {
-    index: "messages",
-    mongoMapping: {
-      text: {
-        text: "text",
-      },
-    },
-    esMapping: {
-      properties: {
-        text: { type: "text" },
-      },
-    },
-    source: (entity: Message) => {
-      return {
-        text: entity.text,
-      };
-    },
-  },
+  search,
 })
 export class Message {
   @Type(() => String)
@@ -96,6 +79,13 @@ export class Message {
 
   @Column("override", "encoded_json")
   override: null | MessageOverride;
+
+  @Column("cache", "encoded_json")
+  cache: null | {
+    company_id: string;
+    workspace_id: string;
+    channel_id: string;
+  };
 }
 
 export type MessageReaction = { count: number; name: string; users: string[] };

@@ -27,6 +27,8 @@ import {
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
 import { StatisticsAPI } from "../statistics/types";
+import { SearchUserOptions } from "../user/services/users/types";
+import { uuid } from "../../utils/types";
 
 export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
   userBookmarks: MessageUserBookmarksServiceAPI;
@@ -71,13 +73,13 @@ export interface MessageThreadMessagesServiceAPI
     CRUDService<Message, MessagePrimaryKey, ExecutionContext> {
   pin(
     item: { id: string; pin: boolean },
-    options: {},
+    options: Record<string, any>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
 
   reaction(
     item: { id: string; reactions: string[] },
-    options: {},
+    options: Record<string, any>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
 
@@ -89,7 +91,7 @@ export interface MessageThreadMessagesServiceAPI
 
   bookmark(
     item: { id: string; bookmark_id: string; active: boolean },
-    options: {},
+    options: Record<string, any>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
 
@@ -118,4 +120,12 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies>>;
+
+  search(
+    pagination: Pagination,
+    options?: SearchUserOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<Message>>;
+
+  getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]>;
 }
