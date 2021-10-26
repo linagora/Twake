@@ -12,7 +12,7 @@ export type FilePluginPreview = {
    * Url to preview file (full screen or inline)
    */
   url: string;
-  inline: true;
+  inline: boolean;
 
   /**
    * Main extensions app can read

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Info } from 'react-feather';
 import { ColumnsType } from 'antd/lib/table';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
-import { Avatar, Image, Divider, Table, Typography, Row, Input, Col, Button } from 'antd';
+import { Divider, Table, Typography, Row, Input, Col, Button } from 'antd';
 
 //import Languages from 'services/languages/languages';
 
@@ -14,6 +14,9 @@ import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrent
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
+import AvatarComponent from 'app/components/Avatar/Avatar';
+
+import './ApplicationsStyles.scss';
 
 type ColumnObjectType = { key: number } & Application;
 const DEFAULT_PAGE_SIZE = 5;
@@ -38,12 +41,8 @@ export default () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applicationsList]);
 
-  const refreshApplications = async () => {
-    try {
-      applicationsList && setData(applicationsList);
-    } catch (e) {
-      console.error(e);
-    }
+  const refreshApplications = () => {
+    applicationsList && setData(applicationsList);
   };
 
   const setData = (list: Application[]) => {
@@ -69,20 +68,12 @@ export default () => {
         { name, icon }: { name: string; icon: string },
         record: ColumnObjectType,
         index: number,
-      ) => {
-        return (
-          <Row key={index} wrap={false} align="middle" justify="start">
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar
-                shape="square"
-                src={<Image src={icon} style={{ width: 24, borderRadius: 4 }} preview={false} />}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-              />
-              <Typography.Text className="small-x-margin">{name}</Typography.Text>
-            </div>
-          </Row>
-        );
-      },
+      ) => (
+        <Row key={index} wrap={false} align="middle" justify="start">
+          <AvatarComponent url={icon} />
+          <Typography.Text className="small-x-margin">{name}</Typography.Text>
+        </Row>
+      ),
     },
     {
       dataIndex: 'actions',
@@ -93,6 +84,7 @@ export default () => {
             key={key}
             loading={isLoadingCompanyApplications}
             type="default"
+            className="applications-table-actions-btn"
             icon={<Info size={18} />}
             onClick={() => {
               ModalManager.open(
@@ -102,13 +94,6 @@ export default () => {
                   size: { width: '600px' },
                 },
               );
-            }}
-            style={{
-              height: 22,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'transparent',
             }}
           />
         );

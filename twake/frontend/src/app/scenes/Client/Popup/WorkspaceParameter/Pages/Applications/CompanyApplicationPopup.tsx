@@ -1,32 +1,37 @@
 import React from 'react';
 
 import moment from 'moment';
-import { Avatar, Button, Row, Typography, Image, Col, Tag } from 'antd';
+import { Check } from 'react-feather';
+import { Tabs, Button, Typography, Col, Tag, Descriptions, Row, Divider } from 'antd';
 
 import { Application } from 'app/models/App';
 //import Languages from 'services/languages/languages';
+import AvatarComponent from 'app/components/Avatar/Avatar';
 import ObjectModal from 'app/components/ObjectModal/ObjectModal';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
-import { Check } from 'react-feather';
+
+import './ApplicationsStyles.scss';
+
 type PropsType = {
   application: Application;
   companyId: string;
+  shouldDisplayButton?: boolean;
 };
 
+const { TabPane } = Tabs;
 const { Text, Link, Title } = Typography;
-export default ({ application, companyId }: PropsType) => {
+const { Item } = Descriptions;
+
+export default ({ application, companyId, shouldDisplayButton = true }: PropsType) => {
   const {
     addOneCompanyApplication,
     isLoadingCompanyApplications,
     isApplicationInstalledInCompany,
-    deleteOneCompanyApplication,
   } = useCurrentCompanyApplications(companyId);
 
   const onClickButton = async () => {
-    if (isApplicationInstalledInCompany(application.id)) {
-      await deleteOneCompanyApplication(application.id);
-    } else {
+    if (!isApplicationInstalledInCompany(application.id)) {
       await addOneCompanyApplication(application.id);
     }
 
@@ -37,97 +42,67 @@ export default ({ application, companyId }: PropsType) => {
 
   return (
     <ObjectModal
-      title={
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
-          <Avatar
-            shape="square"
-            src={
-              <Image
-                src={application.identity.icon}
-                style={{ width: 24, borderRadius: 4 }}
-                preview={false}
-              />
-            }
-            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          />
-
-          <Title level={3} style={{ margin: '0 8px' }}>
-            {application.identity.name}
-          </Title>
-
-          {isApplicationInstalledInCompany(application.id) && (
-            <Tag
-              color="var(--success)"
-              style={{
-                opacity: '0.5',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {/* // TODO translation here */}
-              <Check size={16} /> Installed
-            </Tag>
-          )}
-        </div>
-      }
-      titleLevel={3}
+      className="company-application-popup"
+      headerStyle={{ height: 32, marginTop: 24 }}
+      footerDividerStyle={{ marginTop: 0 }}
       closable
       footer={
-        <Button
-          className="small"
-          block={true}
-          type="ghost"
-          loading={isLoadingCompanyApplications}
-          onClick={onClickButton}
-          style={{
-            background: isApplicationInstalledInCompany(application.id)
-              ? 'var(--error)'
-              : 'var(--success)',
-            color: 'var(--white)',
-            width: 'auto',
-            float: 'right',
-          }}
-        >
-          {isApplicationInstalledInCompany(application.id) ? 'Remove' : 'Install'}
-        </Button>
+        isApplicationInstalledInCompany(application.id) ? (
+          <Tag color="var(--success)" className="company-application-popup-installed-tag">
+            <Check size={16} /> Installed
+          </Tag>
+        ) : (
+          <Button
+            type="ghost"
+            loading={isLoadingCompanyApplications}
+            onClick={onClickButton}
+            className="company-application-popup-install-btn"
+          >
+            Install
+          </Button>
+        )
+      }
+      title={
+        <Row align="middle" justify="start">
+          <Col>
+            <AvatarComponent url={application.identity.icon} />
+          </Col>
+          <Col className="small-x-margin">
+            <Title level={3} style={{ margin: 0 }}>
+              {application.identity.name}
+            </Title>
+          </Col>
+        </Row>
       }
     >
-      <div style={{ margin: '0 22px' }}>
-        <Col>
-          {/* // TODO translation here */}
-          <Text strong>Website:</Text>
-        </Col>
-        <Col>
-          <Link onClick={() => window.open(application.identity.website, 'blank')}>
-            {application.identity.website}
-          </Link>
-        </Col>
+      <Divider style={{ margin: '16px 0 0 0' }} />
 
-        <Col>
-          {/* // TODO translation here */}
-          <Text strong>Description:</Text>
-        </Col>
-        <Col>
-          <Text type="secondary">{application.identity.description}</Text>
-        </Col>
+      <Tabs defaultActiveKey="1" tabPosition="left">
+        <TabPane tab="Informations" key="1">
+          <Descriptions layout="vertical" bordered>
+            <Item label="Description" span={3}>
+              <Text type="secondary">{application.identity.description}</Text>
+            </Item>
 
-        <Col>
-          {/* // TODO translation here */}
-          <Text strong>Created:</Text>
-        </Col>
-        <Col>
-          <Text type="secondary">{createdDate.fromNow()}</Text>
-        </Col>
+            <Item label="Website" span={3}>
+              <Link onClick={() => window.open(application.identity.website, 'blank')}>
+                {application.identity.website}
+              </Link>
+            </Item>
 
-        <Col>
-          {/* // TODO translation here */}
-          <Text strong>Version:</Text>
-        </Col>
-        <Col>
-          <Text type="secondary">{application.stats.version}</Text>
-        </Col>
-      </div>
+            <Item label="Created" span={3}>
+              <Text type="secondary">{createdDate.fromNow()}</Text>
+            </Item>
+
+            <Item label="Version" span={3}>
+              <Text type="secondary">{application.stats.version}</Text>
+            </Item>
+          </Descriptions>
+        </TabPane>
+        <TabPane tab="Settings" key="2">
+          TODO
+        </TabPane>
+      </Tabs>
     </ObjectModal>
   );
 };

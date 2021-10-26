@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-import { Tool } from 'react-feather';
+import { MoreHorizontal } from 'react-feather';
 import { ColumnsType } from 'antd/lib/table';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { Avatar, Image, Divider, Table, Typography, Row, Col, Button } from 'antd';
@@ -9,9 +9,13 @@ import { Avatar, Image, Divider, Table, Typography, Row, Col, Button } from 'ant
 import { Application } from 'app/models/App';
 
 import ModalManager from 'app/components/Modal/ModalManager';
+import MenuManager from 'app/components/Menus/MenusManager';
+import AvatarComponent from 'app/components/Avatar/Avatar';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
 import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
+
+import './ApplicationsStyles.scss';
 
 type ColumnObjectType = { key: number } & Application;
 
@@ -22,9 +26,10 @@ export default () => {
 
   if (!company?.id) return <></>;
 
-  const { companyApplications, isLoadingCompanyApplications } = useCurrentCompanyApplications(
-    company?.id,
-  );
+  const menuBtnRef = useRef<HTMLElement>();
+
+  const { companyApplications, isLoadingCompanyApplications, deleteOneCompanyApplication } =
+    useCurrentCompanyApplications(company?.id);
   const [data, _setData] = useState<ColumnObjectType[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -37,6 +42,40 @@ export default () => {
 
   const refreshCompanyApplications = () => {
     companyApplications && setData(companyApplications);
+  };
+
+  const buildMenu = (e: React.MouseEvent<HTMLElement, MouseEvent>, application: Application) => {
+    e.stopPropagation();
+
+    MenuManager.openMenu(
+      [
+        {
+          type: 'menu',
+          text: 'Show',
+          onClick: () =>
+            ModalManager.open(
+              <CompanyApplicationPopup
+                application={application}
+                companyId={company.id}
+                shouldDisplayButton={false}
+              />,
+              {
+                position: 'center',
+                size: { width: '600px' },
+              },
+            ),
+        },
+        {
+          type: 'menu',
+          className: 'error',
+          text: 'Remove from the company',
+          onClick: () => deleteOneCompanyApplication(application.id),
+        },
+      ],
+      (window as any).getBoundingClientRect(menuBtnRef.current),
+      null,
+      { margin: 0 },
+    );
   };
 
   const setData = (list: Application[]) => {
@@ -64,11 +103,7 @@ export default () => {
       ) => {
         return (
           <Row key={index} align="middle">
-            <Avatar
-              shape="square"
-              src={<Image src={icon} style={{ width: 24, borderRadius: 4 }} preview={false} />}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            />
+            <AvatarComponent url={icon} />
             <Typography.Text className="small-left-margin">{name}</Typography.Text>
           </Row>
         );
@@ -81,25 +116,11 @@ export default () => {
         return (
           <Button
             key={key}
-            loading={isLoadingCompanyApplications}
+            ref={node => node && (menuBtnRef.current = node)}
             type="default"
-            icon={<Tool size={18} />}
-            onClick={() => {
-              ModalManager.open(
-                <CompanyApplicationPopup application={application} companyId={company.id} />,
-                {
-                  position: 'center',
-                  size: { width: '600px' },
-                },
-              );
-            }}
-            style={{
-              height: 22,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'transparent',
-            }}
+            icon={<MoreHorizontal size={18} />}
+            onClick={e => buildMenu(e, application)}
+            className="applications-table-actions-btn"
           />
         );
       },
