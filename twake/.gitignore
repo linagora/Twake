@@ -129,6 +129,7 @@ docker-compose.yml
 /app/Ressources/DatabaseEncryption/.HaliteEncryptor.key
 /app/Ressources/DatabaseEncryption/.Halite.key
 /backend/websockets_server/false/
+/ssl/
 
 ### AWS ###
 /app/config/aws_config.yml

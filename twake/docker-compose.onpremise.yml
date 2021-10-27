@@ -47,8 +47,10 @@ services:
     image: twaketech/twake-nginx:2021.Q2.505
     environment:
       - DEV=production
+      - SSL_CERTS=selfsigned
     ports:
-      - 8000:80
+      - 80:80
+      - 443:443
     depends_on:
       - php
       - node
@@ -57,3 +59,4 @@ services:
       - ./docker-data/letsencrypt/:/etc/letsencrypt/
       - ./docker-data/drive-preview/:/twake-core/web/medias/
       - ./docker-data/uploads/:/twake-core/web/upload/
+      - ./ssl:/etc/nginx/ssl
