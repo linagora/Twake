@@ -20,6 +20,7 @@ data_folders=(\
 	./docker-data/logs/nginx \
 	./docker-data/scylladb \
 	./docker-data/uploads \
+	./docker-data/ssl \
 	./connectors \
 	)
 for folder in "${data_folders[@]}"; do #create mounted folders
