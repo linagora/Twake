@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import useWebSocket from 'app/services/WebSocket/hooks/useWebSocket';
 import Logger from 'app/services/Logger';
 import { RealtimeEventAction } from './types';
@@ -11,14 +11,26 @@ export type RealtimeRoomService<T> = {
   emit: (event: string, data: T) => void;
 };
 
+/**
+ * Subscribe to a room using websocket channel.
+ *
+ * Note: It will subscribe only once, even if the component using it re renders. If you need to unsubscribe and subscribe again, call unsubscribe on the returned object.
+ *
+ * @param roomName
+ * @param tagName
+ * @param onEvent
+ * @returns
+ */
 const useRealtimeRoom = <T>(roomName: string, tagName: string, onEvent: (action: RealtimeEventAction, event: T) => void) => {
   const { websocket } = useWebSocket();
   const [lastEvent, setLastEvent] = useState<{ action: string; resource: T }>();
   const [room] = useState(roomName);
   const [tag] = useState(tagName);
+  // subscribe once
+  const subscribed = useRef(false);
 
   useEffect(() => {
-    if (room && websocket) {
+    if (room && websocket && !subscribed.current) {
       websocket.join(room, tag, (type: string, event: { action: RealtimeEventAction, resource: T }) => {
         logger.debug('Received WebSocket event', type, event);
         if (type === 'realtime:resource') {
@@ -30,18 +42,17 @@ const useRealtimeRoom = <T>(roomName: string, tagName: string, onEvent: (action:
           logger.debug('Event type is not supported', type);
         }
       });
+      subscribed.current = true;
     }
-
-    return () => {
-      logger.debug(`Destroy for room ${room}`);
-      websocket?.leave(room, tag);
-    };
-
   }, [websocket, tag, room, onEvent]);
 
   return {
     lastEvent,
     send: (data: any) => websocket?.getSocket()?.send(data),
+    unsubscribe: () => {
+      subscribed.current = false;
+      websocket?.leave(roomName, tagName);
+    },
   };
 };
 

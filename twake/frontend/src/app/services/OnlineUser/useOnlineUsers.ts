@@ -5,17 +5,14 @@ import Logger from 'app/services/Logger';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import { OnlineUsersState, OnlineUserType } from '../../state/recoil/atoms/OnlineUsers';
 import useWebSocket from '../WebSocket/hooks/useWebSocket';
-import { OnlineUserRealtimeAPI } from './OnlineUserRealtimeAPIClient';
-
-type OnlineMessageType = Array<[string, boolean]>;
+import { OnlineUserRealtimeAPI, ONLINE_ROOM, RealtimeUpdateMessageType } from './OnlineUserRealtimeAPIClient';
 
 const logger = Logger.getLogger('useOnlineUsers');
 
 const INTERVAL = 10000;
 
 export const useOnlineUsers = (): void => {
-  logger.debug("Running online hook");
-  const onlineRoom = '/users/online';
+  logger.trace("Running online hook");
   const { websocket } = useWebSocket();
   const [onlineUsers, setOnlineUsersState] = useRecoilState(OnlineUsersState);
 
@@ -61,12 +58,11 @@ export const useOnlineUsers = (): void => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [websocket, onlineUsers]);
 
-  // listen to room events in which online/offline events are pushed
-  useRealtimeRoom<OnlineMessageType>(onlineRoom, 'useOnlineUsers', (action, resource) => {
+  // listen to room events in which online events are pushed
+  useRealtimeRoom<RealtimeUpdateMessageType>(ONLINE_ROOM, 'useOnlineUsers', (action, resource) => {
     if (action === 'event' && resource?.length) {
-      logger.debug('Updating online users');
+      logger.trace('Updating online users');
       updateOnline(resource);
-
     } else {
       logger.warn('Received unsupported event', action);
     }
