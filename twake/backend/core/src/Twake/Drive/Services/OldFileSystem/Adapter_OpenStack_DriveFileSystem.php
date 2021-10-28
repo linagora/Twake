@@ -15,13 +15,19 @@ class Adapter_OpenStack_DriveFileSystem
 
     public function __construct(App $app)
     {
-        $this->configure($app, $app->getContainer()->getParameter("storage.openstack"));
+        $configuration = $app->getContainer()->getParameter("storage.openstack");
+        foreach($app->getContainer()->getParameter("storage.providers") as $providerConfiguration){
+            if($providerConfiguration["type"] == "openstack"){
+                $configuration = $providerConfiguration;
+            }
+        }
+        $this->configure($app, $configuration);
     }
 
     public function configure(App $app, $config){
         $openstack_config = $config;
         $this->root = $this->local = $app->getAppRootDir();
-        $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
+        $this->parameter_drive_salt = $openstack_config["override_drive_salt"] ?: $app->getContainer()->getParameter("storage.drive_salt");
 
         $this->openstack_buckets = $openstack_config["buckets"];
         $this->openstack_buckets_prefix = isset($openstack_config["buckets_prefix"]) ? $openstack_config["buckets_prefix"] : "";
