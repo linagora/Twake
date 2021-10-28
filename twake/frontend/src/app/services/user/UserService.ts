@@ -40,7 +40,7 @@ class User {
     let name: string = user?.username;
 
     if (!name) {
-      return '';
+      return 'Anonymous';
     }
 
     if (user.deleted) {
