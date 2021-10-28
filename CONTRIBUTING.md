@@ -7,6 +7,12 @@ Following these guidelines helps to communicate that you respect the time of the
 We are an open-source project and we love to receive contributions from our community! There are many ways to contribute - writing tutorials or blog posts, improving the documentation, submitting bug reports and feature requests, fixing bugs, submitting pull requests for enhancements, or reviewing other's pull requests.  
 
 
+## In a nutshell
+
+- Notify us that you will work on something using the issues of github.
+- Fork this repository to start working and create a new working branch on top of the develop branch preferably.
+- To propose your changes, open a PR from your fork and target the **develop** branch.
+
 
 ## Ground Rules
 
@@ -67,7 +73,7 @@ When contributing to this repository, please first discuss the change you wish t
 
 5. When you feel that you are ready for a formal review or for merging into `trunk` make sure you check this list. 
 
-   - Make sure your branch merges cleanly and consider rebasing against `trunk` to keep the branch history short and clean. 
+   - Make sure your branch merges cleanly and consider rebasing against `trunk` to keep the branch history short and clean. You must target the **develop** branch for your changes.
    - If there are visual changes, add before and after screenshots in the pull request comments. 
    - Add unit tests, or at a minimum, provide helpful instructions for the reviewer so they can test your changes. This will help speed up the review process. 
    - Ensure that your commit messages are [meaningful](https://thoughtbot.com/blog/5-useful-tips-for-a-better-commit-message). 
