@@ -12,7 +12,13 @@ class Adapter_AWS_DriveFileSystem
 
     public function __construct(App $app)
     {
-        $this->configure($app, $app->getContainer()->getParameter("storage.S3"));
+        $configuration = $app->getContainer()->getParameter("storage.openstack");
+        foreach($app->getContainer()->getParameter("storage.providers") as $providerConfiguration){
+            if($providerConfiguration["type"] == "S3"){
+                $configuration = $providerConfiguration;
+            }
+        }
+        $this->configure($app, $configuration);
     }
 
     public function configure(App $app, $config){
@@ -20,7 +26,7 @@ class Adapter_AWS_DriveFileSystem
         $s3_config = $aws_config;
 
         $this->root = $this->local = $app->getAppRootDir();
-        $this->parameter_drive_salt = $app->getContainer()->getParameter("storage.drive_salt");
+        $this->parameter_drive_salt = $s3_config["override_drive_salt"] ?: $app->getContainer()->getParameter("storage.drive_salt");
 
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
