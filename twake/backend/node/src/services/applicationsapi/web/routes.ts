@@ -12,14 +12,14 @@ const routes: FastifyPluginCallback<{ service: ApplicationsApiServiceAPI }> = (
   //Authenticate the application
   fastify.route({
     method: "POST",
-    url: `console/v1/login`,
+    url: `/console/v1/login`,
     handler: controller.token.bind(controller),
   });
 
   //Get myself as an application
   fastify.route({
     method: "POST",
-    url: `console/v1/me`,
+    url: `/console/v1/me`,
     preValidation: [fastify.authenticate],
     handler: controller.me.bind(controller),
   });
@@ -27,7 +27,7 @@ const routes: FastifyPluginCallback<{ service: ApplicationsApiServiceAPI }> = (
   //Open a configuration popup on the client side
   fastify.route({
     method: "POST",
-    url: `console/v1/configure`,
+    url: `/console/v1/configure`,
     preValidation: [fastify.authenticate],
     handler: controller.configure.bind(controller),
   });
@@ -35,15 +35,7 @@ const routes: FastifyPluginCallback<{ service: ApplicationsApiServiceAPI }> = (
   //Close a configuration popup on the client side
   fastify.route({
     method: "DELETE",
-    url: `console/v1/configure/:configuration_id`,
-    preValidation: [fastify.authenticate],
-    handler: controller.closeConfigure.bind(controller),
-  });
-
-  //Close a configuration popup on the client side
-  fastify.route({
-    method: "DELETE",
-    url: `console/v1/configure/:configuration_id`,
+    url: `/console/v1/configure/:configuration_id`,
     preValidation: [fastify.authenticate],
     handler: controller.closeConfigure.bind(controller),
   });
@@ -51,7 +43,7 @@ const routes: FastifyPluginCallback<{ service: ApplicationsApiServiceAPI }> = (
   //Get myself as an application
   fastify.route({
     method: "POST",
-    url: `*`, //Fixme probably not working that way
+    url: `/*`, //Fixme probably not working that way
     preValidation: [fastify.authenticate],
     handler: (request, reply) => controller.proxy.bind(controller)(request, reply, fastify),
   });
