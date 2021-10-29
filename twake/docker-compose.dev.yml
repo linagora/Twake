@@ -22,7 +22,7 @@ services:
       - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
     build:
       context: .
-      dockerfile: docker/twake-node/Dockerfile
+      dockerfile: ./docker/twake-node/Dockerfile
       target: development
     volumes:
       - ./backend/node:/usr/src/app

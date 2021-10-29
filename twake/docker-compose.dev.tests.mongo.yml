@@ -19,7 +19,7 @@ services:
     image: twaketech/twake-node:test
     build:
       context: .
-      dockerfile: docker/twake-node/Dockerfile
+      dockerfile: ./docker/twake-node/Dockerfile
       target: test
     environment:
       - NODE_ENV=test
