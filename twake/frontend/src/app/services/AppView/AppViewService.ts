@@ -1,3 +1,4 @@
+import { Application } from 'app/models/App';
 import Observable from 'app/services/Observable/Observable';
 import _ from 'lodash';
 
@@ -10,7 +11,7 @@ export type ViewTypes =
   | '';
 
 export type ViewConfiguration = {
-  app?: { [key: string]: any }; //In depreciated app is used
+  app?: Partial<Application>; //In depreciated app is used
   collection?: any;
   context:
     | {
@@ -23,7 +24,17 @@ export type ViewConfiguration = {
 };
 
 const defaultConfiguration: ViewConfiguration = {
-  app: { simple_name: 'messages' },
+  app: {
+    identity: {
+      key: 'messages',
+      name: '',
+      icon: '',
+      description: '',
+      website: '',
+      categories: [],
+      compatibility: [],
+    },
+  },
   collection: null,
   context: null,
   hasTabs: false,

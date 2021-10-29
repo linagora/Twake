@@ -1,0 +1,70 @@
+.company-application-popup {
+  .ant-tabs-tab-btn {
+    margin: 0;
+  }
+
+  // Descriptions
+  .ant-descriptions-bordered .ant-descriptions-item-label,
+  .ant-descriptions-bordered .ant-descriptions-item-content {
+    padding: 8px 24px;
+  }
+
+  // Tabs btn
+  .ant-tabs > .ant-tabs-nav .ant-tabs-nav-list,
+  .ant-tabs > div > .ant-tabs-nav .ant-tabs-nav-list {
+    padding-top: 22px;
+  }
+
+  // Tabs Content
+  .ant-tabs-left > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane,
+  .ant-tabs-left > div > .ant-tabs-content-holder > .ant-tabs-content > .ant-tabs-tabpane {
+    padding: 24px;
+  }
+
+  .ant-tabs-ink-bar .ant-tabs-ink-bar-animated,
+  .ant-tabs-content-holder {
+    display: block;
+    min-height: 383px;
+  }
+
+  .company-application-popup-install-btn {
+    height: 24px;
+    background: var(--success);
+    color: var(--white);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover,
+    &.ant-btn-loading {
+      background: var(--success);
+      opacity: 0.8;
+
+      color: var(--white);
+    }
+  }
+  .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab,
+  .ant-tabs-right > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab,
+  .ant-tabs-left > div > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab,
+  .ant-tabs-right > div > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab {
+    margin: 0;
+  }
+  .company-application-popup-installed-tag {
+    height: 24px;
+
+    margin-right: 0;
+    opacity: 0.5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.applications-table-actions-btn {
+  height: 22px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}

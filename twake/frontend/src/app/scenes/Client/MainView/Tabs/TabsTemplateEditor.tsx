@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppType } from 'app/models/App';
+import { Application, AppType } from 'app/models/App';
 import { TabResource } from 'app/models/Tab';
 import { Button, Row, Input, Select } from 'antd';
 
@@ -8,6 +8,8 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Languages from 'services/languages/languages';
+import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
 
 const { Option } = Select;
 
@@ -21,6 +23,9 @@ export default (props: PropsType): JSX.Element => {
   const [appId, setAppId] = useState<string>(props.tab?.data.application_id || '');
   const [tabName, setTabName] = useState<string>(props.tab?.data.name || '');
   const [workspacesApps, setWorkspacesApps] = useState<AppType[]>([]);
+  const [company] = useCurrentCompany();
+
+  const { companyApplications } = useCurrentCompanyApplications(company?.id || '');
 
   useEffect(() => {
     generateWorkspacesApps();
@@ -94,12 +99,12 @@ export default (props: PropsType): JSX.Element => {
                 'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder',
               )}
             >
-              {workspacesApps
-                .filter((app: AppType) => (app.display || {}).channel_tab)
-                .map((app: AppType) => {
+              {companyApplications
+                .filter((app: Application) => app.display?.twake?.tab)
+                .map((app: Application) => {
                   return (
                     <Option key={`key_${app.id}`} value={app.id || ''}>
-                      <Icon type={WorkspacesApps.getAppIcon(app)} /> {app.name}
+                      <Icon type={WorkspacesApps.getAppIcon(app)} /> {app.identity.name}
                     </Option>
                   );
                 })}

@@ -7,7 +7,7 @@ import { MoreHorizontal, MessageCircle } from 'react-feather';
 import Languages from 'services/languages/languages';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from '../../Popup/WorkspaceParameter/WorkspaceParameter';
-import { AppType } from 'app/models/App';
+import { Application } from 'app/models/App';
 import { ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/ConnectorsListManager/ConnectorsListManager';
@@ -16,14 +16,14 @@ import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
-  const apps = WorkspacesApps.getApps().filter((app: any) => (app.display || {}).channel);
+  const apps = WorkspacesApps.getApps().filter((app: any) => (app?.display || {}).channel);
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
 
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelsCollections = Collections.get(collectionPath, ChannelResource);
   const channelResource: ChannelResource = channelsCollections.useWatcher({ id: channelId })[0];
 
-  const configureChannelConnector = (app: AppType): void => {
+  const configureChannelConnector = (app: Application): void => {
     return WorkspacesApps.notifyApp(app.id, 'configuration', 'channel', {
       channel: channelResource.data,
     });
@@ -49,7 +49,17 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
   if (selected) {
     MainViewService.select(MainViewService.getId(), {
       collection: MainViewService.getConfiguration().collection,
-      app: { simple_name: 'messages' },
+      app: {
+        identity: {
+          key: 'messages',
+          name: '',
+          icon: '',
+          description: '',
+          website: '',
+          categories: [],
+          compatibility: [],
+        },
+      },
       context: null,
       hasTabs: MainViewService.getConfiguration().hasTabs,
     });

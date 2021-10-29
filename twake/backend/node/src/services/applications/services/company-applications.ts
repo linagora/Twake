@@ -53,7 +53,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<CompanyApplicationWithApplication> {
-    let companyApplication = await this.repository.findOne({
+    const companyApplication = await this.repository.findOne({
       group_id: context.company.id,
       app_id: pk.application_id,
     });
@@ -77,7 +77,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
 
     let operation = OperationType.UPDATE;
     let companyApplication = await this.repository.findOne({
-      group_id: context.company.id,
+      group_id: context?.company.id,
       app_id: item.application_id,
     });
     if (!companyApplication) {
@@ -100,7 +100,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     context: CompanyExecutionContext,
   ): Promise<void> {
     const defaultApps = await this.applicationService.listDefaults();
-    for (let defaultApp of defaultApps.getEntities()) {
+    for (const defaultApp of defaultApps.getEntities()) {
       await this.save({ company_id: companyId, application_id: defaultApp.id }, {}, context);
     }
   }
@@ -109,7 +109,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
   ): Promise<DeleteResult<CompanyApplication>> {
-    let companyApplication = await this.repository.findOne({
+    const companyApplication = await this.repository.findOne({
       group_id: context.company.id,
       app_id: pk.application_id,
     });
@@ -128,14 +128,14 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     options?: ListOptions,
     context?: CompanyExecutionContext,
   ): Promise<ListResult<CompanyApplicationWithApplication>> {
-    let companyApplications = await this.repository.find(
+    const companyApplications = await this.repository.find(
       {
         group_id: context.company.id,
       },
       { pagination },
     );
 
-    let applications = [];
+    const applications = [];
 
     for (const companyApplication of companyApplications.getEntities()) {
       const application = await this.applicationService.get({

@@ -10,7 +10,7 @@ import { getService } from "./services";
 export default class ApplicationsApiService extends TwakeService<ApplicationsApiServiceAPI> {
   version = "1";
   name = "applicationsapi";
-  service: ApplicationsApiServiceAPI
+  service: ApplicationsApiServiceAPI;
 
   api(): ApplicationsApiServiceAPI {
     return this.service;

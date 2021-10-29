@@ -8,7 +8,10 @@ import UserService from 'services/user/UserService';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import AccessRightsService from 'app/services/AccessRightsService';
+import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import RouterService from 'app/services/RouterService';
 
+// This should be deleted
 export default class ChannelsApps extends Component {
   constructor(props: any) {
     super(props);
@@ -85,3 +88,34 @@ export default class ChannelsApps extends Component {
     );
   }
 }
+
+type PropsType = {
+  companyId: string;
+};
+
+export const CompanyApplications = ({ companyId }: PropsType) => {
+  const { companyApplications } = useCurrentCompanyApplications(companyId);
+  const { channelId } = RouterService.getStateFromRoute();
+  return (
+    <div className="applications_channels" style={{ marginTop: 8 }}>
+      {companyApplications
+        .filter(app => app.display?.twake?.standalone)
+        .map(app => (
+          <ChannelUI
+            key={app.id}
+            id={app.id}
+            channelId={channelId}
+            app={app}
+            name={app.identity.name}
+            icon={app.identity.icon}
+            muted={false}
+            favorite={false}
+            visibility={'public'}
+            unreadMessages={false}
+            notifications={0}
+            collection={Collections.get('channels')}
+          />
+        ))}
+    </div>
+  );
+};

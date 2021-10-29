@@ -6,15 +6,17 @@ import LoginService from 'app/services/login/LoginService';
 import popupManager from 'services/popupManager/popupManager.js';
 import userService from 'services/user/UserService';
 import currentUserService from 'app/services/user/CurrentUser';
-import WorkspaceIdentity from './Pages/WorkspaceIdentity.js';
+import WorkspaceIdentity from './Pages/WorkspaceIdentity';
+import CompanyIntegration from './Pages/CompanyIntegration';
 import WorkspacePartner from './Pages/WorkspacePartner';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
-import WorkspaceApps from './Pages/WorkspaceApps.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import MenuList from 'components/Menus/MenuComponent.js';
 import InitService from 'app/services/InitService';
 import ConsoleService from 'app/services/Console/ConsoleService';
+import WorkspaceApps from './Pages/WorkspaceApps.js';
+
 import './WorkspaceParameter.scss';
 
 export default class WorkspaceParameter extends Component {
@@ -63,7 +65,7 @@ export default class WorkspaceParameter extends Component {
       return <WorkspacePartner />;
     }
     if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page === 3) {
-      return <WorkspaceApps />;
+      return <CompanyIntegration />;
     }
     if (WorkspaceUserRights.hasGroupPrivilege('MANAGE_DATA') && this.state.page === 4) {
       return <CompanyIdendity />;
@@ -153,12 +155,8 @@ export default class WorkspaceParameter extends Component {
       });
       menu.push({
         type: 'menu',
-        emoji: ':electric_plug:',
-        text: Languages.t(
-          'scenes.app.popup.workspaceparameter.pages.apps_connectors_title',
-          [],
-          'Applications et connecteurs',
-        ),
+        emoji: ':electric_plug:', // WORKSPACE INTEGRATION
+        text: Languages.t('scenes.app.popup.workspaceparameter.pages.apps_connectors_title'),
         selected: this.state.page === 3 ? 'selected' : '',
         onClick: () => {
           this.setPage(3);

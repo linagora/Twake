@@ -29,35 +29,23 @@ const AppView: FC<PropsType> = props => {
   if (channelCollection) {
     if (channelCollection?.findOne) {
       channel = channelCollection.findOne({ id: props.id }, { withoutBackend: true });
-    } else {
-      channel = channelCollection.find(props.id);
-      channel = {
-        data: {
-          workspace_id: channel.original_workspace,
-          company_id: channel.original_group,
-          ...channel,
-        },
-      };
     }
   }
 
   const app = props.viewService.getConfiguration().app;
-  let channelTab = configuration.context;
+  //let channelTab = configuration.context;
 
-  if (channel) {
-    switch (app?.simple_name) {
-      case 'twake_drive':
-        return <Drive channel={channel} tab={channelTab} options={configuration} />;
-      case 'twake_calendar':
-        return <Calendar channel={channel} tab={channelTab} options={configuration} />;
-      case 'twake_tasks':
-        return <Tasks channel={channel} tab={channelTab} options={configuration} />;
-      case 'messages':
-        return <Messages channel={channel} options={configuration} />;
-      default:
-        return <NoApp />;
-    }
+  switch (app?.identity?.key) {
+    case 'documents':
+      return <Drive options={configuration} />;
+    case 'calendar':
+      return <Calendar options={configuration} />;
+    case 'tasks':
+      return <Tasks options={configuration} />;
+    case 'messages':
+      return <Messages channel={channel} options={configuration} />;
+    default:
+      return <NoApp />;
   }
-  return <></>;
 };
 export default AppView;
