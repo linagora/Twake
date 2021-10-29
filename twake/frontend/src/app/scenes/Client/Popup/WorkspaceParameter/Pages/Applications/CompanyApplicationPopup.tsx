@@ -1,10 +1,11 @@
 import React from 'react';
 
 import moment from 'moment';
+import { capitalize } from 'lodash';
 import { Check } from 'react-feather';
 import { Tabs, Button, Typography, Col, Tag, Descriptions, Row, Divider } from 'antd';
 
-import { Application } from 'app/models/App';
+import { Application, ApplicationAccess } from 'app/models/App';
 import Languages from 'services/languages/languages';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import ObjectModal from 'app/components/ObjectModal/ObjectModal';
@@ -16,14 +17,80 @@ import './ApplicationsStyles.scss';
 type PropsType = {
   application: Application;
   companyId: string;
-  shouldDisplayButton?: boolean;
 };
 
 const { TabPane } = Tabs;
 const { Text, Link, Title } = Typography;
 const { Item } = Descriptions;
 
-export default ({ application, companyId, shouldDisplayButton = true }: PropsType) => {
+const InformationsDescriptions = ({ application }: { application: Application }) => {
+  const createdDate = moment(application.stats.createdAt).format('L');
+
+  return (
+    <Descriptions layout="vertical" bordered>
+      <Item
+        label={Languages.t(
+          'scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.website_item',
+        )}
+        span={3}
+      >
+        <Link onClick={() => window.open(application.identity.website, 'blank')}>
+          {application.identity.website}
+        </Link>
+      </Item>
+
+      <Item
+        label={Languages.t(
+          'scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.description_item',
+        )}
+        span={3}
+      >
+        <Text type="secondary">{application.identity.description}</Text>
+      </Item>
+
+      <Item
+        label={Languages.t(
+          'scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.created_item',
+        )}
+        span={3}
+      >
+        <Text type="secondary">{createdDate}</Text>
+      </Item>
+
+      <Item label="Compatible with Twake" span={3}>
+        <Text type="secondary">
+          {application.identity.compatibility.includes('twake')
+            ? 'Yes'
+            : `No, this integration is compatible with ${application.identity.compatibility
+                .map(v => capitalize(v))
+                .join(', ')}.`}
+        </Text>
+      </Item>
+    </Descriptions>
+  );
+};
+
+const AccessDescriptions = ({ application }: { application: Application }) => (
+  <Descriptions layout="vertical" bordered>
+    {Object.keys(application.access).map(key => {
+      const values: string[] = (application.access as any)[key];
+
+      return (
+        <Item label={capitalize(key === 'hooks' ? 'listened events' : key)} span={3}>
+          {values?.length > 0 ? (
+            values.map(v => <Tag color="var(--success)">{v}</Tag>)
+          ) : (
+            <Text style={{ minHeight: 22 }} type="secondary">
+              This integration doesn't have any {key} access
+            </Text>
+          )}
+        </Item>
+      );
+    })}
+  </Descriptions>
+);
+
+export default ({ application, companyId }: PropsType) => {
   const {
     addOneCompanyApplication,
     isLoadingCompanyApplications,
@@ -37,8 +104,6 @@ export default ({ application, companyId, shouldDisplayButton = true }: PropsTyp
 
     ModalManager.close();
   };
-
-  const createdDate = moment(application.stats.createdAt);
 
   return (
     <ObjectModal
@@ -85,45 +150,11 @@ export default ({ application, companyId, shouldDisplayButton = true }: PropsTyp
           )}
           key="1"
         >
-          <Descriptions layout="vertical" bordered>
-            <Item
-              label={Languages.t(
-                'scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.description_item',
-              )}
-              span={3}
-            >
-              <Text type="secondary">{application.identity.description}</Text>
-            </Item>
+          <InformationsDescriptions application={application} />
+        </TabPane>
 
-            <Item
-              label={Languages.t(
-                'scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.website_item',
-              )}
-              span={3}
-            >
-              <Link onClick={() => window.open(application.identity.website, 'blank')}>
-                {application.identity.website}
-              </Link>
-            </Item>
-
-            <Item
-              label={Languages.t(
-                'scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.created_item',
-              )}
-              span={3}
-            >
-              <Text type="secondary">{createdDate.toString()}</Text>
-            </Item>
-
-            <Item
-              label={Languages.t(
-                'scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.version_item',
-              )}
-              span={3}
-            >
-              <Text type="secondary">{application.stats.version}</Text>
-            </Item>
-          </Descriptions>
+        <TabPane tab="App access" key="2">
+          <AccessDescriptions application={application} />
         </TabPane>
       </Tabs>
     </ObjectModal>

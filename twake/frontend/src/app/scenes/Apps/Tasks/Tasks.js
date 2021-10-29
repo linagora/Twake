@@ -25,6 +25,7 @@ import Board from './Board/Board.js';
 
 import './Tasks.scss';
 import UserListManager from 'app/components/UserListManager/UserListManager';
+import RouterService from 'app/services/RouterService';
 
 export default class Tasks extends Component {
   constructor(props) {
@@ -36,23 +37,23 @@ export default class Tasks extends Component {
     Languages.addListener(this);
     TasksService.addListener(this);
     WorkspacesUsers.addListener(this);
+    const { workspaceId, channelId } = RouterService.getStateFromRoute();
+    if (workspaceId && channelId) {
+      this.boards_collection_key = 'boards_' + workspaceId;
 
-    this.boards_collection_key = 'boards_' + this.props.channel.data.workspace_id;
-
-    Collections.get('boards').addListener(this);
-    Collections.get('boards').addSource(
-      {
-        http_base_url: 'tasks/board',
-        http_options: {
-          channel_id: this.props.channel.id,
-          workspace_id: this.props.channel.data.workspace_id,
+      Collections.get('boards').addListener(this);
+      Collections.get('boards').addSource(
+        {
+          http_base_url: 'tasks/board',
+          http_options: {
+            channel_id: channelId,
+            workspace_id: workspaceId,
+          },
+          websockets: [{ uri: 'boards/' + workspaceId, options: { type: 'board' } }],
         },
-        websockets: [
-          { uri: 'boards/' + this.props.channel.data.workspace_id, options: { type: 'board' } },
-        ],
-      },
-      this.boards_collection_key,
-    );
+        this.boards_collection_key,
+      );
+    }
   }
 
   componentWillUnmount() {

@@ -44,7 +44,12 @@
       color: var(--white);
     }
   }
-
+  .ant-tabs-left > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab,
+  .ant-tabs-right > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab,
+  .ant-tabs-left > div > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab,
+  .ant-tabs-right > div > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab {
+    margin: 0;
+  }
   .company-application-popup-installed-tag {
     height: 24px;
 
@@ -58,9 +63,8 @@
 }
 
 .applications-table-actions-btn {
-  height: 22px;
-  display: flex;
+  height: 22px !important;
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  background: transparent;
 }

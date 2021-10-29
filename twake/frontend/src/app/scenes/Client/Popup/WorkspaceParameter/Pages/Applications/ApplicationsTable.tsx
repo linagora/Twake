@@ -28,7 +28,8 @@ export default () => {
   const { applicationsList, isLoadingApplicationsList, searchApplicationsInTwake } =
     useApplications();
 
-  const { isLoadingCompanyApplications } = useCurrentCompanyApplications(company.id);
+  const { isLoadingCompanyApplications, companyApplications, addOneCompanyApplication } =
+    useCurrentCompanyApplications(company.id);
 
   const [data, _setData] = useState<ColumnObjectType[]>([]);
 
@@ -58,6 +59,9 @@ export default () => {
     }
   };
 
+  const onClickButton = async (application: Application) =>
+    addOneCompanyApplication(application.id);
+
   const columns: ColumnsType<ColumnObjectType> = [
     {
       title: Languages.t('scenes.app.integrations_parameters.applications_table.name'),
@@ -82,19 +86,12 @@ export default () => {
           <Button
             key={key}
             loading={isLoadingCompanyApplications}
-            type="default"
+            type="ghost"
             className="applications-table-actions-btn"
-            icon={<Info size={18} />}
-            onClick={() => {
-              ModalManager.open(
-                <CompanyApplicationPopup application={application} companyId={company.id} />,
-                {
-                  position: 'center',
-                  size: { width: '600px' },
-                },
-              );
-            }}
-          />
+            onClick={() => onClickButton(application)}
+          >
+            Install
+          </Button>
         );
       },
     },
@@ -102,9 +99,12 @@ export default () => {
 
   return (
     <>
-      <Row justify="space-between" wrap={false}>
+      <Row>
+        <Divider />
+      </Row>
+      <Row justify="space-between" wrap={false} className="small-bottom-margin">
         <Col>
-          <Typography.Title level={3}>
+          <Typography.Title level={3} style={{ margin: 0 }}>
             {Languages.t('scenes.app.integrations_parameters.applications_table.title')}
           </Typography.Title>
         </Col>
@@ -123,12 +123,12 @@ export default () => {
           />
         </Col>
       </Row>
-      <Divider />
+
       <div>
         <Table
           columns={columns}
           loading={isLoadingApplicationsList}
-          dataSource={data}
+          dataSource={data.filter(app => !companyApplications.map(a => a.id).includes(app.id))}
           size="small"
           pagination={{ pageSize: DEFAULT_PAGE_SIZE, simple: true }}
           scroll={{ x: xs || sm ? true : undefined }}

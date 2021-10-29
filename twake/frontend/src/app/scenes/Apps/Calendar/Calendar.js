@@ -30,7 +30,7 @@ import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard
 import Select from 'components/Select/Select.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import UnconfiguredTab from './UnconfiguredTab.js';
-
+import RouterService from 'app/services/RouterService';
 import MainPlus from 'components/MainPlus/MainPlus.js';
 
 const ExportView = props => {
@@ -80,9 +80,10 @@ export default class Calendar extends Component {
     CalendarService.filter_mode = this.state.filter;
 
     this.props = props;
+    const { workspaceId, channelId } = RouterService.getStateFromRoute();
 
     this.loaded_date_range = {};
-    this.calendar_collection_key = 'calendar_' + this.props.channel.data.workspace_id;
+    this.calendar_collection_key = 'calendar_' + workspaceId;
 
     this.setLoadedRange(
       'both',
@@ -96,12 +97,12 @@ export default class Calendar extends Component {
       {
         http_base_url: 'calendar/calendar',
         http_options: {
-          channel_id: this.props.channel.id,
-          workspace_id: this.props.channel.data.workspace_id,
+          channel_id: channelId,
+          workspace_id: workspaceId,
         },
         websockets: [
           {
-            uri: 'calendars/' + this.props.channel.data.workspace_id,
+            uri: 'calendars/' + workspaceId,
             options: { type: 'calendar' },
           },
         ],
@@ -121,8 +122,9 @@ export default class Calendar extends Component {
     CalendarService.addListener(this);
   }
   onFirstLoad() {
+    const { workspaceId, channelId } = RouterService.getStateFromRoute();
     var calendar_list = Collections.get('calendars')
-      .findBy({ workspace_id: this.props.channel.data.workspace_id })
+      .findBy({ workspace_id: workspaceId })
       .map(cal => {
         return {
           calendar_id: cal.id,
@@ -137,7 +139,7 @@ export default class Calendar extends Component {
       {
         http_base_url: 'calendar/event',
         http_options: {
-          channel_id: this.props.channel.id,
+          channel_id: channelId,
           after_ts:
             this.loaded_date_range['both'].min || new Date().getTime() / 1000 - 24 * 60 * 60 * 60,
           before_ts:
@@ -147,7 +149,7 @@ export default class Calendar extends Component {
         },
         websockets: [
           {
-            uri: 'calendar_events/' + this.props.channel.data.workspace_id,
+            uri: 'calendar_events/' + workspaceId,
             options: { type: 'event' },
           },
           {
@@ -253,8 +255,9 @@ export default class Calendar extends Component {
     WorkspacesApps.notifyApp(app.id, 'configuration', 'calendar', data);
   }
   renderCalendarList() {
+    const { workspaceId } = RouterService.getStateFromRoute();
     var calendars = Collections.get('calendars').findBy({
-      workspace_id: this.props.channel.data.workspace_id,
+      workspace_id: workspaceId,
     });
     if (this.props.tab != null) {
       calendars = calendars.filter(c => this.allowed_ids.indexOf(c.id) >= 0);
@@ -446,6 +449,7 @@ export default class Calendar extends Component {
     return rect;
   }
   render() {
+    const { workspaceId } = RouterService.getStateFromRoute();
     if (
       this.props.tab != null &&
       (!this.props.tab.configuration || this.props.tab.configuration.calendars === undefined)
@@ -454,7 +458,7 @@ export default class Calendar extends Component {
     }
 
     var calendars = Collections.get('calendars')
-      .findBy({ workspace_id: this.props.channel.data.workspace_id })
+      .findBy({ workspace_id: workspaceId })
       .map(cal => cal.id);
 
     if (this.props.tab != null) {

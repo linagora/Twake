@@ -106,6 +106,7 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
 
   if (!newApplication.identity?.name) {
     newApplication.identity = {
+      key: application.depreciated_name.toLocaleLowerCase(),
       name: application.depreciated_name,
       icon: application.depreciated_icon_url,
       description: application.depreciated_description,

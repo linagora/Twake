@@ -68,6 +68,7 @@ export function getInstance(message: Application): Application {
 }
 
 type ApplicationIdentity = {
+  key: string;
   name: string;
   icon: string;
   description: string;
