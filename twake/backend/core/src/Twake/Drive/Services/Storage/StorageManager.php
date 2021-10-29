@@ -17,6 +17,7 @@ class StorageManager
         $this->root = $app->getAppRootDir();
         $this->preview = $app->getServices()->get("app.drive.preview");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
+	    $this->app = $app;
     }
 
     /**
@@ -24,7 +25,13 @@ class StorageManager
      */
     public function getAdapter($provider = false)
     {
+        //Prod retro-compatibility
+        if($this->getProviderConfiguration("")["label"] === ""){
+            $provider = $provider ?: "";
+        }
+
         $configuration = $this->getProviderConfiguration($provider);
+	    $configuration["default_drive_salt"] = $this->app->getContainer()->getParameter("storage.drive_salt");
 
         if ($configuration["type"] === "S3") {
             return new Adapter_AWS($configuration, $this->preview, $this->doctrine);

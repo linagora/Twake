@@ -20,6 +20,8 @@ class Adapter_AWS implements AdapterInterface
         $this->aws_credentials_key = $s3_config["credentials"]["key"];
         $this->aws_credentials_secret = $s3_config["credentials"]["secret"];
         $this->disable_encryption = $s3_config["disable_encryption"] ?: false;
+        $this->parameter_drive_salt = $s3_config["override_drive_salt"] ?: $s3_config["default_drive_salt"];
+	    $this->default_parameter_drive_salt = $s3_config["default_drive_salt"];
 
         $region = false;
         foreach ($this->aws_buckets ? $this->aws_buckets : [] as $region_code => $aws_region) {
@@ -133,6 +135,9 @@ class Adapter_AWS implements AdapterInterface
     {
 
         $key = "AWS" . $param_bag->getSalt() . $param_bag->getKey();
+	if($param_bag->getSalt() == $this->default_parameter_drive_salt){
+        	$key = "AWS" . $this->parameter_drive_salt . $param_bag->getKey();
+	}
         $key = md5($key);
 
         $file_path = "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
@@ -168,7 +173,7 @@ class Adapter_AWS implements AdapterInterface
             return $destination;
 
         } catch (S3Exception $e) {
-            error_log("Error accessing aws file.");
+            error_log("Error accessing aws file." . $e);
         }
 
         return false;
