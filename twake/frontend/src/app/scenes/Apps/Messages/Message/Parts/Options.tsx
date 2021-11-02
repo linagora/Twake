@@ -102,10 +102,11 @@ export default (props: Props) => {
       }
     }
 
-    var apps =
+    const apps =
       WorkspacesApps.getApps().filter(
-        (app: any) => ((app.display || {}).messages_module || {}).action,
+        (app: any) => ((app?.display || {}).messages_module || {}).action,
       ) || [];
+
     if (apps.length > 0) {
       menu.push({ type: 'separator' });
       menu.push({

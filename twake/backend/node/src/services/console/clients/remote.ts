@@ -196,6 +196,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       planFeatures = {
         "chat:guests": false,
         "chat:message_history": false,
+        "chat:message_history_limit": 10000,
         "chat:multiple_workspaces": false,
         "chat:edit_files": false,
         "chat:unlimited_storage": false, //Currently inactive

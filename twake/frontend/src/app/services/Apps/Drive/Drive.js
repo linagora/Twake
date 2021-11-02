@@ -514,8 +514,8 @@ class Drive extends Observable {
       });
     }
 
-    var apps = WorkspacesApps.getApps().filter(
-      app => ((app.display || {}).drive_module || {}).can_open_files,
+    const apps = WorkspacesApps.getApps().filter(
+      app => (((app || {}).display || {}).drive_module || {}).can_open_files,
     );
 
     //Primary exts

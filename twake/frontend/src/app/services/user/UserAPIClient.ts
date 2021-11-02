@@ -62,6 +62,10 @@ class UserAPIClient {
     ).then(result => result.resource);
   }
 
+  async getCompany(companyId: string): Promise<CompanyType> {
+    return Api.get<{resource:CompanyType}>(`/internal/services/users/v1/companies/${companyId}`).then(a=>a.resource);
+  }
+
   async logout() {
     return Api.post('users/logout', {});
   }
