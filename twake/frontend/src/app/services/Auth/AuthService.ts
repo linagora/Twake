@@ -13,6 +13,7 @@ import WindowState from 'services/utils/window';
 import Application from 'services/Application';
 import LocalStorage from 'services/LocalStorage';
 import Collections from 'services/Collections/Collections';
+import Globals from '../Globals';
 
 type AccountType = 'console' | 'internal';
 export type LoginState =
@@ -42,7 +43,7 @@ class AuthService {
       return this.provider;
     }
 
-    const accountType = this.getAccountType();
+    let accountType = this.getAccountType();
     if (!accountType) {
       this.logger.info('No server account configuration');
       this.provider = this.getDefaultProvider();
@@ -52,16 +53,14 @@ class AuthService {
 
     const config = InitService.server_infos?.configuration?.accounts[accountType];
 
-    if (localStorage.getItem('dev_force_internal')) {
+    if (Globals.environment.env_dev_auth) accountType = Globals.environment.env_dev_auth;
+
+    if (accountType === 'console') {
+      this.provider = new OIDCAuthProviderService(config as ConsoleConfiguration);
+    } else if (accountType === 'internal') {
       this.provider = new InternalAuthProviderService(config as InternalConfiguration);
     } else {
-      if (accountType === 'console') {
-        this.provider = new OIDCAuthProviderService(config as ConsoleConfiguration);
-      } else if (accountType === 'internal') {
-        this.provider = new InternalAuthProviderService(config as InternalConfiguration);
-      } else {
-        throw new Error(`${accountType} is not a valid auth account provider`);
-      }
+      throw new Error(`${accountType} is not a valid auth account provider`);
     }
 
     return this.provider;
