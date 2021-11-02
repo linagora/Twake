@@ -18,7 +18,7 @@ fi
 function _selfsigned() {
     self-signed.sh
     export NGINX_LISTEN="443 ssl"
-    ln -s /etc/nginx/sites-available/redirect /etc/nginx/sites-enabled/
+    ln -sf /etc/nginx/sites-available/redirect /etc/nginx/sites-enabled/
 }
 
 case $SSL_CERTS in
