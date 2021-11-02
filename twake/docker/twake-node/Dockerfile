@@ -40,17 +40,21 @@ CMD ["npm", "run", "dev"]
 FROM node-base as production
 
 ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-RUN npm install --only=production
+
+ENV NODE_ENV=development
+RUN npm install
 COPY backend/node/ .
+ENV NODE_ENV=${NODE_ENV}
 RUN npm run build
 RUN rm -R node_modules
 
 # Add frontend into node
+ENV NODE_ENV=development
 COPY frontend/package*.json public/
 RUN cp public/src/app/environment/environment.ts.dist public/src/app/environment/environment.ts
 RUN cd public && yarn install --network-timeout 1000000000
 RUN yarn global add webpack && yarn global add webpack-cli
+ENV NODE_ENV=${NODE_ENV}
 RUN cd public && yarn build
 RUN cd public && rm -R node_modules
 RUN mv public/build/* public/
