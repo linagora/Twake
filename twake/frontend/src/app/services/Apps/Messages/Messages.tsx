@@ -19,6 +19,7 @@ import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 import { Message } from '../../../models/Message';
+import { Application } from 'app/models/App';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -496,7 +497,7 @@ class Messages extends Observable {
 
     SideViewService.select(channel.id, {
       collection: this.getCollection(message.channel_id),
-      app: { code: 'messages' },
+      app: { identity: { code: 'messages' } } as Application,
       context: {
         viewType: 'channel_thread',
         threadId: id,

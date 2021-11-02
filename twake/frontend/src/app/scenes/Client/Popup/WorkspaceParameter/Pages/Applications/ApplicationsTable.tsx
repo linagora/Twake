@@ -9,7 +9,7 @@ import { Application } from 'app/models/App';
 import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { useApplications } from 'app/services/Apps/useApplications';
-import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
@@ -29,7 +29,7 @@ export default () => {
     useApplications();
 
   const { isLoadingCompanyApplications, companyApplications, addOneCompanyApplication } =
-    useCurrentCompanyApplications(company.id);
+    useCompanyApplications(company.id);
 
   const [data, _setData] = useState<ColumnObjectType[]>([]);
 

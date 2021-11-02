@@ -25,8 +25,8 @@ export type ViewConfiguration = {
 
 const defaultConfiguration: ViewConfiguration = {
   app: {
-    code: 'messages',
     identity: {
+      code: 'messages',
       name: '',
       icon: '',
       description: '',

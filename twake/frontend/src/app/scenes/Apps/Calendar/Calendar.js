@@ -32,7 +32,7 @@ import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/Works
 import UnconfiguredTab from './UnconfiguredTab.js';
 import RouterService from 'app/services/RouterService';
 import MainPlus from 'components/MainPlus/MainPlus.js';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 const ExportView = props => {
   const [export_my_calendar, set_export_my_calendar] = useState(props.values.export_my_calendar);

@@ -11,7 +11,7 @@ import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Icon from 'components/Icon/Icon.js';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 import './Pages.scss';
 

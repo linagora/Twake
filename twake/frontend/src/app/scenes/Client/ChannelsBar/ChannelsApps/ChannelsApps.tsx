@@ -8,7 +8,7 @@ import UserService from 'services/user/UserService';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import AccessRightsService from 'app/services/AccessRightsService';
-import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import RouterService from 'app/services/RouterService';
 
 // This should be deleted
@@ -98,7 +98,7 @@ type PropsType = {
 };
 
 export const CompanyApplications = ({ companyId }: PropsType) => {
-  const { companyApplications } = useCurrentCompanyApplications(companyId);
+  const { companyApplications } = useCompanyApplications(companyId);
   const { channelId } = RouterService.getStateFromRoute();
   return (
     <div className="applications_channels" style={{ marginTop: 8 }}>

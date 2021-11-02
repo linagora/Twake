@@ -10,7 +10,7 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
-import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import Menu from 'components/Menus/Menu';
 
 import './ApplicationsStyles.scss';
@@ -25,7 +25,7 @@ export default () => {
   if (!company?.id) return <></>;
 
   const { companyApplications, isLoadingCompanyApplications, deleteOneCompanyApplication } =
-    useCurrentCompanyApplications(company?.id);
+    useCompanyApplications(company?.id);
   const [data, _setData] = useState<ColumnObjectType[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

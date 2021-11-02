@@ -33,14 +33,13 @@ const AppView: FC<PropsType> = props => {
   }
 
   const app = props.viewService.getConfiguration().app;
-  //let channelTab = configuration.context;
 
   switch (app?.identity?.code) {
-    case 'documents':
+    case 'twake_drive':
       return <Drive options={configuration} />;
-    case 'calendar':
+    case 'twake_calendar':
       return <Calendar options={configuration} />;
-    case 'tasks':
+    case 'twake_tasks':
       return <Tasks options={configuration} />;
     case 'messages':
       return <Messages channel={channel} options={configuration} />;

@@ -8,7 +8,7 @@ import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 export default class PathElement extends DriveElement {
   dropFile(data, directory) {

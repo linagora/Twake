@@ -7,7 +7,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import '../Drive.scss';
 import 'moment-timezone';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 export default class Directory extends React.Component {
   constructor(props) {

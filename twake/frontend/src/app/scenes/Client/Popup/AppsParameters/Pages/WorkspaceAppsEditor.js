@@ -16,7 +16,7 @@ import Icon from 'components/Icon/Icon.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import Input from 'components/Inputs/Input.js';
 import InlineTagPicker from 'app/components/InlineTagPicker/InlineTagPicker';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 import './Pages.scss';
 import WorkspacesApp from 'services/workspaces/workspaces_apps.js';
@@ -221,7 +221,7 @@ export default class WorkspaceAppsEditor extends Component {
                 value={application?.identity?.code}
                 onChange={ev => {
                   var simple = this.convertToSimpleName(ev.target.value);
-                  application?.identity?.code = simple;
+                  application.identity.code = simple;
                   this.setState({});
                 }}
               />

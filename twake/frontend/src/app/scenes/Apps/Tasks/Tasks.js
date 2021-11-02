@@ -20,7 +20,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 import Board from './Board/Board.js';
 

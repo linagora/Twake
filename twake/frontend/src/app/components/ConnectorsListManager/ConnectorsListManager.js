@@ -7,7 +7,7 @@ import Input from 'components/Inputs/Input.js';
 import './ConnectorsListManager.scss';
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 export default class ConnectorsListManager extends React.Component {
   constructor(props) {

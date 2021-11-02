@@ -8,14 +8,11 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import MainViewService from 'app/services/AppView/MainViewService';
 
 export default (): JSX.Element => {
-  const { channelId } = RouterServices.getStateFromRoute();
-
-  const appChannel = DepreciatedCollections.get('channels').find(channelId);
-  const application = getApplication(appChannel?.app_id);
-
+  const application = MainViewService.getConfiguration().app;
   if (!application) {
     return <></>;
   }
@@ -33,10 +30,6 @@ export default (): JSX.Element => {
     icon = <Icon type={IconType} style={{ width: 16, height: 16 }} />;
   } else {
     icon = <IconType size={16} />;
-  }
-
-  if (!appChannel) {
-    return <></>;
   }
 
   return (

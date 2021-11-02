@@ -2,7 +2,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import { Message } from '../../../models/Message';
 import userAsyncGet from 'services/user/AsyncGet';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 export const getSender = (message: Message | undefined) => {
   var senderData: any = {

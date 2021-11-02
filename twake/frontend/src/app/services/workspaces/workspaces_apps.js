@@ -9,7 +9,7 @@ import Workspaces from './workspaces.js';
 import Globals from 'services/Globals';
 import Icon from 'app/components/Icon/Icon';
 import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 class WorkspacesApps extends Observable {
   constructor() {

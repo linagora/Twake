@@ -14,7 +14,7 @@ import ConnectorsListManager from 'app/components/ConnectorsListManager/Connecto
 import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
   const apps = WorkspacesApps.getApps().filter((app: any) => (app?.display || {}).channel);
@@ -49,8 +49,8 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
     MainViewService.select(MainViewService.getId(), {
       collection: MainViewService.getConfiguration().collection,
       app: {
-        code: 'messages',
         identity: {
+          code: 'messages',
           name: '',
           icon: '',
           description: '',

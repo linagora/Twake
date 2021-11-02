@@ -10,7 +10,7 @@ import Languages from 'services/languages/languages';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import ObjectModal from 'app/components/ObjectModal/ObjectModal';
 import ModalManager from 'app/components/Modal/ModalManager';
-import { useCurrentCompanyApplications } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 
 import './ApplicationsStyles.scss';
 
@@ -95,7 +95,7 @@ export default ({ application, companyId }: PropsType) => {
     addOneCompanyApplication,
     isLoadingCompanyApplications,
     isApplicationInstalledInCompany,
-  } = useCurrentCompanyApplications(companyId);
+  } = useCompanyApplications(companyId);
 
   const onClickButton = async () => {
     if (!isApplicationInstalledInCompany(application.id)) {

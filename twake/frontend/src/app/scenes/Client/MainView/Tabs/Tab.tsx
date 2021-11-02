@@ -10,7 +10,7 @@ import Languages from 'services/languages/languages';
 import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import MainViewService from 'app/services/AppView/MainViewService';
-import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 type PropsType = {
   tabResource: TabResource;

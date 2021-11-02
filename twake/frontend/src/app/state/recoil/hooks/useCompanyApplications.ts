@@ -15,8 +15,8 @@ export function getApplication(applicationId: string) {
   return applications.get(applicationId);
 }
 
-const logger = Logger.getLogger('useCurrentCompanyApplications');
-export function useCurrentCompanyApplications(companyId: string) {
+const logger = Logger.getLogger('useCompanyApplications');
+export function useCompanyApplications(companyId: string) {
   const [companyApplications, setCompanyApplications] = useRecoilState(
     CompanyApplicationsStateFamily(companyId),
   );
