@@ -173,7 +173,6 @@ export type ApplicationAccess = {
 };
 
 export type ApplicationIdentity = {
-  key: string;
   name: string;
   icon: string;
   description: string;

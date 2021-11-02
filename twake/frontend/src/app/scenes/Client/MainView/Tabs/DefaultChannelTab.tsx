@@ -50,8 +50,8 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
     MainViewService.select(MainViewService.getId(), {
       collection: MainViewService.getConfiguration().collection,
       app: {
+        code: 'messages',
         identity: {
-          key: 'messages',
           name: '',
           icon: '',
           description: '',
