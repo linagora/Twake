@@ -17,7 +17,7 @@ export default ({ zoneId }: PropsType) => {
   const { currentUploadZoneFilesList } = useUploadZones(zoneId);
 
   return currentUploadZoneFilesList.length > 0 ? (
-    <Row className="attached-files-container small-y-margin" justify="start">
+    <Row className="attached-files-container" justify="start">
       {currentUploadZoneFilesList.map((file, index) => {
         const id = file.metadata?.external_id || '';
 

@@ -30,26 +30,24 @@ export default ({ file, className, type, progress, status }: PropsType) => {
     className,
     {
       'file-component-error':
-        type === 'input' &&
-        status &&
-        (isPendingFileStatusError(status) || isPendingFileStatusCancel(status)),
-      'file-component-uploading': type === 'input' && status && !isPendingFileStatusSuccess(status),
+        status && (isPendingFileStatusError(status) || isPendingFileStatusCancel(status)),
+      'file-component-uploading': progress && progress < 1,
     },
   ];
 
-  const onClickFile = (data: DataFileType, companyId: string) =>
-    DriveService.viewDocument(
-      {
-        id: file.id,
-        name: file.name,
-        url:
-          data.type === 'input' // Allow instant preview even if the download is not complete
-            ? file.thumbnail
-            : FileUploadService.getDownloadRoute({ companyId, fileId: file.id }),
-        extension: file.name.split('.').pop(),
-      },
-      true,
-    );
+  const onClickFile = (data: DataFileType, companyId: string) => {
+    //Only if upload has ended
+    if (!status || isPendingFileStatusSuccess(status))
+      DriveService.viewDocument(
+        {
+          id: file.id,
+          name: file.name,
+          url: FileUploadService.getDownloadRoute({ companyId, fileId: file.id }),
+          extension: file.name.split('.').pop(),
+        },
+        true,
+      );
+  };
   return (
     <div
       className={classNames(classNameArguments)}
@@ -58,7 +56,12 @@ export default ({ file, className, type, progress, status }: PropsType) => {
       <div className="file-info-container">
         <FileThumbnail file={file} />
         <FileDetails file={file} />
-        <FileActions type={type} status={status} file={file} />
+        <FileActions
+          deletable={type === 'input'}
+          actionMenu={type == 'message'}
+          status={status}
+          file={file}
+        />
       </div>
       <FileProgress progress={progress} status={status} file={file} />
     </div>

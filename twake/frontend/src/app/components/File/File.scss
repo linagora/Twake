@@ -12,6 +12,7 @@
   }
 
   &.file-component-uploading {
+    opacity: 0.5;
     border-radius: 8px 8px 0px 0px;
 
     .file-info-container {
@@ -20,7 +21,6 @@
 
     .file-progress-bar-container {
       padding-top: 8px;
-
       height: 2px;
     }
   }
@@ -39,6 +39,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 32px;
 
       .file-thumbnail-component {
         border-radius: 4px;
@@ -47,7 +48,7 @@
 
     .file-component-details {
       max-width: 134px;
-
+      flex: 1;
       display: flex;
       flex-direction: column;
     }
