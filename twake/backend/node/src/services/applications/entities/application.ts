@@ -155,14 +155,18 @@ type ApplicationDisplay = {
         };
 
     //Display app as a standalone application in a tab
-    tab?: {
-      url: string;
-    };
+    tab?:
+      | {
+          url: string;
+        }
+      | true;
 
     //Display app as a standalone application on the left bar
-    standalone?: {
-      url: string;
-    };
+    standalone?:
+      | {
+          url: string;
+        }
+      | true;
 
     //Define where the app can be configured from
     configuration?: ("global" | "channel")[];

@@ -103,14 +103,25 @@ export default () => {
       render: (initialValue: any, record: ColumnObjectType, index: number) => {
         const { key, ...application } = record;
         return (
-          <Menu menu={buildMenu(application)}>
-            <Button
-              key={key}
-              type="default"
-              icon={<MoreHorizontal size={18} />}
-              className="applications-table-actions-btn"
-            />
-          </Menu>
+          <>
+            {!!application.display?.twake?.configuration?.includes('global') && (
+              <Button
+                type="default"
+                onClick={() => {
+                  //TODO
+                }}
+              >
+                {Languages.t('scenes.app.popup.workspaceparameter.pages.configure_button')}
+              </Button>
+            )}
+            <Menu menu={buildMenu(application)}>
+              <Button
+                type="default"
+                icon={<MoreHorizontal size={18} />}
+                className="applications-table-actions-btn"
+              />
+            </Menu>
+          </>
         );
       },
     },

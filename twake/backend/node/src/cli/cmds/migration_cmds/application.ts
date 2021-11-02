@@ -3,7 +3,10 @@ import twake from "../../../twake";
 import ora from "ora";
 import { TwakePlatform } from "../../../core/platform/platform";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import PhpApplication, { TYPE as phpTYPE } from "./php-application/php-application-entity";
+import PhpApplication, {
+  DepreciatedDisplayConfiguration,
+  TYPE as phpTYPE,
+} from "./php-application/php-application-entity";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Application, {
   TYPE,
@@ -160,12 +163,76 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
     } catch (e) {
       newApplication.access.hooks = [];
     }
-  }
 
-  if (!newApplication.display?.twake) {
-    newApplication.display = newApplication.display || { twake: { version: 1 } };
-    newApplication.display.twake = JSON.parse(application.depreciated_display_configuration) || {};
+    newApplication.display = importDepreciatedDisplayFields(
+      newApplication,
+      JSON.parse(application.depreciated_display_configuration),
+    );
   }
 
   return newApplication;
+};
+
+export const importDepreciatedDisplayFields = (
+  application: Application,
+  depreciatedDisplay: DepreciatedDisplayConfiguration,
+): Application["display"] => {
+  let display = application.display;
+
+  if (!display?.twake) {
+    display = display || { twake: { version: 1 } };
+    display.twake = display.twake || { version: 1 };
+  }
+
+  display.twake.tab = depreciatedDisplay?.channel_tab
+    ? { url: depreciatedDisplay?.channel_tab?.iframe } || true
+    : undefined;
+
+  display.twake.standalone = depreciatedDisplay?.app
+    ? { url: depreciatedDisplay?.app?.iframe } || true
+    : undefined;
+
+  display.twake.configuration = [];
+  if (depreciatedDisplay.configuration.can_configure_in_workspace)
+    display.twake.configuration.push("global");
+  if (depreciatedDisplay.configuration.can_configure_in_channel)
+    display.twake.configuration.push("channel");
+
+  display.twake.direct = depreciatedDisplay?.member_app
+    ? { name: application.identity.name, icon: application.identity.icon } || true
+    : undefined;
+
+  if (depreciatedDisplay?.drive_module) {
+    display.twake.files = {
+      preview: undefined, //TODO update new format to handle file edition etc
+      actions: [],
+    };
+
+    //TODO update new format to handle file edition etc
+  }
+
+  if (depreciatedDisplay?.messages_module) {
+    display.twake.chat = {
+      input:
+        depreciatedDisplay?.messages_module?.in_plus ||
+        depreciatedDisplay?.messages_module?.right_icon
+          ? {
+              icon: application.identity.icon,
+            }
+          : undefined,
+      commands:
+        (depreciatedDisplay?.messages_module
+          ?.commands as Application["display"]["twake"]["chat"]["commands"]) || undefined,
+      actions: depreciatedDisplay?.messages_module?.action
+        ? [
+            {
+              name: depreciatedDisplay?.messages_module?.action.description,
+              id: "default",
+            },
+          ]
+        : undefined,
+    };
+  }
+
+  return display;
 };
