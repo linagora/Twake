@@ -133,7 +133,7 @@ class Messages extends Observable {
         let app_name = value.split(' ')[0].slice(1);
         // eslint-disable-next-line array-callback-return
         WorkspacesApps.getApps().map((_app: any) => {
-          if (_app.code === app_name) {
+          if (_app?.identity?.code === app_name) {
             app = _app;
           }
         });
@@ -250,7 +250,7 @@ class Messages extends Observable {
   }
 
   async triggerApp(channelId: string, threadId: string, app: any, from_icon: any, evt: any) {
-    if (app.code === 'twake_drive') {
+    if (app?.identity?.code === 'twake_drive') {
       let menu = [];
       let has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
 

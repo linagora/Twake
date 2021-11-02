@@ -37,7 +37,7 @@ export const getSender = (message: Message | undefined) => {
         senderData = {
           type: 'app',
           application: app,
-          username: 'app#' + app?.code,
+          username: 'app#' + app?.identity?.code,
           firstname: app.identity?.icon,
           lastname: '',
           thumbnail: WorkspacesApps.getAppIcon(app),

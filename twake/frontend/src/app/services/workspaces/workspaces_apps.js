@@ -287,8 +287,8 @@ class WorkspacesApps extends Observable {
   openAppPopup(app_id) {}
 
   getAppIcon(app, feather = false) {
-    if (app && app.code) {
-      switch (app.code.toLocaleLowerCase()) {
+    if (app && app?.identity?.code) {
+      switch (app?.identity?.code.toLocaleLowerCase()) {
         case 'twake_calendar':
           return feather ? Calendar : 'calendar-alt';
         case 'twake_drive':

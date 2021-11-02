@@ -218,10 +218,10 @@ export default class WorkspaceAppsEditor extends Component {
                 placeholder={'my_amazing_app'}
                 type="text"
                 disabled={this.state.loading || public_lock}
-                value={application.code}
+                value={application?.identity?.code}
                 onChange={ev => {
                   var simple = this.convertToSimpleName(ev.target.value);
-                  application.code = simple;
+                  application?.identity?.code = simple;
                   this.setState({});
                 }}
               />

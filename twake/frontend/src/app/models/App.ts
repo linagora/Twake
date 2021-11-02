@@ -173,6 +173,7 @@ export type ApplicationAccess = {
 };
 
 export type ApplicationIdentity = {
+  code: string;
   name: string;
   icon: string;
   description: string;
@@ -195,7 +196,6 @@ type ApplicationStatistics = {
 export type Application = {
   id: string;
   company_id: string;
-  code: string;
   access: ApplicationAccess;
   display: ApplicationDisplay;
   identity: ApplicationIdentity;

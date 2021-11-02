@@ -35,7 +35,7 @@ const AppView: FC<PropsType> = props => {
   const app = props.viewService.getConfiguration().app;
   //let channelTab = configuration.context;
 
-  switch (app?.code) {
+  switch (app?.identity?.code) {
     case 'documents':
       return <Drive options={configuration} />;
     case 'calendar':

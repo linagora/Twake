@@ -21,7 +21,11 @@ export default (): JSX.Element => {
   }
 
   const channel = new ChannelResource({
-    name: Languages.t('app.identity?.name.' + application.code, [], application.identity?.name),
+    name: Languages.t(
+      'app.identity?.name.' + application?.identity?.code,
+      [],
+      application.identity?.name,
+    ),
   });
   const IconType = WorkspacesApps.getAppIcon(application, true);
   let icon: JSX.Element;

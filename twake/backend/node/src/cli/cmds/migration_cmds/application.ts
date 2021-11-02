@@ -106,11 +106,10 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
   newApplication.id = application.id;
   newApplication.company_id = application.group_id;
   newApplication.is_default = application.is_default;
-  newApplication.code = application.depreciated_simple_name;
 
   if (!newApplication.identity?.name) {
     newApplication.identity = {
-      key: application.depreciated_name.toLocaleLowerCase(),
+      code: application.depreciated_simple_name || application.depreciated_name.toLocaleLowerCase(),
       name: application.depreciated_name,
       icon: application.depreciated_icon_url,
       description: application.depreciated_description,
@@ -164,12 +163,12 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
     } catch (e) {
       newApplication.access.hooks = [];
     }
-
-    newApplication.display = importDepreciatedDisplayFields(
-      newApplication,
-      JSON.parse(application.depreciated_display_configuration),
-    );
   }
+
+  newApplication.display = importDepreciatedDisplayFields(
+    newApplication,
+    JSON.parse(application.depreciated_display_configuration),
+  );
 
   return newApplication;
 };
@@ -194,9 +193,9 @@ export const importDepreciatedDisplayFields = (
     : undefined;
 
   display.twake.configuration = [];
-  if (depreciatedDisplay.configuration.can_configure_in_workspace)
+  if (depreciatedDisplay.configuration?.can_configure_in_workspace)
     display.twake.configuration.push("global");
-  if (depreciatedDisplay.configuration.can_configure_in_channel)
+  if (depreciatedDisplay.configuration?.can_configure_in_channel)
     display.twake.configuration.push("channel");
 
   display.twake.direct = depreciatedDisplay?.member_app

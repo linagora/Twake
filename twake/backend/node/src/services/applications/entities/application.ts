@@ -22,9 +22,6 @@ export default class Application {
   @Column("is_default", "boolean")
   is_default: boolean;
 
-  @Column("code", "string")
-  code: string;
-
   @Column("identity", "json")
   identity: ApplicationIdentity;
 
@@ -71,7 +68,7 @@ export function getInstance(message: Application): Application {
 }
 
 type ApplicationIdentity = {
-  key: string;
+  code: string;
   name: string;
   icon: string;
   description: string;
