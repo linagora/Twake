@@ -26,6 +26,9 @@ export default class PhpApplication {
   @Column("name", "encoded_string")
   depreciated_name: string;
 
+  @Column("simple_name", "encoded_string")
+  depreciated_simple_name: string;
+
   @Column("description", "encoded_string")
   depreciated_description: string;
 

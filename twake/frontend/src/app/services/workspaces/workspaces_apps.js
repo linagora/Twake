@@ -287,8 +287,8 @@ class WorkspacesApps extends Observable {
   openAppPopup(app_id) {}
 
   getAppIcon(app, feather = false) {
-    if (app && app.simple_name) {
-      switch (app.simple_name.toLocaleLowerCase()) {
+    if (app && app.code) {
+      switch (app.code.toLocaleLowerCase()) {
         case 'twake_calendar':
           return feather ? Calendar : 'calendar-alt';
         case 'twake_drive':
@@ -308,7 +308,7 @@ class WorkspacesApps extends Observable {
     );
     const IconType = this.getAppIcon(application, true);
 
-    if (item.simple_name === 'jitsi') {
+    if (item.code === 'jitsi') {
       return (
         <div
           className="menu-app-icon"

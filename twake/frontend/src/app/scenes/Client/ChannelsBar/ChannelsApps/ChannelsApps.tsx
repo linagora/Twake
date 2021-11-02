@@ -60,7 +60,7 @@ export default class ChannelsApps extends Component {
           }
           const app = groupApp.app;
           if (groupApp && !(!app || !(app.display || {}).app)) {
-            const name = Languages.t('app.name.' + app.simple_name, [], app.name);
+            const name = Languages.t('app.name.' + app.code, [], app.name);
             let icon = WorkspacesApps.getAppIcon(app);
             if ((icon || '').indexOf('http') === 0) {
               icon = '';

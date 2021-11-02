@@ -106,6 +106,7 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
   newApplication.id = application.id;
   newApplication.company_id = application.group_id;
   newApplication.is_default = application.is_default;
+  newApplication.code = application.depreciated_simple_name;
 
   if (!newApplication.identity?.name) {
     newApplication.identity = {

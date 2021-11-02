@@ -22,6 +22,9 @@ export default class Application {
   @Column("is_default", "boolean")
   is_default: boolean;
 
+  @Column("code", "string")
+  code: string;
+
   @Column("identity", "json")
   identity: ApplicationIdentity;
 

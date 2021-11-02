@@ -33,7 +33,7 @@ const resolver = (
     if (app) {
       commands = commands.concat(
         (((app.display || {}).messages_module || {}).commands || []).map((c: any) => ({
-          command: `/${app.simple_name} ${c.command}`,
+          command: `/${app.code} ${c.command}`,
           description: c.description,
         })),
       );

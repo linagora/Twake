@@ -63,12 +63,12 @@ export default (props: Props) => {
           };
 
           if (
-            app.simple_name === 'twake_drive' ||
+            app.code === 'twake_drive' ||
             app.display?.messages_module?.right_icon?.type === 'file'
           ) {
             addon_files.push(menu_item);
           } else if (
-            app.simple_name === 'jitsi' ||
+            app.code === 'jitsi' ||
             app.display?.messages_module?.right_icon?.type === 'call'
           ) {
             addon_calls.push(menu_item);

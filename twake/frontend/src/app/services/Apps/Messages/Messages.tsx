@@ -3,7 +3,9 @@ import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import UserService from 'services/user/UserService';
-import DepreciatedCollections, { Collection } from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections, {
+  Collection,
+} from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -131,7 +133,7 @@ class Messages extends Observable {
         let app_name = value.split(' ')[0].slice(1);
         // eslint-disable-next-line array-callback-return
         WorkspacesApps.getApps().map((_app: any) => {
-          if (_app.simple_name === app_name) {
+          if (_app.code === app_name) {
             app = _app;
           }
         });
@@ -248,7 +250,7 @@ class Messages extends Observable {
   }
 
   async triggerApp(channelId: string, threadId: string, app: any, from_icon: any, evt: any) {
-    if (app.simple_name === 'twake_drive') {
+    if (app.code === 'twake_drive') {
       let menu = [];
       let has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
 

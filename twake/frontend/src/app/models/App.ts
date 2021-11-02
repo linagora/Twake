@@ -196,6 +196,7 @@ type ApplicationStatistics = {
 export type Application = {
   id: string;
   company_id: string;
+  code: string;
   access: ApplicationAccess;
   display: ApplicationDisplay;
   identity: ApplicationIdentity;

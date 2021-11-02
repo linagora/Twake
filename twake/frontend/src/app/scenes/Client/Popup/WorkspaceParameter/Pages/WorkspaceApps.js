@@ -174,7 +174,7 @@ export default class WorkspaceApps extends Component {
                         />
                         <div className="fix_text_padding_medium text-complete-width">
                           {row.name} ({row.app_group_name ? row.app_group_name + '.' : ''}
-                          {row.simple_name})
+                          {row.code})
                         </div>
                       </div>
                     );
@@ -280,7 +280,7 @@ export default class WorkspaceApps extends Component {
                         />
                         <div className="fix_text_padding_medium text-complete-width">
                           {row.name} ({row.app_group_name ? row.app_group_name + '.' : ''}
-                          {row.simple_name})
+                          {row.code})
                         </div>
                       </div>
                     );
