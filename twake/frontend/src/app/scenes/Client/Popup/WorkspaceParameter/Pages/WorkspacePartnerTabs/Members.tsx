@@ -291,7 +291,6 @@ export default ({ filter }: { filter: string }) => {
 
   return (
     <>
-      <Divider />
       <div>
         <Typography.Title level={3}>
           {Languages.t('scenes.apps.parameters.workspace_sections.members.members')}
