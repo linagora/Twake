@@ -14,6 +14,7 @@ import ConnectorsListManager from 'app/components/ConnectorsListManager/Connecto
 import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
   const apps = WorkspacesApps.getApps().filter((app: any) => (app?.display || {}).channel);
@@ -37,9 +38,7 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
   const current = () => {
     return (
       isArray(channelResource.data.connectors) &&
-      channelResource.data.connectors.map((id: string) =>
-        DepreciatedCollections.get('applications').find(id),
-      )
+      channelResource.data.connectors.map((id: string) => getApplication(id))
     );
   };
 

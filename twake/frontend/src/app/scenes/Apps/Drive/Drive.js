@@ -350,12 +350,12 @@ export default class Drive extends Component {
       .map(app => {
         return externalStorageMenu.push({
           type: 'menu',
-          text: app.name,
-          emoji: app.icon_url,
+          text: app.identity?.name,
+          emoji: app.identity?.icon,
           onClick: () => {
             DriveService.createDirectory(
               this.state.workspaces.currentWorkspaceId,
-              app.name,
+              app.identity?.name,
               DriveService.current_directory_channels[this.drive_channel],
               this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
               file => {
@@ -387,8 +387,8 @@ export default class Drive extends Component {
         return app.display.drive_module.can_create_files.map(info => {
           return addableFilesMenu.push({
             type: 'menu',
-            emoji: info.icon || app.icon_url,
-            text: info.name + ' (' + app.name + ')',
+            emoji: info.icon || app.identity?.icon,
+            text: info.name + ' (' + app.identity?.name + ')',
             submenu_replace: true,
             submenu: [
               {

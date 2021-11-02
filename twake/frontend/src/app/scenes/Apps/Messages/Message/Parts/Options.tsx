@@ -123,9 +123,9 @@ export default (props: Props) => {
                 <div className="text">
                   <div
                     className="menu-app-icon"
-                    style={{ backgroundImage: 'url(' + app.icon_url + ')' }}
+                    style={{ backgroundImage: 'url(' + app.identity?.icon + ')' }}
                   />
-                  {app.display.messages_module.action.description || app.name}
+                  {app.display.messages_module.action.description || app.identity?.name}
                 </div>
               </div>
             );

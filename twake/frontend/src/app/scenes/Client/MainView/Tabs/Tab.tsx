@@ -9,9 +9,8 @@ import { MoreHorizontal } from 'react-feather';
 import Languages from 'services/languages/languages';
 import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
-import { Typography } from 'antd';
 import MainViewService from 'app/services/AppView/MainViewService';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 type PropsType = {
   tabResource: TabResource;
@@ -42,7 +41,7 @@ export default ({
         configuration: tabResource.data.configuration || {},
         name: tabResource.data.name,
       },
-      app: DepreciatedCollections.get('applications').find(tabResource.data.application_id),
+      app: getApplication(tabResource.data.application_id || ''),
       hasTabs: MainViewService.getConfiguration().hasTabs,
     });
   }

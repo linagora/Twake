@@ -326,7 +326,7 @@ export default class DriveElement extends React.Component {
           type: 'menu',
           text: Languages.t(
             'scenes.apps.drive.viewer.edit_with_button',
-            [editor_candidate[0].app.name],
+            [editor_candidate[0].app.identity?.name],
             'Editer avec $1',
           ),
           onClick: () => {

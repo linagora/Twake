@@ -7,6 +7,13 @@ import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import { CompanyApplicationsStateFamily } from '../atoms/CurrentCompanyApplications';
 import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
+import { Application } from 'app/models/App';
+
+const applications: Map<string, Application> = new Map();
+
+export function getApplication(applicationId: string) {
+  return applications.get(applicationId);
+}
 
 const logger = Logger.getLogger('useCurrentCompanyApplications');
 export function useCurrentCompanyApplications(companyId: string) {
@@ -21,8 +28,12 @@ export function useCurrentCompanyApplications(companyId: string) {
 
     try {
       const res = await CompanyApplicationsAPIClient.list(companyId);
-
-      res && setCompanyApplications(res);
+      if (res) {
+        res.forEach(application => {
+          applications.set(application.id, application);
+        });
+        setCompanyApplications(res);
+      }
     } catch (e) {
       logger.error(`Error while trying to handle company applications changes`, e);
     }

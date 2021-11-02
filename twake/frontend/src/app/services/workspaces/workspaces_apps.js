@@ -9,7 +9,7 @@ import Workspaces from './workspaces.js';
 import Globals from 'services/Globals';
 import Icon from 'app/components/Icon/Icon';
 import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 class WorkspacesApps extends Observable {
   constructor() {
@@ -51,7 +51,7 @@ class WorkspacesApps extends Observable {
             0,
       )
       .map(ch => {
-        return Collections.get('applications').find(ch.app_id);
+        return getApplication(ch.app_id);
       });
 
     return workspace_apps.filter(a => a);
@@ -296,16 +296,14 @@ class WorkspacesApps extends Observable {
         case 'twake_tasks':
           return feather ? CheckSquare : 'check-square';
         default:
-          return app.icon_url || (feather ? Hexagon : 'puzzle-piece');
+          return app.identity?.icon || (feather ? Hexagon : 'puzzle-piece');
       }
     }
     return feather ? Hexagon : 'puzzle-piece';
   }
 
   getAppIconComponent(item, options = {}) {
-    const application = DepreciatedCollections.get('applications').find(
-      item.application_id ? item.application_id : item.id,
-    );
+    const application = getApplication(item.application_id ? item.application_id : item.id);
     const IconType = this.getAppIcon(application, true);
 
     if (item.code === 'jitsi') {

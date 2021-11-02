@@ -32,6 +32,7 @@ import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/Works
 import UnconfiguredTab from './UnconfiguredTab.js';
 import RouterService from 'app/services/RouterService';
 import MainPlus from 'components/MainPlus/MainPlus.js';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 const ExportView = props => {
   const [export_my_calendar, set_export_my_calendar] = useState(props.values.export_my_calendar);
@@ -341,7 +342,7 @@ export default class Calendar extends Component {
                           <ConnectorsListManager
                             list={apps}
                             current={(cal.connectors || [])
-                              .map(id => Collections.get('applications').find(id))
+                              .map(id => getApplication(id))
                               .filter(item => item)}
                             configurable={item =>
                               ((item.display || {}).configuration || {}).can_configure_in_calendar

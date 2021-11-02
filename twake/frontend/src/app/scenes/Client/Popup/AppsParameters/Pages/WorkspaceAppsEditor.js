@@ -16,6 +16,7 @@ import Icon from 'components/Icon/Icon.js';
 import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
 import Input from 'components/Inputs/Input.js';
 import InlineTagPicker from 'app/components/InlineTagPicker/InlineTagPicker';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 import './Pages.scss';
 import WorkspacesApp from 'services/workspaces/workspaces_apps.js';
@@ -114,9 +115,7 @@ export default class WorkspaceAppsEditor extends Component {
   render() {
     if (this.state.application.id !== this.state.id) {
       // eslint-disable-next-line react/no-direct-mutation-state
-      this.state.application = JSON.parse(
-        JSON.stringify(Collections.get('applications').find(this.state.id) || {}),
-      );
+      this.state.application = JSON.parse(JSON.stringify(getApplication(this.state.id) || {}));
     }
 
     var isNew = false;
@@ -136,7 +135,7 @@ export default class WorkspaceAppsEditor extends Component {
       );
     }
 
-    var original_app = Collections.get('applications').find(this.state.id);
+    var original_app = getApplication(this.state.id);
 
     var public_lock = original_app.public || original_app.is_available_to_public;
 
@@ -237,7 +236,7 @@ export default class WorkspaceAppsEditor extends Component {
               )}
 
               <div className="label for_input">
-                {Languages.t('scenes.app.popup.appsparameters.pages.icon', 'icon')}
+                {Languages.t('scenes.app.popup.appsparameters.pages.icon_url', 'icon')}
               </div>
               <div className="smalltext" style={{ paddingBottom: 0 }}>
                 {Languages.t(

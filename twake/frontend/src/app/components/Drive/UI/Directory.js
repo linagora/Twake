@@ -7,6 +7,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/Icon/Icon.js';
 import '../Drive.scss';
 import 'moment-timezone';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 export default class Directory extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ export default class Directory extends React.Component {
   render() {
     var app = {};
     if (this.props.data.application_id && this.props.data.external_storage) {
-      app = Collections.get('applications').find(this.props.data.application_id);
+      app = getApplication(this.props.data.application_id);
     }
 
     return [
@@ -23,12 +24,15 @@ export default class Directory extends React.Component {
         <div className="icon">
           {!app.id && <FolderIcon className="m-icon-small" />}
           {!!app.id && (
-            <div className="app_icon" style={{ backgroundImage: "url('" + app.icon_url + "')" }} />
+            <div
+              className="app_icon"
+              style={{ backgroundImage: "url('" + app.identity?.icon + "')" }}
+            />
           )}
         </div>
         <div className="text">
           {this.props.data.name}
-          {!!app.id && <i> ({app.name})</i>}
+          {!!app.id && <i> ({app.identity?.name})</i>}
         </div>
 
         {(this.props.data.acces_info || {}).token && (

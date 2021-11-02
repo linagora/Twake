@@ -20,6 +20,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 import Board from './Board/Board.js';
 
@@ -215,7 +216,7 @@ export default class Tasks extends Component {
                                         <ConnectorsListManager
                                           list={apps}
                                           current={(board.connectors || [])
-                                            .map(id => Collections.get('applications').find(id))
+                                            .map(id => getApplication(id))
                                             .filter(item => item)}
                                           configurable={item =>
                                             ((item.display || {}).configuration || {})

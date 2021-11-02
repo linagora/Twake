@@ -11,6 +11,7 @@ import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Icon from 'components/Icon/Icon.js';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 import './Pages.scss';
 
@@ -119,7 +120,7 @@ export default class WorkspaceAppsSearch extends Component {
     var group = Collections.get('groups').find(workspace.group.id);
 
     if (this.state.current_app_id) {
-      var application = Collections.get('applications').find(this.state.current_app_id);
+      var application = getApplication(this.state.current_app_id);
 
       return (
         <div className="application_search fade_in">
@@ -128,12 +129,12 @@ export default class WorkspaceAppsSearch extends Component {
               className="app_icon"
               style={{
                 backgroundImage:
-                  'url(' + (application.icon_url || '/public/img/default_app_icon.png') + ')',
+                  'url(' + (application.identity?.icon || '/public/img/default_app_icon.png') + ')',
                 marginTop: 0,
                 marginRight: 5,
               }}
             />
-            {application.name}
+            {application.identity?.name}
           </div>
 
           <div className="group_section">

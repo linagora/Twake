@@ -7,6 +7,7 @@ import Input from 'components/Inputs/Input.js';
 import './ConnectorsListManager.scss';
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 export default class ConnectorsListManager extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ export default class ConnectorsListManager extends React.Component {
   renderLine(item, added) {
     var id = item.id || item;
 
-    item = Collections.get('applications').find(id);
+    item = getApplication(id);
 
     var text = '';
     var button = '';

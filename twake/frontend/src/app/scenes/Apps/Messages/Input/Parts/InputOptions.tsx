@@ -56,7 +56,7 @@ export default (props: Props) => {
             type: 'menu',
             emoji,
             icon,
-            text: app.name,
+            text: app.identity?.name,
             onClick: (evt: any) => {
               props.triggerApp && props.triggerApp(app, undefined, evt);
             },
@@ -226,7 +226,7 @@ export default (props: Props) => {
                 style={{
                   backgroundImage:
                     'url(' +
-                    (app.display.messages_module.right_icon.icon_url || app.icon_url) +
+                    (app.display.messages_module.right_icon.icon_url || app.identity?.icon) +
                     ')',
                 }}
               />

@@ -8,19 +8,20 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';
+import { getApplication } from 'app/state/recoil/hooks/useCurrentCompanyApplications';
 
 export default (): JSX.Element => {
   const { channelId } = RouterServices.getStateFromRoute();
 
   const appChannel = DepreciatedCollections.get('channels').find(channelId);
-  const application = DepreciatedCollections.get('applications').find(appChannel?.app_id);
+  const application = getApplication(appChannel?.app_id);
 
   if (!application) {
     return <></>;
   }
 
   const channel = new ChannelResource({
-    name: Languages.t('app.name.' + application.code, [], application.name),
+    name: Languages.t('app.identity?.name.' + application.code, [], application.identity?.name),
   });
   const IconType = WorkspacesApps.getAppIcon(application, true);
   let icon: JSX.Element;
