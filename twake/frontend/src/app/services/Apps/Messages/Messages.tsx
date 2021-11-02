@@ -496,7 +496,7 @@ class Messages extends Observable {
 
     SideViewService.select(channel.id, {
       collection: this.getCollection(message.channel_id),
-      app: { simple_name: 'messages' },
+      app: { code: 'messages' },
       context: {
         viewType: 'channel_thread',
         threadId: id,

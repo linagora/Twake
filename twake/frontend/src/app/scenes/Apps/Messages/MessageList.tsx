@@ -519,7 +519,9 @@ export default class MessagesList extends React.Component<Props, State> {
                   );
 
                 return (
-                  <Message
+                  <div>
+                    {message.id}{' '}
+                    {/*<Message
                     deleted={deleted}
                     noReplies={deleted}
                     key={message.id || message.front_id}
@@ -530,7 +532,8 @@ export default class MessagesList extends React.Component<Props, State> {
                     highlighted={highlight}
                     collectionKey={this.props.collectionKey}
                     repliesAsLink={!this.props.threadId}
-                  />
+                  />*/}
+                  </div>
                 );
               }}
               atBottomStateChange={atBottom => this.onBottomUpdate(atBottom)}

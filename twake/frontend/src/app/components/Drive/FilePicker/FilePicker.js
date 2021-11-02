@@ -99,7 +99,7 @@ export default class FilePicker extends React.Component {
 
     var allow_go_parent = true;
     var drive_channel = ChannelsService.getChannelForApp(
-      (Collections.get('applications').findBy({ simple_name: 'twake_drive' })[0] || {}).id,
+      (Collections.get('applications').findBy({ code: 'twake_drive' })[0] || {}).id,
       Workspaces.currentWorkspaceId,
     );
     if (!drive_channel && (this.props.initialDirectory || {}).id == directory_id) {

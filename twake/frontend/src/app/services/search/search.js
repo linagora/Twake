@@ -153,7 +153,7 @@ class SearchService extends Observable {
         }
         setTimeout(() => {
           var app_id = Collections.get('applications').findBy({
-            simple_name: 'twake_calendar',
+            code: 'twake_calendar',
           })[0];
           if (app_id) {
             app_id = app_id.id;
@@ -180,7 +180,7 @@ class SearchService extends Observable {
         }
         setTimeout(() => {
           var app_id = Collections.get('applications').findBy({
-            simple_name: 'twake_tasks',
+            code: 'twake_tasks',
           })[0];
           if (app_id) {
             app_id = app_id.id;

@@ -32,7 +32,7 @@ export default class WorkspaceAppsEditor extends Component {
 
   saveApp() {
     var saveApp = () => {
-      this.setState({ loading: true, error: false, error_simple_name: false });
+      this.setState({ loading: true, error: false, error_code: false });
 
       var data = {
         application: this.state.application,
@@ -45,8 +45,8 @@ export default class WorkspaceAppsEditor extends Component {
 
           this.props.exit();
         } else {
-          if (res.errors.indexOf('simple_name_used') >= 0) {
-            this.setState({ loading: false, error_simple_name: true });
+          if (res.errors.indexOf('code_used') >= 0) {
+            this.setState({ loading: false, error_code: true });
           } else {
             this.setState({ loading: false, error: true });
           }
@@ -226,7 +226,7 @@ export default class WorkspaceAppsEditor extends Component {
                   this.setState({});
                 }}
               />
-              {this.state.error_simple_name && (
+              {this.state.error_code && (
                 <div className="smalltext error" style={{ opacity: 1 }}>
                   {Languages.t(
                     'scenes.app.popup.appsparameters.pages.grp_section_name-error',
@@ -605,10 +605,10 @@ export default class WorkspaceAppsEditor extends Component {
           </Attribute>
         </div>
         <div className="group_section">
-          {this.state.error_simple_name && (
+          {this.state.error_code && (
             <div className="smalltext error" style={{ opacity: 1 }}>
               {Languages.t(
-                'scenes.app.popup.appsparameters.pages.error_app_simple_name_message',
+                'scenes.app.popup.appsparameters.pages.error_app_code_message',
                 [],
                 'Le nom simplifié de votre application est déjà utilisé par une autre application, veuillez le changer.',
               )}

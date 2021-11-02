@@ -140,8 +140,8 @@ export default class EventsFilter extends React.Component {
                 'Fichiers',
               ),
               value:
-                (Collections.get('applications').findBy({ simple_name: 'twake_drive' })[0] || {})
-                  .id || 'error_no_drive_app_found',
+                (Collections.get('applications').findBy({ code: 'twake_drive' })[0] || {}).id ||
+                'error_no_drive_app_found',
             },
           ]}
           value={this.state.options.application_id || false}
