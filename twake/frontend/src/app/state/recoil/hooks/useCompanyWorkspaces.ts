@@ -24,7 +24,7 @@ export const useCompanyWorkspaces = (companyId: string = ''): [
 ] => {
   // TODO: can be used in recoil
   const [workspace] = useFetchWorkspaces(companyId);
-  const roomName = workspace?.websockets?.[0]?.room;
+  const roomName = workspace?.websockets?.[0]?.room || "";
 
   const [workspaces, updateWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));
   const get = useRecoilCallback(({ snapshot }) => async (workspaceId: string) => {

@@ -152,6 +152,8 @@
     "previews",
     "platform-services",
     "counter",
-    "statistics"
+    "statistics",
+    "cron",
+    "online"
   ]
 }
