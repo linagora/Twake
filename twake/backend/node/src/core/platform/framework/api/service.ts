@@ -6,7 +6,8 @@ import { TwakeServiceConfiguration } from "./service-configuration";
 import { TwakeContext } from "./context";
 import { TwakeServiceOptions } from "./service-options";
 import { PREFIX_METADATA, CONSUMES_METADATA } from "./constants";
-import { logger } from "../logger";
+import { getLogger, logger } from "../logger";
+import { TwakeLogger } from "..";
 
 const pendingServices: any = {};
 
@@ -17,10 +18,12 @@ export abstract class TwakeService<T extends TwakeServiceProvider>
   readonly name: string;
   protected readonly configuration: TwakeServiceConfiguration;
   context: TwakeContext;
+  logger: TwakeLogger;
 
   constructor(protected options?: TwakeServiceOptions<TwakeServiceConfiguration>) {
     this.state = new BehaviorSubject<TwakeServiceState>(TwakeServiceState.Ready);
     this.configuration = options?.configuration;
+    this.logger = getLogger(`core.platform.services.${this.name}Service`);
   }
 
   abstract api(): T;

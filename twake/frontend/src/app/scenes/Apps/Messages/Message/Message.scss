@@ -27,6 +27,18 @@
       background-color: var(--grey-background);
       background-size: cover;
       background-position: center;
+
+      .online_user_status {
+        position: relative;
+        bottom: -20px;
+        right: -20px;
+      }
+    }
+    
+    .sender-head {
+      .user_online_stPPatus {
+        right: -20px;
+      }
     }
   }
   .message-content {

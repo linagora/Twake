@@ -2,6 +2,7 @@ import io from 'socket.io-client';
 import { EventEmitter } from 'events';
 import Logger from 'services/Logger';
 import { WebsocketEvents, WebSocketListener, WebsocketRoomActions } from './WebSocket';
+import { Maybe } from 'app/types';
 
 export type WebSocketOptions = {
   url: string;
@@ -222,6 +223,23 @@ class WebSocketService extends EventEmitter {
     if (this.socket) {
       this.socket.emit('realtime:event', { name, data });
     }
+  }
+
+  public async get<Request, Response>(route: string, request: Request, callback?: (response: Response) => void): Promise<Maybe<Response>> {
+    this.logger.debug(`Get ${route}`);
+
+    return new Promise<Maybe<Response>>(resolve => {
+      if (this.socket) {
+        this.socket.emit(route, { data: request }, (response: { data: Response }) => {
+          this.logger.trace('Got a socket ack');
+          const result = response.data;
+          callback && callback(result);
+          resolve(result);
+        });
+
+        return;
+      }
+    });
   }
 }
 

@@ -8,7 +8,7 @@ export type RealtimeResources<T> = {
   websockets: WebSocketResource[];
 };
 
-export type RealtimeEventAction = 'saved' | 'updated' | 'deleted';
+export type RealtimeEventAction = 'saved' | 'updated' | 'deleted' | 'event';
 
 export type RealtimeEvent<T, U> = {
   action: RealtimeEventAction;
