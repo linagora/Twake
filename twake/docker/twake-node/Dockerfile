@@ -51,6 +51,7 @@ RUN rm -R node_modules
 # Add frontend into node
 ENV NODE_ENV=development
 COPY frontend/package*.json public/
+RUN apt-get install -y build-essential
 RUN cd public && yarn install --network-timeout 1000000000
 RUN yarn global add webpack && yarn global add webpack-cli
 COPY frontend/* public/
