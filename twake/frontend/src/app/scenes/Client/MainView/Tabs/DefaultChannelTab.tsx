@@ -1,6 +1,5 @@
 import React from 'react';
 import RouterServices from 'app/services/RouterService';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Menu from 'components/Menus/Menu.js';
 import { MoreHorizontal, MessageCircle } from 'react-feather';
@@ -15,9 +14,13 @@ import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
-  const apps = WorkspacesApps.getApps().filter((app: any) => (app?.display || {}).channel);
+  const apps = getCompanyApplications(Groups.currentGroupId).filter(
+    (app: any) => (app?.display || {}).channel,
+  );
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
 
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;

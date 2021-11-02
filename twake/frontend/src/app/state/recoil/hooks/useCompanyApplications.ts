@@ -8,15 +8,23 @@ import { ToasterService as Toaster } from 'app/services/Toaster';
 import { CompanyApplicationsStateFamily } from '../atoms/CurrentCompanyApplications';
 import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
 import { Application } from 'app/models/App';
+import { useCurrentCompany } from './useCurrentCompany';
 
-const applications: Map<string, Application> = new Map();
-
+const _applications: Map<string, Application> = new Map();
 export function getApplication(applicationId: string) {
-  return applications.get(applicationId);
+  return _applications.get(applicationId);
+}
+
+const _companyApplications: Map<string, Application[]> = new Map();
+export function getCompanyApplications(companyId: string) {
+  return _companyApplications.get(companyId) || [];
 }
 
 const logger = Logger.getLogger('useCompanyApplications');
-export function useCompanyApplications(companyId: string) {
+export function useCompanyApplications(companyId: string = '') {
+  const [company] = useCurrentCompany();
+  companyId = companyId || company?.id || '';
+
   const [companyApplications, setCompanyApplications] = useRecoilState(
     CompanyApplicationsStateFamily(companyId),
   );
@@ -30,8 +38,9 @@ export function useCompanyApplications(companyId: string) {
       const res = await CompanyApplicationsAPIClient.list(companyId);
       if (res) {
         res.forEach(application => {
-          applications.set(application.id, application);
+          _applications.set(application.id, application);
         });
+        _companyApplications.set(companyId, res);
         setCompanyApplications(res);
       }
     } catch (e) {

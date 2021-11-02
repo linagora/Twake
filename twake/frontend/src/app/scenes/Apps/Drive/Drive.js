@@ -34,6 +34,8 @@ import DriveList from './Lists/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { NewFolderInput, NewLinkInput, NewFileInput } from './DriveEditors';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 export default class Drive extends Component {
   constructor() {
@@ -333,7 +335,7 @@ export default class Drive extends Component {
     }
 
     var externalStorageMenu = [];
-    WorkspacesApps.getApps()
+    getCompanyApplications(Groups.currentGroupId)
       .filter(app => ((app.display || {}).drive_module || {}).can_connect_to_directory)
       .map(app => {
         return externalStorageMenu.push({
@@ -369,7 +371,7 @@ export default class Drive extends Component {
     }
 
     var addableFilesMenu = [];
-    WorkspacesApps.getApps()
+    getCompanyApplications(Groups.currentGroupId)
       .filter(app => ((app.display || {}).drive_module || {}).can_create_files)
       .map(app => {
         return app.display.drive_module.can_create_files.map(info => {

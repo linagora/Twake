@@ -1,14 +1,16 @@
 import { ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
-import WorkspacesApps from 'services/workspaces/workspaces_apps';
+import Groups from 'services/workspaces/groups.js';
 import { Command } from './Command';
 import { getInsertRange } from '../../EditorUtils';
 import CommandSuggestion from './CommandSuggestion';
 import { EditorSuggestionPlugin } from '../';
+import { Application } from 'app/models/App';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 
 export type CommandSuggestionType = {
   command: string;
   description: string;
-  autocomplete_id: number;
+  autocomplete_id?: number;
 };
 
 export const CommandResourceType = 'COMMAND';
@@ -29,10 +31,10 @@ const resolver = (
 ) => {
   let commands: CommandSuggestionType[] = [];
 
-  WorkspacesApps.getApps().map((app: any) => {
+  getCompanyApplications(Groups.currentGroupId).map((app: Application) => {
     if (app) {
       commands = commands.concat(
-        (((app.display || {}).messages_module || {}).commands || []).map((c: any) => ({
+        (app.display?.twake?.chat?.commands || []).map(c => ({
           command: `/${app?.identity?.code} ${c.command}`,
           description: c.description,
         })),

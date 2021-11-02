@@ -11,7 +11,7 @@ import ModalManager from 'app/components/Modal/ModalManager';
 
 import Icon from 'components/Icon/Icon.js';
 import moment from 'moment';
-
+import Groups from 'services/workspaces/groups.js';
 import FullCalendar from './FullCalendar/FullCalendar.js';
 import EventDetails from './Modals/EventDetails.js';
 import EventCreation from './Modals/EventCreation.js';
@@ -32,7 +32,10 @@ import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/Works
 import UnconfiguredTab from './UnconfiguredTab.js';
 import RouterService from 'app/services/RouterService';
 import MainPlus from 'components/MainPlus/MainPlus.js';
-import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import {
+  getApplication,
+  getCompanyApplications,
+} from 'app/state/recoil/hooks/useCompanyApplications';
 
 const ExportView = props => {
   const [export_my_calendar, set_export_my_calendar] = useState(props.values.export_my_calendar);
@@ -334,9 +337,7 @@ export default class Calendar extends Component {
                   {
                     type: 'react-element',
                     reactElement: level => {
-                      var apps = WorkspacesApps.getApps().filter(
-                        app => ((app.display || {}).calendar_module || {}).can_connect_to_calendar,
-                      );
+                      var apps = getCompanyApplications(Groups.currentGroupId).filter(app => false);
                       if (apps.length > 0) {
                         return (
                           <ConnectorsListManager

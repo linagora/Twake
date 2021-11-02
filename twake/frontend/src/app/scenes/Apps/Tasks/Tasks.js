@@ -14,13 +14,14 @@ import Menu from 'components/Menus/Menu.js';
 import BoardEditor from './Board/BoardEditor.js';
 import MoreIcon from '@material-ui/icons/MoreHorizOutlined';
 import AlertManager from 'services/AlertManager/AlertManager';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 import Board from './Board/Board.js';
 
@@ -206,10 +207,8 @@ export default class Tasks extends Component {
                                 {
                                   type: 'react-element',
                                   reactElement: level => {
-                                    var apps = WorkspacesApps.getApps().filter(
-                                      app =>
-                                        ((app.display || {}).tasks_module || {})
-                                          .can_connect_to_tasks,
+                                    var apps = getCompanyApplications(Groups.currentGroupId).filter(
+                                      app => false,
                                     );
                                     if (apps.length > 0) {
                                       return (

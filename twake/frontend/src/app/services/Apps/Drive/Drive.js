@@ -4,7 +4,8 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LocalStorage from 'app/services/LocalStorage';
 import AceModeList from './utils/ace_modelist.js';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 import Globals from 'services/Globals';
 
@@ -514,7 +515,7 @@ class Drive extends Observable {
       });
     }
 
-    const apps = WorkspacesApps.getApps().filter(
+    const apps = getCompanyApplications(Groups.currentGroupId).filter(
       app => (((app || {}).display || {}).drive_module || {}).can_open_files,
     );
 

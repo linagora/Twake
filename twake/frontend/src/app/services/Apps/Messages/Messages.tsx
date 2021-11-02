@@ -20,6 +20,8 @@ import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 import { Message } from '../../../models/Message';
 import { Application } from 'app/models/App';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -133,7 +135,7 @@ class Messages extends Observable {
         let app: any = null;
         let app_name = value.split(' ')[0].slice(1);
         // eslint-disable-next-line array-callback-return
-        WorkspacesApps.getApps().map((_app: any) => {
+        getCompanyApplications(Groups.currentGroupId).map((_app: any) => {
           if (_app?.identity?.code === app_name) {
             app = _app;
           }
@@ -273,7 +275,7 @@ class Messages extends Observable {
       return;
     }
 
-    if ((((app.display || {}).messages_module || {}).in_plus || {}).should_wait_for_popup) {
+    if ((app as Application).display?.twake?.chat?.input) {
       WorkspacesApps.openAppPopup(app.id);
     }
 

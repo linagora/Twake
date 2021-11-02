@@ -2,13 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Application, AppType } from 'app/models/App';
 import { TabResource } from 'app/models/Tab';
 import { Button, Row, Input, Select } from 'antd';
+import Groups from 'services/workspaces/groups.js';
 
 import Icon from 'app/components/Icon/Icon';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Languages from 'services/languages/languages';
-import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import {
+  useCompanyApplications,
+  getCompanyApplications,
+} from 'app/state/recoil/hooks/useCompanyApplications';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
 
 const { Option } = Select;
@@ -32,7 +36,7 @@ export default (props: PropsType): JSX.Element => {
   }, []);
 
   const generateWorkspacesApps = () => {
-    const apps: AppType[] = WorkspacesApps.getApps();
+    const apps: AppType[] = getCompanyApplications(Groups.currentGroupId);
     return setWorkspacesApps(apps);
   };
 
