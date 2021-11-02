@@ -19,6 +19,7 @@ export type CompanyStatsObjectType = {
   created_at: number;
   total_members: number;
   total_guests: number;
+  total_messages: number;
   //Will be completed with Twake specific stats
 };
 
