@@ -204,11 +204,19 @@ export const importDepreciatedDisplayFields = (
 
   if (depreciatedDisplay?.drive_module) {
     display.twake.files = {
-      preview: undefined, //TODO update new format to handle file edition etc
+      editor: undefined, //TODO update new format to handle file edition etc
       actions: [],
     };
 
-    //TODO update new format to handle file edition etc
+    display.twake.files.editor = {
+      preview_url: depreciatedDisplay?.drive_module?.can_open_files?.preview_url,
+      edition_url: depreciatedDisplay?.drive_module?.can_open_files?.url,
+      extensions: [
+        ...(depreciatedDisplay?.drive_module?.can_open_files?.main_ext || []),
+        ...(depreciatedDisplay?.drive_module?.can_open_files?.other_ext || []),
+      ],
+      empty_files: (depreciatedDisplay?.drive_module?.can_create_files as any) || [],
+    };
   }
 
   if (depreciatedDisplay?.messages_module) {

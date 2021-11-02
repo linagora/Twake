@@ -516,22 +516,24 @@ class Drive extends Observable {
     }
 
     const apps = getCompanyApplications(Groups.currentGroupId).filter(
-      app => (((app || {}).display || {}).drive_module || {}).can_open_files,
+      app =>
+        app.display?.twake?.files?.editor?.preview_url ||
+        app.display?.twake?.files?.editor?.edition_url,
     );
 
     //Primary exts
     apps.forEach(app => {
       if (
-        ((app.display.drive_module.can_open_files || {}).main_ext || []).indexOf(
+        (app.display?.twake?.files?.editor?.extensions || []).indexOf(
           ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase(),
         ) >= 0
       ) {
-        if ((app.display.drive_module.can_open_files || {}).url) {
+        if (app.display?.twake?.files?.editor?.edition_url) {
           editor_candidate.push(app);
         }
-        if ((app.display.drive_module.can_open_files || {}).preview_url) {
+        if (app.display?.twake?.files?.editor?.preview_url) {
           preview_candidate.push({
-            url: (app.display.drive_module.can_open_files || {}).preview_url,
+            url: app.display?.twake?.files?.editor?.preview_url,
             app: app,
           });
         }
@@ -581,16 +583,16 @@ class Drive extends Observable {
     //Secondary ext
     apps.forEach(app => {
       if (
-        ((app.display.drive_module.can_open_files || {}).other_ext || []).indexOf(
+        (app.display?.twake?.files?.editor?.extensions || []).indexOf(
           ((current.extension || '') + (current.url ? '.url' : '')).toLocaleLowerCase(),
         ) >= 0
       ) {
-        if ((app.display.drive_module.can_open_files || {}).url) {
+        if (app.display?.twake?.files?.editor?.edition_url) {
           editor_candidate.push(app);
         }
-        if ((app.display.drive_module.can_open_files || {}).preview_url) {
+        if (app.display?.twake?.files?.editor?.preview_url) {
           preview_candidate.push({
-            url: (app.display.drive_module.can_open_files || {}).preview_url,
+            url: app.display?.twake?.files?.editor?.preview_url,
             app: app,
           });
         }

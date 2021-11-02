@@ -4,39 +4,23 @@
  */
 export type AppType = { [key: string]: any };
 
-/**
- * Preview file (full screen or inline)
- */
-export type FilePluginPreview = {
-  /**
-   * Url to preview file (full screen or inline)
-   */
-  url: string;
-  inline: boolean;
-
-  /**
-   * Main extensions app can read
-   * @example ['docx', 'xlsx']
-   */
-  main_ext: string[];
-
-  /**
-   * Secondary extensions app can read
-   * @example ['txt', 'html']
-   */
-  other_ext: string[];
-};
-
 export type PluginAction = {
   name: string;
   id: string;
 };
 
 export type FilePlugin = {
-  /**
-   * Preview file (full screen or inline)
-   */
-  preview?: FilePluginPreview;
+  editor?: {
+    preview_url: string; //Open a preview inline (iframe)
+    edition_url: string; //Url to edit the file (full screen)
+    extensions?: string[]; //Main extensions app can read
+    // if file was created by the app, then the app is able to edit with or without extension
+    empty_files?: {
+      url: string; // "https://[...]/empty.docx";
+      filename: string; // "Untitled.docx";
+      name: string; // "Word Document";
+    }[];
+  };
 
   /**
    * List of action that can apply on a file

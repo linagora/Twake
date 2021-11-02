@@ -336,7 +336,7 @@ export default class Drive extends Component {
 
     var externalStorageMenu = [];
     getCompanyApplications(Groups.currentGroupId)
-      .filter(app => ((app.display || {}).drive_module || {}).can_connect_to_directory)
+      .filter(app => false)
       .map(app => {
         return externalStorageMenu.push({
           type: 'menu',
@@ -372,9 +372,9 @@ export default class Drive extends Component {
 
     var addableFilesMenu = [];
     getCompanyApplications(Groups.currentGroupId)
-      .filter(app => ((app.display || {}).drive_module || {}).can_create_files)
+      .filter(app => app.display?.twake?.files?.editor?.empty_files?.length)
       .map(app => {
-        return app.display.drive_module.can_create_files.map(info => {
+        return app.display?.twake?.files?.editor?.empty_files.map(info => {
           return addableFilesMenu.push({
             type: 'menu',
             emoji: info.icon || app.identity?.icon,
@@ -641,25 +641,6 @@ export default class Drive extends Component {
         ],
       },
     ];
-
-    if (
-      !DriveService.current_directory_channels[this.drive_channel].parent_id &&
-      WorkspaceUserRights.hasWorkspacePrivilege()
-    ) {
-      plus_menu = plus_menu.concat([
-        { type: 'separator' },
-        {
-          type: 'menu',
-          icon: 'database',
-          text: Languages.t(
-            'scenes.apps.drive.new_external_storage',
-            [],
-            'Ajouter un stockage externe',
-          ),
-          submenu: externalStorageMenu,
-        },
-      ]);
-    }
 
     list.push(
       <div className={'drive_app drive_view list'}>
