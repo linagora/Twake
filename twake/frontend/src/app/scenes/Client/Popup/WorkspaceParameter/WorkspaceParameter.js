@@ -15,7 +15,6 @@ import WorkspaceService from 'services/workspaces/workspaces.js';
 import MenuList from 'components/Menus/MenuComponent.js';
 import InitService from 'app/services/InitService';
 import ConsoleService from 'app/services/Console/ConsoleService';
-import WorkspaceApps from './Pages/WorkspaceApps.js';
 
 import './WorkspaceParameter.scss';
 

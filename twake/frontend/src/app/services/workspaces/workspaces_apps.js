@@ -33,46 +33,6 @@ class WorkspacesApps extends Observable {
     this.loading_by_workspace = {};
   }
 
-  getApps() {
-    var workspace_apps_channels = Collections.get('channels').findBy({
-      direct: false,
-      application: true,
-      original_workspace: Workspaces.currentWorkspaceId,
-    });
-
-    var workspace_apps = workspace_apps_channels
-      .filter(channel => channel)
-      .filter(
-        channel =>
-          channel.app_id &&
-          channel.members &&
-          channel.members.length &&
-          (channel.members || []).concat(channel.ext_members || []).indexOf(CurrentUser.get().id) >=
-            0,
-      )
-      .map(ch => {
-        return getApplication(ch.app_id);
-      });
-
-    return workspace_apps.filter(a => a);
-  }
-
-  getApp(id, callback = undefined) {
-    if (this.findingApp[id]) {
-      return;
-    }
-
-    this.findingApp[id] = true;
-
-    Api.post('/ajax/market/app/find', { id: id }, res => {
-      if (res.data) {
-        Collections.get('applications').updateObject(res.data);
-        this.findingApp[id] = false;
-        if (callback) callback(res.data);
-      }
-    });
-  }
-
   notifyApp(app_id, type, event, data, workspace_id = undefined, group_id = undefined) {
     workspace_id = workspace_id || Workspaces.currentWorkspaceId;
     group_id = group_id || Workspaces.currentGroupId;
@@ -180,45 +140,6 @@ class WorkspacesApps extends Observable {
     } else if (res.type === 'remove') {
       delete this.apps_by_workspace[res.workspace_app.workspace_id][res.workspace_app.app.id];
     }
-    this.notify();
-  }
-
-  activateApp(id) {
-    var data = {
-      workspace_id: Workspaces.currentWorkspaceId,
-      app_id: id,
-    };
-
-    if (
-      this.apps_by_group[Groups.currentGroupId] &&
-      this.apps_by_group[Groups.currentGroupId][id]
-    ) {
-      this.apps_by_workspace[Workspaces.currentWorkspaceId][id] =
-        this.apps_by_group[Groups.currentGroupId][id].app;
-    }
-
-    Api.post('/ajax/workspace/apps/enable', data, function (res) {});
-
-    this.notify();
-  }
-
-  desactivateApp(id) {
-    var data = {
-      workspace_id: Workspaces.currentWorkspaceId,
-      app_id: id,
-    };
-
-    if (this.apps_by_workspace[Workspaces.currentWorkspaceId]) {
-      delete this.apps_by_workspace[Workspaces.currentWorkspaceId][id];
-    }
-    if (this.apps_by_group[Groups.currentGroupId]) {
-      delete this.apps_by_group[Groups.currentGroupId][id];
-
-      this.loadGroupApps();
-    }
-
-    Api.post('/ajax/workspace/apps/disable', data, function (res) {});
-
     this.notify();
   }
 

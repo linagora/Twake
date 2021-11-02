@@ -520,19 +520,18 @@ export default class MessagesList extends React.Component<Props, State> {
 
                 return (
                   <div>
-                    {message.id}{' '}
-                    {/*<Message
-                    deleted={deleted}
-                    noReplies={deleted}
-                    key={message.id || message.front_id}
-                    messageId={message.id || message.front_id || ''}
-                    threadHeader={this.props.threadId}
-                    previousMessageId={this.getPreviousMessage(message)?.id || ''}
-                    unreadAfter={this.props.unreadAfter}
-                    highlighted={highlight}
-                    collectionKey={this.props.collectionKey}
-                    repliesAsLink={!this.props.threadId}
-                  />*/}
+                    <Message
+                      deleted={deleted}
+                      noReplies={deleted}
+                      key={message.id || message.front_id}
+                      messageId={message.id || message.front_id || ''}
+                      threadHeader={this.props.threadId}
+                      previousMessageId={this.getPreviousMessage(message)?.id || ''}
+                      unreadAfter={this.props.unreadAfter}
+                      highlighted={highlight}
+                      collectionKey={this.props.collectionKey}
+                      repliesAsLink={!this.props.threadId}
+                    />
                   </div>
                 );
               }}

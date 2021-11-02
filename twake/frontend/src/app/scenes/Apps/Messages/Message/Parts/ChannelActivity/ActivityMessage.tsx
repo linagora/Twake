@@ -158,7 +158,6 @@ export default (props: PropsType): JSX.Element => {
   const channelTabCreatedOrDeleted = (activity: ActivityType) => {
     if (activity.context.array) {
       const resource = activity.context.array[0].resource as TabType;
-      // WorkspaceApps.getApp() doesn't work
       const connector = getCompanyApplications(Groups.currentGroupId).filter(
         (app: any) => app.id === resource.application_id,
       );
@@ -202,7 +201,6 @@ export default (props: PropsType): JSX.Element => {
   const channelConnectorCreatedOrDeleted = (activity: ActivityType) => {
     if (activity.context.array) {
       const resource = activity.context.array[0].resource as ChannelType;
-      // WorkspaceApps.getApp() doesn't work
       const connector = getCompanyApplications(Groups.currentGroupId).filter((app: any) =>
         resource.connectors?.includes(app.id),
       );

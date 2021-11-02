@@ -11,13 +11,13 @@ import { Application } from 'app/models/App';
 import { useCurrentCompany } from './useCurrentCompany';
 
 const _applications: Map<string, Application> = new Map();
-export function getApplication(applicationId: string) {
-  return _applications.get(applicationId);
+export function getApplication(applicationId?: string) {
+  return _applications.get(applicationId || '');
 }
 
 const _companyApplications: Map<string, Application[]> = new Map();
-export function getCompanyApplications(companyId: string) {
-  return _companyApplications.get(companyId) || [];
+export function getCompanyApplications(companyId?: string) {
+  return _companyApplications.get(companyId || '') || [];
 }
 
 const logger = Logger.getLogger('useCompanyApplications');

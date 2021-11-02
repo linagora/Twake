@@ -32,8 +32,10 @@ export const getSender = (message: Message | undefined) => {
       //App message
       var app = getApplication(message.application_id || '');
       if (!app?.id) {
-        WorkspacesApps.getApp(message.application_id);
-      } else {
+        app = getApplication(message.application_id || '');
+      }
+
+      if (app?.id) {
         senderData = {
           type: 'app',
           application: app,
