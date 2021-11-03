@@ -165,7 +165,7 @@
     "minimongo": "^6.9.0",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
-    "node-sass": "^5.0.0",
+    "node-sass": "^6.0.1",
     "oidc-client": "^1.11.5",
     "oidc-react": "^1.5.1",
     "optimize-css-assets-webpack-plugin": "5.0.3",
