@@ -50,16 +50,16 @@ RUN rm -R node_modules
 
 # Add frontend into node
 ENV NODE_ENV=development
-COPY frontend/package*.json public/
+COPY frontend/package*.json public_build/
 RUN apt-get install -y build-essential
-RUN cd public && yarn install --network-timeout 1000000000
+RUN cd public_build && yarn install --network-timeout 1000000000
 RUN yarn global add webpack && yarn global add webpack-cli
-COPY frontend/ public/
-RUN cp public/src/app/environment/environment.ts.dist public/src/app/environment/environment.ts
+COPY frontend/ public_build/
+RUN cp public_build/src/app/environment/environment.ts.dist public_build/src/app/environment/environment.ts
 ENV NODE_ENV=${NODE_ENV}
-RUN cd public && yarn build
-RUN cd public && rm -R node_modules
-RUN mv public/build/* public/
+RUN cd public_build && yarn build
+RUN cd public_build && rm -R node_modules
+RUN mv public_build/build public; rm -R public_build
 
 EXPOSE 3000
 
