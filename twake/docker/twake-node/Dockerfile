@@ -54,7 +54,8 @@ COPY frontend/package*.json public/
 RUN apt-get install -y build-essential
 RUN cd public && yarn install --network-timeout 1000000000
 RUN yarn global add webpack && yarn global add webpack-cli
-COPY frontend/* public/
+COPY frontend/ public/
+RUN ls -l public
 RUN cp public/src/app/environment/environment.ts.dist public/src/app/environment/environment.ts
 ENV NODE_ENV=${NODE_ENV}
 RUN cd public && yarn build

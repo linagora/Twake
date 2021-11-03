@@ -1,7 +1,8 @@
 export default {
   env_dev: true,
+  env_dev_auth: 'internal',
   sentry_dsn: false,
-  front_root_url: 'http://localhost:3000',
-  api_root_url: 'http://localhost:8000',
-  websocket_url: 'ws://localhost:8000'
+  front_root_url: (document.location.protocol || "http") + '//' + document.location.host,
+  api_root_url: (document.location.protocol || "http") + '//' + document.location.host,
+  websocket_url: (document.location.protocol || "http").replace("http", "ws") + '//' + document.location.host
 };
