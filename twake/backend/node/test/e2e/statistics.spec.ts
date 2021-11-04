@@ -1,6 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-import { beforeAll, describe, expect, it } from "@jest/globals";
+import { beforeAll, beforeEach, afterAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "./setup";
 
 import { v1 as uuidv1 } from "uuid";
@@ -16,7 +14,7 @@ import { deserialize } from "class-transformer";
 import { WorkspaceExecutionContext } from "../../src/services/channels/types";
 import { ChannelUtils, get as getChannelUtils } from "./channels/utils";
 import { StatisticsAPI } from "../../src/services/statistics/types";
-import { ResourceUpdateResponse } from "../../src/utils/types";
+import { ResourceUpdateResponse, User } from "../../src/utils/types";
 
 describe("Statistics implementation", () => {
   let platform: TestPlatform;
@@ -29,8 +27,6 @@ describe("Statistics implementation", () => {
       services: ["database", "statistics", "webserver", "auth"],
     });
 
-    await platform.database.getConnector().drop();
-
     statisticsAPI = platform.platform.getProvider<StatisticsAPI>("statistics");
     expect(statisticsAPI).toBeTruthy();
 
@@ -38,8 +34,14 @@ describe("Statistics implementation", () => {
     channelUtils = getChannelUtils(platform);
   });
 
-  afterAll(done => {
-    platform.tearDown().then(done);
+  beforeEach(async ends => {
+    await platform.database.getConnector().drop();
+    ends();
+  });
+
+  afterAll(async done => {
+    await platform.tearDown();
+    done();
   });
 
   it("Check statistics counters", async done => {
