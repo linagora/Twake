@@ -45,6 +45,10 @@ describe("Statistics implementation", () => {
   });
 
   it("Check statistics counters", async done => {
+    console.log(await statisticsAPI.get(undefined, "counter-test"));
+
+    expect(await statisticsAPI.get(undefined, "counter-test")).toEqual(0);
+
     await statisticsAPI.increase(platform.workspace.company_id, "counter-test");
     await statisticsAPI.increase(platform.workspace.company_id, "counter-test");
     const secondCompanyId = uuidv1();
