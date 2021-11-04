@@ -131,7 +131,19 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
           pagination,
           company.id,
         );
-        directChannels = [...directChannels, ...page.getEntities()] as Channel[];
+        for (const channel of page.getEntities()) {
+          const channelDetail = await channelService.channels.get(
+            {
+              company_id: channel.company_id,
+              id: channel.channel_id,
+            },
+            {
+              user: { id: "", server_request: true },
+              workspace: { workspace_id: workspace.id, company_id: company.id },
+            },
+          );
+          directChannels.push(channelDetail);
+        }
         pagination = page.nextPage as Pagination;
       } while (pagination.page_token);
 

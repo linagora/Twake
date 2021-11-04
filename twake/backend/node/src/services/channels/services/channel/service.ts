@@ -500,7 +500,6 @@ export class Service implements ChannelService {
       users: DirectChannel.getUsersAsString(users),
     });
 
-    // TODO map
     return directChannel;
   }
 
