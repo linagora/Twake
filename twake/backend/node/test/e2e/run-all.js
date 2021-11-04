@@ -16,7 +16,6 @@ function exec(command, args) {
     });
 
     cmd.stderr.on("data", function (data) {
-      data += data.toString() + "\n";
       error += data.toString() + "\n";
     });
 
@@ -45,7 +44,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
 
   for (const path of srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
-    const args = `${testName} --forceExit --coverage --runInBand --testTimeout=60000 --verbose false`;
+    const args = `${testName} --forceExit --coverage --runInBand --testTimeout=60000 --verbose`;
     try {
       const out = await exec("jest", args.split(" "));
       if (out.code !== 0) {
