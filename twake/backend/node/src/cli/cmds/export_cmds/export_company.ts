@@ -136,6 +136,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
           const channelDetail = await channelService.channels.get(
             {
               company_id: channel.company_id,
+              workspace_id: "direct",
               id: channel.channel_id,
             },
             {
