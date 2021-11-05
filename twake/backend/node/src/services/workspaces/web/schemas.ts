@@ -281,3 +281,28 @@ export const deleteWorkspacePendingUsersSchema = {
     "204": {},
   },
 };
+
+const workspaceInviteTokenObjectSchema = {
+  type: "object",
+  properties: {
+    token: { type: "string" },
+  },
+};
+
+export const getWorkspaceInviteTokenSchema = {
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resource: workspaceInviteTokenObjectSchema,
+      },
+      required: ["resource"],
+    },
+  },
+};
+
+export const deleteWorkspaceInviteTokenSchema = {
+  response: {
+    "204": {},
+  },
+};

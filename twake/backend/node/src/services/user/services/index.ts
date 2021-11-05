@@ -23,13 +23,15 @@ import User from "../entities/user";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../applications/api";
 import { StatisticsAPI } from "../../statistics/types";
+import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 
 export function getService(
   platformServices: PlatformServicesAPI,
   applications: ApplicationServiceAPI,
   statistics: StatisticsAPI,
+  auth: AuthServiceAPI,
 ): UserServiceAPI {
-  return new Service(platformServices, applications, statistics);
+  return new Service(platformServices, applications, statistics, auth);
 }
 
 class Service implements UserServiceAPI {
@@ -43,6 +45,7 @@ class Service implements UserServiceAPI {
     platformServices: PlatformServicesAPI,
     readonly applications: ApplicationServiceAPI,
     readonly statistics: StatisticsAPI,
+    readonly auth: AuthServiceAPI,
   ) {
     this.users = getUserService(platformServices);
     this.external = getExternalService(platformServices.database);
@@ -52,6 +55,7 @@ class Service implements UserServiceAPI {
       this.users,
       this.companies,
       this.applications,
+      auth,
     );
   }
 

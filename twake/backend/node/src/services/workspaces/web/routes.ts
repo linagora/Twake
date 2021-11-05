@@ -3,8 +3,10 @@ import { WorkspacesCrudController } from "./controllers/workspaces";
 import {
   createWorkspaceSchema,
   createWorkspaceUserSchema,
+  deleteWorkspaceInviteTokenSchema,
   deleteWorkspacePendingUsersSchema,
   deleteWorkspaceUserSchema,
+  getWorkspaceInviteTokenSchema,
   getWorkspacePendingUsersSchema,
   getWorkspaceSchema,
   getWorkspacesSchema,
@@ -18,11 +20,14 @@ import {
 import WorkspaceServicesAPI from "../api";
 import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { WorkspaceUsersCrudController } from "./controllers/workspace-users";
-import { hasWorkspaceAdminLevel } from "../../../utils/workspace";
+import { hasWorkspaceAdminLevel, hasWorkspaceMemberLevel } from "../../../utils/workspace";
+import { WorkspaceInviteTokensCrudController } from "./controllers/workspace-invite-tokens";
+import WorkspaceUser from "../entities/workspace_user";
 
 const workspacesUrl = "/companies/:company_id/workspaces";
-const workspaceUsersUrl = "/companies/:company_id/workspaces/:workspace_id/users";
 const workspacePendingUsersUrl = "/companies/:company_id/workspaces/:workspace_id/pending";
+const workspaceUsersUrl = "/companies/:company_id/workspaces/:workspace_id/users";
+const workspaceInviteTokensUrl = "/companies/:company_id/workspaces/:workspace_id/users/tokens";
 
 const routes: FastifyPluginCallback<{
   service: WorkspaceServicesAPI;
@@ -38,6 +43,8 @@ const routes: FastifyPluginCallback<{
     options.service.users,
     options.service.console,
   );
+
+  const workspaceInviteTokensController = new WorkspaceInviteTokensCrudController(options.service);
 
   const accessControl = async () => {
     // TODO
@@ -76,24 +83,43 @@ const routes: FastifyPluginCallback<{
     }
   };
 
-  const checkUserIsWorkspaceAdmin = async (
+  const checkUserWorkspace = async (
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
-  ) => {
+  ): Promise<WorkspaceUser> => {
+    const companyId = request.params.workspace_id;
     const workspaceId = request.params.workspace_id;
     const userId = request.currentUser.id;
     const workspaceUser = await options.service.workspaces.getUser({ workspaceId, userId });
+
     if (!workspaceUser) {
       const workspace = await options.service.workspaces.get({
-        company_id: request.params.company_id,
-        id: request.params.workspace_id,
+        company_id: companyId,
+        id: workspaceId,
       });
       if (!workspace) {
         throw fastify.httpErrors.notFound(`Workspace ${workspaceId} not found`);
       } else {
         throw fastify.httpErrors.forbidden("Not member of the workspace");
       }
-    } else if (!hasWorkspaceAdminLevel(workspaceUser.role)) {
+    }
+    return workspaceUser;
+  };
+
+  const checkUserIsWorkspaceAdmin = async (
+    request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
+  ) => {
+    const workspaceUser = await checkUserWorkspace(request);
+    if (!hasWorkspaceAdminLevel(workspaceUser.role)) {
       throw fastify.httpErrors.forbidden("Only workspace moderator can perform this action");
+    }
+  };
+
+  const checkUserIsWorkspaceMember = async (
+    request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
+  ) => {
+    const workspaceUser = await checkUserWorkspace(request);
+    if (!hasWorkspaceMemberLevel(workspaceUser.role)) {
+      throw fastify.httpErrors.forbidden("Only workspace members can perform this action");
     }
   };
 
@@ -211,6 +237,33 @@ const routes: FastifyPluginCallback<{
     preValidation: [fastify.authenticate],
     schema: getWorkspacePendingUsersSchema,
     handler: workspaceUsersController.listPending.bind(workspaceUsersController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: `${workspaceInviteTokensUrl}`,
+    preHandler: [accessControl, companyCheck, checkUserIsWorkspaceMember],
+    preValidation: [fastify.authenticate],
+    schema: getWorkspaceInviteTokenSchema,
+    handler: workspaceInviteTokensController.get.bind(workspaceInviteTokensController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: `${workspaceInviteTokensUrl}`,
+    preHandler: [accessControl, companyCheck, checkUserIsWorkspaceMember],
+    preValidation: [fastify.authenticate],
+    schema: getWorkspaceInviteTokenSchema,
+    handler: workspaceInviteTokensController.save.bind(workspaceInviteTokensController),
+  });
+
+  fastify.route({
+    method: "DELETE",
+    url: `${workspaceInviteTokensUrl}/:token`,
+    preHandler: [accessControl, companyCheck, checkUserIsWorkspaceMember],
+    preValidation: [fastify.authenticate],
+    schema: deleteWorkspaceInviteTokenSchema,
+    handler: workspaceInviteTokensController.delete.bind(workspaceInviteTokensController),
   });
 
   next();
