@@ -23,16 +23,16 @@ import LoginService from 'app/services/login/LoginService';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
-import useRouteState from 'app/services/hooks/useRouteState';
 import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
 
 import './Client.scss';
+import useRouterCompany from 'app/services/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
 
 export default (): JSX.Element => {
-  const { companyId, workspaceId } = useRouteState(({ companyId, workspaceId }) => ({
-    companyId,
-    workspaceId,
-  }));
+  
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const user = useCurrentUser();
 

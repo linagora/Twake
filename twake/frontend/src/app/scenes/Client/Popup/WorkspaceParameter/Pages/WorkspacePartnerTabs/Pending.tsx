@@ -6,8 +6,9 @@ import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights'
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import { ColumnsType } from 'antd/lib/table';
 import Api from 'app/services/Api';
-import RouterServices from 'services/RouterService';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
+import useRouterCompany from 'app/services/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
 
 type PendingEmailResourceType = {
   company_role: string;
@@ -18,7 +19,8 @@ type PendingEmailResourceType = {
 type ColumnObjectType = { key: number } & PendingEmailResourceType;
 
 export default (props: { filter: string }) => {
-  const { workspaceId, companyId } = RouterServices.useRouteState();
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
   const prefixRoute = '/internal/services/workspaces/v1';
   const DEFAULT_PAGE_SIZE = 5;
 
