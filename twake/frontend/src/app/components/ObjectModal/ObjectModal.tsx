@@ -1,7 +1,11 @@
 import React, { FC } from 'react';
+
+import classNames from 'classnames';
 import { Divider, Layout, Typography, Col, Row } from 'antd';
+
 import ModalManager from 'app/components/Modal/ModalManager';
 import Icon from 'components/Icon/Icon.js';
+
 import './ObjectModal.scss';
 
 type PropsType = {
@@ -20,12 +24,18 @@ type PropsType = {
   colTitleStyle?: React.CSSProperties;
   contentStyle?: React.CSSProperties;
   titleTypographyStyle?: React.CSSProperties;
+  className?: string;
+  footerDividerStyle?: React.CSSProperties;
 };
 
 const { Header, Content, Footer } = Layout;
 const ObjectModal: FC<PropsType> = (props: PropsType) => {
   return (
-    <Layout className="modal-layout" hasSider={false} style={props.style || {}}>
+    <Layout
+      className={classNames('modal-layout', props.className)}
+      hasSider={false}
+      style={props.style || {}}
+    >
       <Header className="modal-layout-header" style={props.headerStyle || {}}>
         <Row justify="space-between" align="middle" className="modal-layout-row" wrap={false}>
           {props.titleCenter && <Col style={{ width: 32 }}></Col>}
@@ -60,7 +70,9 @@ const ObjectModal: FC<PropsType> = (props: PropsType) => {
       {props.children && <Content style={props.contentStyle}>{props.children}</Content>}
       {props.footer && (
         <Footer className="modal-layout-footer">
-          {!props.hideFooterDivider && <Divider className="y-margin" />}
+          {!props.hideFooterDivider && (
+            <Divider className="y-margin" style={props.footerDividerStyle} />
+          )}
           <Row align="middle" justify={props.footerAlign || 'end'}>
             <Col
               style={{

@@ -92,7 +92,17 @@ const ChannelWorkspaceEditor: FC<Props> = ({
       if (resource) {
         MainViewService.select(resource.id, {
           collection: ChannelsCollections,
-          app: { simple_name: 'messages' },
+          app: {
+            identity: {
+              code: 'messages',
+              name: '',
+              icon: '',
+              description: '',
+              website: '',
+              categories: [],
+              compatibility: [],
+            },
+          },
           context: null,
           hasTabs: false,
         });

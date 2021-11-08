@@ -68,6 +68,7 @@ export function getInstance(message: Application): Application {
 }
 
 type ApplicationIdentity = {
+  code: string;
   name: string;
   icon: string;
   description: string;
@@ -93,10 +94,19 @@ type ApplicationApi = {
   privateKey: string;
 };
 
+type ApplicationScopes =
+  | "files"
+  | "applications"
+  | "workspaces"
+  | "users"
+  | "messages"
+  | "channels";
+
 type ApplicationAccess = {
-  privileges: string[];
-  capabilities: string[];
-  hooks: string[];
+  read: ApplicationScopes[];
+  write: ApplicationScopes[];
+  delete: ApplicationScopes[];
+  hooks: ApplicationScopes[];
 };
 
 type ApplicationDisplay = {
@@ -104,11 +114,16 @@ type ApplicationDisplay = {
     version: 1;
 
     files?: {
-      preview?: {
-        url: string; //Url to preview file (full screen or inline)
-        inline?: boolean;
-        main_ext?: string[]; //Main extensions app can read
-        other_ext?: string[]; //Secondary extensions app can read
+      editor?: {
+        preview_url: string; //Open a preview inline (iframe)
+        edition_url: string; //Url to edit the file (full screen)
+        extensions?: string[]; //Main extensions app can read
+        // if file was created by the app, then the app is able to edit with or without extension
+        empty_files?: {
+          url: string; // "https://[...]/empty.docx";
+          filename: string; // "Untitled.docx";
+          name: string; // "Word Document";
+        }[];
       };
       actions?: //List of action that can apply on a file
       {
@@ -145,14 +160,18 @@ type ApplicationDisplay = {
         };
 
     //Display app as a standalone application in a tab
-    tab?: {
-      url: string;
-    };
+    tab?:
+      | {
+          url: string;
+        }
+      | true;
 
     //Display app as a standalone application on the left bar
-    standalone?: {
-      url: string;
-    };
+    standalone?:
+      | {
+          url: string;
+        }
+      | true;
 
     //Define where the app can be configured from
     configuration?: ("global" | "channel")[];

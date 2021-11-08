@@ -4,10 +4,12 @@ import { FastifyInstance, fastify } from "fastify";
 import sensible from "fastify-sensible";
 import multipart from "fastify-multipart";
 import formbody from "fastify-formbody";
+import fastifyStatic from "fastify-static";
 import corsPlugin, { FastifyCorsOptions } from "fastify-cors";
 import { serverErrorHandler } from "./error";
 import WebServerAPI from "./provider";
 import jwtPlugin from "../auth/web/jwt";
+import path from "path";
 import swaggerPlugin from "fastify-swagger";
 import { SkipCLI } from "../../framework/decorators/skip";
 // import { throws } from "assert";
@@ -69,6 +71,11 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     this.server.register(multipart);
     this.server.register(formbody);
     this.server.register(corsPlugin, this.configuration.get<FastifyCorsOptions>("cors", {}));
+
+    const root = this.configuration.get<{ root: string }>("static", { root: "./public" }).root;
+    this.server.register(fastifyStatic, {
+      root: root.indexOf("/") === 0 ? root : path.join(__dirname + "/../../../../../", root),
+    });
 
     return this;
   }

@@ -33,12 +33,12 @@ export default class StatisticsService
     const now = new Date();
     const monthId = +(now.getFullYear() + now.getMonth().toString().padStart(2, "0")); // format 202108
 
-    return Promise.all([
-      this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, monthId, value),
-      this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, 0, value),
-      this.dbIncrement(companyId, eventName, monthId, value),
-      this.dbIncrement(companyId, eventName, 0, value),
-    ]).then(() => null);
+    //return Promise.all([
+    await this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, monthId, value);
+    await this.dbIncrement(STATISTICS_GLOBAL_KEY, eventName, 0, value);
+    await this.dbIncrement(companyId, eventName, monthId, value);
+    await this.dbIncrement(companyId, eventName, 0, value);
+    //]).then(() => null);
   }
 
   async get(companyId: string = STATISTICS_GLOBAL_KEY, eventName: string): Promise<number> {

@@ -21,8 +21,8 @@ services:
       - DB_CASSANDRA_KEYSPACE=twake
       - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
     build:
-      context: ./backend/node
-      dockerfile: ../../docker/twake-node/Dockerfile
+      context: .
+      dockerfile: ./docker/twake-node/Dockerfile
       target: development
     volumes:
       - ./backend/node:/usr/src/app

@@ -14,17 +14,20 @@ import Menu from 'components/Menus/Menu.js';
 import BoardEditor from './Board/BoardEditor.js';
 import MoreIcon from '@material-ui/icons/MoreHorizOutlined';
 import AlertManager from 'services/AlertManager/AlertManager';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 import Board from './Board/Board.js';
 
 import './Tasks.scss';
 import UserListManager from 'app/components/UserListManager/UserListManager';
+import RouterService from 'app/services/RouterService';
 
 export default class Tasks extends Component {
   constructor(props) {
@@ -36,23 +39,23 @@ export default class Tasks extends Component {
     Languages.addListener(this);
     TasksService.addListener(this);
     WorkspacesUsers.addListener(this);
+    const { workspaceId, channelId } = RouterService.getStateFromRoute();
+    if (workspaceId && channelId) {
+      this.boards_collection_key = 'boards_' + workspaceId;
 
-    this.boards_collection_key = 'boards_' + this.props.channel.data.workspace_id;
-
-    Collections.get('boards').addListener(this);
-    Collections.get('boards').addSource(
-      {
-        http_base_url: 'tasks/board',
-        http_options: {
-          channel_id: this.props.channel.id,
-          workspace_id: this.props.channel.data.workspace_id,
+      Collections.get('boards').addListener(this);
+      Collections.get('boards').addSource(
+        {
+          http_base_url: 'tasks/board',
+          http_options: {
+            channel_id: channelId,
+            workspace_id: workspaceId,
+          },
+          websockets: [{ uri: 'boards/' + workspaceId, options: { type: 'board' } }],
         },
-        websockets: [
-          { uri: 'boards/' + this.props.channel.data.workspace_id, options: { type: 'board' } },
-        ],
-      },
-      this.boards_collection_key,
-    );
+        this.boards_collection_key,
+      );
+    }
   }
 
   componentWillUnmount() {
@@ -204,17 +207,15 @@ export default class Tasks extends Component {
                                 {
                                   type: 'react-element',
                                   reactElement: level => {
-                                    var apps = WorkspacesApps.getApps().filter(
-                                      app =>
-                                        ((app.display || {}).tasks_module || {})
-                                          .can_connect_to_tasks,
+                                    var apps = getCompanyApplications(Groups.currentGroupId).filter(
+                                      app => false,
                                     );
                                     if (apps.length > 0) {
                                       return (
                                         <ConnectorsListManager
                                           list={apps}
                                           current={(board.connectors || [])
-                                            .map(id => Collections.get('applications').find(id))
+                                            .map(id => getApplication(id))
                                             .filter(item => item)}
                                           configurable={item =>
                                             ((item.display || {}).configuration || {})

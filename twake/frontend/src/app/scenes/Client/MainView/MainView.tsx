@@ -15,14 +15,15 @@ import './MainView.scss';
 
 type PropsType = {
   className?: string;
-}
+};
 
 const MainView: FC<PropsType> = ({ className }) => {
-  const { companyId, workspaceId, channelId } = useRouteState(({ companyId, workspaceId, channelId }) => ({ companyId, workspaceId, channelId }));
+  const { companyId, workspaceId, channelId } = useRouteState(
+    ({ companyId, workspaceId, channelId }) => ({ companyId, workspaceId, channelId }),
+  );
   const loaded = useWatcher(ChannelsBarService, () => {
     return (
       ChannelsBarService.isReady(companyId, workspaceId) &&
-      ChannelsBarService.isReady(companyId, workspaceId, ['applications']) &&
       ChannelsBarService.isReady(companyId, 'direct')
     );
   });
@@ -33,7 +34,7 @@ const MainView: FC<PropsType> = ({ className }) => {
   }
 
   return (
-    <Layout className={"global-view-layout "+(className ? className : "")}>
+    <Layout className={'global-view-layout ' + (className ? className : '')}>
       {!!channelId && ready && (
         <>
           <AccountStatusComponent />

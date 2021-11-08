@@ -9,7 +9,8 @@ import Languages from 'services/languages/languages';
 export default (): JSX.Element => {
   const { workspaceId } = RouterServices.getStateFromRoute();
 
-  if (!AccessRightsService.hasLevel(workspaceId, 'member')) {
+  //Disabled until search comes back
+  if (true || !AccessRightsService.hasLevel(workspaceId, 'member')) {
     return <></>;
   }
 

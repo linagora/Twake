@@ -8,7 +8,10 @@ import UserService from 'services/user/UserService';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import AccessRightsService from 'app/services/AccessRightsService';
+import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import RouterService from 'app/services/RouterService';
 
+// This should be deleted
 export default class ChannelsApps extends Component {
   constructor(props: any) {
     super(props);
@@ -36,67 +39,32 @@ export default class ChannelsApps extends Component {
     Collections.get('channels').addListener(this);
     Collections.get('applications').addListener(this);
     Languages.addListener(this);
+    WorkspacesApps.addListener(this);
   }
   componentWillUnmount() {
     Collections.get('channels').removeListener(this);
     Collections.get('applications').removeListener(this);
     Languages.removeListener(this);
+    WorkspacesApps.removeListener(this);
   }
   render() {
-    if (
-      Collections.get('channels').did_load_first_time[
-        'channels_' + Workspaces.currentWorkspaceId
-      ] ||
-      !AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member')
-    ) {
-      ChannelsBarService.collectionIsReady(
-        Workspaces.currentGroupId,
-        Workspaces.currentWorkspaceId,
-        ['applications'],
-      );
-    }
-
-    if (
-      !Collections.get('channels').did_load_first_time[
-        'channels_' + Workspaces.currentWorkspaceId
-      ] ||
-      AccessRightsService.getCompanyLevel(Workspaces.currentGroupId) === 'guest'
-    ) {
-      return <div />;
-    }
-
-    var workspace_apps_channels = Collections.get('channels').findBy({
-      direct: false,
-      application: true,
-      original_workspace: Workspaces.currentWorkspaceId,
-    });
-
-    workspace_apps_channels = workspace_apps_channels
-      .filter((channel: any) => channel)
-      .filter(
-        (channel: any) =>
-          channel.members &&
-          channel.members.length &&
-          (channel.members || [])
-            .concat(channel.ext_members || [])
-            .indexOf(UserService.getCurrentUserId()) >= 0,
-      );
-
-    const workspace_channels_by_app_id: any = {};
-    workspace_apps_channels.map((ch: any) => {
-      ch.app_id && (workspace_channels_by_app_id[ch.app_id] = ch);
-    });
+    //@ts-ignore
+    const apps = WorkspacesApps.apps_by_group[Workspaces.currentGroupId] || {};
 
     return (
       <div className="applications_channels" style={{ marginTop: 8 }}>
-        {Object.keys(workspace_channels_by_app_id).map(id => {
-          const channel = workspace_channels_by_app_id[id];
-          if (!channel) {
+        {Object.keys(apps).map(id => {
+          const groupApp = apps[id];
+          if (!groupApp) {
             return '';
           }
-          const app = Collections.get('applications').find(channel.app_id);
-          if (channel && !(!app || !(app.display || {}).app)) {
-            const name = Languages.t('app.name.' + app.simple_name, [], app.name);
+          const app = groupApp.app;
+          if (groupApp && !(!app || !(app.display || {}).app)) {
+            const name = Languages.t(
+              'app.identity?.name.' + app?.identity?.code,
+              [],
+              app.identity?.name,
+            );
             let icon = WorkspacesApps.getAppIcon(app);
             if ((icon || '').indexOf('http') === 0) {
               icon = '';
@@ -109,7 +77,7 @@ export default class ChannelsApps extends Component {
                 app={app}
                 name={name}
                 icon={icon}
-                id={channel.id}
+                id={app.id}
                 muted={false}
                 favorite={false}
                 visibility={'public'}
@@ -124,3 +92,34 @@ export default class ChannelsApps extends Component {
     );
   }
 }
+
+type PropsType = {
+  companyId: string;
+};
+
+export const CompanyApplications = ({ companyId }: PropsType) => {
+  const { companyApplications } = useCompanyApplications(companyId);
+  const { channelId } = RouterService.getStateFromRoute();
+  return (
+    <div className="applications_channels" style={{ marginTop: 8 }}>
+      {companyApplications
+        .filter(app => app.display?.twake?.standalone)
+        .map(app => (
+          <ChannelUI
+            key={app.id}
+            id={app.id}
+            channelId={channelId}
+            app={app}
+            name={app.identity.name}
+            icon={app.identity.icon}
+            muted={false}
+            favorite={false}
+            visibility={'public'}
+            unreadMessages={false}
+            notifications={0}
+            collection={Collections.get('channels')}
+          />
+        ))}
+    </div>
+  );
+};
