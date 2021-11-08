@@ -23,4 +23,4 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - run: cd twake/backend/node && docker build --target production -t twaketech/twake-node -f ../../docker/twake-node/Dockerfile .
+      - run: cd twake && docker build --target production -t twaketech/twake-node -f docker/twake-node/Dockerfile .

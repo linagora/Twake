@@ -98,9 +98,9 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "7",
-    "@sentry/node": "^6.11.0",
-    "@sentry/tracing": "^6.11.0",
-    "amqp-connection-manager": "^3.2.1",
+    "@sentry/node": "^6.13.3",
+    "@sentry/tracing": "^6.13.3",
+    "amqp-connection-manager": "^3.7.0",
     "amqplib": "^0.7.1",
     "analytics-node": "^5.0.0",
     "axios": "^0.21.3",

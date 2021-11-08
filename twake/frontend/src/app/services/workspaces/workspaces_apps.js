@@ -9,7 +9,7 @@ import Workspaces from './workspaces.js';
 import Globals from 'services/Globals';
 import Icon from 'app/components/Icon/Icon';
 import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 class WorkspacesApps extends Observable {
   constructor() {
@@ -31,46 +31,6 @@ class WorkspacesApps extends Observable {
     Globals.window.workspacesApps = this;
 
     this.loading_by_workspace = {};
-  }
-
-  getApps() {
-    var workspace_apps_channels = Collections.get('channels').findBy({
-      direct: false,
-      application: true,
-      original_workspace: Workspaces.currentWorkspaceId,
-    });
-
-    var workspace_apps = workspace_apps_channels
-      .filter(channel => channel)
-      .filter(
-        channel =>
-          channel.app_id &&
-          channel.members &&
-          channel.members.length &&
-          (channel.members || []).concat(channel.ext_members || []).indexOf(CurrentUser.get().id) >=
-            0,
-      )
-      .map(ch => {
-        return Collections.get('applications').find(ch.app_id);
-      });
-
-    return workspace_apps.filter(a => a);
-  }
-
-  getApp(id, callback = undefined) {
-    if (this.findingApp[id]) {
-      return;
-    }
-
-    this.findingApp[id] = true;
-
-    Api.post('/ajax/market/app/find', { id: id }, res => {
-      if (res.data) {
-        Collections.get('applications').updateObject(res.data);
-        this.findingApp[id] = false;
-        if (callback) callback(res.data);
-      }
-    });
   }
 
   notifyApp(app_id, type, event, data, workspace_id = undefined, group_id = undefined) {
@@ -103,19 +63,6 @@ class WorkspacesApps extends Observable {
     if (!options) {
       options = {};
     }
-
-    var group_id = Collections.get('workspaces').find(workspace_id).group.id;
-
-    if (!this.apps_by_group[group_id]) {
-      this.apps_by_group[group_id] = {};
-    }
-    if (!this.apps_by_workspace[workspace_id]) {
-      this.apps_by_workspace[workspace_id] = {};
-    }
-
-    ws.subscribe('workspace_apps/' + workspace_id, (route, res) => {
-      this.recieveWS(res);
-    });
 
     if (this.loading_by_workspace[workspace_id]) {
       return false;
@@ -166,6 +113,8 @@ class WorkspacesApps extends Observable {
             workspace_default: item.workspace_default,
             app: item.app,
           };
+          if (!this.apps_by_group) this.apps_by_group = {};
+          if (!this.apps_by_group[item.group_id]) this.apps_by_group[item.group_id] = {};
           this.apps_by_group[item.group_id][item.app.id] = app_link;
         });
 
@@ -191,45 +140,6 @@ class WorkspacesApps extends Observable {
     } else if (res.type === 'remove') {
       delete this.apps_by_workspace[res.workspace_app.workspace_id][res.workspace_app.app.id];
     }
-    this.notify();
-  }
-
-  activateApp(id) {
-    var data = {
-      workspace_id: Workspaces.currentWorkspaceId,
-      app_id: id,
-    };
-
-    if (
-      this.apps_by_group[Groups.currentGroupId] &&
-      this.apps_by_group[Groups.currentGroupId][id]
-    ) {
-      this.apps_by_workspace[Workspaces.currentWorkspaceId][id] =
-        this.apps_by_group[Groups.currentGroupId][id].app;
-    }
-
-    Api.post('/ajax/workspace/apps/enable', data, function (res) {});
-
-    this.notify();
-  }
-
-  desactivateApp(id) {
-    var data = {
-      workspace_id: Workspaces.currentWorkspaceId,
-      app_id: id,
-    };
-
-    if (this.apps_by_workspace[Workspaces.currentWorkspaceId]) {
-      delete this.apps_by_workspace[Workspaces.currentWorkspaceId][id];
-    }
-    if (this.apps_by_group[Groups.currentGroupId]) {
-      delete this.apps_by_group[Groups.currentGroupId][id];
-
-      this.loadGroupApps();
-    }
-
-    Api.post('/ajax/workspace/apps/disable', data, function (res) {});
-
     this.notify();
   }
 
@@ -298,8 +208,8 @@ class WorkspacesApps extends Observable {
   openAppPopup(app_id) {}
 
   getAppIcon(app, feather = false) {
-    if (app && app.simple_name) {
-      switch (app.simple_name.toLocaleLowerCase()) {
+    if (app && app?.identity?.code) {
+      switch (app?.identity?.code.toLocaleLowerCase()) {
         case 'twake_calendar':
           return feather ? Calendar : 'calendar-alt';
         case 'twake_drive':
@@ -307,19 +217,17 @@ class WorkspacesApps extends Observable {
         case 'twake_tasks':
           return feather ? CheckSquare : 'check-square';
         default:
-          return app.icon_url || (feather ? Hexagon : 'puzzle-piece');
+          return app.identity?.icon || (feather ? Hexagon : 'puzzle-piece');
       }
     }
     return feather ? Hexagon : 'puzzle-piece';
   }
 
   getAppIconComponent(item, options = {}) {
-    const application = DepreciatedCollections.get('applications').find(
-      item.application_id ? item.application_id : item.id,
-    );
+    const application = getApplication(item.application_id ? item.application_id : item.id);
     const IconType = this.getAppIcon(application, true);
 
-    if (item.simple_name === 'jitsi') {
+    if (item.code === 'jitsi') {
       return (
         <div
           className="menu-app-icon"

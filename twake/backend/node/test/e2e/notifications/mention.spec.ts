@@ -110,13 +110,11 @@ describe("The notification for user mentions", () => {
     const member3 = await joinChannel(uuidv1(), channel);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      if (message.data.message_id === messageId) {
-        expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
-        expect(message.data.mentions.users).toContain(member2.user_id);
-        expect(message.data.mentions.users).toContain(member3.user_id);
-        expect(message.data.mentions.users).not.toContain(unknownUser);
-        done();
-      }
+      expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
+      expect(message.data.mentions.users).toContain(member2.user_id);
+      expect(message.data.mentions.users).toContain(member3.user_id);
+      expect(message.data.mentions.users).not.toContain(unknownUser);
+      done();
     });
 
     pushMessage({
@@ -147,12 +145,10 @@ describe("The notification for user mentions", () => {
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.NONE);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      if (message.data.message_id === messageId) {
-        expect(message.data.mentions.users).not.toContain(member.user_id);
-        expect(message.data.mentions.users).toContain(member3.user_id);
-        expect(message.data.mentions.users).not.toContain(member2.user_id);
-        done();
-      }
+      expect(message.data.mentions.users).not.toContain(member.user_id);
+      expect(message.data.mentions.users).toContain(member3.user_id);
+      expect(message.data.mentions.users).not.toContain(member2.user_id);
+      done();
     });
 
     pushMessage({
@@ -183,12 +179,10 @@ describe("The notification for user mentions", () => {
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      if (message.data.message_id === messageId) {
-        expect(message.data.mentions.users).not.toContain(member.user_id);
-        expect(message.data.mentions.users).toContain(member2.user_id);
-        expect(message.data.mentions.users).not.toContain(member3.user_id);
-        done();
-      }
+      expect(message.data.mentions.users).not.toContain(member.user_id);
+      expect(message.data.mentions.users).toContain(member2.user_id);
+      expect(message.data.mentions.users).not.toContain(member3.user_id);
+      done();
     });
 
     pushMessage({
@@ -220,12 +214,10 @@ describe("The notification for user mentions", () => {
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      if (message.data.message_id === messageId) {
-        expect(message.data.mentions.users).not.toContain(member.user_id);
-        expect(message.data.mentions.users).toContain(member2.user_id);
-        expect(message.data.mentions.users).not.toContain(member3.user_id);
-        done();
-      }
+      expect(message.data.mentions.users).not.toContain(member.user_id);
+      expect(message.data.mentions.users).toContain(member2.user_id);
+      expect(message.data.mentions.users).not.toContain(member3.user_id);
+      done();
     });
 
     pushMessage({
@@ -256,12 +248,10 @@ describe("The notification for user mentions", () => {
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.ME);
 
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
-      if (message.data.message_id === messageId) {
-        expect(message.data.mentions.users).not.toContain(member.user_id);
-        expect(message.data.mentions.users).not.toContain(member3.user_id);
-        expect(message.data.mentions.users).toContain(member2.user_id);
-        done();
-      }
+      expect(message.data.mentions.users).not.toContain(member.user_id);
+      expect(message.data.mentions.users).not.toContain(member3.user_id);
+      expect(message.data.mentions.users).toContain(member2.user_id);
+      done();
     });
 
     pushMessage({

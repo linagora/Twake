@@ -5,7 +5,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout } from 'antd';
 
 import CurrentUser from './Parts/CurrentUser/CurrentUser';
-import ChannelsApps from './ChannelsApps/ChannelsApps';
+import ChannelsApps, { CompanyApplications } from './ChannelsApps/ChannelsApps';
 import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
 import ChannelsUser from './ChannelsUser/ChannelsUser';
 import Footer from './Parts/Footer.js';
@@ -85,18 +85,15 @@ export default () => {
     <Layout.Sider
       theme="light"
       width={220}
-      className={classNames(
-        'channels_view',
-        {
-          'loading': !ready,
-          'loading_render': !ready,
-        }
-      )}
+      className={classNames('channels_view', {
+        loading: !ready,
+        loading_render: !ready,
+      })}
       style={{ height: '100%' }}
     >
       <CurrentUser />
 
-      {!ready && <LoadingChannels/>}
+      {!ready && <LoadingChannels />}
 
       <ScrollWithHiddenComponents
         disabled={!ready}
@@ -105,7 +102,9 @@ export default () => {
         scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
       >
         <PerfectScrollbar options={{ suppressScrollX: true }}>
-          <ChannelsApps key={workspaceId} />
+          <React.Suspense fallback={<></>}>
+            <CompanyApplications companyId={companyId} />
+          </React.Suspense>
           <ChannelsWorkspace key={`workspace_chans_${workspaceId}`} />
           <ChannelsUser key={companyId} />
           {AccessRightsService.hasLevel(workspaceId, 'moderator') &&

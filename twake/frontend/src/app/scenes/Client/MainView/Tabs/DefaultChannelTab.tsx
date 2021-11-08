@@ -1,29 +1,33 @@
 import React from 'react';
 import RouterServices from 'app/services/RouterService';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Menu from 'components/Menus/Menu.js';
 import { MoreHorizontal, MessageCircle } from 'react-feather';
 import Languages from 'services/languages/languages';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from '../../Popup/WorkspaceParameter/WorkspaceParameter';
-import { AppType } from 'app/models/App';
+import { Application } from 'app/models/App';
 import { ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/ConnectorsListManager/ConnectorsListManager';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
-  const apps = WorkspacesApps.getApps().filter((app: any) => (app?.display || {}).channel);
+  const apps = getCompanyApplications(Groups.currentGroupId).filter(
+    (app: any) => (app?.display || {}).channel,
+  );
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
 
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelsCollections = Collections.get(collectionPath, ChannelResource);
   const channelResource: ChannelResource = channelsCollections.useWatcher({ id: channelId })[0];
 
-  const configureChannelConnector = (app: AppType): void => {
+  const configureChannelConnector = (app: Application): void => {
     return WorkspacesApps.notifyApp(app.id, 'configuration', 'channel', {
       channel: channelResource.data,
     });
@@ -37,9 +41,7 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
   const current = () => {
     return (
       isArray(channelResource.data.connectors) &&
-      channelResource.data.connectors.map((id: string) =>
-        DepreciatedCollections.get('applications').find(id),
-      )
+      channelResource.data.connectors.map((id: string) => getApplication(id))
     );
   };
 
@@ -49,7 +51,17 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
   if (selected) {
     MainViewService.select(MainViewService.getId(), {
       collection: MainViewService.getConfiguration().collection,
-      app: { simple_name: 'messages' },
+      app: {
+        identity: {
+          code: 'messages',
+          name: '',
+          icon: '',
+          description: '',
+          website: '',
+          categories: [],
+          compatibility: [],
+        },
+      },
       context: null,
       hasTabs: MainViewService.getConfiguration().hasTabs,
     });

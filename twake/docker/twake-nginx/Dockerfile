@@ -18,6 +18,7 @@ RUN cat /twake-react/src/app/environment/environment.ts.dist
 RUN cat /twake-react/src/app/environment/environment.ts
 ENV GENERATE_SOURCEMAP=false
 RUN yarn build
+RUN rm -R node_modules
 
 RUN cp /twake-react/src/app/environment/environment.ts.dist /environment.ts.dist
 

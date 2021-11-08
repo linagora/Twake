@@ -249,7 +249,7 @@ class WorkspacesUsers extends Observable {
         const deleteWorkspaceUser = `${prefixRoute}/companies/${
           workspaceService.currentGroupId
         }/workspaces/${workspaceService.currentWorkspaceId}/users/${User.getCurrentUserId()}`;
-        Api.delete(deleteWorkspaceUser, {}, (res: any) => {
+        Api.delete(deleteWorkspaceUser, (res: any) => {
           if (res.status == 'success') {
             window.location.reload();
           } else {

@@ -69,7 +69,7 @@ export default class Viewer extends Component<PropsType, StateType> {
       window.open(app.url);
     }
     DriveService.getFileUrlForEdition(
-      (((app.display || {}).drive_module || {}).can_open_files || {}).url,
+      app.display?.twake?.files?.editor?.edition_url,
       app,
       this.viewed_document.id,
       (url: string) => window.open(url),

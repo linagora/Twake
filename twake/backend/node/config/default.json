@@ -49,6 +49,9 @@
     },
     "cors": {
       "origin": "*"
+    },
+    "static": {
+      "root": "./public"
     }
   },
   "phpnode": {
@@ -142,6 +145,7 @@
     "tracker",
     "general",
     "user",
+    "applicationsapi",
     "applications",
     "channels",
     "notifications",

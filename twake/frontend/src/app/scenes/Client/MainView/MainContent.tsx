@@ -22,9 +22,9 @@ const MainContent: FC<{}> = () => {
 
   // Put the sideview in full screen if screen has not a big width
   const { innerWidth } = window;
-  let sideViewWidth = "40%";
-  if(innerWidth < 768 ){
-    sideViewWidth = "100%"
+  let sideViewWidth = '40%';
+  if (innerWidth < 768) {
+    sideViewWidth = '100%';
   }
   return (
     <Layout.Content className={'global-view-content'}>
@@ -38,10 +38,7 @@ const MainContent: FC<{}> = () => {
           <Layout.Content>
             <Layout className="main-view-layout">
               <Layout.Content className="main-view-content">
-                {mainType !== '' && (
-                  <AppView key={mainId} id={mainId} viewService={MainViewService} />
-                )}
-                {mainType === '' && <NoApp />}
+                {<AppView key={mainId} id={mainId} viewService={MainViewService} />}
               </Layout.Content>
             </Layout>
           </Layout.Content>
@@ -51,7 +48,7 @@ const MainContent: FC<{}> = () => {
             breakpoint="lg"
             collapsedWidth="0"
             theme="light"
-            width={sideViewWidth}            
+            width={sideViewWidth}
             collapsed={sideType === ''}
           >
             {!!sideType && (
