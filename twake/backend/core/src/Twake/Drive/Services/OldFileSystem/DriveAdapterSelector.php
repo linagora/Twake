@@ -18,7 +18,7 @@ class DriveAdapterSelector
 
     public function getFileSystem($provider = null)
     {
-        if(!$provider){
+        if($provider === null || $provider === false){
             $provider = $this->storagemanager->getOneProvider();
         }
         $configuration = $this->storagemanager->getProviderConfiguration($provider);

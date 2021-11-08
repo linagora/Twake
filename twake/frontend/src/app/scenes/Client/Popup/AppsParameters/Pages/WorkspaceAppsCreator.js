@@ -30,28 +30,28 @@ export default class WorkspaceAppsCreator extends Component {
   createApp() {
     AlertManager.confirm(() => {
       var name = this.state.new_app_name;
-      var simple_name = this.state.new_app_simple_name;
+      var code = this.state.new_app_code;
       var app_group_name = this.state.new_app_group_name;
 
-      this.setState({ loading: true, error: false, error_simple_name: false });
+      this.setState({ loading: true, error: false, error_code: false });
 
       var data = {
         name: name,
-        simple_name: simple_name,
+        code: code,
         app_group_name: app_group_name,
         workspace_id: workspaceService.currentWorkspaceId,
       };
 
       Api.post('/ajax/market/app/create', data, res => {
         if (res.data && res.data.id) {
-          this.setState({ new_app_name: '', new_app_simple_name: '', app_group_name: '' });
+          this.setState({ new_app_name: '', new_app_code: '', app_group_name: '' });
 
           Collections.get('applications').completeObject(res.data);
 
           this.props.openApp(res.data.id);
         } else {
-          if (res.errors.indexOf('simple_name_used') >= 0) {
-            this.setState({ loading: false, error_simple_name: true });
+          if (res.errors.indexOf('code_used') >= 0) {
+            this.setState({ loading: false, error_code: true });
           } else {
             this.setState({ loading: false, error: true });
           }
@@ -95,13 +95,13 @@ export default class WorkspaceAppsCreator extends Component {
             onChange={ev =>
               this.setState({
                 new_app_name: ev.target.value,
-                new_app_simple_name: this.state.new_app_simple_name_modified
-                  ? this.state.new_app_simple_name
+                new_app_code: this.state.new_app_code_modified
+                  ? this.state.new_app_code
                   : this.convertToSimpleName(ev.target.value),
               })
             }
           />
-          {this.state.error_simple_name && (
+          {this.state.error_code && (
             <div className="smalltext error" style={{ opacity: 1 }}>
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_message',

@@ -14,6 +14,7 @@ const services = [
   "webserver",
   "pubsub",
   "messages",
+  "statistics",
 ];
 
 const command: yargs.CommandModule<unknown, unknown> = {

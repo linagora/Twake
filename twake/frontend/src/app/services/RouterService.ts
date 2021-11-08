@@ -190,7 +190,9 @@ class RouterServices extends Observable {
     });
 
     //Retrocompatibility with old code
-    state.companyId = Collections.get('workspaces').find(state.workspaceId) ? Collections.get('workspaces').find(state.workspaceId).company_id : '';
+    state.companyId = Collections.get('workspaces').find(state.workspaceId)
+      ? Collections.get('workspaces').find(state.workspaceId).company_id
+      : '';
     Workspaces.updateCurrentWorkspaceId(state.workspaceId, true);
     Workspaces.updateCurrentCompanyId(state.companyId, true);
     Groups.currentGroupId = state.companyId;

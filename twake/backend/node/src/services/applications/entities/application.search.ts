@@ -1,8 +1,8 @@
 import { expandStringForPrefix } from "../../../core/platform/services/search/adapters/utils";
-import Application from "./application";
+import Application, { TYPE } from "./application";
 
 export default {
-  index: "application",
+  index: TYPE,
   source: (entity: Application) => {
     return {
       company_id: entity.company_id,

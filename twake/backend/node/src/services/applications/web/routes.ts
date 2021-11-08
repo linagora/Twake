@@ -3,7 +3,7 @@ import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
 
-const applicationsUrl = "applications";
+const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
 
 const routes: FastifyPluginCallback<{ service: ApplicationServiceAPI }> = (
@@ -87,6 +87,14 @@ const routes: FastifyPluginCallback<{ service: ApplicationServiceAPI }> = (
     url: `${companyApplicationsUrl}/:application_id`,
     preValidation: [fastify.authenticate],
     handler: companyApplicationController.save.bind(applicationController),
+  });
+
+  //Application event triggered by a user
+  fastify.route({
+    method: "POST",
+    url: `${applicationsUrl}/:application_id/event`,
+    preValidation: [fastify.authenticate],
+    handler: applicationController.event.bind(applicationController),
   });
 
   next();

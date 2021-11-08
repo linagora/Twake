@@ -1,7 +1,7 @@
 .user_head {
   width: 18px;
   height: 18px;
-  border-radius: var(--border-radius-base);
+  border-radius: 50%;
   border: solid 1px var(--grey-background);
   background-position: center;
   background-size: cover;
@@ -13,29 +13,17 @@
     border: 1px solid #fff;
   }
 
-  .status {
+  .online_user_status {
     position: absolute;
     bottom: -1px;
     right: -1px;
-    width: 8px;
-    height: 8px;
-    border-radius: 6px;
-    background: var(--green);
-    border: 1px solid var(--grey-background);
-
-    &.grey {
-      background: var(--grey-dark);
-    }
-    &.red {
-      background: var(--red);
-    }
   }
 
   &.big {
     width: 40px;
     height: 40px;
     border-radius: var(--border-radius-large);
-    .status {
+    .online_user_status {
       border-width: 2px;
       bottom: -2px;
       right: -2px;

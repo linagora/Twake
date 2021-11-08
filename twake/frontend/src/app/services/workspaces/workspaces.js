@@ -191,26 +191,8 @@ class Workspaces extends Observable {
     DepreciatedCollections.get('workspaces').updateObject(workspace);
     this.user_workspaces[id] = DepreciatedCollections.get('workspaces').known_objects_by_id[id];
 
-    if (workspace._user_hasnotifications) {
-      workspace.group._user_hasnotifications = true;
-    }
-
-    AccessRightsService.updateLevel(
-      workspace.id,
-      workspace.role,
-    );
+    AccessRightsService.updateLevel(workspace.id, workspace.role);
     // TODO: Move to another service
-    // TODO: _user_is_organization_administrator does not exist, get from company role
-    if (workspace._user_is_organization_administrator !== undefined) {
-      AccessRightsService.updateCompanyLevel(
-        workspace.group.id,
-        workspace._user_is_organization_administrator
-          ? 'admin'
-          : workspace._user_is_guest
-          ? 'guest'
-          : 'member',
-      );
-    }
   }
 
   removeFromUser(workspace) {
@@ -297,7 +279,9 @@ class Workspaces extends Observable {
     this.notify();
 
     try {
-      const result = await WorkspaceAPIClient.update(this.currentGroupId, this.currentWorkspaceId, { name });
+      const result = await WorkspaceAPIClient.update(this.currentGroupId, this.currentWorkspaceId, {
+        name,
+      });
       this.logger.debug('Workspace updated', result);
       DepreciatedCollections.get('workspaces').updateObject({
         id: this.currentWorkspaceId,

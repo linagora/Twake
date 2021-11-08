@@ -1,22 +1,27 @@
 import React from 'react';
 import { Tooltip } from 'antd';
 import { Star } from 'react-feather';
+
+import Icon from 'components/Icon/Icon';
+import { Application } from 'app/models/App';
+import WindowState from 'services/utils/window';
+import Emojione from 'components/Emojione/Emojione';
+import { ChannelResource } from 'app/models/Channel';
 import RouterServices from 'app/services/RouterService';
+import AvatarComponent from 'app/components/Avatar/Avatar';
+import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
-import { ChannelResource } from 'app/models/Channel';
-import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
-import Emojione from 'components/Emojione/Emojione';
-import Icon from 'components/Icon/Icon';
-import WindowState from 'services/utils/window';
+
 import './Channel.scss';
 
 type Props = {
-  collection: Collection<ChannelResource>;
-  app?: any;
+  collection?: Collection<ChannelResource>;
+  app?: Application;
   name: string;
   icon: string | JSX.Element;
   id?: string;
+  channelId?: string;
   muted: boolean;
   favorite: boolean;
   unreadMessages: boolean;
@@ -36,7 +41,7 @@ export default (props: Props) => {
     props.id &&
       MainViewService.select(props.id, {
         collection: props.collection,
-        app: props.app || { simple_name: 'messages' },
+        app: props.app,
         context: null,
         hasTabs: props.visibility !== 'direct' && !props.app,
       });
@@ -71,7 +76,7 @@ export default (props: Props) => {
         )}
         {!!props.app && (
           <div className="icon">
-            <Icon type={props.icon} />
+            <AvatarComponent borderRadius={0} size={16} url={props.icon as string} />
           </div>
         )}
         <div className="text" style={{ textTransform: 'capitalize' }}>

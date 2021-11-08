@@ -8,19 +8,20 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';
+import MainViewService from 'app/services/AppView/MainViewService';
 
 export default (): JSX.Element => {
-  const { channelId } = RouterServices.getStateFromRoute();
-
-  const appChannel = DepreciatedCollections.get('channels').find(channelId);
-  const application = DepreciatedCollections.get('applications').find(appChannel?.app_id);
-
+  const application = MainViewService.getConfiguration().app;
   if (!application) {
     return <></>;
   }
 
   const channel = new ChannelResource({
-    name: Languages.t('app.name.' + application.simple_name, [], application.name),
+    name: Languages.t(
+      'app.identity?.name.' + application?.identity?.code,
+      [],
+      application.identity?.name,
+    ),
   });
   const IconType = WorkspacesApps.getAppIcon(application, true);
   let icon: JSX.Element;
@@ -28,10 +29,6 @@ export default (): JSX.Element => {
     icon = <Icon type={IconType} style={{ width: 16, height: 16 }} />;
   } else {
     icon = <IconType size={16} />;
-  }
-
-  if (!appChannel) {
-    return <></>;
   }
 
   return (

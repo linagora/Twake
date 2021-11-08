@@ -54,7 +54,7 @@ export default (props: { filter: string }) => {
   const deletePendingEmail = (col: ColumnObjectType) => {
     const removePendingEmailRoute = `/internal/services/workspaces/v1/companies/${companyId}/workspaces/${workspaceId}/pending/${col.email}`;
     setLoading(true);
-    Api.delete(removePendingEmailRoute, null).finally(() => {
+    Api.delete(removePendingEmailRoute).finally(() => {
       refreshPendingEmails();
       setLoading(false);
     });
@@ -116,12 +116,11 @@ export default (props: { filter: string }) => {
   ];
 
   if (data.length === 0) {
-    return null;
+    return <></>;
   }
 
   return (
     <>
-      <Divider />
       <div>
         <Typography.Title level={3}>
           {Languages.t('scenes.apps.parameters.workspace_sections.members.pending')}
@@ -135,6 +134,7 @@ export default (props: { filter: string }) => {
           scroll={{ x: xs || sm ? true : undefined }}
         />
       </div>
+      <Divider />
     </>
   );
 };

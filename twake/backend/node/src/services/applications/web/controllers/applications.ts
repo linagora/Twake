@@ -77,6 +77,10 @@ export class ApplicationController
       status: "error",
     };
   }
+
+  async event(request: FastifyRequest<{ Params: { application_id: string } }>) {
+    return { error: "Not implemented (yet)" };
+  }
 }
 
 function getExecutionContext(request: FastifyRequest): ExecutionContext {

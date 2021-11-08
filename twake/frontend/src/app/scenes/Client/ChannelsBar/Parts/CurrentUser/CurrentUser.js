@@ -25,6 +25,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 import LockedWorkspacePopup from 'app/components/LockedFeaturesComponents/LockedWorkspacePopup/LockedWorkspacePopup';
 import ModalManager from 'app/components/Modal/ModalManager';
+import CompanyMessagesCounter from "components/CompanyMessagesCounter/CompanyMessagesCounter";
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -145,6 +146,7 @@ export default class CurrentUser extends Component {
               );
             },
           },
+
           {
             type: 'react-element',
             reactElement: level => {
@@ -185,6 +187,11 @@ export default class CurrentUser extends Component {
       },
       { type: 'separator' },
       {
+        type: 'react-element',
+        className: 'menu-cancel-left-padding',
+        reactElement: () => <CompanyMessagesCounter />
+      },
+      {
         type: 'text',
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.workspace_info',
@@ -195,6 +202,8 @@ export default class CurrentUser extends Component {
           "Vous êtes dans l'espace de travail $1 du groupe $2.",
         ),
       },
+      { type: 'separator' },
+
     ];
     if (!WorkspaceUserRights.isInvite()) {
       if (WorkspaceUserRights.hasWorkspacePrivilege()) {

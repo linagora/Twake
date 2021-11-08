@@ -3,7 +3,10 @@ import twake from "../../../twake";
 import ora from "ora";
 import { TwakePlatform } from "../../../core/platform/platform";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import PhpApplication, { TYPE as phpTYPE } from "./php-application/php-application-entity";
+import PhpApplication, {
+  DepreciatedDisplayConfiguration,
+  TYPE as phpTYPE,
+} from "./php-application/php-application-entity";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Application, {
   TYPE,
@@ -60,6 +63,7 @@ const services = [
   "applications",
   "console",
   "auth",
+  "statistics",
 ];
 
 const command: yargs.CommandModule<unknown, unknown> = {
@@ -106,6 +110,7 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
 
   if (!newApplication.identity?.name) {
     newApplication.identity = {
+      code: application.depreciated_simple_name || application.depreciated_name.toLocaleLowerCase(),
       name: application.depreciated_name,
       icon: application.depreciated_icon_url,
       description: application.depreciated_description,
@@ -139,20 +144,20 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
     newApplication.api.privateKey = application.depreciated_api_private_key;
   }
 
-  if (newApplication.access?.capabilities === undefined) {
+  if (newApplication.access?.write === undefined) {
     //@ts-ignore
     newApplication.access = newApplication.access || {};
     try {
-      newApplication.access.capabilities =
-        JSON.parse(application.depreciated_capabilities || "[]") || [];
+      newApplication.access.write = JSON.parse(application.depreciated_capabilities || "[]") || [];
+      newApplication.access.delete = JSON.parse(application.depreciated_capabilities || "[]") || [];
     } catch (e) {
-      newApplication.access.capabilities = [];
+      newApplication.access.write = [];
+      newApplication.access.delete = [];
     }
     try {
-      newApplication.access.privileges =
-        JSON.parse(application.depreciated_privileges || "[]") || [];
+      newApplication.access.read = JSON.parse(application.depreciated_privileges || "[]") || [];
     } catch (e) {
-      newApplication.access.privileges = [];
+      newApplication.access.read = [];
     }
     try {
       newApplication.access.hooks = JSON.parse(application.depreciated_hooks || "[]") || [];
@@ -161,10 +166,82 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
     }
   }
 
-  if (!newApplication.display?.twake) {
-    newApplication.display = newApplication.display || { twake: { version: 1 } };
-    newApplication.display.twake = JSON.parse(application.depreciated_display_configuration) || {};
-  }
+  newApplication.display = importDepreciatedDisplayFields(
+    newApplication,
+    JSON.parse(application.depreciated_display_configuration),
+  );
 
   return newApplication;
+};
+
+export const importDepreciatedDisplayFields = (
+  application: Application,
+  depreciatedDisplay: DepreciatedDisplayConfiguration,
+): Application["display"] => {
+  let display = application.display;
+
+  if (!display?.twake) {
+    display = display || { twake: { version: 1 } };
+    display.twake = display.twake || { version: 1 };
+  }
+
+  display.twake.tab = depreciatedDisplay?.channel_tab
+    ? { url: depreciatedDisplay?.channel_tab?.iframe } || true
+    : undefined;
+
+  display.twake.standalone = depreciatedDisplay?.app
+    ? { url: depreciatedDisplay?.app?.iframe } || true
+    : undefined;
+
+  display.twake.configuration = [];
+  if (depreciatedDisplay.configuration?.can_configure_in_workspace)
+    display.twake.configuration.push("global");
+  if (depreciatedDisplay.configuration?.can_configure_in_channel)
+    display.twake.configuration.push("channel");
+
+  display.twake.direct = depreciatedDisplay?.member_app
+    ? { name: application.identity.name, icon: application.identity.icon } || true
+    : undefined;
+
+  if (depreciatedDisplay?.drive_module) {
+    display.twake.files = {
+      editor: undefined, //TODO update new format to handle file edition etc
+      actions: [],
+    };
+
+    display.twake.files.editor = {
+      preview_url: depreciatedDisplay?.drive_module?.can_open_files?.preview_url,
+      edition_url: depreciatedDisplay?.drive_module?.can_open_files?.url,
+      extensions: [
+        ...(depreciatedDisplay?.drive_module?.can_open_files?.main_ext || []),
+        ...(depreciatedDisplay?.drive_module?.can_open_files?.other_ext || []),
+      ],
+      empty_files: (depreciatedDisplay?.drive_module?.can_create_files as any) || [],
+    };
+  }
+
+  if (depreciatedDisplay?.messages_module) {
+    display.twake.chat = {
+      input:
+        depreciatedDisplay?.messages_module?.in_plus ||
+        depreciatedDisplay?.messages_module?.right_icon
+          ? {
+              icon: application.identity.icon,
+            }
+          : undefined,
+      commands:
+        (depreciatedDisplay?.messages_module
+          ?.commands as Application["display"]["twake"]["chat"]["commands"]) || undefined,
+      actions: depreciatedDisplay?.messages_module?.action
+        ? [
+            {
+              name: depreciatedDisplay?.messages_module?.action.description,
+              id: "default",
+            },
+          ]
+        : undefined,
+    };
+  }
+
+  return display;
 };

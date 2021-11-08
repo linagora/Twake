@@ -181,6 +181,7 @@ export type ConsoleHookBody = {
   type: string;
   content: ConsoleHookBodyContent | ConsoleHookUser | ConsoleHookCompany;
   signature: string;
+  secret_key?: string;
 };
 
 export class ConsoleHookQueryString {

@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { AppType } from 'app/models/App';
+import { Application, AppType } from 'app/models/App';
 import { TabResource } from 'app/models/Tab';
 import { Button, Row, Input, Select } from 'antd';
+import Groups from 'services/workspaces/groups.js';
 
 import Icon from 'app/components/Icon/Icon';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Languages from 'services/languages/languages';
+import {
+  useCompanyApplications,
+  getCompanyApplications,
+} from 'app/state/recoil/hooks/useCompanyApplications';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
 
 const { Option } = Select;
 
@@ -21,13 +27,16 @@ export default (props: PropsType): JSX.Element => {
   const [appId, setAppId] = useState<string>(props.tab?.data.application_id || '');
   const [tabName, setTabName] = useState<string>(props.tab?.data.name || '');
   const [workspacesApps, setWorkspacesApps] = useState<AppType[]>([]);
+  const [company] = useCurrentCompany();
+
+  const { companyApplications } = useCompanyApplications(company?.id || '');
 
   useEffect(() => {
     generateWorkspacesApps();
   }, []);
 
   const generateWorkspacesApps = () => {
-    const apps: AppType[] = WorkspacesApps.getApps();
+    const apps: AppType[] = getCompanyApplications(Groups.currentGroupId);
     return setWorkspacesApps(apps);
   };
 
@@ -94,12 +103,12 @@ export default (props: PropsType): JSX.Element => {
                 'scenes.client.mainview.tabs.tabstemplateeditor.select_placeholder',
               )}
             >
-              {workspacesApps
-                .filter((app: AppType) => (app.display || {}).channel_tab)
-                .map((app: AppType) => {
+              {companyApplications
+                .filter((app: Application) => app.display?.twake?.tab)
+                .map((app: Application) => {
                   return (
                     <Option key={`key_${app.id}`} value={app.id || ''}>
-                      <Icon type={WorkspacesApps.getAppIcon(app)} /> {app.name}
+                      <Icon type={WorkspacesApps.getAppIcon(app)} /> {app.identity.name}
                     </Option>
                   );
                 })}

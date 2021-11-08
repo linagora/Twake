@@ -8,6 +8,9 @@
   "webserver": {
     "logger": {
       "level": "LOG_LEVEL"
+    },
+    "static": {
+      "root": "STATIC_ROOT"
     }
   },
   "phpnode": {

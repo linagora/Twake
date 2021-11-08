@@ -5,7 +5,8 @@ import Emojione from 'app/components/Emojione/Emojione';
 import User from 'app/components/Twacode/blocks/User';
 import { ChannelMemberType, ChannelType } from 'app/models/Channel';
 import { TabType } from 'app/models/Tab';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 enum ChannelActivityEnum {
   CHANNEL_MEMBER_CREATED = 'channel:activity:member:created',
@@ -157,8 +158,7 @@ export default (props: PropsType): JSX.Element => {
   const channelTabCreatedOrDeleted = (activity: ActivityType) => {
     if (activity.context.array) {
       const resource = activity.context.array[0].resource as TabType;
-      // WorkspaceApps.getApp() doesn't work
-      const connector = WorkspacesApps.getApps().filter(
+      const connector = getCompanyApplications(Groups.currentGroupId).filter(
         (app: any) => app.id === resource.application_id,
       );
 
@@ -170,7 +170,7 @@ export default (props: PropsType): JSX.Element => {
               {generateTypographyName(activity.actor.id)}
             </span>,
             <Typography.Text strong style={{ margin: '0 5px' }}>
-              {connector[0]?.name}
+              {connector[0]?.identity?.name}
             </Typography.Text>,
             <Typography.Text strong style={{ marginLeft: 5 }}>
               {resource?.name}
@@ -187,7 +187,7 @@ export default (props: PropsType): JSX.Element => {
               {generateTypographyName(activity.actor.id)}
             </span>,
             <Typography.Text strong style={{ margin: '0 5px' }}>
-              {connector[0]?.name}
+              {connector[0]?.identity?.name}
             </Typography.Text>,
             <Typography.Text strong style={{ marginLeft: 5 }}>
               {resource?.name}
@@ -201,8 +201,7 @@ export default (props: PropsType): JSX.Element => {
   const channelConnectorCreatedOrDeleted = (activity: ActivityType) => {
     if (activity.context.array) {
       const resource = activity.context.array[0].resource as ChannelType;
-      // WorkspaceApps.getApp() doesn't work
-      const connector = WorkspacesApps.getApps().filter((app: any) =>
+      const connector = getCompanyApplications(Groups.currentGroupId).filter((app: any) =>
         resource.connectors?.includes(app.id),
       );
 
@@ -215,7 +214,7 @@ export default (props: PropsType): JSX.Element => {
                 {generateTypographyName(activity.actor.id)}
               </span>,
               <Typography.Text strong style={{ marginLeft: 5 }}>
-                {connector[0]?.name}
+                {connector[0]?.identity?.name}
               </Typography.Text>,
             ],
           );
@@ -229,7 +228,7 @@ export default (props: PropsType): JSX.Element => {
                 {generateTypographyName(activity.actor.id)}
               </span>,
               <Typography.Text strong style={{ marginLeft: 5 }}>
-                {connector[0]?.name}
+                {connector[0]?.identity?.name}
               </Typography.Text>,
             ],
           );

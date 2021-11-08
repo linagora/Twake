@@ -225,7 +225,7 @@ class DownloadFile
             $url = $file->getUrl();
             if (isset($url)) {
                 //on ajoute un fichier url dans le zip
-                $zip->addFile($file->getName() . ".url", "[InternetShortcut]" . "\n" . "URL=" . $url);
+                $zip->addFile($zip_prefix . DIRECTORY_SEPARATOR . $file->getName() . ".url", "[InternetShortcut]" . "\n" . "URL=" . $url);
             }
             return true;
         }
@@ -235,7 +235,12 @@ class DownloadFile
         } else {
             if ($this->oldFileSystem) {
 
-                $oldFileSystem = $this->oldFileSystem->getFileSystem($version->getProvider());
+                $provider = $version->getProvider();
+                //Prod retro-compatibility
+                if($this->storagemanager->getProviderConfiguration("")["label"] === ""){
+                    $provider = $provider ?: "";
+                }
+                $oldFileSystem = $this->oldFileSystem->getFileSystem($provider);
 
                 $completePath = $oldFileSystem->getRoot() . $file->getPath();
 
@@ -258,8 +263,15 @@ class DownloadFile
                 flush();
                 while (!feof($fp)) {
                     $buff = fread($fp, 1024);
-                    print $buff;
+                    if(!$zip){
+                        print $buff;
+                    }
                 }
+
+                if($zip){
+                    $zip->addFileFromPath($zip_prefix . DIRECTORY_SEPARATOR . $file->getName(), $completePath);
+                }
+
                 //Delete decoded file
                 @unlink($completePath);
                 return true;
@@ -270,6 +282,7 @@ class DownloadFile
 
     public function downloadFile($version, $identifier, $name, &$zip = null, $zip_prefix = null)
     {
+
         $uploadstate = $this->doctrine->getRepository("Twake\Drive:UploadState")->findOneBy(Array("identifier" => $identifier));
         if ($uploadstate->getEncryptionMode() == "OpenSSL-2") {
             $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $uploadstate->getEncryptionSalt(), $uploadstate->getEncryptionMode());
@@ -291,7 +304,7 @@ class DownloadFile
             $url = $file->getUrl();
             if (isset($url)) {
                 //on ajoute un fichier url dans le zip
-                $zip->addFile("google.url", "[InternetShortcut]" . "\r\n" . "URL=" . $url);
+                $zip->addFile($zip_prefix . DIRECTORY_SEPARATOR . "google.url", "[InternetShortcut]" . "\r\n" . "URL=" . $url);
             }
         }
     }

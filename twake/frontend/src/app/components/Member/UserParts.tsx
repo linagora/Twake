@@ -8,6 +8,7 @@ import { UserType } from 'app/models/User';
 import UserService from 'services/user/UserService';
 import Collections from 'services/Depreciated/Collections/Collections';
 import UsersService from 'services/user/UserService';
+import UserIcon from 'components/User/User';
 
 type UserPartsType = {
   avatar: JSX.Element;
@@ -19,12 +20,14 @@ type UserPartsType = {
 type PropsType = {
   usersIds: string[];
   keepMyself?: boolean;
+  displayOnline?: boolean;
   max?: number;
   size?: number;
 };
 
 export const getUserParts = (props: PropsType): UserPartsType => {
   const { companyId } = RouterServices.getStateFromRoute();
+  const avatarSize = props.size || 20;
 
   let channelMembers = (props.usersIds || []).filter(
     e =>
@@ -35,7 +38,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
   channelMembers = channelMembers.filter((e, i) => channelMembers.indexOf(e) === i);
 
   let avatar: JSX.Element = (
-    <Avatar size={props.size || 20} icon={<User size={12} style={{ margin: 4 }} />} />
+    <Avatar size={avatarSize} icon={<User size={12} style={{ margin: 4 }} />} />
   );
   let channelName: string[] = [];
 
@@ -44,9 +47,10 @@ export const getUserParts = (props: PropsType): UserPartsType => {
   channelMembers?.map(userId => users.push(Collections.get('users').find(userId)));
 
   if (channelMembers?.length === 1) {
+    const avatarSrc = users[0]?.id ? <UserIcon user={users[0]} withStatus={props.displayOnline} size={avatarSize}/> : UserService.getThumbnail(users[0]);
     avatar = (
       <Badge count={0} size="default" dot offset={[-4, 16]}>
-        <Avatar size={props.size || 20} src={UserService.getThumbnail(users[0])} />
+        <Avatar style={{overflow: 'visible'}} size={avatarSize} src={avatarSrc} />
       </Badge>
     );
     channelName = [UserService.getFullName(users[0])];
@@ -57,8 +61,8 @@ export const getUserParts = (props: PropsType): UserPartsType => {
         maxStyle={{
           color: '#FFFFFF',
           backgroundColor: `var(--grey-dark)`,
-          width: props.size || 20,
-          height: props.size || 20,
+          width: avatarSize,
+          height: avatarSize,
           display: 'flex',
           alignItems: 'center',
         }}
@@ -71,7 +75,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
               member && (
                 <Avatar
                   key={member.id}
-                  size={props.size || 20}
+                  size={avatarSize}
                   src={UserService.getThumbnail(member)}
                 />
               )
@@ -79,7 +83,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
           })}
         {users.length > (props.max || 3) && (
           <Avatar
-            size={props.size || 20}
+            size={avatarSize}
             style={{ backgroundColor: 'var(--grey-dark)' }}
             icon={<DashOutlined />}
           />

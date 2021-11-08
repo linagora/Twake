@@ -3,7 +3,9 @@ import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import CurrentUser from 'app/services/user/CurrentUser';
 import UserService from 'services/user/UserService';
-import DepreciatedCollections, { Collection } from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections, {
+  Collection,
+} from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -17,6 +19,9 @@ import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 import { Message } from '../../../models/Message';
+import { Application } from 'app/models/App';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -130,8 +135,8 @@ class Messages extends Observable {
         let app: any = null;
         let app_name = value.split(' ')[0].slice(1);
         // eslint-disable-next-line array-callback-return
-        WorkspacesApps.getApps().map((_app: any) => {
-          if (_app.simple_name === app_name) {
+        getCompanyApplications(Groups.currentGroupId).map((_app: any) => {
+          if (_app?.identity?.code === app_name) {
             app = _app;
           }
         });
@@ -248,7 +253,7 @@ class Messages extends Observable {
   }
 
   async triggerApp(channelId: string, threadId: string, app: any, from_icon: any, evt: any) {
-    if (app.simple_name === 'twake_drive') {
+    if (app?.identity?.code === 'twake_drive') {
       let menu = [];
       let has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
 
@@ -270,7 +275,7 @@ class Messages extends Observable {
       return;
     }
 
-    if ((((app.display || {}).messages_module || {}).in_plus || {}).should_wait_for_popup) {
+    if ((app as Application).display?.twake?.chat?.input) {
       WorkspacesApps.openAppPopup(app.id);
     }
 
@@ -494,7 +499,7 @@ class Messages extends Observable {
 
     SideViewService.select(channel.id, {
       collection: this.getCollection(message.channel_id),
-      app: { simple_name: 'messages' },
+      app: { identity: { code: 'messages' } } as Application,
       context: {
         viewType: 'channel_thread',
         threadId: id,

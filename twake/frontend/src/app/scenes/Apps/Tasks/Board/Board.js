@@ -17,6 +17,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
 import User from 'components/User/User.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
+import RouterService from 'app/services/RouterService';
 
 export default class Board extends React.Component {
   constructor(props) {
@@ -32,6 +33,8 @@ export default class Board extends React.Component {
 
     this.user_mode = this.props.board.id.split('_')[0] === 'user';
 
+    const { channelId } = RouterService.getStateFromRoute();
+
     //Lists (only in board mode, not in user mode)
     if (!this.user_mode) {
       Collections.get('lists').addListener(this);
@@ -39,7 +42,7 @@ export default class Board extends React.Component {
         {
           http_base_url: 'tasks/list',
           http_options: {
-            channel_id: this.props.channel.id,
+            channel_id: channelId,
             board_id: this.props.board.id,
           },
           websockets: [{ uri: 'board_lists/' + this.props.board.id, options: { type: 'list' } }],
@@ -53,7 +56,7 @@ export default class Board extends React.Component {
       {
         http_base_url: 'tasks/task',
         http_options: {
-          channel_id: this.props.channel.id,
+          channel_id: channelId,
           board_id: this.props.board.id,
         },
         websockets: [{ uri: 'board_tasks/' + this.props.board.id, options: { type: 'task' } }],

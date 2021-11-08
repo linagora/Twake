@@ -8,6 +8,7 @@ import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/Emojione/Emojione';
 import Languages from 'services/languages/languages';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 export default class PathElement extends DriveElement {
   dropFile(data, directory) {
@@ -44,7 +45,7 @@ export default class PathElement extends DriveElement {
 
     var app = {};
     if (directory.application_id) {
-      app = Collections.get('applications').find(directory.application_id) || {};
+      app = getApplication(directory.application_id) || {};
     }
 
     var list = [];
@@ -81,7 +82,7 @@ export default class PathElement extends DriveElement {
         >
           {directory.application_id && (
             <span style={{ marginRight: '8px' }}>
-              <Emojione type={app.icon_url} />
+              <Emojione type={app.identity?.icon} />
             </span>
           )}
 
@@ -91,7 +92,7 @@ export default class PathElement extends DriveElement {
             ? Languages.t('scenes.apps.drive.trash', [], 'Trash')
             : workspace.name}
 
-          {directory.application_id && app.name && <i> ({app.name})</i>}
+          {directory.application_id && app.identity?.name && <i> ({app.identity?.name})</i>}
 
           {this.props.showOptions &&
             directory.parent_id &&

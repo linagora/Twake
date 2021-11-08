@@ -40,7 +40,7 @@ class TwakeApp {
 
   constructor() {
     this.services = ServiceRegistry;
-    this.environment = environment;
+    this.environment = environment as EnvironmentType;
     this.version = version;
     this.window = window;
     this.api_root_url = this.environment.api_root_url || '';
