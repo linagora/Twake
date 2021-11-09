@@ -294,6 +294,18 @@ export const getWorkspaceInviteTokenSchema = {
     "2xx": {
       type: "object",
       properties: {
+        resources: { type: "array", items: workspaceInviteTokenObjectSchema },
+      },
+      required: ["resources"],
+    },
+  },
+};
+
+export const postWorkspaceInviteTokenSchema = {
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
         resource: workspaceInviteTokenObjectSchema,
       },
       required: ["resource"],

@@ -138,9 +138,11 @@ describe("The /workspaces API (invite tokens)", () => {
       expect(response.statusCode).toBe(200);
 
       expect(response.json()).toMatchObject({
-        resource: {
-          token: expect.any(String),
-        },
+        resources: [
+          {
+            token: expect.any(String),
+          },
+        ],
       });
 
       done();
@@ -222,12 +224,14 @@ describe("The /workspaces API (invite tokens)", () => {
       expect(afterResponse.statusCode).toBe(200);
 
       expect(afterResponse.json()).toMatchObject({
-        resource: {
-          token: expect.any(String),
-        },
+        resources: [
+          {
+            token: expect.any(String),
+          },
+        ],
       });
 
-      const getToken = decodeToken(afterResponse.json().resource.token);
+      const getToken = decodeToken(afterResponse.json().resources[0].token);
 
       expect(createToken.t).toEqual(getToken.t);
 
@@ -249,7 +253,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
       expect(beforeResponse.statusCode).toBe(200);
 
-      const beforeResponseResource = beforeResponse.json()["resource"];
+      const beforeResponseResource = beforeResponse.json()["resources"][0];
 
       expect(beforeResponseResource).toMatchObject({
         token: expect.any(String),
@@ -283,7 +287,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
       expect(afterResponse.statusCode).toBe(200);
 
-      const afterResponseResource = afterResponse.json()["resource"];
+      const afterResponseResource = afterResponse.json()["resources"][0];
 
       expect(afterResponseResource).toMatchObject({
         token: expect.any(String),
@@ -353,7 +357,7 @@ describe("The /workspaces API (invite tokens)", () => {
       const response = await platform.app.inject({
         method: "DELETE",
         url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens/${
-          beforeResponse.json().resource.token
+          beforeResponse.json().resources[0].token
         }`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
@@ -390,7 +394,7 @@ describe("The /workspaces API (invite tokens)", () => {
     });
   });
 
-  describe.only("Join workspace using token", () => {
+  describe("Join workspace using token", () => {
     let workspaceId;
     let userId;
     let companyId;

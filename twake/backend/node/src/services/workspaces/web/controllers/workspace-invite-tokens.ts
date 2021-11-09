@@ -34,10 +34,10 @@ export class WorkspaceInviteTokensCrudController
     this.services = services;
   }
 
-  async get(
+  async list(
     request: FastifyRequest<{ Params: WorkspaceInviteTokenGetRequest }>,
     reply: FastifyReply,
-  ): Promise<ResourceGetResponse<WorkspaceInviteTokenObject>> {
+  ): Promise<ResourceListResponse<WorkspaceInviteTokenObject>> {
     const context = getExecutionContext(request);
 
     const res = await this.services.workspaces.getInviteToken(
@@ -50,7 +50,7 @@ export class WorkspaceInviteTokensCrudController
     }
 
     return {
-      resource: { token: res.token },
+      resources: [{ token: res.token }],
     };
   }
 

@@ -14,6 +14,7 @@ import {
   getWorkspaceUsersSchema,
   inviteWorkspaceUserSchema,
   joinInviteTokenSchema,
+  postWorkspaceInviteTokenSchema,
   updateWorkspaceSchema,
   updateWorkspaceUserSchema,
 } from "./schemas";
@@ -246,7 +247,7 @@ const routes: FastifyPluginCallback<{
     preHandler: [accessControl, companyCheck, checkUserIsWorkspaceMember],
     preValidation: [fastify.authenticate],
     schema: getWorkspaceInviteTokenSchema,
-    handler: workspaceInviteTokensController.get.bind(workspaceInviteTokensController),
+    handler: workspaceInviteTokensController.list.bind(workspaceInviteTokensController),
   });
 
   fastify.route({
@@ -254,7 +255,7 @@ const routes: FastifyPluginCallback<{
     url: `${workspaceInviteTokensUrl}`,
     preHandler: [accessControl, companyCheck, checkUserIsWorkspaceMember],
     preValidation: [fastify.authenticate],
-    schema: getWorkspaceInviteTokenSchema,
+    schema: postWorkspaceInviteTokenSchema,
     handler: workspaceInviteTokensController.save.bind(workspaceInviteTokensController),
   });
 
