@@ -810,10 +810,10 @@
     "components.locked_features.locked_drive_popup.subtitle": "Dans la version gratuite, vous ne pouvez stocker que 6 Go.",
     "general.resume": "Reprendre",
     "general.pause": "Pause",
-    "scenes.app.integrations_parameters.title" :"Intégrations",
+    "scenes.app.integrations_parameters.title": "Intégrations",
     "scenes.app.integrations_parameters.applications_table.name": "Nom",
     "scenes.app.integrations_parameters.applications_table.title": "Autres intégrations",
-    "scenes.app.integrations_parameters.applications_table.search_placeholder" : "Rechercher une application",
+    "scenes.app.integrations_parameters.applications_table.search_placeholder": "Rechercher une application",
     "scenes.app.integrations_parameters.company_application_popup.tag": "Installé",
     "scenes.app.integrations_parameters.company_application_popup.btn": "Installer",
     "scenes.app.integrations_parameters.company_application_popup.tab_btn_info": "Informations",
@@ -822,9 +822,9 @@
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.created_item": "Date de création",
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.version_item": "Version",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.show_application": "Afficher",
-    "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application" : "Retirer de l'entreprise",
-    "scenes.app.integrations_parameters.company_applications_table.name" : "Nom",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application": "Retirer de l'entreprise",
+    "scenes.app.integrations_parameters.company_applications_table.name": "Nom",
     "scenes.app.integrations_parameters.company_applications_table.title": "Installé dans votre entreprise",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "{{$1}} supprimé avec succès de votre entreprise",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} ajouté avec succès dans votre entreprise"
+    "app.state.recoil.hooks.use_current_company_applications.toaster_delete": "{{$1}} supprimé avec succès de votre entreprise",
+    "app.state.recoil.hooks.use_current_company_applications.toaster_add": "{{$1}} ajouté avec succès dans votre entreprise"
 }
