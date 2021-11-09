@@ -8,7 +8,7 @@ import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard';
 import { getSender } from 'services/Apps/Messages/MessagesUtils';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import Emojione from 'components/Emojione/Emojione';
 import ListenUsers from 'services/user/ListenUsers';
 import Workspaces from 'services/workspaces/workspaces.js';
