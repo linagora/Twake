@@ -820,7 +820,7 @@
     "scenes.app.integrations_parameters.title": "Integrations",
     "scenes.app.integrations_parameters.applications_table.name": "Name",
     "scenes.app.integrations_parameters.applications_table.title": "Other integrations",
-    "scenes.app.integrations_parameters.applications_table.search_placeholder" : "Search application", 
+    "scenes.app.integrations_parameters.applications_table.search_placeholder": "Search application",
     "scenes.app.integrations_parameters.company_application_popup.tag": "Installed",
     "scenes.app.integrations_parameters.company_application_popup.btn": "Install",
     "scenes.app.integrations_parameters.company_application_popup.tab_btn_info": "Informations",
@@ -829,9 +829,9 @@
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.created_item": "Creation date",
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.version_item": "Version",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.show_application": "Show",
-    "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application" : "Remove from the company",
-    "scenes.app.integrations_parameters.company_applications_table.name" : "Name",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application": "Remove from the company",
+    "scenes.app.integrations_parameters.company_applications_table.name": "Name",
     "scenes.app.integrations_parameters.company_applications_table.title": "Installed in your company",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "Successfully deleted {{$1}} from your company",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "Successfully added {{$1}} in your company"
+    "app.state.recoil.hooks.use_current_company_applications.toaster_delete": "Successfully deleted {{$1}} from your company",
+    "app.state.recoil.hooks.use_current_company_applications.toaster_add": "Successfully added {{$1}} in your company"
 }

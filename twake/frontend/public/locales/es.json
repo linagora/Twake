@@ -807,10 +807,10 @@
     "components.emoji_picker.categories.travel_and_places": "Viajes y Lugares",
     "scenes.app.popup.workspaceparameter.pages.workspace_partner_tabs.members.table.tags": "Rol",
     "general.email": "Correo electrónico",
-    "scenes.app.integrations_parameters.title" :"Integraciones",
+    "scenes.app.integrations_parameters.title": "Integraciones",
     "scenes.app.integrations_parameters.applications_table.name": "Nombre",
     "scenes.app.integrations_parameters.applications_table.title": "Otras integraciones",
-    "scenes.app.integrations_parameters.applications_table.search_placeholder" : "Aplicación de búsqueda",
+    "scenes.app.integrations_parameters.applications_table.search_placeholder": "Aplicación de búsqueda",
     "scenes.app.integrations_parameters.company_application_popup.tag": "Instalado",
     "scenes.app.integrations_parameters.company_application_popup.btn": "Instalar",
     "scenes.app.integrations_parameters.company_application_popup.tab_btn_info": "Informaciones",
@@ -819,10 +819,9 @@
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.created_item": "Fecha de creación",
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.version_item": "Versión",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.show_application": "Mostrar",
-    "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application" : "Eliminar de la empresa",
-    "scenes.app.integrations_parameters.company_applications_table.name" : "Nombre",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application": "Eliminar de la empresa",
+    "scenes.app.integrations_parameters.company_applications_table.name": "Nombre",
     "scenes.app.integrations_parameters.company_applications_table.title": "Instalado en su empresa",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "{{$1}} eliminado correctamente de su empresa",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} instalado correctamente en su empresa"
-    
+    "app.state.recoil.hooks.use_current_company_applications.toaster_delete": "{{$1}} eliminado correctamente de su empresa",
+    "app.state.recoil.hooks.use_current_company_applications.toaster_add": "{{$1}} instalado correctamente en su empresa"
 }
