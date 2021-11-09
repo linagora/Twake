@@ -1,4 +1,4 @@
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { describe, expect, it, beforeAll, afterAll } from "@jest/globals";
 import { v1 as uuidv1 } from "uuid";
 import { TestPlatform, init } from "../setup";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
@@ -12,7 +12,10 @@ import {
   ChannelMemberUtils,
 } from "../channels/utils";
 import { MessageNotification } from "../../../src/services/messages/types";
-import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
+import {
+  IncomingPubsubMessage,
+  PubsubServiceAPI,
+} from "../../../src/core/platform/services/pubsub/api";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { MentionNotification } from "../../../src/services/notifications/types";
 
@@ -22,8 +25,9 @@ describe("The notification for user mentions", () => {
   let channelMemberUtils: ChannelMemberUtils;
   let channelService: ChannelServiceAPI;
   let pubsubService: PubsubServiceAPI;
+  let pubsubHandler: (message: IncomingPubsubMessage<MentionNotification>) => void = _ => {};
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     platform = await init({
       services: [
         "webserver",
@@ -49,9 +53,12 @@ describe("The notification for user mentions", () => {
     channelMemberUtils = getMemberUtils(platform);
     channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
     pubsubService = platform.platform.getProvider<PubsubServiceAPI>("pubsub");
+    pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
+      pubsubHandler(message);
+    });
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await platform?.tearDown();
     platform = null;
   });
@@ -109,13 +116,13 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
 
-    pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
+    pubsubHandler = message => {
       expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
       expect(message.data.mentions.users).toContain(member2.user_id);
       expect(message.data.mentions.users).toContain(member3.user_id);
       expect(message.data.mentions.users).not.toContain(unknownUser);
       done();
-    });
+    };
 
     pushMessage({
       channel_id: channel.id,
@@ -144,12 +151,12 @@ describe("The notification for user mentions", () => {
 
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.NONE);
 
-    pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
+    pubsubHandler = message => {
       expect(message.data.mentions.users).not.toContain(member.user_id);
       expect(message.data.mentions.users).toContain(member3.user_id);
       expect(message.data.mentions.users).not.toContain(member2.user_id);
       done();
-    });
+    };
 
     pushMessage({
       channel_id: channel.id,
@@ -178,12 +185,12 @@ describe("The notification for user mentions", () => {
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
-    pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
+    pubsubHandler = message => {
       expect(message.data.mentions.users).not.toContain(member.user_id);
       expect(message.data.mentions.users).toContain(member2.user_id);
       expect(message.data.mentions.users).not.toContain(member3.user_id);
       done();
-    });
+    };
 
     pushMessage({
       channel_id: channel.id,
@@ -213,12 +220,12 @@ describe("The notification for user mentions", () => {
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
-    pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
+    pubsubHandler = message => {
       expect(message.data.mentions.users).not.toContain(member.user_id);
       expect(message.data.mentions.users).toContain(member2.user_id);
       expect(message.data.mentions.users).not.toContain(member3.user_id);
       done();
-    });
+    };
 
     pushMessage({
       channel_id: channel.id,
@@ -247,12 +254,12 @@ describe("The notification for user mentions", () => {
 
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.ME);
 
-    pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
+    pubsubHandler = message => {
       expect(message.data.mentions.users).not.toContain(member.user_id);
       expect(message.data.mentions.users).not.toContain(member3.user_id);
       expect(message.data.mentions.users).toContain(member2.user_id);
       done();
-    });
+    };
 
     pushMessage({
       channel_id: channel.id,
