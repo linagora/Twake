@@ -1,7 +1,12 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import 'moment-timezone';
 import moment from 'moment';
 import Moment from 'react-moment';
+import { Typography } from 'antd';
+import classNames from 'classnames';
+import { AlertTriangle } from 'react-feather';
+
 import User from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
@@ -14,13 +19,9 @@ import ListenUsers from 'services/user/ListenUsers';
 import Workspaces from 'services/workspaces/workspaces.js';
 import RouterServices from 'app/services/RouterService';
 import { Message } from 'app/models/Message';
-import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import Languages from 'services/languages/languages';
 import Loader from 'components/Loader/Loader.js';
-import { AlertTriangle } from 'react-feather';
-
-import classNames from 'classnames';
 
 type Props = {
   message: Message;
@@ -30,9 +31,7 @@ type Props = {
   failed: boolean;
 };
 
-type State = {
-  messageLink: string;
-};
+const { Link } = Typography;
 
 export default (props: Props) => {
   const [messageLink, setMessageLink] = useState('');
@@ -45,6 +44,7 @@ export default (props: Props) => {
         ListenUsers.cancelListenUser(senderData.id);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   let user_name_node: any = null;
@@ -125,13 +125,13 @@ export default (props: Props) => {
 
         {props.linkToThread && (
           <span className="reply-text">
-            replied to {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a href="#" onClick={() => scrollToMessage()}>
+            {Languages.t('scenes.apps.messages.input.replied_to')}
+            <Link onClick={() => scrollToMessage()}>
               {PseudoMarkdownCompiler.compileToSimpleHTML(
                 parentMessage?.content,
                 parentMessage?.message_type === 1,
               )}
-            </a>
+            </Link>
           </span>
         )}
 

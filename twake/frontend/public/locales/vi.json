@@ -58,5 +58,6 @@
     "scenes.apps.calendar.calendar_modal.participants": "Người tham dự",
     "scenes.apps.calendar.calendar_modal.placeholder": "Tên",
     "scenes.apps.calendar.left.calendars": "Lịch",
-    "scenes.apps.drive.left.search": "Tìm kiếm"
+    "scenes.apps.drive.left.search": "Tìm kiếm",
+    "scenes.apps.messages.input.replied_to" : "đã trả lời "
 }

@@ -1,6 +1,6 @@
 import UserService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionary.js';
+import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionary';
 import anchorme from 'anchorme';
 import emojis_original_service from 'emojione';
 import Globals from 'services/Globals';
@@ -12,15 +12,15 @@ class PseudoMarkdownCompiler {
     '• ': () => '• ',
     '- ': () => '- ',
     '([0-9]+)\\. ': (match: any) => {
-      var i = parseInt(match[1]);
+      const i = parseInt(match[1]);
       return i + 1 + '. ';
     },
     '([a-z])\\. ': (match: any) => {
-      var i = this.alphabet.toLowerCase().indexOf(match[1]);
+      const i = this.alphabet.toLowerCase().indexOf(match[1]);
       return this.alphabet.toLowerCase()[i + 1] + '. ';
     },
     '([A-Z])\\. ': (match: any) => {
-      var i = this.alphabet.indexOf(match[1]);
+      const i = this.alphabet.indexOf(match[1]);
       return this.alphabet[i + 1] + '. ';
     },
   };
@@ -247,7 +247,7 @@ class PseudoMarkdownCompiler {
 
   constructor() {
     Object.keys(this.pseudo_markdown).forEach(id => {
-      var item = this.pseudo_markdown[id];
+      const item = this.pseudo_markdown[id];
       this.pseudo_markdown_types[item.name] = item;
     });
 
@@ -256,19 +256,19 @@ class PseudoMarkdownCompiler {
 
   compileStringToLinkObject(string: string) {
     //Monkey hack for new markdown links, not the best place for this code
-    var link_found = anchorme(string.replace(/\[.*?\]\(.*?\)/gm, ''), {
+    const link_found = anchorme(string.replace(/\[.*?\]\(.*?\)/gm, ''), {
       list: true,
       ips: false,
       files: false,
     });
 
-    var result: any[] = [];
+    let result: any[] = [];
 
     if (link_found.length === 0) {
       return [string];
     } else {
-      var first_link = link_found[0];
-      var pos = string.indexOf(first_link.raw);
+      const first_link = link_found[0];
+      const pos = string.indexOf(first_link.raw);
       if (pos > 0) {
         result = result.concat(this.compileStringToLinkObject(string.slice(0, pos)));
       }
@@ -291,12 +291,12 @@ class PseudoMarkdownCompiler {
     str = (str || '').replace(
       /(\B@)([a-z_.-A-Z0-9]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
       (full_match, match1, username, match3) => {
-        var values = username.split(':');
+        const values = username.split(':');
         if (values.length === 1) {
           if (username === 'me') {
             username = UserService.getCurrentUser().username;
           }
-          var user_id = Collections.get('users').findBy({ username: username })[0];
+          let user_id = Collections.get('users').findBy({ username: username })[0];
           if (user_id && user_id.id) {
             user_id = user_id.id;
             return match1 + username + ':' + user_id + match3;
@@ -312,9 +312,9 @@ class PseudoMarkdownCompiler {
     str = str.replace(
       /(\B#)([a-z_.-A-Z0-9\u00C0-\u017F]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
       (full_match, match1, channel, match3) => {
-        var values = channel.split(':');
+        const values = channel.split(':');
         if (values.length === 1) {
-          var channel_id = Collections.get('channels')
+          let channel_id = Collections.get('channels')
             .findBy({})
             .filter(
               (item: { [key: string]: any }) =>
@@ -345,9 +345,9 @@ class PseudoMarkdownCompiler {
 
   compileToJSON(str: string, recursive: any = false) {
     if (!recursive) {
-      var result: any[] = [];
-      var original_str = str;
-      var _str = str.split('```'); //Priority to code
+      const result: any[] = [];
+      const original_str = str;
+      const _str = str.split('```'); //Priority to code
       _str.forEach((str, i) => {
         if (i % 2 === 0) {
           if (str) {
@@ -357,7 +357,7 @@ class PseudoMarkdownCompiler {
             str = emojis_original_service.shortnameToUnicode(str);
             str = emojis_original_service.toShort(str);
 
-            var links = this.compileStringToLinkObject(str);
+            const links = this.compileStringToLinkObject(str);
             links.forEach(item => {
               if (typeof item === 'string') {
                 result.push(this.compileToJSON(item, true));
@@ -367,7 +367,7 @@ class PseudoMarkdownCompiler {
             });
           }
         } else {
-          var object = {
+          const object = {
             start: '```',
             content: str,
             end: '\n```',
@@ -387,15 +387,15 @@ class PseudoMarkdownCompiler {
     }
 
     // eslint-disable-next-line no-redeclare
-    var original_str = str;
+    const original_str = str;
 
     // eslint-disable-next-line no-redeclare
-    var result = [];
+    let result: any = [];
 
-    var min_index_of = -1;
-    var min_index_of_key: any = null;
+    let min_index_of = -1;
+    let min_index_of_key: any = null;
 
-    var ret: any = [];
+    let ret: any = [];
     Object.keys(this.pseudo_markdown)
       .sort((a, b) => b.length - a.length)
       .forEach(starting_value => {
@@ -433,13 +433,13 @@ class PseudoMarkdownCompiler {
     str = original_str;
 
     if (min_index_of_key) {
-      var str_left = str.substr(0, min_index_of);
-      var char = min_index_of_key;
-      var str_right = str.substr(min_index_of + char.length);
+      let str_left = str.substr(0, min_index_of);
+      const char = min_index_of_key;
+      let str_right = str.substr(min_index_of + char.length);
 
       //Seach end of element in str_right
-      var match: any = -1;
-      var add_to_value = '';
+      let match: any = -1;
+      let add_to_value = '';
       while (match < 0 || (match && match[1][match[1].length - 1] === '\\')) {
         if (match && match !== -1) {
           //It mean we found an antislashed element
@@ -473,7 +473,7 @@ class PseudoMarkdownCompiler {
         }
 
         //Generate object
-        var object = {
+        const object = {
           start: char,
           content: this.pseudo_markdown[char].disable_recursion
             ? match[1]
@@ -523,9 +523,9 @@ class PseudoMarkdownCompiler {
       json = [json];
     }
 
-    var el = null;
-    var child_contain_view = false;
-    var result: any = [];
+    let el = null;
+    let child_contain_view = false;
+    const result: any = [];
     try {
       json.forEach((item: any) => {
         if (typeof item === 'string') {
@@ -537,7 +537,7 @@ class PseudoMarkdownCompiler {
           child_contain_view = child_contain_view || el.child_contain_view;
           result.push(el);
         } else {
-          var type = this.pseudo_markdown[item.start];
+          let type = this.pseudo_markdown[item.start];
           if (item.type === 'compile' && is_app && typeof item.content === 'string') {
             el = this.compileToHTML(
               this.compileToJSON(item.content),
@@ -554,7 +554,7 @@ class PseudoMarkdownCompiler {
             if (type) {
               if (!type.apps_only || is_app) {
                 //If text transform do it
-                var old_text_transform = JSON.parse(JSON.stringify(text_transform));
+                const old_text_transform = JSON.parse(JSON.stringify(text_transform));
                 text_transform = JSON.parse(JSON.stringify(text_transform));
                 if (type.text_transform) {
                   Object.keys(type.text_transform).forEach(key => {
@@ -627,8 +627,8 @@ class PseudoMarkdownCompiler {
       json = [json];
     }
 
+    let result: any = [];
     try {
-      var result: any = [];
       json.forEach((item: any) => {
         if (typeof item === 'string') {
           result_analysis.has_string = true;
@@ -659,7 +659,7 @@ class PseudoMarkdownCompiler {
               if (type) {
                 if (!type.apps_only || is_app) {
                   //If text transform do it
-                  var old_text_transform = JSON.parse(JSON.stringify(text_transform));
+                  const old_text_transform = JSON.parse(JSON.stringify(text_transform));
                   text_transform = JSON.parse(JSON.stringify(text_transform));
                   if (type.text_transform) {
                     Object.keys(type.text_transform).forEach(key => {
@@ -716,23 +716,23 @@ class PseudoMarkdownCompiler {
       json = [json];
     }
 
-    var result = '';
+    let result = '';
     try {
       json.forEach((item: any) => {
         if (typeof item === 'string') {
-          var tmp = item;
+          let tmp = item;
           Object.keys(this.pseudo_markdown).forEach(starting_value => {
-            var starting_value_reg = starting_value;
-            var allowed_chars = this.pseudo_markdown[starting_value].allowed_chars;
+            let starting_value_reg = starting_value;
+            const allowed_chars = this.pseudo_markdown[starting_value].allowed_chars;
             if (starting_value === '*') {
               starting_value_reg = '\\*';
             }
             if (allowed_chars) {
-              var reg = new RegExp(starting_value_reg, 'gm');
+              const reg = new RegExp(starting_value_reg, 'gm');
               tmp = tmp.replace(reg + '(' + allowed_chars + ')', '\\' + starting_value + '$1');
             } else {
               // eslint-disable-next-line no-redeclare
-              var reg = new RegExp(starting_value_reg, 'gm');
+              const reg = new RegExp(starting_value_reg, 'gm');
               tmp = tmp.replace(reg, '\\' + starting_value);
             }
           });
@@ -742,7 +742,7 @@ class PseudoMarkdownCompiler {
           result += this.compileToText(item);
         } else {
           result += item.start || '';
-          var no_antislash =
+          const no_antislash =
             (this.pseudo_markdown[item.start] || {}).disable_recursion || item.type; //no recursion was set or is a type (link actually)
           result += this.compileToText(item.content, no_antislash);
           result += item.end || '';
@@ -764,8 +764,8 @@ class PseudoMarkdownCompiler {
     }
     //MOZILLA and others
     else if (myField.selectionStart || myField.selectionStart === '0') {
-      var startPos = myField.selectionStart;
-      var endPos = myField.selectionEnd;
+      const startPos = myField.selectionStart;
+      const endPos = myField.selectionEnd;
       myField.value =
         myField.value.substring(0, startPos) +
         myValue +
@@ -777,30 +777,24 @@ class PseudoMarkdownCompiler {
 
   //Call this function after each line break
   autoCompleteBulletList(input: any, didEnter: any) {
-    var getCursorPos = (input: any) => {
+    const getCursorPos = (input: any) => {
       if ('selectionStart' in input && document.activeElement === input) {
         return {
           start: input.selectionStart,
           end: input.selectionEnd,
         };
       } else if (input.createTextRange) {
-        var sel = (document as any).selection.createRange();
+        const sel = (document as any).selection.createRange();
         if (sel.parentElement() === input) {
-          var rng = input.createTextRange();
+          const rng = input.createTextRange();
           rng.moveToBookmark(sel.getBookmark());
-          for (
-            var len = 0;
-            rng.compareEndPoints('EndToStart', rng) > 0;
-            rng.moveEnd('character', -1)
-          ) {
+          let len = 0;
+          for (len; rng.compareEndPoints('EndToStart', rng) > 0; rng.moveEnd('character', -1)) {
             len++;
+            rng.setEndPoint('StartToStart', input.createTextRange());
           }
-          rng.setEndPoint('StartToStart', input.createTextRange());
-          for (
-            var pos = { start: 0, end: len };
-            rng.compareEndPoints('EndToStart', rng) > 0;
-            rng.moveEnd('character', -1)
-          ) {
+          const pos = { start: 0, end: len };
+          for (pos; rng.compareEndPoints('EndToStart', rng) > 0; rng.moveEnd('character', -1)) {
             pos.start++;
             pos.end++;
           }
@@ -809,7 +803,7 @@ class PseudoMarkdownCompiler {
       }
       return -1;
     };
-    var setCaretPosition = (ctrl: any, pos: any) => {
+    const setCaretPosition = (ctrl: any, pos: any) => {
       // Modern browsers
       if (ctrl.setSelectionRange) {
         ctrl.focus();
@@ -817,7 +811,7 @@ class PseudoMarkdownCompiler {
 
         // IE8 and below
       } else if (ctrl.createTextRange) {
-        var range = ctrl.createTextRange();
+        const range = ctrl.createTextRange();
         range.collapse(true);
         range.moveEnd('character', pos);
         range.moveStart('character', pos);
@@ -827,20 +821,20 @@ class PseudoMarkdownCompiler {
 
     if (didEnter) {
       //@ts-ignore
-      var cursor_position = (getCursorPos(input) || {}).start;
+      const cursor_position = (getCursorPos(input) || {}).start;
       if (cursor_position === false || cursor_position < 0) {
         return;
       }
-      var value = input.value;
+      const value = input.value;
 
-      var str_before = value.substr(0, cursor_position);
-      var str_after = value.substr(cursor_position);
+      const str_before = value.substr(0, cursor_position);
+      const str_after = value.substr(cursor_position);
 
-      var src_line_before = str_before.split('\n').pop();
-      var addon = '';
-      var to_remove = 0;
+      const src_line_before = str_before.split('\n').pop();
+      let addon = '';
+      let to_remove = 0;
       Object.keys(this.bullets).forEach(regex => {
-        var match = src_line_before.match(new RegExp('^' + regex, ''));
+        const match = src_line_before.match(new RegExp('^' + regex, ''));
         if (match) {
           if (src_line_before.length > match[0].length) {
             addon = this.bullets[regex](match);
