@@ -10,11 +10,16 @@ import {
   WorkspaceInviteTokenDeleteRequest,
   WorkspaceInviteTokenGetRequest,
   WorkspaceInviteTokenObject,
+  WorkspaceJoinByTokenRequest,
+  WorkspaceJoinByTokenResponse,
 } from "../types";
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
 import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
+import WorkspaceInviteTokens from "../../entities/workspace_invite_tokens";
+import Workspace from "../../entities/workspace";
+import { pick } from "lodash";
 
 export class WorkspaceInviteTokensCrudController
   implements
@@ -85,6 +90,64 @@ export class WorkspaceInviteTokensCrudController
     return {
       status: "success",
     };
+  }
+
+  async join(
+    request: FastifyRequest<{ Body: WorkspaceJoinByTokenRequest }>,
+    reply: FastifyReply,
+  ): Promise<ResourceGetResponse<WorkspaceJoinByTokenResponse>> {
+    const entity = await this.services.workspaces.getInviteTokenInfo(request.body.token);
+
+    if (!entity) {
+      throw CrudExeption.notFound("Token not found");
+    }
+
+    const { company_id, workspace_id } = entity;
+
+    const [company, workspace] = await Promise.all([
+      this.services.companies.getCompany({ id: company_id }),
+      this.services.workspaces.get({
+        company_id: company_id,
+        id: workspace_id,
+      }),
+    ]);
+
+    const resource: WorkspaceJoinByTokenResponse = {
+      company: { name: company.name },
+      workspace: { name: workspace.name },
+    };
+
+    if (!request.currentUser) {
+      resource.auth_url = "link to authorization";
+    } else {
+      if (request.body.join) {
+        const user_id = request.currentUser.id;
+
+        const companyUser = await this.services.companies.getCompanyUser(
+          { id: company_id },
+          { id: user_id },
+        );
+        if (!companyUser) {
+          await this.services.companies.setUserRole(company_id, user_id, "member");
+        }
+
+        const workspaceUser = await this.services.workspaces.getUser({
+          workspaceId: workspace.id,
+          userId: user_id,
+        });
+        if (!workspaceUser) {
+          await this.services.workspaces.addUser(
+            pick(workspace, ["company_id", "id"]),
+            { id: user_id },
+            "member",
+          );
+        }
+        resource.company.id = company.id;
+        resource.workspace.id = workspace.id;
+      }
+    }
+
+    return { resource };
   }
 }
 

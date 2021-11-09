@@ -111,3 +111,20 @@ export interface InviteTokenObject {
   w: string;
   t: string;
 }
+
+export interface WorkspaceJoinByTokenRequest extends WorkspaceBaseRequest {
+  join: boolean;
+  token: string;
+}
+
+export interface WorkspaceJoinByTokenResponse {
+  company: {
+    id?: string;
+    name: string;
+  };
+  workspace: {
+    id?: string;
+    name: string;
+  };
+  auth_url?: string;
+}

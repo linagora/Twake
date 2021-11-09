@@ -52,6 +52,7 @@ import { InviteTokenObject, WorkspaceInviteTokenObject } from "../../web/types";
 import WorkspaceInviteTokens, {
   TYPE as WorkspaceInviteTokensType,
   getInstance as getWorkspaceInviteTokensInstance,
+  WorkspaceInviteTokensPrimaryKey,
 } from "../../entities/workspace_invite_tokens";
 import AuthServiceAPI from "../../../../core/platform/services/auth/provider";
 import { randomBytes } from "crypto";
@@ -569,5 +570,23 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       await this.workspaceInviteTokensRepository.remove(currentRecord);
     }
     return !!currentRecord;
+  }
+
+  async getInviteTokenInfo(jwtToken: string): Promise<WorkspaceInviteTokens> {
+    let tokenInfo: InviteTokenObject;
+    try {
+      tokenInfo = await this.auth.verifyTokenObject<InviteTokenObject>(jwtToken);
+    } catch (e) {}
+
+    if (!tokenInfo) {
+      return null;
+    }
+
+    const pk: WorkspaceInviteTokensPrimaryKey = {
+      company_id: tokenInfo.c,
+      workspace_id: tokenInfo.w,
+      token: tokenInfo.t,
+    };
+    return this.workspaceInviteTokensRepository.findOne(pk);
   }
 }

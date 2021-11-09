@@ -13,6 +13,7 @@ import {
   getWorkspaceUserSchema,
   getWorkspaceUsersSchema,
   inviteWorkspaceUserSchema,
+  joinInviteTokenSchema,
   updateWorkspaceSchema,
   updateWorkspaceUserSchema,
 } from "./schemas";
@@ -264,6 +265,15 @@ const routes: FastifyPluginCallback<{
     preValidation: [fastify.authenticate],
     schema: deleteWorkspaceInviteTokenSchema,
     handler: workspaceInviteTokensController.delete.bind(workspaceInviteTokensController),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/join",
+    preHandler: [],
+    preValidation: [fastify.authenticateOptional],
+    schema: joinInviteTokenSchema,
+    handler: workspaceInviteTokensController.join.bind(workspaceInviteTokensController),
   });
 
   next();

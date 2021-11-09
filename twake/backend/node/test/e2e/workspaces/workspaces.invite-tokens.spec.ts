@@ -52,13 +52,13 @@ describe("The /workspaces API (invite tokens)", () => {
   const resetDatabase = async () => {
     // await platform.database.getConnector().init();
     await platform.database.getConnector().drop();
-    await testDbService.createCompany(companyId);
+    await testDbService.createCompany(companyId, "TestJoinCompany");
     const ws0pk = { id: uuidv1(), company_id: companyId };
     const ws1pk = { id: uuidv1(), company_id: companyId };
     const ws2pk = { id: uuidv1(), company_id: companyId };
-    await testDbService.createWorkspace(ws0pk);
-    await testDbService.createWorkspace(ws1pk);
-    await testDbService.createWorkspace(ws2pk);
+    await testDbService.createWorkspace(ws0pk, "FirstWorkspace");
+    await testDbService.createWorkspace(ws1pk, "SecondWorkspace");
+    await testDbService.createWorkspace(ws2pk, "ThirdWorkspace");
     await testDbService.createUser([ws0pk, ws1pk]);
     await testDbService.createUser([ws2pk], { companyRole: "admin" });
     await testDbService.createUser([ws2pk], { companyRole: undefined, workspaceRole: "moderator" });
@@ -66,7 +66,7 @@ describe("The /workspaces API (invite tokens)", () => {
   };
 
   const decodeToken = (token: string): InviteTokenObject => {
-    return authServiceApi.verifyToken(token) as unknown as InviteTokenObject;
+    return authServiceApi.verifyTokenObject<InviteTokenObject>(token);
   };
 
   describe("The GET /tokens/ route", () => {
@@ -385,6 +385,125 @@ describe("The /workspaces API (invite tokens)", () => {
         payload: {},
       });
       expect(response.statusCode).toBe(404);
+
+      done();
+    });
+  });
+
+  describe.only("Join workspace using token", () => {
+    let workspaceId;
+    let userId;
+    let companyId;
+    let inviteToken;
+
+    beforeAll(async () => {
+      await startup();
+      companyId = testDbService.company.id;
+      workspaceId = testDbService.workspaces[0].workspace.id;
+      userId = testDbService.workspaces[2].users[0].id;
+      inviteToken = await workspaceServicesAPI.workspaces.createInviteToken(companyId, workspaceId);
+    });
+    afterAll(shutdown);
+
+    it("should 404 when when token not found", async done => {
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/join`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          join: false,
+          token: "SOME FAKE TOKEN",
+        },
+      });
+      expect(response.statusCode).toBe(404);
+      done();
+    });
+
+    it("should 200 when user is not authorized", async done => {
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/join`,
+        // headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          join: false,
+          token: inviteToken.token,
+        },
+      });
+      expect(response.statusCode).toBe(200);
+
+      const resource = response.json()["resource"];
+
+      expect(resource).toMatchObject({
+        company: {
+          name: "TestJoinCompany",
+        },
+        workspace: {
+          name: "FirstWorkspace",
+        },
+        auth_url: "link to authorization",
+      });
+
+      done();
+    });
+
+    it("should 200 when user is authorized and not joining", async done => {
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/join`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          join: false,
+          token: inviteToken.token,
+        },
+      });
+      expect(response.statusCode).toBe(200);
+
+      const resource = response.json()["resource"];
+
+      expect(resource).toMatchObject({
+        company: {
+          name: "TestJoinCompany",
+        },
+        workspace: {
+          name: "FirstWorkspace",
+        },
+      });
+
+      done();
+    });
+
+    it("should 200 when user is authorized and joining", async done => {
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "POST",
+        url: `${url}/join`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+        payload: {
+          join: true,
+          token: inviteToken.token,
+        },
+      });
+      expect(response.statusCode).toBe(200);
+
+      const resource = response.json()["resource"];
+
+      expect(resource).toMatchObject({
+        company: {
+          id: companyId,
+          name: "TestJoinCompany",
+        },
+        workspace: {
+          id: workspaceId,
+          name: "FirstWorkspace",
+        },
+      });
 
       done();
     });

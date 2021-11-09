@@ -14,7 +14,7 @@ export default class WorkspaceInviteTokens {
   @Column("workspace_id", "timeuuid")
   workspace_id: string;
 
-  @Column("token", "encoded_string")
+  @Column("token", "string")
   token: string;
 }
 
