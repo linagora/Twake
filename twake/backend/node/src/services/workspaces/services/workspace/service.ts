@@ -56,6 +56,7 @@ import WorkspaceInviteTokens, {
 } from "../../entities/workspace_invite_tokens";
 import AuthServiceAPI from "../../../../core/platform/services/auth/provider";
 import { randomBytes } from "crypto";
+import { ConsoleOptions, ConsoleType } from "../../../console/types";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";

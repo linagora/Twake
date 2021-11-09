@@ -2,9 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import ChannelServiceAPI from "../../../src/services/channels/provider";
-import WorkspaceServicesAPI, { WorkspaceServiceAPI } from "../../../src/services/workspaces/api";
-import { assign } from "lodash";
+import WorkspaceServicesAPI from "../../../src/services/workspaces/api";
 import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import { InviteTokenObject } from "../../../src/services/workspaces/web/types";
 
@@ -448,7 +446,7 @@ describe("The /workspaces API (invite tokens)", () => {
         workspace: {
           name: "FirstWorkspace",
         },
-        auth_url: "link to authorization",
+        auth_url: expect.any(String),
       });
 
       done();
