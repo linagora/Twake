@@ -15,9 +15,11 @@ import { ParticipantObject, Thread, ThreadPrimaryKey } from "../../entities/thre
 import { CompanyExecutionContext, ThreadExecutionContext } from "../../types";
 import { Message } from "../../entities/messages";
 import _ from "lodash";
+import { extendExecutionContentWithChannel } from "../../web/controllers";
 
 export class ThreadsService
-  implements MessageThreadsServiceAPI, CRUDService<Thread, ThreadPrimaryKey, ExecutionContext> {
+  implements MessageThreadsServiceAPI, CRUDService<Thread, ThreadPrimaryKey, ExecutionContext>
+{
   version: "1";
   name: "ThreadsService";
   repository: Repository<Thread>;
@@ -84,7 +86,7 @@ export class ThreadsService
         //Thread to edit does not exists
 
         if (!context.user?.server_request) {
-          throw new Error(`ThreadService: Unable to edit inexistent thread`);
+          throw new Error("ThreadService: Unable to edit inexistent thread");
         }
       }
     }
@@ -133,7 +135,10 @@ export class ThreadsService
         {
           threadInitialMessage: true,
         },
-        Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
+        extendExecutionContentWithChannel(
+          participants,
+          Object.assign(context, { thread: { id: thread.id, company_id: context.company.id } }),
+        ),
       );
     }
 
@@ -194,7 +199,7 @@ export class ThreadsService
     });
 
     if (!thread) {
-      logger.info(`No such thread`);
+      logger.info("No such thread");
       return false;
     }
 

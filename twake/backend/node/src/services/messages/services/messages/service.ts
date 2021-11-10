@@ -44,6 +44,7 @@ import ChannelServiceAPI from "../../../channels/provider";
 import { UserObject } from "../../../user/web/types";
 import { FileServiceAPI } from "../../../files/api";
 import { ApplicationServiceAPI } from "../../../applications/api";
+import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -52,19 +53,22 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   operations: ThreadMessagesOperationsService;
 
   constructor(
-    private database: DatabaseServiceAPI,
+    private platformServices: PlatformServicesAPI,
     private user: UserServiceAPI,
     private channel: ChannelServiceAPI,
     private files: FileServiceAPI,
     private applications: ApplicationServiceAPI,
     private service: MessageServiceAPI,
   ) {
-    this.operations = new ThreadMessagesOperationsService(database, service, this);
+    this.operations = new ThreadMessagesOperationsService(platformServices.database, service, this);
   }
 
   async init(context: TwakeContext): Promise<this> {
-    this.repository = await this.database.getRepository<Message>(MessageTableName, Message);
-    this.msgFilesRepository = await this.database.getRepository<MessageFile>(
+    this.repository = await this.platformServices.database.getRepository<Message>(
+      MessageTableName,
+      Message,
+    );
+    this.msgFilesRepository = await this.platformServices.database.getRepository<MessageFile>(
       MsgFileTableName,
       MessageFile,
     );
@@ -144,6 +148,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       }
     });
     message = _.assign(message, pk);
+
+    if (context.workspace && context.channel) {
+      message.cache = {
+        company_id: context.company.id,
+        workspace_id: context.workspace.id,
+        channel_id: context.channel.id,
+      };
+    }
 
     if (!message.ephemeral) {
       if (options.threadInitialMessage) {
@@ -237,9 +249,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     //Check new thread exists
     let thread = await this.service.threads.get({ id: context.thread.id });
     if (!thread && `${context.thread.id}` === `${pk.id}`) {
-      logger.info(`Create empty thread for message moved out of thread`);
-      let oldThread = await this.service.threads.get({ id: options.previous_thread });
-      let upgradedContext = _.cloneDeep(context);
+      logger.info("Create empty thread for message moved out of thread");
+      const oldThread = await this.service.threads.get({ id: options.previous_thread });
+      const upgradedContext = _.cloneDeep(context);
       upgradedContext.user.server_request = true;
       thread = (
         await this.service.threads.save(
@@ -294,7 +306,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     if (!message) {
       logger.error(
-        `This message does not exists, only remove it on websockets (ephemeral message)`,
+        "This message does not exists, only remove it on websockets (ephemeral message)",
       );
 
       const msg = getInstance({
@@ -312,7 +324,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       message.user_id !== context.user.id &&
       message.application_id !== context?.user?.application_id
     ) {
-      logger.error(`You have no right to delete this message`);
+      logger.error("You have no right to delete this message");
       throw Error("Can't delete this message.");
     }
 
@@ -372,13 +384,13 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       )
     ).getEntities();
 
-    let lastReplies: Message[] = [];
+    const lastReplies: Message[] = [];
     for (const lastReply of lastRepliesUncompleted) {
       if (lastReply)
         lastReplies.push(await this.completeMessage(lastReply, { files: lastReply.files || [] }));
     }
 
-    let firstMessage = await this.getSingleMessage({
+    const firstMessage = await this.getSingleMessage({
       thread_id: thread.id,
       id: thread.id,
     });
@@ -435,7 +447,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
     ids = _.uniq(ids);
 
-    let users: UserObject[] = [];
+    const users: UserObject[] = [];
     for (const id of ids) {
       users.push(
         await this.user.formatUser(
@@ -449,19 +461,19 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       application = await this.applications.applications.get({ id: message.application_id });
     }
 
-    let messageWithUsers = { ...message, users, application };
+    const messageWithUsers = { ...message, users, application };
     return messageWithUsers;
   }
 
   async includeUsersInMessageWithReplies(
     message: MessageWithReplies,
   ): Promise<MessageWithRepliesWithUsers> {
-    let last_replies = [];
+    const last_replies = [];
     for (const reply of message.last_replies) {
       last_replies.push(await this.includeUsersInMessage(reply));
     }
 
-    let messageWithUsers = {
+    const messageWithUsers = {
       ...message,
       users: (await this.includeUsersInMessage(message)).users,
       last_replies,
@@ -495,7 +507,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   async pin(
     operation: PinOperation,
-    options: {},
+    options: Record<string, any>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     return this.operations.pin(operation, options, context);
@@ -503,7 +515,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   async reaction(
     operation: ReactionOperation,
-    options: {},
+    options: Record<string, any>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     return this.operations.reaction(operation, options, context);
@@ -511,7 +523,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
   async bookmark(
     operation: BookmarkOperation,
-    options: {},
+    options: Record<string, any>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     return this.operations.bookmark(operation, options, context);

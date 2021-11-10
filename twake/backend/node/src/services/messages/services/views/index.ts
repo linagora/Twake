@@ -1,10 +1,10 @@
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { MessageServiceAPI, MessageViewsServiceAPI } from "../../api";
 import { ViewsService } from "./service";
+import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 
 export function getService(
-  databaseService: DatabaseServiceAPI,
+  platformServices: PlatformServicesAPI,
   service: MessageServiceAPI,
 ): MessageViewsServiceAPI {
-  return new ViewsService(databaseService, service);
+  return new ViewsService(platformServices, service);
 }
