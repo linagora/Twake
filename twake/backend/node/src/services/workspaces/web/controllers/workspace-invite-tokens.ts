@@ -13,12 +13,10 @@ import {
   WorkspaceJoinByTokenRequest,
   WorkspaceJoinByTokenResponse,
 } from "../types";
-import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
 import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
-import WorkspaceInviteTokens from "../../entities/workspace_invite_tokens";
-import Workspace from "../../entities/workspace";
 import { pick } from "lodash";
 
 export class WorkspaceInviteTokensCrudController

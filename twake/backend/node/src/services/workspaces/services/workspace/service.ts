@@ -546,7 +546,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     if (!res) return null;
 
     return {
-      token: this.jwtInviteToken(companyId, workspaceId, res.token),
+      token: this.jwtInviteToken(companyId, workspaceId, res.invite_token),
     };
   }
 
@@ -558,7 +558,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const token = randomBytes(16).toString("hex");
     const pk = { company_id: companyId, workspace_id: workspaceId };
     await this.workspaceInviteTokensRepository.save(
-      getWorkspaceInviteTokensInstance({ ...pk, token }),
+      getWorkspaceInviteTokensInstance({ ...pk, invite_token: token }),
     );
     return {
       token: this.jwtInviteToken(companyId, workspaceId, token),
@@ -586,7 +586,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const pk: WorkspaceInviteTokensPrimaryKey = {
       company_id: tokenInfo.c,
       workspace_id: tokenInfo.w,
-      token: tokenInfo.t,
+      invite_token: tokenInfo.t,
     };
     return this.workspaceInviteTokensRepository.findOne(pk);
   }
