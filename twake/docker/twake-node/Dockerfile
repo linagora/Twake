@@ -42,11 +42,12 @@ FROM node-base as production
 ARG NODE_ENV=production
 
 ENV NODE_ENV=development
-RUN npm install
+RUN npm install #Install dev dependancies for build
 COPY backend/node/ .
 ENV NODE_ENV=${NODE_ENV}
-RUN npm run build
+RUN npm run build #Build in production mode
 RUN rm -R node_modules
+RUN npm install #Install prod dependancies after build
 
 # Add frontend into node
 ENV NODE_ENV=development
