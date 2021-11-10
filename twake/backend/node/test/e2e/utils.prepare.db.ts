@@ -60,8 +60,10 @@ export class TestDbService {
     return [...this.workspacesMap.values()];
   }
 
-  async createCompany(id?: uuid): Promise<void> {
-    const name = `TwakeAutotests-test-company-${this.rand()}`;
+  async createCompany(id?: uuid, name?: string): Promise<void> {
+    if (!name) {
+      name = `TwakeAutotests-test-company-${this.rand()}`;
+    }
     this.company = await this.userService.companies.createCompany(
       getCompanyInstance({
         id: id || uuidv1(),
@@ -72,9 +74,10 @@ export class TestDbService {
     );
   }
 
-  async createWorkspace(workspacePk: WorkspacePrimaryKey): Promise<Workspace> {
-    const name = `TwakeAutotests-test-workspace-${this.rand()}`;
-
+  async createWorkspace(
+    workspacePk: WorkspacePrimaryKey,
+    name = `TwakeAutotests-test-workspace-${this.rand()}`,
+  ): Promise<Workspace> {
     if (!workspacePk.company_id) throw new Error("company_id is not defined for workspace");
 
     const workspace = await this.workspaceService.workspaces.create(

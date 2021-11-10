@@ -7,13 +7,15 @@ import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
 import { ConsoleServiceAPI } from "../../console/api";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../applications/api";
+import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 
 export function getService(
   platformServices: PlatformServicesAPI,
   consoleService: ConsoleServiceAPI,
   applicationsService: ApplicationServiceAPI,
+  auth: AuthServiceAPI,
 ): WorkspaceServicesAPI {
-  return new Service(platformServices, consoleService, applicationsService);
+  return new Service(platformServices, consoleService, applicationsService, auth);
 }
 
 class Service implements WorkspaceServicesAPI {
@@ -26,6 +28,7 @@ class Service implements WorkspaceServicesAPI {
     platformServices: PlatformServicesAPI,
     readonly console: ConsoleServiceAPI,
     readonly applications: ApplicationServiceAPI,
+    readonly auth: AuthServiceAPI,
   ) {
     this.companies = getCompaniesService(platformServices);
     this.users = getUsersService(platformServices);
@@ -34,6 +37,7 @@ class Service implements WorkspaceServicesAPI {
       this.users,
       this.companies,
       this.applications,
+      auth,
     );
   }
 

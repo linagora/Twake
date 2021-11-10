@@ -9,4 +9,9 @@ export interface WorkspaceUsersExecutionContext extends ExecutionContext {
   workspace_id: string;
 }
 
+export interface WorkspaceInviteTokensExecutionContext extends ExecutionContext {
+  company_id: string;
+  workspace_id: string;
+}
+
 export type WorkspaceUserRole = "moderator" | "member";

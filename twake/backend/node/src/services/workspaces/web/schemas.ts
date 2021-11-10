@@ -281,3 +281,72 @@ export const deleteWorkspacePendingUsersSchema = {
     "204": {},
   },
 };
+
+const workspaceInviteTokenObjectSchema = {
+  type: "object",
+  properties: {
+    token: { type: "string" },
+  },
+};
+
+export const getWorkspaceInviteTokenSchema = {
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resources: { type: "array", items: workspaceInviteTokenObjectSchema },
+      },
+      required: ["resources"],
+    },
+  },
+};
+
+export const postWorkspaceInviteTokenSchema = {
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resource: workspaceInviteTokenObjectSchema,
+      },
+      required: ["resource"],
+    },
+  },
+};
+
+export const deleteWorkspaceInviteTokenSchema = {
+  response: {
+    "204": {},
+  },
+};
+
+export const joinInviteTokenSchema = {
+  body: {
+    type: "object",
+    properties: {
+      join: { type: "boolean" },
+      token: { type: "string" },
+    },
+    required: ["join", "token"],
+  },
+  response: {
+    "2xx": {
+      type: "object",
+      properties: {
+        resource: {
+          type: "object",
+          properties: {
+            company: {
+              type: "object",
+              properties: { id: { type: "string" }, name: { type: "string" } },
+            },
+            workspace: {
+              type: "object",
+              properties: { id: { type: "string" }, name: { type: "string" } },
+            },
+            auth_url: { type: "string" },
+          },
+        },
+      },
+    },
+  },
+};

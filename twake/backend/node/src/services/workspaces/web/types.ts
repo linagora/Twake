@@ -92,3 +92,39 @@ export interface WorkspaceUserObject {
   role: WorkspaceUserRole;
   user: UserObject;
 }
+
+export interface WorkspaceInviteTokenGetRequest extends WorkspaceBaseRequest {
+  workspace_id: uuid;
+}
+
+export interface WorkspaceInviteTokenDeleteRequest extends WorkspaceBaseRequest {
+  workspace_id: uuid;
+  token: string;
+}
+
+export interface WorkspaceInviteTokenObject {
+  token: string;
+}
+
+export interface InviteTokenObject {
+  c: string;
+  w: string;
+  t: string;
+}
+
+export interface WorkspaceJoinByTokenRequest extends WorkspaceBaseRequest {
+  join: boolean;
+  token: string;
+}
+
+export interface WorkspaceJoinByTokenResponse {
+  company: {
+    id?: string;
+    name: string;
+  };
+  workspace: {
+    id?: string;
+    name: string;
+  };
+  auth_url?: string;
+}
