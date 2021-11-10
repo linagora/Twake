@@ -8,7 +8,7 @@ import MainViewService from 'app/services/AppView/MainViewService';
 import { Lock } from 'react-feather';
 import SearchInput from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import { ChannelResource } from 'app/models/Channel';
 import ChannelAvatars from './ChannelAvatars';
 import Collections from 'app/services/CollectionsReact/Collections';

@@ -4,7 +4,7 @@ import MessagesService from 'services/Apps/Messages/Messages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import MessageInput from '../../Input/Input';
 import Button from 'components/Buttons/Button.js';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import AlertManager from 'app/services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages';
 import { Message } from 'app/models/Message';

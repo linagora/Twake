@@ -11,7 +11,7 @@ import TasksFilter from './Parts/TasksFilter.js';
 import MessagesFilter from './Parts/MessagesFilter.js';
 import Tabs from 'components/Tabs/Tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import moment from 'moment';
 import Languages from 'services/languages/languages';
 import userAsyncGet from 'services/user/AsyncGet';

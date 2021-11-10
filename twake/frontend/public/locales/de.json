@@ -826,5 +826,6 @@
     "scenes.app.integrations_parameters.company_applications_table.name" : "Name",
     "scenes.app.integrations_parameters.company_applications_table.title": "In Ihrem Unternehmen installiert",
     "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "{{$1}} erfolgreich aus Ihrem Unternehmen gelöscht",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} erfolgreich zu Ihrem Unternehmen hinzugefügt"
+    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} erfolgreich zu Ihrem Unternehmen hinzugefügt",
+    "scenes.apps.messages.input.replied_to" : "antwortete auf "
 }

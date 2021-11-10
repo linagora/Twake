@@ -832,6 +832,7 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application": "Remove from the company",
     "scenes.app.integrations_parameters.company_applications_table.name": "Name",
     "scenes.app.integrations_parameters.company_applications_table.title": "Installed in your company",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_delete": "Successfully deleted {{$1}} from your company",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_add": "Successfully added {{$1}} in your company"
+    "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "Successfully deleted {{$1}} from your company",
+    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "Successfully added {{$1}} in your company",
+    "scenes.apps.messages.input.replied_to" : "replied to "
 }
