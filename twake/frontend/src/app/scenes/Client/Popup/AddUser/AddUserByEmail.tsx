@@ -7,6 +7,7 @@ import ConsoleService from 'app/services/Console/ConsoleService';
 import RouterServices from 'services/RouterService';
 import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import './AddUser.scss';
+import MagicLinks from './MagicLinks';
 
 type PropsType = {
   [key: string]: any;
@@ -76,6 +77,11 @@ export default (props: PropsType): JSX.Element => {
           {Languages.t('scenes.app.popup.adduser.adresses_message')}
         </Typography.Text>
       </div>
+
+      <div className="magic-links-wrapper">
+        <MagicLinks></MagicLinks>
+       </div>
+
       <div className="add-user-button-container">
         <Button
           type="primary"

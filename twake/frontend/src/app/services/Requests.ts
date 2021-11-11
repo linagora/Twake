@@ -29,7 +29,7 @@ class Requests {
       })
       .then(response => {
         response.text().then(text => {
-          this.retrieveJWTToken(text);
+          if(text) this.retrieveJWTToken(text);
           callback && callback(text);
         });
       })

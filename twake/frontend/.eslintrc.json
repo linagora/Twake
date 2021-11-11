@@ -1,20 +1,24 @@
 {
-  "extends": ["react-app"],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2017,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
+    "extends": [
+        "react-app"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2017,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "plugins": [
+        // ...
+        "react-hooks"
+    ],
+    "rules": {
+        "semi": "warn",
+        "react-hooks/rules-of-hooks": "warn", // Checks rules of Hooks
+        "react-hooks/exhaustive-deps": "warn", // Checks effect dependencies
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": "off"
     }
-  },
-  "plugins": [
-    // ...
-    "react-hooks"
-  ],
-  "rules": {
-    "semi": "warn",
-    "react-hooks/rules-of-hooks": "warn", // Checks rules of Hooks
-    "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies
-  }
 }
