@@ -67,7 +67,7 @@ export default (props: PropsType): JSX.Element => {
 
     const onGenerateBtnClick = () => {
         magicLinksService.recreateToken().then(resource => setCurrentToken(resource.token));
-        message.success(Languages.t('scenes.app.popup.adduser.magiclinks.new-link-generated'));
+        message.success(Languages.t('scenes.app.popup.adduser.magiclinks.new_link_generated'));
     };
 
     const onDeleteBtnClick = () => {
