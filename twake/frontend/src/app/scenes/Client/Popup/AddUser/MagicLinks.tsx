@@ -56,7 +56,7 @@ export default (props: PropsType): JSX.Element => {
 
     useEffect(() => { init();}, []);
 
-    useEffect(() => { setLink('https://twake.app/join/' + currentToken); }, [currentToken]);
+    useEffect(() => { setLink(window.location.origin + '/join/' + currentToken); }, [currentToken]);
 
     const init = () => {
         magicLinksService.getCurrentTokens().then(resources => {
