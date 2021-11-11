@@ -47,9 +47,11 @@ export interface CompanyExecutionContext extends ExecutionContext {
   company: { id: string };
 }
 
-export interface ThreadExecutionContext extends ExecutionContext {
+export interface ThreadExecutionContext extends CompanyExecutionContext {
   thread: { id: string };
   company: { id: string };
+  workspace?: { id: string };
+  channel?: { id: string };
 }
 export interface ChannelViewExecutionContext extends ExecutionContext {
   channel: {

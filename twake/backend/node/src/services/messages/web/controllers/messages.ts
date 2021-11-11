@@ -2,16 +2,18 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { MessageServiceAPI } from "../../api";
 import {
-  ResourceUpdateResponse,
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
+  ResourceUpdateResponse,
 } from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
 import { handleError } from "../../../../utils/handleError";
-import { Paginable, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { getThreadMessageWebsocketRoom } from "../realtime";
+import { ThreadPrimaryKey } from "../../entities/threads";
+import { extendExecutionContentWithChannel } from "./index";
 
 export class MessagesController
   implements
@@ -56,13 +58,15 @@ export class MessagesController
         );
       }
 
+      const thread = await this.service.threads.get({ id: context.thread.id } as ThreadPrimaryKey);
+
       const result = await this.service.messages.save(
         {
           id: request.params.message_id || undefined,
           ...request.body.resource,
         },
         {},
-        context,
+        extendExecutionContentWithChannel(thread.participants, context),
       );
 
       let entity = result.entity;

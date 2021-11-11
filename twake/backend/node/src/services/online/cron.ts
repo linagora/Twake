@@ -27,7 +27,10 @@ export default class OnlineJob implements Initializable {
       ) as unknown as WebSocket[];
 
       await this.onlineService.setLastSeenOnline(
-        connectedWebsockets.map(ws => this.websocket.getUser(ws)).map(user => user.id),
+        connectedWebsockets
+          .filter(ws => ws?.decoded_token)
+          .map(ws => this.websocket.getUser(ws))
+          .map(user => user.id),
         Date.now(),
       );
     });

@@ -673,5 +673,6 @@
     "scenes.app.integrations_parameters.company_applications_table.name" : "Имя",
     "scenes.app.integrations_parameters.company_applications_table.title": "Установлен в вашей компании",
     "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "Успешно удалил {{$1}} из вашей компании",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} успешно добавлен в вашу компанию"
+    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} успешно добавлен в вашу компанию",
+    "scenes.apps.messages.input.replied_to" : "ответил "
 }

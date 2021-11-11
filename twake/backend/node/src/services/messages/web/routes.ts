@@ -162,6 +162,13 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI }> = (
     handler: viewsController.list.bind(viewsController),
   });
 
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/search",
+    preValidation: [fastify.authenticate],
+    handler: viewsController.search.bind(viewsController),
+  });
+
   next();
 };
 
