@@ -46,6 +46,7 @@ export default (props: PropsType): JSX.Element => {
     const [link, setLink] = useState<string>();
     const [disabled, setDisabled] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [showButtons, setShowButtons] = useState(false);
 
     const busy = (val: boolean) => {
         setLoading(val);
@@ -76,12 +77,18 @@ export default (props: PropsType): JSX.Element => {
         }
     };
 
-    const onCopyBtnClick = async () => {
+    const onCopyBtnClick = () => {
         navigator.clipboard.writeText(link!);
         message.success(Languages.t('scenes.app.popup.adduser.magiclinks.copied_to_clipboard'));
     };
 
-    const suffix = (<div className="link-input-suffix"><DeleteOutlined onClick={onDeleteBtnClick} style={{ fontSize: 16 }} /><RetweetOutlined onClick={onGenerateBtnClick} /></div>);
+    const onMouseOver = ()=> setShowButtons(true);
+    const onMouseLeave = ()=>setShowButtons(false);
+    
+    const suffix = (<div className="link-input-suffix" style={showButtons ? {} : { display: 'none' }}>
+        <DeleteOutlined onClick={onDeleteBtnClick} className="action-button" />
+        <RetweetOutlined onClick={onGenerateBtnClick} className="action-button" />
+        </div>) ;
 
     const TokenInput = () =>
     (<Input.Search
@@ -90,7 +97,9 @@ export default (props: PropsType): JSX.Element => {
         enterButton={Languages.t("scenes.app.popup.adduser.magiclinks.action_copy")}
         defaultValue={link}
         suffix={suffix}
-        onSearch={onCopyBtnClick} />);
+        loading={loading}
+        onSearch={onCopyBtnClick} 
+        />);
 
 
     const DeleteButton = () => (<Button type="primary" onClick={onGenerateBtnClick} disabled={disabled || props.loading} loading={loading || props.loading}>{Languages.t("scenes.app.popup.adduser.magiclinks.action_generate")}</Button>);
@@ -100,7 +109,9 @@ export default (props: PropsType): JSX.Element => {
 
             <Space direction="vertical" style={{ width: '100%' }}>
                 {Languages.t("scenes.app.popup.adduser.magiclinks.genrator_info")}
-                {currentToken ? <TokenInput /> : <DeleteButton />}
+                <div onMouseOver={onMouseOver} onMouseLeave={onMouseLeave}>
+                    {currentToken ? <TokenInput /> : <DeleteButton />}
+                </div>
             </Space>
         </div>
     ) : (<></>);
