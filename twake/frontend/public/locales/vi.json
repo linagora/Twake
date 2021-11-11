@@ -399,5 +399,10 @@
     "scenes.app.popup.appsparameters.pages.grp_section_name-error": "Tên này đã dùng cho ứng dụng khác. Hãy chọn tên khác.",
     "scenes.app.popup.appsparameters.pages.string_information": "Chuỗi này định danh ứng dụng của bạn và sẽ được sử dụng trong tin nhắn dòng lệnh.",
     "scenes.app.popup.appsparameters.pages.interne_availability_application": "Ứng dụng nội bộ",
-    "scenes.app.popup.appsparameters.pages.json_configuration_information": "Đi tới phần tài liệu và khởi tạo cấu hình với địn dạng JSON."
+    "scenes.app.popup.appsparameters.pages.json_configuration_information": "Đi tới phần tài liệu và khởi tạo cấu hình với địn dạng JSON.",
+    "scenes.app.popup.appsparameters.pages.write_privileges_label": "Quyền ghi",
+    "scenes.app.popup.appsparameters.pages.danger_zone_small_text": "Bạn không thể xóa ứng dụng này nếu nó đã được phát hành.",
+    "scenes.app.popup.appsparameters.pages.url_reception_events_label": "Đường dẫn sự kiện",
+    "scenes.app.popup.appsparameters.pages.waiting_availability_application": "Hãy đợi...",
+    "scenes.app.popup.appsparameters.pages.website_label": "Trang mạng"
 }
