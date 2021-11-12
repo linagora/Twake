@@ -78,10 +78,6 @@ export default (props: PropsType): JSX.Element => {
         </Typography.Text>
       </div>
 
-      <div className="magic-links-wrapper">
-        <MagicLinks></MagicLinks>
-       </div>
-
       <div className="add-user-button-container">
         <Button
           type="primary"
@@ -94,6 +90,13 @@ export default (props: PropsType): JSX.Element => {
             : Languages.t('general.add')}
         </Button>
       </div>
+
+      <hr/>
+
+      <div className="magic-links-wrapper">
+        <MagicLinks/>
+       </div>
+
     </div>
   );
 };
