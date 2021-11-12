@@ -33,7 +33,7 @@ class MagicLinksService {
 
     deleteToken(token: string): Promise<undefined> {
         this.loading(true);
-        return Api.delete(this.route + '/' + token).then(a => undefined).finally(() => this.loading(false));
+        return Api.delete(`${this.route}/${token}`).then(a => undefined).finally(() => this.loading(false));
     }
 }
 
@@ -57,7 +57,7 @@ export default (props: PropsType): JSX.Element => {
 
     useEffect(() => { init();}, []);
 
-    useEffect(() => { setLink(window.location.origin + '/join/' + currentToken); }, [currentToken]);
+    useEffect(() => { setLink(`${window.location.origin}/join/${currentToken}`); }, [currentToken]);
 
     const init = () => {
         magicLinksService.getCurrentTokens().then(resources => {
