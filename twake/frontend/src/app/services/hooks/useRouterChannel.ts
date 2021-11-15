@@ -1,22 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
+import { RouterState, RouterChannelSelector } from 'app/state/recoil/atoms/Router';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import RouterService from '../RouterService';
 
 export default function useRouterChannel() {
-  const channelIdFromRoute = RouterService.getStateFromRoute().channelId;
-
-  const [channelId, setchannelId] = useState<string | undefined>(channelIdFromRoute);
-  const handleStateFromRoute = useCallback(
-    function () {
-      const channelId = channelIdFromRoute;
-      setchannelId(channelId);
-    },
-
-    [channelIdFromRoute],
-  );
-
-  useEffect(() => {
-    handleStateFromRoute();
-  }, [handleStateFromRoute]);
+  const setClientState = useSetRecoilState(RouterState);
+  RouterService.setRecoilState = setClientState;
+  const channelId = useRecoilValue(RouterChannelSelector);
 
   return channelId;
 }

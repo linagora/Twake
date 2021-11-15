@@ -10,19 +10,18 @@ import { useCompanyWorkspaces } from 'app/state/recoil/hooks/useCompanyWorkspace
 
 import './WorkspacesBar.scss';
 import useRouterCompany from 'app/services/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
+
 
 export default () => {
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace();
   const [workspaces] = useCompanyWorkspaces(companyId);
-
+  
   return (
     <Layout.Sider className={'workspaces_view'} width={70}>
       <PerfectScrollbar component="div" className="list">
         {workspaces.map((ws: WorkspaceType) => (
-           
-          <Workspace key={ws.id} workspace={ws} isSelected={workspaceId === ws.id} />
+          
+          <Workspace key={ws.id} workspace={ws}/>
           
         ))}
       </PerfectScrollbar>

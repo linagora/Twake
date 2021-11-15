@@ -1,21 +1,11 @@
-import { useState, useCallback, useEffect } from 'react';
+import { RouterCompanySelector, RouterState } from 'app/state/recoil/atoms/Router';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import RouterService from '../RouterService';
 
 export default function useRouterCompany() {
-  const companyIdFromRoute = RouterService.getStateFromRoute().companyId;
-
-  const [companyId, setCompanyId] = useState<string | undefined>(companyIdFromRoute);
-  const handleStateFromRoute = useCallback(
-    function () {
-      const companyId = companyIdFromRoute;
-      setCompanyId(companyId);
-    },
-    [companyIdFromRoute],
-  );
-
-  useEffect(() => {
-    handleStateFromRoute();
-  }, [handleStateFromRoute]);
+  const setClientState = useSetRecoilState(RouterState);
+  RouterService.setRecoilState = setClientState;
+  const companyId = useRecoilValue(RouterCompanySelector);
 
   return companyId;
 }

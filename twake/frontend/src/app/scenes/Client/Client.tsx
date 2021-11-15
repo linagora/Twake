@@ -29,17 +29,17 @@ import './Client.scss';
 import useRouterCompany from 'app/services/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
 
-export default (): JSX.Element => {
+export default React.memo((): JSX.Element => {
   
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace();
+  const workspaceId = useRouterWorkspace(); 
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const user = useCurrentUser();
 
-  popupService.useListener(useState);
+  /*popupService.useListener(useState);
   Workspaces.useListener(useState);
   Languages.useListener(useState);
-  LoginService.useListener(useState);
+  LoginService.useListener(useState);*/
 
   useEffect(() => {
     LoginService.init();
@@ -99,4 +99,5 @@ export default (): JSX.Element => {
       <ChatUploadsViewer />
     </>
   );
-};
+});
+

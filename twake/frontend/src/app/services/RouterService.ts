@@ -44,6 +44,7 @@ class RouterServices extends Observable {
   public history: History<unknown> = createBrowserHistory();
   public match = (pathSchema: string): match<object> | null =>
     matchPath(this.history.location.pathname, { path: pathSchema });
+  public setRecoilState: (state: ClientStateType) => void = _ => {};
 
   //List of client sub paths
   clientSubPathnames: Readonly<string[]> = [
@@ -126,6 +127,7 @@ class RouterServices extends Observable {
     super();
     this.history.listen(() => {
       this.notify();
+      this.setRecoilState(this.getStateFromRoute());
     });
   }
 

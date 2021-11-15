@@ -6,17 +6,20 @@ import WorkspaceIcon from './WorkspaceIcon';
 import { WorkspaceType } from 'app/models/Workspace';
 
 import './Workspace.scss';
+import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
 
 type Props = {
   workspace: WorkspaceType;
-  isSelected: boolean;
+  
 };
 
-export default ({ workspace, isSelected = false }: Props): JSX.Element => {
+export default ({workspace}: Props): JSX.Element => {
+  const routerWorkspace = useRouterWorkspace();
+ 
   return (
     <WorkspaceIcon
       workspace={workspace}
-      selected={isSelected}
+      selected={routerWorkspace === workspace.id}
       onClick={() => WorkspacesService.select(workspace)}
     />
   );
