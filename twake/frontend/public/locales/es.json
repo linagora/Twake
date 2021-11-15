@@ -822,7 +822,10 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application": "Eliminar de la empresa",
     "scenes.app.integrations_parameters.company_applications_table.name": "Nombre",
     "scenes.app.integrations_parameters.company_applications_table.title": "Instalado en su empresa",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "{{$1}} eliminado correctamente de su empresa",
-    "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} instalado correctamente en su empresa",
-    "scenes.apps.messages.input.replied_to" : "respondió a "
+    "app.state.recoil.hooks.use_current_company_applications.toaster_delete": "{{$1}} eliminado correctamente de su empresa",
+    "app.state.recoil.hooks.use_current_company_applications.toaster_add": "{{$1}} instalado correctamente en su empresa",
+    "components.emoji_picker.categories.activity": "Actividad",
+    "scenes.client.main_view.main_header.search_input": "Buscar",
+    "general.pause": "Pausa",
+    "scenes.apps.messages.input.replied_to": "respondió a "
 }
