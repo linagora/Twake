@@ -10,7 +10,7 @@ type Props = {
 };
 
 export default ({ threadId, companyId }: Props) => {
-  const messages = useThreadMessages({ companyId, threadId });
+  const { messages } = useThreadMessages({ companyId, threadId });
   return (
     <div>
       <Virtuoso

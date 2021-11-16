@@ -11,7 +11,7 @@ type Props = {
 
 export default ({ channelId, companyId, workspaceId }: Props) => {
   const virtuosoRef = useRef(null);
-  const messages = useChannelMessages({ companyId, workspaceId, channelId });
+  const { messages, loadMore } = useChannelMessages({ companyId, workspaceId, channelId });
   return (
     <div>
       <Virtuoso
@@ -20,10 +20,15 @@ export default ({ channelId, companyId, workspaceId }: Props) => {
         style={{ height: '400px' }}
         totalCount={messages.length}
         itemContent={index => (
-          <Thread companyId={messages[index].companyId} threadId={messages[index].threadId} />
+          <Suspense fallback="">
+            <Thread companyId={messages[index].companyId} threadId={messages[index].threadId} />
+          </Suspense>
         )}
         followOutput={'smooth'}
       />
+      <a href="#" onClick={() => loadMore()}>
+        More
+      </a>
     </div>
   );
 };

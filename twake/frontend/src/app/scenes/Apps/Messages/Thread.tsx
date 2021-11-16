@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default ({ threadId, companyId }: Props) => {
-  let messages = useThreadMessages({ companyId, threadId });
+  let { messages } = useThreadMessages({ companyId, threadId });
   return (
     <div style={{ border: '1px solid black', padding: 8 }}>
       <Message companyId={companyId} threadId={threadId} messageId={threadId} />
