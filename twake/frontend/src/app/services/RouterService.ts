@@ -6,6 +6,7 @@ import App from 'app/scenes/App';
 import Login from 'app/scenes/Login/Login';
 import Logout from 'app/scenes/Login/Logout';
 import Error from 'app/scenes/Error/Error';
+import Join from 'app/scenes/Join/Join';
 import Collections from 'services/Depreciated/Collections/Collections';
 
 import Workspaces from 'services/workspaces/workspaces';
@@ -65,6 +66,7 @@ class RouterServices extends Observable {
     LOGIN: '/login',
     LOGOUT: '/logout',
     ERROR: '/error',
+    JOIN: '/join/:token'
   };
 
   UUIDsToTranslate: Readonly<string[]> = [
@@ -119,6 +121,15 @@ class RouterServices extends Observable {
       path: this.pathnames.ERROR,
       exact: true,
       component: Error,
+    },
+    {
+      path: this.pathnames.JOIN,
+      exact: false,
+      key: 'join',
+      component: Join,
+      options: {
+        withErrorBoundary: false,
+      },
     },
   ];
 

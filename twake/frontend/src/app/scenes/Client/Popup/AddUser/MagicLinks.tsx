@@ -4,40 +4,11 @@ import { DeleteOutlined, RetweetOutlined } from '@ant-design/icons';
 import Languages from 'services/languages/languages';
 import RouterServices from 'services/RouterService';
 import './MagicLinks.scss';
-import Api from 'app/services/Api';
-
+import { MagicLinksGeneratorService } from 'services/MagicLinks/MagicLinks';
 
 type PropsType = {
     [key: string]: any;
 };
-
-type MagicLinksResponse = {
-    token: string
-}
-
-class MagicLinksService {
-
-    constructor(protected companyId: string, protected workspaceId: string, protected loading = (arg: boolean) => { }) { }
-
-    private route = `/internal/services/workspaces/v1/companies/${this.companyId}/workspaces/${this.workspaceId}/users/tokens`;
-
-    getCurrentTokens(): Promise<MagicLinksResponse[] | null> {
-        this.loading(true);
-        return Api.get<{ resources: MagicLinksResponse[] }>(this.route).then((a) => (a.resources) ? a.resources : null).finally(() => this.loading(false));
-    }
-
-    recreateToken(): Promise<MagicLinksResponse> {
-        this.loading(true);
-        return Api.post<any, { resource: MagicLinksResponse }>(this.route, {}).then(a => a.resource).finally(() => this.loading(false));
-    }
-
-    deleteToken(token: string): Promise<undefined> {
-        this.loading(true);
-        return Api.delete(`${this.route}/${token}`).then(a => undefined).finally(() => this.loading(false));
-    }
-}
-
-
 
 export default (props: PropsType): JSX.Element => {
     const { companyId, workspaceId } = RouterServices.getStateFromRoute();
@@ -53,7 +24,7 @@ export default (props: PropsType): JSX.Element => {
         setDisabled(val);
     };
 
-    const magicLinksService = new MagicLinksService(companyId!, workspaceId!, busy);
+    const magicLinksService = new MagicLinksGeneratorService(companyId!, workspaceId!, busy);
 
     useEffect(() => { init();}, []);
 
