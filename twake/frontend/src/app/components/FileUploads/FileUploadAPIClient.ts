@@ -63,7 +63,7 @@ class FileUploadAPIClient {
   public delete({ companyId, fileId }: DeleteContextType): Promise<ResponseDeleteFileType> {
     const deleteFileRoute = this.getRoute({ companyId, fileId });
 
-    return Api.delete<undefined, ResponseDeleteFileType>(deleteFileRoute, undefined);
+    return Api.delete<ResponseDeleteFileType>(deleteFileRoute, undefined);
   }
 
   public download({ companyId, fileId }: DownloadContextType): Promise<Blob> {
