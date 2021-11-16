@@ -1,5 +1,5 @@
 import { TwakeService } from '../../../Decorators/TwakeService';
-import { NodeMessage } from 'app/models/Message';
+import { MessageWithReplies, NodeMessage } from 'app/models/Message';
 import MessageViewAPIClient from './MessageViewAPIClient';
 import MessageThreadAPIClient from './MessageThreadAPIClient';
 import Api from 'app/services/Api';
@@ -29,7 +29,7 @@ class MessageAPIClient {
   }
 
   async get(companyId: string, threadId: string, messageId: string) {
-    const response = await Api.get<{ resource: NodeMessage }>(
+    const response = await Api.get<{ resource: MessageWithReplies }>(
       `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}`,
     );
     return response.resource;

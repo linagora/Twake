@@ -1,4 +1,4 @@
-import React, { createRef, RefObject } from 'react';
+import React, { createRef, RefObject, Suspense } from 'react';
 import { IndexLocationWithAlign, ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import classNames from 'classnames';
 import { Spin } from 'antd';
@@ -520,18 +520,21 @@ export default class MessagesList extends React.Component<Props, State> {
 
                 return (
                   <div>
-                    <Message
-                      deleted={deleted}
-                      noReplies={deleted}
-                      key={message.id || message.front_id}
-                      messageId={message.id || message.front_id || ''}
-                      threadHeader={this.props.threadId}
-                      previousMessageId={this.getPreviousMessage(message)?.id || ''}
-                      unreadAfter={this.props.unreadAfter}
-                      highlighted={highlight}
-                      collectionKey={this.props.collectionKey}
-                      repliesAsLink={!this.props.threadId}
-                    />
+                    <Suspense fallback={<></>}>
+                      <Message
+                        channel={this.props.channel}
+                        deleted={deleted}
+                        noReplies={deleted}
+                        key={message.id || message.front_id}
+                        messageId={message.id || message.front_id || ''}
+                        threadHeader={this.props.threadId}
+                        previousMessageId={this.getPreviousMessage(message)?.id || ''}
+                        unreadAfter={this.props.unreadAfter}
+                        highlighted={highlight}
+                        collectionKey={this.props.collectionKey}
+                        repliesAsLink={!this.props.threadId}
+                      />
+                    </Suspense>
                   </div>
                 );
               }}
