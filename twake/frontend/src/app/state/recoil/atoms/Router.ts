@@ -1,4 +1,4 @@
-import { atom, selector } from 'recoil';
+import { atom, selector, selectorFamily } from 'recoil';
 
 import { ClientStateType } from 'app/services/RouterService';
 
@@ -21,4 +21,20 @@ export const RouterWorkspaceSelector = selector<string>({
 export const RouterChannelSelector = selector<string>({
   key: 'RouterChannelSelector',
   get: ({ get }) => get(RouterState)?.channelId || '',
+});
+
+export const RouterChannelSelectedSelector = selectorFamily<boolean, string>({
+  key: 'RouterChannelSelectedSelector',
+  get:
+    testedChannelId =>
+    ({ get }) =>
+      get(RouterState)?.channelId === testedChannelId,
+});
+
+export const RouterWorkspaceSelectedSelector = selectorFamily<boolean, string>({
+  key: 'RouterWorkspaceSelectedSelector',
+  get:
+    testedWorkspaceId =>
+    ({ get }) =>
+      get(RouterState)?.workspaceId === testedWorkspaceId,
 });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
 import Languages from 'services/languages/languages';
 import { Table, Row, Col, Typography, Divider } from 'antd';
 import AlertManager from 'services/AlertManager/AlertManager';
@@ -14,10 +15,10 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import Api from 'app/services/Api';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import _ from 'lodash';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
-import useRouterCompany from 'app/services/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+
 
 type ColumnObjectType = { [key: string]: any };
 

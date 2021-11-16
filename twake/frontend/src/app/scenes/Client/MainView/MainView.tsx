@@ -9,11 +9,12 @@ import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import { useWatcher } from 'app/services/Observable/Observable';
 import AccountStatusComponent from 'app/components/OnBoarding/AccountStatusComponent';
 import CompanyBillingBanner from 'app/components/OnBoarding/CompanyBillingBanner';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
 
 import './MainView.scss';
-import useRouterCompany from 'app/services/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
-import useRouterChannel from 'app/services/hooks/useRouterChannel';
+
 
 
 type PropsType = {
@@ -43,7 +44,7 @@ const MainView: FC<PropsType> = ({ className }) => {
       {!!channelId && ready && (
         <>
           <AccountStatusComponent />
-          {companyId && <CompanyBillingBanner companyId={companyId} />}
+          {companyId && <CompanyBillingBanner companyId={companyId || ""} />}
           <MainHeader />
           <MainContent />
         </>

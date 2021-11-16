@@ -9,8 +9,6 @@ import ChannelsApps, { CompanyApplications } from './ChannelsApps/ChannelsApps';
 import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
 import ChannelsUser from './ChannelsUser/ChannelsUser';
 import Footer from './Parts/Footer.js';
-import RouterServices from 'app/services/RouterService';
-import './ChannelsBar.scss';
 import Shortcuts, { defaultShortcutsMap, ShortcutType } from 'app/services/ShortcutService';
 import AddUserButton from 'components/AddUserButton/AddUserButton';
 import Workspaces from 'services/workspaces/workspaces';
@@ -20,6 +18,12 @@ import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/Sc
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import AccessRightsService from 'app/services/AccessRightsService';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+
+import './ChannelsBar.scss';
+
+
 
 const LoadingChannels = () => {
   return (
@@ -44,9 +48,12 @@ const LoadingChannels = () => {
 };
 
 export default () => {
-  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
+  //const { companyId, workspaceId } = RouterServices.getStateFromRoute();
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace(); 
 
-  const ready = ChannelsBarService.useWatcher(() => {
+  //Need to be fix, here ready always == true
+  const ready = true || ChannelsBarService.useWatcher(() => {
     return (
       ChannelsBarService.isReady(companyId, workspaceId) &&
       //ChannelsBarService.isReady(companyId, workspaceId, ['applications']) &&

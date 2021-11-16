@@ -7,9 +7,9 @@ import { WorkspaceType } from 'app/models/Workspace';
 import Group from './Components/Group/Group';
 import Workspace from './Components/Workspace/Workspace';
 import { useCompanyWorkspaces } from 'app/state/recoil/hooks/useCompanyWorkspaces';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 
 import './WorkspacesBar.scss';
-import useRouterCompany from 'app/services/hooks/useRouterCompany';
 
 
 export default () => {

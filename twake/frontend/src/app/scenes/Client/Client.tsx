@@ -24,10 +24,10 @@ import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 
 import './Client.scss';
-import useRouterCompany from 'app/services/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
 
 export default React.memo((): JSX.Element => {
   

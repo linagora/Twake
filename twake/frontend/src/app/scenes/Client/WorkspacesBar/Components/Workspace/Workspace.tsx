@@ -4,9 +4,9 @@ import React from 'react';
 import WorkspacesService from 'services/workspaces/workspaces';
 import WorkspaceIcon from './WorkspaceIcon';
 import { WorkspaceType } from 'app/models/Workspace';
+import useRouterWorkspaceSelected from 'app/state/recoil/hooks/useRouterWorkspaceSelected';
 
 import './Workspace.scss';
-import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
 
 type Props = {
   workspace: WorkspaceType;
@@ -14,12 +14,11 @@ type Props = {
 };
 
 export default ({workspace}: Props): JSX.Element => {
-  const routerWorkspace = useRouterWorkspace();
  
   return (
     <WorkspaceIcon
       workspace={workspace}
-      selected={routerWorkspace === workspace.id}
+      selected={useRouterWorkspaceSelected(workspace.id)}
       onClick={() => WorkspacesService.select(workspace)}
     />
   );

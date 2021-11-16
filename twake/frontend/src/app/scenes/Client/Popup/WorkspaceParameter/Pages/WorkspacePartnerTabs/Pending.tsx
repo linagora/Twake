@@ -7,8 +7,9 @@ import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import { ColumnsType } from 'antd/lib/table';
 import Api from 'app/services/Api';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
-import useRouterCompany from 'app/services/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/services/hooks/useRouterWorkspace';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+
 
 type PendingEmailResourceType = {
   company_role: string;

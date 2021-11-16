@@ -1,6 +1,6 @@
+import RouterService from 'app/services/RouterService';
 import { RouterState, RouterWorkspaceSelector } from 'app/state/recoil/atoms/Router';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import RouterService from '../RouterService';
 
 export default function useRouterWorkspace() {
   const setClientState = useSetRecoilState(RouterState);
