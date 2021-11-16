@@ -123,7 +123,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const workspaceToCreate: Workspace = getWorkspaceInstance({
       ...workspace,
       ...{
-        name: await this.getWorkspaceName(workspace.name, workspace.company_id),
+        name: await this.getWorkspaceName(workspace.name, workspace.company_id, workspace.id),
         dateAdded: Date.now(),
         isDeleted: false,
         isArchived: false,
@@ -194,7 +194,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     }
 
     workspace = merge(workspace, {
-      name: await this.getWorkspaceName(item.name, context.company_id),
+      name: await this.getWorkspaceName(item.name, context.company_id, workspace.id),
       logo: item.logo,
       isArchived: item.isArchived,
       isDefault: item.isDefault,
@@ -507,14 +507,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
    * @param companyId company that user excepted to create or update the workspace
    * @returns if workspace name is already used in the company, this will return the exceptedName with the current duplicates number otherwise simply return the exceptedName
    */
-  private async getWorkspaceName(exceptedName: string, companyId: string) {
+  private async getWorkspaceName(exceptedName: string, companyId: string, workspaceId: string) {
     const workspacesList = await this.list(
       null,
       {},
       { company_id: companyId, user: { id: null, server_request: true } },
     );
 
-    workspacesList.filterEntities(entity => _.includes(entity.name, exceptedName));
+    workspacesList.filterEntities(
+      entity => entity.id !== workspaceId && _.includes(entity.name, exceptedName),
+    );
 
     const shouldRenameWorkspace = !workspacesList.isEmpty();
     const duplicatesCount = workspacesList.getEntities().length;
