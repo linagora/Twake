@@ -2,6 +2,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import { Message } from '../../../models/Message';
 import userAsyncGet from 'services/user/AsyncGet';
+import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 export const getSender = (message: Message | undefined) => {
   var senderData: any = {
@@ -22,22 +23,24 @@ export const getSender = (message: Message | undefined) => {
           id: message.sender,
         };
       } else {
-        senderData = {...senderData};
+        senderData = { ...senderData };
         senderData.type = 'user';
       }
     }
 
     if (message.message_type === 1) {
       //App message
-      var app = DepreciatedCollections.get('applications').find(message.application_id) || {};
-      if (!app.id) {
-        WorkspacesApps.getApp(message.application_id);
-      } else {
+      var app = getApplication(message.application_id || '');
+      if (!app?.id) {
+        app = getApplication(message.application_id || '');
+      }
+
+      if (app?.id) {
         senderData = {
           type: 'app',
           application: app,
-          username: 'app#' + app?.simple_name,
-          firstname: app.name,
+          username: 'app#' + app?.identity?.code,
+          firstname: app.identity?.icon,
           lastname: '',
           thumbnail: WorkspacesApps.getAppIcon(app),
         };

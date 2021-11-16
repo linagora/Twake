@@ -14,7 +14,7 @@ import Checklist from './Parts/Checklist.js';
 import TagPicker from 'components/TagPicker/TagPicker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import { ObjectModal, ObjectModalFormTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
 
 import './Modal.scss';

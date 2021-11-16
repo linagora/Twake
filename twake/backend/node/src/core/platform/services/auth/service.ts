@@ -23,6 +23,9 @@ export class AuthService implements AuthServiceAPI {
     return jwt.verify(token, this.configuration.secret) as JWTObject;
   }
 
+  verifyTokenObject<T>(token: string): T {
+    return jwt.verify(token, this.configuration.secret) as T;
+  }
   generateJWT(
     userId: uuid,
     email: string,

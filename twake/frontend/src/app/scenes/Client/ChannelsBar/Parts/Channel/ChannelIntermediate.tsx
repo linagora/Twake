@@ -44,6 +44,7 @@ export default (props: Props): JSX.Element => {
   const { avatar, name } = isDirectChannel
     ? getUserParts({
         usersIds: props.channel.members || [],
+        displayOnline: true,
       })
     : { avatar: '', name: '' };
 

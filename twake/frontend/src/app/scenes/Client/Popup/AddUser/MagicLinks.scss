@@ -1,0 +1,26 @@
+.magic-links {
+
+    margin-top:2px;
+    padding-top:8px;
+    border-top:1px solid var(--grey-light);
+
+    .link-input {
+        .ant-input-affix-wrapper {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .link-input-suffix {
+            .action-button {
+                color: var(--grey-dark);
+                margin-left: 4px;
+            }
+            .action-button:first-child {
+                margin-left: 2px;
+            }
+        }
+
+        .ant-input-search-button span {
+            text-transform: uppercase;
+        }
+    }
+}

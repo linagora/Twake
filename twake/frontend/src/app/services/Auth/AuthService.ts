@@ -13,9 +13,18 @@ import WindowState from 'services/utils/window';
 import Application from 'services/Application';
 import LocalStorage from 'services/LocalStorage';
 import Collections from 'services/Collections/Collections';
+import Globals from '../Globals';
 
-type AccountType = 'console' | 'internal';
-export type LoginState = '' | 'app' | 'error' | 'signin' | 'verify_mail' | 'forgot_password' | 'logged_out' | 'logout';
+type AccountType = 'console' | 'internal';
+export type LoginState =
+  | ''
+  | 'app'
+  | 'error'
+  | 'signin'
+  | 'verify_mail'
+  | 'forgot_password'
+  | 'logged_out'
+  | 'logout';
 type InitState = '' | 'initializing' | 'initialized';
 
 @TwakeService('AuthService')
@@ -34,7 +43,7 @@ class AuthService {
       return this.provider;
     }
 
-    const accountType = this.getAccountType();
+    let accountType = this.getAccountType();
     if (!accountType) {
       this.logger.info('No server account configuration');
       this.provider = this.getDefaultProvider();
@@ -43,6 +52,8 @@ class AuthService {
     }
 
     const config = InitService.server_infos?.configuration?.accounts[accountType];
+
+    if (Globals.environment.env_dev_auth) accountType = Globals.environment.env_dev_auth;
 
     if (accountType === 'console') {
       this.provider = new OIDCAuthProviderService(config as ConsoleConfiguration);
@@ -76,18 +87,14 @@ class AuthService {
    */
   onSessionExpired() {
     this.logger.error('Session expired, displaying alert');
-    AlertManager.confirm(
-      () => this.logout(),
-      undefined,
-      {
-        title: Languages.t('login.session.expired', undefined, 'Session expired'),
-        text: Languages.t('login.session.expired.text', undefined, 'Click on OK to reconnect'),
-      },
-    );
+    AlertManager.confirm(() => this.logout(), undefined, {
+      title: Languages.t('login.session.expired', undefined, 'Session expired'),
+      text: Languages.t('login.session.expired.text', undefined, 'Click on OK to reconnect'),
+    });
   }
 
-  async init(): Promise<UserType | null> {
-    return new Promise((resolve) => {
+  async init(): Promise<UserType | null> {
+    return new Promise(resolve => {
       this.logger.debug(`Initializing state=${this.initState}`);
       if (['initializing', 'initialized'].includes(this.initState)) {
         this.logger.debug(`LoginService is already in ${this.initState}`);
@@ -109,10 +116,10 @@ class AuthService {
           }
         },
         onInitialized: () => {
-          this.logger.info("Auth provider is initialized");
+          this.logger.info('Auth provider is initialized');
           this.initState = 'initialized';
           resolve(null);
-        }
+        },
       });
     });
   }
@@ -120,8 +127,8 @@ class AuthService {
   onNewToken(token?: JWTDataType): void {
     if (token) {
       JWT.updateJWT(token);
-    // TODO: Update the user from API?
-    // this.updateUser();
+      // TODO: Update the user from API?
+      // this.updateUser();
     }
   }
 
@@ -136,7 +143,8 @@ class AuthService {
 
     let error = false;
 
-    return provider.signIn(params)
+    return provider
+      .signIn(params)
       .then(() => this.logger.info('SignIn complete'))
       .catch((err: Error) => {
         this.logger.error('Provider signIn Error', err);
@@ -154,17 +162,17 @@ class AuthService {
 
     const shouldReload = reload && window.location.pathname !== '/logout';
 
-    return new Promise(async (resolve) => {
+    return new Promise(async resolve => {
       try {
-          await UserAPIClient.logout();
-          this.getProvider().signOut && (await this.getProvider().signOut!({ reload: shouldReload }));
-          this.logger.debug('SignOut complete');
-          resolve();
-        } catch (err) {
-          this.logger.error('Error while signin out', err);
-          resolve();
-        }
-      });
+        await UserAPIClient.logout();
+        this.getProvider().signOut && (await this.getProvider().signOut!({ reload: shouldReload }));
+        this.logger.debug('SignOut complete');
+        resolve();
+      } catch (err) {
+        this.logger.error('Error while signin out', err);
+        resolve();
+      }
+    });
   }
 
   updateUser(callback?: (user?: UserType) => void): void {
@@ -174,7 +182,7 @@ class AuthService {
       this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);
       //this.firstInit = true;
       if (!user) {
-      //if (!res.data || res.errors?.length) {
+        //if (!res.data || res.errors?.length) {
         this.logger.debug('Error while fetching user');
         WindowState.reset();
         // TODO: Redirect
@@ -203,7 +211,7 @@ class AuthService {
 
   setCurrentUser(user: UserType) {
     this.logger.debug('Current user', user);
-    this.currentUserId = user.id || '';
+    this.currentUserId = user.id || '';
   }
 
   resetCurrentUser() {
@@ -215,7 +223,7 @@ class AuthService {
   }
 
   // TODO: Do we need to do it here?
-  private async comleteInit(): Promise<UserType | null> {
+  private async comleteInit(): Promise<UserType | null> {
     this.logger.info('Starting application');
     const user = await UserAPIClient.getCurrent(true);
     this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);

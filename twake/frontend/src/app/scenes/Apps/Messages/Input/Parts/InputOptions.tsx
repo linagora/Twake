@@ -9,6 +9,9 @@ import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
+import { Application } from 'app/models/App';
+import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
 
 type Props = {
   channelId: string;
@@ -37,14 +40,15 @@ export default (props: Props) => {
   const addon_right_icon: any[] = [];
   const addon_files: any[] = [];
   const addon_calls: any[] = [];
-  const apps = WorkspacesApps.getApps().filter(
-    (app: any) => app.display?.messages_module?.in_plus || app.display?.messages_module?.right_icon,
+
+  const apps = useCompanyApplications().companyApplications.filter(
+    (app: Application) => app.display?.twake?.chat?.input,
   );
 
   if (props.triggerApp) {
     if (apps.length > 0) {
       // eslint-disable-next-line array-callback-return
-      apps.map((app: any) => {
+      apps.map((app: Application) => {
         if (app) {
           let icon = WorkspacesApps.getAppIcon(app);
           let emoji = '';
@@ -56,24 +60,22 @@ export default (props: Props) => {
             type: 'menu',
             emoji,
             icon,
-            text: app.name,
+            text: app.identity?.name,
             onClick: (evt: any) => {
               props.triggerApp && props.triggerApp(app, undefined, evt);
             },
           };
 
           if (
-            app.simple_name === 'twake_drive' ||
-            app.display?.messages_module?.right_icon?.type === 'file'
+            app?.identity?.code === 'twake_drive' ||
+            app.display?.twake?.chat?.input?.type === 'file'
           ) {
             addon_files.push(menu_item);
           } else if (
-            app.simple_name === 'jitsi' ||
-            app.display?.messages_module?.right_icon?.type === 'call'
+            app?.identity?.code === 'jitsi' ||
+            app.display?.twake?.chat?.input?.type === 'call'
           ) {
             addon_calls.push(menu_item);
-          } else if (app.display?.messages_module?.right_icon) {
-            addon_right_icon.push(app);
           } else {
             addon_menu.push(menu_item);
           }
@@ -211,7 +213,7 @@ export default (props: Props) => {
           </Button>
         </Tooltip>
 
-        {addon_right_icon.map((app: any) => {
+        {addon_right_icon.map((app: Application) => {
           return (
             <Button
               type="text"
@@ -225,9 +227,7 @@ export default (props: Props) => {
                 className="messages-input-app-icon"
                 style={{
                   backgroundImage:
-                    'url(' +
-                    (app.display.messages_module.right_icon.icon_url || app.icon_url) +
-                    ')',
+                    'url(' + (app.display?.twake?.chat?.input?.icon || app.identity?.icon) + ')',
                 }}
               />
             </Button>

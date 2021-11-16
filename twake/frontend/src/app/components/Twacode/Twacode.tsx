@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler.js';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import './Twacode.scss';
 
 type Props = {

@@ -1,276 +1,274 @@
 import UserService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionary.js';
+import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionary';
 import anchorme from 'anchorme';
 import emojis_original_service from 'emojione';
 import Globals from 'services/Globals';
 
 class PseudoMarkdownCompiler {
+  saved_messages: { [key: string]: any } = {};
+  alphabet: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  bullets: { [key: string]: any } = {
+    '• ': () => '• ',
+    '- ': () => '- ',
+    '([0-9]+)\\. ': (match: any) => {
+      const i = parseInt(match[1]);
+      return i + 1 + '. ';
+    },
+    '([a-z])\\. ': (match: any) => {
+      const i = this.alphabet.toLowerCase().indexOf(match[1]);
+      return this.alphabet.toLowerCase()[i + 1] + '. ';
+    },
+    '([A-Z])\\. ': (match: any) => {
+      const i = this.alphabet.indexOf(match[1]);
+      return this.alphabet[i + 1] + '. ';
+    },
+  };
+
+  pseudo_markdown: { [key: string]: any } = {
+    text_block_parent: {
+      name: 'text',
+      object: PseudoMarkdownDictionary.render_block.text_block_parent.object,
+      simple_object: (child: any) => child,
+    },
+    text: {
+      name: 'text',
+      object: PseudoMarkdownDictionary.render_block.text.object,
+      simple_object: (child: any) => child,
+    },
+    '\n': {
+      name: 'br',
+      end: '^',
+      allowed_chars: '.',
+      object: PseudoMarkdownDictionary.render_block.br.object,
+      simple_object: (child: any) => child,
+    },
+    '[': {
+      name: 'markdown_link',
+      allowed_char_before: '', //"(^| )",
+      allowed_chars: '.+?\\]\\([^ ]+',
+      disable_recursion: true,
+      end: '\\)',
+      object: PseudoMarkdownDictionary.render_block.markdown_link.object,
+    },
+    ':': {
+      name: 'emoji',
+      allowed_char_before: '', //"(^| )",
+      allowed_chars: '[a-z_]+',
+      disable_recursion: true,
+      end: ':',
+      object: PseudoMarkdownDictionary.render_block.emoji.object,
+    },
+    '@': {
+      name: 'user',
+      allowed_char_before: '(^|\\B)',
+      allowed_chars: '[a-z_.-A-Z0-9:]+',
+      disable_recursion: true,
+      after_end: ' |$|[^a-zA-Z0-9]',
+      object: PseudoMarkdownDictionary.render_block.user.object,
+      simple_object: (child: any, obj: any) => '@' + (obj.content || '').split(':')[0] + ' ',
+      text_transform: (PseudoMarkdownDictionary.render_block.user as any).text_transform,
+    },
+    '#': {
+      name: 'channel',
+      allowed_char_before: '(^|\\B)',
+      allowed_chars: '[a-z_.-A-Z0-9\u00C0-\u017F:]+',
+      disable_recursion: true,
+      after_end: ' |$[^a-zA-Z0-9]',
+      object: PseudoMarkdownDictionary.render_block.channel.object,
+      simple_object: (child: any, obj: any) => '#' + (obj.content || '').split(':')[0] + ' ',
+      text_transform: (PseudoMarkdownDictionary.render_block.channel as any).text_transform,
+    },
+    '```': {
+      name: 'mcode',
+      end: '```',
+      after_end: '$|\n',
+      view: true,
+      allowed_chars: '(.|\n)',
+      disable_recursion: true,
+      object: PseudoMarkdownDictionary.render_block.mcode.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.mcode as any).text_transform,
+      simple_object: (child: any, obj: any) => {
+        const str = (obj.content || '').trim();
+        return str.length > 40 ? str.substr(0, 37) + '...' : str;
+      },
+    },
+    '`': {
+      name: 'icode',
+      end: '`',
+      allowed_char_before: '(^|\\B)',
+      allowed_chars: '.',
+      disable_recursion: true,
+      object: PseudoMarkdownDictionary.render_block.icode.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.icode as any).text_transform,
+    },
+    __: {
+      name: 'underline',
+      end: '__',
+      allowed_char_before: '(^|\\B)',
+      allowed_chars: '.',
+      object: PseudoMarkdownDictionary.render_block.underline.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.underline as any).text_transform,
+    },
+    '~~': {
+      name: 'strikethrough',
+      end: '~~',
+      allowed_char_before: '(^|\\B)',
+      allowed_chars: '.',
+      object: PseudoMarkdownDictionary.render_block.strikethrough.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.strikethrough as any).text_transform,
+    },
+    '**': {
+      name: 'bold',
+      end: '\\*\\*',
+      allowed_char_before: '(^|\\B|.)',
+      allowed_chars: '.',
+      object: PseudoMarkdownDictionary.render_block.bold.object,
+      text_transform: PseudoMarkdownDictionary.render_block.bold.text_transform,
+    },
+    '*': {
+      name: 'italic',
+      end: '\\*',
+      allowed_char_before: '(^|\\B)',
+      allowed_chars: '.',
+      object: PseudoMarkdownDictionary.render_block.italic.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.italic as any).text_transform,
+    },
+    _: {
+      name: 'italic',
+      end: '_',
+      allowed_char_before: '(^|\\B)',
+      allowed_chars: '.',
+      object: PseudoMarkdownDictionary.render_block.italic.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.italic as any).text_transform,
+    },
+    '>>>': {
+      name: 'mquote',
+      allowed_char_before: '^',
+      view: true,
+      end: false,
+      allowed_chars: '(.|\n)',
+      object: PseudoMarkdownDictionary.render_block.mquote.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.mquote as any).text_transform,
+    },
+    '>': {
+      name: 'quote',
+      view: true,
+      allowed_char_before: '^',
+      after_end: '$|\n',
+      object: PseudoMarkdownDictionary.render_block.quote.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.quote as any).text_transform,
+    },
+  };
+
+  pseudo_markdown_types: { [key: string]: any } = {
+    nop: {
+      object: PseudoMarkdownDictionary.render_block.nop.object,
+      simple_object: (child: any) => child,
+      text_transform: (PseudoMarkdownDictionary.render_block.nop as any).text_transform,
+    },
+    url: {
+      object: PseudoMarkdownDictionary.render_block.url.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.url as any).text_transform,
+    },
+    email: {
+      object: PseudoMarkdownDictionary.render_block.email.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.email as any).text_transform,
+    },
+    system: {
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.system.object,
+      simple_object: (child: any) => child,
+      text_transform: (PseudoMarkdownDictionary.render_block.system as any).text_transform,
+    },
+    file: {
+      view: true,
+      object: PseudoMarkdownDictionary.render_block.file.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.file as any).text_transform,
+    },
+    image: {
+      view: true,
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.image.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.image as any).text_transform,
+    },
+    icon: {
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.icon.object,
+      text_transform: (PseudoMarkdownDictionary.render_block.icon as any).text_transform,
+    },
+    progress_bar: {
+      view: true,
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.progress_bar.object,
+      simple_object: (child: any, object: any) => (object.progress || 0) + '%',
+      text_transform: (PseudoMarkdownDictionary.render_block.progress_bar as any).text_transform,
+    },
+    attachment: {
+      view: true,
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.attachment.object,
+      simple_object: (child: any, object: any) => child,
+      text_transform: (PseudoMarkdownDictionary.render_block.attachment as any).text_transform,
+    },
+    button: {
+      view: true,
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.button.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.button as any).text_transform,
+    },
+    copiable: {
+      view: true,
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.copiable.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.copiable as any).text_transform,
+    },
+    input: {
+      view: true,
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.input.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.input as any).text_transform,
+    },
+    select: {
+      view: true,
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.select.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.select as any).text_transform,
+    },
+  };
+
   constructor() {
-    this.saved_messages = {};
-
-    this.alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-    this.bullets = {
-      '• ': () => '• ',
-      '- ': () => '- ',
-      '([0-9]+)\\. ': match => {
-        var i = parseInt(match[1]);
-        return i + 1 + '. ';
-      },
-      '([a-z])\\. ': match => {
-        var i = this.alphabet.toLowerCase().indexOf(match[1]);
-        return this.alphabet.toLowerCase()[i + 1] + '. ';
-      },
-      '([A-Z])\\. ': match => {
-        var i = this.alphabet.indexOf(match[1]);
-        return this.alphabet[i + 1] + '. ';
-      },
-    };
-
-    this.pseudo_markdown = {
-      text_block_parent: {
-        name: 'text',
-        object: PseudoMarkdownDictionary.render_block.text_block_parent.object,
-        simple_object: child => child,
-      },
-      text: {
-        name: 'text',
-        object: PseudoMarkdownDictionary.render_block.text.object,
-        simple_object: child => child,
-      },
-      '\n': {
-        name: 'br',
-        end: '^',
-        allowed_chars: '.',
-        object: PseudoMarkdownDictionary.render_block.br.object,
-        simple_object: child => child,
-      },
-      '[': {
-        name: 'markdown_link',
-        allowed_char_before: '', //"(^| )",
-        allowed_chars: '.+?\\]\\([^ ]+',
-        disable_recursion: true,
-        end: '\\)',
-        object: PseudoMarkdownDictionary.render_block.markdown_link.object,
-      },
-      ':': {
-        name: 'emoji',
-        allowed_char_before: '', //"(^| )",
-        allowed_chars: '[a-z_]+',
-        disable_recursion: true,
-        end: ':',
-        object: PseudoMarkdownDictionary.render_block.emoji.object,
-      },
-      '@': {
-        name: 'user',
-        allowed_char_before: '(^|\\B)',
-        allowed_chars: '[a-z_.-A-Z0-9:]+',
-        disable_recursion: true,
-        after_end: ' |$|[^a-zA-Z0-9]',
-        object: PseudoMarkdownDictionary.render_block.user.object,
-        simple_object: (child, obj) => '@' + (obj.content || '').split(':')[0] + ' ',
-        text_transform: PseudoMarkdownDictionary.render_block.user.text_transform,
-      },
-      '#': {
-        name: 'channel',
-        allowed_char_before: '(^|\\B)',
-        allowed_chars: '[a-z_.-A-Z0-9\u00C0-\u017F:]+',
-        disable_recursion: true,
-        after_end: ' |$[^a-zA-Z0-9]',
-        object: PseudoMarkdownDictionary.render_block.channel.object,
-        simple_object: (child, obj) => '#' + (obj.content || '').split(':')[0] + ' ',
-        text_transform: PseudoMarkdownDictionary.render_block.channel.text_transform,
-      },
-      '```': {
-        name: 'mcode',
-        end: '```',
-        after_end: '$|\n',
-        view: true,
-        allowed_chars: '(.|\n)',
-        disable_recursion: true,
-        object: PseudoMarkdownDictionary.render_block.mcode.object,
-        text_transform: PseudoMarkdownDictionary.render_block.mcode.text_transform,
-        simple_object: (child, obj) => {
-          const str = (obj.content || '').trim();
-          return str.length > 40 ? str.substr(0, 37) + '...' : str;
-        },
-      },
-      '`': {
-        name: 'icode',
-        end: '`',
-        allowed_char_before: '(^|\\B)',
-        allowed_chars: '.',
-        disable_recursion: true,
-        object: PseudoMarkdownDictionary.render_block.icode.object,
-        text_transform: PseudoMarkdownDictionary.render_block.icode.text_transform,
-      },
-      __: {
-        name: 'underline',
-        end: '__',
-        allowed_char_before: '(^|\\B)',
-        allowed_chars: '.',
-        object: PseudoMarkdownDictionary.render_block.underline.object,
-        text_transform: PseudoMarkdownDictionary.render_block.underline.text_transform,
-      },
-      '~~': {
-        name: 'strikethrough',
-        end: '~~',
-        allowed_char_before: '(^|\\B)',
-        allowed_chars: '.',
-        object: PseudoMarkdownDictionary.render_block.strikethrough.object,
-        text_transform: PseudoMarkdownDictionary.render_block.strikethrough.text_transform,
-      },
-      '**': {
-        name: 'bold',
-        end: '\\*\\*',
-        allowed_char_before: '(^|\\B|.)',
-        allowed_chars: '.',
-        object: PseudoMarkdownDictionary.render_block.bold.object,
-        text_transform: PseudoMarkdownDictionary.render_block.bold.text_transform,
-      },
-      '*': {
-        name: 'italic',
-        end: '\\*',
-        allowed_char_before: '(^|\\B)',
-        allowed_chars: '.',
-        object: PseudoMarkdownDictionary.render_block.italic.object,
-        text_transform: PseudoMarkdownDictionary.render_block.italic.text_transform,
-      },
-      _: {
-        name: 'italic',
-        end: '_',
-        allowed_char_before: '(^|\\B)',
-        allowed_chars: '.',
-        object: PseudoMarkdownDictionary.render_block.italic.object,
-        text_transform: PseudoMarkdownDictionary.render_block.italic.text_transform,
-      },
-      '>>>': {
-        name: 'mquote',
-        allowed_char_before: '^',
-        view: true,
-        end: false,
-        allowed_chars: '(.|\n)',
-        object: PseudoMarkdownDictionary.render_block.mquote.object,
-        simple_object: child => '',
-        text_transform: PseudoMarkdownDictionary.render_block.mquote.text_transform,
-      },
-      '>': {
-        name: 'quote',
-        view: true,
-        allowed_char_before: '^',
-        after_end: '$|\n',
-        object: PseudoMarkdownDictionary.render_block.quote.object,
-        simple_object: child => '',
-        text_transform: PseudoMarkdownDictionary.render_block.quote.text_transform,
-      },
-    };
-
-    this.pseudo_markdown_types = {
-      nop: {
-        object: PseudoMarkdownDictionary.render_block.nop.object,
-        simple_object: child => child,
-        text_transform: PseudoMarkdownDictionary.render_block.nop.text_transform,
-      },
-      url: {
-        object: PseudoMarkdownDictionary.render_block.url.object,
-        text_transform: PseudoMarkdownDictionary.render_block.url.text_transform,
-      },
-      email: {
-        object: PseudoMarkdownDictionary.render_block.email.object,
-        text_transform: PseudoMarkdownDictionary.render_block.email.text_transform,
-      },
-      system: {
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.system.object,
-        simple_object: child => child,
-        text_transform: PseudoMarkdownDictionary.render_block.system.text_transform,
-      },
-      file: {
-        view: true,
-        object: PseudoMarkdownDictionary.render_block.file.object,
-        simple_object: child => '',
-        text_transform: PseudoMarkdownDictionary.render_block.file.text_transform,
-      },
-      image: {
-        view: true,
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.image.object,
-        simple_object: child => '',
-        text_transform: PseudoMarkdownDictionary.render_block.image.text_transform,
-      },
-      icon: {
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.icon.object,
-        text_transform: PseudoMarkdownDictionary.render_block.icon.text_transform,
-      },
-      progress_bar: {
-        view: true,
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.progress_bar.object,
-        simple_object: (child, object) => (object.progress || 0) + '%',
-        text_transform: PseudoMarkdownDictionary.render_block.progress_bar.text_transform,
-      },
-      attachment: {
-        view: true,
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.attachment.object,
-        simple_object: (child, object) => child,
-        text_transform: PseudoMarkdownDictionary.render_block.attachment.text_transform,
-      },
-      button: {
-        view: true,
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.button.object,
-        simple_object: child => '',
-        text_transform: PseudoMarkdownDictionary.render_block.button.text_transform,
-      },
-      copiable: {
-        view: true,
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.copiable.object,
-        simple_object: child => '',
-        text_transform: PseudoMarkdownDictionary.render_block.copiable.text_transform,
-      },
-      input: {
-        view: true,
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.input.object,
-        simple_object: child => '',
-        text_transform: PseudoMarkdownDictionary.render_block.input.text_transform,
-      },
-      select: {
-        view: true,
-        apps_only: true,
-        object: PseudoMarkdownDictionary.render_block.select.object,
-        simple_object: child => '',
-        text_transform: PseudoMarkdownDictionary.render_block.select.text_transform,
-      },
-    };
-
     Object.keys(this.pseudo_markdown).forEach(id => {
-      var item = this.pseudo_markdown[id];
+      const item = this.pseudo_markdown[id];
       this.pseudo_markdown_types[item.name] = item;
     });
 
-    Globals.window.pmc = this;
+    (Globals.window as any).pmc = this;
   }
 
-  compileStringToLinkObject(string) {
+  compileStringToLinkObject(string: string) {
     //Monkey hack for new markdown links, not the best place for this code
-    var link_found = anchorme(string.replace(/\[.*?\]\(.*?\)/gm, ''), {
+    const link_found = anchorme(string.replace(/\[.*?\]\(.*?\)/gm, ''), {
       list: true,
       ips: false,
       files: false,
     });
 
-    var result = [];
+    let result: any[] = [];
 
     if (link_found.length === 0) {
       return [string];
     } else {
-      var first_link = link_found[0];
-      var pos = string.indexOf(first_link.raw);
+      const first_link = link_found[0];
+      const pos = string.indexOf(first_link.raw);
       if (pos > 0) {
         result = result.concat(this.compileStringToLinkObject(string.slice(0, pos)));
       }
@@ -288,17 +286,17 @@ class PseudoMarkdownCompiler {
     return result;
   }
 
-  transformChannelsUsers(str) {
+  transformChannelsUsers(str: string) {
     //Users
     str = (str || '').replace(
       /(\B@)([a-z_.-A-Z0-9]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
       (full_match, match1, username, match3) => {
-        var values = username.split(':');
+        const values = username.split(':');
         if (values.length === 1) {
           if (username === 'me') {
             username = UserService.getCurrentUser().username;
           }
-          var user_id = Collections.get('users').findBy({ username: username })[0];
+          let user_id = Collections.get('users').findBy({ username: username })[0];
           if (user_id && user_id.id) {
             user_id = user_id.id;
             return match1 + username + ':' + user_id + match3;
@@ -314,12 +312,12 @@ class PseudoMarkdownCompiler {
     str = str.replace(
       /(\B#)([a-z_.-A-Z0-9\u00C0-\u017F]*[a-z_A-Z0-9-])(( |$|([^a-zA-Z0-9]|$){2}))/g,
       (full_match, match1, channel, match3) => {
-        var values = channel.split(':');
+        const values = channel.split(':');
         if (values.length === 1) {
-          var channel_id = Collections.get('channels')
+          let channel_id = Collections.get('channels')
             .findBy({})
             .filter(
-              item =>
+              (item: { [key: string]: any }) =>
                 (item.name || '').toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '') ===
                 channel,
             )[0];
@@ -337,7 +335,7 @@ class PseudoMarkdownCompiler {
     return str;
   }
 
-  transformBackChannelsUsers(str) {
+  transformBackChannelsUsers(str: string) {
     //Users
     str = str.replace(/\B(@[^\s]*?):.*?(( |$|[^a-zA-Z0-9-]))/g, '$1$2');
     //Channels
@@ -345,11 +343,11 @@ class PseudoMarkdownCompiler {
     return str;
   }
 
-  compileToJSON(str, recursive = false) {
+  compileToJSON(str: string, recursive: any = false) {
     if (!recursive) {
-      var result = [];
-      var original_str = str;
-      var _str = str.split('```'); //Priority to code
+      const result: any[] = [];
+      const original_str = str;
+      const _str = str.split('```'); //Priority to code
       _str.forEach((str, i) => {
         if (i % 2 === 0) {
           if (str) {
@@ -359,7 +357,7 @@ class PseudoMarkdownCompiler {
             str = emojis_original_service.shortnameToUnicode(str);
             str = emojis_original_service.toShort(str);
 
-            var links = this.compileStringToLinkObject(str);
+            const links = this.compileStringToLinkObject(str);
             links.forEach(item => {
               if (typeof item === 'string') {
                 result.push(this.compileToJSON(item, true));
@@ -369,7 +367,7 @@ class PseudoMarkdownCompiler {
             });
           }
         } else {
-          var object = {
+          const object = {
             start: '```',
             content: str,
             end: '\n```',
@@ -389,15 +387,15 @@ class PseudoMarkdownCompiler {
     }
 
     // eslint-disable-next-line no-redeclare
-    var original_str = str;
+    const original_str = str;
 
     // eslint-disable-next-line no-redeclare
-    var result = [];
+    let result: any = [];
 
-    var min_index_of = -1;
-    var min_index_of_key = null;
+    let min_index_of = -1;
+    let min_index_of_key: any = null;
 
-    var ret = [];
+    let ret: any = [];
     Object.keys(this.pseudo_markdown)
       .sort((a, b) => b.length - a.length)
       .forEach(starting_value => {
@@ -435,13 +433,13 @@ class PseudoMarkdownCompiler {
     str = original_str;
 
     if (min_index_of_key) {
-      var str_left = str.substr(0, min_index_of);
-      var char = min_index_of_key;
-      var str_right = str.substr(min_index_of + char.length);
+      let str_left = str.substr(0, min_index_of);
+      const char = min_index_of_key;
+      let str_right = str.substr(min_index_of + char.length);
 
       //Seach end of element in str_right
-      var match = -1;
-      var add_to_value = '';
+      let match: any = -1;
+      let add_to_value = '';
       while (match < 0 || (match && match[1][match[1].length - 1] === '\\')) {
         if (match && match !== -1) {
           //It mean we found an antislashed element
@@ -475,7 +473,7 @@ class PseudoMarkdownCompiler {
         }
 
         //Generate object
-        var object = {
+        const object = {
           start: char,
           content: this.pseudo_markdown[char].disable_recursion
             ? match[1]
@@ -501,7 +499,12 @@ class PseudoMarkdownCompiler {
     return ret;
   }
 
-  compileToHTML(json, is_app = false, event_container = undefined, text_transform = undefined) {
+  compileToHTML(
+    json: any,
+    is_app: any = false,
+    event_container: any = undefined,
+    text_transform: any = undefined,
+  ) {
     if (!text_transform) {
       text_transform = {};
     }
@@ -520,11 +523,11 @@ class PseudoMarkdownCompiler {
       json = [json];
     }
 
-    var el = null;
-    var child_contain_view = false;
-    var result = [];
+    let el = null;
+    let child_contain_view = false;
+    const result: any = [];
     try {
-      json.forEach(item => {
+      json.forEach((item: any) => {
         if (typeof item === 'string') {
           result.push(
             this.pseudo_markdown['text'].object(item, is_app, event_container, text_transform),
@@ -534,7 +537,7 @@ class PseudoMarkdownCompiler {
           child_contain_view = child_contain_view || el.child_contain_view;
           result.push(el);
         } else {
-          var type = this.pseudo_markdown[item.start];
+          let type = this.pseudo_markdown[item.start];
           if (item.type === 'compile' && is_app && typeof item.content === 'string') {
             el = this.compileToHTML(
               this.compileToJSON(item.content),
@@ -551,7 +554,7 @@ class PseudoMarkdownCompiler {
             if (type) {
               if (!type.apps_only || is_app) {
                 //If text transform do it
-                var old_text_transform = JSON.parse(JSON.stringify(text_transform));
+                const old_text_transform = JSON.parse(JSON.stringify(text_transform));
                 text_transform = JSON.parse(JSON.stringify(text_transform));
                 if (type.text_transform) {
                   Object.keys(type.text_transform).forEach(key => {
@@ -585,7 +588,7 @@ class PseudoMarkdownCompiler {
     }
     result.child_contain_view = child_contain_view;
 
-    result.forEach(item => {
+    result.forEach((item: any) => {
       if (!item.child_contain_view && child_contain_view) {
         item = this.pseudo_markdown['text_block_parent'].object(item);
       }
@@ -595,10 +598,10 @@ class PseudoMarkdownCompiler {
   }
 
   compileToSimpleHTML(
-    json,
+    json: any,
     is_app = false,
-    text_transform = undefined,
-    result_analysis = undefined,
+    text_transform: any = undefined,
+    result_analysis: any = undefined,
   ) {
     if (!text_transform) {
       text_transform = {};
@@ -624,9 +627,9 @@ class PseudoMarkdownCompiler {
       json = [json];
     }
 
+    let result: any = [];
     try {
-      var result = [];
-      json.forEach(item => {
+      json.forEach((item: any) => {
         if (typeof item === 'string') {
           result_analysis.has_string = true;
           result.push(
@@ -656,7 +659,7 @@ class PseudoMarkdownCompiler {
               if (type) {
                 if (!type.apps_only || is_app) {
                   //If text transform do it
-                  var old_text_transform = JSON.parse(JSON.stringify(text_transform));
+                  const old_text_transform = JSON.parse(JSON.stringify(text_transform));
                   text_transform = JSON.parse(JSON.stringify(text_transform));
                   if (type.text_transform) {
                     Object.keys(type.text_transform).forEach(key => {
@@ -696,7 +699,7 @@ class PseudoMarkdownCompiler {
     return result;
   }
 
-  compileToText(json, no_antislash) {
+  compileToText(json: any, no_antislash?: any) {
     if (!json) {
       return '';
     }
@@ -713,23 +716,23 @@ class PseudoMarkdownCompiler {
       json = [json];
     }
 
-    var result = '';
+    let result = '';
     try {
-      json.forEach(item => {
+      json.forEach((item: any) => {
         if (typeof item === 'string') {
-          var tmp = item;
+          let tmp = item;
           Object.keys(this.pseudo_markdown).forEach(starting_value => {
-            var starting_value_reg = starting_value;
-            var allowed_chars = this.pseudo_markdown[starting_value].allowed_chars;
+            let starting_value_reg = starting_value;
+            const allowed_chars = this.pseudo_markdown[starting_value].allowed_chars;
             if (starting_value === '*') {
               starting_value_reg = '\\*';
             }
             if (allowed_chars) {
-              var reg = new RegExp(starting_value_reg, 'gm');
+              const reg = new RegExp(starting_value_reg, 'gm');
               tmp = tmp.replace(reg + '(' + allowed_chars + ')', '\\' + starting_value + '$1');
             } else {
               // eslint-disable-next-line no-redeclare
-              var reg = new RegExp(starting_value_reg, 'gm');
+              const reg = new RegExp(starting_value_reg, 'gm');
               tmp = tmp.replace(reg, '\\' + starting_value);
             }
           });
@@ -739,7 +742,7 @@ class PseudoMarkdownCompiler {
           result += this.compileToText(item);
         } else {
           result += item.start || '';
-          var no_antislash =
+          const no_antislash =
             (this.pseudo_markdown[item.start] || {}).disable_recursion || item.type; //no recursion was set or is a type (link actually)
           result += this.compileToText(item.content, no_antislash);
           result += item.end || '';
@@ -752,17 +755,17 @@ class PseudoMarkdownCompiler {
     return this.transformBackChannelsUsers(result);
   }
 
-  insertAtCursor(myField, myValue) {
+  insertAtCursor(myField: any, myValue: any) {
     //IE support
-    if (document.selection) {
+    if ((document as any).selection) {
       myField.focus();
-      let sel = document.selection.createRange();
+      let sel = (document as any).selection.createRange();
       sel.text = myValue;
     }
     //MOZILLA and others
     else if (myField.selectionStart || myField.selectionStart === '0') {
-      var startPos = myField.selectionStart;
-      var endPos = myField.selectionEnd;
+      const startPos = myField.selectionStart;
+      const endPos = myField.selectionEnd;
       myField.value =
         myField.value.substring(0, startPos) +
         myValue +
@@ -773,31 +776,25 @@ class PseudoMarkdownCompiler {
   }
 
   //Call this function after each line break
-  autoCompleteBulletList(input, didEnter) {
-    var getCursorPos = input => {
+  autoCompleteBulletList(input: any, didEnter: any) {
+    const getCursorPos = (input: any) => {
       if ('selectionStart' in input && document.activeElement === input) {
         return {
           start: input.selectionStart,
           end: input.selectionEnd,
         };
       } else if (input.createTextRange) {
-        var sel = document.selection.createRange();
+        const sel = (document as any).selection.createRange();
         if (sel.parentElement() === input) {
-          var rng = input.createTextRange();
+          const rng = input.createTextRange();
           rng.moveToBookmark(sel.getBookmark());
-          for (
-            var len = 0;
-            rng.compareEndPoints('EndToStart', rng) > 0;
-            rng.moveEnd('character', -1)
-          ) {
+          let len = 0;
+          for (len; rng.compareEndPoints('EndToStart', rng) > 0; rng.moveEnd('character', -1)) {
             len++;
+            rng.setEndPoint('StartToStart', input.createTextRange());
           }
-          rng.setEndPoint('StartToStart', input.createTextRange());
-          for (
-            var pos = { start: 0, end: len };
-            rng.compareEndPoints('EndToStart', rng) > 0;
-            rng.moveEnd('character', -1)
-          ) {
+          const pos = { start: 0, end: len };
+          for (pos; rng.compareEndPoints('EndToStart', rng) > 0; rng.moveEnd('character', -1)) {
             pos.start++;
             pos.end++;
           }
@@ -806,7 +803,7 @@ class PseudoMarkdownCompiler {
       }
       return -1;
     };
-    var setCaretPosition = (ctrl, pos) => {
+    const setCaretPosition = (ctrl: any, pos: any) => {
       // Modern browsers
       if (ctrl.setSelectionRange) {
         ctrl.focus();
@@ -814,7 +811,7 @@ class PseudoMarkdownCompiler {
 
         // IE8 and below
       } else if (ctrl.createTextRange) {
-        var range = ctrl.createTextRange();
+        const range = ctrl.createTextRange();
         range.collapse(true);
         range.moveEnd('character', pos);
         range.moveStart('character', pos);
@@ -823,20 +820,21 @@ class PseudoMarkdownCompiler {
     };
 
     if (didEnter) {
-      var cursor_position = (getCursorPos(input) || {}).start;
+      //@ts-ignore
+      const cursor_position = (getCursorPos(input) || {}).start;
       if (cursor_position === false || cursor_position < 0) {
         return;
       }
-      var value = input.value;
+      const value = input.value;
 
-      var str_before = value.substr(0, cursor_position);
-      var str_after = value.substr(cursor_position);
+      const str_before = value.substr(0, cursor_position);
+      const str_after = value.substr(cursor_position);
 
-      var src_line_before = str_before.split('\n').pop();
-      var addon = '';
-      var to_remove = 0;
+      const src_line_before = str_before.split('\n').pop();
+      let addon = '';
+      let to_remove = 0;
       Object.keys(this.bullets).forEach(regex => {
-        var match = src_line_before.match(new RegExp('^' + regex, ''));
+        const match = src_line_before.match(new RegExp('^' + regex, ''));
         if (match) {
           if (src_line_before.length > match[0].length) {
             addon = this.bullets[regex](match);

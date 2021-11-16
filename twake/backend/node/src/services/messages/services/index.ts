@@ -51,7 +51,7 @@ export default class Service implements MessageServiceAPI {
   ) {
     this.userBookmarks = getMessageUserBookmarksServiceAPI(platformServices.database);
     this.messages = getMessageThreadMessagesServiceAPI(
-      platformServices.database,
+      platformServices,
       user,
       channel,
       files,
@@ -59,7 +59,7 @@ export default class Service implements MessageServiceAPI {
       this,
     );
     this.threads = getMessageThreadsServiceAPI(platformServices.database, this);
-    this.views = getMessageViewsServiceAPI(platformServices.database, this);
+    this.views = getMessageViewsServiceAPI(platformServices, this);
     this.engine = new MessagesEngine(
       platformServices.database,
       platformServices.pubsub,

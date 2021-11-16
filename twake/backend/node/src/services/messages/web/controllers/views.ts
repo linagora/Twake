@@ -9,13 +9,14 @@ import {
 } from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { handleError } from "../../../../utils/handleError";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import {
   ChannelViewExecutionContext,
   MessageViewListOptions,
   PaginationQueryParameters,
   MessageWithReplies,
 } from "../../types";
+import { keyBy } from "lodash";
 
 export class ViewsController
   implements
@@ -24,7 +25,8 @@ export class ViewsController
       ResourceCreateResponse<MessageWithReplies>,
       ResourceListResponse<MessageWithReplies>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(protected service: MessageServiceAPI) {}
 
   async list(
@@ -76,12 +78,52 @@ export class ViewsController
       handleError(reply, err);
     }
   }
+
+  async search(
+    request: FastifyRequest<{
+      Querystring: MessageViewSearchQueryParameters;
+      Params: {
+        company_id: string;
+      };
+    }>,
+    context: ChannelViewExecutionContext,
+  ): Promise<ResourceListResponse<MessageWithReplies>> {
+    const messages: Message[] = await this.service.views
+      .search(
+        new Pagination(request.query.page_token, request.query.limit),
+        {
+          search: request.query.q,
+          companyId: request.params.company_id,
+        },
+        context,
+      )
+      .then(a => a.getEntities());
+
+    const firstMessagesMap = keyBy(
+      await this.service.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
+      item => item.id,
+    );
+
+    const resources = messages.map((resource: Message) => {
+      const firstMessage = firstMessagesMap[resource.thread_id];
+      return {
+        ...firstMessage,
+        last_replies: resource.id != firstMessage.id ? [resource] : [],
+      } as MessageWithReplies;
+    });
+
+    return { resources };
+  }
 }
 
 export interface MessageViewListQueryParameters
   extends PaginationQueryParameters,
     MessageViewListOptions {
   include_users: boolean;
+}
+
+export interface MessageViewSearchQueryParameters extends PaginationQueryParameters {
+  q: string;
 }
 
 function getChannelViewExecutionContext(

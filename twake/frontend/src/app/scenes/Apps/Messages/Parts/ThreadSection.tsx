@@ -8,6 +8,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Icon from 'components/Icon/Icon.js';
 import { Message } from 'app/models/Message';
 import './Threads.scss';
+import UserOnlineStatus from 'app/components/OnlineUserStatus/OnlineUserStatus';
 
 type Props = {
   message?: Message;
@@ -72,11 +73,13 @@ export default class ThreadSection extends Component<Props> {
             <div className="sender-space">
               {senderData && senderData.type !== 'app' && (
                 <div
-                  className={'sender-head'}
+                  className="sender-head"
                   style={{
                     backgroundImage: "url('" + User.getThumbnail(senderData) + "')",
                   }}
-                ></div>
+                >
+                  <UserOnlineStatus user={senderData} size={this.props.small ? 'small' : 'medium'}/>
+                </div>
               )}
               {senderData && senderData.type === 'app' && (
                 <Icon

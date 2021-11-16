@@ -97,19 +97,15 @@ export default class Api {
     });
   }
 
-  static delete<Request, Response>(
+  static delete<Response>(
     route: string,
-    data: Request,
     callback?: (result: Response) => void,
     raw: boolean = false,
     options: {
       disableJWTAuthentication?: boolean;
     } = {},
-  ) {
-    return Api.request<Request, Response>(route, data, callback, raw, {
-      ...options,
-      requestType: 'delete',
-    });
+  ): Promise<Response> {
+    return Api.request(route, {}, callback, raw, { ...options, requestType: 'delete' });
   }
 
   static request<Request extends { _grouped?: unknown }, Response>(

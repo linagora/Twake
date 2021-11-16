@@ -18,6 +18,9 @@ import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServi
 import RouterServices from 'app/services/RouterService';
 import { Message } from 'app/models/Message';
 import MessageReactionService from 'app/services/Apps/Messages/MessageReactionService';
+import { Application } from 'app/models/App';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 type Props = {
   message: Message;
@@ -102,10 +105,11 @@ export default (props: Props) => {
       }
     }
 
-    var apps =
-      WorkspacesApps.getApps().filter(
-        (app: any) => ((app.display || {}).messages_module || {}).action,
+    const apps =
+      getCompanyApplications(Groups.currentGroupId).filter(
+        (app: Application) => app.display?.twake?.chat?.actions?.length,
       ) || [];
+
     if (apps.length > 0) {
       menu.push({ type: 'separator' });
       menu.push({
@@ -122,9 +126,9 @@ export default (props: Props) => {
                 <div className="text">
                   <div
                     className="menu-app-icon"
-                    style={{ backgroundImage: 'url(' + app.icon_url + ')' }}
+                    style={{ backgroundImage: 'url(' + app.identity?.icon + ')' }}
                   />
-                  {app.display.messages_module.action.description || app.name}
+                  {app.display.twake.chat.actions[0].description || app.identity?.name}
                 </div>
               </div>
             );

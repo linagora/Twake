@@ -34,6 +34,8 @@ import DriveList from './Lists/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { NewFolderInput, NewLinkInput, NewFileInput } from './DriveEditors';
+import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import Groups from 'services/workspaces/groups.js';
 
 export default class Drive extends Component {
   constructor() {
@@ -144,7 +146,7 @@ export default class Drive extends Component {
     var group = null;
     if (workspace) {
       // eslint-disable-next-line no-unused-vars
-      group = Collections.get('groups').find(workspace.group.id);
+      group = Collections.get('groups').find(workspace.group?.id || '');
     }
 
     DriveService.addPathForElement(
@@ -307,18 +309,6 @@ export default class Drive extends Component {
 
     var directory_id = directory.id;
 
-    if (directory_id) {
-      /*
-      // TODO -> Get document id and replace url
-      const url = RouterServices.generateRouteFromState({
-        workspaceId: workspace_id,
-        channelId: this.props.channel.id,
-        directoryId: directory_id,
-      });
-      RouterServices.replace(url);
-      */
-    }
-
     if (!directory_id) {
       return list;
     }
@@ -345,17 +335,17 @@ export default class Drive extends Component {
     }
 
     var externalStorageMenu = [];
-    WorkspacesApps.getApps()
-      .filter(app => ((app.display || {}).drive_module || {}).can_connect_to_directory)
+    getCompanyApplications(Groups.currentGroupId)
+      .filter(app => false)
       .map(app => {
         return externalStorageMenu.push({
           type: 'menu',
-          text: app.name,
-          emoji: app.icon_url,
+          text: app.identity?.name,
+          emoji: app.identity?.icon,
           onClick: () => {
             DriveService.createDirectory(
               this.state.workspaces.currentWorkspaceId,
-              app.name,
+              app.identity?.name,
               DriveService.current_directory_channels[this.drive_channel],
               this.state.app_drive_service.current_collection_key_channels[this.drive_channel],
               file => {
@@ -381,14 +371,14 @@ export default class Drive extends Component {
     }
 
     var addableFilesMenu = [];
-    WorkspacesApps.getApps()
-      .filter(app => ((app.display || {}).drive_module || {}).can_create_files)
+    getCompanyApplications(Groups.currentGroupId)
+      .filter(app => app.display?.twake?.files?.editor?.empty_files?.length)
       .map(app => {
-        return app.display.drive_module.can_create_files.map(info => {
+        return app.display?.twake?.files?.editor?.empty_files.map(info => {
           return addableFilesMenu.push({
             type: 'menu',
-            emoji: info.icon || app.icon_url,
-            text: info.name + ' (' + app.name + ')',
+            emoji: info.icon || app.identity?.icon,
+            text: info.name + ' (' + app.identity?.name + ')',
             submenu_replace: true,
             submenu: [
               {
@@ -651,25 +641,6 @@ export default class Drive extends Component {
         ],
       },
     ];
-
-    if (
-      !DriveService.current_directory_channels[this.drive_channel].parent_id &&
-      WorkspaceUserRights.hasWorkspacePrivilege()
-    ) {
-      plus_menu = plus_menu.concat([
-        { type: 'separator' },
-        {
-          type: 'menu',
-          icon: 'database',
-          text: Languages.t(
-            'scenes.apps.drive.new_external_storage',
-            [],
-            'Ajouter un stockage externe',
-          ),
-          submenu: externalStorageMenu,
-        },
-      ]);
-    }
 
     list.push(
       <div className={'drive_app drive_view list'}>

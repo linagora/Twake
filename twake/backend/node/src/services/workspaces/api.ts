@@ -19,6 +19,8 @@ import WorkspacePendingUser, {
 import { CompanyUserRole } from "../user/web/types";
 import { uuid } from "../../utils/types";
 import { ConsoleServiceAPI } from "../console/api";
+import { WorkspaceInviteTokenObject } from "./web/types";
+import WorkspaceInviteTokens from "./entities/workspace_invite_tokens";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
   workspaces: WorkspaceServiceAPI;
@@ -116,4 +118,9 @@ export interface WorkspaceServiceAPI
   removePendingUser(
     workspaceUserPk: WorkspacePendingUserPrimaryKey,
   ): Promise<DeleteResult<WorkspacePendingUserPrimaryKey>>;
+
+  getInviteToken(companyId: string, workspaceId: string): Promise<WorkspaceInviteTokenObject>;
+  createInviteToken(companyId: string, workspaceId: string): Promise<WorkspaceInviteTokenObject>;
+  deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean>;
+  getInviteTokenInfo(jwtToken: string): Promise<WorkspaceInviteTokens>;
 }

@@ -140,7 +140,7 @@ export default ({ filter }: { filter: string }) => {
       const deleteWorkspaceUser = `${prefixRoute}/companies/${col.company_id}/workspaces/${col.workspace_id}/users/${col.user_id}`;
 
       setLoading(true);
-      Api.delete(deleteWorkspaceUser, {}, (res: any) => {
+      Api.delete(deleteWorkspaceUser, (res: any) => {
         updateData(data => data.filter(d => d.user_id !== col.user_id));
         setLoading(false);
       });
@@ -291,7 +291,6 @@ export default ({ filter }: { filter: string }) => {
 
   return (
     <>
-      <Divider />
       <div>
         <Typography.Title level={3}>
           {Languages.t('scenes.apps.parameters.workspace_sections.members.members')}

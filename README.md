@@ -33,8 +33,8 @@ Or run your own local Twake instance with :
 ```
 cd twake
 sudo ./start.sh
-# Twake will be running on port 8000
 ```
+Twake will be running on http//localhost and by default redirect to https and uses a self-signed certificate. If you want to run http only then set SSL_CERTS=none at docker-compose.yml
 
 ## Documentation
 

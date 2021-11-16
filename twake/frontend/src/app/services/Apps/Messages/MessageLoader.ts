@@ -199,7 +199,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
 
     if (
       loadUp &&
-      MessageHistoryService.shouldLimitMessages(this.firstMessageId, this.messagesCount)
+      await MessageHistoryService.shouldLimitMessages(this.firstMessageId, this.messagesCount)
     ) {
       const limitChannelMessage = MessageHistoryService.getLimitChannelMessageObject();
 

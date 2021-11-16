@@ -5,9 +5,10 @@ import { getService } from "./services";
 import { ConsoleServiceAPI } from "../console/api";
 import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../applications/api";
+import AuthServiceAPI from "../../core/platform/services/auth/provider";
 
 @Prefix("/internal/services/workspaces/v1")
-@Consumes(["platform-services", "console", "applications"])
+@Consumes(["platform-services", "console", "applications", "auth"])
 export default class WorkspaceService extends TwakeService<WorkspaceServiceAPI> {
   version = "1";
   name = "workspaces";
@@ -19,8 +20,9 @@ export default class WorkspaceService extends TwakeService<WorkspaceServiceAPI> 
     const fastify = platformServices.fastify.getServer();
     const console = this.context.getProvider<ConsoleServiceAPI>("console");
     const applications = this.context.getProvider<ApplicationServiceAPI>("applications");
+    const auth = this.context.getProvider<AuthServiceAPI>("auth");
 
-    this.service = getService(platformServices, console, applications);
+    this.service = getService(platformServices, console, applications, auth);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {

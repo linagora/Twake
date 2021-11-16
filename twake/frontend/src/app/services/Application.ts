@@ -90,12 +90,22 @@ class Application {
     const workspaces = new Map<string, WorkspaceType[]>();
     const notifications = await UserNotificationAPIClient.getAllCompaniesBadges();
 
-    for(const company of companies) {
+    for (const company of companies) {
       const companyWorkspaces = await WorkspaceAPIClient.list(company.id);
 
       companyWorkspaces.forEach(workspace => Workspaces.addToUser(workspace));
       workspaces.set(company.id, companyWorkspaces || []);
-      Groups.addToUser({...company, ...{_user_hasnotifications: hasNotification(company)}});
+      Groups.addToUser({ ...company, ...{ _user_hasnotifications: hasNotification(company) } });
+
+      console.log(company);
+      AccessRightsService.updateCompanyLevel(
+        company.id,
+        company.role === 'admin' || company.role === 'owner'
+          ? 'admin'
+          : company.role === 'guest'
+          ? 'guest'
+          : 'member',
+      );
     }
 
     const defaultCompany = companies[0];

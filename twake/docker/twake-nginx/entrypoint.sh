@@ -15,13 +15,32 @@ else
   fi
 fi
 
-MOBILE_HOST="${MOBILE_HOST:-http://node:3000}"
+function _selfsigned() {
+    self-signed.sh
+    export NGINX_LISTEN="443 ssl"
+    ln -sf /etc/nginx/sites-available/redirect /etc/nginx/sites-enabled/
+}
+
+case $SSL_CERTS in
+  selfsigned)
+    _selfsigned
+    ;;
+  off|no|non|none|false)
+    export NGINX_LISTEN="80"
+    sed -i '/ *ssl_/d' /etc/nginx/sites-available/site.template
+    ;;
+  *)
+    echo: "SSL_CERTS var not defined setting selfsigned"
+    export SSL_CERTS=selfsigned
+    _selfsigned
+    ;;
+esac
+
 NODE_HOST="${NODE_HOST:-http://node:3000}"
 PHP_UPSTREAM="${PHP_UPSTREAM:-php:9000}"
-export MOBILE_HOST
 export NODE_HOST
 export PHP_UPSTREAM
-envsubst '$${MOBILE_HOST} $${NODE_HOST}' < /etc/nginx/sites-available/site.template > /etc/nginx/sites-enabled/site
+envsubst '$${NODE_HOST} $${NGINX_LISTEN}' < /etc/nginx/sites-available/site.template > /etc/nginx/sites-enabled/site
 echo "upstream php-upstream { server ${PHP_UPSTREAM}; }" > /etc/nginx/conf.d/upstream.conf
 
 cron -f &

@@ -70,7 +70,16 @@
         margin: -8px 0;
       }
     }
+
+    &.menu-cancel-left-padding {
+      padding-left: 0;
+    }
+
+    &.menu-cancel-top-margin {
+      margin-top: 0;
+    }
   }
+
 
   .menu {
     height: 32px;

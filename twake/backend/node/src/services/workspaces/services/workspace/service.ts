@@ -48,6 +48,15 @@ import { ApplicationServiceAPI } from "../../../applications/api";
 import { RealtimeSaved } from "../../../../core/platform/framework";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { getRoomName, getWorkspacePath } from "../../realtime";
+import { InviteTokenObject, WorkspaceInviteTokenObject } from "../../web/types";
+import WorkspaceInviteTokens, {
+  TYPE as WorkspaceInviteTokensType,
+  getInstance as getWorkspaceInviteTokensInstance,
+  WorkspaceInviteTokensPrimaryKey,
+} from "../../entities/workspace_invite_tokens";
+import AuthServiceAPI from "../../../../core/platform/services/auth/provider";
+import { randomBytes } from "crypto";
+import { ConsoleOptions, ConsoleType } from "../../../console/types";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -55,12 +64,14 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   private workspaceRepository: Repository<Workspace>;
   private workspacePendingUserRepository: Repository<WorkspacePendingUser>;
   private workspaceCounter: CounterProvider<WorkspaceCounterEntity>;
+  private workspaceInviteTokensRepository: Repository<WorkspaceInviteTokens>;
 
   constructor(
     private platformServices: PlatformServicesAPI,
     private users: UsersServiceAPI,
     private companies: CompaniesServiceAPI,
     private applications: ApplicationServiceAPI,
+    private auth: AuthServiceAPI,
   ) {}
 
   async init(): Promise<this> {
@@ -94,6 +105,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     this.workspaceCounter.reviseCounter(async (pk: WorkspaceCounterPrimaryKey) => {
       return countRepositoryItems(this.workspaceUserRepository, pk);
     });
+
+    this.workspaceInviteTokensRepository =
+      await this.platformServices.database.getRepository<WorkspaceInviteTokens>(
+        WorkspaceInviteTokensType,
+        WorkspaceInviteTokens,
+      );
 
     return this;
   }
@@ -513,5 +530,64 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
   getUsersCount(workspaceId: string): Promise<number> {
     return this.workspaceCounter.get(this.wsCountPk(workspaceId));
+  }
+
+  private jwtInviteToken(companyId: string, workspaceId: string, token: string) {
+    const inviteTokenObject: InviteTokenObject = { c: companyId, w: workspaceId, t: token };
+    return this.auth.sign(inviteTokenObject);
+  }
+
+  async getInviteToken(
+    companyId: string,
+    workspaceId: string,
+  ): Promise<WorkspaceInviteTokenObject> {
+    const pk = { company_id: companyId, workspace_id: workspaceId };
+    const res = await this.workspaceInviteTokensRepository.findOne(pk);
+    if (!res) return null;
+
+    return {
+      token: this.jwtInviteToken(companyId, workspaceId, res.invite_token),
+    };
+  }
+
+  async createInviteToken(
+    companyId: string,
+    workspaceId: string,
+  ): Promise<WorkspaceInviteTokenObject> {
+    await this.deleteInviteToken(companyId, workspaceId);
+    const token = randomBytes(16).toString("hex");
+    const pk = { company_id: companyId, workspace_id: workspaceId };
+    await this.workspaceInviteTokensRepository.save(
+      getWorkspaceInviteTokensInstance({ ...pk, invite_token: token }),
+    );
+    return {
+      token: this.jwtInviteToken(companyId, workspaceId, token),
+    };
+  }
+  async deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean> {
+    const pk = { company_id: companyId, workspace_id: workspaceId };
+    const currentRecord = await this.workspaceInviteTokensRepository.findOne(pk);
+    if (currentRecord) {
+      await this.workspaceInviteTokensRepository.remove(currentRecord);
+    }
+    return !!currentRecord;
+  }
+
+  async getInviteTokenInfo(jwtToken: string): Promise<WorkspaceInviteTokens> {
+    let tokenInfo: InviteTokenObject;
+    try {
+      tokenInfo = await this.auth.verifyTokenObject<InviteTokenObject>(jwtToken);
+    } catch (e) {}
+
+    if (!tokenInfo) {
+      return null;
+    }
+
+    const pk: WorkspaceInviteTokensPrimaryKey = {
+      company_id: tokenInfo.c,
+      workspace_id: tokenInfo.w,
+      invite_token: tokenInfo.t,
+    };
+    return this.workspaceInviteTokensRepository.findOne(pk);
   }
 }
