@@ -5,4 +5,9 @@
   h1.ant-typography {
     font-size:1.6em
   }
+
+  .ant-btn-primary.gray-btn {
+    border-color:var(--grey-dark);
+    background: var(--grey-dark);
+  }
 }

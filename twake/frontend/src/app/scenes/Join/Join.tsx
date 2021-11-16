@@ -73,8 +73,11 @@ export default (props: PropsType): JSX.Element => {
             <Title>Join {info.workspace.name} from {info.company.name}! <span role="img" aria-label="">👋</span></Title>
             <Text>Twake is an open-source digital workspace built to improve your team productivity</Text>
             <Divider />
-            <Button disabled={busy} loading={busy} type="primary" onClick={onJoinAccountBtnClick}
-            >Join the team</Button>
+            { !info.auth_url ?  
+             <Button disabled={busy} loading={busy} type="primary" onClick={onJoinAccountBtnClick}>Join the team</Button>
+            :<Button disabled={busy} loading={busy} type="primary" className="gray-btn" onClick={onJoinAccountBtnClick}>Log in or create an account first</Button>
+            }
+            
           </Space>}
         </Col>
       </Row>
