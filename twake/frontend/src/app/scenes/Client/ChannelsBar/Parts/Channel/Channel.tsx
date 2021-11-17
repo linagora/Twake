@@ -7,11 +7,11 @@ import { Application } from 'app/models/App';
 import WindowState from 'services/utils/window';
 import Emojione from 'components/Emojione/Emojione';
 import { ChannelResource } from 'app/models/Channel';
-import RouterServices from 'app/services/RouterService';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
+import useRouterChannelSelected from 'app/state/recoil/hooks/useRouterChannelSelected';
 
 import './Channel.scss';
 
@@ -34,8 +34,7 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const { channelId } = RouterServices.getStateFromRoute();
-  const selected = channelId === props.id;
+  const selected = useRouterChannelSelected(props.id || "");
 
   const onChannelChange = () => {
     props.id &&

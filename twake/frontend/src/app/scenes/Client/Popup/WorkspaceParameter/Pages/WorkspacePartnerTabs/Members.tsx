@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import _ from 'lodash';
 import Languages from 'services/languages/languages';
 import { Table, Row, Col, Typography, Divider } from 'antd';
 import AlertManager from 'services/AlertManager/AlertManager';
@@ -9,14 +10,15 @@ import UserService from 'services/user/UserService';
 import workspacesUsers from 'services/workspaces/workspaces_users';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import InitService from 'app/services/InitService';
-import RouterServices from 'services/RouterService';
 import { ChevronUp, ChevronsUp } from 'react-feather';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import Api from 'app/services/Api';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import _ from 'lodash';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+
 
 type ColumnObjectType = { [key: string]: any };
 
@@ -41,7 +43,9 @@ export default ({ filter }: { filter: string }) => {
   const [pageToken, setPageToken] = useState<string | null>(null);
   const [serverSearchedData, setServerSearchedData] = useState<ColumnObjectType[]>([]);
   const [filteredData, setFilteredData] = useState<ColumnObjectType[] | null>(null);
-  const { workspaceId, companyId } = RouterServices.useRouteState();
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
+
   const prefixRoute = '/internal/services/workspaces/v1';
   const workspaceUsersRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/users`;
 
