@@ -59,6 +59,12 @@ export const createWorkspaceSchema = {
         },
         required: ["name", "logo", "default"],
       },
+      options: {
+        type: "object",
+        properties: {
+          logo_b64: { type: "string" },
+        },
+      },
     },
     required: ["resource"],
   },
@@ -84,6 +90,12 @@ export const updateWorkspaceSchema = {
           logo: { type: "string" },
           default: { type: "boolean" },
           archived: { type: "boolean" },
+        },
+      },
+      options: {
+        type: "object",
+        properties: {
+          logo_b64: { type: "string" },
         },
       },
     },

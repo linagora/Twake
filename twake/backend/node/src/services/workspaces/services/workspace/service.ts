@@ -167,7 +167,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   ])
   async save<SaveOptions>(
     item: Partial<Workspace>,
-    options?: SaveOptions,
+    options?: SaveOptions & { logo_b64?: string },
     context?: WorkspaceExecutionContext,
   ): Promise<SaveResult<Workspace>> {
     let workspace = getWorkspaceInstance({
@@ -193,9 +193,20 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       }
     }
 
+    if (workspace.logo) {
+      if (!item.logo || options.logo_b64) {
+        //TODO remove old logo upload with S3
+      }
+    }
+    let logoPublicUrl = undefined;
+    if (options.logo_b64) {
+      //TODO implement logo upload with S3
+      logoPublicUrl = ""; //put the new updated logo public url
+    }
+
     workspace = merge(workspace, {
       name: await this.getWorkspaceName(item.name, context.company_id, workspace.id),
-      logo: item.logo,
+      logo: logoPublicUrl || workspace.logo,
       isArchived: item.isArchived,
       isDefault: item.isDefault,
     });

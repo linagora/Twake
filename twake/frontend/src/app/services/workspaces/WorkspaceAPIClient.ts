@@ -54,12 +54,15 @@ class WorkspaceAPIClient {
   update(
     companyId: string,
     workspaceId: string,
-    workspace: WorkspaceUpdateResource,
+    workspace: WorkspaceUpdateResource & { logo_b64?: string },
   ): Promise<WorkspaceType> {
-    return Api.post<UpdateWorkspaceBody, { resource: WorkspaceType }>(
-      `${PREFIX}/${companyId}/workspaces/${workspaceId}`,
-      { resource: workspace },
-    ).then(result => result.resource);
+    return Api.post<
+      UpdateWorkspaceBody & { options?: { logo_b64?: string } },
+      { resource: WorkspaceType }
+    >(`${PREFIX}/${companyId}/workspaces/${workspaceId}`, {
+      resource: workspace,
+      options: { logo_b64: workspace?.logo_b64 },
+    }).then(result => result.resource);
   }
 
   /**

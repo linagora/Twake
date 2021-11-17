@@ -844,5 +844,9 @@
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Automatically invite all workspace users to this channel",
     "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.title": "You are about to delete {{$1}}",
     "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.alert_total_members": "You still have {{$1}} members in {{$2}}. You should remove all the members to be able to delete this workspace.",
-    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox" : "I understand that all of my workspace's messages and files will be deleted."
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox" : "I understand that all of my workspace's messages and files will be deleted.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size": "Max logo size is 5mb",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Bad format, only png gif and jpg are allowed",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Unknown error",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Error"
 }

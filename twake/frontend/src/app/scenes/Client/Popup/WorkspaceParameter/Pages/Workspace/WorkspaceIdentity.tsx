@@ -10,22 +10,30 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import DeleteWorkspacePopup from './DeleteWorkspacePopup';
 import { WorkspaceType } from 'app/models/Workspace';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
-import UploadService from 'services/uploadManager/uploadManager';
+import { ToasterService as Toaster } from 'app/services/Toaster';
 
 const { Item } = Descriptions;
 const { Text, Title, Link } = Typography;
+
+const MAX_LOGO_FILE_SIZE = 5000000;
+const ALLOWED_LOGO_FORMATS = ['image/gif', 'image/jpeg', 'image/png'];
+
 export default () => {
   const uploadInputRef = useRef<HTMLInputElement>();
   const workspace = useCurrentWorkspace();
   const [workspaceName, setWorkspaceName] = useState<string | undefined>(workspace?.name);
-  const [disabledLogoSaveButton, setDisabledLogoSaveButton] = useState<boolean>(true);
 
-  const onClickUpdateWorkspace = async (partials: Partial<WorkspaceType>) => {
-    const updatedObject: Pick<WorkspaceType, 'name' | 'logo' | 'default' | 'archived'> = {
+  const onClickUpdateWorkspace = async (
+    partials: Partial<WorkspaceType> & { logo_b64?: string },
+  ) => {
+    const updatedObject: Pick<WorkspaceType, 'name' | 'logo' | 'default' | 'archived'> & {
+      logo_b64?: string;
+    } = {
       name: partials.name || workspace?.name || '',
       default: partials.default || workspace?.default || false,
       logo: partials.logo || workspace?.logo || '',
       archived: partials.archived || workspace?.archived || false,
+      logo_b64: partials.logo_b64 || '',
     };
 
     if (workspace) {
@@ -38,6 +46,7 @@ export default () => {
 
         if (res) {
           setWorkspaceName(res.name);
+          return res;
         }
       } catch (e) {
         console.error(e);
@@ -45,19 +54,56 @@ export default () => {
     }
   };
 
-  const onChangeWorkspaceLogo = (e: Event) =>
-    UploadService.getFilesTree(e, (tree: File[]) => {
-      const file = tree[Object.keys(tree)[0] as any];
+  const onChangeWorkspaceLogo = async (e: Event) => {
+    if (!uploadInputRef?.current) return;
+    const file = uploadInputRef.current.files?.[0];
+    try {
+      if (file && workspace) {
+        if (file.size > MAX_LOGO_FILE_SIZE) {
+          throw new Error(
+            'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size',
+          );
+        }
+        if (!ALLOWED_LOGO_FORMATS.includes(file.type)) {
+          throw new Error(
+            'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format',
+          );
+        }
 
-      if (file) {
-        setDisabledLogoSaveButton(false);
+        const getBase64 = (file: File): Promise<string> => {
+          return new Promise((result, fail) => {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+              result(`${reader.result}`);
+            };
+            reader.onerror = function (error) {
+              fail(error);
+            };
+          });
+        };
+
+        const res = await onClickUpdateWorkspace({ logo_b64: await getBase64(file) });
+        if (!res) {
+          throw new Error(
+            'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown',
+          );
+        }
       }
-    });
+    } catch (err) {
+      Toaster.error(
+        `${Languages.t(
+          'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix',
+        )} - ${Languages.t(err)}`,
+      );
+    }
+    uploadInputRef.current.value = '';
+  };
 
   useEffect(() => {
     uploadInputRef?.current && (uploadInputRef.current.onchange = onChangeWorkspaceLogo);
-
     return () => (uploadInputRef.current = undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -138,41 +184,25 @@ export default () => {
                     {Languages.t('scenes.app.popup.workspaceparameter.pages.weight_max_small_text')}
                   </Text>
 
-                  {(workspace?.logo && workspace?.logo.length > 0) ||
-                    (uploadInputRef?.current?.files && uploadInputRef.current.value && (
-                      <Link
-                        type="danger"
-                        className="small-top-margin"
-                        onClick={() => {
-                          // If file is not uploaded but in the inputNode value
-                          if (uploadInputRef.current?.value) {
-                            uploadInputRef.current.value = '';
-                          }
+                  {workspace?.logo && workspace?.logo.length > 0 && (
+                    <Link
+                      type="danger"
+                      className="small-top-margin"
+                      onClick={() => {
+                        // If file is not uploaded but in the inputNode value
+                        if (uploadInputRef.current?.value) {
+                          uploadInputRef.current.value = '';
+                        }
 
-                          // TODO delete workspace logo with WorkspaceAPIClient.update()
-                          if (workspace?.logo) {
-                            console.log(workspace.logo);
-                          }
-
-                          setDisabledLogoSaveButton(true);
-                        }}
-                      >
-                        {Languages.t('general.delete')}
-                      </Link>
-                    ))}
-                </Col>
-
-                <Col>
-                  <Button
-                    type="primary"
-                    disabled={disabledLogoSaveButton}
-                    onClick={() => {
-                      // TODO upload new workspace logo with WorkspaceAPIClient.update()
-                      console.log(uploadInputRef.current?.files);
-                    }}
-                  >
-                    {Languages.t('general.save')}
-                  </Button>
+                        // Delete workspace logo
+                        if (workspace?.logo) {
+                          onClickUpdateWorkspace({ logo: '' });
+                        }
+                      }}
+                    >
+                      {Languages.t('general.delete')}
+                    </Link>
+                  )}
                 </Col>
               </Row>
             </Item>

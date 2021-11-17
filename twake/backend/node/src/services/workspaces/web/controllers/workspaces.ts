@@ -181,7 +181,7 @@ export class WorkspacesCrudController
     });
 
     const workspaceEntity = await this.workspaceService
-      .save(entity, {}, context)
+      .save(entity, request.body.options || {}, context)
       .then(a => a.entity);
 
     request.params.id ? reply.code(200) : reply.code(201);
