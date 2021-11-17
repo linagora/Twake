@@ -1,5 +1,5 @@
-import { RouterWorkspaceSelectedSelector } from 'app/state/recoil/atoms/Router';
 import { useRecoilValue } from 'recoil';
+import { RouterWorkspaceSelectedSelector } from '../selectors/RouterSelector';
 
 export default function useRouterWorkspaceSelected(workspaceId: string) {
   return useRecoilValue(RouterWorkspaceSelectedSelector(workspaceId));

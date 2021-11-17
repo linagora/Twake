@@ -1,6 +1,7 @@
 import RouterService from 'app/services/RouterService';
-import { RouterState, RouterChannelSelector } from 'app/state/recoil/atoms/Router';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { RouterState } from 'app/state/recoil/atoms/Router';
+import { RouterChannelSelector } from '../selectors/RouterSelector';
 
 export default function useRouterChannel() {
   const setClientState = useSetRecoilState(RouterState);
