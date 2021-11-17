@@ -5,7 +5,6 @@ import { Layout } from 'antd';
 import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
-import Workspaces from 'services/workspaces/workspaces.js';
 import popupService from 'services/popupManager/popupManager.js';
 import WorkspacesListener from 'services/workspaces/WorkspacesListener';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
@@ -36,10 +35,9 @@ export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const user = useCurrentUser();
 
-  /*popupService.useListener(useState);
-  Workspaces.useListener(useState);
+  popupService.useListener(useState);
   Languages.useListener(useState);
-  LoginService.useListener(useState);*/
+  LoginService.useListener(useState);
 
   useEffect(() => {
     LoginService.init();

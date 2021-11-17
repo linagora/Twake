@@ -5,7 +5,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout } from 'antd';
 
 import CurrentUser from './Parts/CurrentUser/CurrentUser';
-import ChannelsApps, { CompanyApplications } from './ChannelsApps/ChannelsApps';
+import { CompanyApplications } from './ChannelsApps/ChannelsApps';
 import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
 import ChannelsUser from './ChannelsUser/ChannelsUser';
 import Footer from './Parts/Footer.js';
@@ -48,7 +48,6 @@ const LoadingChannels = () => {
 };
 
 export default () => {
-  //const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace(); 
 
