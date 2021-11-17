@@ -7,6 +7,8 @@ import { useParams } from 'react-router-dom';
 import WorkspaceAPIClient from 'services/workspaces/WorkspaceAPIClient';
 import WorkspacesService from 'services/workspaces/workspaces';
 import Languages from 'services/languages/languages';
+import RouterService from 'services/RouterService';
+
 
 const { Title, Text } = Typography;
 
@@ -43,12 +45,7 @@ export default (props: PropsType): JSX.Element => {
     } else {
       service.join().then(resource => {
         setBusy(true);
-        WorkspaceAPIClient.get(resource.company.id, resource.workspace.id)
-          .then(workspace => {
-            WorkspacesService.addToUser(workspace); 
-            WorkspacesService.select(workspace);
-          });
-
+        document.location.replace(RouterService.generateRouteFromState({workspaceId: resource.workspace.id, companyId: resource.company.id}));
       }).catch(err => { setError(err.message); });
     }
   };
