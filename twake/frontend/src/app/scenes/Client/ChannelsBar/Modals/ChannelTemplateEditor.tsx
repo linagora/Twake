@@ -1,6 +1,6 @@
 import React, { FC, useState, useEffect } from 'react';
 import Languages from 'services/languages/languages';
-import InputWithIcon from 'components/Inputs/InputWithIcon.js';
+import InputWithIcon from 'components/Inputs/InputWithIcon';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import { Select, Typography, Checkbox, Input } from 'antd';
 import InputWithSelect from 'app/components/Inputs/InputWithSelect';
