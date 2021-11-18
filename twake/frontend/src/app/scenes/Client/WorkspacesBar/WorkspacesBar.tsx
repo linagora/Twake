@@ -30,3 +30,10 @@ export default () => {
   );
 };
 
+export const LoadingWorkspace = () => {
+  return (
+  <Layout.Sider className={'workspaces_view'} width={70}>
+  </Layout.Sider>
+  );
+}
+

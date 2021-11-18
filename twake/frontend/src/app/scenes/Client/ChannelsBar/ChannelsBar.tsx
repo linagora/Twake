@@ -25,7 +25,7 @@ import './ChannelsBar.scss';
 
 
 
-const LoadingChannels = () => {
+export const LoadingChannels = () => {
   return (
     <div style={{ paddingTop: 8 }}>
       <div className="channel" />

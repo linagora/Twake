@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Menu } from 'react-feather';
 import { Layout } from 'antd';
 import classNames from 'classnames';
@@ -20,7 +20,7 @@ import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndica
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import LoginService from 'app/services/login/LoginService';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
-import SideBars from './SideBars';
+import SideBars, { LoadingSidebar} from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
@@ -57,26 +57,28 @@ export default React.memo((): JSX.Element => {
           <NewVersionComponent />
           {companyId && workspaceId && <CompanyStatusComponent />}
           <Layout hasSider>
-            <Layout.Sider
-              trigger={<Menu size={16} />}
-              breakpoint="lg"
-              collapsedWidth="0"
-              theme="light"
-              width={290}
-              onCollapse={(collapsed, type) => {
-                if (type === 'responsive') {
-                  setMenuIsOpen(false);
-                  return;
-                }
-                setMenuIsOpen(!collapsed);
-              }}
-            >
-              <SideBars />
-            </Layout.Sider>
-            <MainView
-              className={classNames({ collapsed: menuIsOpen })}
-              key={`mainview-${companyId}-${workspaceId}`}
-            />
+            <Suspense fallback={<LoadingSidebar />}>
+              <Layout.Sider
+                trigger={<Menu size={16} />}
+                breakpoint="lg"
+                collapsedWidth="0"
+                theme="light"
+                width={290}
+                onCollapse={(collapsed, type) => {
+                  if (type === 'responsive') {
+                    setMenuIsOpen(false);
+                    return;
+                  }
+                  setMenuIsOpen(!collapsed);
+                }}
+              >
+                <SideBars />              
+              </Layout.Sider>
+            </Suspense>
+                  <MainView
+                    className={classNames({ collapsed: menuIsOpen })}
+                    key={`mainview-${companyId}-${workspaceId}`}
+                  />
           </Layout>
         </Layout>
       );

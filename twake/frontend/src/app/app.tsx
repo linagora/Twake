@@ -9,11 +9,14 @@ import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
 import UserContext from './state/recoil/integration/UserContext';
+import useTimeout from './services/hooks/useTimeout';
+import ApplicationLoader from './components/Loader/ApplicationLoader';
+import useRouterChannel from './state/recoil/hooks/useRouterChannel';
+import useRouterCompany from './state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from './state/recoil/hooks/useRouterWorkspace';
 
 import 'app/ui.scss';
 import 'app/theme.less';
-import useTimeout from './services/hooks/useTimeout';
-import ApplicationLoader from './components/Loader/ApplicationLoader';
 
 const delayMessage = 5000;
 
@@ -91,3 +94,10 @@ export default () => {
     </RecoilRoot>
   );
 };
+
+export const TestToto = () => {
+  const companyId = useRouterCompany()
+  const workspaceId = useRouterWorkspace()
+  const channelId = useRouterChannel()
+  return <div style={{position: "absolute",top:100, left:600, zIndex: 1000, width: "100px", height: "100px", background: "grey",pointerEvents: "none" }}> {channelId} </div>
+}
