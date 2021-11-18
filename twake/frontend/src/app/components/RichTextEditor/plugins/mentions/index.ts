@@ -119,7 +119,7 @@ export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): E
     strategy:  findMentionEntities,
     component: Mention,
   },
-  trigger: /\B@([\-+\w]+)$/,
+  trigger: /\B@([-+\w]+)$/,
   resourceType: MENTION_TYPE,
   getTextDisplay: (mention: MentionSuggestionType) => mention.username,
   onSelected: (mention: MentionSuggestionType, editorState: EditorState, options: SelectOrInsertOptions = { addSpaceAfter: true }) => addMention(mention, editorState, options),

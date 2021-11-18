@@ -35,7 +35,7 @@ test('Create a collection', async () => {
     tasks
       .find()
       .map(i => i.constructor.name)
-      .filter(i => i != 'Task').length,
+      .filter(i => i !== 'Task').length,
   ).toBe(0);
 });
 

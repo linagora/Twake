@@ -18,11 +18,13 @@ export default (props: Props) => {
   const messageEditorService = MessageEditorsManager.get(props.channelId);
   messageEditorService.useListener(useState);
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (!props.useButton && messageEditorService.currentEditor === false) {
       messageEditorService.openEditor(props.threadId, '', 'main');
     }
   }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   if (messageEditorService.currentEditor !== props.threadId + '_main' && props.useButton) {
     return (

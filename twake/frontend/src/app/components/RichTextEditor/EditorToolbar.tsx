@@ -37,6 +37,8 @@ export default (props: EditorToolbarProps) => {
       case 'BLOCK_TYPE_BUTTONS': {
         return _renderBlockTypeButtons(groupName, toolbarConfig);
       }
+      default:
+        return null;
     }
   });
 

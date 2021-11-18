@@ -13,5 +13,5 @@ export default (props: EmojiSuggestionType): JSX.Element => {
         <span style={{ opacity: '0.5', textTransform: 'capitalize' }}>{props.name}</span>
       </div>
     </>
-  )
-}
+  );
+};
