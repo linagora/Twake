@@ -23,10 +23,13 @@ export const setThreadMessages = (key: AtomThreadKey, messages: AtomMessageKey[]
   defaultThreadMessagesStore.set(key.threadId, messages);
 };
 
-export const MessagesWindowState = atomFamily<{ from: string; to: string }, string>({
+export const MessagesWindowState = atomFamily<
+  { start: string; end: string; reachedStart: boolean; reachedEnd: boolean },
+  string
+>({
   key: 'MessagesWindowState',
   default: key => {
-    return { from: '', to: '' };
+    return { start: '', end: '', reachedStart: false, reachedEnd: false };
   },
 });
 

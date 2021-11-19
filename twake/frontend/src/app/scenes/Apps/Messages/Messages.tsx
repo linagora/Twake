@@ -12,6 +12,10 @@ type Props = {
 };
 
 export default (props: Props) => {
+  if (!props.channel) {
+    return <></>;
+  }
+
   const companyId = props.channel.data.company_id || '';
   const workspaceId = props.channel.data.workspace_id || '';
   const channelId = props.channel.data.id || '';
@@ -19,7 +23,7 @@ export default (props: Props) => {
   const threadId = props.options.context?.threadId || '';
 
   return (
-    <div>
+    <div className="messages-view">
       <Suspense fallback="loading...">
         {!threadId && (
           <ThreadsList companyId={companyId} workspaceId={workspaceId} channelId={channelId} />

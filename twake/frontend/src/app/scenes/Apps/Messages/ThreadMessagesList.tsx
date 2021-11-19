@@ -14,7 +14,6 @@ export default ({ threadId, companyId }: Props) => {
   return (
     <div>
       <Virtuoso
-        style={{ height: '400px' }}
         totalCount={messages.length}
         itemContent={index => (
           <Message

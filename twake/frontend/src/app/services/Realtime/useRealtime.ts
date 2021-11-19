@@ -21,9 +21,13 @@ export type RealtimeRoomService<T> = {
  * @param onEvent
  * @returns
  */
-const useRealtimeRoom = <T>(roomName: string, tagName: string, onEvent: (action: RealtimeEventAction, event: T) => void) => {
+const useRealtimeRoom = <T>(
+  roomName: string,
+  tagName: string,
+  onEvent: (action: RealtimeEventAction, event: T) => void,
+) => {
   const { websocket } = useWebSocket();
-  const [lastEvent, setLastEvent] = useState<{ action: string; resource: T }>();
+  const [lastEvent, setLastEvent] = useState<{ action: RealtimeEventAction; resource: T }>();
   const [room] = useState(roomName);
   const [tag] = useState(tagName);
   // subscribe once
@@ -31,20 +35,29 @@ const useRealtimeRoom = <T>(roomName: string, tagName: string, onEvent: (action:
 
   useEffect(() => {
     if (room && websocket && !subscribed.current) {
-      websocket.join(room, tag, (type: string, event: { action: RealtimeEventAction, resource: T }) => {
-        logger.debug('Received WebSocket event', type, event);
-        if (type === 'realtime:resource') {
-          setLastEvent(event);
-          onEvent(event.action, event.resource);
-        } else if (type === 'realtime:join:success') {
-          logger.debug(`Room ${room} has been joined`);
-        } else {
-          logger.debug('Event type is not supported', type);
-        }
-      });
+      websocket.join(
+        room,
+        tag,
+        (type: string, event: { action: RealtimeEventAction; resource: T }) => {
+          logger.debug('Received WebSocket event', type, event);
+          if (type === 'realtime:resource') {
+            setLastEvent(event);
+          } else if (type === 'realtime:join:success') {
+            logger.debug(`Room ${room} has been joined`);
+          } else {
+            logger.debug('Event type is not supported', type);
+          }
+        },
+      );
       subscribed.current = true;
     }
   }, [websocket, tag, room, onEvent]);
+
+  useEffect(() => {
+    if (lastEvent) {
+      onEvent(lastEvent.action, lastEvent.resource);
+    }
+  }, [lastEvent]);
 
   return {
     lastEvent,
@@ -56,6 +69,4 @@ const useRealtimeRoom = <T>(roomName: string, tagName: string, onEvent: (action:
   };
 };
 
-export {
-  useRealtimeRoom,
-};
+export { useRealtimeRoom };

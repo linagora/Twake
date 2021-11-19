@@ -21,7 +21,7 @@ class MessageViewAPIClient {
     { repliesPerThread = 5, limit = 25, pageToken = '', direction = 'future' } = {},
   ) {
     const response = await Api.get<{ resources: MessageWithReplies[] }>(
-      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/feed?replies_per_thread=${repliesPerThread}&limit=${limit}&page_token=${pageToken}&direction=${direction}`,
+      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/feed?replies_per_thread=${repliesPerThread}&limit=${limit}&page_token=${pageToken}&direction=${direction}&websockets=1`,
     );
     return response.resources;
   }
