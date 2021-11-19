@@ -8,6 +8,7 @@ import Group from './Components/Group/Group';
 import Workspace from './Components/Workspace/Workspace';
 import { useCompanyWorkspaces } from 'app/state/recoil/hooks/useCompanyWorkspaces';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import WorkspaceIcon from './Components/Workspace/WorkspaceIcon';
 
 import './WorkspacesBar.scss';
 
@@ -31,8 +32,29 @@ export default () => {
 };
 
 export const LoadingWorkspace = () => {
+  const mockdate = new Date(0);
   return (
   <Layout.Sider className={'workspaces_view'} width={70}>
+    <PerfectScrollbar component="div" className="list">
+      <WorkspaceIcon
+        workspace={{
+          id: '',
+          company_id: '',
+          archived: false,
+          default: false,
+          name: '',
+          mininame: undefined,
+          logo: '',
+          role: '',
+          stats: {
+            created_at:  mockdate,
+            total_members: 0
+          }
+        }}
+        selected={false}
+        onClick={() => null}
+      />
+    </PerfectScrollbar>
   </Layout.Sider>
   );
 }

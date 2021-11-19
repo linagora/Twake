@@ -37,7 +37,7 @@ export default (props: Props): JSX.Element => {
         }
         style={{ backgroundImage: addApiUrlIfNeeded(workspace.logo, true) }}
       >
-        {`${name}-`[0].toUpperCase()}
+        {workspace.name !== '' && `${name}-`[0].toUpperCase()}
         {unreadInWorkspace > 0 && <div className="notification_dot" />}
       </div>
       <div className="name">{name}</div>
