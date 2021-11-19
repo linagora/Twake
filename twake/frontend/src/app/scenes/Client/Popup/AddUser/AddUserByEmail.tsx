@@ -91,8 +91,6 @@ export default (props: PropsType): JSX.Element => {
         </Button>
       </div>
 
-      <hr/>
-
       <div className="magic-links-wrapper">
         <MagicLinks/>
        </div>
