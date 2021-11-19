@@ -90,12 +90,14 @@ export class ConsoleController {
       logger.info(`Received event ${request.body.type}`);
 
       switch (request.body.type) {
+        case "user_created":
         case "company_user_added":
         case "company_user_activated":
         case "company_user_updated":
           await this.userAdded(request.body.content as ConsoleHookBodyContent);
           break;
         case "company_user_deactivated":
+        case "company_user_deleted":
           await this.userDisabled(request.body.content as ConsoleHookBodyContent);
           break;
         case "user_updated":

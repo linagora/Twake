@@ -55,6 +55,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
         [
           ...messages,
           ...newMessages.map(m => {
+            //TODO Can it be simplified? and also we should update the atom instead of setting default value
             setMessage({ companyId: key.companyId, threadId: m.thread_id, id: m.id }, m);
             if (m.last_replies) {
               setThreadMessages(
@@ -71,6 +72,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
                 setMessage({ companyId: key.companyId, threadId: m.id, id: m.id }, m as any);
               });
             }
+            //TODO (End of TODO)
             return {
               companyId: key.companyId,
               threadId: m.thread_id,
