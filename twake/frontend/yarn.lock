@@ -10309,7 +10309,7 @@ jest@26.6.0:
     import-local "^3.0.2"
     jest-cli "^26.6.0"
 
-jquery@^3.3.1, jquery@^3.5.1:
+jquery@^3.5.1, jquery@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
   integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
@@ -10923,11 +10923,6 @@ lodash@4.17.11:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
-lodash@^3.10.1:
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
-  integrity sha1-W/Rejkm6QYnhfUgnid/RW9FAt7Y=
-
 loglevel-plugin-prefix@^0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/loglevel-plugin-prefix/-/loglevel-plugin-prefix-0.8.4.tgz#2fe0e05f1a820317d98d8c123e634c1bd84ff644"
@@ -11281,10 +11276,10 @@ minimist@^1.1.1, minimist@^1.2.0, minimist@^1.2.5:
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
   integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
 
-minimongo@^6.9.0:
-  version "6.9.0"
-  resolved "https://registry.yarnpkg.com/minimongo/-/minimongo-6.9.0.tgz#12ad3f98b8ba7cc53debd747ca418867c5dc0a9f"
-  integrity sha512-wU1q22er8NvAdvIXCGuPwhvU3+spSqXSbY7rMRF+DHL+uuIJXY0BNm7Lqz+0CR8KGsJeOwOdek1s77VjgfAS9w==
+minimongo@^6.10.0:
+  version "6.11.3"
+  resolved "https://registry.yarnpkg.com/minimongo/-/minimongo-6.11.3.tgz#f07170ec11fa6b80a87853c39d6a61f0d0a947e6"
+  integrity sha512-K5P2E+9FfgQZ0BQdn9a02HWjeVlTK4S2IrGGg87bvalAxXSm4PBH6vVdVFNgEPIEdmDRr/CmzbWHFJ42vkbkkg==
   dependencies:
     "@turf/boolean-crosses" "^6.0.1"
     "@turf/boolean-point-in-polygon" "^6.0.1"
@@ -11293,9 +11288,9 @@ minimongo@^6.9.0:
     async "^1.4.2"
     bowser "^0.7.1"
     idb-wrapper "^1.4.1"
-    jquery "^3.3.1"
+    jquery "^3.6.0"
     js-sha1 "^0.6.0"
-    lodash "^3.10.1"
+    lodash "^4.0.0"
 
 minipass-collect@^1.0.2:
   version "1.0.2"
