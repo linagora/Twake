@@ -28,24 +28,18 @@ const type_to_uni: any = {};
 const getFromEmojione = (props: Props) => {
   //Use from local server
   let html: string | '' = '';
-  let size = props.size || 16;
   html = emojione.toImage(props.type || props.emoji || '');
   html = html?.replace('https://cdn.jsdelivr.net/emojione/assets/3.1/png/', '/public/emojione/');
 
   if (props.s64) {
-    size = 32;
     html = html?.replace('/32/', '/64/');
   } else if (props.s128) {
-    size = 64;
     html = html?.replace('/32/', '/128/');
   }
   return { __html: html };
 };
 
 class EmojioneFallback extends Component<Props> {
-  constructor(props: any) {
-    super(props);
-  }
   // WIP
   render() {
     return (
@@ -59,11 +53,11 @@ export default React.memo((props: Props) => {
     return <></>;
   }
 
-  if (props.type == 'trash') {
+  if (props.type === 'trash') {
     return <Icon type="trash" className="trash_emoji" />;
   }
 
-  if (props.type.substr(0, 7) == ':twake-') {
+  if (props.type.substr(0, 7) === ':twake-') {
     return (
       <i
         className={'emojione emoji-image ' + (props.className || '')}
@@ -75,7 +69,7 @@ export default React.memo((props: Props) => {
     );
   }
 
-  if (props.type.substr(0, 7) == 'http://' || props.type.substr(0, 8) == 'https://') {
+  if (props.type.substr(0, 7) === 'http://' || props.type.substr(0, 8) === 'https://') {
     return (
       <i
         className={'emojione emoji-image ' + (props.className || '')}

@@ -22,7 +22,7 @@ const findChannelEntities = (contentBlock: ContentBlock, callback: any, contentS
     },
     callback
   );
-}
+};
 
 const resolver = (text: string, max: number, callback: (channels: ChannelSuggestionType[]) => void) => {
   ChannelsService.search(text, (channels: ChannelResource[]) => {
@@ -33,7 +33,7 @@ const resolver = (text: string, max: number, callback: (channels: ChannelSuggest
 
     return callback(channels.map((channel, index) => ({ ...channel.data, ...{ autocomplete_id: index }})));
   });
-}
+};
 
 const addChannel = (channel: ChannelSuggestionType, editorState: EditorState, options: SelectOrInsertOptions): EditorState => {
   let spaceAlreadyPresent = false;

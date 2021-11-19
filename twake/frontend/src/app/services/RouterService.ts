@@ -6,6 +6,7 @@ import App from 'app/scenes/App';
 import Login from 'app/scenes/Login/Login';
 import Logout from 'app/scenes/Login/Logout';
 import Error from 'app/scenes/Error/Error';
+import Join from 'app/scenes/Join/Join';
 import Collections from 'services/Depreciated/Collections/Collections';
 
 import Workspaces from 'services/workspaces/workspaces';
@@ -44,6 +45,7 @@ class RouterServices extends Observable {
   public history: History<unknown> = createBrowserHistory();
   public match = (pathSchema: string): match<object> | null =>
     matchPath(this.history.location.pathname, { path: pathSchema });
+  public setRecoilState: (state: ClientStateType) => void = _ => {};
 
   //List of client sub paths
   clientSubPathnames: Readonly<string[]> = [
@@ -65,6 +67,7 @@ class RouterServices extends Observable {
     LOGIN: '/login',
     LOGOUT: '/logout',
     ERROR: '/error',
+    JOIN: '/join/:token'
   };
 
   UUIDsToTranslate: Readonly<string[]> = [
@@ -120,12 +123,22 @@ class RouterServices extends Observable {
       exact: true,
       component: Error,
     },
+    {
+      path: this.pathnames.JOIN,
+      exact: false,
+      key: 'join',
+      component: Join,
+      options: {
+        withErrorBoundary: false,
+      },
+    },
   ];
 
   constructor() {
     super();
     this.history.listen(() => {
       this.notify();
+      this.setRecoilState(this.getStateFromRoute());
     });
   }
 

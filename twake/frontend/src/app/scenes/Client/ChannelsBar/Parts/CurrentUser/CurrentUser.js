@@ -11,7 +11,7 @@ import WorkspaceService from 'services/workspaces/workspaces.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import ListenUsers from 'services/user/ListenUsers';
 import UserParameter from 'app/scenes/Client/Popup/UserParameter/UserParameter.js';
-import InputWithIcon from 'components/Inputs/InputWithIcon.js';
+import InputWithIcon from 'components/Inputs/InputWithIcon';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import NotificationParameters from 'services/user/notification_parameters.js';
@@ -25,7 +25,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 import LockedWorkspacePopup from 'app/components/LockedFeaturesComponents/LockedWorkspacePopup/LockedWorkspacePopup';
 import ModalManager from 'app/components/Modal/ModalManager';
-import CompanyMessagesCounter from "components/CompanyMessagesCounter/CompanyMessagesCounter";
+import CompanyMessagesCounter from 'components/CompanyMessagesCounter/CompanyMessagesCounter';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -189,7 +189,7 @@ export default class CurrentUser extends Component {
       {
         type: 'react-element',
         className: 'menu-cancel-left-padding',
-        reactElement: () => <CompanyMessagesCounter />
+        reactElement: () => <CompanyMessagesCounter />,
       },
       {
         type: 'text',
@@ -203,7 +203,6 @@ export default class CurrentUser extends Component {
         ),
       },
       { type: 'separator' },
-
     ];
     if (!WorkspaceUserRights.isInvite()) {
       if (WorkspaceUserRights.hasWorkspacePrivilege()) {

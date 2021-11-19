@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Switch } from 'antd';
 
 import './Inputs.scss';

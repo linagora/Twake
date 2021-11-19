@@ -24,7 +24,7 @@ export default class WritingUsers extends Component<Props> {
       );
       const savedState = this.savedState;
       this.savedState = newState;
-      return newState != savedState;
+      return newState !== savedState;
     });
     MessagesService.addListener(this);
   }
@@ -45,12 +45,12 @@ export default class WritingUsers extends Component<Props> {
   render() {
     var writing_users = MessagesService.getWritingUsers(this.props.channelId, this.props.threadId);
 
-    if (writing_users.length == 0) {
+    if (writing_users.length === 0) {
       return '';
     }
 
     var phrase = Languages.t('scenes.apps.messages.messageslist.get_writing_users', []);
-    if (writing_users.length == 1) {
+    if (writing_users.length === 1) {
       phrase = Languages.t('scenes.apps.messages.messageslist.get_writing_user');
     }
 

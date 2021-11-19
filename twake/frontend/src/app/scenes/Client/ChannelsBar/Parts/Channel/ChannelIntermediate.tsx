@@ -55,7 +55,7 @@ export default (props: Props): JSX.Element => {
 
   const unreadMessages =
     (channel.data.last_activity || 0) > (channel.data.user_member.last_access || 0) &&
-    channel.data.last_message?.sender != channel.data.user_member?.user_id;
+    channel.data.last_message?.sender !== channel.data.user_member?.user_id;
 
   return (
     <ChannelUI

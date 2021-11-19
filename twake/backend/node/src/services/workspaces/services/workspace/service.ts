@@ -555,7 +555,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     workspaceId: string,
   ): Promise<WorkspaceInviteTokenObject> {
     await this.deleteInviteToken(companyId, workspaceId);
-    const token = randomBytes(16).toString("hex");
+    const token = randomBytes(32).toString("base64");
     const pk = { company_id: companyId, workspace_id: workspaceId };
     await this.workspaceInviteTokensRepository.save(
       getWorkspaceInviteTokensInstance({ ...pk, invite_token: token }),

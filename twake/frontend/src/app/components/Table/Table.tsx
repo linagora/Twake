@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Button from 'components/Buttons/Button.js';

@@ -46,7 +46,7 @@ export default () => {
     .concat(directChannels)
     .filter(a => a.data.user_member?.user_id)
     .sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''))
-    .map(channel => {
+    .forEach(channel => {
       switch (true) {
         case channel.data.user_member?.favorite:
           channelCategory.favorite.push(channel);
@@ -68,7 +68,7 @@ export default () => {
     channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0
   );
 
-  channelCategory.inGroup.map(channel => {
+  channelCategory.inGroup.forEach(channel => {
     if (channel.data.channel_group && channel.data.channel_group.length > 1) {
       if (groups.length === 0) {
         groupsName.push(channel.data.channel_group);

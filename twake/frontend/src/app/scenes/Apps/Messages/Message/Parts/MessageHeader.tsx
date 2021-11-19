@@ -141,7 +141,7 @@ export default (props: Props) => {
             // eslint-disable-next-line react/jsx-no-target-blank
             target="_BLANK"
             href={messageLink || '#'}
-            onMouseEnter={() => updateMessageLink()}
+            onMouseEnter={() => updateMessageLink()} rel="noreferrer"
           >
             <Moment
               tz={moment.tz.guess()}

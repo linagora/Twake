@@ -173,7 +173,7 @@ class WorkspacesUsers extends Observable {
     }
 
     // eslint-disable-next-line no-unused-vars
-    var loadGroupUsers = (data: any) => {
+    const loadGroupUsers = (data: any) => {
       data.users.forEach((item: any) => {
         if (
           !that.offset_by_group_id[group_id][1] ||
@@ -183,7 +183,7 @@ class WorkspacesUsers extends Observable {
         }
         that.offset_by_group_id[group_id][0]++;
 
-        Collections.get('users').completeObject(item.user, item.user.front_id);
+        Collections.get("users").completeObject(item.user, item.user.front_id);
 
         that.users_by_group[group_id][item.user.id] = item;
       });
@@ -250,7 +250,7 @@ class WorkspacesUsers extends Observable {
           workspaceService.currentGroupId
         }/workspaces/${workspaceService.currentWorkspaceId}/users/${User.getCurrentUserId()}`;
         Api.delete(deleteWorkspaceUser, (res: any) => {
-          if (res.status == 'success') {
+          if (res.status === 'success') {
             window.location.reload();
           } else {
             AlertManager.alert(() => {}, {

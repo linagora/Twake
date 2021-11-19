@@ -55,6 +55,7 @@ const flushPromises = () => {
       resolve();
     };
     setTimeout(() => {
+      // eslint-disable-next-line no-throw-literal
       throw 'The component did not flush after 2s!';
     }, 2000);
   });
