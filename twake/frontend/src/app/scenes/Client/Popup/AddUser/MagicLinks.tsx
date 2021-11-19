@@ -26,7 +26,9 @@ export default (props: PropsType): JSX.Element => {
 
     const magicLinksService = new MagicLinksGeneratorService(companyId!, workspaceId!, busy);
 
+    /* eslint-disable react-hooks/exhaustive-deps */
     useEffect(() => { init();}, []);
+    /* eslint-enable react-hooks/exhaustive-deps */
 
     useEffect(() => { setLink(`${window.location.origin}/join/${currentToken}`); }, [currentToken]);
 
@@ -55,7 +57,7 @@ export default (props: PropsType): JSX.Element => {
 
     const onMouseOver = ()=> setShowButtons(true);
     const onMouseLeave = ()=>setShowButtons(false);
-    
+
     const suffix = (<div className="link-input-suffix" style={showButtons ? {} : { display: 'none' }}>
         <DeleteOutlined onClick={onDeleteBtnClick} className="action-button" />
         <RetweetOutlined onClick={onGenerateBtnClick} className="action-button" />
@@ -69,7 +71,7 @@ export default (props: PropsType): JSX.Element => {
         defaultValue={link}
         suffix={suffix}
         loading={loading}
-        onSearch={onCopyBtnClick} 
+        onSearch={onCopyBtnClick}
         />);
 
 

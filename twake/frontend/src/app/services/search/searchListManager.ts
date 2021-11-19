@@ -89,11 +89,9 @@ class SearchListManager extends Observable {
     search?: string;
   }): Promise<(UserType | ChannelResource)[]> {
     if (collectionPath?.length) {
-      const res =
-        this.workspaceChannels.length == 0
+      return this.workspaceChannels.length === 0
           ? await Collection.get(collectionPath, ChannelResource).findSync({})
           : Collection.get(collectionPath, ChannelResource).find({});
-      return res;
     } else {
       let users: UserType[] = [];
       users.push(...(await this.searchUsers(search || '')));
@@ -144,10 +142,11 @@ class SearchListManager extends Observable {
       if (channel.type === 'workspace') {
         const resource = channel.resource as ChannelResource;
         const isNotAbleToSeeChannel =
-          this.isChannelMember(mineWorkspaceChannels, resource) === false &&
+          !this.isChannelMember(mineWorkspaceChannels, resource) &&
           resource.data.visibility === 'private';
         return !isNotAbleToSeeChannel;
       }
+      return undefined;
     });
   }
 
@@ -209,6 +208,7 @@ class SearchListManager extends Observable {
           )[0];
           return otherUserId;
         }
+        return undefined;
       });
 
     this.list = this.list.filter(userOrChannel => {

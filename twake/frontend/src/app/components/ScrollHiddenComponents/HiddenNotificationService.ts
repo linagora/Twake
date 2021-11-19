@@ -48,7 +48,7 @@ class HiddenNotificationService extends Observable {
   }
 
   private setBeaconsTop(scroller: ScrollerRef) {
-    this.beacons.map((beacon: BeaconRef) => {
+    this.beacons.forEach((beacon: BeaconRef) => {
       beacon.top =
         beacon.node.current.getBoundingClientRect().y -
         (scroller.node.getBoundingClientRect().y || 0) +

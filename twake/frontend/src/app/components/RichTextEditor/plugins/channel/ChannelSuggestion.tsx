@@ -11,4 +11,4 @@ export default (props: ChannelSuggestionType): JSX.Element => {
       <div className="text">{props.name}</div>
      </>
   );
-}
+};

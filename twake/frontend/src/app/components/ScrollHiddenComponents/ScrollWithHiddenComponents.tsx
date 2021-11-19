@@ -22,6 +22,7 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
   const ref = useRef<any>(null);
   const service = HiddenNotificationService.get(tag);
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (disabled) {
       return;
@@ -29,6 +30,8 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
     service.setScroller(ref.current.firstChild);
     return () => service.removeScroller();
   }, [tag, ref, disabled]);
+  /* eslint-enable react-hooks/exhaustive-deps */
+
 
   const beacon: number[] = service.useWatcher(() => [
     service.state.beaconTop.length,

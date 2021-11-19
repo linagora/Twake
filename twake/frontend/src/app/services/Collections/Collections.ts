@@ -31,7 +31,7 @@ class Collections {
     return this.options;
   }
 
-  public connect(options: Options) {
+  public connect(options?: Options) {
     options && this.setOptions(options);
     this.transport.connect(this.options.transport);
     this.started = true;
