@@ -124,7 +124,7 @@
     "moment": "^2.29.1",
     "mongodb": "^4.1.0",
     "multistream": "^4.1.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.5",
     "node-uuid": "^1.4.8",
     "ora": "^5.4.0",
     "pdf2pic": "^2.1.4",
