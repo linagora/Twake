@@ -95,6 +95,7 @@ export default class CreateWorkspacePage extends Component {
           previous={() => this.previous()}
           finish={() => this.next()}
           loading={this.state.workspaces.loading}
+          noMagicLink
         />
       );
     }

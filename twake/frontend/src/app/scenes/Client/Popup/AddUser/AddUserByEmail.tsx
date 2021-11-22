@@ -11,6 +11,8 @@ import MagicLinks from './MagicLinks';
 
 type PropsType = {
   [key: string]: any;
+  noMagicLink?: boolean;
+  inline?: boolean;
 };
 
 export default (props: PropsType): JSX.Element => {
@@ -91,10 +93,11 @@ export default (props: PropsType): JSX.Element => {
         </Button>
       </div>
 
-      <div className="magic-links-wrapper">
-        <MagicLinks/>
-       </div>
-
+      {!props.noMagicLink && (
+        <div className="magic-links-wrapper">
+          <MagicLinks />
+        </div>
+      )}
     </div>
   );
 };

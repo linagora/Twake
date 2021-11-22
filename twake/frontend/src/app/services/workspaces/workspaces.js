@@ -226,41 +226,27 @@ class Workspaces extends Observable {
     return object;
   }
 
-  createWorkspace(wsName, wsMembers, groupId, groupName, groupCreationData) {
+  async createWorkspace(wsName, wsMembers, groupId, groupName, groupCreationData) {
     var that = this;
-    var data = {
-      name: wsName,
-      groupId: groupId,
-      group_name: groupName,
-      group_creation_data: groupCreationData,
-      channels: [],
-    };
     that.loading = true;
     that.notify();
-    Api.post('/ajax/workspace/create', data, function (res) {
-      var workspace = undefined;
-      if (res.data && res.data.workspace) {
-        //Update rights and more
-        loginService.updateUser();
-
-        that.addToUser(res.data.workspace);
-        workspace = res.data.workspace;
-        if (wsMembers.length > 0) {
-          //Invite using console
-          ConsoleService.addMailsInWorkspace({
-            workspace_id: res.data.workspace.id || '',
-            company_id: res.data.workspace.group.id || '',
-            emails: wsMembers,
-          }).finally(() => {
-            that.loading = false;
-            popupManager.close();
-            if (workspace) {
-              that.select(workspace);
-            } else {
-              that.notify();
-            }
-          });
-        } else {
+    const res = await WorkspaceAPIClient.create(groupId, {
+      name: wsName,
+      logo: '',
+      default: false,
+    });
+    var workspace = res;
+    if (workspace) {
+      that.addToUser(workspace);
+      //Update rights and more
+      loginService.updateUser();
+      if (wsMembers.length > 0) {
+        //Invite using console
+        ConsoleService.addMailsInWorkspace({
+          workspace_id: workspace.id || '',
+          company_id: workspace.group.id || '',
+          emails: wsMembers,
+        }).finally(() => {
           that.loading = false;
           popupManager.close();
           if (workspace) {
@@ -268,10 +254,18 @@ class Workspaces extends Observable {
           } else {
             that.notify();
           }
+        });
+      } else {
+        that.loading = false;
+        popupManager.close();
+        if (workspace) {
+          that.select(workspace);
+        } else {
+          that.notify();
         }
       }
-      that.initSelection();
-    });
+    }
+    that.initSelection();
   }
 
   async updateWorkspaceName(name) {

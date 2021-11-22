@@ -1,33 +1,42 @@
-import { MessageWithReplies } from 'app/models/Message';
+import { MessageWithReplies, NodeMessage } from 'app/models/Message';
 import MessageViewAPIClient from 'app/services/Apps/Messages/clients/MessageViewAPIClient';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
-import message from 'app/services/Toaster/ToasterService';
 import Numbers from 'app/services/utils/Numbers';
 import _ from 'lodash';
 import { useEffect } from 'react';
-import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import {
   AtomChannelKey,
   AtomMessageKey,
   AtomThreadKey,
   ChannelMessagesState,
+  ChannelMessagesStateExtended,
   MessageState,
+  MessageStateExtended,
   MessagesWindowState,
-  setMessage,
-  setThreadMessages,
   ThreadMessagesState,
+  ThreadMessagesStateExtended,
 } from '../atoms/Messages';
 
-export const useMessage = (key: AtomMessageKey) => {
-  return useRecoilValue(MessageState(key));
+export const useMessage = (partialKey: AtomMessageKey) => {
+  const key = { ...partialKey, id: partialKey.id || partialKey.threadId };
+  const [value, setValue] = useRecoilState(MessageState(key));
+  useEffect(() => {
+    MessageStateExtended.setHandler(key.id, setValue, value);
+  }, []);
+  return value;
 };
 
+//TODO this also could jump, do we need windows too ?
 export const useThreadMessages = (key: AtomThreadKey) => {
   const { window, updateWindowFromIds, isInWindow } = useMessagesWindow(key.threadId);
-  const messages = useRecoilValue(ThreadMessagesState(key)).filter(message =>
-    isInWindow(message.id),
-  );
-  updateWindowFromIds(messages.map(m => m.id));
+  let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
+  useEffect(() => {
+    ThreadMessagesStateExtended.setHandler(key.threadId, setMessages, messages);
+  }, []);
+
+  messages = messages.filter(message => isInWindow(message.id || ''));
+  updateWindowFromIds(messages.map(m => m.id || ''));
   return {
     messages,
     window,
@@ -39,6 +48,10 @@ export const useThreadMessages = (key: AtomThreadKey) => {
 //TODO make this more easy to duplicate for other views
 export const useChannelMessages = (key: AtomChannelKey) => {
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
+  useEffect(() => {
+    ChannelMessagesStateExtended.setHandler(key.channelId, setMessages, messages);
+  }, []);
+
   const { window, updateWindowFromIds, isInWindow, reachEdge } = useMessagesWindow(key.channelId);
   const currentWindowMessages = messages.filter(message => isInWindow(message.threadId));
 
@@ -68,24 +81,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       [
         ...messages,
         ...newMessages.map(m => {
-          //TODO Can it be simplified? and also we should update the atom instead of setting default value
-          setMessage({ companyId: key.companyId, threadId: m.thread_id, id: m.id }, m);
-          if (m.last_replies) {
-            setThreadMessages(
-              { companyId: key.companyId, threadId: m.id },
-              m.last_replies.map(m2 => {
-                return {
-                  companyId: key.companyId,
-                  threadId: m.id,
-                  id: m2.id,
-                };
-              }),
-            );
-            m.last_replies.forEach(m => {
-              setMessage({ companyId: key.companyId, threadId: m.id, id: m.id }, m as any);
-            });
-          }
-          //TODO (End of TODO)
+          updateRecoilFromMessage(key, m);
           return {
             companyId: key.companyId,
             threadId: m.thread_id,
@@ -96,21 +92,19 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     );
 
     allMessages.sort((a, b) => Numbers.compareTimeuuid(a.threadId, b.threadId));
-
     updateWindowFromIds(allMessages.map(m => m.threadId));
     setMessages(allMessages);
-  };
-
-  const test = (action: any, resource: any) => {
-    console.log('window in useRealtimeRoom', action, window);
-    loadMore('future');
   };
 
   useRealtimeRoom<MessageWithReplies>(
     //TODO should get this from backend not hardcoded here
     `/companies/${key.companyId}/workspaces/${key.workspaceId}/channels/${key.channelId}/feed`,
     'useChannelMessages',
-    test,
+    (action: string, event: any) => {
+      if (action === 'created' || action === 'updated') {
+        updateRecoilFromMessage(key, event as NodeMessage);
+      }
+    },
   );
 
   return {
@@ -121,12 +115,64 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   };
 };
 
+/**
+ * This will set all the messages and threads atoms records from any kind of list
+ */
+const updateRecoilFromMessage = (
+  key: { companyId: string },
+  m: MessageWithReplies | NodeMessage,
+) => {
+  if ((m as MessageWithReplies)?.last_replies?.length === undefined) {
+    m = messageToMessageWithReplies(m);
+  }
+
+  const mwr = m as MessageWithReplies;
+
+  MessageStateExtended.set(mwr.id, mwr);
+  if (mwr.last_replies) {
+    ThreadMessagesStateExtended.set(
+      mwr.id,
+      _.uniqBy(
+        [
+          ...(ThreadMessagesStateExtended.get(mwr.id) || []),
+          ...mwr.last_replies.map(m => {
+            return {
+              companyId: key.companyId,
+              threadId: mwr.id,
+              id: m.id,
+            };
+          }),
+        ],
+        m => m.id,
+      ),
+    );
+    mwr.last_replies.forEach(m => {
+      MessageStateExtended.set(m.id, messageToMessageWithReplies(m));
+    });
+  }
+};
+
+/**
+ * This convert a NodeMessage to a MessageWithReply type to make things easier
+ */
+const messageToMessageWithReplies = (m: NodeMessage) => {
+  const mwr: MessageWithReplies = {
+    ...m,
+    last_replies: [],
+    stats: { last_activity: m.created_at, replies: 0 },
+  };
+  return mwr;
+};
+
+/**
+ * This is the hook to work with feed window (from where to where we are looking to messages)
+ * useful mostly in case of jumps
+ */
 const useMessagesWindow = (key: string) => {
   const [window, setWindow] = useRecoilState(MessagesWindowState(key));
   const updateWindowFromIds = (ids: string[]) => {
     const min = ids.reduce((a, b) => Numbers.minTimeuuid(a, b), ids[0]);
     const max = ids.reduce((a, b) => Numbers.maxTimeuuid(a, b), ids[0]);
-    console.log(ids, min, max);
     if (max !== window.end || min !== window.start) {
       setWindow({
         ...window,

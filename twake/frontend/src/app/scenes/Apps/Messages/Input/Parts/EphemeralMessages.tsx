@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CurrentUser from 'app/services/user/CurrentUser';
-import MessageComponent from '../../Message/Message';
+import MessageComponent from '../../_Message/Message';
 import MessagesService from 'services/Apps/Messages/Messages';
 
 type Props = {

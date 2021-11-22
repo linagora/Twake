@@ -2,8 +2,7 @@ import React, { Suspense } from 'react';
 import { ChannelResource } from 'app/models/Channel';
 import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 import NewThread from './Input/NewThread';
-import ThreadsList from './ThreadsList';
-import ThreadMessagesList from './ThreadMessagesList';
+import MessagesList from './MessagesList';
 
 type Props = {
   channel: ChannelResource;
@@ -25,10 +24,12 @@ export default (props: Props) => {
   return (
     <div className="messages-view">
       <Suspense fallback="loading...">
-        {!threadId && (
-          <ThreadsList companyId={companyId} workspaceId={workspaceId} channelId={channelId} />
-        )}
-        {!!threadId && <ThreadMessagesList threadId={threadId} companyId={companyId} />}
+        <MessagesList
+          companyId={companyId}
+          workspaceId={workspaceId}
+          channelId={channelId}
+          threadId={threadId}
+        />
       </Suspense>
       <NewThread
         collectionKey=""
