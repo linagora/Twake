@@ -18,6 +18,21 @@
     }
   }
 }
+
+.workpaces_view_loading {
+  padding-bottom: 30px;
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .list {
+      position: relative;
+      height: 100%;
+      padding-top: 20px;
+    }
+  }
+}
+
 .no_workspaces {
   .workspaces_view {
     width: 0px !important;

@@ -1,6 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 import classNames from 'classnames';
+import { Skeleton } from 'antd';
 
 import { NotificationResource } from 'app/models/Notification';
 import { Collection } from 'app/services/CollectionsReact/Collections';
@@ -44,3 +45,11 @@ export default (props: Props): JSX.Element => {
     </div>
   );
 };
+
+export const LoadingWorkspaceIcon = () => {
+  const size = 32; 
+  const shape = "square";
+  return (  
+    <Skeleton.Avatar size={size} shape={shape} />
+  );
+}

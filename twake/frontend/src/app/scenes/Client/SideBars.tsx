@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
-import classNames from 'classnames';
 import { Layout } from 'antd';
 
 import ChannelsBar, { LoadingChannels } from './ChannelsBar/ChannelsBar';
@@ -23,11 +22,9 @@ export default () => {
 
 export const LoadingSidebar = () => {
   return (
-    <Layout>
+    <Layout style={{ height: '100%'}}>      
       <LoadingWorkspace />
-      <Layout.Sider theme="light" width={220} className={classNames('channels_view', {loading: true, loading_render: true, })} style={{ height: '100%' }}>
-        <LoadingChannels />
-      </Layout.Sider> 
+      <LoadingChannels />
     </Layout>
 
   );
