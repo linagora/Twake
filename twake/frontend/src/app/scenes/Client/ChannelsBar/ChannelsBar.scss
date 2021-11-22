@@ -89,6 +89,22 @@
   }
 }
 
+.channels_view_loader {
+  background: var(--grey-background);
+  width: 220px;
+  padding-top: 16px;
+  border-radius: var(--border-radius-base) 0 0 8px;
+
+  .applications_channels_loader {
+    margin-top: 4px;
+  }
+  .channels_loader {
+    .ant-skeleton > .ant-skeleton-content > .ant-skeleton-title {
+      margin-top: 24px;
+    }
+  }
+}
+
 .loading_render {
   .channel_small_text {
     display: none;

@@ -157,3 +157,32 @@
     }
   }
 }
+
+.current-company-header-loader {
+  display: flex;
+  margin-left: 20px;
+  margin-right: 12px;
+  width: auto;
+  box-sizing: border-box;
+
+  .current-company-loader {
+    flex: 1;
+    overflow: hidden;
+    height: 48px;
+
+    .user-info-loader {
+      align-items: center;
+      background-color: var(--grey-dark);
+      background-size: cover;
+      background-position: center;
+      opacity: 1;
+      height: 12px;
+      margin-top: -10%;
+      margin-right: 20%;
+      margin-left: 20%;
+      overflow: hidden;
+      white-space: nowrap;
+      border-radius: var(--border-radius-base);
+    }
+  }
+}
