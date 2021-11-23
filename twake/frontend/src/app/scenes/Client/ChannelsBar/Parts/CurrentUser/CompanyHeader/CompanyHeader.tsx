@@ -54,10 +54,7 @@ export const LoadingCompany = () => {
   return (
     <div className="current_company_header_loader ">
       <div className="current_company_loader small-x-margin">
-        <Skeleton
-          title={{ style: { height: 22, background: '#DFDFDF' }, width: '50%' }}
-          paragraph={{ style: { background: '#DFDFDF' }, rows: 2 }}
-        />
+        <Skeleton title={{ style: { height: 22 }, width: '50%' }} />
       </div>
     </div>
   );

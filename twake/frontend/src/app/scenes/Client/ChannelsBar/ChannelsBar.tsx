@@ -118,15 +118,9 @@ export const ChannelLoading = () => {
       <div className="applications_channels_loader small-x-margin">
         <Skeleton title={false} paragraph={{ rows: 3, width: '100%' }} />
       </div>
-      <div className="channels_loader small-x-margin">
-        <Skeleton
-          title={{ style: { background: '#DFDFDF' }, width: '50%' }}
-          paragraph={{ rows: 4, width: '100%' }}
-        />
-        <Skeleton
-          title={{ style: { background: '#DFDFDF' }, width: '50%' }}
-          paragraph={{ rows: 4, width: '100%' }}
-        />
+      <div className="small-x-margin">
+        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
+        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
       </div>
     </div>
   );
