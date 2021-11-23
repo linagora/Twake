@@ -7,8 +7,6 @@ import Icon from 'components/Icon/Icon.js';
 import Emojione from 'components/Emojione/Emojione';
 import NotificationDelay from '../Notifications/NotificationDelay';
 import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
-import { SkeletonTitleProps } from 'antd/lib/skeleton/Title';
-import { SkeletonParagraphProps } from 'antd/lib/skeleton/Paragraph';
 
 import './CompanyHeader.scss';
 

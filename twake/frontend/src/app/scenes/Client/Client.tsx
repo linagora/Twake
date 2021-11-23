@@ -20,7 +20,7 @@ import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndica
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import LoginService from 'app/services/login/LoginService';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
-import SideBars, { LoadingSidebar} from './SideBars';
+import SideBars, { LoadingSidebar } from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
@@ -29,9 +29,8 @@ import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import './Client.scss';
 
 export default React.memo((): JSX.Element => {
-  
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace(); 
+  const workspaceId = useRouterWorkspace();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const user = useCurrentUser();
 
@@ -72,13 +71,13 @@ export default React.memo((): JSX.Element => {
                   setMenuIsOpen(!collapsed);
                 }}
               >
-                <SideBars />              
+                <SideBars />
               </Layout.Sider>
             </Suspense>
-                  <MainView
-                    className={classNames({ collapsed: menuIsOpen })}
-                    key={`mainview-${companyId}-${workspaceId}`}
-                  />
+            <MainView
+              className={classNames({ collapsed: menuIsOpen })}
+              key={`mainview-${companyId}-${workspaceId}`}
+            />
           </Layout>
         </Layout>
       );
@@ -100,4 +99,3 @@ export default React.memo((): JSX.Element => {
     </>
   );
 });
-
