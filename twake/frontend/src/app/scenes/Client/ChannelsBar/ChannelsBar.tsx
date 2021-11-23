@@ -5,7 +5,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout, Skeleton } from 'antd';
 
 import CurrentUser from './Parts/CurrentUser/CurrentUser';
-import { CompanyApplications} from './ChannelsApps/ChannelsApps';
+import { CompanyApplications } from './ChannelsApps/ChannelsApps';
 import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
 import ChannelsUser from './ChannelsUser/ChannelsUser';
 import Footer from './Parts/Footer.js';
@@ -26,22 +26,26 @@ import './ChannelsBar.scss';
 
 export const LoadingChannels = () => {
   return (
-    <Layout.Sider theme="light" width={220} className={classNames('channels_view_loading')} style={{ height: '100%', width: "90%", alignItems: 'center' }}>
+    <Layout.Sider
+      theme="light"
+      width={220}
+      className={classNames('channels_view_loading')}
+      style={{ height: '100%', width: '90%', alignItems: 'center' }}
+    >
       <LoadingCompany />
-      <Channel_loading />
-    </Layout.Sider> 
-    
+      <ChannelLoading />
+    </Layout.Sider>
   );
 };
 
 export default () => {
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace(); 
+  const workspaceId = useRouterWorkspace();
 
   //Need to be fix, here ready always == true
   const ready = ChannelsBarService.useWatcher(async () => {
     return (
-      await ChannelsBarService.isReady(companyId, workspaceId) &&
+      (await ChannelsBarService.isReady(companyId, workspaceId)) &&
       //ChannelsBarService.isReady(companyId, workspaceId, ['applications']) &&
       ChannelsBarService.isReady(companyId, 'direct')
     );
@@ -87,37 +91,43 @@ export default () => {
       <CurrentUser />
 
       {!ready && <LoadingChannels />}
-        <ScrollWithHiddenComponents
-          disabled={!ready}
-          tag="channel_bar_component"
-          scrollTopComponent={<HiddenNotificationsButton position="top" type="important" />}
-          scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
-        >
-          <PerfectScrollbar options={{ suppressScrollX: true }}>
-            <Suspense fallback={<></>}>
-              <CompanyApplications companyId={companyId} />
-            </Suspense>
-            <ChannelsWorkspace key={`workspace_chans_${workspaceId}`} />
-            <ChannelsUser key={companyId} />
-            {AccessRightsService.hasLevel(workspaceId, 'moderator') &&
-              Workspaces.getCurrentWorkspace().stats.total_members <= 5 && <AddUserButton />}
-          </PerfectScrollbar>
-        </ScrollWithHiddenComponents>
-        <Footer />
+      <ScrollWithHiddenComponents
+        disabled={!ready}
+        tag="channel_bar_component"
+        scrollTopComponent={<HiddenNotificationsButton position="top" type="important" />}
+        scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
+      >
+        <PerfectScrollbar options={{ suppressScrollX: true }}>
+          <Suspense fallback={<></>}>
+            <CompanyApplications companyId={companyId} />
+          </Suspense>
+          <ChannelsWorkspace key={`workspace_chans_${workspaceId}`} />
+          <ChannelsUser key={companyId} />
+          {AccessRightsService.hasLevel(workspaceId, 'moderator') &&
+            Workspaces.getCurrentWorkspace().stats.total_members <= 5 && <AddUserButton />}
+        </PerfectScrollbar>
+      </ScrollWithHiddenComponents>
+      <Footer />
     </Layout.Sider>
   );
 };
 
-export const Channel_loading = () => {
+export const ChannelLoading = () => {
   return (
     <div className="channels_view_loader ">
       <div className="applications_channels_loader small-x-margin">
-        <Skeleton title={false} paragraph={{rows : 3, width:["45%", "40%","50%"]}}/>
+        <Skeleton title={false} paragraph={{ rows: 3, width: '100%' }} />
       </div>
       <div className="channels_loader small-x-margin">
-          <Skeleton title={{style:{height:22} , width:"45%"}} paragraph={{rows:4, width:["100%", "80%","90%","100"]}}/>
-          <Skeleton title={{style:{height:22}, width:"55%"}} paragraph={{rows:4, width:["60%", "90%","100%", "85%"]}}/>
+        <Skeleton
+          title={{ style: { background: '#DFDFDF' }, width: '50%' }}
+          paragraph={{ rows: 4, width: '100%' }}
+        />
+        <Skeleton
+          title={{ style: { background: '#DFDFDF' }, width: '50%' }}
+          paragraph={{ rows: 4, width: '100%' }}
+        />
       </div>
     </div>
   );
-}
+};

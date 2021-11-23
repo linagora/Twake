@@ -97,10 +97,17 @@
 
   .applications_channels_loader {
     margin-top: 4px;
+    margin-bottom: 12px;
+    .ant-skeleton > .ant-skeleton-content > .ant-skeleton-paragraph > li {
+      border-radius: var(--border-radius-large);
+    }
   }
   .channels_loader {
     .ant-skeleton > .ant-skeleton-content > .ant-skeleton-title {
-      margin-top: 24px;
+      border-radius: var(--border-radius-large);
+    }
+    .ant-skeleton > .ant-skeleton-content > .ant-skeleton-paragraph > li {
+      border-radius: var(--border-radius-large);
     }
   }
 }

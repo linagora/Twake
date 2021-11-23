@@ -158,31 +158,24 @@
   }
 }
 
-.current-company-header-loader {
+.current_company_header_loader {
   display: flex;
-  margin-left: 20px;
-  margin-right: 12px;
   width: auto;
   box-sizing: border-box;
 
-  .current-company-loader {
+  .current_company_loader {
     flex: 1;
     overflow: hidden;
     height: 48px;
+    .ant-skeleton > .ant-skeleton-content {
+      height: 48px;
+    }
 
-    .user-info-loader {
-      align-items: center;
-      background-color: var(--grey-dark);
-      background-size: cover;
-      background-position: center;
-      opacity: 1;
-      height: 12px;
-      margin-top: -10%;
-      margin-right: 20%;
-      margin-left: 20%;
-      overflow: hidden;
-      white-space: nowrap;
-      border-radius: var(--border-radius-base);
+    .ant-skeleton > .ant-skeleton-content > .ant-skeleton-title {
+      border-radius: var(--border-radius-large);
+    }
+    .ant-skeleton > .ant-skeleton-content > .ant-skeleton-paragraph > li {
+      border-radius: var(--border-radius-large);
     }
   }
 }

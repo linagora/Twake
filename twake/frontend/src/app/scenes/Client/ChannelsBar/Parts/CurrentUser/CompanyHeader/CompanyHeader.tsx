@@ -35,7 +35,7 @@ export default (props: PropsType): JSX.Element => {
           </div>
         </div>
 
-        { user &&
+        {user && (
           <div className="user-info">
             {!!(user.status_icon || [])[0] && <Emojione type={user.status_icon![0]} />}
 
@@ -43,7 +43,7 @@ export default (props: PropsType): JSX.Element => {
               {UserService.getFullName(user)} ({user.email})
             </span>
           </div>
-        }
+        )}
       </div>
       <div className="notifications">
         <NotificationDelay />
@@ -53,13 +53,13 @@ export default (props: PropsType): JSX.Element => {
 };
 
 export const LoadingCompany = () => {
-  const workspace_name_loading : SkeletonTitleProps = {style: {height:28}, width: "40%"}
-  const user_mail_loading : SkeletonParagraphProps = {rows: 1, width: "100%"}
   return (
     <div className="current_company_header_loader ">
       <div className="current_company_loader small-x-margin">
-        <Skeleton title={workspace_name_loading} paragraph={false}/>
-        <Skeleton title={false} paragraph={user_mail_loading}/>  
+        <Skeleton
+          title={{ style: { height: 22, background: '#DFDFDF' }, width: '50%' }}
+          paragraph={{ style: { background: '#DFDFDF' }, rows: 2 }}
+        />
       </div>
     </div>
   );
