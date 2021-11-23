@@ -8,10 +8,9 @@ import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { MessageContext } from '../MessageWithReplies';
 import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import _ from 'lodash';
 
-type PropsType = {};
-
-export default (_: PropsType) => {
+export default () => {
   const context = useContext(MessageContext);
   let { message, react } = useMessage(context);
 
@@ -68,7 +67,7 @@ export default (_: PropsType) => {
 
   return (
     <div className="reactions">
-      {(message?.reactions || [])?.sort(sortReactions).map(mapReactions)}
+      {(_.cloneDeep(message?.reactions) || [])?.sort(sortReactions).map(mapReactions)}
     </div>
   );
 };

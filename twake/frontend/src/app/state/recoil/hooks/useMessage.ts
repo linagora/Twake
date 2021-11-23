@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import { AtomMessageKey, MessageState, MessageStateExtended } from '../atoms/Messages';
 import { NodeMessage } from 'app/models/Message';
+import { messageToMessageWithReplies } from './useMessages';
 
 export const useMessage = (partialKey: AtomMessageKey) => {
   const key = { ...partialKey, id: partialKey.id || partialKey.threadId };
@@ -25,44 +26,48 @@ export const useMessage = (partialKey: AtomMessageKey) => {
   };
 
   const save = async (message: NodeMessage) => {
-    await MessageAPIClient.save(partialKey.companyId, partialKey.threadId, message);
-    get();
+    const updated = await MessageAPIClient.save(partialKey.companyId, partialKey.threadId, message);
+    if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
   const move = async (targetThread: string) => {
-    await MessageAPIClient.save(
+    const updated = await MessageAPIClient.save(
       partialKey.companyId,
       partialKey.threadId,
       { ...message, thread_id: targetThread },
       { movedFromThread: message.thread_id },
     );
-    get();
+    if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
   const remove = async () => {
-    await MessageAPIClient.delete(partialKey.companyId, partialKey.threadId, partialKey.id || '');
-    get();
+    const updated = await MessageAPIClient.delete(
+      partialKey.companyId,
+      partialKey.threadId,
+      partialKey.id || '',
+    );
+    if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
   const bookmark = async (bookmarkId: string, status: boolean = true) => {
-    await MessageAPIClient.bookmark(
+    const updated = await MessageAPIClient.bookmark(
       partialKey.companyId,
       partialKey.threadId,
       partialKey.id || '',
       bookmarkId,
       status,
     );
-    get();
+    if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
   const pin = async (status: boolean = true) => {
-    await MessageAPIClient.pin(
+    const updated = await MessageAPIClient.pin(
       partialKey.companyId,
       partialKey.threadId,
       partialKey.id || '',
       status,
     );
-    get();
+    if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
   const react = async (
@@ -83,19 +88,19 @@ export const useMessage = (partialKey: AtomMessageKey) => {
         } else if (mode === 'toggle') {
           const existing = userReactions.filter(e => emoji === e);
           userReactions = [
-            ...userReactions.filter(e => existing.includes(e)),
+            ...userReactions.filter(e => !emojis.includes(e)),
             ...emojis.filter(e => !existing.includes(e)),
           ];
         }
       });
     }
-    await MessageAPIClient.reaction(
+    const updated = await MessageAPIClient.reaction(
       partialKey.companyId,
       partialKey.threadId,
       partialKey.id || '',
       _.uniq(userReactions),
     );
-    get();
+    if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
   return { message, get, react, pin, remove, bookmark, save, move };

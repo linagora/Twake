@@ -220,7 +220,7 @@ export default (props: Props) => {
                     onChange={(emoji: any) => {
                       MenusManager.closeMenu();
                       props.onClose && props.onClose();
-                      react([emoji], 'toggle');
+                      react([emoji.colons], 'toggle');
                     }}
                   />
                 );

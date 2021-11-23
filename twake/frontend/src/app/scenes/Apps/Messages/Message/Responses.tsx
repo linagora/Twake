@@ -14,7 +14,6 @@ export default ({ threadId, companyId }: Props) => {
   let { messages } = useThreadMessages({ companyId, threadId });
   //TODO use window to open more or less messages here
 
-  console.log(messages);
   return (
     <>
       {messages.map(m => {

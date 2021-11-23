@@ -144,7 +144,7 @@ const updateRecoilFromMessage = (
 /**
  * This convert a NodeMessage to a MessageWithReply type to make things easier
  */
-const messageToMessageWithReplies = (m: NodeMessage) => {
+export const messageToMessageWithReplies = (m: NodeMessage) => {
   const mwr: MessageWithReplies = {
     ...m,
     last_replies: MessageStateExtended.get(m.id)?.last_replies || [],
