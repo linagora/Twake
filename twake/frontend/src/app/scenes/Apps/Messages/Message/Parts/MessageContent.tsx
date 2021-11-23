@@ -28,6 +28,7 @@ type Props = {
 export default (props: Props) => {
   const [active, setActive] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
+  const [didMouseOver, setDidMouseOver] = useState(false);
   let loading_interaction_timeout: any = 0;
 
   const context = useContext(MessageContext);
@@ -71,6 +72,9 @@ export default (props: Props) => {
         'loading-interaction': loadingAction,
         'link-to-thread': props.linkToThread,
       })}
+      onMouseEnter={() => {
+        setDidMouseOver(true);
+      }}
       onClick={() => setActive(false)}
     >
       <MessageHeader linkToThread={props.linkToThread} />
@@ -142,7 +146,7 @@ export default (props: Props) => {
           )}
         </div>
       )}
-      {!showEdition && !deleted && !messageSaveFailed && (
+      {!showEdition && !deleted && !messageSaveFailed && didMouseOver && (
         <Options
           onOpen={() => setActive(true)}
           onClose={() => setActive(false)}

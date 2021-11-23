@@ -19,7 +19,7 @@ export default ({ threadId, companyId }: Props) => {
       {messages.map(m => {
         return (
           <MessageContext.Provider key={m.id} value={{ ...m, id: m.id || '' }}>
-            <ThreadSection canDrag alinea small>
+            <ThreadSection withAvatar alinea small>
               <Message />
             </ThreadSection>
           </MessageContext.Provider>

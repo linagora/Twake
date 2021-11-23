@@ -5,6 +5,8 @@ export default class ExtendedState<T> {
     this.map.set(id, { current: value, set: handler });
   }
   public set(id: string, current: T) {
+    console.log('set ', id, ' to ', current);
+    console.trace();
     const setter = this.map.get(id)?.set || ((_: T) => {});
     this.map.set(id, {
       current,

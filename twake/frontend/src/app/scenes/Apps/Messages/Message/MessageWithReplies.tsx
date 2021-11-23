@@ -5,6 +5,8 @@ import ReplyBlock from './Parts/ReplyBlock';
 import LoadMoreReplies from './Parts/LoadMoreReplies';
 import { MessagesListContext } from '../MessagesList';
 import ThreadSection from '../Parts/ThreadSection';
+import Thread from '../Parts/Thread';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
 
 export const MessageContext = React.createContext({ companyId: '', threadId: '', id: '' });
 
@@ -18,22 +20,26 @@ export default ({ threadId, companyId }: Props) => {
 
   return (
     <MessageContext.Provider value={{ companyId, threadId, id: threadId }}>
-      <div className="thread-container">
-        <div className="thread-centerer">
-          <div className="thread with-block">
-            <ThreadSection>
-              <Message />
-            </ThreadSection>
-            {!listContext.hideReplies && (
-              <>
-                <LoadMoreReplies />
-                <Responses companyId={companyId} threadId={threadId} />
-                <ReplyBlock />
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      <Thread withBlock>
+        <HeadMessage />
+        {!listContext.hideReplies && (
+          <>
+            <LoadMoreReplies />
+            <Responses companyId={companyId} threadId={threadId} />
+            <ReplyBlock />
+          </>
+        )}
+      </Thread>
     </MessageContext.Provider>
+  );
+};
+
+const HeadMessage = () => {
+  const context = useContext(MessageContext);
+  const { message } = useMessage(context);
+  return (
+    <ThreadSection withAvatar head pinned={!!message.pinned_info?.pinned_at}>
+      <Message />
+    </ThreadSection>
   );
 };

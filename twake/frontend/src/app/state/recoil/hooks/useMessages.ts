@@ -22,7 +22,7 @@ export const useThreadMessages = (key: AtomThreadKey) => {
   let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
   useEffect(() => {
     ThreadMessagesStateExtended.setHandler(key.threadId, setMessages, messages);
-  }, []);
+  }, [key.threadId, messages, setMessages]);
 
   messages = messages.filter(message => isInWindow(message.id || ''));
   updateWindowFromIds(messages.map(m => m.id || ''));
@@ -39,7 +39,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
   useEffect(() => {
     ChannelMessagesStateExtended.setHandler(key.channelId, setMessages, messages);
-  }, []);
+  }, [key.channelId, messages, setMessages]);
 
   const { window, updateWindowFromIds, isInWindow, reachEdge } = useMessagesWindow(key.channelId);
   const currentWindowMessages = messages.filter(message => isInWindow(message.threadId));
@@ -115,7 +115,8 @@ const updateRecoilFromMessage = (
     m = messageToMessageWithReplies(m);
   }
 
-  const mwr = m as MessageWithReplies;
+  const mwr = _.cloneDeep(m) as MessageWithReplies;
+  mwr.last_replies = mwr.last_replies.filter(m => m.id !== m.thread_id);
 
   MessageStateExtended.set(mwr.id, mwr);
   if (mwr.last_replies) {
@@ -133,7 +134,7 @@ const updateRecoilFromMessage = (
           }),
         ],
         m => m.id,
-      ).filter(m => m.id != m.threadId),
+      ).filter(m => m.id !== m.threadId),
     );
     mwr.last_replies.forEach(m => {
       MessageStateExtended.set(m.id, messageToMessageWithReplies(m));
@@ -144,11 +145,13 @@ const updateRecoilFromMessage = (
 /**
  * This convert a NodeMessage to a MessageWithReply type to make things easier
  */
-export const messageToMessageWithReplies = (m: NodeMessage) => {
+export const messageToMessageWithReplies = (m: NodeMessage | MessageWithReplies) => {
   const mwr: MessageWithReplies = {
     ...m,
-    last_replies: MessageStateExtended.get(m.id)?.last_replies || [],
-    stats: MessageStateExtended.get(m.id)?.stats || { last_activity: m.created_at, replies: 0 },
+    last_replies:
+      (m as MessageWithReplies)?.last_replies || MessageStateExtended.get(m.id)?.last_replies || [],
+    stats: (m as MessageWithReplies)?.stats ||
+      MessageStateExtended.get(m.id)?.stats || { last_activity: m.created_at, replies: 0 },
   };
   return mwr;
 };

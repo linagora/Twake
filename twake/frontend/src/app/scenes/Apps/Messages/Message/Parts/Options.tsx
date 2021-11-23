@@ -164,7 +164,7 @@ export default (props: Props) => {
           },
         });
       }
-      if (!message?.stats?.replies) {
+      if (message?.stats?.replies <= 1) {
         menu.push({
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),

@@ -114,7 +114,7 @@ export default class MessageComponent extends Component<Props> {
     const max_responses = 3;
 
     if (this.props.fake === true) {
-      return <Thread loading />;
+      return <Thread>-</Thread>;
     }
 
     if (message?.hidden_data?.type === 'activity') {
@@ -135,15 +135,11 @@ export default class MessageComponent extends Component<Props> {
         onDrop={(data: any) => this.dropMessage(data.data)}
       >
         <Thread
-          collectionKey={this.props.collectionKey}
-          threadId={message?.id || ''}
           highlighted={this.props.highlighted}
           withBlock={!message.parent_message_id && !this.props.noBlock}
-          canDrag={!(this.props.repliesAsLink && message.parent_message_id)}
-          message={message}
           className={canDropIn ? 'has-droppable ' : ''}
         >
-          <ThreadSection small={linkToThread} message={message} head>
+          <ThreadSection small={linkToThread} head>
             <MessageContent
               deleted={this.props.deleted}
               key={message?._last_modified || message?.front_id}
@@ -186,7 +182,7 @@ export default class MessageComponent extends Component<Props> {
                   previousMessageId={tmp_previous_message?.id || ''}
                   unreadAfter={this.props.unreadAfter || 0}
                 />,
-                <ThreadSection canDrag alinea message={message} small key={message.front_id}>
+                <ThreadSection alinea small key={message.front_id}>
                   <MessageContent
                     message={message}
                     collectionKey={this.props.collectionKey}
@@ -197,7 +193,7 @@ export default class MessageComponent extends Component<Props> {
             })}
 
           {!this.props.noReplies && showInput && (
-            <ThreadSection alinea small message={{ sender: UserService.getCurrentUserId() }}>
+            <ThreadSection alinea small>
               <div className="message-content">
                 <Input
                   channelId={message?.channel_id || ''}

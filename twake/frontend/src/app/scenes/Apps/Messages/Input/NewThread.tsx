@@ -28,16 +28,12 @@ export default (props: Props) => {
 
   if (messageEditorService.currentEditor !== props.threadId + '_main' && props.useButton) {
     return (
-      <Thread
-        withBlock
-        className="new-thread-button"
-        threadMain
-        allowUpload
-        channelId={props.channelId}
-      >
+      <Thread withBlock className="new-thread-button">
         <ThreadSection
           noSenderSpace
-          onClick={() => messageEditorService.openEditor(props.threadId, '', 'main')}
+          className={
+            '' /*onClick={() => messageEditorService.openEditor(props.threadId, '', 'main')}*/
+          }
         >
           <PlusCircle size={16} className="plus-icon" />{' '}
           {Languages.t('scenes.apps.messages.new_thread', [], 'Start a new discussion')}
@@ -46,14 +42,7 @@ export default (props: Props) => {
     );
   } else {
     return (
-      <Thread
-        channelId={props.channelId}
-        collectionKey={props.collectionKey}
-        withBlock
-        className="new-thread"
-        allowUpload
-        threadMain
-      >
+      <Thread withBlock className="new-thread">
         <ThreadSection noSenderSpace>
           <Input
             ref={node => messageEditorService.setInputNode(props.threadId, '', 'main', node)}

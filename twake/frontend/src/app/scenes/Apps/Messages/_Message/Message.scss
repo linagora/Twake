@@ -34,7 +34,7 @@
         right: -20px;
       }
     }
-    
+
     .sender-head {
       .user_online_stPPatus {
         right: -20px;
@@ -134,7 +134,6 @@
     opacity: 0;
     display: flex;
     flex-direction: row;
-    transition: opacity 0.2s;
 
     &.drag {
       left: -8px;
@@ -172,7 +171,6 @@
   &:hover {
     .message-options {
       opacity: 1;
-      transition-delay: 0.2s;
     }
   }
 
