@@ -97,9 +97,9 @@ class Workspaces extends Observable {
     let { workspaceId } = RouterServices.getStateFromRoute();
     const routerWorkspaceId = workspaceId;
 
-    const autoload_workspaces = (await LocalStorage.getItem('autoload_workspaces')) || {};
+    const autoload_workspaces = await LocalStorage.getItem('default_workspace_id');
 
-    workspaceId = workspaceId || autoload_workspaces.id || '';
+    workspaceId = workspaceId || autoload_workspaces || '';
 
     let workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
     if (!workspace) {
@@ -172,6 +172,7 @@ class Workspaces extends Observable {
     this.updateCurrentWorkspaceId(workspace.id);
 
     const route = RouterServices.generateRouteFromState({
+      companyId: workspace.company_id,
       workspaceId: workspace.id,
       channelId: '',
     });
@@ -181,7 +182,8 @@ class Workspaces extends Observable {
       RouterServices.push(route);
     }
 
-    LocalStorage.setItem('autoload_workspaces', { id: workspace.id });
+    LocalStorage.setItem('default_workspace_id', workspace.id);
+    LocalStorage.setItem('default_company_id', workspace.company_id);
 
     this.notify();
   }

@@ -4,7 +4,7 @@ import WindowState from 'services/utils/window';
 import Globals from 'services/Globals';
 import RouterServices from '../RouterService';
 import LocalStorage from 'services/LocalStorage';
-import AuthService from "services/Auth/AuthService";
+import AuthService from 'services/Auth/AuthService';
 import Application from '../Application';
 import { UserType } from 'app/models/User';
 
@@ -19,7 +19,7 @@ class Login extends Observable {
   currentUserId: string = '';
   emailInit: string;
   server_infos_loaded: boolean;
-  server_infos: { branding: {}; ready: {}; auth: {}; help_url: boolean; };
+  server_infos: { branding: {}; ready: {}; auth: {}; help_url: boolean };
   error_secondary_mail_already: boolean;
   addmail_token: string;
   external_login_error: boolean;
@@ -98,8 +98,8 @@ class Login extends Observable {
         RouterServices.push(
           RouterServices.addRedirection(
             `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-            ),
-          );
+          ),
+        );
       } else {
         this.setCurrentUser(user);
         await Application.start(user);
@@ -125,7 +125,7 @@ class Login extends Observable {
     this.notify();
 
     AuthService.login(params)
-      .then(async (result) => {
+      .then(async result => {
         this.login_loading = false;
         if (!result) {
           this.login_error = true;

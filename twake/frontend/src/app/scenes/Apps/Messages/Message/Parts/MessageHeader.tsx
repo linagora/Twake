@@ -66,7 +66,7 @@ export default (props: Props) => {
   const updateMessageLink = () => {
     const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
     const url = RouterServices.generateRouteFromState({
-      workspaceId: workspace.id,
+      workspaceId: workspace.id || '',
       channelId: props.message.channel_id,
       messageId: props.message.parent_message_id || props.message.id,
     });
@@ -141,7 +141,8 @@ export default (props: Props) => {
             // eslint-disable-next-line react/jsx-no-target-blank
             target="_BLANK"
             href={messageLink || '#'}
-            onMouseEnter={() => updateMessageLink()} rel="noreferrer"
+            onMouseEnter={() => updateMessageLink()}
+            rel="noreferrer"
           >
             <Moment
               tz={moment.tz.guess()}

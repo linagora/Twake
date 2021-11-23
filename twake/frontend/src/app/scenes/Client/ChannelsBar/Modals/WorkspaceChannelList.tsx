@@ -74,7 +74,13 @@ export default () => {
     }
 
     ModalManager.closeAll();
-    return RouterServices.push(`/client/${channel.data.workspace_id}/c/${channel.data.id}`);
+    return RouterServices.push(
+      RouterServices.generateRouteFromState({
+        companyId: channel.data.company_id,
+        workspaceId: channel.data.workspace_id || '',
+        channelId: channel.data.id,
+      }),
+    );
   };
 
   const loadMore = () => {

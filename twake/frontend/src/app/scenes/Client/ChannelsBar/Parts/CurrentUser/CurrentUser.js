@@ -26,6 +26,8 @@ import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureToggles
 import LockedWorkspacePopup from 'app/components/LockedFeaturesComponents/LockedWorkspacePopup/LockedWorkspacePopup';
 import ModalManager from 'app/components/Modal/ModalManager';
 import CompanyMessagesCounter from 'components/CompanyMessagesCounter/CompanyMessagesCounter';
+import RouterService from 'app/services/RouterService';
+import CompanyAPIClient from 'app/services/CompanyAPIClient';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -67,12 +69,23 @@ export default class CurrentUser extends Component {
     Languages.removeListener(this);
     clearInterval(this.refreshUserState);
   }
+
+  async fetchCurrentCompany() {
+    const { companyId } = RouterService.getStateFromRoute();
+
+    const company = await CompanyAPIClient.get(companyId);
+
+    this.setState({ companyName: company.name });
+  }
+
   componentDidMount() {
     const new_status = { ...this.users_repository.known_objects_by_id[this.user_id].status_icon };
 
     if (!new_status[0]) {
       new_status[1] = '';
     }
+
+    this.fetchCurrentCompany();
 
     this.setState({ new_status });
   }
@@ -356,10 +369,7 @@ export default class CurrentUser extends Component {
       <CompanyHeaderUI
         refDivUser={node => (this.node = node)}
         refDivBell={node => (this.bell_node = node)}
-        companyName={
-          (Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId) || {}).name ||
-          '-'
-        }
+        companyName={this.state.companyName || '-'}
         status={status}
         notificationsDisabled={notifications_disabled}
         onClickUser={evt => {

@@ -9,11 +9,12 @@ import Workspace from './Components/Workspace/Workspace';
 import { useCompanyWorkspaces } from 'app/state/recoil/hooks/useCompanyWorkspaces';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import { LoadingWorkspaceIcon } from './Components/Workspace/WorkspaceIcon';
+import LocalStorage from 'app/services/LocalStorage';
 
 import './WorkspacesBar.scss';
 
 export default () => {
-  const companyId = useRouterCompany();
+  const companyId = useRouterCompany() || (LocalStorage.getItem('default_company_id') as string);
   const [workspaces] = useCompanyWorkspaces(companyId);
 
   return (
