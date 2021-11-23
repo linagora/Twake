@@ -18,6 +18,7 @@ import Globals from 'services/Globals';
 import RouterService from 'app/services/RouterService';
 import { MessageContext } from '../MessageWithReplies';
 import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import Blocks from './Blocks';
 
 type Props = {
   linkToThread?: boolean;
@@ -94,26 +95,32 @@ export default (props: Props) => {
             </div>
           ) : (
             <>
-              {/*<Twacode
+              <div
                 className={classNames('content allow_selection', {
                   message_is_loading: messageIsLoading,
                   'message-not-sent': messageSaveFailed,
                 })}
-                content={MessagesService.prepareContent(
-                  message.content,
-                  message.user_specific_content,
+              >
+                {!!props.linkToThread && message.text}
+                {!props.linkToThread && (
+                  <>
+                    <Blocks
+                      blocks={message.blocks}
+                      fallback={message.text}
+                      onAction={(
+                        type: string,
+                        id: string,
+                        context: any,
+                        passives: any,
+                        evt: any,
+                      ) => {
+                        onAction(type, id, context, passives, evt);
+                      }}
+                      allowAdvancedBlocks={message.subtype === 'application'}
+                    />
+                  </>
                 )}
-                isApp={message.subtype === 'application'}
-                after={
-                  message.edited?.edited_at &&
-                  message.type === 'message' &&
-                  !message.subtype && <div className="edited">(edited)</div>
-                }
-                simple={props.linkToThread}
-                onAction={(type: string, id: string, context: any, passives: any, evt: any) =>
-                  onAction(type, id, context, passives, evt)
-                }
-              />*/}
+              </div>
               {message?.files && message?.files?.length > 0 && (
                 <Row justify="start" align="middle" className="small-top-margin" wrap>
                   {message.files.map((f, i) =>
