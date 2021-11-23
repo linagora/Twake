@@ -1,9 +1,6 @@
 import { ChannelResource } from 'app/models/Channel';
-import {
-  useChannelMessages,
-  useMessage,
-  useThreadMessages,
-} from 'app/state/recoil/hooks/useMessages';
+import { useChannelMessages, useThreadMessages } from 'app/state/recoil/hooks/useMessages';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import React from 'react';
 import Message from './Message';
 import TimeSeparator from './TimeSeparator';
@@ -29,7 +26,7 @@ type Props = {
 };
 
 export default React.memo((props: Props) => {
-  const message = useMessage({
+  const { message } = useMessage({
     id: props.messageId,
     threadId: props.messageId,
     companyId: props.channel.data.company_id || '',

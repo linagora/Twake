@@ -2,6 +2,8 @@ import React from 'react';
 import { useThreadMessages } from 'app/state/recoil/hooks/useMessages';
 import Message from './Message';
 import TimeSeparator from './TimeSeparator';
+import { MessageContext } from './MessageWithReplies';
+import ThreadSection from '../Parts/ThreadSection';
 
 type Props = {
   companyId: string;
@@ -15,9 +17,14 @@ export default ({ threadId, companyId }: Props) => {
   console.log(messages);
   return (
     <>
-      Réponses: <br />
       {messages.map(m => {
-        return <Message companyId={m.companyId} threadId={m.threadId} id={m.id || ''} />;
+        return (
+          <MessageContext.Provider key={m.id} value={{ ...m, id: m.id || '' }}>
+            <ThreadSection canDrag alinea small>
+              <Message />
+            </ThreadSection>
+          </MessageContext.Provider>
+        );
       })}
     </>
   );

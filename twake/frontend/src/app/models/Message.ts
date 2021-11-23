@@ -105,6 +105,13 @@ export enum NodeMessageSubType {
   SYSTEM = 'system', // Message from system (channel activity)
 }
 
+export type EphemeralMessage = {
+  id: string; //Identifier of the ephemeral message
+  version: string; //Version of ephemeral message (to update the view)
+  recipient: string; //User that will see this ephemeral message
+  recipient_context_id: string; //Recipient current view/tab/window to send the message to
+};
+
 export type NodeMessage = {
   /**
    * @type UUID required
@@ -154,41 +161,45 @@ export type NodeMessage = {
    * @type  JSON [BlockObject]
    * Alternative nested json to replace text (if defined it replaces the text field)
    */
-  blocks: string;
+  blocks: any;
 
   /**
    * @type JSON
    * Hidden custom data for message
    */
-  context: string; //Hidden custom data for message
+  context: any; //Hidden custom data for message
 
   /**
    * @type JSON
    * @example { "edited_at": 0 }
    */
-  edited: string | null;
+  edited: { edited_at: number } | null;
 
   /**
    * @type JSON
    * If message if pinned (or it is undefined)
    * @example { "pinned_by": "uuid", "pinned_at": 0 }
    */
-  pinned_info?: string | null;
+  pinned_info?: { pinned_by: string; pinned_at: number } | null;
 
   /**
    * @type JSON
    * @example [{"name": "string", "users": ["uuid", "uuid"], "count": 0 }]
    */
-  reactions: string | null;
+  reactions: ReactionType[] | null;
 
   /**
    * @type JSON
    * Overide message title - Overide message picture
    * @example { "title": "string", "picture": "string" }
    */
-  override: string | null;
+  override: { title: string; picture: string } | null;
 
   files?: MessageFileType[];
+
+  ephemeral: EphemeralMessage | null; //Used for non-persisted messages (like interractive messages)
+
+  _status?: 'sending' | 'failed';
 };
 
 export type MessageWithReplies = NodeMessage & {

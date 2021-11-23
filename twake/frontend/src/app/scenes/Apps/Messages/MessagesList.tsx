@@ -11,6 +11,8 @@ type Props = {
   threadId?: string;
 };
 
+export const MessagesListContext = React.createContext({ hideReplies: false });
+
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const { messages, loadMore } = useChannelMessages({
     companyId,
@@ -26,7 +28,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   }, []);
 
   return (
-    <>
+    <MessagesListContext.Provider value={{ hideReplies: false }}>
       <ListBuilder
         items={messages}
         itemContent={index => {
@@ -46,6 +48,6 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
         }}
         loadMore={loadMore}
       />
-    </>
+    </MessagesListContext.Provider>
   );
 };

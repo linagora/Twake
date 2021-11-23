@@ -7,7 +7,7 @@ import Languages from 'services/languages/languages';
 import CurrentUser from 'app/services/user/CurrentUser';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import './Message.scss';
-import { useMessage } from 'app/state/recoil/hooks/useMessages';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import { AtomMessageKey } from 'app/state/recoil/atoms/Messages';
 
 type Props = {
@@ -21,8 +21,8 @@ export default React.memo((props: Props) => {
     return <div />;
   }
 
-  const message = useMessage(props.messageId);
-  const previousMessage = useMessage(props.previousMessageId);
+  const { message } = useMessage(props.messageId);
+  const previousMessage = useMessage(props.previousMessageId).message;
 
   const isFirstNewMessage =
     (message?.created_at || 0) >= props.unreadAfter &&

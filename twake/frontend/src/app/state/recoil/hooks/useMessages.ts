@@ -7,25 +7,14 @@ import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 import {
   AtomChannelKey,
-  AtomMessageKey,
   AtomThreadKey,
   ChannelMessagesState,
   ChannelMessagesStateExtended,
-  MessageState,
   MessageStateExtended,
   MessagesWindowState,
   ThreadMessagesState,
   ThreadMessagesStateExtended,
 } from '../atoms/Messages';
-
-export const useMessage = (partialKey: AtomMessageKey) => {
-  const key = { ...partialKey, id: partialKey.id || partialKey.threadId };
-  const [value, setValue] = useRecoilState(MessageState(key));
-  useEffect(() => {
-    MessageStateExtended.setHandler(key.id, setValue, value);
-  }, []);
-  return value;
-};
 
 //TODO this also could jump, do we need windows too ?
 export const useThreadMessages = (key: AtomThreadKey) => {
@@ -144,7 +133,7 @@ const updateRecoilFromMessage = (
           }),
         ],
         m => m.id,
-      ),
+      ).filter(m => m.id != m.threadId),
     );
     mwr.last_replies.forEach(m => {
       MessageStateExtended.set(m.id, messageToMessageWithReplies(m));
@@ -158,8 +147,8 @@ const updateRecoilFromMessage = (
 const messageToMessageWithReplies = (m: NodeMessage) => {
   const mwr: MessageWithReplies = {
     ...m,
-    last_replies: [],
-    stats: { last_activity: m.created_at, replies: 0 },
+    last_replies: MessageStateExtended.get(m.id)?.last_replies || [],
+    stats: MessageStateExtended.get(m.id)?.stats || { last_activity: m.created_at, replies: 0 },
   };
   return mwr;
 };

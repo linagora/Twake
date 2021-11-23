@@ -131,22 +131,23 @@ body.dragging * {
   color: block;
 }
 
-a {
+a,
+.link {
   text-decoration: none;
   color: var(--primary);
   cursor: pointer;
-}
-
-a:hover {
-  color: var(--primary-hover);
-}
-
-a.red,
-a.error {
-  color: var(--red);
 
   &:hover {
-    color: #dd0000;
+    color: var(--primary-hover);
+  }
+
+  &.red,
+  &.error {
+    color: var(--red);
+
+    &:hover {
+      color: #dd0000;
+    }
   }
 }
 

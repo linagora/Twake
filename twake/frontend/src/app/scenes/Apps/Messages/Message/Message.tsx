@@ -1,21 +1,10 @@
-import React from 'react';
-import { useMessage, useThreadMessages } from 'app/state/recoil/hooks/useMessages';
-import Message from '../_Message/Message';
-import Thread from '../Parts/Thread';
-import TimeSeparator from './TimeSeparator';
+import React, { useContext } from 'react';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { MessageContext } from './MessageWithReplies';
+import MessageContent from './Parts/MessageContent';
 
-type Props = {
-  companyId: string;
-  threadId: string;
-  id: string;
-};
+type Props = {};
 
-export default ({ companyId, threadId, id }: Props) => {
-  let message = useMessage({ companyId, threadId, id });
-  return (
-    <>
-      {message.text}
-      <br />
-    </>
-  );
+export default (props: Props) => {
+  return <MessageContent />;
 };
