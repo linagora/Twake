@@ -506,8 +506,11 @@ export class Service implements ChannelService {
   async getDirectChannelsInCompany(
     pagination: Pagination,
     company_id: string,
-  ): Promise<ListResult<DirectChannel>> {
-    return await this.directChannelRepository.find({ company_id }, { pagination });
+  ): Promise<ListResult<Channel>> {
+    return await this.channelRepository.find(
+      { company_id, workspace_id: "direct" },
+      { pagination },
+    );
   }
 
   async getDirectChannelsForUsersInCompany(
