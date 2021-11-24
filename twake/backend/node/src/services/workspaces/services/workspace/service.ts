@@ -195,7 +195,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     }
 
     const logoInternalPath = `/workspaces/${workspace.id}/thumbnail.png`;
-    const logoPublicPath = `/internal/services/workspaces/v1/workspaces/${workspace.id}/thumbnail`;
+    const logoPublicPath = `/internal/services/workspaces/v1/companies/${workspace.company_id}/workspaces/${workspace.id}/thumbnail`;
     let logoPublicUrl = undefined;
     if (workspace.logo) {
       if (!item.logo || options.logo_b64) {
