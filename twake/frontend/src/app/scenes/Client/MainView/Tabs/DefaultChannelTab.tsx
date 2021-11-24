@@ -13,8 +13,8 @@ import ConnectorsListManager from 'app/components/ConnectorsListManager/Connecto
 import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
-import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {

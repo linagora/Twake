@@ -24,8 +24,11 @@ export default () => {
 
   if (!company?.id) return <></>;
 
-  const { companyApplications, isLoadingCompanyApplications, deleteOneCompanyApplication } =
-    useCompanyApplications(company?.id);
+  const {
+    applications: companyApplications,
+    loading: isLoadingCompanyApplications,
+    remove: deleteOneCompanyApplication,
+  } = useCompanyApplications(company?.id);
   const [data, _setData] = useState<ColumnObjectType[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

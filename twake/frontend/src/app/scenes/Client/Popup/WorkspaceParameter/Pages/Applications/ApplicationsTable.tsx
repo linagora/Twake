@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
-import { Info } from 'react-feather';
 import { ColumnsType } from 'antd/lib/table';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { Divider, Table, Typography, Row, Input, Col, Button } from 'antd';
 
 import { Application } from 'app/models/App';
 import Languages from 'services/languages/languages';
-import ModalManager from 'app/components/Modal/ModalManager';
-import { useApplications } from 'app/services/Apps/useApplications';
+import { useApplications } from 'app/state/recoil/hooks/useApplications';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
-import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 
@@ -25,16 +22,17 @@ export default () => {
 
   if (!company?.id) return <></>;
 
-  const { applicationsList, isLoadingApplicationsList, searchApplicationsInTwake } =
-    useApplications();
-
-  const { isLoadingCompanyApplications, companyApplications, addOneCompanyApplication } =
-    useCompanyApplications(company.id);
+  const {
+    applications: applicationsList,
+    loading: isLoadingApplicationsList,
+    search,
+  } = useApplications();
+  const { loading, applications, add } = useCompanyApplications(company.id);
 
   const [data, _setData] = useState<ColumnObjectType[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { xs, sm, md, lg, xl } = useBreakpoint();
+  const { xs, sm } = useBreakpoint();
 
   useEffect(() => {
     refreshApplications();
@@ -52,15 +50,14 @@ export default () => {
           key: key + 1,
           name: { name: app.identity.name, icon: app.identity.icon },
           description: app.identity.description,
-          installed: isLoadingCompanyApplications,
+          installed: loading,
           ...app,
         })),
       );
     }
   };
 
-  const onClickButton = async (application: Application) =>
-    addOneCompanyApplication(application.id);
+  const onClickButton = async (application: Application) => add(application.id);
 
   const columns: ColumnsType<ColumnObjectType> = [
     {
@@ -85,7 +82,7 @@ export default () => {
         return (
           <Button
             key={key}
-            loading={isLoadingCompanyApplications}
+            loading={loading}
             type="ghost"
             className="applications-table-actions-btn"
             onClick={() => onClickButton(application)}
@@ -115,10 +112,7 @@ export default () => {
             )}
             onChange={e => {
               const value = e.target?.value;
-              delayRequest(
-                'application_search',
-                async () => await searchApplicationsInTwake(value),
-              );
+              delayRequest('application_search', async () => await search(value));
             }}
           />
         </Col>
@@ -128,7 +122,7 @@ export default () => {
         <Table
           columns={columns}
           loading={isLoadingApplicationsList}
-          dataSource={data.filter(app => !companyApplications.map(a => a.id).includes(app.id))}
+          dataSource={data.filter(app => !applications.map(a => a.id).includes(app.id))}
           size="small"
           pagination={{ pageSize: DEFAULT_PAGE_SIZE, simple: true }}
           scroll={{ x: xs || sm ? true : undefined }}

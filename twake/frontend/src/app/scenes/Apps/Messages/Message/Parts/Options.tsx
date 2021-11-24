@@ -15,7 +15,7 @@ import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import RouterServices from 'app/services/RouterService';
 import { Application } from 'app/models/App';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 import { MessageContext } from '../MessageWithReplies';
 import { useMessage } from 'app/state/recoil/hooks/useMessage';

@@ -1,13 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 
+import Icon from 'components/Icon/Icon.js';
 import FolderIcon from '@material-ui/icons/FolderOutlined';
 import Menu from 'components/Menus/Menu.js';
 import Numbers from 'services/utils/Numbers';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Icon from 'components/Icon/Icon.js';
 import '../Drive.scss';
 import 'moment-timezone';
-import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
 
 export default class Directory extends React.Component {
   constructor(props) {

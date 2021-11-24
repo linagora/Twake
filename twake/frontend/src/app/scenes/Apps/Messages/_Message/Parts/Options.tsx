@@ -19,7 +19,7 @@ import RouterServices from 'app/services/RouterService';
 import { Message } from 'app/models/Message';
 import MessageReactionService from 'app/services/Apps/Messages/MessageReactionService';
 import { Application } from 'app/models/App';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 type Props = {

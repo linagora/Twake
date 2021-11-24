@@ -5,7 +5,7 @@ import Emojione from 'app/components/Emojione/Emojione';
 import User from 'app/components/Twacode/blocks/User';
 import { ChannelMemberType, ChannelType } from 'app/models/Channel';
 import { TabType } from 'app/models/Tab';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 enum ChannelActivityEnum {

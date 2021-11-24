@@ -92,9 +92,9 @@ const AccessDescriptions = ({ application }: { application: Application }) => (
 
 export default ({ application, companyId }: PropsType) => {
   const {
-    addOneCompanyApplication,
-    isLoadingCompanyApplications,
-    isApplicationInstalledInCompany,
+    add: addOneCompanyApplication,
+    loading: isLoadingCompanyApplications,
+    isInstalled: isApplicationInstalledInCompany,
   } = useCompanyApplications(companyId);
 
   const onClickButton = async () => {

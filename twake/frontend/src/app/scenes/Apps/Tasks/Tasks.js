@@ -14,13 +14,13 @@ import Menu from 'components/Menus/Menu.js';
 import BoardEditor from './Board/BoardEditor.js';
 import MoreIcon from '@material-ui/icons/MoreHorizOutlined';
 import AlertManager from 'services/AlertManager/AlertManager';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/scenes/Client/Popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
-import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 import Board from './Board/Board.js';

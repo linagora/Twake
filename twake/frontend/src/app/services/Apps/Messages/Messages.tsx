@@ -21,7 +21,7 @@ import SideViewService from 'app/services/AppView/SideViewService';
 import { Message, MessageFileType } from '../../../models/Message';
 import MessageAPIClient from './clients/MessageAPIClient';
 import { Application } from 'app/models/App';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 class Messages extends Observable {

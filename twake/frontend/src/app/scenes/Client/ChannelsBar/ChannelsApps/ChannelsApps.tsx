@@ -98,7 +98,7 @@ type PropsType = {
 };
 
 export const CompanyApplications = ({ companyId }: PropsType) => {
-  const { companyApplications } = useCompanyApplications(companyId);
+  const { applications: companyApplications } = useCompanyApplications(companyId);
   const { channelId } = RouterService.getStateFromRoute();
   return (
     <div className="applications_channels" style={{ marginTop: 8 }}>

@@ -34,7 +34,7 @@ import DriveList from './Lists/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { NewFolderInput, NewLinkInput, NewFileInput } from './DriveEditors';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 export default class Drive extends Component {

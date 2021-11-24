@@ -41,7 +41,7 @@ export default (props: Props) => {
   const addon_files: any[] = [];
   const addon_calls: any[] = [];
 
-  const apps = useCompanyApplications().companyApplications.filter(
+  const apps = useCompanyApplications().applications.filter(
     (app: Application) => app.display?.twake?.chat?.input,
   );
 

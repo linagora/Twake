@@ -33,9 +33,9 @@ import UnconfiguredTab from './UnconfiguredTab.js';
 import RouterService from 'app/services/RouterService';
 import MainPlus from 'components/MainPlus/MainPlus.js';
 import {
-  getApplication,
+  getCompanyApplication as getApplication,
   getCompanyApplications,
-} from 'app/state/recoil/hooks/useCompanyApplications';
+} from 'app/state/recoil/atoms/CompanyApplications';
 
 const ExportView = props => {
   const [export_my_calendar, set_export_my_calendar] = useState(props.values.export_my_calendar);

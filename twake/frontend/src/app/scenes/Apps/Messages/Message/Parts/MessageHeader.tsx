@@ -39,7 +39,7 @@ export default (props: Props) => {
   let { message } = useMessage(context);
   let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
   let user = useUser(message.user_id);
-  let { companyApplications } = useCompanyApplications(context.companyId);
+  let { applications: companyApplications } = useCompanyApplications(context.companyId);
   let application = companyApplications.find(a => a.id === message.application_id);
 
   const scrollToMessage = () => {
