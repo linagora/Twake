@@ -771,5 +771,22 @@
     "components.locked_features.locked_drive_popup.subtitle": "Ở gói miễn phí, bạn chỉ có thể lưu trữ tối đa 6GB.",
     "scenes.apps.drive.no_file_alert": "Bạn không có ứng dụng nào để có thể cấp quyền tạo tệp.",
     "components.alert.confirm": "Xác nhận hành động của bạn",
-    "components.locked_features.locked_workspace_popup.text": "Whoops!!Bạn muốn tạo thêm không gian làm việc mới? Hãy cân nhắc đăng kí gói cao hơn. Khám phá các gói của chúng tôi và chọn gói phù hợp nhất với nhu cầu của công ty bạn."
+    "components.locked_features.locked_workspace_popup.text": "Whoops!!Bạn muốn tạo thêm không gian làm việc mới? Hãy cân nhắc đăng kí gói cao hơn. Khám phá các gói của chúng tôi và chọn gói phù hợp nhất với nhu cầu của công ty bạn.",
+    "scenes.app.popup.adduser.magiclinks.genrator_info": "Liên kết lời mời đến không gian làm việc",
+    "scenes.app.popup.adduser.magiclinks.new_link_generated": "Liên kết mới được tạo",
+    "scenes.app.popup.adduser.magiclinks.copied_to_clipboard": "Đã sao chép thành công vào bộ nhớ tạm",
+    "scenes.app.popup.adduser.magiclinks.action_copy": "Sao chép",
+    "scenes.app.popup.adduser.magiclinks.action_generate": "Tạo ra",
+    "scenes.apps.board.new_task": "+ Công việc mới",
+    "components.alert.confirm_click": "Xác nhận hành động của bạn bằng cách nhấp vào OK.",
+    "components.searchpopup.tasks": "Công việc",
+    "scenes.app.mainview.advanced_search_placeholder": "Tìm kiếm nâng cao",
+    "components.searchpopup.hide_filters": "ẩn bộ lọc",
+    "components.searchpopup.show_filters": "hiện bộ lọc",
+    "components.searchpopup.load_more": "Tải thêm kết quả",
+    "general.more": "Thêm",
+    "scenes.apps.board.archived_tasks": "Công việc đã lưu trữ ({{$ 1}})",
+    "scenes.apps.board.active_tasks": "Công việc đang thực hiện",
+    "scenes.apps.board.kanban": "Kanban",
+    "scenes.apps.board.display_as": "Hiển thị dưới dạng"
 }

@@ -835,5 +835,13 @@
     "scenes.app.popup.adduser.magiclinks.action_copy": "Copier",
     "scenes.app.channelsbar.currentuser.company_messages_counter_header": "Nombre de messages",
     "scenes.app.channelsbar.currentuser.company_messages_counter_info": "Dans la version gratuite de Twake, vous pouvez seulement accéder aux {{$1}} messages les plus récents.",
-    "scenes.app.channelsbar.currentuser.company_messages_counter_link": "Afficher d'autres offres"
+    "scenes.app.channelsbar.currentuser.company_messages_counter_link": "Afficher d'autres offres",
+    "scenes.join.loading": "Chargement…",
+    "scenes.join.wrong_link_title": "Ce lien n'est plus disponible",
+    "scenes.join.twake_description": "Twake est un espace de travail numérique à code ouvert conçu pour améliorer la productivité de votre équipe",
+    "scenes.join.login_first_button": "Connectez-vous ou créez d'abord un compte",
+    "scenes.join.wrong_link_description": "Demandez à la personne qui vous a invité(e) de rejoindre cette entreprise par un nouveau lien ou créez votre propre entreprise",
+    "scenes.join.join_the_team_button": "Rejoindre l'équipe",
+    "scenes.join.create_the_company_button": "Créer l'entreprise",
+    "scenes.join.join_workspace_from_company": "Rejoignez {{$1}} à partir de {{$2}} !"
 }
