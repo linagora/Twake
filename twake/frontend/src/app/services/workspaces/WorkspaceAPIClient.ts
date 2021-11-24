@@ -1,6 +1,6 @@
+import Api from '../Api';
 import { CompanyType } from 'app/models/Company';
 import { WorkspaceType } from 'app/models/Workspace';
-import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
@@ -44,10 +44,23 @@ class WorkspaceAPIClient {
    * @param workspace
    * @returns the updated workspace
    */
-  create(companyId: string, workspace: WorkspaceUpdateResource): Promise<WorkspaceType> {
+  async create(companyId: string, workspace: WorkspaceUpdateResource): Promise<WorkspaceType> {
     return Api.post<UpdateWorkspaceBody, { resource: WorkspaceType }>(
       `${PREFIX}/${companyId}/workspaces`,
       { resource: workspace },
+    ).then(result => result.resource);
+  }
+
+  /**
+   * Delete a workspace
+   *
+   * @param companyId
+   * @param workspace
+   * @returns the updated workspace
+   */
+  async delete(companyId: string, workspaceId: string): Promise<WorkspaceType> {
+    return Api.delete<{ resource: WorkspaceType }>(
+      `${PREFIX}/${companyId}/workspaces/${workspaceId}`,
     ).then(result => result.resource);
   }
 
@@ -62,12 +75,15 @@ class WorkspaceAPIClient {
   update(
     companyId: string,
     workspaceId: string,
-    workspace: WorkspaceUpdateResource,
+    workspace: WorkspaceUpdateResource & { logo_b64?: string },
   ): Promise<WorkspaceType> {
-    return Api.post<UpdateWorkspaceBody, { resource: WorkspaceType }>(
-      `${PREFIX}/${companyId}/workspaces/${workspaceId}`,
-      { resource: workspace },
-    ).then(result => result.resource);
+    return Api.post<
+      UpdateWorkspaceBody & { options?: { logo_b64?: string } },
+      { resource: WorkspaceType }
+    >(`${PREFIX}/${companyId}/workspaces/${workspaceId}`, {
+      resource: workspace,
+      options: { logo_b64: workspace?.logo_b64 },
+    }).then(result => result.resource);
   }
 
   /**

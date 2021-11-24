@@ -89,6 +89,18 @@
   }
 }
 
+.channels_view_loader {
+  background: var(--grey-background);
+  width: 220px;
+  padding-top: 16px;
+  border-radius: var(--border-radius-base) 0 0 8px;
+
+  .applications_channels_loader {
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+}
+
 .loading_render {
   .channel_small_text {
     display: none;

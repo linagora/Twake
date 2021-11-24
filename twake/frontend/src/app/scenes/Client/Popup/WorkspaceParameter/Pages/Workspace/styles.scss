@@ -1,0 +1,24 @@
+.alert-total-members {
+  background: transparent;
+  border-color: var(--error);
+  padding: 8;
+}
+
+.workspace-name-confirmation-input {
+  padding: 16px 0;
+}
+
+.workspace-logo-column {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.delete-workspace-button {
+  color: var(--white) !important;
+  background: var(--error) !important;
+
+  &.disabled {
+    opacity: 0.5;
+  }
+}

@@ -4,10 +4,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import UserService from 'services/user/UserService';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
-import ChannelsBarService from 'app/services/channels/ChannelsBarService';
-import AccessRightsService from 'app/services/AccessRightsService';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import RouterService from 'app/services/RouterService';
 

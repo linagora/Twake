@@ -157,3 +157,18 @@
     }
   }
 }
+
+.current_company_header_loader {
+  display: flex;
+  width: auto;
+  box-sizing: border-box;
+
+  .current_company_loader {
+    flex: 1;
+    overflow: hidden;
+    height: 48px;
+    .ant-skeleton > .ant-skeleton-content {
+      height: 48px;
+    }
+  }
+}

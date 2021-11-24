@@ -38,11 +38,11 @@ export interface StorageConnectorAPI {
   read(path: string, options?: ReadOptions): Promise<Readable>;
 
   /**
-   * Read a path and delete his stream
+   * Remove a path
    *
    * @param path
    */
-  delete(path: string, options?: DeleteOptions): Promise<void>;
+  remove(path: string): Promise<boolean>;
 }
 
 export default interface StorageAPI extends TwakeServiceProvider, StorageConnectorAPI {

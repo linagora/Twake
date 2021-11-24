@@ -36,6 +36,7 @@
 @white: #fff;
 @progress-bar-background: #efefef;
 @progress-bar-color: #58c3ff;
+@lazy-backgound: #dfdfdf;
 
 /*
 // Preparation of dark theme
@@ -98,6 +99,7 @@
   --warning: @warning;
   --progress-bar-background: @progress-bar-background;
   --progress-bar-color: @progress-bar-color;
+  --lazy-backgroud: @lazy-backgound;
 }
 
 // --- ant-colors --- //
@@ -460,4 +462,19 @@ h4.ant-typography,
 // --- ant-table --- //
 .ant-table {
   font-size: @font-size-small !important;
+}
+
+// --- ant-skeleton --- //
+//ant-skeleton-avatar
+.ant-skeleton-avatar-square {
+  border-radius: @border-radius-base;
+}
+
+.ant-skeleton-title {
+  background-color: #dfdfdf !important;
+}
+
+.ant-skeleton-title,
+.ant-skeleton-paragraph > li {
+  border-radius: var(--border-radius-large) !important;
 }

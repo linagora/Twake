@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
+import { Skeleton } from 'antd';
 
 import UserService from 'services/user/UserService';
 import Icon from 'components/Icon/Icon.js';
@@ -32,7 +33,7 @@ export default (props: PropsType): JSX.Element => {
           </div>
         </div>
 
-        { user &&
+        {user && (
           <div className="user-info">
             {!!(user.status_icon || [])[0] && <Emojione type={user.status_icon![0]} />}
 
@@ -40,10 +41,20 @@ export default (props: PropsType): JSX.Element => {
               {UserService.getFullName(user)} ({user.email})
             </span>
           </div>
-        }
+        )}
       </div>
       <div className="notifications">
         <NotificationDelay />
+      </div>
+    </div>
+  );
+};
+
+export const CompanyHeaderLoading = () => {
+  return (
+    <div className="current_company_header_loader ">
+      <div className="current_company_loader small-x-margin">
+        <Skeleton title={{ style: { height: 22 }, width: '50%' }} />
       </div>
     </div>
   );

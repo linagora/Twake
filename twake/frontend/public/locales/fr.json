@@ -398,7 +398,7 @@
     "scenes.app.popup.workspaceparameter.manager_current_status": "Vous êtes Gérant de l'entreprise.",
     "scenes.app.popup.workspaceparameter.pages.deleteworkspace": "Supprimer l'espace",
     "scenes.app.popup.workspaceparameter.pages.error_workspace_member": "Vous devez être seul dans l'espace de travail pour le supprimer.\nRetirez vos collaborateurs et recommencer l'opération.",
-    "scenes.app.popup.workspaceparameter.pages.deleteworkspace_description": "Pour confirmer que vous souhaitez supprimer cet espace de travail, veuillez saisir le nom ci-dessous et cliquer sur \"supprimer\".",
+    "scenes.app.popup.workspaceparameter.pages.deleteworkspace_description": "La suppression d'un espace de travail ne peut pas être annulée. Tous les messages et fichiers seront irrécupérables.",
     "scenes.app.popup.workspaceparameter.pages.enter": "Entrer ",
     "scenes.app.popup.workspaceparameter.pages.access_apps": "Accédez à vos applications et connecteurs",
     "scenes.app.popup.workspaceparameter.pages.moderator_status": "Moderateur de l'espace",
@@ -835,5 +835,14 @@
     "scenes.app.popup.adduser.magiclinks.action_copy": "Copier",
     "scenes.app.channelsbar.currentuser.company_messages_counter_header": "Nombre de messages",
     "scenes.app.channelsbar.currentuser.company_messages_counter_info": "Dans la version gratuite de Twake, vous pouvez seulement accéder aux {{$1}} messages les plus récents.",
-    "scenes.app.channelsbar.currentuser.company_messages_counter_link": "Afficher d'autres offres"
+    "scenes.app.channelsbar.currentuser.company_messages_counter_link": "Afficher d'autres offres",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.label": "Espace par défaut",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Invite automatiquement tous les utilisateurs de l'entreprise dans cet espace de travail",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.title": "Vous êtes sur le point de supprimer {{$1}}",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.alert_total_members": "Vous avez encore {{$1}} membres dans {{$2}}. Vous devez supprimer tous les membres pour pouvoir supprimer cet espace de travail.",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox" : "Je comprends que tous les messages et fichiers de mon espace de travail seront supprimés.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size": "La taille maximale du logo est de 5 Mo",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Mauvais format, seuls les png, gif et jpg sont autorisés",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Erreur inconnue",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Erreur"
 }

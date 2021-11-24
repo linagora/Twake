@@ -60,10 +60,12 @@ export type WorkspaceUpdateResource = Pick<
 
 export interface CreateWorkspaceBody {
   resource: WorkspaceCreateResource;
+  options?: { logo_b64?: string };
 }
 
 export interface UpdateWorkspaceBody {
   resource: WorkspaceUpdateResource;
+  options?: { logo_b64?: string };
 }
 
 export interface WorkspaceObject {
