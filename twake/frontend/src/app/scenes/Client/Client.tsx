@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Menu } from 'react-feather';
 import { Layout } from 'antd';
 import classNames from 'classnames';
@@ -20,7 +20,7 @@ import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndica
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import LoginService from 'app/services/login/LoginService';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
-import SideBars from './SideBars';
+import SideBars, { LoadingSidebar } from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
@@ -29,9 +29,8 @@ import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import './Client.scss';
 
 export default React.memo((): JSX.Element => {
-  
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace(); 
+  const workspaceId = useRouterWorkspace();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const user = useCurrentUser();
 
@@ -71,7 +70,9 @@ export default React.memo((): JSX.Element => {
                 setMenuIsOpen(!collapsed);
               }}
             >
-              <SideBars />
+              <Suspense fallback={<LoadingSidebar />}>
+                <SideBars />
+              </Suspense>
             </Layout.Sider>
             <MainView
               className={classNames({ collapsed: menuIsOpen })}
@@ -98,4 +99,3 @@ export default React.memo((): JSX.Element => {
     </>
   );
 });
-

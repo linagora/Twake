@@ -1,17 +1,26 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { Suspense } from 'react';
+import React from 'react';
 import { Layout } from 'antd';
 
-import ChannelsBar from './ChannelsBar/ChannelsBar';
-import WorkspacesBar from './WorkspacesBar/WorkspacesBar';
+import ChannelsBar, { LoadingChannelBar } from './ChannelsBar/ChannelsBar';
+import WorkspacesBar, { LoadingWorkspaceBar } from './WorkspacesBar/WorkspacesBar';
+
+import './WorkspacesBar/WorkspacesBar.scss';
 
 export default () => {
   return (
     <Layout style={{ height: '100%', backgroundColor: 'var(--secondary)' }}>
-      <Suspense fallback={<Layout.Sider className={'workspaces_view'} width={70} />}>
-        <WorkspacesBar key="workspacebar" />
-      </Suspense>
+      <WorkspacesBar key="workspacebar" />
       <ChannelsBar key="channelbar" />
+    </Layout>
+  );
+};
+
+export const LoadingSidebar = () => {
+  return (
+    <Layout style={{ height: '100%' }}>
+      <LoadingWorkspaceBar />
+      <LoadingChannelBar />
     </Layout>
   );
 };
