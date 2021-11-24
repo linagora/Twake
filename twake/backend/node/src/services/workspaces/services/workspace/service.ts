@@ -57,6 +57,7 @@ import WorkspaceInviteTokens, {
 import AuthServiceAPI from "../../../../core/platform/services/auth/provider";
 import { randomBytes } from "crypto";
 import { ConsoleOptions, ConsoleType } from "../../../console/types";
+import { Readable } from "stream";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -193,15 +194,20 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       }
     }
 
+    const logoInternalPath = `/workspaces/${workspace.id}/thumbnail.png`;
+    const logoPublicPath = `/internal/services/workspaces/v1/workspaces/${workspace.id}/thumbnail`;
+    let logoPublicUrl = undefined;
     if (workspace.logo) {
       if (!item.logo || options.logo_b64) {
-        //TODO remove old logo upload with S3
+        await this.platformServices.storage.remove(logoInternalPath);
+        workspace.logo = null;
       }
     }
-    let logoPublicUrl = undefined;
     if (options.logo_b64) {
-      //TODO implement logo upload with S3
-      logoPublicUrl = ""; //put the new updated logo public url
+      const s = new Readable();
+      s.push(Buffer.from(options.logo_b64, "base64"));
+      await this.platformServices.storage.write(logoInternalPath, s);
+      logoPublicUrl = logoPublicPath;
     }
 
     workspace = merge(workspace, {
@@ -235,6 +241,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       workspace,
       item.id ? OperationType.UPDATE : OperationType.CREATE,
     );
+  }
+
+  async thumbnail(workspaceId: string) {
+    const logoInternalPath = `/workspaces/${workspaceId}/thumbnail.png`;
+    const file = await this.platformServices.storage.read(logoInternalPath);
+    return { file };
   }
 
   async delete(
