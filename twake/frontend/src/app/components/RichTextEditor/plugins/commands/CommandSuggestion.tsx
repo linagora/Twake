@@ -8,4 +8,4 @@ export default (props: CommandSuggestionType): JSX.Element => {
       <span style={{ marginLeft: 5, opacity: 0.5 }}>{props.description}</span>
     </div>
   );
-}
+};

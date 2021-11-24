@@ -53,6 +53,7 @@ export default (props: Props) => {
 
   messageEditorService.useListener(useState);
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     (async () => {
       const dataParser = RichTextEditorStateService.getDataParser(editorPlugins);
@@ -74,6 +75,7 @@ export default (props: Props) => {
       setReady(true);
     })();
   }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   const save = (content: string) => {
     if (!content) {

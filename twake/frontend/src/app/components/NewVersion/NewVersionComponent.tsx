@@ -24,48 +24,51 @@ const NewVersionComponent = (): JSX.Element => {
     return toNumber(v1) - toNumber(v2);
   };
 
-  const getConfiguration = async () => {
-    if (new Date().getTime() - lastScrape < 15 * 60 * 1000) {
-      return;
-    }
-    lastScrape = new Date().getTime();
 
-    const config = await Api.get<ServerInfoType>(
-      '/internal/services/general/v1/server',
-      undefined,
-      false,
-      {
-        disableJWTAuthentication: true,
-      },
-    );
-    const currentVersion: string = Globals.version.version_detail;
-    const newestVersion: string = config?.version?.current || '';
-    const minimalWebVersion: string = config?.version?.minimal?.web || '';
-
-    const shouldDisplayModal: boolean =
-      minimalWebVersion && compareVersion(minimalWebVersion, currentVersion) > 0 ? true : false;
-    const shouldDisplayBanner: boolean =
-      newestVersion && compareVersion(newestVersion, currentVersion) > 0 && !shouldDisplayModal
-        ? true
-        : false;
-
-    if (shouldDisplayModal) {
-      return ModalManager.open(
-        <NewVersionModal />,
-        {
-          position: 'center',
-          size: { width: '600px' },
-        },
-        false,
-      );
-    }
-
-    if (shouldDisplayBanner) {
-      return setDisplayBanner(shouldDisplayBanner);
-    }
-  };
 
   useMemo(() => {
+
+    const getConfiguration = async () => {
+      if (new Date().getTime() - lastScrape < 15 * 60 * 1000) {
+        return;
+      }
+      lastScrape = new Date().getTime();
+
+      const config = await Api.get<ServerInfoType>(
+        '/internal/services/general/v1/server',
+        undefined,
+        false,
+        {
+          disableJWTAuthentication: true,
+        },
+      );
+      const currentVersion: string = Globals.version.version_detail;
+      const newestVersion: string = config?.version?.current || '';
+      const minimalWebVersion: string = config?.version?.minimal?.web || '';
+
+      const shouldDisplayModal: boolean =
+        minimalWebVersion && compareVersion(minimalWebVersion, currentVersion) > 0 ? true : false;
+      const shouldDisplayBanner: boolean =
+        newestVersion && compareVersion(newestVersion, currentVersion) > 0 && !shouldDisplayModal
+          ? true
+          : false;
+
+      if (shouldDisplayModal) {
+        return ModalManager.open(
+          <NewVersionModal />,
+          {
+            position: 'center',
+            size: { width: '600px' },
+          },
+          false,
+        );
+      }
+
+      if (shouldDisplayBanner) {
+        return setDisplayBanner(shouldDisplayBanner);
+      }
+    };
+
     document.addEventListener('visibilitychange', () => {
       getConfiguration();
     });

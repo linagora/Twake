@@ -5,7 +5,6 @@ import { Layout } from 'antd';
 import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
-import Workspaces from 'services/workspaces/workspaces.js';
 import popupService from 'services/popupManager/popupManager.js';
 import WorkspacesListener from 'services/workspaces/WorkspacesListener';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
@@ -23,21 +22,20 @@ import LoginService from 'app/services/login/LoginService';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
-import useRouteState from 'app/services/hooks/useRouteState';
 import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 
 import './Client.scss';
 
-export default (): JSX.Element => {
-  const { companyId, workspaceId } = useRouteState(({ companyId, workspaceId }) => ({
-    companyId,
-    workspaceId,
-  }));
+export default React.memo((): JSX.Element => {
+  
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace(); 
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const user = useCurrentUser();
 
   popupService.useListener(useState);
-  Workspaces.useListener(useState);
   Languages.useListener(useState);
   LoginService.useListener(useState);
 
@@ -99,4 +97,5 @@ export default (): JSX.Element => {
       <ChatUploadsViewer />
     </>
   );
-};
+});
+

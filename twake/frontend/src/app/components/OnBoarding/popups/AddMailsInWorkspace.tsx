@@ -10,7 +10,7 @@ import WorkspacesUsers from 'services/workspaces/workspaces_users';
 
 type PropsType = {};
 
-export default ({}: PropsType): JSX.Element => {
+export default (props: PropsType): JSX.Element => {
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
   const [emails, _setEmails] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
