@@ -406,7 +406,7 @@ describe("The /workspaces API", () => {
         id: workspaceId,
         company_id: companyId,
         name: "Another channel name",
-        logo: "logo",
+        logo: expect.any(String),
         default: false,
         archived: false,
         role: "member",
