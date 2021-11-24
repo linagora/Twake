@@ -273,7 +273,7 @@ class Service implements FileServiceAPI {
 
     const path = getFilePath(fileToDelete);
 
-    await this.storage.delete(path, {
+    await this.storage.remove(path, {
       totalChunks: fileToDelete.upload_data.chunks,
     });
 

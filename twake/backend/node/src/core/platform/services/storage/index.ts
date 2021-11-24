@@ -136,9 +136,12 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return stream;
   }
 
-  async remove(path: string) {
+  async remove(path: string, options?: DeleteOptions) {
     try {
-      this.getConnector().remove(path);
+      for (let count = 1; count <= options.totalChunks || 1; count++) {
+        const chunk = options.totalChunks ? `${path}/chunk${count}` : path;
+        await this.getConnector().remove(chunk);
+      }
       return true;
     } catch (err) {
       logger.error("Unable to remove file %s", err);
@@ -153,30 +156,5 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     };
 
     return this;
-  }
-
-  async delete(path: string, options?: DeleteOptions): Promise<void> {
-    const pathList = this.getPathList(path, options?.totalChunks);
-
-    if (pathList.length > 0) {
-      pathList.forEach(async p => await this.getConnector().delete(p));
-    }
-
-    console.log("pathList in delete", pathList);
-  }
-
-  getPathList(path: string, totalChunks?: number): string[] {
-    const pathList: string[] = [];
-
-    // First iteration for chunks paths
-    if (totalChunks) {
-      for (let count = 1; count <= totalChunks; count++) {
-        pathList.push(`${path}/chunk${count}`);
-      }
-    } else {
-      pathList.push(path);
-    }
-
-    return pathList;
   }
 }

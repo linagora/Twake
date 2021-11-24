@@ -42,7 +42,7 @@ export interface StorageConnectorAPI {
    *
    * @param path
    */
-  remove(path: string): Promise<boolean>;
+  remove(path: string, options?: DeleteOptions): Promise<boolean>;
 }
 
 export default interface StorageAPI extends TwakeServiceProvider, StorageConnectorAPI {

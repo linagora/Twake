@@ -14,13 +14,56 @@ export default () => {
   const context = useContext(MessageContext);
   let { message, react } = useMessage(context);
 
-  const has_reactions =
-    !message?.context?.disable_reactions && message?.reactions && message?.reactions.length > 0;
+  if (
+    !(!message?.context?.disable_reactions && message?.reactions && message?.reactions.length > 0)
+  )
+    return <></>;
 
-  if (!has_reactions) return <></>;
+  return (
+    <div className="reactions">
+      {(message?.reactions || [])
+        .map(r => r) //To avoid modifing the original one with sort
+        .sort((a, b) => b.count || 0 - a.count)
+        .map((reaction, index) => (
+          <Reaction reaction={reaction} react={react} key={index} />
+        ))}
+    </div>
+  );
+};
 
-  const getReactionTooltip = (users: ReactionType['users']): JSX.Element[] =>
-    users.map(id => {
+const Reaction = ({
+  reaction,
+  react,
+}: {
+  reaction: ReactionType;
+  react: Function;
+}): JSX.Element => {
+  const noReactions: boolean = (reaction.count || 0) <= 0;
+  const users: ReactionType['users'] = reaction.users || [];
+
+  if (noReactions) return <></>;
+
+  const reactionClassName = classNames('reaction', {
+    is_selected: reaction.users.includes(User.getCurrentUserId()),
+  });
+
+  return (
+    <Tooltip
+      className="reaction_container"
+      placement="top"
+      title={<ReactionTooltip users={users} />}
+    >
+      <div className={reactionClassName} onClick={() => react([reaction.name], 'toggle')}>
+        <Emojione type={reaction.name} />
+        {reaction.count}
+      </div>
+    </Tooltip>
+  );
+};
+
+const ReactionTooltip = ({ users }: { users: ReactionType['users'] }): JSX.Element => (
+  <>
+    {users.map(id => {
       const user = Collections.get('users').find(id);
 
       if (!user) return <></>;
@@ -32,42 +75,6 @@ export default () => {
           {name}
         </div>
       );
-    });
-
-  const onClickReaction = (name: ReactionType['name']): void => {
-    react([name], 'toggle');
-  };
-
-  const mapReactions = (reaction: ReactionType, index: number): JSX.Element => {
-    const noReactions: boolean = (reaction.count || 0) <= 0;
-    const users: ReactionType['users'] = reaction.users || [];
-
-    if (noReactions) return <></>;
-
-    const reactionClassName = classNames('reaction', {
-      is_selected: reaction.users.includes(User.getCurrentUserId()),
-    });
-
-    return (
-      <Tooltip
-        className="reaction_container"
-        key={index}
-        placement="top"
-        title={getReactionTooltip(users)}
-      >
-        <div className={reactionClassName} onClick={() => onClickReaction(reaction.name)}>
-          <Emojione type={reaction.name} />
-          {reaction.count}
-        </div>
-      </Tooltip>
-    );
-  };
-
-  const sortReactions = (a: ReactionType, b: ReactionType): number => b.count || 0 - a.count;
-
-  return (
-    <div className="reactions">
-      {(_.cloneDeep(message?.reactions) || [])?.sort(sortReactions).map(mapReactions)}
-    </div>
-  );
-};
+    })}
+  </>
+);
