@@ -839,5 +839,13 @@
     "scenes.app.integrations_parameters.company_applications_table.title": "Installed in your company",
     "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "Successfully deleted {{$1}} from your company",
     "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "Successfully added {{$1}} in your company",
-    "scenes.apps.messages.input.replied_to" : "replied to "
+    "scenes.apps.messages.input.replied_to" : "replied to ",
+    "scenes.join.loading": "Loading…",
+    "scenes.join.wrong_link_title": "This link is not available anymore",
+    "scenes.join.wrong_link_description": "Ask the person who invited you to join this company for a new link or create your own company",
+    "scenes.join.create_the_company_button": "Create the company",
+    "scenes.join.join_workspace_from_company": "Join {{$1}} from {{$2}}!",
+    "scenes.join.twake_description": "Twake is an open-source digital workspace built to improve your team productivity",
+    "scenes.join.login_first_button": "Log in or create an account first",
+    "scenes.join.join_the_team_button": "Join the team"
 }

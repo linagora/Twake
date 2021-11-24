@@ -31,7 +31,7 @@ const resolver = (
 ) => {
   let commands: CommandSuggestionType[] = [];
 
-  getCompanyApplications(Groups.currentGroupId).map((app: Application) => {
+  getCompanyApplications(Groups.currentGroupId).forEach((app: Application) => {
     if (app) {
       commands = commands.concat(
         (app.display?.twake?.chat?.commands || []).map(c => ({

@@ -20,11 +20,11 @@ import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import AccessRightsService from 'app/services/AccessRightsService';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
-import { LoadingCompany } from './Parts/CurrentUser/CompanyHeader/CompanyHeader';
 
 import './ChannelsBar.scss';
+import { LoadingCompany } from './Parts/CurrentUser/CompanyHeader/CompanyHeader';
 
-export const LoadingChannels = () => {
+const LoadingChannels = () => {
   return (
     <Layout.Sider
       theme="light"
@@ -51,24 +51,24 @@ export default () => {
     );
   });
 
-  const openWorkspaceChannelList: ShortcutType = {
-    shortcut: defaultShortcutsMap.SEARCH_CHANNEL,
-    handler: (event: any) => {
-      event.preventDefault();
-      if (ModalManager.isOpen()) {
-        ModalManager.close();
-
-        return;
-      }
-
-      ModalManager.open(<WorkspaceChannelList />, {
-        position: 'center',
-        size: { width: '500px' },
-      });
-    },
-  };
-
   useEffect(() => {
+    const openWorkspaceChannelList: ShortcutType = {
+      shortcut: defaultShortcutsMap.SEARCH_CHANNEL,
+      handler: (event: any) => {
+        event.preventDefault();
+        if (ModalManager.isOpen()) {
+          ModalManager.close();
+
+          return;
+        }
+
+        ModalManager.open(<WorkspaceChannelList />, {
+          position: 'center',
+          size: { width: '500px' },
+        });
+      },
+    };
+
     Shortcuts.addShortcut(openWorkspaceChannelList);
     return () => {
       Shortcuts.removeShortcut(openWorkspaceChannelList);
