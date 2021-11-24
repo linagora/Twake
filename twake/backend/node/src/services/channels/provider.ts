@@ -69,7 +69,7 @@ export interface ChannelService
   getDirectChannelsInCompany(
     pagination: Pagination,
     company_id: string,
-  ): Promise<ListResult<DirectChannel>>;
+  ): Promise<ListResult<Channel>>;
 
   /**
    * Get all the direct channels in a company for the given user
