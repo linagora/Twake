@@ -144,6 +144,15 @@ const routes: FastifyPluginCallback<{
   });
 
   fastify.route({
+    method: "GET",
+    url: `${workspacesUrl}/:id/thumbnail`,
+    preHandler: [accessControl, companyCheck],
+    preValidation: [fastify.authenticate],
+    schema: getWorkspaceSchema,
+    handler: workspacesController.thumbnail.bind(workspacesController),
+  });
+
+  fastify.route({
     method: "POST",
     url: `${workspacesUrl}`,
     preHandler: [accessControl, companyCheck],

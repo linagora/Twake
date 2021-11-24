@@ -78,6 +78,18 @@ export class WorkspacesCrudController
     return res;
   }
 
+  async thumbnail(
+    request: FastifyRequest<{ Params: WorkspaceRequest }>,
+    response: FastifyReply,
+  ): Promise<void> {
+    const data = await this.workspaceService.thumbnail(request.params.id);
+    const filename = "thumbnail.png";
+
+    response.header("Content-disposition", `inline; filename="${filename}"`);
+    response.type("image/png");
+    response.send(data.file);
+  }
+
   async get(
     request: FastifyRequest<{ Params: WorkspaceRequest }>,
     reply: FastifyReply,
@@ -181,7 +193,7 @@ export class WorkspacesCrudController
     });
 
     const workspaceEntity = await this.workspaceService
-      .save(entity, {}, context)
+      .save(entity, request.body.options || {}, context)
       .then(a => a.entity);
 
     request.params.id ? reply.code(200) : reply.code(201);

@@ -6,7 +6,7 @@ import LoginService from 'app/services/login/LoginService';
 import popupManager from 'services/popupManager/popupManager.js';
 import userService from 'services/user/UserService';
 import currentUserService from 'app/services/user/CurrentUser';
-import WorkspaceIdentity from './Pages/WorkspaceIdentity';
+import WorkspaceIdentity from './Pages/Workspace/WorkspaceIdentity';
 import CompanyIntegration from './Pages/CompanyIntegration';
 import WorkspacePartner from './Pages/WorkspacePartner';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
