@@ -20,36 +20,13 @@ import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import AccessRightsService from 'app/services/AccessRightsService';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import { CompanyHeaderLoading } from './Parts/CurrentUser/CompanyHeader/CompanyHeader';
 
 import './ChannelsBar.scss';
-import { LoadingCompany } from './Parts/CurrentUser/CompanyHeader/CompanyHeader';
-
-const LoadingChannels = () => {
-  return (
-    <Layout.Sider
-      theme="light"
-      width={220}
-      className={classNames('channels_view_loading')}
-      style={{ height: '100%', width: '90%', alignItems: 'center' }}
-    >
-      <LoadingCompany />
-      <ChannelLoading />
-    </Layout.Sider>
-  );
-};
 
 export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-
-  //Need to be fix, here ready always == true
-  const ready = ChannelsBarService.useWatcher(async () => {
-    return (
-      (await ChannelsBarService.isReady(companyId, workspaceId)) &&
-      //ChannelsBarService.isReady(companyId, workspaceId, ['applications']) &&
-      ChannelsBarService.isReady(companyId, 'direct')
-    );
-  });
 
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
@@ -82,17 +59,12 @@ export default () => {
     <Layout.Sider
       theme="light"
       width={220}
-      className={classNames('channels_view', {
-        loading: !ready,
-        loading_render: !ready,
-      })}
+      className={classNames('channels_view', {})}
       style={{ height: '100%' }}
     >
       <CurrentUser />
 
-      {!ready && <LoadingChannels />}
       <ScrollWithHiddenComponents
-        disabled={!ready}
         tag="channel_bar_component"
         scrollTopComponent={<HiddenNotificationsButton position="top" type="important" />}
         scrollBottomComponent={<HiddenNotificationsButton position="bottom" type="important" />}
@@ -108,6 +80,20 @@ export default () => {
         </PerfectScrollbar>
       </ScrollWithHiddenComponents>
       <Footer />
+    </Layout.Sider>
+  );
+};
+
+export const LoadingChannelBar = () => {
+  return (
+    <Layout.Sider
+      theme="light"
+      width={220}
+      className={classNames('channels_view_loading')}
+      style={{ height: '100%', width: '90%', alignItems: 'center' }}
+    >
+      <CompanyHeaderLoading />
+      <ChannelLoading />
     </Layout.Sider>
   );
 };

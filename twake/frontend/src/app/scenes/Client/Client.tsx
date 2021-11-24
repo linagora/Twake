@@ -56,24 +56,24 @@ export default React.memo((): JSX.Element => {
           <NewVersionComponent />
           {companyId && workspaceId && <CompanyStatusComponent />}
           <Layout hasSider>
-            <Suspense fallback={<LoadingSidebar />}>
-              <Layout.Sider
-                trigger={<Menu size={16} />}
-                breakpoint="lg"
-                collapsedWidth="0"
-                theme="light"
-                width={290}
-                onCollapse={(collapsed, type) => {
-                  if (type === 'responsive') {
-                    setMenuIsOpen(false);
-                    return;
-                  }
-                  setMenuIsOpen(!collapsed);
-                }}
-              >
+            <Layout.Sider
+              trigger={<Menu size={16} />}
+              breakpoint="lg"
+              collapsedWidth="0"
+              theme="light"
+              width={290}
+              onCollapse={(collapsed, type) => {
+                if (type === 'responsive') {
+                  setMenuIsOpen(false);
+                  return;
+                }
+                setMenuIsOpen(!collapsed);
+              }}
+            >
+              <Suspense fallback={<LoadingSidebar />}>
                 <SideBars />
-              </Layout.Sider>
-            </Suspense>
+              </Suspense>
+            </Layout.Sider>
             <MainView
               className={classNames({ collapsed: menuIsOpen })}
               key={`mainview-${companyId}-${workspaceId}`}

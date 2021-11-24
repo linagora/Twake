@@ -50,7 +50,7 @@ export default (props: PropsType): JSX.Element => {
   );
 };
 
-export const LoadingCompany = () => {
+export const CompanyHeaderLoading = () => {
   return (
     <div className="current_company_header_loader ">
       <div className="current_company_loader small-x-margin">

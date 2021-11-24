@@ -28,7 +28,7 @@ export default () => {
   );
 };
 
-export const LoadingWorkspace = () => {
+export const LoadingWorkspaceBar = () => {
   return (
     <Layout.Sider className={'workpaces_view_loading'} width={70}>
       <div className="list">
