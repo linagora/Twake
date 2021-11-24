@@ -260,7 +260,7 @@ describe("The /workspaces API", () => {
         payload: {
           resource: {
             name: "Some channel name",
-            logo: "some logo",
+            logo: "",
             default: false,
           },
         },
@@ -430,7 +430,7 @@ describe("The /workspaces API", () => {
           resource: {
             name: "My awesome workspace",
             default: true,
-            logo: "workspace_logo",
+            logo: "",
           },
         },
       });
@@ -443,7 +443,7 @@ describe("The /workspaces API", () => {
         id: workspaceId,
         company_id: companyId,
         name: "My awesome workspace",
-        logo: "workspace_logo",
+        logo: expect.any(String),
         default: true,
         archived: false,
         role: "moderator",
