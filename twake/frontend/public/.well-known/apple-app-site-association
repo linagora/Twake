@@ -1,11 +1,13 @@
 {
-    "applinks": {
-        "apps": [],
-        "details": [
-            {
-                "appID": "1588764852.com.linagora.ios.twake",
-                "paths": ["*"]
-            }
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "KUT463DS29.com.linagora.ios.twake",
+        "paths": [
+          "*"
         ]
-    }
+      }
+    ]
+  }
 }
