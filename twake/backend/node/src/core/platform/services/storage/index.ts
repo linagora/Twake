@@ -134,6 +134,16 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return stream;
   }
 
+  async remove(path: string) {
+    try {
+      this.getConnector().remove(path);
+      return true;
+    } catch (err) {
+      logger.error("Unable to remove file %s", err);
+    }
+    return false;
+  }
+
   async doInit(): Promise<this> {
     this.encryptionOptions = {
       secret: this.configuration.get<string>("secret", null),

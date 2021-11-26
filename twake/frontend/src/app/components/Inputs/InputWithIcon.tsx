@@ -1,65 +1,77 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Input, Col, Row } from 'antd';
 
 import Emojione from 'components/Emojione/Emojione';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
-import { Input, Col, Row } from 'antd';
+
 import './Inputs.scss';
 
-export default class InputWithIcon extends React.Component {
-  constructor(props) {
-    super();
-    this.allChanEmojies = [
-      ':8ball:',
-      ':dart:',
-      ':joystick:',
-      ':video_game:',
-      ':bar_chart:',
-      ':crystal_ball:',
-      ':speech_balloon:',
-      ':bulb:',
-      ':deciduous_tree:',
-      ':palm_tree:',
-      ':earth_americas:',
-      ':open_file_folder:',
-      ':penguin:',
-      ':seedling:',
-      ':sailboat:',
-      ':fire_engine:',
-      ':scroll:',
-      ':newspaper:',
-      ':factory:',
-      ':package:',
-      ':mailbox:',
-      ':moneybag:',
-      ':smiley_cat:',
-      ':sunglasses:',
-    ];
-  }
+type PropsType = { [key: string]: any };
+type StateType = { [key: string]: any };
+
+export default class InputWithIcon extends React.Component<PropsType, StateType> {
+  outsideClickListener: (event: any) => void = () => {};
+  input: any;
+  emojiPickerIsOpen: any;
+  emojipicker_dom: any;
+  allChanEmojies = [
+    ':8ball:',
+    ':dart:',
+    ':joystick:',
+    ':video_game:',
+    ':bar_chart:',
+    ':crystal_ball:',
+    ':speech_balloon:',
+    ':bulb:',
+    ':deciduous_tree:',
+    ':palm_tree:',
+    ':earth_americas:',
+    ':open_file_folder:',
+    ':penguin:',
+    ':seedling:',
+    ':sailboat:',
+    ':fire_engine:',
+    ':scroll:',
+    ':newspaper:',
+    ':factory:',
+    ':package:',
+    ':mailbox:',
+    ':moneybag:',
+    ':smiley_cat:',
+    ':sunglasses:',
+  ];
+  emoji_dom: any;
+
   componentWillMount() {
     this.randomizeEmojies();
   }
+
   randomizeEmojies() {
     this.allChanEmojies.sort((a, b) => {
-      if (b == this.props.value[0]) {
+      if (b === this.props.value[0]) {
         return -1;
       }
-      if (a == this.props.value[0]) {
+      if (a === this.props.value[0]) {
         return 1;
       }
       return Math.floor(Math.random() * 3) - 1;
     });
   }
+
   outsideMenuListener() {
     this.closeEmojiPicker();
   }
+
   componentWillUnmount() {
     document.removeEventListener('click', this.outsideClickListener);
   }
+
   componentDidMount() {
     if (this.props.focusOnDidMount && this.input) {
       this.input.focus();
     }
+
     this.outsideClickListener = event => {
       if (
         this.emojiPickerIsOpen &&
@@ -70,9 +82,11 @@ export default class InputWithIcon extends React.Component {
         this.outsideMenuListener();
       }
     };
+
     this.outsideClickListener = this.outsideClickListener.bind(this);
     document.addEventListener('click', this.outsideClickListener);
   }
+
   closeEmojiPicker() {
     if (!this.emojiPickerIsOpen) {
       return;
@@ -86,6 +100,7 @@ export default class InputWithIcon extends React.Component {
 
     this.emojiPickerIsOpen = false;
   }
+
   openEmojiPicker() {
     if (this.emojiPickerIsOpen) {
       return;
@@ -108,32 +123,32 @@ export default class InputWithIcon extends React.Component {
         reactElement: () => {
           return (
             <EmojiPicker
-              refDom={node => (this.emojipicker_dom = node)}
-              onChange={emoji => this.selectEmoji(emoji)}
+              refDom={(node: any) => (this.emojipicker_dom = node)}
+              onChange={(emoji: any) => this.selectEmoji(emoji)}
             />
           );
         },
       },
     ];
-    var elementRect = window.getBoundingClientRect(this.emoji_dom);
+    var elementRect = (window as any).getBoundingClientRect(this.emoji_dom);
     elementRect.x = elementRect.x || elementRect.left;
     elementRect.y = elementRect.y || elementRect.top;
     if (this.props.menu_level !== undefined) {
       MenusManager.openSubMenu(menu, elementRect, this.props.menu_level, 'bottom');
     } else {
-      MenusManager.openMenu(menu, elementRect, 'bottom');
+      MenusManager.openMenu(menu, elementRect, 'bottom', {});
     }
 
     setTimeout(() => {
       this.emojiPickerIsOpen = true;
     }, 200);
   }
-  selectEmoji(emoji) {
+  selectEmoji(emoji: any) {
     this.closeEmojiPicker();
     var value = [emoji.native, this.props.value[1]];
     this.onChange(value);
   }
-  onChange(value) {
+  onChange(value: any) {
     if (this.props.onChange) {
       this.props.onChange(value);
     }
@@ -146,14 +161,7 @@ export default class InputWithIcon extends React.Component {
     }
     return (
       <Input.Group size="small">
-        <Row
-          // Default wrapping elements
-          // Wrap props isn't provided until antd version 4.8
-          // This is a way to prevent wrapping
-          style={{ flexWrap: 'nowrap' }}
-          align="middle"
-          gutter={[8, 0]}
-        >
+        <Row wrap={false} align="middle" gutter={[8, 0]}>
           <Col flex="none">
             <div
               className="emoji"
@@ -171,11 +179,11 @@ export default class InputWithIcon extends React.Component {
                 size={'large'}
                 style={{ paddingLeft: 15 }}
                 autoFocus
-                refInput={obj => (this.input = obj)}
+                ref={obj => (this.input = obj)}
                 type="text"
                 placeholder={this.props.placeholder}
                 value={this.props.value[1]}
-                onEnter={this.props.onEnter}
+                onPressEnter={this.props.onEnter}
                 onChange={evt => {
                   if (this.onChange) this.onChange([this.props.value[0], evt.target.value]);
                 }}

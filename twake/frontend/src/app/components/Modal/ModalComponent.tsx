@@ -9,11 +9,11 @@ export default () => {
 
   const eventClose = useMemo(
     () => (evt: any) => {
-      if (evt.keyCode == 27 && ModalManager.canClose()) {
+      if (evt.keyCode === 27 && ModalManager.canClose()) {
         close();
       }
     },
-    undefined,
+    [],
   );
 
   const close = () => {
@@ -22,12 +22,14 @@ export default () => {
     }
   };
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     document.addEventListener('keydown', eventClose);
     return () => {
       document.removeEventListener('keydown', eventClose);
     };
   }, []);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   component = ModalManager.getComponent() || component;
 

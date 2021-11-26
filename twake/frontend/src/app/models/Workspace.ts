@@ -12,3 +12,37 @@ export type WorkspaceType = {
     total_members: number;
   };
 };
+
+export type WorkspaceUserCompanyType = {
+  role: 'owner' | 'admin' | 'member' | 'guest';
+  status: 'active' | 'deactivated' | 'invited';
+  company: {
+    id: string; //Related to console "code"
+    name: string;
+    logo: string;
+  };
+};
+
+export type WorkspaceUserType = {
+  id: string;
+  provider: string; //"console",
+  provider_id: string;
+
+  email: string;
+  is_verified: boolean;
+  picture: string;
+  first_name: string;
+  last_name: string;
+  created_at: number;
+  deleted: boolean;
+
+  status: string; //Single string for the status
+  last_activity: number;
+
+  //Below is only if this is myself
+  preference: {
+    locale: string; //"fr-FR",
+    timezone: number; //minutesFromGMT,
+  };
+  companies: WorkspaceUserCompanyType[];
+};

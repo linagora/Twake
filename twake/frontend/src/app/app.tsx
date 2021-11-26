@@ -9,11 +9,11 @@ import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
 import UserContext from './state/recoil/integration/UserContext';
+import useTimeout from './services/hooks/useTimeout';
+import ApplicationLoader from './components/Loader/ApplicationLoader';
 
 import 'app/ui.scss';
 import 'app/theme.less';
-import useTimeout from './services/hooks/useTimeout';
-import ApplicationLoader from './components/Loader/ApplicationLoader';
 
 const delayMessage = 5000;
 
@@ -56,22 +56,22 @@ export default () => {
       <Integration>
         <Router history={RouterServices.history}>
           <Switch>
-            {RouterServices.routes.map((route: RouteType, index: number) =>
+            {RouterServices.routes.map((route: RouteType, index: number) => (
               <Route
                 key={`${route.key}_${index}`}
                 exact={route.exact ? route.exact : false}
                 path={route.path}
                 component={() =>
-                  route.options?.withErrorBoundary
-                  ?
-                  <ErrorBoundary key={route.key}>
-                    <route.component />
-                  </ErrorBoundary>
-                  :
-                  <route.component key={route.key} />
+                  route.options?.withErrorBoundary ? (
+                    <ErrorBoundary key={route.key}>
+                      <route.component />
+                    </ErrorBoundary>
+                  ) : (
+                    <route.component key={route.key} />
+                  )
                 }
               />
-            )}
+            ))}
             {
               <Route
                 path="/"

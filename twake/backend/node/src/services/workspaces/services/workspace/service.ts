@@ -57,6 +57,7 @@ import WorkspaceInviteTokens, {
 import AuthServiceAPI from "../../../../core/platform/services/auth/provider";
 import { randomBytes } from "crypto";
 import { ConsoleOptions, ConsoleType } from "../../../console/types";
+import { Readable } from "stream";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -123,7 +124,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const workspaceToCreate: Workspace = getWorkspaceInstance({
       ...workspace,
       ...{
-        name: await this.getWorkspaceName(workspace.name, workspace.company_id),
+        name: await this.getWorkspaceName(workspace.name, workspace.company_id, workspace.id),
         dateAdded: Date.now(),
         isDeleted: false,
         isArchived: false,
@@ -167,7 +168,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   ])
   async save<SaveOptions>(
     item: Partial<Workspace>,
-    options?: SaveOptions,
+    options?: SaveOptions & { logo_b64?: string },
     context?: WorkspaceExecutionContext,
   ): Promise<SaveResult<Workspace>> {
     let workspace = getWorkspaceInstance({
@@ -193,9 +194,25 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       }
     }
 
+    const logoInternalPath = `/workspaces/${workspace.id}/thumbnail.png`;
+    const logoPublicPath = `/internal/services/workspaces/v1/workspaces/${workspace.id}/thumbnail`;
+    let logoPublicUrl = undefined;
+    if (workspace.logo) {
+      if (!item.logo || options.logo_b64) {
+        await this.platformServices.storage.remove(logoInternalPath);
+        workspace.logo = null;
+      }
+    }
+    if (options.logo_b64) {
+      const s = new Readable();
+      s.push(Buffer.from(options.logo_b64, "base64"));
+      await this.platformServices.storage.write(logoInternalPath, s);
+      logoPublicUrl = logoPublicPath;
+    }
+
     workspace = merge(workspace, {
-      name: await this.getWorkspaceName(item.name, context.company_id),
-      logo: item.logo,
+      name: await this.getWorkspaceName(item.name, context.company_id, workspace.id),
+      logo: logoPublicUrl || workspace.logo,
       isArchived: item.isArchived,
       isDefault: item.isDefault,
     });
@@ -224,6 +241,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       workspace,
       item.id ? OperationType.UPDATE : OperationType.CREATE,
     );
+  }
+
+  async thumbnail(workspaceId: string) {
+    const logoInternalPath = `/workspaces/${workspaceId}/thumbnail.png`;
+    const file = await this.platformServices.storage.read(logoInternalPath);
+    return { file };
   }
 
   async delete(
@@ -507,14 +530,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
    * @param companyId company that user excepted to create or update the workspace
    * @returns if workspace name is already used in the company, this will return the exceptedName with the current duplicates number otherwise simply return the exceptedName
    */
-  private async getWorkspaceName(exceptedName: string, companyId: string) {
+  private async getWorkspaceName(exceptedName: string, companyId: string, workspaceId: string) {
     const workspacesList = await this.list(
       null,
       {},
       { company_id: companyId, user: { id: null, server_request: true } },
     );
 
-    workspacesList.filterEntities(entity => _.includes(entity.name, exceptedName));
+    workspacesList.filterEntities(
+      entity => entity.id !== workspaceId && _.includes(entity.name, exceptedName),
+    );
 
     const shouldRenameWorkspace = !workspacesList.isEmpty();
     const duplicatesCount = workspacesList.getEntities().length;
