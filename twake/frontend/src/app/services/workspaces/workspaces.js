@@ -22,6 +22,7 @@ import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
 import WorkspaceAPIClient from './WorkspaceAPIClient';
 import Logger from 'services/Logger';
+import { getBestCandidateWorkspace } from 'app/state/recoil/utils/BestCandidateUtils';
 
 class Workspaces extends Observable {
   constructor() {
@@ -93,7 +94,19 @@ class Workspaces extends Observable {
     if ((Globals.store_public_access_get_data || {}).public_access_token) {
       return;
     }
+    const user = User.getCurrentUser();
 
+    const bestCandidateWorkspace = getBestCandidateWorkspace(user);
+
+    if (!bestCandidateWorkspace) {
+      this.openWelcomePage();
+    }
+
+    if (bestCandidateWorkspace.id !== this.currentWorkspaceId) {
+      this.select(bestCandidateWorkspace, true);
+    }
+
+    /*
     let { workspaceId } = RouterServices.getStateFromRoute();
     const routerWorkspaceId = workspaceId;
 
@@ -117,6 +130,7 @@ class Workspaces extends Observable {
         this.select(workspace, true);
       }
     }
+    */
     return;
   }
 

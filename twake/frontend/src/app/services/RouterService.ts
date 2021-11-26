@@ -49,6 +49,7 @@ class RouterServices extends Observable {
 
   //List of client sub paths
   clientSubPathnames: Readonly<string[]> = [
+    '/client/:companyId',
     '/client/:companyId/w/:workspaceId',
     '/client/:companyId/w/:workspaceId/c/:channelId',
     '/client/:companyId/w/:workspaceId/c/:channelId/t/:threadId',

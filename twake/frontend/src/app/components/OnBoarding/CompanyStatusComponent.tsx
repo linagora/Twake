@@ -54,9 +54,9 @@ const CompanyStatusComponent = (): JSX.Element => {
   const isBlockedCompany = () => {
     if (!companyId) return;
     const userGroups: { [key: string]: CompanyType } = Groups.user_groups;
-    const { plan } = userGroups[companyId];
+    const currentGroup = userGroups[companyId];
 
-    if (plan?.billing?.status === 'error') {
+    if (currentGroup?.plan?.billing?.status === 'error') {
       return ModalManager.open(
         <BlockedCompany />,
         {

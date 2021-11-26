@@ -15,11 +15,14 @@ import WorkspacesListener from './workspaces/WorkspacesListener';
 import WorkspaceAPIClient from './workspaces/WorkspaceAPIClient';
 import UserNotificationAPIClient from './user/UserNotificationAPIClient';
 import { CompanyType } from 'app/models/Company';
-import { WorkspaceType } from 'app/models/Workspace';
 import LocalStorage from './LocalStorage';
 import WebSocket from './WebSocket/WebSocket';
 import RouterService from './RouterService';
 import CompanyAPIClient from './CompanyAPIClient';
+import {
+  getBestCandidateWorkspace,
+  getBestCandidateCompany,
+} from 'app/state/recoil/utils/BestCandidateUtils';
 
 class Application {
   private logger: Logger.Logger;
@@ -103,15 +106,7 @@ class Application {
    * @param user
    */
   private async setupWorkspaces(user: UserType) {
-    const { companyId, workspaceId } = RouterService.getStateFromRoute();
-
-    const storageCompanyId = (LocalStorage.getItem('default_company_id') as string) || null;
-    const bestCandidateCompany =
-      user.companies?.find(o => o.company.id === companyId)?.company ||
-      user.companies?.find(o => o.company.id === storageCompanyId)?.company ||
-      user.companies?.sort(
-        (a, b) => (a.company?.stats?.total_members || 0) - (b.company?.stats?.total_members || 0),
-      )[0].company;
+    const bestCandidateCompany = getBestCandidateCompany(user);
 
     const company = bestCandidateCompany?.id
       ? await CompanyAPIClient.get(bestCandidateCompany.id)
@@ -144,14 +139,11 @@ class Application {
     // Everything related to observable takes time ...
     Groups.select(company);
 
-    const storageWorkspaceId = (LocalStorage.getItem('default_workspace_id') as string) || null;
-    const bestCandidateWorkspace =
-      workspaces?.find(w => w.id === workspaceId) ||
-      workspaces?.find(w => w.id === storageWorkspaceId) ||
-      workspaces?.sort((a, b) => a?.stats?.total_members - b.stats?.total_members)[0] ||
-      workspaces[0];
+    const bestCandidateWorkspace = getBestCandidateWorkspace(workspaces);
 
     bestCandidateWorkspace && Workspaces.select(bestCandidateWorkspace, true);
+
+    Workspaces.notify();
 
     function hasNotification(company: CompanyType): boolean {
       const notification = notifications.find(n => n.company_id === company.id);

@@ -28,6 +28,7 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import CompanyMessagesCounter from 'components/CompanyMessagesCounter/CompanyMessagesCounter';
 import RouterService from 'app/services/RouterService';
 import CompanyAPIClient from 'app/services/CompanyAPIClient';
+import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -70,12 +71,23 @@ export default class CurrentUser extends Component {
     clearInterval(this.refreshUserState);
   }
 
-  async fetchCurrentCompany() {
-    const { companyId } = RouterService.getStateFromRoute();
+  async fetchCurrentWorkspace(companyId, workspaceId) {
+    const workspace = await WorkspaceAPIClient.get(companyId, workspaceId);
 
-    const company = await CompanyAPIClient.get(companyId);
+    this.setState({ workspaceName: workspace.name || '' });
 
-    this.setState({ companyName: company.name });
+    if (this.currentWorkspaceId !== workspaceId) {
+      this.setState({ currentWorkspaceId: workspaceId });
+    }
+  }
+
+  componentDidUpdate() {
+    const { companyId, workspaceId } = RouterService.getStateFromRoute();
+
+    companyId &&
+      workspaceId &&
+      workspaceId !== this.state.currentWorkspaceId &&
+      this.fetchCurrentWorkspace(companyId, workspaceId);
   }
 
   componentDidMount() {
@@ -85,7 +97,9 @@ export default class CurrentUser extends Component {
       new_status[1] = '';
     }
 
-    this.fetchCurrentCompany();
+    const { companyId, workspaceId } = RouterService.getStateFromRoute();
+
+    companyId && workspaceId && this.fetchCurrentWorkspace(companyId, workspaceId);
 
     this.setState({ new_status });
   }
@@ -369,7 +383,7 @@ export default class CurrentUser extends Component {
       <CompanyHeaderUI
         refDivUser={node => (this.node = node)}
         refDivBell={node => (this.bell_node = node)}
-        companyName={this.state.companyName || '-'}
+        companyName={this.state.workspaceName || '-'}
         status={status}
         notificationsDisabled={notifications_disabled}
         onClickUser={evt => {

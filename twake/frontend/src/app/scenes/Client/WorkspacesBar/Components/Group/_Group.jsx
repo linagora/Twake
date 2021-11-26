@@ -71,12 +71,12 @@ export default class Group extends Component {
     };
   }
 
-  openMenu() {
+   async openMenu() {
     var group = this.group;
-
+    const companies = await Groups.getOrderedGroups() || [];
     this.change_group_menu = [];
 
-    if (Groups.getOrderedGroups().length > 1) {
+    if (companies.length > 1) {
       this.change_group_menu.push({
         type: 'title',
         text: Languages.t(
@@ -87,7 +87,7 @@ export default class Group extends Component {
       });
     }
 
-    Groups.getOrderedGroups().forEach(item => {
+    companies.forEach(item => {
       this.change_group_menu.push(this.renderGroupInMenu(item));
     });
 
