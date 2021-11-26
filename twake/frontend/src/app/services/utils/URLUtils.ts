@@ -1,6 +1,10 @@
 import Globals from 'services/Globals';
 
-export function addApiUrlIfNeeded(url: string, asCssUrl?: boolean): string {
+export function addApiUrlIfNeeded(
+  url: string,
+  asCssUrl?: boolean,
+  withSeparator: boolean = true,
+): string {
   function _wrap(url: string): string {
     return asCssUrl ? `url('${url}')` : url;
   }
@@ -13,10 +17,9 @@ export function addApiUrlIfNeeded(url: string, asCssUrl?: boolean): string {
     return _wrap(url);
   }
 
-  return _wrap(`${Globals.api_root_url}/${url}`);
-};
-
-export function getAsFrontUrl(path: string): string {
-  return `${(Globals.environment.front_root_url || '')}${path}`;
+  return _wrap(`${Globals.api_root_url}${withSeparator ? '/' : ''}${url}`);
 }
 
+export function getAsFrontUrl(path: string): string {
+  return `${Globals.environment.front_root_url || ''}${path}`;
+}
