@@ -37,7 +37,7 @@ export type MagicLinksJoinResponse = {
     id: string
     name: string
   },
-  auth_url: string
+  auth_required: boolean
 }
 
 export class MagicLinksJoinService {
