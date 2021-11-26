@@ -19,11 +19,11 @@ import RouterService from 'app/services/RouterService';
 import { MessageContext } from '../MessageWithReplies';
 import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import Blocks from './Blocks';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
 
 type Props = {
   linkToThread?: boolean;
   threadHeader?: string;
-  edited?: boolean;
 };
 
 export default (props: Props) => {
@@ -62,7 +62,10 @@ export default (props: Props) => {
 
   const deleted = message.subtype === 'deleted';
 
-  const showEdition = !props.linkToThread && props.edited;
+  const location = `message-${message.id}`;
+  const { active: editorIsActive } = useVisibleMessagesEditorLocation(location);
+
+  const showEdition = !props.linkToThread && editorIsActive;
   const messageIsLoading = (message as any)._creating || (message as any)._updating;
   const messageSaveFailed = (message as any)._failed;
 

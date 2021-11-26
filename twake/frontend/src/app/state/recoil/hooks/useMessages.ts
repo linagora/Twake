@@ -93,6 +93,25 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       console.log('receive event');
       if (action === 'created' || action === 'updated') {
         updateRecoilFromMessage(key, event as NodeMessage);
+
+        //TODO make this more clean
+        let threadMessages = ThreadMessagesStateExtended.get(event.thread_id) || [];
+        console.log(threadMessages);
+        threadMessages = _.uniqBy(
+          [
+            ...threadMessages,
+            {
+              companyId: key.companyId,
+              threadId: (event as NodeMessage).thread_id,
+              id: (event as NodeMessage).id,
+            },
+          ],
+          m => m.id,
+        );
+        console.log(threadMessages);
+        ThreadMessagesStateExtended.set(event.thread_id, threadMessages);
+
+        //TODO make this more clean
         const allMessages = _.uniqBy(
           [
             ...messages,

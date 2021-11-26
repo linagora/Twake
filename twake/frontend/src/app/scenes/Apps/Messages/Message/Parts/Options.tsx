@@ -22,6 +22,7 @@ import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
 import _ from 'lodash';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
 
 type Props = {
   onOpen?: () => void;
@@ -34,6 +35,10 @@ export default (props: Props) => {
   const workspaceId = useRouterWorkspace();
   const context = useContext(MessageContext);
   let { message, react, remove, pin } = useMessage(context);
+
+  const location = `message-${message.id}`;
+  const { active: editorIsActive, set: setVisibleEditor } =
+    useVisibleMessagesEditorLocation(location);
 
   const menu: any[] = [];
 
@@ -155,12 +160,7 @@ export default (props: Props) => {
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Edit'),
           onClick: () => {
-            //TODO
-            MessageEditorsManager.get(channelId || '').openEditor(
-              message?.thread_id || '',
-              message?.id || '',
-              'edition',
-            );
+            setVisibleEditor({ location, subLocation: '' });
           },
         });
       }

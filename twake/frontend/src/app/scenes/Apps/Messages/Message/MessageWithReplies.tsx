@@ -25,7 +25,7 @@ export default ({ threadId, companyId }: Props) => {
         {!listContext.hideReplies && (
           <>
             <LoadMoreReplies />
-            {false && <Responses companyId={companyId} threadId={threadId} />}
+            <Responses companyId={companyId} threadId={threadId} />
             <ReplyBlock />
           </>
         )}

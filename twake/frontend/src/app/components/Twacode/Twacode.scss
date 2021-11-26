@@ -71,6 +71,10 @@
     overflow: auto;
     box-sizing: border-box;
     line-break: anywhere;
+
+    pre {
+      margin-bottom: 0;
+    }
   }
   .multiline-code {
     color: var(--white);
