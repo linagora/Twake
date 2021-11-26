@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Message from './Message';
 import Responses from './Responses';
 import ReplyBlock from './Parts/ReplyBlock';
@@ -25,7 +25,7 @@ export default ({ threadId, companyId }: Props) => {
         {!listContext.hideReplies && (
           <>
             <LoadMoreReplies />
-            <Responses companyId={companyId} threadId={threadId} />
+            {false && <Responses companyId={companyId} threadId={threadId} />}
             <ReplyBlock />
           </>
         )}

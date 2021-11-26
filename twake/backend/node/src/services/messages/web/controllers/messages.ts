@@ -60,6 +60,10 @@ export class MessagesController
 
       const thread = await this.service.threads.get({ id: context.thread.id } as ThreadPrimaryKey);
 
+      if (!thread) {
+        throw "Message must be in a thread";
+      }
+
       const result = await this.service.messages.save(
         {
           id: request.params.message_id || undefined,

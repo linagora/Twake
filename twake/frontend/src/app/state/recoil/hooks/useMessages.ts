@@ -90,8 +90,22 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     `/companies/${key.companyId}/workspaces/${key.workspaceId}/channels/${key.channelId}/feed`,
     'useChannelMessages',
     (action: string, event: any) => {
+      console.log('receive event');
       if (action === 'created' || action === 'updated') {
         updateRecoilFromMessage(key, event as NodeMessage);
+        const allMessages = _.uniqBy(
+          [
+            ...messages,
+            {
+              companyId: key.companyId,
+              threadId: (event as NodeMessage).thread_id,
+            },
+          ],
+          m => m.threadId,
+        );
+        allMessages.sort((a, b) => Numbers.compareTimeuuid(a.threadId, b.threadId));
+        updateWindowFromIds(allMessages.map(m => m.threadId));
+        setMessages(allMessages);
       }
     },
   );

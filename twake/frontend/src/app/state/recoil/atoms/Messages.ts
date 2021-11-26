@@ -4,11 +4,8 @@ import { atomFamily } from 'recoil';
 import ExtendedState from '../utils/ExtendedState';
 
 export type AtomMessageKey = { companyId: string; threadId: string; id?: string };
-
 export type AtomThreadKey = { companyId: string; threadId: string };
-
 export type AtomChannelKey = { companyId: string; workspaceId: string; channelId: string };
-
 export type AtomThreadValue = AtomThreadKey & {};
 
 export const MessagesWindowState = atomFamily<

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
+import Compile from './Compile';
 import './Twacode.scss';
 
 type Props = {
@@ -14,7 +15,7 @@ type Props = {
   onAction?: (type: string, id: string, context: any, value: any, evt: any) => void;
 };
 
-export default (props: Props) => {
+export default React.memo((props: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let container: any = null;
   let passives: any = {};
@@ -49,7 +50,7 @@ export default (props: Props) => {
   };
 
   useEffect(() => {
-    var stringified = JSON.stringify([props.content, props.before, props.after]);
+    var stringified = JSON.stringify([props.content]);
     if (stringified !== saved_stringified) {
       clearTimeout(loadingInteraction_timeout);
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,7 +61,7 @@ export default (props: Props) => {
       //Called when element is unmounted
       clearTimeout(loadingInteraction_timeout);
     };
-  });
+  }, [props.content]);
 
   return (
     <div
@@ -68,11 +69,15 @@ export default (props: Props) => {
       {...props}
       className={'markdown ' + (loadingInteraction ? 'loadingInteraction ' : '') + props.className}
     >
-      {props.before || ''}
-      {props.simple
-        ? PseudoMarkdownCompiler.compileToSimpleHTML(props.content, true || props.isApp)
-        : PseudoMarkdownCompiler.compileToHTML(props.content, true || props.isApp, event_container)}
-      {props.after || ''}
+      {!!props.simple &&
+        PseudoMarkdownCompiler.compileToSimpleHTML(props.content, true || props.isApp)}
+      {!props.simple && (
+        <Compile
+          content={props.content}
+          isApp={true || props.isApp}
+          eventContainer={event_container}
+        />
+      )}
     </div>
   );
-};
+});

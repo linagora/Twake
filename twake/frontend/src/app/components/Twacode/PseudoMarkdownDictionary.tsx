@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import Emojione from 'components/Emojione/Emojione';
-import HighlightedCode from 'components/HighlightedCode/HighlightedCode.js';
+import HighlightedCode from 'components/HighlightedCode/HighlightedCode';
 import User from './blocks/User';
 import Chan from './blocks/Chan';
 import File from 'components/Drive/File';
@@ -10,295 +10,360 @@ import UserService from 'services/user/UserService';
 import Button from 'components/Buttons/Button.js';
 import Input from 'components/Inputs/Input.js';
 
-class PseudoMarkdownDictionary {
-  counter: number = 0;
-  render_block: { [key: string]: any } = {
-    text_block_parent: {
-      object: (child: any, _object: any, _event_container: any, text_transform: any) => (
-        <span key={this.counter++} style={text_transform || {}}>
-          {child}
-        </span>
-      ),
-    },
-    text: {
-      object: (child: any, _object: any, _event_container: any, text_transform: any) => (
-        <span key={this.counter++} style={text_transform || {}}>
-          {child}
-        </span>
-      ),
-    },
-    br: {
-      object: (child: any) => [
-        <br key={this.counter++} />,
-        <span key={this.counter++}>{child}</span>,
-      ],
-    },
-    emoji: {
-      object: (_child: any, object: any) => (
-        <Emojione key={this.counter++} type={':' + (object.content || '') + ':'} />
-      ),
-    },
-    user: {
-      object: (_child: any, object: any) => {
-        const data = (object.content || '').split(':');
-        const id = object.id || data[1];
-        const username = data[0];
-        return [
-          // FIX ME
-          // Should we hide the user image? (hideUserImage props required)
-          //@ts-ignore
-          <User key={this.counter++} id={id} username={username} />,
-          <span key={this.counter++}> </span>,
-        ];
-      },
-    },
-    channel: {
-      object: (_child: any, object: any) => {
-        const data = (object.content || '').split(':');
-        const id = object.id || data[1];
-        const name = data[0];
-        return [
-          <Chan key={this.counter++} id={id} name={name} />,
-          <span key={this.counter++}> </span>,
-        ];
-      },
-    },
-    mcode: {
-      object: (_child: any, object: any) => (
-        <HighlightedCode key={this.counter++} className="multiline-code">
-          {(object.content || '').trim()}
-        </HighlightedCode>
-      ),
-    },
-    icode: {
-      object: (_child: any, object: any) => (
-        <div key={this.counter++} className="inline-code">
-          {(object.content || '').trim()}
-        </div>
-      ),
-    },
-    underline: { object: (child: any) => <div className="underline">{child}</div> },
-    strikethrough: { object: (child: any) => <div className="strikethrough">{child}</div> },
-    bold: { object: (child: any) => <div className="bold">{child}</div>, text_transform: {} },
-    italic: { object: (child: any) => <div className="italic">{child}</div> },
-    mquote: { object: (child: any) => <div className="multiline-quote">{child}</div> },
-    quote: { object: (child: any) => <div className="one-line-quote">{child}</div> },
-    nop: { object: (child: any) => child },
-    url: {
-      object: (child: any, object: any) => {
-        if (!object.url && object.url !== undefined) {
-          return (
-            // eslint-disable-next-line jsx-a11y/anchor-is-valid
-            <a key={this.counter++} href="#">
-              {child}
-            </a>
-          );
-        }
-        let url = this.setUrlProtocol(object.url || object.content);
-        if (object.user_identifier && UserService.getCurrentUser()) {
-          let separator = '?';
-          if (url.indexOf('?') > 0) {
-            separator = '&';
-          }
-          url += separator + 'twake_user=' + UserService.getCurrentUser().id;
-        }
-        return (
-          // eslint-disable-next-line react/jsx-no-target-blank
-          <a key={this.counter++} target="_blank" href={url}>
-            {child}
-          </a>
-        );
-      },
-    },
-    markdown_link: {
-      object: (_child: any, object: any) => {
-        const linkData = object.content.split('](');
-        const url = linkData[1] || '';
+export const DynamicComponent = ({
+  type,
+  child,
+  data,
+  eventContainer,
+  textTransform,
+}: {
+  type?: string;
+  child?: ReactNode;
+  data?: any;
+  eventContainer?: any;
+  textTransform?: any;
+}) => {
+  if (type === 'text_block_parent') {
+    return <span style={textTransform || {}}>{child}</span>;
+  }
+  if (type === 'text') {
+    return <span style={textTransform || {}}>{child}</span>;
+  }
+  if (type === 'br') {
+    return (
+      <>
+        <br />,<span>{child}</span>,
+      </>
+    );
+  }
+  if (type === 'emoji') {
+    return <Emojione type={':' + (data.content || '') + ':'} />;
+  }
+  if (type === 'user') {
+    const split = (data.content || '').split(':');
+    const id = data.id || split[1];
+    const username = split[0];
+    return (
+      <>
+        <User hideUserImage={false} id={id} username={username} />
+        <span> </span>
+      </>
+    );
+  }
+  if (type === 'channel') {
+    const split = (data.content || '').split(':');
+    const id = data.id || split[1];
+    const name = split[0];
+    return (
+      <>
+        <Chan id={id} name={name} />,<span> </span>,
+      </>
+    );
+  }
+  if (type === 'underline') return <div className="underline">{child}</div>;
+  if (type === 'strikethrough') return <div className="strikethrough">{child}</div>;
+  if (type === 'bold') return <div className="bold">{child}</div>;
+  if (type === 'italic') return <div className="italic">{child}</div>;
+  if (type === 'mquote') return <div className="multiline-quote">{child}</div>;
+  if (type === 'quote') return <div className="one-line-quote">{child}</div>;
+  if (type === 'nop') {
+    return <>{child}</>;
+  }
 
-        return (
-          // eslint-disable-next-line react/jsx-no-target-blank
-          <a href={this.setUrlProtocol(url)} target="_BLANK">
-            {linkData[0]}
-          </a>
-        );
-      },
-    },
-    email: {
-      object: (child: any, object: any) => (
-        // eslint-disable-next-line react/jsx-no-target-blank
-        <a key={this.counter++} target="_blank" href={'mailto:' + (object.content || '')}>
-          {child}
-        </a>
-      ),
-    },
-    system: {
-      object: (child: any) => <span style={{ color: '#888', fontSize: 13 }}>{child}</span>,
-    },
-    file: {
-      object: (_child: any, object: any) => (
-        <div className="drive_view grid inline-files">
-          <File
-            key={this.counter++}
-            data={{ id: object.content || '' }}
-            notInDrive={true}
-            mini={object.mode === 'mini' ? true : false}
-          />
-        </div>
-      ),
-    },
-    image: {
-      object: (_child: any, object: any, _event_container: any) => (
-        <img
-          key={this.counter++}
-          src={object.src}
-          alt={object.alt || ''}
-          className={'image twacode'}
+  if (type === 'mcode') {
+    return <HighlightedCode className="multiline-code" code={(data.content || '').trim()} />;
+  }
+  if (type === 'icode') {
+    return <div className="inline-code">{(data.content || '').trim()}</div>;
+  }
+  if (type === 'url') {
+    if (!data.url && data.url !== undefined) {
+      return <span className="link">{child}</span>;
+    }
+    let url = setUrlProtocol(data.url || data.content);
+    if (data.user_identifier && UserService.getCurrentUser()) {
+      let separator = '?';
+      if (url.indexOf('?') > 0) {
+        separator = '&';
+      }
+      url += separator + 'twake_user=' + UserService.getCurrentUser().id;
+    }
+    return (
+      // eslint-disable-next-line react/jsx-no-target-blank
+      <a target="_blank" href={url}>
+        {child}
+      </a>
+    );
+  }
+  if (type === 'markdown_link') {
+    const linkData = data.content.split('](');
+    const url = linkData[1] || '';
+
+    return (
+      <a href={setUrlProtocol(url)} target="_BLANK">
+        {linkData[0]}
+      </a>
+    );
+  }
+  if (type === 'email') {
+    return (
+      <a target="_blank" href={'mailto:' + (data.content || '')}>
+        {child}
+      </a>
+    );
+  }
+  if (type === 'system') {
+    return <span style={{ color: '#888', fontSize: 13 }}>{child}</span>;
+  }
+
+  if (type === 'file') {
+    return (
+      <div className="drive_view grid inline-files">
+        <File
+          data={{ id: data.content || '' }}
+          notInDrive={true}
+          mini={data.mode === 'mini' ? true : false}
         />
-      ),
-    },
-    icon: {
-      object: (_child: any, object: any) => <Emojione key={this.counter++} type={object.src} />,
-    },
-    progress_bar: {
-      object: (_child: any, object: any) => (
-        <div key={this.counter++} className="progress_bar">
-          <div style={{ width: (object.progress || 0) + '%' }} />
-        </div>
-      ),
-    },
-    attachment: { object: (child: any) => <div className="attachment">{child}</div> },
-    button: {
-      object: (child: any, object: any, event_container: any) => {
-        if (object.inline) {
-          return (
-            <div
-              key={this.counter++}
-              className={
-                'interactive_element underline interactive_message_btn ' +
-                (object.style === 'danger' ? 'danger ' : '') +
-                (object.style === 'primary' ? 'primary ' : '')
-              }
-              onClick={evt => {
-                if (object.action_id) {
-                  event_container.onAction(
-                    'interactive_action',
-                    object.action_id,
-                    object.interactive_context || {},
-                    '',
-                    evt,
-                  );
-                }
-              }}
-            >
-              {child}
-            </div>
-          );
-        }
-        return (
-          <Button
-            key={this.counter++}
-            type="button"
-            className={
-              'button interactive_element interactive_message_btn small ' +
-              (object.style === 'danger' ? 'danger ' : '') +
-              (object.style === 'default' ? 'default ' : '')
-            }
-            onClick={(evt: any) => {
-              if (object.action_id) {
-                event_container.onAction(
-                  'interactive_action',
-                  object.action_id,
-                  object.interactive_context || {},
-                  '',
-                  evt,
-                );
-              }
-            }}
-          >
-            {child}
-          </Button>
-        );
-      },
-    },
-    copiable: {
-      object: (_child: any, object: any) => (
-        <InputWithClipBoard key={this.counter++} value={object.content || ''} disabled={false} />
-      ),
-    },
-    input: {
-      object: (_child: any, object: any, event_container: any) => (
-        <Input
-          key={this.counter++}
-          type="text"
+      </div>
+    );
+  }
+  if (type === 'image') {
+    return <img src={data.src} alt={data.alt || ''} className={'image twacode'} />;
+  }
+  if (type === 'icon') {
+    return <Emojione type={data.src} />;
+  }
+  if (type === 'progress_bar') {
+    return (
+      <div className="progress_bar">
+        <div style={{ width: (data.progress || 0) + '%' }} />
+      </div>
+    );
+  }
+  if (type === 'attachment') {
+    return <div className="attachment">{child}</div>;
+  }
+  if (type === 'button') {
+    if (data.inline) {
+      return (
+        <div
           className={
-            'interactive_element interactive_message_input medium ' +
-            (object.full_width ? 'full_width ' : '')
+            'interactive_element underline interactive_message_btn ' +
+            (data.style === 'danger' ? 'danger ' : '') +
+            (data.style === 'primary' ? 'primary ' : '')
           }
-          defaultValue={object.content || ''}
-          placeholder={object.placeholder}
-          onChange={(evt: any) => {
-            event_container.onAction(
-              'interactive_change',
-              object.passive_id,
-              object.interactive_context || {},
-              evt.target.value,
-              evt,
-            );
-          }}
-        />
-      ),
-    },
-    select: {
-      object: (_child: any, object: any, event_container: any) => (
-        <select
-          key={this.counter++}
-          className={
-            'select interactive_element interactive_message_input medium ' +
-            (object.full_width ? 'full_width ' : '')
-          }
-          onChange={evt => {
-            const value = evt.target.value;
-            event_container.onAction(
-              'interactive_change',
-              object.passive_id || object.action_id,
-              object.interactive_context || {},
-              value,
-              evt,
-            );
-            if (object.action_id) {
-              event_container.onAction(
+          onClick={evt => {
+            if (data.action_id) {
+              eventContainer.onAction(
                 'interactive_action',
-                object.action_id,
-                object.interactive_context || {},
-                value,
-                evt.target.value,
+                data.action_id,
+                data.interactive_context || {},
+                '',
+                evt,
               );
             }
           }}
         >
-          <option disabled selected={object.values.filter((e: any) => e.selected).length === 0}>
-            {object.title}
-          </option>
-          {object.values.map((item: any) => {
-            return (
-              <option value={item.value} selected={item.selected}>
-                {item.name}
-              </option>
+          {child}
+        </div>
+      );
+    }
+    return (
+      <Button
+        type="button"
+        className={
+          'button interactive_element interactive_message_btn small ' +
+          (data.style === 'danger' ? 'danger ' : '') +
+          (data.style === 'default' ? 'default ' : '')
+        }
+        onClick={(evt: any) => {
+          if (data.action_id) {
+            eventContainer.onAction(
+              'interactive_action',
+              data.action_id,
+              data.interactive_context || {},
+              '',
+              evt,
             );
-          })}
-        </select>
+          }
+        }}
+      >
+        {child}
+      </Button>
+    );
+  }
+  if (type === 'copiable') {
+    return <InputWithClipBoard value={data.content || ''} disabled={false} />;
+  }
+  if (type === 'input') {
+    return (
+      <Input
+        type="text"
+        className={
+          'interactive_element interactive_message_input medium ' +
+          (data.full_width ? 'full_width ' : '')
+        }
+        defaultValue={data.content || ''}
+        placeholder={data.placeholder}
+        onChange={(evt: any) => {
+          eventContainer.onAction(
+            'interactive_change',
+            data.passive_id,
+            data.interactive_context || {},
+            evt.target.value,
+            evt,
+          );
+        }}
+      />
+    );
+  }
+  if (type === 'select') {
+    return (
+      <select
+        className={
+          'select interactive_element interactive_message_input medium ' +
+          (data.full_width ? 'full_width ' : '')
+        }
+        onChange={evt => {
+          const value = evt.target.value;
+          eventContainer.onAction(
+            'interactive_change',
+            data.passive_id || data.action_id,
+            data.interactive_context || {},
+            value,
+            evt,
+          );
+          if (data.action_id) {
+            eventContainer.onAction(
+              'interactive_action',
+              data.action_id,
+              data.interactive_context || {},
+              value,
+              evt.target.value,
+            );
+          }
+        }}
+      >
+        <option disabled selected={data.values.filter((e: any) => e.selected).length === 0}>
+          {data.title}
+        </option>
+        {data.values.map((item: any) => {
+          return (
+            <option value={item.value} selected={item.selected}>
+              {item.name}
+            </option>
+          );
+        })}
+      </select>
+    );
+  }
+
+  return <></>;
+};
+
+class PseudoMarkdownDictionary {
+  render_block: { [key: string]: any } = {
+    text_block_parent: {
+      object: (child: any, _object: any, _eventContainer: any, textTransform: any) => (
+        <DynamicComponent type="text_block_parent" child={child} textTransform={textTransform} />
+      ),
+    },
+    text: {
+      object: (child: any, _object: any, _eventContainer: any, textTransform: any) => (
+        <DynamicComponent type="text" child={child} textTransform={textTransform} />
+      ),
+    },
+    br: {
+      object: (child: any) => <DynamicComponent type="br" child={child} />,
+    },
+    emoji: {
+      object: (_child: any, data: any) => <DynamicComponent type="emoji" data={data} />,
+    },
+    user: {
+      object: (_child: any, object: any) => <DynamicComponent type="user" data={object} />,
+    },
+    channel: {
+      object: (_child: any, object: any) => <DynamicComponent type="channel" data={object} />,
+    },
+    underline: { object: (child: any) => <DynamicComponent type="underline" child={child} /> },
+    strikethrough: {
+      object: (child: any) => <DynamicComponent type="strikethrough" child={child} />,
+    },
+    bold: { object: (child: any) => <DynamicComponent type="bold" child={child} /> },
+    italic: { object: (child: any) => <DynamicComponent type="italic" child={child} /> },
+    mquote: { object: (child: any) => <DynamicComponent type="mquote" child={child} /> },
+    quote: { object: (child: any) => <DynamicComponent type="quote" child={child} /> },
+    nop: { object: (child: any) => <DynamicComponent type="nop" child={child} /> },
+    mcode: {
+      object: (_child: any, object: any) => <DynamicComponent type="mcode" data={object} />,
+    },
+    icode: {
+      object: (_child: any, object: any) => <DynamicComponent type="icode" data={object} />,
+    },
+    url: {
+      object: (child: any, object: any) => (
+        <DynamicComponent type="url" child={child} data={object} />
+      ),
+    },
+    markdown_link: {
+      object: (_child: any, object: any) => <DynamicComponent type="markdown_link" data={object} />,
+    },
+    email: {
+      object: (child: any, object: any) => (
+        <DynamicComponent type="email" child={child} data={object} />
+      ),
+    },
+    system: {
+      object: (child: any) => <DynamicComponent type="system" child={child} />,
+    },
+    file: {
+      object: (_child: any, object: any) => <DynamicComponent type="file" data={object} />,
+    },
+    image: {
+      object: (_child: any, object: any, _eventContainer: any) => (
+        <DynamicComponent type="image" data={object} />
+      ),
+    },
+    icon: {
+      object: (_child: any, object: any) => <DynamicComponent type="icon" data={object} />,
+    },
+    progress_bar: {
+      object: (_child: any, object: any) => <DynamicComponent type="progress_bar" data={object} />,
+    },
+    attachment: { object: (child: any) => <DynamicComponent type="attachment" child={child} /> },
+    button: {
+      object: (child: any, object: any, eventContainer: any) => (
+        <DynamicComponent
+          type="attachment"
+          child={child}
+          data={object}
+          eventContainer={eventContainer}
+        />
+      ),
+    },
+    copiable: {
+      object: (_child: any, object: any) => <DynamicComponent type="copiable" data={object} />,
+    },
+    input: {
+      object: (_child: any, object: any, eventContainer: any) => (
+        <DynamicComponent type="input" data={object} eventContainer={eventContainer} />
+      ),
+    },
+    select: {
+      object: (_child: any, object: any, eventContainer: any) => (
+        <DynamicComponent type="select" data={object} eventContainer={eventContainer} />
       ),
     },
   };
+}
 
-  setUrlProtocol(url: string) {
-    let protocol = 'https';
+function setUrlProtocol(url: string) {
+  let protocol = 'https';
 
-    if ((url || '').indexOf('http://') >= 0) {
-      protocol = 'http';
-    }
-    return protocol + '://' + (url || '').replace(/^(https?:\/\/)/, '');
+  if ((url || '').indexOf('http://') >= 0) {
+    protocol = 'http';
   }
+  return protocol + '://' + (url || '').replace(/^(https?:\/\/)/, '');
 }
 
 const service = new PseudoMarkdownDictionary();

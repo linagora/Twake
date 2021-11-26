@@ -31,18 +31,16 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     <MessagesListContext.Provider value={{ hideReplies: false }}>
       <ListBuilder
         items={messages}
-        itemContent={index => {
+        itemId={m => m.threadId}
+        itemContent={(index, m) => {
+          const previous = messages[messages.map(m => m.threadId).indexOf(m.threadId) - 1];
+
+          console.log('rerender list item virtuoso');
+
           return (
-            <Suspense fallback="">
-              <TimeSeparator
-                messageId={messages[index]}
-                previousMessageId={messages[index - 1]}
-                unreadAfter={0}
-              />
-              <MessageWithReplies
-                companyId={messages[index].companyId}
-                threadId={messages[index].threadId}
-              />
+            <Suspense fallback="" key={m.threadId}>
+              <TimeSeparator messageId={m} previousMessageId={previous} unreadAfter={0} />
+              <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
             </Suspense>
           );
         }}
