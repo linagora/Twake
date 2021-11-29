@@ -20,6 +20,7 @@ import { MessageContext } from '../MessageWithReplies';
 import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import Blocks from './Blocks';
 import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 
 type Props = {
   linkToThread?: boolean;
@@ -63,7 +64,10 @@ export default (props: Props) => {
   const deleted = message.subtype === 'deleted';
 
   const location = `message-${message.id}`;
-  const { active: editorIsActive } = useVisibleMessagesEditorLocation(location);
+  const { active: editorIsActive } = useVisibleMessagesEditorLocation(
+    location,
+    useContext(ViewContext).type,
+  );
 
   const showEdition = !props.linkToThread && editorIsActive;
   const messageIsLoading = (message as any)._creating || (message as any)._updating;

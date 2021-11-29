@@ -5,6 +5,8 @@ import Languages from 'services/languages/languages';
 import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import { MessageContext } from '../MessageWithReplies';
 import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
+import Input from '../../Input/Input';
 
 type Props = {};
 
@@ -13,7 +15,7 @@ export default (props: Props) => {
   let { message } = useMessage(context);
 
   const location = `thread-${message.thread_id}`;
-  const subLocation = 'channel_view';
+  const subLocation = useContext(ViewContext).type;
   const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
     location,
     subLocation,
@@ -24,7 +26,13 @@ export default (props: Props) => {
   }
 
   if (editorIsActive) {
-    return <ThreadSection compact>Editor</ThreadSection>;
+    return (
+      <ThreadSection small alinea>
+        <div className="message-content">
+          <Input threadId={message?.id || ''} />
+        </div>
+      </ThreadSection>
+    );
   }
 
   return (

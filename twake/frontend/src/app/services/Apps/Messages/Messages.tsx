@@ -479,7 +479,6 @@ class Messages extends Observable {
     const channel = await this.findChannel(message.channel_id);
 
     SideViewService.select(channel.id, {
-      collection: this.getCollection(message.channel_id),
       app: { identity: { code: 'messages' } } as Application,
       context: {
         viewType: 'channel_thread',

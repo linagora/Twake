@@ -22,12 +22,13 @@ import RouterService from 'app/services/RouterService';
 import { FileType } from 'app/models/File';
 import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
+import { useMessageEditor } from 'app/state/recoil/hooks/useMessageEditor';
 
 type Props = {
   messageId?: string;
-  channelId: string;
+  channelId?: string;
   threadId: string;
-  collectionKey: string;
+  collectionKey?: string;
   onResize?: (evt: any) => void;
   onEscape?: (evt: any) => void;
   onFocus?: () => void;
@@ -44,17 +45,22 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const editorPlugins = props.editorPlugins || ['emoji', 'mention', 'channel', 'command'];
-  const editorId = `channel:${props.channelId || ''}/thread:${props.threadId || ''}/message:${
-    props.messageId || ''
-  }`;
+  const editorId = props.messageId
+    ? `edit-${props.messageId}`
+    : props.threadId
+    ? `reply-${props.threadId}`
+    : `new-${props.channelId}`;
+  const { editor, setValue } = useMessageEditor(editorId);
+
   const { uploadFiles, getOnePendingFile } = useUpload();
   const { currentUploadZoneFilesList, clearZone } = useUploadZones(editorId);
   const format = props.format || 'markdown';
   const editorRef = useRef<EditorView>(null);
   const submitRef = useRef<HTMLDivElement>(null);
   const [hasEphemeralMessage, setHasEphemeralMessage] = useState(false);
-  const messageEditorService = MessageEditorsManager.get(props.channelId);
+  const messageEditorService = MessageEditorsManager.get(props.channelId || '');
+
+  const editorPlugins = props.editorPlugins || ['emoji', 'mention', 'channel', 'command'];
   const [editorState, setEditorState] = useState(() =>
     RichTextEditorStateService.get(editorId, { plugins: editorPlugins }),
   );
@@ -63,23 +69,16 @@ export default (props: Props) => {
     setTooLong(TextCountService.getStats(editorState).isTooLong);
   }, [editorState]);
 
-  const disable_app: any = {};
-
-  messageEditorService.useListener(useState);
-
   useEffect(() => {
     focusEditor();
-
     (async () => {
-      const initialMessage = await messageEditorService.getContent(props.threadId, props.messageId);
-
-      if (initialMessage && initialMessage.length) {
+      if (editor.value && editor.value.length) {
         setEditorState(
           RichTextEditorStateService.get(editorId, {
             plugins: editorPlugins,
             clearIfExists: true,
             initialContent: RichTextEditorStateService.getDataParser(editorPlugins).fromString(
-              initialMessage,
+              editor.value,
               format,
             ),
           }),
@@ -88,6 +87,8 @@ export default (props: Props) => {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const disable_app: any = {};
 
   useEffect(() => {
     if (props.editorState && props.editorState !== editorState) {
@@ -119,14 +120,14 @@ export default (props: Props) => {
       return;
     }
     disable_app[app.id] = new Date().getTime();
-    MessagesService.triggerApp(props.channelId, props.threadId, app, from_icon, evt);
+    MessagesService.triggerApp(props.channelId || '', props.threadId, app, from_icon, evt);
   };
 
   const sendMessage = (messageContent: string, editorId: string) => {
     if (!props.threadId) {
       messageEditorService.closeEditor();
     }
-    MessagesService.iamWriting(props.channelId, props.threadId, false);
+    MessagesService.iamWriting(props.channelId || '', props.threadId, false);
     MessagesService.sendMessage(
       messageContent,
       {
@@ -134,7 +135,7 @@ export default (props: Props) => {
         parent_message_id: props.threadId || '',
         editor_id: editorId,
       },
-      props.collectionKey,
+      props.collectionKey || '',
       currentUploadZoneFilesList,
     ).then((message: any) => {
       clearZone(editorId);
@@ -185,18 +186,12 @@ export default (props: Props) => {
   };
 
   const onChange = async (editorState: EditorState) => {
-    await messageEditorService.setContent(
-      props.threadId,
-      props.messageId || '',
-      getContentOutput(editorState),
-    );
-
+    setValue(getContentOutput(editorState));
     if (props.onChange) {
       props.onChange(editorState);
       return;
     }
     setRichTextEditorState(editorState);
-    //props.onChange && props.onChange(editorState);
   };
 
   const onFilePaste = (files: Blob[]) => {
@@ -230,15 +225,7 @@ export default (props: Props) => {
 
   const disabled = isEmpty() || isTooLong;
   return (
-    <div
-      className={classNames('message-input', {
-        unfocused:
-          messageEditorService.currentEditor !==
-          messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context),
-      })}
-      ref={props.ref}
-      onClick={() => focus()}
-    >
+    <div className={'message-input'} ref={props.ref} onClick={() => focus()}>
       <UploadZone
         className="upload-zone-centerer"
         ref={setUploadZoneRef}
@@ -254,9 +241,9 @@ export default (props: Props) => {
         onAddFiles={onAddFiles}
       >
         <EphemeralMessages
-          channelId={props.channelId}
+          channelId={props.channelId || ''}
           threadId={props.threadId}
-          collectionKey={props.collectionKey}
+          collectionKey={props.collectionKey || ''}
           onHasEphemeralMessage={() => {
             if (!hasEphemeralMessage) {
               setHasEphemeralMessage(true);
@@ -283,15 +270,11 @@ export default (props: Props) => {
               onSubmit={() => onSend()}
               onUpArrow={e => onUpArrow(e)}
               onFilePaste={onFilePaste}
-              placeholder={Languages.t(
-                'scenes.apps.messages.input.placeholder',
-                [],
-                'Write a message. Use @ to quote a user.',
-              )}
+              placeholder={Languages.t('scenes.apps.messages.input.placeholder')}
             />
             {!isEditing() && (
               <Tooltip
-                title={Languages.t('scenes.apps.messages.input.send_message', [], 'Send message')}
+                title={Languages.t('scenes.apps.messages.input.send_message')}
                 placement="top"
               >
                 <div
@@ -320,7 +303,7 @@ export default (props: Props) => {
         {!hasEphemeralMessage && !props.messageId && (
           <InputOptions
             isEmpty={isEmpty()}
-            channelId={props.channelId}
+            channelId={props.channelId || ''}
             threadId={props.threadId}
             onSend={() => onSend()}
             triggerApp={(app, fromIcon, evt) => triggerApp(app, fromIcon, evt)}

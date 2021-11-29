@@ -23,6 +23,8 @@ import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
 import _ from 'lodash';
 import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
+import SideViewService from 'app/services/AppView/SideViewService';
 
 type Props = {
   onOpen?: () => void;
@@ -37,8 +39,10 @@ export default (props: Props) => {
   let { message, react, remove, pin } = useMessage(context);
 
   const location = `message-${message.id}`;
-  const { active: editorIsActive, set: setVisibleEditor } =
-    useVisibleMessagesEditorLocation(location);
+  const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
+    location,
+    useContext(ViewContext).type,
+  );
 
   const menu: any[] = [];
 
@@ -235,8 +239,13 @@ export default (props: Props) => {
           <div
             className="option"
             onClick={() => {
-              //TODO
-              //MessagesService.showMessage(message.parent_message_id || message.id);
+              SideViewService.select(channelId, {
+                app: { identity: { code: 'messages' } } as Application,
+                context: {
+                  viewType: 'channel_thread',
+                  threadId: message.thread_id || message.id,
+                },
+              });
             }}
           >
             <ArrowUpRight size={16} />

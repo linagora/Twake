@@ -14,11 +14,13 @@ type Props = {
   withAvatar?: boolean;
   pinned?: boolean;
   className?: string;
+  onClick?: any;
 };
 
 export default (props: Props) => {
   return (
     <div
+      onClick={props.onClick}
       className={
         'thread-section ' +
         (props.compact ? 'compact ' : '') +

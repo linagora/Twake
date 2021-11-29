@@ -35,8 +35,6 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
         itemContent={(index, m) => {
           const previous = messages[messages.map(m => m.threadId).indexOf(m.threadId) - 1];
 
-          console.log('rerender list item virtuoso');
-
           return (
             <Suspense fallback="" key={m.threadId}>
               <TimeSeparator messageId={m} previousMessageId={previous} unreadAfter={0} />

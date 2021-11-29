@@ -81,6 +81,12 @@
     padding: 5px;
     border-radius: var(--border-radius-base);
     position: relative;
+
+    pre {
+      max-height: 360px;
+      overflow: auto;
+    }
+
     .hljs {
       border-radius: 6px;
     }

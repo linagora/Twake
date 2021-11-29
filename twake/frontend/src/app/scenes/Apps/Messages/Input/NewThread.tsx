@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { PlusCircle } from 'react-feather';
 import Thread from '../Parts/Thread';
 import ThreadSection from '../Parts/ThreadSection';
@@ -6,6 +6,8 @@ import Input from './Input';
 import Languages from 'services/languages/languages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import './Input.scss';
+import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
 
 type Props = {
   useButton?: boolean;
@@ -15,25 +17,21 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const messageEditorService = MessageEditorsManager.get(props.channelId);
-  messageEditorService.useListener(useState);
+  const location = `new-thread-${props.threadId || props.channelId}`;
+  const subLocation = useContext(ViewContext).type;
+  const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
+    location,
+    subLocation,
+  );
 
-  /* eslint-disable react-hooks/exhaustive-deps */
-  useEffect(() => {
-    if (!props.useButton && messageEditorService.currentEditor === false) {
-      messageEditorService.openEditor(props.threadId, '', 'main');
-    }
-  }, []);
-  /* eslint-enable react-hooks/exhaustive-deps */
-
-  if (messageEditorService.currentEditor !== props.threadId + '_main' && props.useButton) {
+  if (!editorIsActive && props.useButton) {
     return (
       <Thread withBlock className="new-thread-button">
         <ThreadSection
           noSenderSpace
-          className={
-            '' /*onClick={() => messageEditorService.openEditor(props.threadId, '', 'main')}*/
-          }
+          onClick={() => {
+            setVisibleEditor({ location, subLocation });
+          }}
         >
           <PlusCircle size={16} className="plus-icon" />{' '}
           {Languages.t('scenes.apps.messages.new_thread', [], 'Start a new discussion')}
@@ -44,13 +42,7 @@ export default (props: Props) => {
     return (
       <Thread withBlock className="new-thread">
         <ThreadSection noSenderSpace>
-          <Input
-            ref={node => messageEditorService.setInputNode(props.threadId, '', 'main', node)}
-            channelId={props.channelId}
-            threadId={props.threadId}
-            collectionKey={props.collectionKey}
-            context={'main'}
-          />
+          <Input channelId={props.channelId} threadId={props.threadId} />
         </ThreadSection>
       </Thread>
     );
