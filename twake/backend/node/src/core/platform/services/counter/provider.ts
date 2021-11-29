@@ -23,14 +23,18 @@ export class CounterProvider<T extends CounterEntity> {
     logger.debug(`${this.name} Created counter provider for ${this.repository.table}`);
   }
 
-  increase(pk: Partial<T>, value: number): Promise<void> {
+  async increase(pk: Partial<T>, value: number): Promise<void> {
     return this.repository.save(this.repository.createEntityFromObject({ value, ...pk }));
   }
 
   async get(pk: Partial<T>): Promise<number> {
-    const counter = await this.repository.findOne(pk);
-    const val = counter ? counter.value : 0;
-    return this.revise(pk, val);
+    try {
+      const counter = await this.repository.findOne(pk);
+      const val = counter ? counter.value : 0;
+      return this.revise(pk, val);
+    } catch (e) {
+      throw e;
+    }
   }
 
   reviseCounter(
