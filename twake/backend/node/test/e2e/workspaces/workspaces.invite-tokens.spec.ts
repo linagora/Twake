@@ -446,7 +446,7 @@ describe("The /workspaces API (invite tokens)", () => {
         workspace: {
           name: "FirstWorkspace",
         },
-        auth_url: expect.any(String),
+        auth_required: true,
       });
 
       done();
@@ -475,6 +475,7 @@ describe("The /workspaces API (invite tokens)", () => {
         workspace: {
           name: "FirstWorkspace",
         },
+        auth_required: false,
       });
 
       done();
@@ -505,6 +506,7 @@ describe("The /workspaces API (invite tokens)", () => {
           id: workspaceId,
           name: "FirstWorkspace",
         },
+        auth_required: false,
       });
 
       done();

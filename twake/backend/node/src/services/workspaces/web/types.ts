@@ -128,5 +128,5 @@ export interface WorkspaceJoinByTokenResponse {
     id?: string;
     name: string;
   };
-  auth_url?: string;
+  auth_required: boolean;
 }
