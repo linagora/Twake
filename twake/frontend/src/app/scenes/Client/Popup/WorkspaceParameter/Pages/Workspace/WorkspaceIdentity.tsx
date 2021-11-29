@@ -19,7 +19,10 @@ const { Text, Title, Link } = Typography;
 
 const MAX_LOGO_FILE_SIZE = 5000000;
 const ALLOWED_LOGO_FORMATS = ['image/gif', 'image/jpeg', 'image/png'];
-
+/**
+ *
+ * Les nouveau membres de l'entreprise seront également invités à cet espace de travail.
+ */
 export default () => {
   const uploadInputRef = useRef<HTMLInputElement>();
   const [workspace, setWorkspace] = useCurrentWorkspace();
@@ -160,10 +163,7 @@ export default () => {
                   onClick={() => uploadInputRef.current?.click()}
                 >
                   {workspace?.logo && workspace?.logo.length > 0 ? (
-                    <AvatarComponent
-                      size={64}
-                      url={addApiUrlIfNeeded(workspace.logo, false, false)}
-                    />
+                    <AvatarComponent size={64} url={addApiUrlIfNeeded(workspace.logo)} />
                   ) : (
                     <Avatar
                       size={64}

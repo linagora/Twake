@@ -1,10 +1,6 @@
 import Globals from 'services/Globals';
 
-export function addApiUrlIfNeeded(
-  url: string,
-  asCssUrl?: boolean,
-  withSeparator: boolean = true,
-): string {
+export function addApiUrlIfNeeded(url: string, asCssUrl?: boolean): string {
   function _wrap(url: string): string {
     return asCssUrl ? `url('${url}')` : url;
   }
@@ -17,7 +13,7 @@ export function addApiUrlIfNeeded(
     return _wrap(url);
   }
 
-  return _wrap(`${Globals.api_root_url}${withSeparator ? '/' : ''}${url}`);
+  return _wrap(`${Globals.api_root_url}${url}`).replace(/\/+/g, '/');
 }
 
 export function getAsFrontUrl(path: string): string {
