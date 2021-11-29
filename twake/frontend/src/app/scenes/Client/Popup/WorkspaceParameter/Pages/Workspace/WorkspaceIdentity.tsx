@@ -8,33 +8,33 @@ import { useCurrentWorkspace } from 'app/state/recoil/hooks/useCurrentWorkspace'
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import ModalManager from 'app/components/Modal/ModalManager';
 import DeleteWorkspacePopup from './DeleteWorkspacePopup';
-import { WorkspaceType } from 'app/models/Workspace';
-import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
+import WorkspaceAPIClient, {
+  WorkspaceUpdateResource,
+} from 'app/services/workspaces/WorkspaceAPIClient';
 import { ToasterService as Toaster } from 'app/services/Toaster';
+import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 
 const { Item } = Descriptions;
 const { Text, Title, Link } = Typography;
 
 const MAX_LOGO_FILE_SIZE = 5000000;
 const ALLOWED_LOGO_FORMATS = ['image/gif', 'image/jpeg', 'image/png'];
-
+/**
+ *
+ * Les nouveau membres de l'entreprise seront également invités à cet espace de travail.
+ */
 export default () => {
   const uploadInputRef = useRef<HTMLInputElement>();
-  const workspace = useCurrentWorkspace();
+  const [workspace, setWorkspace] = useCurrentWorkspace();
   const [workspaceName, setWorkspaceName] = useState<string | undefined>(workspace?.name);
 
-  const onClickUpdateWorkspace = async (
-    partials: Partial<WorkspaceType> & { logo_b64?: string },
-  ) => {
-    const updatedObject: Pick<WorkspaceType, 'name' | 'logo' | 'default' | 'archived'> & {
-      logo_b64?: string;
-    } = {
-      name: partials.name || workspace?.name || '',
-      default: partials.default || workspace?.default || false,
-      logo: partials.logo || workspace?.logo || '',
-      archived: partials.archived || workspace?.archived || false,
-      logo_b64: partials.logo_b64 || '',
-    };
+  const onClickUpdateWorkspace = async (partials: WorkspaceUpdateResource) => {
+    const updatedObject: WorkspaceUpdateResource = {};
+
+    partials.name && (updatedObject.name = partials.name);
+    partials.default !== undefined && (updatedObject.default = partials.default);
+    partials.logo && (updatedObject.logo = partials.logo);
+    partials.logo_b64 && (updatedObject.logo_b64 = partials.logo_b64);
 
     if (workspace) {
       try {
@@ -45,7 +45,8 @@ export default () => {
         );
 
         if (res) {
-          setWorkspaceName(res.name);
+          res && setWorkspace(res);
+          res.name && setWorkspaceName(res.name);
           return res;
         }
       } catch (e) {
@@ -61,12 +62,16 @@ export default () => {
       if (file && workspace) {
         if (file.size > MAX_LOGO_FILE_SIZE) {
           throw new Error(
-            'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size',
+            Languages.t(
+              'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size',
+            ),
           );
         }
         if (!ALLOWED_LOGO_FORMATS.includes(file.type)) {
           throw new Error(
-            'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format',
+            Languages.t(
+              'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format',
+            ),
           );
         }
 
@@ -86,7 +91,9 @@ export default () => {
         const res = await onClickUpdateWorkspace({ logo_b64: await getBase64(file) });
         if (!res) {
           throw new Error(
-            'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown',
+            Languages.t(
+              'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown',
+            ),
           );
         }
       }
@@ -155,8 +162,8 @@ export default () => {
                   className="workspace-logo-column"
                   onClick={() => uploadInputRef.current?.click()}
                 >
-                  {workspace?.logo && workspace.logo.length > 0 ? (
-                    <AvatarComponent size={64} url={workspace.logo} />
+                  {workspace?.logo && workspace?.logo.length > 0 ? (
+                    <AvatarComponent size={64} url={addApiUrlIfNeeded(workspace.logo)} />
                   ) : (
                     <Avatar
                       size={64}
@@ -195,9 +202,7 @@ export default () => {
                         }
 
                         // Delete workspace logo
-                        if (workspace?.logo) {
-                          onClickUpdateWorkspace({ logo: '' });
-                        }
+                        onClickUpdateWorkspace({ logo: uploadInputRef.current?.value });
                       }}
                     >
                       {Languages.t('general.delete')}
@@ -224,7 +229,7 @@ export default () => {
                 <Col>
                   <Switch
                     defaultChecked={workspace?.default}
-                    onChange={e => onClickUpdateWorkspace({ default: !workspace?.default })}
+                    onChange={e => onClickUpdateWorkspace({ default: e })}
                   />
                 </Col>
               </Row>
