@@ -1,14 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react';
-import { MagicLinksJoinService, MagicLinksJoinResponse } from 'services/MagicLinks/MagicLinks';
-import './Join.scss';
-import { Layout, Row, Col, Space, Typography, Button, Divider, message } from 'antd';
-import { useParams } from 'react-router-dom';
-import WorkspaceAPIClient from 'services/workspaces/WorkspaceAPIClient';
-import WorkspacesService from 'services/workspaces/workspaces';
-import Languages from 'services/languages/languages';
-import RouterService from 'services/RouterService';
-
+import React, { useEffect, useState } from "react";
+import { MagicLinksJoinResponse, MagicLinksJoinService } from "services/MagicLinks/MagicLinks";
+import "./Join.scss";
+import { Button, Col, Divider, Layout, Row, Space, Typography } from "antd";
+import { useParams } from "react-router-dom";
+import Languages from "services/languages/languages";
+import RouterService from "services/RouterService";
+import { useCookies } from "react-cookie";
+import InitService from 'services/InitService';
 
 const { Title, Text } = Typography;
 
@@ -27,21 +26,28 @@ export default (props: PropsType): JSX.Element => {
   const [error, setError] = useState<JoinError>();
   const [info, setInfo] = useState<MagicLinksJoinResponse>();
   const [busy, setBusy] = useState<boolean>(false);
+  const [cookies, setCookie] = useCookies(['pending-redirect']);
 
   const params = useParams() as any;
   let service = new MagicLinksJoinService(params.token, (val: boolean) => setBusy(val));
 
   useEffect(() => {
-    service.getInfo().then(info => setInfo(info)).catch(() => setError({title: Languages.t("scenes.join.wrong_link_title"), description: Languages.t("scenes.join.wrong_link_description")}));
+    service.getInfo().then(info => {
+      setInfo(info);
+    }).catch(() => setError({title: Languages.t("scenes.join.wrong_link_title"), description: Languages.t("scenes.join.wrong_link_description")}));
   }, []);
 
 
   const onJoinAccountBtnClick = () => {
     if (!info) return null;
 
-    if (info.auth_url) {
+    if (info.auth_required) {
+      const origin = document.location.origin;
+      const currentPage = document.location.href;
+      const authUrl = `${InitService.server_infos?.configuration?.accounts?.console?.authority}/oauth2/authorize?invite=0&redirect_uri=${origin}`;
+      setCookie("pending-redirect", currentPage, {path: "/", maxAge : 60*60});
       setBusy(true);
-      document.location.href = info.auth_url;
+      document.location.href = authUrl;
     } else {
       service.join().then(resource => {
         setBusy(true);
@@ -72,7 +78,7 @@ export default (props: PropsType): JSX.Element => {
             <Title>{Languages.t("scenes.join.join_workspace_from_company", [info.company.name, info.workspace.name])} <span role="img" aria-label="">👋</span></Title>
             <Text>{Languages.t("scenes.join.twake_description")}</Text>
             <Divider />
-            {info.auth_url
+            {info.auth_required
               ? <Button disabled={busy} loading={busy} type="primary" className="gray-btn" onClick={onJoinAccountBtnClick}>{Languages.t("scenes.join.login_first_button")}</Button>
               : <Button disabled={busy} loading={busy} type="primary" onClick={onJoinAccountBtnClick}>{Languages.t("scenes.join.join_the_team_button")}</Button>
             }
