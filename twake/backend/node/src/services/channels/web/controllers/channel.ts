@@ -7,14 +7,14 @@ import {
   ChannelMember,
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
-  UserChannel,
   getChannelPendingEmailsInstance,
+  UserChannel,
 } from "../../entities";
 import {
-  ChannelService,
-  ChannelPrimaryKey,
-  MemberService,
   ChannelPendingEmailService,
+  ChannelPrimaryKey,
+  ChannelService,
+  MemberService,
 } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
@@ -38,15 +38,17 @@ import {
 } from "../../../../utils/types";
 import { getLogger } from "../../../../core/platform/framework/logger";
 import _ from "lodash";
+import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
+import { ChannelUserCounterType } from "../../entities/channel_counters";
 
 const logger = getLogger("channel.controller");
 
 export class ChannelCrudController
   implements
     CrudController<
-      ResourceGetResponse<Channel>,
-      ResourceCreateResponse<Channel>,
-      ResourceListResponse<Channel>,
+      ResourceGetResponse<ChannelObject>,
+      ResourceCreateResponse<ChannelObject>,
+      ResourceListResponse<ChannelObject>,
       ResourceDeleteResponse
     >
 {
@@ -67,7 +69,9 @@ export class ChannelCrudController
   async get(
     request: FastifyRequest<{ Querystring: ChannelListQueryParameters; Params: ChannelParameters }>,
     reply: FastifyReply,
-  ): Promise<ResourceGetResponse<Channel>> {
+  ): Promise<ResourceGetResponse<ChannelObject>> {
+    const context = getExecutionContext(request);
+
     let channel = await this.service.get(this.getPrimaryKey(request), getExecutionContext(request));
 
     if (!channel) {
@@ -92,9 +96,32 @@ export class ChannelCrudController
         getExecutionContext(request),
       );
 
+    const member = await this.membersService.get(
+      _.assign(new ChannelMember(), {
+        channel_id: channel.id,
+        workspace_id: channel.workspace_id,
+        company_id: channel.company_id,
+        user_id: context.user.id,
+      }),
+      getChannelExecutionContext(request, channel),
+    );
+
     return {
       websocket: getWebsocketInformation(channel),
-      resource: channel,
+      resource: ChannelObject.mapTo(channel, {
+        user_member: ChannelMemberObject.mapTo(member),
+        stats: {
+          members: await this.membersService.getUsersCount(
+            channel.id,
+            ChannelUserCounterType.MEMBERS,
+          ),
+          guests: await this.membersService.getUsersCount(
+            channel.id,
+            ChannelUserCounterType.GUESTS,
+          ),
+          messages: 0,
+        },
+      }),
     };
   }
 
@@ -117,7 +144,7 @@ export class ChannelCrudController
       Querystring: { include_users: boolean };
     }>,
     reply: FastifyReply,
-  ): Promise<ResourceCreateResponse<Channel>> {
+  ): Promise<ResourceCreateResponse<ChannelObject>> {
     const entity = plainToClass(Channel, {
       ...request.body.resource,
       ...{
@@ -160,7 +187,7 @@ export class ChannelCrudController
       if (request.query.include_users)
         entityWithUsers = await this.service.includeUsersInDirectChannel(entityWithUsers, context);
 
-      let resultEntity = {
+      const resultEntity = {
         ...entityWithUsers,
         ...{ user_member: member },
       } as unknown as UserChannel;
@@ -171,7 +198,7 @@ export class ChannelCrudController
 
       return {
         websocket: getWebsocketInformation(channelResult.entity),
-        resource: resultEntity,
+        resource: ChannelObject.mapTo(resultEntity),
       };
     } catch (err) {
       handleError(reply, err);
@@ -181,7 +208,7 @@ export class ChannelCrudController
   async update(
     request: FastifyRequest<{ Body: UpdateChannelBody; Params: ChannelParameters }>,
     reply: FastifyReply,
-  ): Promise<ResourceUpdateResponse<Channel>> {
+  ): Promise<ResourceUpdateResponse<ChannelObject>> {
     const entity = plainToClass(Channel, {
       ...request.body.resource,
       ...{
@@ -200,7 +227,7 @@ export class ChannelCrudController
 
       return {
         websocket: getWebsocketInformation(result.entity),
-        resource: result.entity,
+        resource: ChannelObject.mapTo(result.entity),
       };
     } catch (err) {
       handleError(reply, err);
@@ -212,7 +239,7 @@ export class ChannelCrudController
       Querystring: ChannelListQueryParameters;
       Params: BaseChannelsParameters;
     }>,
-  ): Promise<ResourceListResponse<Channel>> {
+  ): Promise<ResourceListResponse<ChannelObject>> {
     const context = getExecutionContext(request);
 
     //Fixme: this slow down the channel get operation. Once we stabilize the workspace:member:added event we can remove this
@@ -244,7 +271,7 @@ export class ChannelCrudController
 
     return {
       ...{
-        resources: entities,
+        resources: entities.map(a => ChannelObject.mapTo(a)),
       },
       ...(request.query.websockets && {
         websockets: getWorkspaceRooms(request.params, request.currentUser),

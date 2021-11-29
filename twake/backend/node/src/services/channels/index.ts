@@ -1,14 +1,12 @@
-import WebServerAPI from "../../core/platform/services/webserver/provider";
-import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
+import { Consumes, Prefix, TwakeService } from "../../core/platform/framework";
 import ChannelServiceAPI from "./provider";
 import { getService } from "./services";
 import web from "./web/index";
-import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 import UserServiceAPI from "../user/api";
+import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
 
 @Prefix("/internal/services/channels/v1")
-@Consumes(["webserver", "database", "pubsub", "user"])
+@Consumes(["platform-services", "user"])
 export default class ChannelService extends TwakeService<ChannelServiceAPI> {
   version = "1";
   name = "channels";
@@ -19,12 +17,10 @@ export default class ChannelService extends TwakeService<ChannelServiceAPI> {
   }
 
   public async doInit(): Promise<this> {
-    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
-    const database = this.context.getProvider<DatabaseServiceAPI>("database");
-    const pubsub = this.context.getProvider<PubsubServiceAPI>("pubsub");
+    const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
+    const fastify = platformServices.fastify.getServer();
     const user = this.context.getProvider<UserServiceAPI>("user");
-
-    this.service = getService(database, pubsub, user);
+    this.service = getService(platformServices, user);
     this.service.init && (await this.service.init());
 
     fastify.register((instance, _opts, next) => {

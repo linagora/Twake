@@ -5,17 +5,17 @@ import {
   Pagination,
   UpdateResult,
 } from "../../core/platform/framework/api/crud-service";
-import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
+import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import {
-  ChannelTab,
-  ChannelTabPrimaryKey,
   Channel,
   ChannelMember,
   ChannelMemberPrimaryKey,
-  DefaultChannel,
-  DefaultChannelPrimaryKey,
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
+  ChannelTab,
+  ChannelTabPrimaryKey,
+  DefaultChannel,
+  DefaultChannelPrimaryKey,
   UsersIncludedChannel,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
@@ -25,6 +25,7 @@ import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
 import { NewUserInWorkspaceNotification } from "./services/channel/types";
+import { ChannelUserCounterType } from "./entities/channel_counters";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -189,6 +190,8 @@ export interface MemberService
     user: Pick<User, "id">,
     channels: ChannelPrimaryKey[],
   ): Promise<ListResult<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
+
+  getUsersCount(channelId: string, type: ChannelUserCounterType): Promise<number>;
 }
 
 export interface TabService
