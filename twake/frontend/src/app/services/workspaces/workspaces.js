@@ -86,6 +86,7 @@ class Workspaces extends Observable {
 
   updateCurrentCompanyId(companyId, notify = false) {
     if (this.currentGroupId !== companyId && companyId) {
+      Groups.currentGroupId = companyId;
       this.currentGroupId = companyId;
       notify && this.notify();
     }

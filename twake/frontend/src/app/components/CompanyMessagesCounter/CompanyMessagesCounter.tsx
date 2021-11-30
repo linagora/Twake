@@ -15,8 +15,6 @@ const CompanyMessagesCounter = () => {
 
   const { company } = useCurrentCompany();
 
-  console.log('CompanyMessagesCounter', company);
-
   const companySubscriptionUrl =
     InitService.server_infos?.configuration.accounts.console?.company_subscription_url || '';
 
