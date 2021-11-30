@@ -19,7 +19,5 @@ export const useCurrentUser = () => {
     }
   }, [user]);
 
-  console.log('useCurrentUser ', user);
-
   return { user, setUser, refresh };
 };

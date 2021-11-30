@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import { capitalize } from 'lodash';
 
@@ -7,13 +7,14 @@ import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import RouterService from 'app/services/RouterService';
 import Languages from 'services/languages/languages';
+import PopupService from 'services/popupManager/popupManager.js';
 
 import './styles.scss';
 import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
 
 type MenuObjectType = { [key: string]: any };
 
-export default () => {
+export default ({ children }: { children?: ReactNode }) => {
   const { user } = useCurrentUser();
 
   return (
@@ -54,6 +55,7 @@ export default () => {
               </div>
             ),
             onClick: () => {
+              PopupService.closeAll();
               RouterService.push(
                 RouterService.generateRouteFromState(
                   {
@@ -67,7 +69,8 @@ export default () => {
       ]}
       position="top"
     >
-      <CurrentCompanyLogo />
+      {!children && <CurrentCompanyLogo />}
+      {!!children && children}
     </Menu>
   );
 };

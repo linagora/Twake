@@ -13,7 +13,7 @@ import workspacesUsers from './workspaces_users.ts';
 import WindowService from 'services/utils/window';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
-import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
+import NoWorkspaces from 'app/scenes/Client/WorkspacesBar/Components/NoWorkspaces/NoWorkspaces';
 import UserNotifications from 'app/services/user/UserNotifications';
 import AccessRightsService from 'services/AccessRightsService';
 import loginService from 'app/services/login/LoginService';
@@ -38,7 +38,8 @@ class Workspaces extends Observable {
 
     this.user_workspaces = {};
     this.getting_details = {};
-    this.showWelcomePage = false;
+    this.showNoWorkspacesPage = false;
+    this.showNoCompaniesPage = false;
     this.loading = false;
 
     this.url_values = WindowService.getInfoFromUrl() || {};
@@ -99,7 +100,7 @@ class Workspaces extends Observable {
     const bestCandidateWorkspace = getBestCandidateWorkspace(user);
 
     if (!bestCandidateWorkspace) {
-      this.openWelcomePage();
+      this.openNoWorkspacesPage();
     }
 
     if (bestCandidateWorkspace.id !== this.currentWorkspaceId) {
@@ -125,7 +126,7 @@ class Workspaces extends Observable {
         !workspace ||
         DepreciatedCollections.get('users').known_objects_by_id[User.getCurrentUserId()]?.is_new
       ) {
-        this.openWelcomePage();
+        this.openNoWorkspacesPage();
       } else if (workspaceId !== this.currentWorkspaceId) {
         this.select(workspace, true);
       }
@@ -134,21 +135,26 @@ class Workspaces extends Observable {
     return;
   }
 
-  openWelcomePage(page) {
-    this.showWelcomePage = true;
+  openNoWorkspacesPage() {
+    this.showNoWorkspacesPage = true;
     this.notify();
-    popupManager.open(<WelcomePage />, false, 'workspace_parameters');
+    popupManager.open(<NoWorkspaces />, false, 'no_workspace_parameters');
   }
 
-  closeWelcomePage(forever) {
-    if (forever) {
-      Api.post('/ajax/users/set/isNew', { value: false }, function (res) {});
-      DepreciatedCollections.get('users').updateObject({
-        id: User.getCurrentUserId(),
-        isNew: false,
-      });
-    }
-    this.showWelcomePage = false;
+  closeNoWorkspacesPage() {
+    this.showNoWorkspacesPage = false;
+    popupManager.close();
+    this.notify();
+  }
+
+  openNoCompaniesPage() {
+    this.showNoCompaniesPage = true;
+    this.notify();
+    popupManager.open(<NoCompanies />, false, 'no_companies_parameters');
+  }
+
+  closeNoCompaniesPage() {
+    this.showNoCompaniesPage = false;
     popupManager.close();
     this.notify();
   }

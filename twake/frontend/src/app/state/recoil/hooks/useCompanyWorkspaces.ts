@@ -10,6 +10,8 @@ import { RealtimeResources } from 'app/services/Realtime/types';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import useRouterWorkspace from './useRouterWorkspace';
 import RouterService from 'app/services/RouterService';
+import _ from 'lodash';
+import WorkspacesService from 'services/workspaces/workspaces.js';
 
 type WorkspacesResources = RealtimeResources<WorkspaceType>;
 
@@ -56,10 +58,12 @@ export const useCompanyWorkspaces = (
     }
 
     // TODO: To be deleted when workspaces collections are not used anymore
-    Collections.get('workspaces').updateObject({
-      id: workspace.id,
-      name: workspace.name,
-    });
+    Collections.get('workspaces').updateObject(
+      _.cloneDeep({
+        id: workspace.id,
+        name: workspace.name,
+      }),
+    );
   };
 
   useRealtimeRoom<WorkspaceType>(roomName, 'useCompanyWorkspaces', (action, resource) => {
@@ -70,12 +74,17 @@ export const useCompanyWorkspaces = (
     }
   });
 
-  if (!routerWorkspaceId) {
+  if (!routerWorkspaceId && workspaces?.[0]?.id) {
     RouterService.push(
       RouterService.generateRouteFromState({
-        workspaceId: workspaces[0].id,
+        workspaceId: workspaces?.[0]?.id,
       }),
     );
+  }
+
+  //If there is no company for this user, display the no company page
+  if (workspaces.length === 0) {
+    WorkspacesService.openNoWorkspacesPage();
   }
 
   return [workspaces, addOrUpdate, get];

@@ -15,6 +15,9 @@ type Props = {
  * Instanciate a Messages component with a good unicity key
  */
 export default (props: Props) => {
+  if (!props.channel) {
+    return <></>;
+  }
   return (
     <Messages
       channel={props.channel}

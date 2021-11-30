@@ -19,10 +19,7 @@ import LocalStorage from './LocalStorage';
 import WebSocket from './WebSocket/WebSocket';
 import RouterService from './RouterService';
 import CompanyAPIClient from './CompanyAPIClient';
-import {
-  getBestCandidateWorkspace,
-  getBestCandidateCompany,
-} from 'app/state/recoil/utils/BestCandidateUtils';
+import { getBestCandidateWorkspace } from 'app/state/recoil/utils/BestCandidateUtils';
 
 class Application {
   private logger: Logger.Logger;
@@ -47,8 +44,6 @@ class Application {
     this.configureCollections(user);
 
     WorkspacesListener.startListen();
-
-    DepreciatedCollections.get('users').updateObject(user);
     AccessRightsService.resetLevels();
 
     await this.setupWorkspaces(user);
@@ -106,11 +101,8 @@ class Application {
    * @param user
    */
   private async setupWorkspaces(user: UserType) {
-    const bestCandidateCompany = getBestCandidateCompany(user);
-
-    const company = bestCandidateCompany?.id
-      ? await CompanyAPIClient.get(bestCandidateCompany.id)
-      : undefined;
+    const companyId = RouterService.getStateFromRoute().companyId;
+    const company = companyId ? await CompanyAPIClient.get(companyId) : undefined;
 
     if (!company) return this.logger.error(`Error, company is ${company}`);
 

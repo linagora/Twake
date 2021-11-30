@@ -3,6 +3,7 @@ import { atomFamily } from 'recoil';
 import UserAPIClient from 'app/services/user/UserAPIClient';
 import { UserType } from 'app/models/User';
 import Collections from 'app/services/Depreciated/Collections/Collections';
+import _ from 'lodash';
 
 export const UsersState = atomFamily<UserType, string>({
   key: 'UsersState',
@@ -11,7 +12,7 @@ export const UsersState = atomFamily<UserType, string>({
   //Retro-compatibility
   effects_UNSTABLE: () => [
     ({ onSet }) => {
-      onSet(user => Collections.get('users').updateObject(user));
+      onSet(user => Collections.get('users').updateObject(_.cloneDeep(user)));
     },
   ],
 });
