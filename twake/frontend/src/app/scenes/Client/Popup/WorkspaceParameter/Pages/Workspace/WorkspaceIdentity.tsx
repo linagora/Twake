@@ -4,7 +4,7 @@ import { isEqual } from 'lodash';
 import { Avatar, Button, Col, Descriptions, Divider, Input, Row, Switch, Typography } from 'antd';
 
 import Languages from 'services/languages/languages';
-import { useCurrentWorkspace } from 'app/state/recoil/hooks/useCompanyWorkspaces';
+import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import ModalManager from 'app/components/Modal/ModalManager';
 import DeleteWorkspacePopup from './DeleteWorkspacePopup';

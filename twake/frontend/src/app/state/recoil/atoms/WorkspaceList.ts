@@ -10,7 +10,7 @@ const logger = Logger.getLogger('WorkspaceListState');
 
 export const WorkspaceListStateFamily = atomFamily<WorkspaceType[], string>({
   key: 'WorkspaceListStateFamily',
-  default: companyId => (companyId ? fetchCompanyWorkspaces(companyId) : []),
+  default: () => [],
 
   //Depreciated
   effects_UNSTABLE: [
@@ -54,14 +54,6 @@ export const WorkspaceGetOrFetch = selectorFamily<
 
       return result;
     },
-});
-
-export const fetchCompanyWorkspaces = selectorFamily<WorkspaceType[], string>({
-  key: 'fetchCompanyWorkspaces',
-  get: companyId => async () => {
-    logger.debug('fetchCompanyWorkspaces', companyId);
-    return companyId ? await WorkspaceAPIClient.list(companyId) : [];
-  },
 });
 
 export const getWorkspacesForCompany = selectorFamily<WorkspaceType[], string>({

@@ -16,12 +16,11 @@ import AccessRightsService, { RightsOrNone } from 'app/services/AccessRightsServ
 import LocalStorage from 'app/services/LocalStorage';
 import useRouterCompany from './useRouterCompany';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
+import Workspaces from 'services/workspaces/workspaces.js';
 
-type WorkspacesResources = RealtimeResources<WorkspaceType>;
+const logger = Logger.getLogger('useWorkspaces');
 
-const logger = Logger.getLogger('useCompanyWorkspaces');
-
-export const useCompanyWorkspaces = (companyId: string = '') => {
+export const useWorkspaces = (companyId: string = '') => {
   const [workspaces, setWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));
 
   const routerWorkspaceId = useRouterWorkspace();
@@ -31,10 +30,12 @@ export const useCompanyWorkspaces = (companyId: string = '') => {
   const roomName = `/companies/${companyId}/workspaces`;
 
   const refresh = async () => {
-    setWorkspaces(await WorkspaceAPIClient.list(companyId));
+    const workspaces = await WorkspaceAPIClient.list(companyId);
+    setWorkspaces(workspaces);
+    if (workspaces.length === 0) WorkspacesService.openNoWorkspacesPage();
   };
 
-  useRealtimeRoom<WorkspaceType>(roomName, 'useCompanyWorkspaces', (action, resource) => {
+  useRealtimeRoom<WorkspaceType>(roomName, 'useWorkspaces', (action, resource) => {
     if (action === 'saved') {
       refresh();
     } else {
@@ -55,11 +56,7 @@ export const useCompanyWorkspaces = (companyId: string = '') => {
     Collections.get('workspaces').updateObject(_.cloneDeep(w));
     AccessRightsService.updateLevel(w.id, w.role as RightsOrNone);
   });
-
-  //If there is no company for this user, display the no company page
-  if (workspaces.length === 0) {
-    WorkspacesService.openNoWorkspacesPage();
-  }
+  //End
 
   return { workspaces, refresh };
 };
@@ -67,8 +64,15 @@ export const useCompanyWorkspaces = (companyId: string = '') => {
 export function useCurrentWorkspace() {
   const companyId = useRouterCompany();
   const routerWorkspaceId = useRouterWorkspace();
-  const { workspaces, refresh } = useCompanyWorkspaces(companyId);
-  return { workspace: workspaces.find(w => w.id == routerWorkspaceId), refresh };
+  const { workspaces, refresh } = useWorkspaces(companyId);
+  const workspace = workspaces.find(w => w.id == routerWorkspaceId);
+
+  //Retro compatibility
+  Workspaces.currentWorkspaceId = workspace?.id || '';
+  Workspaces.currentGroupId = workspace?.company_id || '';
+  //End
+
+  return { workspace, refresh };
 }
 
 /**

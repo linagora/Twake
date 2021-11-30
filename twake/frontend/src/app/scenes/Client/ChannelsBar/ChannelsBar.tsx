@@ -20,10 +20,12 @@ import AccessRightsService from 'app/services/AccessRightsService';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import './ChannelsBar.scss';
+import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 
 export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
+  const { workspace } = useCurrentWorkspace();
 
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
@@ -49,7 +51,7 @@ export default () => {
     };
   }, []);
 
-  if (!companyId || !workspaceId) {
+  if (!companyId || !workspaceId || !workspace) {
     return <></>;
   }
 

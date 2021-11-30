@@ -203,10 +203,7 @@ class RouterServices extends Observable {
       }
     });
 
-    //Retrocompatibility with old code
-    Workspaces.updateCurrentWorkspaceId(state.workspaceId, true);
-    Workspaces.updateCurrentCompanyId(state.companyId, true);
-    Groups.currentGroupId = state.companyId;
+    //Retro compatibility with old code
     Channels.currentChannelFrontId = Collections.get('channels').find(state.channelId)?.front_id;
 
     return state;
