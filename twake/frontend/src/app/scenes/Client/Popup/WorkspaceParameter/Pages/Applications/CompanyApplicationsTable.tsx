@@ -12,6 +12,7 @@ import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import Menu from 'components/Menus/Menu';
+import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
 import './ApplicationsStyles.scss';
 
@@ -103,28 +104,33 @@ export default () => {
     },
     {
       dataIndex: 'actions',
+      width: 200,
+
       render: (initialValue: any, record: ColumnObjectType, index: number) => {
         const { key, ...application } = record;
         return (
-          <>
+          <div style={{ float: 'right' }}>
             {!!application.display?.twake?.configuration?.includes('global') && (
               <Button
-                type="default"
+                type="ghost"
+                style={{ marginRight: 8 }}
                 onClick={() => {
-                  //TODO
+                  WorkspacesApps.notifyApp(application.id, 'configuration', 'workspace', {});
                 }}
               >
                 {Languages.t('scenes.app.popup.workspaceparameter.pages.configure_button')}
               </Button>
             )}
-            <Menu menu={buildMenu(application)}>
-              <Button
-                type="default"
-                icon={<MoreHorizontal size={18} />}
-                className="applications-table-actions-btn"
-              />
-            </Menu>
-          </>
+            <div style={{ display: 'inline-block' }}>
+              <Menu menu={buildMenu(application)}>
+                <Button
+                  type="default"
+                  icon={<MoreHorizontal size={18} />}
+                  className="applications-table-actions-btn"
+                />
+              </Menu>
+            </div>
+          </div>
         );
       },
     },
