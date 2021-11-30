@@ -8,11 +8,20 @@ import Workspace from './Components/Workspace/Workspace';
 import { useCompanyWorkspaces } from 'app/state/recoil/hooks/useCompanyWorkspaces';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import { LoadingWorkspaceIcon } from './Components/Workspace/WorkspaceIcon';
-import LocalStorage from 'app/services/LocalStorage';
 import CompanySelector from './Components/CompanySelector';
-import UserService from 'app/services/user/UserService';
 
 import './WorkspacesBar.scss';
+
+export default () => {
+  const companyId = useRouterCompany();
+
+  return (
+    <Layout.Sider className="workspaces_view" width={70}>
+      {companyId && companyId.length > 0 ? <WorkspaceListComponent companyId={companyId} /> : <></>}
+      <CompanySelector />
+    </Layout.Sider>
+  );
+};
 
 const WorkspaceListComponent = ({ companyId }: { companyId: string }) => {
   const [workspaces] = useCompanyWorkspaces(companyId);
@@ -22,18 +31,6 @@ const WorkspaceListComponent = ({ companyId }: { companyId: string }) => {
         <Workspace key={ws.id} workspace={ws} />
       ))}
     </PerfectScrollbar>
-  );
-};
-
-export default () => {
-  const companyId = useRouterCompany() || (LocalStorage.getItem('default_company_id') as string);
-  const currentUserId = UserService.getCurrentUserId();
-
-  return (
-    <Layout.Sider className="workspaces_view" width={70}>
-      {companyId && companyId.length > 0 ? <WorkspaceListComponent companyId={companyId} /> : <></>}
-      {currentUserId ? <CompanySelector userId={currentUserId} /> : <></>}{' '}
-    </Layout.Sider>
   );
 };
 

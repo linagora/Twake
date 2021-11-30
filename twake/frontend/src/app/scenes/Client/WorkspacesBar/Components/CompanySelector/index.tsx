@@ -1,50 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 import { capitalize } from 'lodash';
 
 import Menu from 'components/Menus/Menu';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import RouterService from 'app/services/RouterService';
-import CompanyAPIClient from 'app/services/CompanyAPIClient';
-import Groups from 'services/workspaces/groups.js';
 import Languages from 'services/languages/languages';
 
 import './styles.scss';
-import { CompanyType } from 'app/models/Company';
-import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
-
-type PropsType = {
-  userId: string;
-};
+import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
 
 type MenuObjectType = { [key: string]: any };
 
-export default ({ userId }: PropsType) => {
-  const routerCompanyId = useRouterCompany();
-  const [company] = useCurrentCompany();
-  const [menu, setMenu] = useState<MenuObjectType[]>([]);
+export default () => {
+  const { user } = useCurrentUser();
 
-  useEffect(() => {
-    buildMenu();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const buildMenu = async () => {
-    const companies = await CompanyAPIClient.listCompanies(userId);
-
-    companies.length > 0 &&
-      setMenu([
+  return (
+    <Menu
+      menu={[
         {
           type: 'title',
-          text: Languages.t(
-            'scenes.app.workspacesbar.components.change_company_title',
-            [],
-            'Change company',
-          ),
+          text: Languages.t('scenes.app.workspacesbar.components.change_company_title'),
         },
-        ...companies
+        ...(user?.companies || [])
+          .map(c => c.company)
           .sort((a, b) => a.name.localeCompare(b.name))
           .map<MenuObjectType>(c => ({
             type: 'menu',
@@ -84,24 +64,32 @@ export default ({ userId }: PropsType) => {
               );
             },
           })),
-      ]);
-  };
-
-  return company ? (
-    <Menu menu={menu} position="top">
-      <div className={classNames('company-selector-container')}>
-        <div
-          className={classNames('image', {
-            has_image: !!company.logo,
-          })}
-          style={{ backgroundImage: addApiUrlIfNeeded(company.logo, true) }}
-        >
-          {`${company.name}-`[0].toUpperCase()}
-        </div>
-        <div className="name">{company.name}</div>
-      </div>
+      ]}
+      position="top"
+    >
+      <CurrentCompanyLogo />
     </Menu>
-  ) : (
-    <></>
+  );
+};
+
+export const CurrentCompanyLogo = () => {
+  const { company } = useCurrentCompany();
+
+  if (!company) {
+    return <></>;
+  }
+
+  return (
+    <div className={classNames('company-selector-container')}>
+      <div
+        className={classNames('image', {
+          has_image: !!company.logo,
+        })}
+        style={{ backgroundImage: addApiUrlIfNeeded(company.logo, true) }}
+      >
+        {`${company.name}-`[0].toUpperCase()}
+      </div>
+      <div className="name">{company.name}</div>
+    </div>
   );
 };

@@ -7,7 +7,7 @@ import LocalStorage from 'services/LocalStorage';
 import AuthService from 'services/Auth/AuthService';
 import Application from '../Application';
 import { UserType } from 'app/models/User';
-import { Cookies} from "react-cookie";
+import { Cookies } from 'react-cookie';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -30,6 +30,8 @@ class Login extends Observable {
   parsed_error_code: any;
   error_code: any;
   cookies: Cookies;
+
+  recoilUpdateUser = (user: UserType | undefined) => {};
 
   constructor() {
     super();
@@ -78,12 +80,12 @@ class Login extends Observable {
       await AuthService.init();
 
       const redirectUrl = this.cookies.get('pending-redirect');
-      if(redirectUrl) {
-          console.log('Got pending redirect to', redirectUrl);
-          this.cookies.remove('pending-redirect');
-          setTimeout(()=>{
-            document.location.href = redirectUrl;
-          },500);
+      if (redirectUrl) {
+        console.log('Got pending redirect to', redirectUrl);
+        this.cookies.remove('pending-redirect');
+        setTimeout(() => {
+          document.location.href = redirectUrl;
+        }, 500);
       }
 
       this.updateUser((err, user) => this.logger.debug('User is updated', err, user));
@@ -99,6 +101,8 @@ class Login extends Observable {
     }
 
     AuthService.updateUser(async user => {
+      this.recoilUpdateUser(user);
+
       this.logger.debug('User update result', user);
       if (!user) {
         this.firstInit = true;

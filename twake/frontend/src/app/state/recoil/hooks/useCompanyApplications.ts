@@ -8,7 +8,7 @@ import { ToasterService as Toaster } from 'app/services/Toaster';
 import { CompanyApplicationsStateFamily } from '../atoms/CurrentCompanyApplications';
 import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
 import { Application } from 'app/models/App';
-import { useCurrentCompany } from './useCurrentCompany';
+import { useCurrentCompany } from './useCompanies';
 
 const _applications: Map<string, Application> = new Map();
 export function getApplication(applicationId?: string) {
@@ -22,7 +22,7 @@ export function getCompanyApplications(companyId?: string) {
 
 const logger = Logger.getLogger('useCompanyApplications');
 export function useCompanyApplications(companyId: string = '') {
-  const [company] = useCurrentCompany();
+  const { company } = useCurrentCompany();
   companyId = companyId || company?.id || '';
 
   const [companyApplications, setCompanyApplications] = useRecoilState(
