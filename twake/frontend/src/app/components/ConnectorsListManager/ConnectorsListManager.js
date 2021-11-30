@@ -24,7 +24,7 @@ export default class ConnectorsListManager extends React.Component {
     var list = this.props.list;
     var res = list
       .filter(el => {
-        return el.name.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) >= 0;
+        return el.identity.name.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) >= 0;
       })
       .map(el => el);
     this.setState({ filtered: res });
@@ -44,21 +44,19 @@ export default class ConnectorsListManager extends React.Component {
     text = (
       <div className="text" style={{ display: 'flex', alignItems: 'center' }}>
         {WorkspacesApps.getAppIconComponent(item)}
-        {item.name}
+        {item.identity.name}
       </div>
     );
 
     if (added) {
       button = (
         <div className="more">
-          {this.props.configurable && this.props.configurable(item) && (
-            <GearIcon
-              className="m-icon-small config"
-              onClick={() => {
-                this.props.onConfig(item);
-              }}
-            />
-          )}
+          <GearIcon
+            className="m-icon-small config"
+            onClick={() => {
+              this.props.onConfig(item);
+            }}
+          />
           <CloseIcon
             className="m-icon-small remove"
             onClick={() => {
