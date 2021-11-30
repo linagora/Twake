@@ -110,9 +110,7 @@ class Application {
 
     const notifications = await UserNotificationAPIClient.getAllCompaniesBadges();
 
-    workspaces
-      .filter(w => user.workspaces_id?.includes(w.id))
-      .forEach(w => Workspaces.addToUser(w));
+    workspaces.filter(w => user.workspaces_id?.includes(w.id));
 
     // TODO we should find a better way to do this
     // Everything related to observable takes time ...

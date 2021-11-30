@@ -12,6 +12,7 @@ import useRouterWorkspace from './useRouterWorkspace';
 import RouterService from 'app/services/RouterService';
 import _ from 'lodash';
 import WorkspacesService from 'services/workspaces/workspaces.js';
+import AccessRightsService, { RightsOrNone } from 'app/services/AccessRightsService';
 
 type WorkspacesResources = RealtimeResources<WorkspaceType>;
 
@@ -81,6 +82,12 @@ export const useCompanyWorkspaces = (
       }),
     );
   }
+
+  //Retro compatibility
+  workspaces.forEach(w => {
+    Collections.get('workspaces').updateObject(_.cloneDeep(w));
+    AccessRightsService.updateLevel(w.id, w.role as RightsOrNone);
+  });
 
   //If there is no company for this user, display the no company page
   if (workspaces.length === 0) {

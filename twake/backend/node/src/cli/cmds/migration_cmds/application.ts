@@ -110,7 +110,9 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
 
   if (!newApplication.identity?.name) {
     newApplication.identity = {
-      code: application.depreciated_simple_name || application.depreciated_name.toLocaleLowerCase(),
+      code:
+        application.depreciated_simple_name ||
+        (application.depreciated_name || "").toLocaleLowerCase(),
       name: application.depreciated_name,
       icon: application.depreciated_icon_url,
       description: application.depreciated_description,
@@ -205,7 +207,7 @@ export const importDepreciatedDisplayFields = (
 
   if (depreciatedDisplay?.drive_module) {
     display.twake.files = {
-      editor: undefined, //TODO update new format to handle file edition etc
+      editor: undefined,
       actions: [],
     };
 

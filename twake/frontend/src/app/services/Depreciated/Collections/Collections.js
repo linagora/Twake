@@ -3,6 +3,7 @@ import Collection from './Collection';
 class Collections {
   constructor() {
     this.collections = {};
+    window.dcollections = this;
   }
 
   clearAll() {

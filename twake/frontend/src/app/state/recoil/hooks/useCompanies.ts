@@ -9,6 +9,7 @@ import { useCurrentUser } from './useCurrentUser';
 import _ from 'lodash';
 import RouterService from 'app/services/RouterService';
 import WorkspacesService from 'services/workspaces/workspaces.js';
+import UserNotifications from 'app/services/user/UserNotifications';
 
 /**
  * Will return the companies of the current user
@@ -41,6 +42,7 @@ export const useCurrentCompany = () => {
 
   //Always set the current company in localstorage to open it automatically later
   if (routerCompanyId) {
+    UserNotifications.subscribeToCurrentCompanyNotifications(routerCompanyId);
     LocalStorage.setItem('default_company_id', routerCompanyId);
   }
 

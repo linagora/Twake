@@ -17,7 +17,7 @@ import './ApplicationsStyles.scss';
 
 type ColumnObjectType = { key: number } & Application;
 
-const DEFAULT_PAGE_SIZE = 5;
+const DEFAULT_PAGE_SIZE = 20;
 const { useBreakpoint } = Grid;
 export default () => {
   const { company } = useCurrentCompany();

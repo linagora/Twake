@@ -15,7 +15,7 @@ import AvatarComponent from 'app/components/Avatar/Avatar';
 import './ApplicationsStyles.scss';
 
 type ColumnObjectType = { key: number } & Application;
-const DEFAULT_PAGE_SIZE = 5;
+const DEFAULT_PAGE_SIZE = 20;
 
 export default () => {
   const { company } = useCurrentCompany();

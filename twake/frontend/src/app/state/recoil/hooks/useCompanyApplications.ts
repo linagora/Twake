@@ -3,9 +3,13 @@ import { useRecoilState } from 'recoil';
 import Logger from 'app/services/Logger';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from 'app/services/Toaster';
-import { CompanyApplicationsStateFamily } from '../atoms/CompanyApplications';
+import {
+  CompanyApplicationsStateFamily,
+  onChangeCompanyApplications,
+} from '../atoms/CompanyApplications';
 import companyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
 import { useCurrentCompany } from './useCompanies';
+import _ from 'lodash';
 const logger = Logger.getLogger('useApplications');
 
 /**
@@ -19,6 +23,8 @@ export function useCompanyApplications(companyId: string = '') {
 
   const [applications, setApplications] = useRecoilState(CompanyApplicationsStateFamily(companyId));
   const [loading, setLoading] = useState(false);
+
+  onChangeCompanyApplications(companyId, applications);
 
   const refresh = async () => {
     try {

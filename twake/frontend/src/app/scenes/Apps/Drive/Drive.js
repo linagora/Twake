@@ -69,12 +69,7 @@ export default class Drive extends Component {
     }
   }
   componentWillMount() {
-    this.drive_channel =
-      (this.props.channel || {}).id +
-      '_' +
-      (this.props.tab || {}).id +
-      '_' +
-      Workspaces.currentWorkspaceId;
+    this.drive_channel = (this.props.tab || {}).id + '_' + Workspaces.currentWorkspaceId;
 
     var currentdir = this.state.app_drive_service.current_directory_channels[this.drive_channel];
     if (currentdir && !currentdir.id) {

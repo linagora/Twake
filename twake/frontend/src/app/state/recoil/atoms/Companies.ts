@@ -7,9 +7,7 @@ import _ from 'lodash';
 
 export const CompaniesState = atomFamily<CompanyType, string>({
   key: 'CompaniesState',
-  default: id => {
-    return UserAPIClient.getCompany(id);
-  },
+  default: id => UserAPIClient.getCompany(id),
 
   //Retrocompatibility
   effects_UNSTABLE: id => [

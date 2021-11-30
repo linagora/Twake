@@ -3,6 +3,8 @@ import { AtomEffect, atomFamily, selectorFamily } from 'recoil';
 import { Application } from 'app/models/App';
 import Logger from 'app/services/Logger';
 import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
+import Collections from 'app/services/Depreciated/Collections/Collections';
+import _ from 'lodash';
 
 const logger = Logger.getLogger('CurrentCompanyApplicationsState');
 
@@ -15,20 +17,19 @@ export const getCompanyApplication = (applicationId: string) => {
 export const getCompanyApplications = (companyId: string) => {
   return companyApplicationsMap.get(companyId) || [];
 };
-const depreciatedEffect = (companyId: string): AtomEffect<Application[]>[] => [
-  ({ onSet }) => {
-    onSet((applications: Application[]) => {
-      companyApplicationsMap.set(companyId, applications);
-      (applications || []).forEach(a => companyApplicationMap.set(a.id, a));
-    });
-  },
-];
+export const onChangeCompanyApplications = (companyId: string, _applications: Application[]) => {
+  const applications = _.cloneDeep(_applications);
+  companyApplicationsMap.set(companyId, applications);
+  (applications || []).forEach(a => {
+    companyApplicationMap.set(a.id, a);
+    Collections.get('applications').updateObject(a);
+  });
+};
 //Ends retro compatibility
 
 export const CompanyApplicationsStateFamily = atomFamily<Application[], string>({
   key: 'CompanyApplicationsStateFamily',
   default: companyId => fetchCompanyApplications(companyId),
-  effects_UNSTABLE: depreciatedEffect,
 });
 
 export const fetchCompanyApplications = selectorFamily<Application[], string>({

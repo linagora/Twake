@@ -48,11 +48,13 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId, notify = false) {
+    console.log('updateCurrentWorkspaceId', workspaceId, this.currentWorkspaceId);
     if (this.currentWorkspaceId !== workspaceId && workspaceId) {
       const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
       if (!workspace) {
         return;
       }
+      console.log('updateCurrentWorkspaceId B', workspaceId);
 
       this.currentWorkspaceId = workspaceId;
       this.currentWorkspaceIdByGroup[workspace.company_id] = workspaceId;
@@ -86,7 +88,6 @@ class Workspaces extends Observable {
   updateCurrentCompanyId(companyId, notify = false) {
     if (this.currentGroupId !== companyId && companyId) {
       this.currentGroupId = companyId;
-      UserNotifications.subscribeToCurrentCompanyNotifications(companyId);
       notify && this.notify();
     }
   }
@@ -207,15 +208,6 @@ class Workspaces extends Observable {
     this.notify();
   }
 
-  addToUser(workspace) {
-    var id = workspace.id;
-    DepreciatedCollections.get('workspaces').updateObject(workspace);
-    this.user_workspaces[id] = DepreciatedCollections.get('workspaces').known_objects_by_id[id];
-
-    AccessRightsService.updateLevel(workspace.id, workspace.role);
-    // TODO: Move to another service
-  }
-
   removeFromUser(workspace) {
     if (!workspace) {
       return;
@@ -258,7 +250,6 @@ class Workspaces extends Observable {
     });
     var workspace = res;
     if (workspace) {
-      that.addToUser(workspace);
       //Update rights and more
       loginService.updateUser();
       if (wsMembers.length > 0) {

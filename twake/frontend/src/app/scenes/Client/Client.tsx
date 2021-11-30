@@ -56,7 +56,9 @@ export default React.memo((): JSX.Element => {
                 <SideBars />
               </Suspense>
             </Layout.Sider>
-            <MainView className={classNames({ collapsed: menuIsOpen })} />
+            <Suspense fallback={<></>}>
+              <MainView className={classNames({ collapsed: menuIsOpen })} />
+            </Suspense>
           </Layout>
         </Layout>
       );

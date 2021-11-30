@@ -8,7 +8,7 @@ import UserOnlineStatus from 'app/components/OnlineUserStatus/OnlineUserStatus';
 import { MessageContext } from '../Message/MessageWithReplies';
 import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
-import useUser from 'app/services/user/hooks/useUser';
+import { useUser } from 'app/state/recoil/hooks/useUser';
 
 type Props = {
   small?: boolean;
