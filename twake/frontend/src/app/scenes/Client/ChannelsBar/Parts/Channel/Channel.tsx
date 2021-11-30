@@ -34,13 +34,23 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const selected = useRouterChannelSelected(props.id || "");
+  const selected = useRouterChannelSelected(props.id || '');
 
   const onChannelChange = () => {
     props.id &&
       MainViewService.select(props.id, {
         collection: props.collection,
-        app: props.app,
+        app: {
+          identity: {
+            code: 'messages',
+            name: '',
+            icon: '',
+            description: '',
+            website: '',
+            categories: [],
+            compatibility: [],
+          },
+        },
         context: null,
         hasTabs: props.visibility !== 'direct' && !props.app,
       });
