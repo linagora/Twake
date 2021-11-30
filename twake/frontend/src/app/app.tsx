@@ -8,7 +8,6 @@ import Integration from 'app/scenes/Integration/Integration';
 import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
 import InitService from './services/InitService';
-import UserContext from './state/recoil/integration/UserContext';
 import useTimeout from './services/hooks/useTimeout';
 import ApplicationLoader from './components/Loader/ApplicationLoader';
 
@@ -52,7 +51,6 @@ export default () => {
 
   return (
     <RecoilRoot>
-      <UserContext />
       <Integration>
         <Router history={RouterServices.history}>
           <Switch>

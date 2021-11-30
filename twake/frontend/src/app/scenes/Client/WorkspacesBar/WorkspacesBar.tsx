@@ -27,7 +27,7 @@ const WorkspaceListComponent = ({ companyId }: { companyId: string }) => {
 
   useEffect(() => {
     refresh();
-  }, [refresh]);
+  }, [companyId]);
 
   return (
     <PerfectScrollbar component="div" className="list">

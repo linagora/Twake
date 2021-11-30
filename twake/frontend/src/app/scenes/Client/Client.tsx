@@ -20,6 +20,7 @@ import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars, { LoadingSidebar } from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
+import UserContext from 'app/state/recoil/integration/UserContext';
 
 import './Client.scss';
 import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
@@ -60,6 +61,7 @@ export default React.memo((): JSX.Element => {
               <MainView className={classNames({ collapsed: menuIsOpen })} />
             </Suspense>
           </Layout>
+          <UserContext />
         </Layout>
       );
     }

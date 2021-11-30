@@ -68,8 +68,8 @@ export function useCurrentWorkspace() {
   const workspace = workspaces.find(w => w.id == routerWorkspaceId);
 
   //Retro compatibility
-  Workspaces.currentWorkspaceId = workspace?.id || '';
-  Workspaces.currentGroupId = workspace?.company_id || '';
+  Workspaces.updateCurrentWorkspaceId(workspace?.id || '');
+  Workspaces.updateCurrentCompanyId(workspace?.company_id || '');
   //End
 
   return { workspace, refresh };

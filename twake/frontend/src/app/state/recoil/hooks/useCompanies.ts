@@ -56,7 +56,6 @@ export const useCurrentCompany = () => {
         ? 'guest'
         : 'member',
     );
-    UserNotifications.subscribeToCurrentCompanyNotifications(routerCompanyId);
     //End of depreciated
 
     LocalStorage.setItem('default_company_id', routerCompanyId);
