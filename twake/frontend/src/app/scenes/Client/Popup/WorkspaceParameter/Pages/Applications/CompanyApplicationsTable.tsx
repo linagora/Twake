@@ -9,7 +9,7 @@ import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/Modal/ModalManager';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import Menu from 'components/Menus/Menu';
 
@@ -20,7 +20,7 @@ type ColumnObjectType = { key: number } & Application;
 const DEFAULT_PAGE_SIZE = 5;
 const { useBreakpoint } = Grid;
 export default () => {
-  const [company] = useCurrentCompany();
+  const { company } = useCurrentCompany();
 
   if (!company?.id) return <></>;
 

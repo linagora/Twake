@@ -15,9 +15,11 @@ import WorkspacesListener from './workspaces/WorkspacesListener';
 import WorkspaceAPIClient from './workspaces/WorkspaceAPIClient';
 import UserNotificationAPIClient from './user/UserNotificationAPIClient';
 import { CompanyType } from 'app/models/Company';
-import { WorkspaceType } from 'app/models/Workspace';
 import LocalStorage from './LocalStorage';
 import WebSocket from './WebSocket/WebSocket';
+import RouterService from './RouterService';
+import CompanyAPIClient from './CompanyAPIClient';
+import { getBestCandidateWorkspace } from 'app/state/recoil/utils/BestCandidateUtils';
 
 class Application {
   private logger: Logger.Logger;
@@ -42,8 +44,6 @@ class Application {
     this.configureCollections(user);
 
     WorkspacesListener.startListen();
-
-    DepreciatedCollections.get('users').updateObject(user);
     AccessRightsService.resetLevels();
 
     await this.setupWorkspaces(user);
@@ -85,36 +85,57 @@ class Application {
     }
   }
 
+  /**
+   * Setup workspaces based on company id
+   *
+   * Company priority:
+   * 1. Router company id
+   * 2. Local storage company id
+   * 3. User's company with the most total members
+   *
+   * Workspace priority:
+   * 1. Router workspace id
+   * 2. Local storage workspace id
+   * 3. User's workspace with the most total members
+   *
+   * @param user
+   */
   private async setupWorkspaces(user: UserType) {
-    const companies = await WorkspaceAPIClient.listCompanies(user.id!);
-    const workspaces = new Map<string, WorkspaceType[]>();
+    const companyId = RouterService.getStateFromRoute().companyId;
+    const company = companyId ? await CompanyAPIClient.get(companyId) : undefined;
+
+    if (!company) return this.logger.error(`Error, company is ${company}`);
+
+    const workspaces = await WorkspaceAPIClient.list(company.id);
+
     const notifications = await UserNotificationAPIClient.getAllCompaniesBadges();
 
-    for (const company of companies) {
-      const companyWorkspaces = await WorkspaceAPIClient.list(company.id);
+    workspaces
+      .filter(w => user.workspaces_id?.includes(w.id))
+      .forEach(w => Workspaces.addToUser(w));
 
-      companyWorkspaces.forEach(workspace => Workspaces.addToUser(workspace));
-      workspaces.set(company.id, companyWorkspaces || []);
-      Groups.addToUser({ ...company, ...{ _user_hasnotifications: hasNotification(company) } });
+    // TODO we should find a better way to do this
+    // Everything related to observable takes time ...
+    Groups.addToUser({ ...company, ...{ _user_hasnotifications: hasNotification(company) } });
 
-      console.log(company);
-      AccessRightsService.updateCompanyLevel(
-        company.id,
-        company.role === 'admin' || company.role === 'owner'
-          ? 'admin'
-          : company.role === 'guest'
-          ? 'guest'
-          : 'member',
-      );
-    }
+    AccessRightsService.updateCompanyLevel(
+      company.id,
+      company.role === 'admin' || company.role === 'owner'
+        ? 'admin'
+        : company.role === 'guest'
+        ? 'guest'
+        : 'member',
+    );
 
-    const defaultCompany = companies[0];
-    const defaultCompanyWorkspaces = workspaces.get(defaultCompany.id);
-    // TODO: get default workspace
-    const defaultWorkspace = defaultCompanyWorkspaces?.length ? defaultCompanyWorkspaces[0] : '';
+    // TODO we should find a better way to do this
+    // Everything related to observable takes time ...
+    Groups.select(company);
 
-    Groups.select(defaultCompany);
-    Workspaces.select(defaultWorkspace, true);
+    const bestCandidateWorkspace = getBestCandidateWorkspace(company.id, workspaces);
+
+    bestCandidateWorkspace && Workspaces.select(bestCandidateWorkspace, true);
+
+    Workspaces.notify();
 
     function hasNotification(company: CompanyType): boolean {
       const notification = notifications.find(n => n.company_id === company.id);

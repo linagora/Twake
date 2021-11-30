@@ -6,7 +6,8 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import ListenGroups from './listen_groups.js';
 import $ from 'jquery';
 import JWTStorage from 'services/JWTStorage';
-
+import CompanyAPIClient from '../CompanyAPIClient';
+import UserService from 'services/user/UserService';
 import Globals from 'services/Globals';
 
 class Groups extends Observable {
@@ -50,29 +51,26 @@ class Groups extends Observable {
     this.user_groups[id] = Collections.get('groups').known_objects_by_id[id];
   }
 
-  getOrderedGroups() {
-    return Object.keys(this.user_groups)
-      .map(id => this.user_groups[id])
-      .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  async getOrderedGroups() {
+    const userCompanies = await CompanyAPIClient.listCompanies(UserService.getCurrentUserId());
+
+    return userCompanies;
+    //.sort((a, b) => String(a.name).localeCompare(String(b.name)));
   }
 
   updateName(name) {
     var that = this;
     this.loading = true;
     this.notify();
-    Api.post(
-      '/ajax/workspace/group/data/name',
-      { groupId: this.currentGroupId, name },
-      res => {
-        if (res.errors.length === 0) {
-          var group = { id: that.currentGroupId, name: name };
-          Collections.get('groups').updateObject(group);
-          ws.publish('group/' + group.id, { data: { group: group } });
-        }
-        that.loading = false;
-        that.notify();
-      },
-    );
+    Api.post('/ajax/workspace/group/data/name', { groupId: this.currentGroupId, name }, res => {
+      if (res.errors.length === 0) {
+        var group = { id: that.currentGroupId, name: name };
+        Collections.get('groups').updateObject(group);
+        ws.publish('group/' + group.id, { data: { group: group } });
+      }
+      that.loading = false;
+      that.notify();
+    });
   }
   updateLogo(logo) {
     this.loading = true;

@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React from 'react';
+import React, { Suspense } from 'react';
 
 import Client from 'app/scenes/Client/Client';
 import InitService from 'app/services/InitService';
@@ -11,5 +11,9 @@ export default () => {
     return <div />;
   }
 
-  return <Client />;
+  return (
+    <Suspense fallback={<></>}>
+      <Client />
+    </Suspense>
+  );
 };

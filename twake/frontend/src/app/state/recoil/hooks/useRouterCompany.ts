@@ -7,6 +7,5 @@ export default function useRouterCompany() {
   const setClientState = useSetRecoilState(RouterState);
   RouterService.setRecoilState = setClientState;
   const companyId = useRecoilValue(RouterCompanySelector);
-
   return companyId;
 }

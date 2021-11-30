@@ -1,12 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Menu } from 'react-feather';
 import { Layout } from 'antd';
 import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
-import popupService from 'services/popupManager/popupManager.js';
-import WorkspacesListener from 'services/workspaces/WorkspacesListener';
+import PopupService from 'services/popupManager/popupManager.js';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
 import MainView from './MainView/MainView';
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
@@ -18,43 +17,29 @@ import Viewer from 'scenes/Apps/Drive/Viewer/Viewer';
 import ModalComponent from 'app/components/Modal/ModalComponent';
 import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
-import LoginService from 'app/services/login/LoginService';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars, { LoadingSidebar } from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
-import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
-import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 
 import './Client.scss';
+import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
 
 export default React.memo((): JSX.Element => {
-  const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace();
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const user = useCurrentUser();
+  const { user } = useCurrentUser();
 
-  popupService.useListener(useState);
-  Languages.useListener(useState);
-  LoginService.useListener(useState);
-
-  useEffect(() => {
-    LoginService.init();
-    WorkspacesListener.startListen();
-    return () => {
-      WorkspacesListener.cancelListen();
-    };
-  }, []);
+  PopupService.useListener();
+  Languages.useListener();
 
   let page: JSX.Element = <></>;
-  if (popupService.isOpen()) {
+  if (PopupService.isOpen()) {
     page = <PopupComponent key="PopupComponent" />;
   } else {
     if (user?.id) {
       page = (
         <Layout className="appPage fade_in">
           <NewVersionComponent />
-          {companyId && workspaceId && <CompanyStatusComponent />}
+          <CompanyStatusComponent />
           <Layout hasSider>
             <Layout.Sider
               trigger={<Menu size={16} />}
@@ -63,10 +48,7 @@ export default React.memo((): JSX.Element => {
               theme="light"
               width={290}
               onCollapse={(collapsed, type) => {
-                if (type === 'responsive') {
-                  setMenuIsOpen(false);
-                  return;
-                }
+                if (type === 'responsive') return setMenuIsOpen(false);
                 setMenuIsOpen(!collapsed);
               }}
             >
@@ -74,10 +56,7 @@ export default React.memo((): JSX.Element => {
                 <SideBars />
               </Suspense>
             </Layout.Sider>
-            <MainView
-              className={classNames({ collapsed: menuIsOpen })}
-              key={`mainview-${companyId}-${workspaceId}`}
-            />
+            <MainView className={classNames({ collapsed: menuIsOpen })} />
           </Layout>
         </Layout>
       );

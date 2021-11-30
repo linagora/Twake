@@ -49,16 +49,17 @@ class RouterServices extends Observable {
 
   //List of client sub paths
   clientSubPathnames: Readonly<string[]> = [
-    '/client/:workspaceId',
-    '/client/:workspaceId/c/:channelId',
-    '/client/:workspaceId/c/:channelId/t/:threadId',
-    '/client/:workspaceId/c/:channelId/m/:messageId',
-    '/client/:workspaceId/c/:channelId/tab/:tabId/',
-    '/client/:workspaceId/c/:channelId/t/:threadId/m/:messageId',
+    '/client/:companyId',
+    '/client/:companyId/w/:workspaceId',
+    '/client/:companyId/w/:workspaceId/c/:channelId',
+    '/client/:companyId/w/:workspaceId/c/:channelId/t/:threadId',
+    '/client/:companyId/w/:workspaceId/c/:channelId/m/:messageId',
+    '/client/:companyId/w/:workspaceId/c/:channelId/tab/:tabId/',
+    '/client/:companyId/w/:workspaceId/c/:channelId/t/:threadId/m/:messageId',
   ];
 
   private allowedQueryParameters: Record<string, Map<string, string>> = {
-    '/client/:workspaceId/c/:channelId': new Map<string, string>([['m', 'messageId']]),
+    '/client/:companyId/w/:workspaceId/c/:channelId': new Map<string, string>([['m', 'messageId']]),
   };
 
   pathnames: Readonly<Pathnames> = {
@@ -67,7 +68,7 @@ class RouterServices extends Observable {
     LOGIN: '/login',
     LOGOUT: '/logout',
     ERROR: '/error',
-    JOIN: '/join/:token'
+    JOIN: '/join/:token',
   };
 
   UUIDsToTranslate: Readonly<string[]> = [
@@ -164,7 +165,7 @@ class RouterServices extends Observable {
       });
 
     const reducedState: any = {
-      companyId: '',
+      companyId: match?.params?.companyId || '',
       workspaceId: match?.params?.workspaceId || '',
       channelId: match?.params?.channelId || '',
       messageId: match?.params?.messageId || '',
@@ -203,9 +204,6 @@ class RouterServices extends Observable {
     });
 
     //Retrocompatibility with old code
-    state.companyId = Collections.get('workspaces').find(state.workspaceId)
-      ? Collections.get('workspaces').find(state.workspaceId).company_id
-      : '';
     Workspaces.updateCurrentWorkspaceId(state.workspaceId, true);
     Workspaces.updateCurrentCompanyId(state.companyId, true);
     Groups.currentGroupId = state.companyId;
@@ -248,7 +246,9 @@ class RouterServices extends Observable {
 
     if (state.tabId) {
       return (
-        `${this.pathnames.CLIENT}/${state.workspaceId}` +
+        `${this.pathnames.CLIENT}` +
+        (state.companyId ? `/${state.companyId}` : '') +
+        (state.workspaceId ? `/w/${state.workspaceId}` : '') +
         (state.channelId ? `/c/${state.channelId}` : '') +
         (state.tabId ? `/tab/${state.tabId}` : '') +
         search
@@ -262,7 +262,9 @@ class RouterServices extends Observable {
     search = searchParameters.toString() ? `?${searchParameters.toString()}` : '';
 
     return (
-      `${this.pathnames.CLIENT}/${state.workspaceId}` +
+      `${this.pathnames.CLIENT}` +
+      (state.companyId ? `/${state.companyId}` : '') +
+      (state.workspaceId ? `/w/${state.workspaceId}` : '') +
       (state.channelId ? `/c/${state.channelId}` : '') +
       (state.threadId ? `/t/${state.threadId}` : '') +
       search
