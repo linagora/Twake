@@ -131,7 +131,7 @@ class Application {
     // Everything related to observable takes time ...
     Groups.select(company);
 
-    const bestCandidateWorkspace = getBestCandidateWorkspace(workspaces);
+    const bestCandidateWorkspace = getBestCandidateWorkspace(company.id, workspaces);
 
     bestCandidateWorkspace && Workspaces.select(bestCandidateWorkspace, true);
 

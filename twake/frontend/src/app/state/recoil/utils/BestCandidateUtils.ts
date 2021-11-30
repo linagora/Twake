@@ -14,10 +14,12 @@ import RouterService from 'app/services/RouterService';
  * @returns WorkspaceType | undefined
  */
 export function getBestCandidateWorkspace(
+  companyId: string,
   userWorkspaces: WorkspaceType[],
 ): WorkspaceType | undefined {
   const { workspaceId } = RouterService.getStateFromRoute();
-  const storageWorkspaceId = (LocalStorage.getItem('default_workspace_id') as string) || null;
+  const storageWorkspaceId =
+    (LocalStorage.getItem('default_workspace_id_' + companyId) as string) || null;
 
   return (
     userWorkspaces?.find(w => w.id === workspaceId) ||

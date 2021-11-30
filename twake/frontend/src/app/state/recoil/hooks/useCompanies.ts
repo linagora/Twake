@@ -10,16 +10,24 @@ import _ from 'lodash';
 import RouterService from 'app/services/RouterService';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 
+/**
+ * Will return the companies of the current user
+ */
 export const useCompanies = () => {
   const [user] = useRecoilState(CurrentUserState);
   return { companies: user?.companies || [] };
 };
 
+/**
+ * Will return the currently visible company and select one if nothing is already selected
+ */
 export const useCurrentCompany = () => {
   const user = useCurrentUser().user;
   const bestCandidate = useBestCandidateCompany(user)?.id || '';
-  const routerCompanyId = useRouterCompany();
-  const [company] = useRecoilState(CompaniesState(routerCompanyId));
+
+  //Get current route company and verify it is available to the user
+  let routerCompanyId = useRouterCompany();
+  if (!user?.companies?.find(c => c.company.id === routerCompanyId)) routerCompanyId = '';
 
   //If there is no company for this user, display the no company page
   if (user?.companies?.length === 0) {
@@ -27,13 +35,16 @@ export const useCurrentCompany = () => {
   }
 
   //If there is nothing in router or company in router isn't available for the user, try to use the best candidate available
-  if (
-    (!routerCompanyId || !user?.companies?.find(c => c.company.id === routerCompanyId)) &&
-    bestCandidate
-  ) {
+  if (!routerCompanyId && bestCandidate) {
     RouterService.push(RouterService.generateRouteFromState({ companyId: bestCandidate }));
   }
 
+  //Always set the current company in localstorage to open it automatically later
+  if (routerCompanyId) {
+    LocalStorage.setItem('default_company_id', routerCompanyId);
+  }
+
+  const [company] = useRecoilState(CompaniesState(routerCompanyId));
   return { company };
 };
 

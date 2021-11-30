@@ -97,7 +97,7 @@ class Workspaces extends Observable {
     }
     const user = User.getCurrentUser();
 
-    const bestCandidateWorkspace = getBestCandidateWorkspace(user);
+    const bestCandidateWorkspace = getBestCandidateWorkspace(Groups.currentGroupId, user);
 
     if (!bestCandidateWorkspace) {
       this.openNoWorkspacesPage();
@@ -202,8 +202,7 @@ class Workspaces extends Observable {
       RouterServices.push(route);
     }
 
-    LocalStorage.setItem('default_workspace_id', workspace.id);
-    LocalStorage.setItem('default_company_id', workspace.company_id);
+    LocalStorage.setItem(`default_workspace_id_${workspace.company_id}`, workspace.id);
 
     this.notify();
   }
