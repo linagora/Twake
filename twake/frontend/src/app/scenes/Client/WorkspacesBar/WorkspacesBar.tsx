@@ -16,14 +16,14 @@ export default () => {
 
   return (
     <Layout.Sider className="workspaces_view" width={70}>
-      {companyId && companyId.length > 0 ? <WorkspaceListComponent companyId={companyId} /> : <></>}
+      {companyId && <WorkspaceListComponent companyId={companyId} />}
       <CompanySelector />
     </Layout.Sider>
   );
 };
 
 const WorkspaceListComponent = ({ companyId }: { companyId: string }) => {
-  const [workspaces] = useCompanyWorkspaces(companyId);
+  const { workspaces } = useCompanyWorkspaces(companyId);
   return (
     <PerfectScrollbar component="div" className="list">
       {workspaces.map((ws: WorkspaceType) => (

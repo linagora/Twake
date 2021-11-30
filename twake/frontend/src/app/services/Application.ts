@@ -19,7 +19,6 @@ import LocalStorage from './LocalStorage';
 import WebSocket from './WebSocket/WebSocket';
 import RouterService from './RouterService';
 import CompanyAPIClient from './CompanyAPIClient';
-import { getBestCandidateWorkspace } from 'app/state/recoil/utils/BestCandidateUtils';
 
 class Application {
   private logger: Logger.Logger;
@@ -45,8 +44,6 @@ class Application {
 
     WorkspacesListener.startListen();
     AccessRightsService.resetLevels();
-
-    await this.setupWorkspaces(user);
 
     UserNotifications.start();
     CurrentUser.start();
@@ -82,63 +79,6 @@ class Application {
         },
       };
       Collections.connect(options);
-    }
-  }
-
-  /**
-   * Setup workspaces based on company id
-   *
-   * Company priority:
-   * 1. Router company id
-   * 2. Local storage company id
-   * 3. User's company with the most total members
-   *
-   * Workspace priority:
-   * 1. Router workspace id
-   * 2. Local storage workspace id
-   * 3. User's workspace with the most total members
-   *
-   * @param user
-   */
-  private async setupWorkspaces(user: UserType) {
-    const companyId = RouterService.getStateFromRoute().companyId;
-    const company = companyId ? await CompanyAPIClient.get(companyId) : undefined;
-
-    if (!company) return this.logger.error(`Error, company is ${company}`);
-
-    const workspaces = await WorkspaceAPIClient.list(company.id);
-
-    const notifications = await UserNotificationAPIClient.getAllCompaniesBadges();
-
-    workspaces.filter(w => user.workspaces_id?.includes(w.id));
-
-    // TODO we should find a better way to do this
-    // Everything related to observable takes time ...
-    Groups.addToUser({ ...company, ...{ _user_hasnotifications: hasNotification(company) } });
-
-    AccessRightsService.updateCompanyLevel(
-      company.id,
-      company.role === 'admin' || company.role === 'owner'
-        ? 'admin'
-        : company.role === 'guest'
-        ? 'guest'
-        : 'member',
-    );
-
-    // TODO we should find a better way to do this
-    // Everything related to observable takes time ...
-    Groups.select(company);
-
-    const bestCandidateWorkspace = getBestCandidateWorkspace(company.id, workspaces);
-
-    bestCandidateWorkspace && Workspaces.select(bestCandidateWorkspace, true);
-
-    Workspaces.notify();
-
-    function hasNotification(company: CompanyType): boolean {
-      const notification = notifications.find(n => n.company_id === company.id);
-
-      return !!notification && notification.count > 0;
     }
   }
 }

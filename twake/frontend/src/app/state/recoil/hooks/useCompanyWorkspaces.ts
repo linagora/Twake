@@ -13,72 +13,39 @@ import RouterService from 'app/services/RouterService';
 import _ from 'lodash';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import AccessRightsService, { RightsOrNone } from 'app/services/AccessRightsService';
+import LocalStorage from 'app/services/LocalStorage';
+import useRouterCompany from './useRouterCompany';
+import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 
 type WorkspacesResources = RealtimeResources<WorkspaceType>;
 
 const logger = Logger.getLogger('useCompanyWorkspaces');
 
-const useFetchWorkspaces = (companyId: string) => {
-  return useGetHTTP<WorkspacesResources>(`workspaces/v1/companies/${companyId}/workspaces`);
-};
+export const useCompanyWorkspaces = (companyId: string = '') => {
+  const [workspaces, setWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));
 
-export const useCompanyWorkspaces = (
-  companyId: string = '',
-): [
-  WorkspaceType[],
-  (workpace: WorkspaceType) => void,
-  (workspaceId: string) => Promise<Maybe<WorkspaceType>>,
-] => {
-  // TODO: can be used in recoil
-  const [workspace] = useFetchWorkspaces(companyId);
   const routerWorkspaceId = useRouterWorkspace();
-  const roomName = workspace?.websockets?.[0]?.room || '';
+  const bestCandidate = useBestCandidateWorkspace(companyId, workspaces);
 
-  const [workspaces, updateWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));
-  const get = useRecoilCallback(
-    ({ snapshot }) =>
-      async (workspaceId: string) => {
-        return await snapshot.getPromise(WorkspaceGetOrFetch({ companyId, workspaceId }));
-      },
-    [companyId],
-  );
+  //Fixme get this from backend
+  const roomName = `/companies/${companyId}/workspaces`;
 
-  const addOrUpdate = (workspace: WorkspaceType): void => {
-    const index = workspaces.findIndex(ws => ws.id === workspace.id);
-
-    if (index === -1) {
-      logger.debug('Add workspace', workspace);
-      updateWorkspaces(workspaces => [...workspaces, workspace]);
-    } else {
-      logger.debug('Update workspace', workspace);
-      updateWorkspaces(workspaces => [
-        ...workspaces.slice(0, index),
-        workspace,
-        ...workspaces.slice(index + 1),
-      ]);
-    }
-
-    // TODO: To be deleted when workspaces collections are not used anymore
-    Collections.get('workspaces').updateObject(
-      _.cloneDeep({
-        id: workspace.id,
-        name: workspace.name,
-      }),
-    );
+  const refresh = async () => {
+    setWorkspaces(await WorkspaceAPIClient.list(companyId));
   };
 
   useRealtimeRoom<WorkspaceType>(roomName, 'useCompanyWorkspaces', (action, resource) => {
     if (action === 'saved') {
-      addOrUpdate(resource);
+      refresh();
     } else {
       // not supported for now
     }
   });
 
-  if (!routerWorkspaceId && workspaces?.[0]?.id) {
+  if (!routerWorkspaceId && bestCandidate) {
     RouterService.push(
       RouterService.generateRouteFromState({
-        workspaceId: workspaces?.[0]?.id,
+        workspaceId: bestCandidate.id,
       }),
     );
   }
@@ -94,5 +61,37 @@ export const useCompanyWorkspaces = (
     WorkspacesService.openNoWorkspacesPage();
   }
 
-  return [workspaces, addOrUpdate, get];
+  return { workspaces, refresh };
 };
+
+export function useCurrentWorkspace() {
+  const companyId = useRouterCompany();
+  const routerWorkspaceId = useRouterWorkspace();
+  const { workspaces, refresh } = useCompanyWorkspaces(companyId);
+  return { workspace: workspaces.find(w => w.id == routerWorkspaceId), refresh };
+}
+
+/**
+ * Workspace priority:
+ * 1. Router workspace id
+ * 2. Local storage workspace id
+ * 3. User's workspace with the most total members
+ *
+ * @param userWorkspaces
+ * @returns WorkspaceType | undefined
+ */
+export function useBestCandidateWorkspace(
+  companyId: string,
+  userWorkspaces: WorkspaceType[],
+): WorkspaceType | undefined {
+  const routerWorkspaceId = useRouterWorkspace();
+  const storageWorkspaceId =
+    (LocalStorage.getItem('default_workspace_id_' + companyId) as string) || null;
+
+  return (
+    userWorkspaces?.find(w => w.id === routerWorkspaceId) ||
+    userWorkspaces?.find(w => w.id === storageWorkspaceId) ||
+    userWorkspaces?.sort((a, b) => a?.stats?.total_members - b.stats?.total_members)[0] ||
+    userWorkspaces[0]
+  );
+}

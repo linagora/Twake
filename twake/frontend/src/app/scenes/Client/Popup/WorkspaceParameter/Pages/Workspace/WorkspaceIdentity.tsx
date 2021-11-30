@@ -4,7 +4,7 @@ import { isEqual } from 'lodash';
 import { Avatar, Button, Col, Descriptions, Divider, Input, Row, Switch, Typography } from 'antd';
 
 import Languages from 'services/languages/languages';
-import { useCurrentWorkspace } from 'app/state/recoil/hooks/useCurrentWorkspace';
+import { useCurrentWorkspace } from 'app/state/recoil/hooks/useCompanyWorkspaces';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import ModalManager from 'app/components/Modal/ModalManager';
 import DeleteWorkspacePopup from './DeleteWorkspacePopup';
@@ -19,13 +19,10 @@ const { Text, Title, Link } = Typography;
 
 const MAX_LOGO_FILE_SIZE = 5000000;
 const ALLOWED_LOGO_FORMATS = ['image/gif', 'image/jpeg', 'image/png'];
-/**
- *
- * Les nouveau membres de l'entreprise seront également invités à cet espace de travail.
- */
+
 export default () => {
   const uploadInputRef = useRef<HTMLInputElement>();
-  const [workspace, setWorkspace] = useCurrentWorkspace();
+  const { workspace, refresh } = useCurrentWorkspace();
   const [workspaceName, setWorkspaceName] = useState<string | undefined>(workspace?.name);
 
   const onClickUpdateWorkspace = async (partials: WorkspaceUpdateResource) => {
@@ -45,7 +42,7 @@ export default () => {
         );
 
         if (res) {
-          res && setWorkspace(res);
+          res && refresh();
           res.name && setWorkspaceName(res.name);
           return res;
         }
@@ -101,7 +98,7 @@ export default () => {
       Toaster.error(
         `${Languages.t(
           'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix',
-        )} - ${Languages.t(err)}`,
+        )} - ${Languages.t(err as string)}`,
       );
     }
     uploadInputRef.current.value = '';

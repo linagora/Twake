@@ -40,7 +40,7 @@ export default (props: Props) => {
     props.id &&
       MainViewService.select(props.id, {
         collection: props.collection,
-        app: {
+        app: props.app || {
           identity: {
             code: 'messages',
             name: '',

@@ -34,8 +34,6 @@ const AppView: FC<PropsType> = props => {
 
   const app = props.viewService.getConfiguration().app;
 
-  console.log('app: ', props.viewService.getConfiguration());
-
   switch (app?.identity?.code) {
     case 'twake_drive':
       return <Drive options={configuration} />;

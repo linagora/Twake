@@ -22,7 +22,6 @@ import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
 import WorkspaceAPIClient from './WorkspaceAPIClient';
 import Logger from 'services/Logger';
-import { getBestCandidateWorkspace } from 'app/state/recoil/utils/BestCandidateUtils';
 
 class Workspaces extends Observable {
   constructor() {
@@ -90,50 +89,6 @@ class Workspaces extends Observable {
       this.currentGroupId = companyId;
       notify && this.notify();
     }
-  }
-
-  async initSelection() {
-    if ((Globals.store_public_access_get_data || {}).public_access_token) {
-      return;
-    }
-    const user = User.getCurrentUser();
-
-    const bestCandidateWorkspace = getBestCandidateWorkspace(Groups.currentGroupId, user);
-
-    if (!bestCandidateWorkspace) {
-      this.openNoWorkspacesPage();
-    }
-
-    if (bestCandidateWorkspace.id !== this.currentWorkspaceId) {
-      this.select(bestCandidateWorkspace, true);
-    }
-
-    /*
-    let { workspaceId } = RouterServices.getStateFromRoute();
-    const routerWorkspaceId = workspaceId;
-
-    const autoload_workspaces = await LocalStorage.getItem('default_workspace_id');
-
-    workspaceId = workspaceId || autoload_workspaces || '';
-
-    let workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
-    if (!workspace) {
-      workspace = DepreciatedCollections.get('workspaces').findBy({})[0];
-      workspaceId = workspace?.id;
-    }
-
-    if (!routerWorkspaceId || !workspace) {
-      if (
-        !workspace ||
-        DepreciatedCollections.get('users').known_objects_by_id[User.getCurrentUserId()]?.is_new
-      ) {
-        this.openNoWorkspacesPage();
-      } else if (workspaceId !== this.currentWorkspaceId) {
-        this.select(workspace, true);
-      }
-    }
-    */
-    return;
   }
 
   openNoWorkspacesPage() {
@@ -215,10 +170,6 @@ class Workspaces extends Observable {
 
     var id = workspace.id || workspace;
     delete this.user_workspaces[id];
-
-    if (id === this.currentWorkspaceId) {
-      this.initSelection(Groups.currentGroupId);
-    }
   }
 
   getOrderedWorkspacesInGroup(group_id) {
@@ -277,7 +228,6 @@ class Workspaces extends Observable {
         }
       }
     }
-    that.initSelection();
   }
 
   async updateWorkspaceName(name) {

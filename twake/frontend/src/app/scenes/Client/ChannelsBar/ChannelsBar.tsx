@@ -19,7 +19,6 @@ import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/Hid
 import AccessRightsService from 'app/services/AccessRightsService';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
-
 import './ChannelsBar.scss';
 
 export default () => {
@@ -53,6 +52,7 @@ export default () => {
   if (!companyId || !workspaceId) {
     return <></>;
   }
+
   return (
     <Layout.Sider
       theme="light"
