@@ -21,6 +21,7 @@ import { uuid } from "../../utils/types";
 import { ConsoleServiceAPI } from "../console/api";
 import { WorkspaceInviteTokenObject } from "./web/types";
 import WorkspaceInviteTokens from "./entities/workspace_invite_tokens";
+import { Readable } from "stream";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
   workspaces: WorkspaceServiceAPI;
@@ -46,6 +47,8 @@ export interface WorkspaceServiceAPI
   getUsersCount(workspaceId: string): Promise<number>;
 
   processPendingUser(user: User): Promise<void>;
+
+  thumbnail(workspaceId: string): Promise<{ file: Readable }>;
 
   removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,

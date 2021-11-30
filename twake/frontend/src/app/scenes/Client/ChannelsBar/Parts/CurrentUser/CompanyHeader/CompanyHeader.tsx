@@ -6,9 +6,9 @@ import UserService from 'services/user/UserService';
 import Icon from 'components/Icon/Icon.js';
 import Emojione from 'components/Emojione/Emojione';
 import NotificationDelay from '../Notifications/NotificationDelay';
-import useCurrentUser from 'app/services/user/hooks/useCurrentUser';
 
 import './CompanyHeader.scss';
+import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
 
 type PropsType = {
   companyName: string;
@@ -17,7 +17,7 @@ type PropsType = {
 };
 
 export default (props: PropsType): JSX.Element => {
-  const user = useCurrentUser();
+  const { user } = useCurrentUser();
 
   return (
     <div className="current-company-header">

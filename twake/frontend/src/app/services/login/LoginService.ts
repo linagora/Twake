@@ -4,9 +4,10 @@ import WindowState from 'services/utils/window';
 import Globals from 'services/Globals';
 import RouterServices from '../RouterService';
 import LocalStorage from 'services/LocalStorage';
-import AuthService from "services/Auth/AuthService";
+import AuthService from 'services/Auth/AuthService';
 import Application from '../Application';
 import { UserType } from 'app/models/User';
+import { Cookies } from 'react-cookie';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -19,7 +20,7 @@ class Login extends Observable {
   currentUserId: string = '';
   emailInit: string;
   server_infos_loaded: boolean;
-  server_infos: { branding: {}; ready: {}; auth: {}; help_url: boolean; };
+  server_infos: { branding: {}; ready: {}; auth: {}; help_url: boolean };
   error_secondary_mail_already: boolean;
   addmail_token: string;
   external_login_error: boolean;
@@ -28,6 +29,9 @@ class Login extends Observable {
   login_error: boolean = false;
   parsed_error_code: any;
   error_code: any;
+  cookies: Cookies;
+
+  recoilUpdateUser = (user: UserType | undefined) => {};
 
   constructor() {
     super();
@@ -49,6 +53,7 @@ class Login extends Observable {
     this.error_secondary_mail_already = false;
     this.addmail_token = '';
     this.external_login_error = false;
+    this.cookies = new Cookies(['pending-redirect']);
   }
 
   reset() {
@@ -67,13 +72,22 @@ class Login extends Observable {
     if (!did_wait) {
       LocalStorage.getItem('api_root_url');
       await this.init(true);
-
       return;
     }
 
     if (!AuthService.isInitialized()) {
       this.reset();
       await AuthService.init();
+
+      const redirectUrl = this.cookies.get('pending-redirect');
+      if (redirectUrl) {
+        console.log('Got pending redirect to', redirectUrl);
+        this.cookies.remove('pending-redirect');
+        setTimeout(() => {
+          document.location.href = redirectUrl;
+        }, 500);
+      }
+
       this.updateUser((err, user) => this.logger.debug('User is updated', err, user));
     }
   }
@@ -87,6 +101,8 @@ class Login extends Observable {
     }
 
     AuthService.updateUser(async user => {
+      this.recoilUpdateUser(user);
+
       this.logger.debug('User update result', user);
       if (!user) {
         this.firstInit = true;
@@ -98,8 +114,8 @@ class Login extends Observable {
         RouterServices.push(
           RouterServices.addRedirection(
             `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-            ),
-          );
+          ),
+        );
       } else {
         this.setCurrentUser(user);
         await Application.start(user);
@@ -125,7 +141,7 @@ class Login extends Observable {
     this.notify();
 
     AuthService.login(params)
-      .then(async (result) => {
+      .then(async result => {
         this.login_loading = false;
         if (!result) {
           this.login_error = true;

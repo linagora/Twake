@@ -118,13 +118,11 @@ export class WorkspaceInviteTokensCrudController
     const resource: WorkspaceJoinByTokenResponse = {
       company: { name: company.name },
       workspace: { name: workspace.name },
+      auth_required: false,
     };
 
     if (!request.currentUser) {
-      resource.auth_url =
-        consoleUrl +
-        "?doNotCreateCompany=1&return_url=https%20%21%21web.twake.app%212join%21" +
-        request.body.token;
+      resource.auth_required = true;
     } else {
       if (request.body.join) {
         const user_id = request.currentUser.id;

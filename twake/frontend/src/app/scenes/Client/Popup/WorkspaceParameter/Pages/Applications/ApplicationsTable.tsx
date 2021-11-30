@@ -10,7 +10,7 @@ import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { useApplications } from 'app/services/Apps/useApplications';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import AvatarComponent from 'app/components/Avatar/Avatar';
@@ -21,7 +21,7 @@ type ColumnObjectType = { key: number } & Application;
 const DEFAULT_PAGE_SIZE = 5;
 
 export default () => {
-  const [company] = useCurrentCompany();
+  const { company } = useCurrentCompany();
 
   if (!company?.id) return <></>;
 

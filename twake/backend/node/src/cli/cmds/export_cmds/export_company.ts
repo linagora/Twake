@@ -137,7 +137,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
             {
               company_id: channel.company_id,
               workspace_id: "direct",
-              id: channel.channel_id,
+              id: channel.id,
             },
             {
               user: { id: "", server_request: true },

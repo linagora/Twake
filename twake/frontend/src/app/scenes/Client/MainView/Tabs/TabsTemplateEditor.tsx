@@ -13,7 +13,7 @@ import {
   useCompanyApplications,
   getCompanyApplications,
 } from 'app/state/recoil/hooks/useCompanyApplications';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 
 const { Option } = Select;
 
@@ -27,7 +27,7 @@ export default (props: PropsType): JSX.Element => {
   const [appId, setAppId] = useState<string>(props.tab?.data.application_id || '');
   const [tabName, setTabName] = useState<string>(props.tab?.data.name || '');
   const [workspacesApps, setWorkspacesApps] = useState<AppType[]>([]);
-  const [company] = useCurrentCompany();
+  const { company } = useCurrentCompany();
 
   const { companyApplications } = useCompanyApplications(company?.id || '');
 
