@@ -40,8 +40,8 @@ export const getSender = (message: Message | undefined) => {
           type: 'app',
           application: app,
           username: 'app#' + app?.identity?.code,
-          firstname: app.identity?.icon,
-          lastname: '',
+          first_name: app.identity?.icon,
+          last_name: '',
           thumbnail: WorkspacesApps.getAppIcon(app),
         };
       }

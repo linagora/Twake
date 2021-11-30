@@ -127,7 +127,7 @@ class CurrentUser extends Observable {
     });
   }
 
-  updateidentity(lastname: string, firstname: string, thumbnail: string) {
+  updateidentity(last_name: string, first_name: string, thumbnail: string) {
     this.loading = true;
     this.notify();
 
@@ -138,8 +138,8 @@ class CurrentUser extends Observable {
       data.append('thumbnail', thumbnail);
     }
 
-    data.append('firstname', firstname || '');
-    data.append('lastname', lastname || '');
+    data.append('first_name', first_name || '');
+    data.append('last_name', last_name || '');
 
     this.updateTutorialStatus('has_identity');
 
@@ -170,8 +170,8 @@ class CurrentUser extends Observable {
             } else {
               const update = {
                 id: Login.currentUserId,
-                firstname,
-                lastname,
+                first_name,
+                last_name,
                 thumbnail: '',
               };
               if (!thumbnail) {
