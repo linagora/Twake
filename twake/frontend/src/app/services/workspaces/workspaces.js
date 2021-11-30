@@ -13,7 +13,7 @@ import workspacesUsers from './workspaces_users.ts';
 import WindowService from 'services/utils/window';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
 import RouterServices from 'app/services/RouterService';
-import WelcomePage from 'scenes/Client/Popup/WelcomePage/WelcomePage';
+import NoWorkspaces from 'app/scenes/Client/WorkspacesBar/Components/NoWorkspaces/NoWorkspaces';
 import UserNotifications from 'app/services/user/UserNotifications';
 import AccessRightsService from 'services/AccessRightsService';
 import loginService from 'app/services/login/LoginService';
@@ -22,6 +22,7 @@ import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
 import WorkspaceAPIClient from './WorkspaceAPIClient';
 import Logger from 'services/Logger';
+import { getBestCandidateWorkspace } from 'app/state/recoil/utils/BestCandidateUtils';
 
 class Workspaces extends Observable {
   constructor() {
@@ -37,7 +38,8 @@ class Workspaces extends Observable {
 
     this.user_workspaces = {};
     this.getting_details = {};
-    this.showWelcomePage = false;
+    this.showNoWorkspacesPage = false;
+    this.showNoCompaniesPage = false;
     this.loading = false;
 
     this.url_values = WindowService.getInfoFromUrl() || {};
@@ -93,13 +95,25 @@ class Workspaces extends Observable {
     if ((Globals.store_public_access_get_data || {}).public_access_token) {
       return;
     }
+    const user = User.getCurrentUser();
 
+    const bestCandidateWorkspace = getBestCandidateWorkspace(Groups.currentGroupId, user);
+
+    if (!bestCandidateWorkspace) {
+      this.openNoWorkspacesPage();
+    }
+
+    if (bestCandidateWorkspace.id !== this.currentWorkspaceId) {
+      this.select(bestCandidateWorkspace, true);
+    }
+
+    /*
     let { workspaceId } = RouterServices.getStateFromRoute();
     const routerWorkspaceId = workspaceId;
 
-    const autoload_workspaces = (await LocalStorage.getItem('autoload_workspaces')) || {};
+    const autoload_workspaces = await LocalStorage.getItem('default_workspace_id');
 
-    workspaceId = workspaceId || autoload_workspaces.id || '';
+    workspaceId = workspaceId || autoload_workspaces || '';
 
     let workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
     if (!workspace) {
@@ -112,29 +126,35 @@ class Workspaces extends Observable {
         !workspace ||
         DepreciatedCollections.get('users').known_objects_by_id[User.getCurrentUserId()]?.is_new
       ) {
-        this.openWelcomePage();
+        this.openNoWorkspacesPage();
       } else if (workspaceId !== this.currentWorkspaceId) {
         this.select(workspace, true);
       }
     }
+    */
     return;
   }
 
-  openWelcomePage(page) {
-    this.showWelcomePage = true;
+  openNoWorkspacesPage() {
+    this.showNoWorkspacesPage = true;
     this.notify();
-    popupManager.open(<WelcomePage />, false, 'workspace_parameters');
+    popupManager.open(<NoWorkspaces />, false, 'no_workspace_parameters');
   }
 
-  closeWelcomePage(forever) {
-    if (forever) {
-      Api.post('/ajax/users/set/isNew', { value: false }, function (res) {});
-      DepreciatedCollections.get('users').updateObject({
-        id: User.getCurrentUserId(),
-        isNew: false,
-      });
-    }
-    this.showWelcomePage = false;
+  closeNoWorkspacesPage() {
+    this.showNoWorkspacesPage = false;
+    popupManager.close();
+    this.notify();
+  }
+
+  openNoCompaniesPage() {
+    this.showNoCompaniesPage = true;
+    this.notify();
+    popupManager.open(<NoCompanies />, false, 'no_companies_parameters');
+  }
+
+  closeNoCompaniesPage() {
+    this.showNoCompaniesPage = false;
     popupManager.close();
     this.notify();
   }
@@ -172,6 +192,7 @@ class Workspaces extends Observable {
     this.updateCurrentWorkspaceId(workspace.id);
 
     const route = RouterServices.generateRouteFromState({
+      companyId: workspace.company_id,
       workspaceId: workspace.id,
       channelId: '',
     });
@@ -181,7 +202,7 @@ class Workspaces extends Observable {
       RouterServices.push(route);
     }
 
-    LocalStorage.setItem('autoload_workspaces', { id: workspace.id });
+    LocalStorage.setItem(`default_workspace_id_${workspace.company_id}`, workspace.id);
 
     this.notify();
   }

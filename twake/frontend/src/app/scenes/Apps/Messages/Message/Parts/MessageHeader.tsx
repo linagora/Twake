@@ -20,7 +20,7 @@ import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import { MessageContext } from '../MessageWithReplies';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
-import useUser from 'app/services/user/hooks/useUser';
+import { useUser } from 'app/state/recoil/hooks/useUser';
 import { UserType } from 'app/models/User';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 

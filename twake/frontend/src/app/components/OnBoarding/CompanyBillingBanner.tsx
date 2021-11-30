@@ -16,12 +16,13 @@ export default ({ companyId }: PropsType): JSX.Element => {
   const companySubscriptionUrl =
     InitService.server_infos?.configuration.accounts.console?.company_subscription_url || '';
   const userGroups: { [key: string]: CompanyType } = Groups.user_groups;
-  const { role, plan } = userGroups[companyId];
-  const isCurrentUserAdminOrOwner = role === 'admin' || role === 'owner';
+  const currentUserGroup = userGroups[companyId];
+  const isCurrentUserAdminOrOwner =
+    currentUserGroup?.role === 'admin' || currentUserGroup?.role === 'owner';
 
   const onClickLink = () => window.open(companySubscriptionUrl, 'blank');
 
-  const shouldDisplayBanner = plan?.billing?.status === 'warning';
+  const shouldDisplayBanner = currentUserGroup?.plan?.billing?.status === 'warning';
   return shouldDisplayBanner ? (
     <Banner type="important">
       <Row align="middle">

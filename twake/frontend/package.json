@@ -179,6 +179,7 @@
     "react-ace": "^9.1.1",
     "react-app-polyfill": "^1.0.6",
     "react-beautiful-dnd": "10.1.0",
+    "react-cookie": "^4.1.1",
     "react-dev-utils": "^11.0.4",
     "react-dom": "^16.13.0",
     "react-emojione": "^5.0.1",

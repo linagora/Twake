@@ -1,4 +1,6 @@
 import { Resource } from 'services/CollectionsReact/Collections';
+import { CompanyRoleType, CompanyStatusType, CompanyType } from './Company';
+import { WorkspaceType } from './Workspace';
 
 export type UserType = {
   connected?: boolean;
@@ -23,7 +25,8 @@ export type UserType = {
   timezone_offset?: string;
   tutorial_status?: any;
   username: string;
-  workspaces?: any;
+  companies?: { company: CompanyType; role: CompanyRoleType; status: CompanyStatusType }[];
+  workspaces?: WorkspaceType[];
   workspaces_id?: string[];
   is_verified?: boolean;
   created_at?: number;

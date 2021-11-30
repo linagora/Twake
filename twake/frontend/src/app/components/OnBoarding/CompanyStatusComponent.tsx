@@ -8,9 +8,12 @@ import RouterServices from 'app/services/RouterService';
 import Groups from 'services/workspaces/groups.js';
 import { CompanyType } from 'app/models/Company';
 import BlockedCompany from './popups/BlockedCompany';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 
 const CompanyStatusComponent = (): JSX.Element => {
-  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
   const user = UserService.getCurrentUser();
   const onboarding: string | null = localStorage.getItem(`onboarding_${companyId}`);
   const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
@@ -22,7 +25,7 @@ const CompanyStatusComponent = (): JSX.Element => {
 
     isBlockedCompany();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [companyId]);
 
   const isNewCompany = (): boolean => {
     const oneDay = 1000 * 60 * 60 * 24;
@@ -54,9 +57,9 @@ const CompanyStatusComponent = (): JSX.Element => {
   const isBlockedCompany = () => {
     if (!companyId) return;
     const userGroups: { [key: string]: CompanyType } = Groups.user_groups;
-    const { plan } = userGroups[companyId];
+    const currentGroup = userGroups[companyId];
 
-    if (plan?.billing?.status === 'error') {
+    if (currentGroup?.plan?.billing?.status === 'error') {
       return ModalManager.open(
         <BlockedCompany />,
         {

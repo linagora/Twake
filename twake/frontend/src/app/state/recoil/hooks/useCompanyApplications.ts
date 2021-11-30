@@ -5,8 +5,7 @@ import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import { CompanyApplicationsStateFamily } from '../atoms/CompanyApplications';
 import companyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
-import { useCurrentCompany } from './useCurrentCompany';
-import { Application } from 'app/models/App';
+import { useCurrentCompany } from './useCompanies';
 const logger = Logger.getLogger('useApplications');
 
 /**
@@ -15,7 +14,7 @@ const logger = Logger.getLogger('useApplications');
  * @returns
  */
 export function useCompanyApplications(companyId: string = '') {
-  const [company] = useCurrentCompany();
+  const { company } = useCurrentCompany();
   companyId = companyId || company?.id || '';
 
   const [applications, setApplications] = useRecoilState(CompanyApplicationsStateFamily(companyId));

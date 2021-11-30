@@ -5,7 +5,7 @@ import { TwakeService } from '../Decorators/TwakeService';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
 
-export type WorkspaceUpdateResource = Pick<WorkspaceType, 'name' | 'logo' | 'default' | 'archived'>;
+export type WorkspaceUpdateResource = Partial<WorkspaceType & { logo_b64?: string }>;
 
 export type UpdateWorkspaceBody = {
   resource: WorkspaceUpdateResource;
@@ -75,7 +75,7 @@ class WorkspaceAPIClient {
   update(
     companyId: string,
     workspaceId: string,
-    workspace: WorkspaceUpdateResource & { logo_b64?: string },
+    workspace: WorkspaceUpdateResource,
   ): Promise<WorkspaceType> {
     return Api.post<
       UpdateWorkspaceBody & { options?: { logo_b64?: string } },

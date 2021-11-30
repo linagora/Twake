@@ -4,6 +4,10 @@
   padding: 40px;
   margin: auto;
 
+  .company-selector-container .image {
+    box-shadow: 0 0 0 2px var(--secondary);
+  }
+
   .title {
     font-size: 40px;
     .emojione {

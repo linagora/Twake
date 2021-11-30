@@ -8,7 +8,7 @@ import { Application } from 'app/models/App';
 import Languages from 'services/languages/languages';
 import { useApplications } from 'app/state/recoil/hooks/useApplications';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCurrentCompany';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 
@@ -18,7 +18,7 @@ type ColumnObjectType = { key: number } & Application;
 const DEFAULT_PAGE_SIZE = 5;
 
 export default () => {
-  const [company] = useCurrentCompany();
+  const { company } = useCurrentCompany();
 
   if (!company?.id) return <></>;
 

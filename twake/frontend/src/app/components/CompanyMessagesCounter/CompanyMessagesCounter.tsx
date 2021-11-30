@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Col, Divider, Progress, Row, Typography } from "antd";
-import "./CompanyMessagesCounter.scss";
-import i18n from "i18next";
+import React, { useEffect, useState } from 'react';
+import { Col, Divider, Progress, Row, Typography } from 'antd';
+import './CompanyMessagesCounter.scss';
+import i18n from 'i18next';
 
-import Languages from "services/languages/languages";
-import MessageHistoryService from "services/Apps/Messages/MessageHistoryService";
-import InitService from "services/InitService";
-import { useCurrentCompany } from "app/state/recoil/hooks/useCurrentCompany";
+import Languages from 'services/languages/languages';
+import MessageHistoryService from 'services/Apps/Messages/MessageHistoryService';
+import InitService from 'services/InitService';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 
 const { Text, Title, Link } = Typography;
 const CompanyMessagesCounter = () => {
   const [messagesCount, setMessagesCount] = useState<number>();
   let companyMessagesLimit = MessageHistoryService.getLimitCompanyMessages();
 
-  const [company] = useCurrentCompany();
+  const { company } = useCurrentCompany();
 
   const companySubscriptionUrl =
     InitService.server_infos?.configuration.accounts.console?.company_subscription_url || '';
@@ -21,7 +21,7 @@ const CompanyMessagesCounter = () => {
   const onClickLink = () => window.open(companySubscriptionUrl, 'blank');
 
   useEffect(() => {
-    if(companyMessagesLimit && company){
+    if (companyMessagesLimit && company) {
       setMessagesCount(company.stats?.total_messages || 0);
     }
   }, [company, companyMessagesLimit]);
@@ -43,7 +43,7 @@ const CompanyMessagesCounter = () => {
           </Title>
           <Text className="info">
             {Languages.t('scenes.app.channelsbar.currentuser.company_messages_counter_info', [
-              Intl.NumberFormat(i18n.language).format(companyMessagesLimit)
+              Intl.NumberFormat(i18n.language).format(companyMessagesLimit),
             ])}
           </Text>
           <div className="link">

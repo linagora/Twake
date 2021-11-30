@@ -22,6 +22,7 @@ export default (): JSX.Element => {
 
   const redirectToWorkspace = () => {
     const url = RouterServices.generateRouteFromState({
+      companyId,
       workspaceId,
       channelId: '',
     });

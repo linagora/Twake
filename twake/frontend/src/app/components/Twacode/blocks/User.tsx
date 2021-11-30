@@ -5,7 +5,7 @@ import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard';
 import { UserType } from 'app/models/User';
-import useUser from 'app/services/user/hooks/useUser';
+import { useUser } from 'app/state/recoil/hooks/useUser';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 
 const channelMentions = ['channel', 'everyone', 'all', 'here'];
@@ -30,7 +30,7 @@ export default (props: PropsType): JSX.Element => {
     return () => {
       collection.removeListener(listener);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const displayUserCard = (user: UserType): void => {
@@ -53,25 +53,20 @@ export default (props: PropsType): JSX.Element => {
     );
   };
 
-  const highlighted = props.id === UserService.getCurrentUserId() || channelMentions.includes(props.username);
+  const highlighted =
+    props.id === UserService.getCurrentUserId() || channelMentions.includes(props.username);
 
   if (!props.id) {
-    return (
-      <span className={classNames('user_twacode', { highlighted })}>
-        @{props.username}
-      </span>
-    );
+    return <span className={classNames('user_twacode', { highlighted })}>@{props.username}</span>;
   }
 
   if (user) {
     return (
       <div
         ref={nodeRef}
-        className={
-          classNames('user_twacode with_user', {
-            highlighted: highlighted && !props.hideUserImage,
-          })
-        }
+        className={classNames('user_twacode with_user', {
+          highlighted: highlighted && !props.hideUserImage,
+        })}
         onClick={() => displayUserCard(user)}
         style={{
           paddingLeft: props.hideUserImage ? 5 : 0,
@@ -80,7 +75,7 @@ export default (props: PropsType): JSX.Element => {
       >
         {!props.hideUserImage && (
           <div
-            className='userimage'
+            className="userimage"
             style={{ backgroundImage: `url('${UserService.getThumbnail(user)}')` }}
           />
         )}
@@ -88,10 +83,6 @@ export default (props: PropsType): JSX.Element => {
       </div>
     );
   } else {
-    return (
-      <span className={classNames('user_twacode', { highlighted })}>
-        @{props.username}
-      </span>
-    );
+    return <span className={classNames('user_twacode', { highlighted })}>@{props.username}</span>;
   }
 };

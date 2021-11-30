@@ -10,8 +10,8 @@ import './WorkspacesBar/WorkspacesBar.scss';
 export default () => {
   return (
     <Layout style={{ height: '100%', backgroundColor: 'var(--secondary)' }}>
-      <WorkspacesBar key="workspacebar" />
-      <ChannelsBar key="channelbar" />
+      <WorkspacesBar />
+      <ChannelsBar />
     </Layout>
   );
 };

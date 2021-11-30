@@ -14,7 +14,8 @@ export const useFeatureToggles = () => {
   Groups.useListener();
 
   useEffect(() => {
-    const companyPlan: { features: { [key: string]: FeatureValueType } } = userGroups[companyId].plan;
+    const companyPlan: { features: { [key: string]: FeatureValueType } } =
+      userGroups[companyId]?.plan;
     companyPlan && FeatureTogglesService.setFeaturesFromCompanyPlan(companyPlan);
   });
 
