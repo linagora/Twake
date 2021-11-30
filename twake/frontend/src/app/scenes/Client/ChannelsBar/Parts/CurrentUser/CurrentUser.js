@@ -92,7 +92,9 @@ export default class CurrentUser extends Component {
   }
 
   componentDidMount() {
-    const new_status = { ...this.users_repository.known_objects_by_id[this.user_id].status_icon };
+    const new_status = {
+      ...this.users_repository.known_objects_by_id[this.user_id].status.split(' '),
+    };
 
     if (!new_status[0]) {
       new_status[1] = '';
@@ -249,14 +251,14 @@ export default class CurrentUser extends Component {
 
     usermenu = usermenu.concat([
       { type: 'separator' },
-      {
+      /*{
         type: 'menu',
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.change_my_status',
           [],
           'Changer mon statut',
         ),
-        emoji: (current_user.status_icon || {})[0] || ':smiley:',
+        emoji: (current_user.status.split(' ') || {})[0] || ':smiley:',
         submenu_replace: true,
         submenu: [
           {
@@ -271,7 +273,7 @@ export default class CurrentUser extends Component {
             type: 'react-element',
             reactElement: level => {
               if (this.state.new_status[0].length <= 0) {
-                this.setState({ new_status: current_user.status_icon });
+                this.setState({ new_status: current_user.status.split(' ') });
               }
               return (
                 <InputWithIcon
@@ -319,7 +321,7 @@ export default class CurrentUser extends Component {
             },
           },
         ],
-      },
+      },*/
       {
         type: 'menu',
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),
