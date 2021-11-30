@@ -16,6 +16,7 @@ class ConsoleService {
   public getCompanyManagementUrl(companyId: string) {
     const identity_provider_id =
       DepreciatedCollections.get('groups').find(companyId)?.identity_provider_id;
+    console.log(identity_provider_id);
     return (
       InitService.server_infos?.configuration?.accounts?.console?.company_management_url || ''
     ).replace('{company_id}', identity_provider_id);
@@ -102,17 +103,30 @@ class ConsoleService {
 
   /**
    * @deprecated use ConsoleServiceAPIClient.getNewAccessToken
-   * @param currentToken 
-   * @param callback 
+   * @param currentToken
+   * @param callback
    */
-  public getNewAccessToken(currentToken: { access_token: string }, callback: (err?: Error, access_token?: JWTDataType) => void): void {
-    this.logger.debug(`getNewAccessToken, get new token from current token ${JSON.stringify(currentToken)}`);
-    Api.post('/internal/services/console/v1/login',
+  public getNewAccessToken(
+    currentToken: { access_token: string },
+    callback: (err?: Error, access_token?: JWTDataType) => void,
+  ): void {
+    this.logger.debug(
+      `getNewAccessToken, get new token from current token ${JSON.stringify(currentToken)}`,
+    );
+    Api.post(
+      '/internal/services/console/v1/login',
       { remote_access_token: currentToken.access_token },
-      (response: { access_token: JWTDataType, message: string; error: string; statusCode: number }) => {
-
+      (response: {
+        access_token: JWTDataType;
+        message: string;
+        error: string;
+        statusCode: number;
+      }) => {
         if (response.statusCode && !response.access_token) {
-          this.logger.error('getNewAccessToken, Can not retrieve access_token from console. Response was', response);
+          this.logger.error(
+            'getNewAccessToken, Can not retrieve access_token from console. Response was',
+            response,
+          );
           callback(new Error('Can not retrieve access_token from console'));
           return;
         }
@@ -120,7 +134,7 @@ class ConsoleService {
         // we should be able to refresh the token or renew it in some way...
 
         callback(undefined, response.access_token);
-      }
+      },
     );
   }
 }

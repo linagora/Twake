@@ -81,21 +81,21 @@ export function useCurrentWorkspace() {
  * 2. Local storage workspace id
  * 3. User's workspace with the most total members
  *
- * @param userWorkspaces
+ * @param workspaces
  * @returns WorkspaceType | undefined
  */
 export function useBestCandidateWorkspace(
   companyId: string,
-  userWorkspaces: WorkspaceType[],
+  workspaces: WorkspaceType[],
 ): WorkspaceType | undefined {
   const routerWorkspaceId = useRouterWorkspace();
   const storageWorkspaceId =
     (LocalStorage.getItem('default_workspace_id_' + companyId) as string) || null;
 
   return (
-    userWorkspaces?.find(w => w.id === routerWorkspaceId) ||
-    userWorkspaces?.find(w => w.id === storageWorkspaceId) ||
-    userWorkspaces?.sort((a, b) => a?.stats?.total_members - b.stats?.total_members)[0] ||
-    userWorkspaces[0]
+    workspaces?.find(w => w.id === routerWorkspaceId) ||
+    workspaces?.find(w => w.id === storageWorkspaceId) ||
+    _.cloneDeep(workspaces)?.sort((a, b) => a?.stats?.total_members - b.stats?.total_members)[0] ||
+    workspaces[0]
   );
 }

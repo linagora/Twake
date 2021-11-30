@@ -71,6 +71,20 @@
       color: var(--black-alpha-70);
       align-items: center;
 
+      .ant-badge-status {
+        height: 16px;
+        .ant-avatar-image {
+          width: 16px;
+          height: 16px;
+          line-height: 16px;
+          font-size: 18px;
+          overflow: clip;
+          border-radius: 50%;
+          margin-right: 8px;
+          vertical-align: top;
+        }
+      }
+
       .status {
         position: relative;
         display: inline-block;

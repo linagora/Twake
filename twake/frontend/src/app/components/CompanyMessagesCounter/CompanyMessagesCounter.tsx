@@ -63,7 +63,6 @@ const CompanyMessagesCounter = () => {
           />
         </Col>
       </Row>
-      <Divider />
     </>
   ) : (
     <></>

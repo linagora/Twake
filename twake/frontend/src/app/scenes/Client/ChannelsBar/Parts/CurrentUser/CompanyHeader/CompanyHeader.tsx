@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
-import { Skeleton } from 'antd';
+import { Avatar, Badge, Skeleton } from 'antd';
 
 import UserService from 'services/user/UserService';
 import Icon from 'components/Icon/Icon.js';
@@ -35,6 +35,10 @@ export default (props: PropsType): JSX.Element => {
 
         {user && (
           <div className="user-info">
+            <Badge count={1} size="small" dot offset={[-8, 16]} color="green">
+              <Avatar size={16} src={UserService.getThumbnail(user)} />
+            </Badge>
+
             {!!(user.status_icon || [])[0] && <Emojione type={user.status_icon![0]} />}
 
             <span className="text">
