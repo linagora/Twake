@@ -95,6 +95,7 @@ export default (props: PropsType): JSX.Element => {
 
       {!props.noMagicLink && (
         <div className="magic-links-wrapper">
+          <br />
           <MagicLinks />
         </div>
       )}
