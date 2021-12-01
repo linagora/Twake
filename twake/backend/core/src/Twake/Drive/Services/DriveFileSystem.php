@@ -321,14 +321,13 @@ class DriveFileSystem
             if (is_string($directory)) {
                 $directory = $this->em->getRepository("Twake\Drive:DriveFile")->findOneBy(Array("id" => $directory . ""));
 
-                if (!$workspace_id) {
+                if (!$workspace_id && $directory) {
                     $workspace_id = $directory->getWorkspaceId();
                 }
 
             }
             if (!$directory) {
                 $directory = null;
-
             }
 
             if ($directory != null) {
