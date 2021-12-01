@@ -24,6 +24,7 @@ import { CrudExeption } from "../../../core/platform/framework/api/crud-service"
 import UserServiceAPI from "../../user/api";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
+import _ from "lodash";
 
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
@@ -295,6 +296,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       return company;
     };
 
+    const companies = [];
     if (userDTO.roles) {
       for (const role of roles) {
         const companyConsoleCode = role.targetCode;
@@ -303,9 +305,26 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         if (!company) {
           throw CrudExeption.notFound(`Company ${companyConsoleCode} not found`);
         }
-        await this.userService.companies.setUserRole(company.id, user.id, roleName);
+        //Make sure user is active, if not we remove it
+        if (role.status !== "deactivated") {
+          companies.push(company);
+          await this.userService.companies.setUserRole(company.id, user.id, roleName);
+        }
       }
     }
+
+    // Remove user from companies not in the console
+    for (const company of await this.userService.companies.getAllForUser(user.id)) {
+      if (!companies.map(c => c.id).includes(company.id)) {
+        await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
+      }
+    }
+
+    // Update user cache with companies
+    user.cache = Object.assign(user.cache || {}, {
+      companies: _.uniq([...companies.map(c => c.id)]),
+    });
+    await this.userService.users.save(user, {}, { user: { id: user.id, server_request: true } });
 
     return user;
   }

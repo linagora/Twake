@@ -140,7 +140,8 @@ export class ConsoleController {
 
   private async userAdded(content: ConsoleHookBodyContent): Promise<void> {
     const userDTO = content.user;
-    await this.consoleService.getClient().updateLocalUserFromConsole(userDTO._id);
+    const user = await this.consoleService.getClient().updateLocalUserFromConsole(userDTO._id);
+    await this.consoleService.processPendingUser(user);
   }
 
   private async userDisabled(content: ConsoleHookBodyContent): Promise<void> {

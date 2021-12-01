@@ -103,7 +103,6 @@ export default class User {
   @Column("cache", "encoded_json")
   cache: null | {
     companies: string[];
-    workspaces: string[];
   };
 
   @Column("devices", "encoded_json")
