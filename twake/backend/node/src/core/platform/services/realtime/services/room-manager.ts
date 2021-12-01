@@ -84,6 +84,9 @@ export default class RoomManager implements RealtimeRoomManager {
       return !!this.auth.verifyToken(joinEvent.token)?.sub;
     }
 
+    //Retro-compatibility for mobile up to february 2021 (to remove after this date)
+    if (joinEvent.token === "twake") return true;
+
     const signature = this.auth.verifyTokenObject<WebsocketRoomSignature>(joinEvent.token);
     return (
       signature &&
