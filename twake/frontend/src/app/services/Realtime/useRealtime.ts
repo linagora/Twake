@@ -61,7 +61,7 @@ const useRealtimeRoom = <T>(
 
   return {
     lastEvent,
-    send: (data: any) => websocket?.getSocket()?.send(data),
+    send: (data: any) => websocket?.send(room, data),
     unsubscribe: () => {
       subscribed.current = false;
       websocket?.leave(roomName, tagName);

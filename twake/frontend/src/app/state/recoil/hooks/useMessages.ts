@@ -85,12 +85,12 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     setMessages(allMessages);
   };
 
-  useRealtimeRoom<MessageWithReplies>(
+  const { send } = useRealtimeRoom<MessageWithReplies>(
     //TODO should get this from backend not hardcoded here
     `/companies/${key.companyId}/workspaces/${key.workspaceId}/channels/${key.channelId}/feed`,
     'useChannelMessages',
     (action: string, event: any) => {
-      console.log('receive event');
+      console.log('receive event', action, event);
       if (action === 'created' || action === 'updated') {
         updateRecoilFromMessage(key, event as NodeMessage);
 
@@ -133,6 +133,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     messages: currentWindowMessages,
     window,
     loadMore,
+    send,
     jumpTo: () => {},
   };
 };

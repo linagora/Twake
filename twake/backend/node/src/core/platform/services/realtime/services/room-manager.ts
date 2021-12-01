@@ -9,9 +9,10 @@ import {
 import { RealtimeRoomManager } from "../api";
 import WebSocketAPI from "../../../services/websocket/provider";
 import { WebSocketUser, WebSocket } from "../../../services/websocket/types";
+import AuthServiceAPI from "../../auth/provider";
 
 export default class RoomManager implements RealtimeRoomManager {
-  constructor(private ws: WebSocketAPI) {}
+  constructor(private ws: WebSocketAPI, private auth: AuthServiceAPI) {}
 
   init(): void {
     this.ws.onUserConnected(event => {
@@ -77,8 +78,8 @@ export default class RoomManager implements RealtimeRoomManager {
       `Checking if user ${user.id} can join room ${joinEvent.name} with token ${joinEvent.token}`,
     );
 
-    // FIXME: We will use JWT to validate the token
-    return joinEvent.token && joinEvent.token === "twake";
+    //Fixme also verify the company and stuff (probably best is to generate a jwt from the websocket room generator)
+    return joinEvent.token && !!this.auth.verifyToken(joinEvent.token)?.sub;
   }
 
   userCanEmitInRoom = this.userCanJoinRoom;
