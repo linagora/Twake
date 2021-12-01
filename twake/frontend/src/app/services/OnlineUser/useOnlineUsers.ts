@@ -68,12 +68,17 @@ export const useOnlineUsers = (): void => {
   }, [websocket, onlineUsers]);
 
   // listen to room events in which online events are pushed
-  useRealtimeRoom<RealtimeUpdateMessageType>(ONLINE_ROOM, 'useOnlineUsers', (action, resource) => {
-    if (action === 'event' && resource?.length) {
-      logger.trace('Updating online users');
-      updateOnline(resource);
-    } else {
-      logger.warn('Received unsupported event', action);
-    }
-  });
+  useRealtimeRoom<RealtimeUpdateMessageType>(
+    ONLINE_ROOM,
+    '',
+    'useOnlineUsers',
+    (action, resource) => {
+      if (action === 'event' && resource?.length) {
+        logger.trace('Updating online users');
+        updateOnline(resource);
+      } else {
+        logger.warn('Received unsupported event', action);
+      }
+    },
+  );
 };

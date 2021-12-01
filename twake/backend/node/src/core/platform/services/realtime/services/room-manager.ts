@@ -5,6 +5,7 @@ import {
   JoinRoomEvent,
   LeaveRoomEvent,
   ClientEvent,
+  WebsocketRoomSignature,
 } from "../types";
 import { RealtimeRoomManager } from "../api";
 import WebSocketAPI from "../../../services/websocket/provider";
@@ -78,8 +79,14 @@ export default class RoomManager implements RealtimeRoomManager {
       `Checking if user ${user.id} can join room ${joinEvent.name} with token ${joinEvent.token}`,
     );
 
-    //Fixme also verify the company and stuff (probably best is to generate a jwt from the websocket room generator)
-    return joinEvent.token && !!this.auth.verifyToken(joinEvent.token)?.sub;
+    const signature = this.auth.verifyTokenObject<WebsocketRoomSignature>(joinEvent.token);
+    return (
+      true || //Fixme remove this when frontend is fully ready
+      (signature &&
+        signature.name === JoinRoomEvent.name &&
+        signature.sub === user.id &&
+        signature.nbf > new Date().getTime())
+    );
   }
 
   userCanEmitInRoom = this.userCanJoinRoom;

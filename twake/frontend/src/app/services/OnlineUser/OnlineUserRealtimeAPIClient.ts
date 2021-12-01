@@ -40,6 +40,7 @@ export const OnlineUserRealtimeAPI = (websocket: WebSocketService): OnlineUserRe
 
     websocket.join(
       ONLINE_ROOM,
+      '',
       name,
       (
         type: string,

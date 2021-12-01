@@ -36,6 +36,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import { getLogger } from "../../../../core/platform/framework/logger";
 import _ from "lodash";
 
@@ -51,6 +52,7 @@ export class ChannelCrudController
     >
 {
   constructor(
+    protected websockets: RealtimeServiceAPI,
     protected service: ChannelService,
     protected membersService: MemberService,
     protected pendingEmails: ChannelPendingEmailService,
@@ -247,7 +249,10 @@ export class ChannelCrudController
         resources: entities,
       },
       ...(request.query.websockets && {
-        websockets: getWorkspaceRooms(request.params, request.currentUser),
+        websockets: this.websockets.sign(
+          getWorkspaceRooms(request.params, request.currentUser),
+          request.currentUser.id,
+        ),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,
@@ -323,7 +328,10 @@ export class ChannelCrudController
     return {
       resources: list.getEntities(),
       ...(request.query.websockets && {
-        websockets: getWorkspaceRooms(request.params, request.currentUser),
+        websockets: this.websockets.sign(
+          getWorkspaceRooms(request.params, request.currentUser),
+          request.currentUser.id,
+        ),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,

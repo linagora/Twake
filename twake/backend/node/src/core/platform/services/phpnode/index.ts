@@ -15,6 +15,7 @@ import { Consumes, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "../websocket/provider";
 import PhpNodeAPI from "./provider";
+import { RealtimeServiceAPI } from "../realtime/api";
 
 @Consumes(["webserver", "websocket"])
 export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
@@ -23,6 +24,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
   private ws: WebSocketAPI;
   private channels: ChannelServiceAPI;
+  private realtime: RealtimeServiceAPI;
 
   api(): PhpNodeAPI {
     return this;
@@ -74,6 +76,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
   async doInit(): Promise<this> {
     this.server = this.context.getProvider<WebServerAPI>("webserver").getServer();
     this.ws = this.context.getProvider<WebSocketAPI>("websocket");
+    this.realtime = this.context.getProvider<RealtimeServiceAPI>("realtime");
 
     /**
      * Register private calls from php for websockets
@@ -101,7 +104,10 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
           reply.code(500).send(); //Server is not ready
           return;
         }
-        const membersController = new ChannelMemberCrudController(this.channels.members);
+        const membersController = new ChannelMemberCrudController(
+          this.realtime,
+          this.channels.members,
+        );
         membersController.exists(request, reply);
       },
     });
@@ -118,6 +124,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
           return;
         }
         const channelsController = new ChannelCrudController(
+          this.realtime,
           this.channels.channels,
           this.channels.members,
           this.channels.pendingEmails,
@@ -145,6 +152,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
           return;
         }
         const channelsController = new ChannelCrudController(
+          this.realtime,
           this.channels.channels,
           this.channels.members,
           this.channels.pendingEmails,

@@ -153,8 +153,13 @@ class WebSocketService extends EventEmitter {
     Object.keys(this.wsListeners).forEach(key => {
       Object.keys(this.wsListeners[key]).forEach(tag => {
         if (this.wsListeners[key][tag]) {
-          newlyConnected && this.wsListeners[key][tag](WebsocketEvents.Connected, {});
-          this.join(key, tag, this.wsListeners[key][tag]);
+          newlyConnected && this.wsListeners[key][tag].callback(WebsocketEvents.Connected, {});
+          this.join(
+            key,
+            tag,
+            this.wsListeners[key][tag].token,
+            this.wsListeners[key][tag].callback,
+          );
         }
       });
     });
@@ -162,7 +167,7 @@ class WebSocketService extends EventEmitter {
 
   private notify(path: string, type: WebsocketEvents, event: any) {
     if (this.wsListeners[path]) {
-      Object.values(this.wsListeners[path]).forEach(callback => callback?.(type, event));
+      Object.values(this.wsListeners[path]).forEach(callback => callback.callback?.(type, event));
     }
   }
 
@@ -177,17 +182,22 @@ class WebSocketService extends EventEmitter {
    * @param tag
    * @param callback
    */
-  public join(path: string, tag: string, callback: (type: WebsocketEvents, event: any) => void) {
+  public join(
+    path: string,
+    token: string,
+    tag: string,
+    callback: (type: WebsocketEvents, event: any) => void,
+  ) {
     const name = path.replace(/\/$/, '');
 
     this.logger.debug(`Join room with name='${name}' and tag='${tag}'`);
 
     if (this.socket) {
-      this.socket.emit(WebsocketRoomActions.Join, { name, token: JWTStorage.getJWT() });
+      this.socket.emit(WebsocketRoomActions.Join, { name, token });
     }
 
     this.wsListeners[name] = this.wsListeners[name] || {};
-    this.wsListeners[name][tag] = callback;
+    this.wsListeners[name][tag] = { token, callback };
   }
 
   /**
@@ -217,12 +227,12 @@ class WebSocketService extends EventEmitter {
    * @param path
    * @param data
    */
-  public send<T>(path: string, data: T): void {
+  public send<T>(path: string, token: string, data: T): void {
     const name = path.replace(/\/$/, '');
     this.logger.debug(`Send realtime:event with name='${name}'`);
 
     if (this.socket) {
-      this.socket.emit('realtime:event', { name, data, token: JWTStorage.getJWT() });
+      this.socket.emit('realtime:event', { name, data, token });
     }
   }
 

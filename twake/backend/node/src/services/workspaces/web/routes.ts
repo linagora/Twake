@@ -25,6 +25,7 @@ import { WorkspaceUsersCrudController } from "./controllers/workspace-users";
 import { hasWorkspaceAdminLevel, hasWorkspaceMemberLevel } from "../../../utils/workspace";
 import { WorkspaceInviteTokensCrudController } from "./controllers/workspace-invite-tokens";
 import WorkspaceUser from "../entities/workspace_user";
+import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 
 const workspacesUrl = "/companies/:company_id/workspaces";
 const workspacePendingUsersUrl = "/companies/:company_id/workspaces/:workspace_id/pending";
@@ -33,8 +34,10 @@ const workspaceInviteTokensUrl = "/companies/:company_id/workspaces/:workspace_i
 
 const routes: FastifyPluginCallback<{
   service: WorkspaceServicesAPI;
+  realtime: RealtimeServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
   const workspacesController = new WorkspacesCrudController(
+    options.realtime,
     options.service.workspaces,
     options.service.companies,
   );

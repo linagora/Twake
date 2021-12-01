@@ -42,7 +42,7 @@ export const webSocketSchema = {
   properties: {
     name: { type: "string" },
     room: { type: "string" },
-    encryption_key: { type: "string" },
+    token: { type: "string" },
   },
 };
 

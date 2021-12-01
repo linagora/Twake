@@ -23,6 +23,7 @@ export type RealtimeRoomService<T> = {
  */
 const useRealtimeRoom = <T>(
   roomName: string,
+  token: string,
   tagName: string,
   onEvent: (action: RealtimeEventAction, event: T) => void,
 ) => {
@@ -37,6 +38,7 @@ const useRealtimeRoom = <T>(
     if (room && websocket && !subscribed.current) {
       websocket.join(
         room,
+        token,
         tag,
         (type: string, event: { action: RealtimeEventAction; resource: T }) => {
           logger.debug('Received WebSocket event', type, event);
@@ -61,7 +63,7 @@ const useRealtimeRoom = <T>(
 
   return {
     lastEvent,
-    send: (data: any) => websocket?.send(room, data),
+    send: (data: any) => websocket?.send(room, token, data),
     unsubscribe: () => {
       subscribed.current = false;
       websocket?.leave(roomName, tagName);

@@ -16,24 +16,28 @@ import {
 import ChannelServiceAPI from "../provider";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
+import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 
 const channelsUrl = "/companies/:company_id/workspaces/:workspace_id/channels";
 const membersUrl = `${channelsUrl}/:id/members`;
 const tabsUrl = `${channelsUrl}/:id/tabs`;
 const pendingEmailsUrl = `${channelsUrl}/:channel_id/pending_emails`;
 
-const routes: FastifyPluginCallback<{ service: ChannelServiceAPI }> = (
-  fastify: FastifyInstance,
-  options,
-  next,
-) => {
+const routes: FastifyPluginCallback<{
+  service: ChannelServiceAPI;
+  realtime: RealtimeServiceAPI;
+}> = (fastify: FastifyInstance, options, next) => {
   const channelsController = new ChannelCrudController(
+    options.realtime,
     options.service.channels,
     options.service.members,
     options.service.pendingEmails,
   );
-  const membersController = new ChannelMemberCrudController(options.service.members);
-  const tabsController = new ChannelTabCrudController(options.service.tabs);
+  const membersController = new ChannelMemberCrudController(
+    options.realtime,
+    options.service.members,
+  );
+  const tabsController = new ChannelTabCrudController(options.realtime, options.service.tabs);
 
   const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
     const authorized = await checkCompanyAndWorkspaceForUser(

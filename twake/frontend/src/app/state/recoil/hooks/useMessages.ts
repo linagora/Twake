@@ -86,8 +86,9 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   };
 
   const { send } = useRealtimeRoom<MessageWithReplies>(
-    //TODO should get this from backend not hardcoded here
+    //TODO should get this from backend not hardcoded here and add the token
     `/companies/${key.companyId}/workspaces/${key.workspaceId}/channels/${key.channelId}/feed`,
+    '',
     'useChannelMessages',
     (action: string, event: any) => {
       console.log('receive event', action, event);

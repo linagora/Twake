@@ -23,6 +23,7 @@ import {
 } from "../../../../utils/types";
 import { getTabsRealtimeRoom } from "../../services/tab/service";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 
 export class ChannelTabCrudController
   implements
@@ -31,8 +32,9 @@ export class ChannelTabCrudController
       ResourceCreateResponse<ChannelTab>,
       ResourceListResponse<ChannelTab>,
       ResourceDeleteResponse
-    > {
-  constructor(protected service: TabService) {}
+    >
+{
+  constructor(protected websockets: RealtimeServiceAPI, protected service: TabService) {}
 
   getPrimaryKey(request: FastifyRequest<{ Params: ChannelTabParameters }>): ChannelTabPrimaryKey {
     return {
@@ -177,7 +179,10 @@ export class ChannelTabCrudController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: [{ room: getTabsRealtimeRoom(context.channel) }],
+        websockets: this.websockets.sign(
+          [{ room: getTabsRealtimeRoom(context.channel) }],
+          context.user.id,
+        ),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,

@@ -35,7 +35,8 @@ export const useWorkspaces = (companyId: string = '') => {
     if (workspaces.length === 0) WorkspacesService.openNoWorkspacesPage();
   };
 
-  useRealtimeRoom<WorkspaceType>(roomName, 'useWorkspaces', (action, resource) => {
+  //Fixme: use the token got from backend here
+  useRealtimeRoom<WorkspaceType>(roomName, '', 'useWorkspaces', (action, resource) => {
     if (action === 'saved') {
       refresh();
     } else {

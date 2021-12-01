@@ -14,6 +14,7 @@ import { Pagination } from "../../../../core/platform/framework/api/crud-service
 import { getThreadMessageWebsocketRoom } from "../realtime";
 import { ThreadPrimaryKey } from "../../entities/threads";
 import { extendExecutionContentWithChannel } from "./index";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 
 export class MessagesController
   implements
@@ -24,7 +25,7 @@ export class MessagesController
       ResourceDeleteResponse
     >
 {
-  constructor(protected service: MessageServiceAPI) {}
+  constructor(protected realtime: RealtimeServiceAPI, protected service: MessageServiceAPI) {}
 
   async save(
     request: FastifyRequest<{
@@ -208,7 +209,10 @@ export class MessagesController
       return {
         resources: entities,
         ...(request.query.websockets && {
-          websockets: [{ room: getThreadMessageWebsocketRoom(context) }],
+          websockets: this.realtime.sign(
+            [{ room: getThreadMessageWebsocketRoom(context) }],
+            context.user.id,
+          ),
         }),
         ...(resources.page_token && {
           next_page_token: resources.page_token,
