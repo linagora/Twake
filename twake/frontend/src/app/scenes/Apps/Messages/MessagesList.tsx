@@ -3,6 +3,10 @@ import { useChannelMessages, useThreadMessages } from 'app/state/recoil/hooks/us
 import ListBuilder from './ListBuilder';
 import TimeSeparator from './Message/TimeSeparator';
 import MessageWithReplies from './Message/MessageWithReplies';
+import FirstMessage from './Message/Parts/FirstMessage/FirstMessage';
+import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
+import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
+import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 
 type Props = {
   companyId: string;
@@ -14,12 +18,13 @@ type Props = {
 export const MessagesListContext = React.createContext({ hideReplies: false });
 
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
-  const { messages, loadMore } = useChannelMessages({
+  const { messages, loadMore, window } = useChannelMessages({
     companyId,
     workspaceId: workspaceId || '',
     channelId: channelId || '',
   });
-  //  const { messages } = useThreadMessages({ companyId, threadId });
+
+  const { company } = useCurrentCompany();
 
   useEffect(() => {
     (async () => {
@@ -27,16 +32,45 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     })();
   }, []);
 
+  if (messages.length === 0) {
+    return (
+      <div style={{ flex: 1 }}>
+        <FirstMessage
+          channelId={channelId || ''}
+          companyId={companyId || ''}
+          workspaceId={workspaceId || ''}
+        />
+      </div>
+    );
+  }
+
   return (
     <MessagesListContext.Provider value={{ hideReplies: false }}>
       <ListBuilder
         items={messages}
         itemId={m => m.threadId}
         itemContent={(index, m) => {
-          const previous = messages[messages.map(m => m.threadId).indexOf(m.threadId) - 1];
+          const currentIndex = messages.map(m => m.threadId).indexOf(m.threadId);
+          const previous = messages[currentIndex - 1];
+
+          let head = <></>;
+          if (window.reachedStart && currentIndex === 0) {
+            head = (
+              <FirstMessage
+                channelId={channelId || ''}
+                companyId={m.companyId}
+                workspaceId={workspaceId || ''}
+              />
+            );
+          }
+
+          if (MessageHistoryService.shouldLimitMessages(company, window.start, messages.length)) {
+            head = <LockedHistoryBanner />;
+          }
 
           return (
             <Suspense fallback="" key={m.threadId}>
+              {head}
               <TimeSeparator messageId={m} previousMessageId={previous} unreadAfter={0} />
               <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
             </Suspense>

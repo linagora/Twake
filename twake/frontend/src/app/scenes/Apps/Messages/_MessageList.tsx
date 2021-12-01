@@ -493,15 +493,7 @@ export default class MessagesList extends React.Component<Props, State> {
                   !!message.id &&
                   this.service.hightlight === message.id;
 
-                if (message?.hidden_data?.type === 'limit_channel')
-                  return (
-                    <LockedHistoryBanner
-                      companySubscriptionUrl={
-                        InitService.server_infos?.configuration?.accounts?.console
-                          ?.company_subscription_url || ''
-                      }
-                    />
-                  );
+                if (message?.hidden_data?.type === 'limit_channel') return <LockedHistoryBanner />;
 
                 if (message.channel_id && message?.hidden_data?.type === 'init_channel') {
                   return <FirstMessage channelId={message.channel_id} />;

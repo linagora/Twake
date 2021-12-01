@@ -12,25 +12,25 @@ import { AtomMessageKey } from 'app/state/recoil/atoms/Messages';
 
 type Props = {
   messageId: AtomMessageKey;
-  previousMessageId: AtomMessageKey | undefined;
+  previousMessageId: AtomMessageKey;
   unreadAfter: number;
 };
 
 export default React.memo((props: Props) => {
-  if (!props.previousMessageId) {
-    return <div />;
-  }
-
   const { message } = useMessage(props.messageId);
-  const previousMessage = useMessage(props.previousMessageId).message;
+  const previousMessage = props.previousMessageId
+    ? useMessage(props.previousMessageId).message
+    : null;
 
   const isFirstNewMessage =
     (message?.created_at || 0) >= props.unreadAfter &&
     (previousMessage?.created_at || 0) < props.unreadAfter;
   const isNewMessage =
     !!(
-      !previousMessage ||
-      (message?.created_at && isFirstNewMessage && previousMessage?.created_at)
+      previousMessage &&
+      message?.created_at &&
+      isFirstNewMessage &&
+      previousMessage?.created_at
     ) && message?.user_id !== CurrentUser.get().id;
   const creation_date = Math.min(new Date().getTime(), message?.created_at || 0);
   return (

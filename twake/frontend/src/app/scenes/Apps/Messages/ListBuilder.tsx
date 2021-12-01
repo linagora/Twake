@@ -34,7 +34,7 @@ export default ({ itemId, loadMore, items, itemContent }: Props) => {
   }, [items]);
 
   if (items.length === 0) {
-    return <></>;
+    return <div style={{ flex: 1 }}></div>;
   }
 
   return (

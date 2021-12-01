@@ -4,14 +4,15 @@ import Banner from 'app/components/Banner/Banner';
 import Emojione from 'app/components/Emojione/Emojione';
 import Languages from 'services/languages/languages';
 import './LockedHistoryBanner.scss';
-
-type PropsType = {
-  companySubscriptionUrl: string;
-};
+import InitService from 'app/services/InitService';
 
 const { Title, Text } = Typography;
-const LockedHistoryBanner = ({ companySubscriptionUrl }: PropsType): JSX.Element => {
-  const onClickBtn = () => window.open(companySubscriptionUrl, 'blank');
+const LockedHistoryBanner = (): JSX.Element => {
+  const onClickBtn = () =>
+    window.open(
+      InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url || '',
+      'blank',
+    );
 
   return (
     <Banner

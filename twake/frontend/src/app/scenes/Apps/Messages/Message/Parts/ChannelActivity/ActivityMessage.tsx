@@ -51,10 +51,11 @@ type PropsType = {
 // i18n but with react nodes as replacements
 // TODO: maybe there is betters ways to do it with lodash
 const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
-  let temp = Languages.t(
-    key,
-    replacements.map((_, i) => `{${i}}`),
-  );
+  let temp =
+    Languages.t(
+      key,
+      replacements.map((_, i) => `{${i}}`),
+    ) || '';
   let list: any[] = [];
   replacements.forEach((replacement, i) => {
     let split = temp.split(`{${i}}`);

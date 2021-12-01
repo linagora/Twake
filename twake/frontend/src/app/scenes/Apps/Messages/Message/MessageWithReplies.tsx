@@ -7,6 +7,7 @@ import { MessagesListContext } from '../MessagesList';
 import ThreadSection from '../Parts/ThreadSection';
 import Thread from '../Parts/Thread';
 import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import ActivityMessage, { ActivityType } from './Parts/ChannelActivity/ActivityMessage';
 
 export const MessageContext = React.createContext({ companyId: '', threadId: '', id: '' });
 
@@ -16,21 +17,34 @@ type Props = {
 };
 
 export default ({ threadId, companyId }: Props) => {
-  const listContext = useContext(MessagesListContext);
-
   return (
     <MessageContext.Provider value={{ companyId, threadId, id: threadId }}>
-      <Thread withBlock>
-        <HeadMessage />
-        {!listContext.hideReplies && (
-          <>
-            <LoadMoreReplies />
-            <Responses companyId={companyId} threadId={threadId} />
-            <ReplyBlock />
-          </>
-        )}
-      </Thread>
+      <MessageType />
     </MessageContext.Provider>
+  );
+};
+
+const MessageType = () => {
+  const listContext = useContext(MessagesListContext);
+  const context = useContext(MessageContext);
+  const { message } = useMessage(context);
+
+  if (message.subtype === 'system') {
+    const activity = message?.context?.activity as ActivityType;
+    return <ActivityMessage activity={activity} />;
+  }
+
+  return (
+    <Thread withBlock>
+      <HeadMessage />
+      {!listContext.hideReplies && (
+        <>
+          <LoadMoreReplies />
+          <Responses companyId={context.companyId} threadId={context.threadId} />
+          <ReplyBlock />
+        </>
+      )}
+    </Thread>
   );
 };
 
