@@ -7,7 +7,6 @@ import FirstMessage from './Message/Parts/FirstMessage/FirstMessage';
 import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
 import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
-import { Button } from 'antd';
 
 type Props = {
   companyId: string;
@@ -19,7 +18,7 @@ type Props = {
 export const MessagesListContext = React.createContext({ hideReplies: false });
 
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
-  const { messages, loadMore, window, send } = useChannelMessages({
+  const { messages, loadMore, window } = useChannelMessages({
     companyId,
     workspaceId: workspaceId || '',
     channelId: channelId || '',
@@ -51,13 +50,6 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: false }}>
-      <Button
-        onClick={() => {
-          send({ some: 'data' });
-        }}
-      >
-        Send
-      </Button>
       <ListBuilder
         items={messages}
         itemId={m => m.threadId}
