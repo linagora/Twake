@@ -1,5 +1,5 @@
 import React from 'react';
-import { TabResource } from 'app/models/Tab';
+import { TabResource, TabType } from 'app/models/Tab';
 import RouterServices from 'app/services/RouterService';
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
@@ -13,9 +13,9 @@ import MainViewService from 'app/services/AppView/MainViewService';
 import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 
 type PropsType = {
-  tabResource: TabResource;
-  upsertTab: (tab: TabResource) => Promise<TabResource>;
-  deleteTab: (tab: TabResource) => Promise<void>;
+  tabResource: TabType;
+  saveTab: (tab: TabType) => Promise<void>;
+  removeTab: (tabId: string) => Promise<void>;
   currentUserId: string;
   selected: boolean;
 };
@@ -23,25 +23,25 @@ type PropsType = {
 export default ({
   selected,
   tabResource,
-  upsertTab,
-  deleteTab,
+  saveTab,
+  removeTab,
   currentUserId,
 }: PropsType): JSX.Element => {
   const { tabId, workspaceId } = RouterServices.getStateFromRoute();
-
+  //useTab
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasLevel(workspaceId, 'moderator'),
   );
 
-  if (selected && tabResource?.state?.persisted) {
+  if (selected && tabResource) {
     MainViewService.select(MainViewService.getId(), {
       collection: MainViewService.getConfiguration().collection,
       context: {
-        tabId: tabResource.data.id,
-        configuration: tabResource.data.configuration || {},
-        name: tabResource.data.name,
+        tabId: tabResource.id,
+        configuration: tabResource.configuration || {},
+        name: tabResource.name,
       },
-      app: getApplication(tabResource.data.application_id || ''),
+      app: getApplication(tabResource.application_id || ''),
       hasTabs: MainViewService.getConfiguration().hasTabs,
     });
   }
@@ -51,16 +51,16 @@ export default ({
       className="align-items-center"
       onClick={() => {
         const route: string = RouterServices.generateRouteFromState({
-          tabId: tabResource.data.id,
+          tabId: tabResource.id,
         });
         return RouterServices.push(route);
       }}
     >
-      {WorkspacesApps.getAppIconComponent(tabResource.data, { size: 14 })}
+      {WorkspacesApps.getAppIconComponent(tabResource, { size: 14 })}
       <span style={{ maxWidth: '108px', marginBottom: 0 }} className="tab-name small-right-margin">
-        {capitalize(tabResource.data.name)}
+        {capitalize(tabResource.name)}
       </span>
-      {tabResource.data.id === tabId && AccessRightsService.hasLevel(workspaceId, 'member') && (
+      {tabResource.id === tabId && /*AccessRightsService.hasLevel(workspaceId, 'member')*/ true && (
         <Menu
           style={{ lineHeight: 0 }}
           menu={[
@@ -72,7 +72,7 @@ export default ({
                 ModalManager.open(
                   <TabsTemplateEditor
                     tab={tabResource}
-                    onChangeTabs={(item: TabResource) => upsertTab(item)}
+                    onChangeTabs={(item: TabType) => saveTab(item)}
                   />,
                   {
                     position: 'center',
@@ -82,9 +82,9 @@ export default ({
             },
             {
               type: 'menu',
-              hide: currentUserId !== tabResource.data.owner && !isCurrentUserAdmin,
+              hide: currentUserId !== tabResource.owner && !isCurrentUserAdmin,
               text: <div style={{ color: 'var(--red)' }}>{Languages.t('general.delete')}</div>,
-              onClick: () => deleteTab(tabResource),
+              onClick: () => removeTab(tabResource.id || ''),
             },
           ]}
         >

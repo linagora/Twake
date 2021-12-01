@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Application, AppType } from 'app/models/App';
-import { TabResource } from 'app/models/Tab';
+import { TabResource, TabType } from 'app/models/Tab';
 import { Button, Row, Input, Select } from 'antd';
 import Groups from 'services/workspaces/groups.js';
 
@@ -18,14 +18,14 @@ import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 const { Option } = Select;
 
 type PropsType = {
-  tab?: TabResource;
+  tab?: TabType;
   onChangeTabs?: any;
   currentUserId?: string;
 };
 
 export default (props: PropsType): JSX.Element => {
-  const [appId, setAppId] = useState<string>(props.tab?.data.application_id || '');
-  const [tabName, setTabName] = useState<string>(props.tab?.data.name || '');
+  const [appId, setAppId] = useState<string>(props.tab?.application_id || '');
+  const [tabName, setTabName] = useState<string>(props.tab?.name || '');
   const [workspacesApps, setWorkspacesApps] = useState<AppType[]>([]);
   const { company } = useCurrentCompany();
 
@@ -43,9 +43,9 @@ export default (props: PropsType): JSX.Element => {
   return (
     <ObjectModal
       title={
-        props.tab?.data.id
+        props.tab?.id
           ? Languages.t('scenes.client.mainview.tabs.tabstemplateeditor.title_tab_edition', [
-              props.tab?.data.name,
+              props.tab?.name,
             ])
           : Languages.t('scenes.client.mainview.tabs.tabstemplateeditor.title_tab_creation')
       }
@@ -55,29 +55,30 @@ export default (props: PropsType): JSX.Element => {
           type="primary"
           disabled={!appId}
           onClick={() => {
-            let editedTab: TabResource | undefined = props.tab;
+            let editedTab: TabType | undefined = props.tab;
 
             ModalManager.closeAll();
 
-            if (editedTab?.data.id) {
-              editedTab.data = {
-                ...editedTab.data,
+            if (editedTab?.id) {
+              editedTab = {
+                ...editedTab,
                 name: tabName,
               };
             } else {
-              editedTab = new TabResource({
+              //tabResource => tabType
+              editedTab = {
                 name: tabName,
                 order: 'pos_' + new Date().getTime(),
                 owner: props.currentUserId,
                 application_id: appId,
                 configuration: {},
-              });
+              };
             }
 
             return props.onChangeTabs(editedTab);
           }}
         >
-          {Languages.t(props.tab?.data.id ? 'general.edit' : 'general.create')}
+          {Languages.t(props.tab?.id ? 'general.edit' : 'general.create')}
         </Button>
       }
     >
@@ -93,7 +94,7 @@ export default (props: PropsType): JSX.Element => {
             placeholder="Tab name"
           />
         </Row>
-        {!props.tab?.data.id && (
+        {!props.tab?.id && (
           <Row justify="start">
             <Select
               size={'large'}
