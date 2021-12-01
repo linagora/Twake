@@ -14,13 +14,14 @@ import CompanyUser from "../../src/services/user/entities/company_user";
 import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
 import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
 import Device from "../../src/services/user/entities/device";
-import WorkspaceServicesAPI, { WorkspaceServiceAPI } from "../../src/services/workspaces/api";
+import WorkspaceServicesAPI from "../../src/services/workspaces/api";
 
 export type uuid = string;
 
 export class TestDbService {
   private deviceRepository: Repository<Device>;
   private workspaceService: WorkspaceServicesAPI;
+
   public static async getInstance(testPlatform: TestPlatform): Promise<TestDbService> {
     const instance = new this(testPlatform);
     await instance.init();
@@ -60,7 +61,7 @@ export class TestDbService {
     return [...this.workspacesMap.values()];
   }
 
-  async createCompany(id?: uuid, name?: string): Promise<void> {
+  async createCompany(id?: uuid, name?: string): Promise<Company> {
     if (!name) {
       name = `TwakeAutotests-test-company-${this.rand()}`;
     }
@@ -72,6 +73,7 @@ export class TestDbService {
         identity_provider_id: id,
       }),
     );
+    return this.company;
   }
 
   async createWorkspace(
@@ -119,10 +121,11 @@ export class TestDbService {
       password?: string;
       cache?: User["cache"];
     } = {},
+    id: string = uuidv1(),
   ): Promise<User> {
     const user = new User();
     const random = this.rand();
-    user.id = uuidv1();
+    user.id = id;
     user.username_canonical = options.username || `test${random}`;
     user.first_name = options.firstName || `test${random}_first_name`;
     user.last_name = options.lastName || `test${random}_last_name`;
@@ -141,7 +144,7 @@ export class TestDbService {
 
     this.users.push(createdUser);
     await this.userService.companies.setUserRole(
-      this.company.id,
+      this.company ? this.company.id : workspacesPk[0].company_id,
       createdUser.id,
       options.companyRole ? options.companyRole : "member",
     );
@@ -210,5 +213,23 @@ export class TestDbService {
 
   async getCompanyUsersCountFromDb(companyId: string) {
     return this.userService.companies.getUsersCount(companyId);
+  }
+
+  async createDefault(platform: TestPlatform, isAdmin: boolean = true): Promise<void> {
+    await this.createCompany(platform.workspace.company_id);
+    const ws0pk = {
+      id: platform.workspace.workspace_id,
+      company_id: platform.workspace.company_id,
+    };
+    await this.createWorkspace(ws0pk);
+    await this.createUser(
+      [ws0pk],
+      {
+        firstName: "defaultUser",
+        companyRole: isAdmin ? "admin" : "member",
+        workspaceRole: isAdmin ? "moderator" : "member",
+      },
+      platform.currentUser.id,
+    );
   }
 }

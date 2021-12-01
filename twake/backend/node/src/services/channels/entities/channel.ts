@@ -20,7 +20,7 @@ export class Channel {
   workspace_id: string | ChannelType.DIRECT;
 
   @Type(() => String)
-  @Column("id", "uuid", { generator: "uuid" })
+  @Column("id", "timeuuid", { generator: "timeuuid" })
   id: string;
 
   @Column("name", "encoded_string")
@@ -39,10 +39,10 @@ export class Channel {
   visibility: ChannelVisibility;
 
   @Column("is_default", "boolean")
-  is_default: boolean = false;
+  is_default = false;
 
   @Column("archived", "boolean")
-  archived: boolean = false;
+  archived = false;
 
   @Column("archivation_date", "number")
   archivation_date: number;

@@ -152,6 +152,8 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
 
   setUserRole(companyId: uuid, userId: uuid, role?: CompanyUserRole): Promise<CompanyUser>;
 
+  getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole>;
+
   removeCompany(searchKey: CompanySearchKey): Promise<void>;
 
   getUsersCount(workspaceId: string): Promise<number>;
