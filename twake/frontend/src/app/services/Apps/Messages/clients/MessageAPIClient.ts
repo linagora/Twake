@@ -86,7 +86,7 @@ class MessageAPIClient {
   async save(
     companyId: string,
     threadId: string,
-    message: NodeMessage,
+    message: Partial<NodeMessage>,
     {
       movedFromThread = undefined,
     }: {
@@ -94,7 +94,7 @@ class MessageAPIClient {
     } = {},
   ) {
     const response = await Api.post<
-      { resource: NodeMessage; options: { previous_thread?: string } },
+      { resource: Partial<NodeMessage>; options: { previous_thread?: string } },
       { resource: NodeMessage }
     >(
       `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages${

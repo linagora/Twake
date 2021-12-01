@@ -1,4 +1,4 @@
-import { useRecoilCallback, useRecoilState } from 'recoil';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 
 import { WorkspaceType } from 'app/models/Workspace';
 import { WorkspaceGetOrFetch, WorkspaceListStateFamily } from '../atoms/WorkspaceList';
@@ -17,19 +17,25 @@ import LocalStorage from 'app/services/LocalStorage';
 import useRouterCompany from './useRouterCompany';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import Workspaces from 'services/workspaces/workspaces.js';
+import { LoadingState } from '../atoms/Loading';
 
 const logger = Logger.getLogger('useWorkspaces');
 
 export const useWorkspaces = (companyId: string = '') => {
   const [workspaces, setWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));
+  const [loading, setLoading] = useRecoilState(LoadingState(`workspaces-${companyId}`));
 
   const routerWorkspaceId = useRouterWorkspace();
   const bestCandidate = useBestCandidateWorkspace(companyId, workspaces);
 
   const refresh = async () => {
-    const workspaces = await WorkspaceAPIClient.list(companyId);
-    setWorkspaces(workspaces);
-    if (workspaces.length === 0) WorkspacesService.openNoWorkspacesPage();
+    if (workspaces.length === 0) {
+      setLoading(true);
+    }
+    const updated = await WorkspaceAPIClient.list(companyId);
+    setWorkspaces(updated);
+    if (updated.length === 0) WorkspacesService.openNoWorkspacesPage();
+    setLoading(false);
   };
 
   //Fixme: use the token got from backend here
@@ -60,8 +66,13 @@ export const useWorkspaces = (companyId: string = '') => {
   });
   //End
 
-  return { workspaces, refresh };
+  return { workspaces, loading, refresh };
 };
+
+export function useWorkspaceLoader(companyId: string) {
+  const loading = useRecoilValue(LoadingState(`workspaces-${companyId}`));
+  return { loading };
+}
 
 export function useCurrentWorkspace() {
   const companyId = useRouterCompany();

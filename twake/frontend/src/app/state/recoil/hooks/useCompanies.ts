@@ -12,13 +12,33 @@ import WorkspacesService from 'services/workspaces/workspaces.js';
 import UserNotifications from 'app/services/user/UserNotifications';
 import AccessRightsService from 'app/services/AccessRightsService';
 import Groups from 'services/workspaces/groups.js';
+import LoginService from 'app/services/login/LoginService';
+import UserAPIClient from 'app/services/user/UserAPIClient';
 
 /**
  * Will return the companies of the current user
  */
 export const useCompanies = () => {
   const [user] = useRecoilState(CurrentUserState);
-  return { companies: user?.companies || [] };
+
+  const refresh = async () => {
+    await LoginService.updateUser();
+  };
+
+  return { companies: user?.companies || [], refresh };
+};
+
+/**
+ * Will return the requested company
+ */
+export const useCompany = (companyId: string) => {
+  const [company, setCompany] = useRecoilState(CompaniesState(companyId));
+
+  const refresh = async () => {
+    setCompany(await UserAPIClient.getCompany(companyId));
+  };
+
+  return { company, refresh };
 };
 
 /**

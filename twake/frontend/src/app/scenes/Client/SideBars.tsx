@@ -6,12 +6,24 @@ import ChannelsBar, { LoadingChannelBar } from './ChannelsBar/ChannelsBar';
 import WorkspacesBar, { LoadingWorkspaceBar } from './WorkspacesBar/WorkspacesBar';
 
 import './WorkspacesBar/WorkspacesBar.scss';
+import { useWorkspaceLoader } from 'app/state/recoil/hooks/useWorkspaces';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 
 export default () => {
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
+  const { loading } = useWorkspaceLoader(companyId);
+
+  if (loading) {
+    return <LoadingSidebar />;
+  }
+
   return (
     <Layout style={{ height: '100%', backgroundColor: 'var(--secondary)' }}>
       <WorkspacesBar />
-      <ChannelsBar />
+      {!!workspaceId && <ChannelsBar />}
+      {!workspaceId && <LoadingChannelBar />}
     </Layout>
   );
 };

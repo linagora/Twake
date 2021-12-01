@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import Languages from 'services/languages/languages';
 import PopupService from 'services/popupManager/popupManager.js';
 import PopupComponent from 'components/PopupComponent/PopupComponent.js';
-import MainView from './MainView/MainView';
+import { MainViewWrapper } from './MainView/MainView';
 import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
 import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
 import DriveUploadViewer from 'components/Uploads/UploadViewer.js';
@@ -58,7 +58,7 @@ export default React.memo((): JSX.Element => {
               </Suspense>
             </Layout.Sider>
             <Suspense fallback={<></>}>
-              <MainView className={classNames({ collapsed: menuIsOpen })} />
+              <MainViewWrapper className={classNames({ collapsed: menuIsOpen })} />
             </Suspense>
           </Layout>
           <UserContext />

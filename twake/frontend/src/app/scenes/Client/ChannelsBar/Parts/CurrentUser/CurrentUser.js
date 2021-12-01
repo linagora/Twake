@@ -72,25 +72,6 @@ export default class CurrentUser extends Component {
     clearInterval(this.refreshUserState);
   }
 
-  async fetchCurrentWorkspace(companyId, workspaceId) {
-    const workspace = await WorkspaceAPIClient.get(companyId, workspaceId);
-
-    this.setState({ workspaceName: workspace.name || '' });
-
-    if (this.currentWorkspaceId !== workspaceId) {
-      this.setState({ currentWorkspaceId: workspaceId });
-    }
-  }
-
-  componentDidUpdate() {
-    const { companyId, workspaceId } = RouterService.getStateFromRoute();
-
-    companyId &&
-      workspaceId &&
-      workspaceId !== this.state.currentWorkspaceId &&
-      this.fetchCurrentWorkspace(companyId, workspaceId);
-  }
-
   componentDidMount() {
     const new_status = {
       ...this.users_repository.known_objects_by_id[this.user_id].status.split(' '),
@@ -99,10 +80,6 @@ export default class CurrentUser extends Component {
     if (!new_status[0]) {
       new_status[1] = '';
     }
-
-    const { companyId, workspaceId } = RouterService.getStateFromRoute();
-
-    companyId && workspaceId && this.fetchCurrentWorkspace(companyId, workspaceId);
 
     this.setState({ new_status });
   }
@@ -381,7 +358,6 @@ export default class CurrentUser extends Component {
       <CompanyHeaderUI
         refDivUser={node => (this.node = node)}
         refDivBell={node => (this.bell_node = node)}
-        companyName={this.state.workspaceName || '-'}
         status={status}
         notificationsDisabled={notifications_disabled}
         onClickUser={evt => {

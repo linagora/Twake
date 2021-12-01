@@ -89,7 +89,7 @@ export const LoadingChannelBar = () => {
     <Layout.Sider
       theme="light"
       width={220}
-      className={classNames('channels_view_loading')}
+      className={classNames('channels_view_loading channels_view')}
       style={{ height: '100%', width: '90%', alignItems: 'center' }}
     >
       <ChannelLoading />

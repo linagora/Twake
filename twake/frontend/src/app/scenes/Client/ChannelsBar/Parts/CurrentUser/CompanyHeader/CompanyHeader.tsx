@@ -9,15 +9,16 @@ import NotificationDelay from '../Notifications/NotificationDelay';
 
 import './CompanyHeader.scss';
 import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 
 type PropsType = {
-  companyName: string;
   onClickUser?: (event: any) => void;
   refDivUser: any;
 };
 
 export default (props: PropsType): JSX.Element => {
   const { user } = useCurrentUser();
+  const { workspace } = useCurrentWorkspace();
 
   return (
     <div className="current-company-header">
@@ -27,7 +28,7 @@ export default (props: PropsType): JSX.Element => {
         onClick={evt => props.onClickUser && props.onClickUser(evt)}
       >
         <div className="name">
-          <div className="text">{props.companyName}</div>
+          <div className="text">{workspace?.name || '-'}</div>
           <div className="icon">
             <Icon type="angle-down" />
           </div>

@@ -23,6 +23,8 @@ import { FileType } from 'app/models/File';
 import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import { useMessageEditor } from 'app/state/recoil/hooks/useMessageEditor';
+import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 
 type Props = {
   messageId?: string;
@@ -45,12 +47,18 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const editorId = props.messageId
-    ? `edit-${props.messageId}`
-    : props.threadId
-    ? `reply-${props.threadId}`
-    : `new-${props.channelId}`;
-  const { editor, setValue } = useMessageEditor(editorId);
+  const {
+    editor,
+    setValue,
+    send,
+    key: editorId,
+  } = useMessageEditor({
+    companyId: useRouterCompany(),
+    workspaceId: useRouterWorkspace(),
+    channelId: props.channelId,
+    threadId: props.threadId,
+    messageId: props.messageId,
+  });
 
   const { uploadFiles, getOnePendingFile } = useUpload();
   const { currentUploadZoneFilesList, clearZone } = useUploadZones(editorId);
@@ -124,6 +132,9 @@ export default (props: Props) => {
   };
 
   const sendMessage = (messageContent: string, editorId: string) => {
+    send();
+    return;
+
     if (!props.threadId) {
       messageEditorService.closeEditor();
     }
