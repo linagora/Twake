@@ -3,6 +3,7 @@ import { MessageWithReplies, NodeMessage } from 'app/models/Message';
 import MessageViewAPIClient from './MessageViewAPIClient';
 import MessageThreadAPIClient from './MessageThreadAPIClient';
 import Api from 'app/services/Api';
+import { WebsocketRoom } from 'app/services/WebSocket/WebSocket';
 
 /**
  * This service is to get, update, create, list messages in a thread
@@ -10,8 +11,13 @@ import Api from 'app/services/Api';
 @TwakeService('MessageAPIClientService')
 class MessageAPIClient {
   private readonly prefixUrl: string = '/internal/services/messages/v1';
+  private realtime: Map<string, WebsocketRoom[]> = new Map();
   private readonly _viewService = MessageViewAPIClient;
   private readonly threadService = MessageThreadAPIClient;
+
+  websockets(threadId: string): WebsocketRoom[] {
+    return this.realtime.get(threadId) || [];
+  }
 
   async list(
     companyId: string,
@@ -22,9 +28,10 @@ class MessageAPIClient {
       direction = 'future',
     }: { limit?: number; pageToken?: string; direction?: 'future' | 'history' } = {},
   ) {
-    const response = await Api.get<{ resources: NodeMessage[] }>(
+    const response = await Api.get<{ resources: NodeMessage[]; websockets: WebsocketRoom[] }>(
       `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages?limit=${limit}&page_token=${pageToken}&direction=${direction}`,
     );
+    this.realtime.set(threadId, response.websockets);
     return response.resources;
   }
 

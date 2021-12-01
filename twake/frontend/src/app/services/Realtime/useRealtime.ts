@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import useWebSocket from 'app/services/WebSocket/hooks/useWebSocket';
 import Logger from 'app/services/Logger';
 import { RealtimeEventAction } from './types';
+import { WebsocketRoom } from '../WebSocket/WebSocket';
 
 const logger = Logger.getLogger('useRealtimeRoom');
 
@@ -22,14 +23,13 @@ export type RealtimeRoomService<T> = {
  * @returns
  */
 const useRealtimeRoom = <T>(
-  roomName: string,
-  token: string,
+  roomConf: WebsocketRoom,
   tagName: string,
   onEvent: (action: RealtimeEventAction, event: T) => void,
 ) => {
   const { websocket } = useWebSocket();
   const [lastEvent, setLastEvent] = useState<{ action: RealtimeEventAction; resource: T }>();
-  const [room] = useState(roomName);
+  const [room] = useState(roomConf);
   const [tag] = useState(tagName);
   // subscribe once
   const subscribed = useRef(false);
@@ -37,8 +37,8 @@ const useRealtimeRoom = <T>(
   useEffect(() => {
     if (room && websocket && !subscribed.current) {
       websocket.join(
-        room,
-        token,
+        room.room,
+        room.token,
         tag,
         (type: string, event: { action: RealtimeEventAction; resource: T }) => {
           logger.debug('Received WebSocket event', type, event);
@@ -63,10 +63,10 @@ const useRealtimeRoom = <T>(
 
   return {
     lastEvent,
-    send: (data: any) => websocket?.send(room, token, data),
+    send: (data: any) => websocket?.send(room.room, room.token, data),
     unsubscribe: () => {
       subscribed.current = false;
-      websocket?.leave(roomName, tagName);
+      websocket?.leave(room.room, tagName);
     },
   };
 };

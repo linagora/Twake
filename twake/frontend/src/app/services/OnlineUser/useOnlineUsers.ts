@@ -10,6 +10,7 @@ import {
   ONLINE_ROOM,
   RealtimeUpdateMessageType,
 } from './OnlineUserRealtimeAPIClient';
+import JWTStorage from '../JWTStorage';
 
 const logger = Logger.getLogger('useOnlineUsers');
 
@@ -69,8 +70,7 @@ export const useOnlineUsers = (): void => {
 
   // listen to room events in which online events are pushed
   useRealtimeRoom<RealtimeUpdateMessageType>(
-    ONLINE_ROOM,
-    '',
+    { room: ONLINE_ROOM, token: JWTStorage.getJWT() },
     'useOnlineUsers',
     (action, resource) => {
       if (action === 'event' && resource?.length) {

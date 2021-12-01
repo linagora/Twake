@@ -1,5 +1,10 @@
 import WebSocketFactory from './WebSocketFactory';
 
+export type WebsocketRoom = {
+  room: string;
+  token: string;
+};
+
 export enum WebsocketRoomActions {
   Join = 'realtime:join',
   Leave = 'realtime:leave',

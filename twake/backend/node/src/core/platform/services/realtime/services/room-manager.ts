@@ -79,13 +79,17 @@ export default class RoomManager implements RealtimeRoomManager {
       `Checking if user ${user.id} can join room ${joinEvent.name} with token ${joinEvent.token}`,
     );
 
+    //Public rooms we just check the user is logged in
+    if (joinEvent.name === "/users/online") {
+      return !!this.auth.verifyToken(joinEvent.token)?.sub;
+    }
+
     const signature = this.auth.verifyTokenObject<WebsocketRoomSignature>(joinEvent.token);
     return (
-      true || //Fixme remove this when frontend is fully ready
-      (signature &&
-        signature.name === JoinRoomEvent.name &&
-        signature.sub === user.id &&
-        signature.nbf > new Date().getTime())
+      signature &&
+      signature.name === JoinRoomEvent.name &&
+      signature.sub === user.id &&
+      signature.nbf > new Date().getTime()
     );
   }
 

@@ -26,9 +26,6 @@ export const useWorkspaces = (companyId: string = '') => {
   const routerWorkspaceId = useRouterWorkspace();
   const bestCandidate = useBestCandidateWorkspace(companyId, workspaces);
 
-  //Fixme get this from backend
-  const roomName = `/companies/${companyId}/workspaces`;
-
   const refresh = async () => {
     const workspaces = await WorkspaceAPIClient.list(companyId);
     setWorkspaces(workspaces);
@@ -36,13 +33,17 @@ export const useWorkspaces = (companyId: string = '') => {
   };
 
   //Fixme: use the token got from backend here
-  useRealtimeRoom<WorkspaceType>(roomName, '', 'useWorkspaces', (action, resource) => {
-    if (action === 'saved') {
-      refresh();
-    } else {
-      // not supported for now
-    }
-  });
+  useRealtimeRoom<WorkspaceType>(
+    WorkspaceAPIClient.websockets(companyId)[0],
+    'useWorkspaces',
+    (action, resource) => {
+      if (action === 'saved') {
+        refresh();
+      } else {
+        // not supported for now
+      }
+    },
+  );
 
   if (!routerWorkspaceId && bestCandidate) {
     RouterService.push(

@@ -19,6 +19,7 @@ type WebsocketJoinEvent = {
 };
 type WebsocketDefinition = {
   room: string;
+  token: string;
 };
 
 export default class CollectionTransportSocket<G extends Resource<any>> {
@@ -39,8 +40,12 @@ export default class CollectionTransportSocket<G extends Resource<any>> {
           .getSocket()
           .join(
             definition.room,
+            definition.token,
             this.transport.collection.getPath(),
-            async (type: WebsocketEvents | string, event: WebsocketResourceEvent & WebsocketJoinEvent) => {
+            async (
+              type: WebsocketEvents | string,
+              event: WebsocketResourceEvent & WebsocketJoinEvent,
+            ) => {
               switch (type) {
                 case WebsocketEvents.Disconnected:
                   this.lastConnectedTime = new Date().getTime();
