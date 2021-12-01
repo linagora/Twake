@@ -156,8 +156,8 @@ class WebSocketService extends EventEmitter {
           newlyConnected && this.wsListeners[key][tag].callback(WebsocketEvents.Connected, {});
           this.join(
             key,
-            tag,
             this.wsListeners[key][tag].token,
+            tag,
             this.wsListeners[key][tag].callback,
           );
         }

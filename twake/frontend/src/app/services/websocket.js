@@ -106,7 +106,7 @@ class DeprecatedWebsocket extends Observable {
     if (this.subscribed[route].length === 1) {
       const unid = Number.unid();
       this.subscribedKey[route] = unid;
-      WebSocket.get().join('previous::' + route, '', (type, data) => {
+      WebSocket.get().join('previous::' + route, '', '', (type, data) => {
         if (type === 'realtime:event') {
           this.message(unid, data.name, data.data);
         }
