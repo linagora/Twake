@@ -8,6 +8,7 @@ import { AbstractConnector } from "../abstract-connector";
 import { buildSelectQuery } from "./query-builder";
 import { transformValueFromDbString, transformValueToDbString } from "./typeTransforms";
 import { logger } from "../../../../../../framework";
+
 export { MongoPagination } from "./pagination";
 
 export interface MongoConnectionOptions {
@@ -244,9 +245,9 @@ export class MongoConnector extends AbstractConnector<MongoConnectionOptions, mo
       entities.push(entity);
     }
 
-    const nextToken =
-      entities.length === parseInt(options.pagination.limitStr) &&
-      (parseInt(options.pagination.page_token) + 1).toString(10);
+    const nextPageToken = options.pagination.page_token || "0";
+    const limit = parseInt(options.pagination.limitStr);
+    const nextToken = entities.length === limit && (parseInt(nextPageToken) + limit).toString(10);
     const nextPage: Paginable = new Pagination(nextToken, options.pagination.limitStr || "100");
     return new ListResult<Table>(entityDefinition.type, entities, nextPage);
   }
