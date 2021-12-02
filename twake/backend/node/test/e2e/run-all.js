@@ -18,6 +18,7 @@ function exec(command, args) {
     });
 
     cmd.stderr.on("data", function (data) {
+      //Fixme: missing logs shows with console.log(data.toString()) ??
       error += data.toString() + "\n";
     });
 
@@ -25,7 +26,7 @@ function exec(command, args) {
       cmd.kill(9);
 
       //The delay is to make sure we get all the missing logs
-      setTimeout(() => done({ code, data, error }), 5000);
+      setTimeout(() => done({ code, data, error }), code === 0 ? 1 : 5000);
     });
   });
 }
