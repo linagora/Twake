@@ -47,7 +47,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   let failed = 0;
   let passed = 0;
 
-  for (const path of ["test/e2e/users"] /*srcFiles*/) {
+  for (const path of srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
     const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
     try {
