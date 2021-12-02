@@ -11,6 +11,7 @@ import { FileServiceAPI } from "../files/api";
 import { ApplicationServiceAPI } from "../applications/api";
 import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
 import { StatisticsAPI } from "../statistics/types";
+import { RealtimeServiceAPI } from "../../core/platform/services/realtime/api";
 
 @Prefix("/internal/services/messages/v1")
 @Consumes([
@@ -41,12 +42,13 @@ export default class MessageService extends TwakeService<MessageServiceAPI> {
     const applications = this.context.getProvider<ApplicationServiceAPI>("applications");
     const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
     const statistics = this.context.getProvider<StatisticsAPI>("statistics");
+    const realtime = this.context.getProvider<RealtimeServiceAPI>("realtime");
 
     this.service = getService(platformServices, user, channels, files, applications, statistics);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {
-      web(instance, { prefix: this.prefix, service: this.service });
+      web(instance, { prefix: this.prefix, service: this.service, realtime });
       next();
     });
 
