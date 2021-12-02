@@ -138,6 +138,7 @@ export class TestDbService {
       ...(user.cache.companies || []),
       ...workspacesPk.map(w => w.company_id),
     ];
+    console.log(user.cache);
 
     if (options.email) {
       user.email_canonical = options.email;

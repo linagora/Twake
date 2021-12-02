@@ -23,7 +23,9 @@ function exec(command, args) {
 
     cmd.on("exit", function (code) {
       cmd.kill(9);
-      done({ code, data, error });
+
+      //The delay is to make sure we get all the missing logs
+      setTimeout(() => done({ code, data, error }), 5000);
     });
   });
 }
