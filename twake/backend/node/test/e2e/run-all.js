@@ -14,12 +14,10 @@ function exec(command, args) {
     let error = "";
 
     cmd.stdout.on("data", function (data) {
-      console.log(data.toString());
       data += data.toString() + "\n";
     });
 
     cmd.stderr.on("data", function (data) {
-      console.log(data.toString());
       error += data.toString() + "\n";
     });
 
