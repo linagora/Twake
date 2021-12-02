@@ -20,10 +20,12 @@ export class AuthService implements AuthServiceAPI {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   verifyToken(token: string): JWTObject {
+    if (!token) return null;
     return jwt.verify(token, this.configuration.secret) as JWTObject;
   }
 
   verifyTokenObject<T>(token: string): T {
+    if (!token) return null;
     return jwt.verify(token, this.configuration.secret) as T;
   }
 
