@@ -1,38 +1,27 @@
 import React from 'react';
-import { TabResource, TabType } from 'app/models/Tab';
+import { Plus } from 'react-feather';
+import { TabType } from 'app/models/Tab';
 import { Button, Row, Tabs } from 'antd';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
-import Collections from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
-import { Plus } from 'react-feather';
 import DefaultChannelTab from 'app/scenes/Client/MainView/Tabs/DefaultChannelTab';
 import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
 import UserService from 'services/user/UserService';
-import AccessRightsService from 'app/services/AccessRightsService';
+import useTabs from 'app/state/recoil/hooks/useTabs';
 
 import './Tabs.scss';
-import useTabs from 'app/state/recoil/hooks/useTabs';
-import LocalStorage from 'app/services/LocalStorage';
 
 export default (): JSX.Element => {
-  const { companyId, workspaceId, channelId, tabId } = RouterServices.getStateFromRoute();
-  const { tabs, save, refresh, remove } = useTabs();
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
-  const TabsCollection = Collections.get(collectionPath, TabResource);
-  const tabsList: TabResource[] = TabsCollection.useWatcher(
-    {},
-    { observedFields: ['id', 'name', 'configuration'] },
-  );
+  const { tabId } = RouterServices.getStateFromRoute();
+  const { tabs, save, remove } = useTabs();
   const currentUser = UserService.getCurrentUser();
-  const tabsListe = [...tabs];
-
-  const upsertTab = async (tab: TabResource) => await TabsCollection.upsert(tab);
-  const deleteTab = async (tab: TabResource) => await TabsCollection.remove(tab);
+  const tabsList = [...tabs];
 
   const saveTab = async (tab: TabType) => await save(tab);
   const removeTab = async (tabId: string) => await remove(tabId || '');
+
   if (tabId && tabs.map(e => e.id).indexOf(tabId || '') < 0) {
     const route: string = RouterServices.generateRouteFromState({
       tabId: '',
@@ -42,10 +31,10 @@ export default (): JSX.Element => {
 
   return (
     <Row align="middle" className="main-view-tabs" wrap={false}>
-      {tabsListe.sort((a, b) => (a.order || '').localeCompare(b.order || '')) && (
+      {tabsList.sort((a, b) => (a.order || '').localeCompare(b.order || '')) && (
         <Tabs activeKey={tabId ? tabId : 'default'}>
           <Tabs.TabPane tab={<DefaultChannelTab selected={!tabId} />} key="default" />
-          {tabsListe.map((tab: TabType) => {
+          {tabsList.map((tab: TabType) => {
             return (
               tab.id && (
                 <Tabs.TabPane
@@ -54,7 +43,7 @@ export default (): JSX.Element => {
                       currentUserId={currentUser.id}
                       selected={tabId === tab.id}
                       key={tab.id}
-                      tabResource={tab}
+                      tabType={tab}
                       saveTab={saveTab}
                       removeTab={removeTab}
                     />

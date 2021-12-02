@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Application, AppType } from 'app/models/App';
-import { TabResource, TabType } from 'app/models/Tab';
 import { Button, Row, Input, Select } from 'antd';
-import Groups from 'services/workspaces/groups.js';
 
+import { Application, AppType } from 'app/models/App';
+import Groups from 'services/workspaces/groups.js';
+import { TabType } from 'app/models/Tab';
 import Icon from 'app/components/Icon/Icon';
 import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
@@ -65,7 +65,6 @@ export default (props: PropsType): JSX.Element => {
                 name: tabName,
               };
             } else {
-              //tabResource => tabType
               editedTab = {
                 name: tabName,
                 order: 'pos_' + new Date().getTime(),

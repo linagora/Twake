@@ -1,6 +1,7 @@
 import { TabType } from 'app/models/Tab';
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
+import { WebsocketRoomActions } from '../WebSocket/WebSocket';
 
 export declare type DeleteStatus = 'success' | 'error';
 
@@ -22,32 +23,23 @@ class TabsAPIClient {
       }`,
       { resource: tab },
     );
-    console.log('+++++++++++coucou', response.resource);
+    console.log('+++++++++++APICLient save : ', response.resource);
     return response.resource;
   }
 
   async list(companyId: string, workspaceId: string, channelId: string): Promise<TabType[]> {
-    const response = await Api.get<{ resources: TabType[] }>(
-      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs`,
+    const response = await Api.get<{ resources: TabType[]; websockets: WebsocketRoomActions }>(
+      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs?websockets=1`,
     );
-
-    console.log('+++++++++++salut', response.resources);
-
+    console.log('+++++++++++APICLient list : ', response.websockets);
     return response.resources;
   }
 
-  async remove(
-    companyId: string,
-    workspaceId: string,
-    channelId: string,
-    tabId: string,
-  ): Promise<boolean> {
+  async remove(companyId: string, workspaceId: string, channelId: string, tabId: string) {
     const response = await Api.delete<any>(
       `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/${tabId}`,
     );
-    console.log('+++++++++++bye', response);
-
-    return true;
+    console.log('+++++++++++APIClient remove : ', response);
   }
 }
 

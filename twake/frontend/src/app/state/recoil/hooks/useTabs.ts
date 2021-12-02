@@ -1,4 +1,5 @@
 import { TabType } from 'app/models/Tab';
+import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import TabsAPIClients from 'app/services/tabs/TabsAPIClients';
 import { useRecoilState } from 'recoil';
 import { AtomTabKey, TabState } from '../atoms/Tabs';
@@ -11,7 +12,12 @@ export default function useTabs() {
   const workspace_id = useRouterWorkspace();
   const channel_id = useRouterChannel();
   const context: AtomTabKey = { company_id, workspace_id, channel_id };
-  console.log('++++++++++++++++__________ ', context);
+  console.log('++++++++++++++++Here in the useTabs Hook:  ', context);
+  useRealtimeRoom(
+    '/companies/91752480-3cc5-11ec-a395-5bf84f5d3e05/workspaces/7936e17a-3d7d-11ec-9c5d-0242ac120006/channels/f6841b52-635b-494b-8b92-f471346990e8/tabs',
+    'UseTabs',
+    () => refresh(),
+  );
 
   const [tabs, setTabs] = useRecoilState(TabState(context));
 
