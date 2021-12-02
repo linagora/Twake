@@ -3,7 +3,7 @@ import { User, WebsocketMetadata } from "../../../utils/types";
 export function getWebsocketInformation(user: User): WebsocketMetadata {
   return {
     room: getNotificationRoomName(user.id),
-    encryption_key: "",
+    token: "",
   };
 }
 

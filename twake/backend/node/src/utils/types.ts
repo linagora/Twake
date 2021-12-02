@@ -62,7 +62,7 @@ export interface Workspace {
 export interface WebsocketMetadata {
   room: string;
   name?: string;
-  encryption_key?: string;
+  token?: string;
 }
 
 export class ResourceListResponse<T> {
@@ -97,7 +97,7 @@ export interface ResourceListQueryParameters extends PaginationQueryParameters {
 export declare type DeleteStatus = "success" | "error";
 export interface ResourceWebsocket {
   room: string;
-  encryption_key?: string;
+  token?: string;
 }
 
 export interface ResourceEventsPayload {
