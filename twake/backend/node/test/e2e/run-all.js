@@ -6,16 +6,20 @@ const cp = require("child_process");
 
 function exec(command, args) {
   return new Promise(done => {
-    const cmd = cp.spawn(command, args, { shell: true });
+    const cmd = cp.spawn(command, args, {
+      shell: true,
+    });
 
     let data = "";
     let error = "";
 
     cmd.stdout.on("data", function (data) {
+      console.log(data.toString());
       data += data.toString() + "\n";
     });
 
     cmd.stderr.on("data", function (data) {
+      console.log(data.toString());
       error += data.toString() + "\n";
     });
 
@@ -43,9 +47,9 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   let failed = 0;
   let passed = 0;
 
-  for (const path of srcFiles) {
+  for (const path of ["test/e2e/users"] /*srcFiles*/) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
-    const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose`;
+    const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
     try {
       const out = await exec("jest", args.split(" "));
       if (out.code !== 0) {

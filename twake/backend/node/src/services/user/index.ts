@@ -6,9 +6,10 @@ import { PlatformServicesAPI } from "../../core/platform/services/platform-servi
 import { ApplicationServiceAPI } from "../applications/api";
 import { StatisticsAPI } from "../statistics/types";
 import AuthServiceAPI from "../../core/platform/services/auth/provider";
+import { RealtimeServiceAPI } from "../../core/platform/services/realtime/api";
 
 @Prefix("/internal/services/users/v1")
-@Consumes(["platform-services", "applications", "statistics", "auth"])
+@Consumes(["platform-services", "applications", "statistics", "auth", "realtime"])
 export default class UserService extends TwakeService<UserServiceAPI> {
   version = "1";
   name = "user";
@@ -19,10 +20,13 @@ export default class UserService extends TwakeService<UserServiceAPI> {
     const applications = this.context.getProvider<ApplicationServiceAPI>("applications");
     const statistics = this.context.getProvider<StatisticsAPI>("statistics");
     const auth = this.context.getProvider<AuthServiceAPI>("auth");
+    const realtime = this.context.getProvider<RealtimeServiceAPI>("realtime");
+
     this.service = getService(platformServices, applications, statistics, auth);
+
     await this.service?.init(this.context);
     platformServices.fastify.getServer().register((instance, _opts, next) => {
-      web(instance, { prefix: this.prefix, service: this.service });
+      web(instance, { prefix: this.prefix, service: this.service, realtime });
       next();
     });
     return this;
