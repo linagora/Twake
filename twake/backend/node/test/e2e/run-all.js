@@ -6,7 +6,7 @@ const cp = require("child_process");
 
 function exec(command, args) {
   return new Promise(done => {
-    const cmd = cp.spawn(command, args);
+    const cmd = cp.spawn(command, args, { stdio: "inherit", shell: true });
 
     let data = "";
     let error = "";
