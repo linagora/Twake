@@ -109,7 +109,7 @@ export class ChannelCrudController
     );
 
     return {
-      websocket: getWebsocketInformation(channel),
+      websocket: this.websockets.sign([getWebsocketInformation(channel)], context.user.id)[0],
       resource: ChannelObject.mapTo(channel, {
         user_member: ChannelMemberObject.mapTo(member),
         stats: {
@@ -199,7 +199,10 @@ export class ChannelCrudController
       }
 
       return {
-        websocket: getWebsocketInformation(channelResult.entity),
+        websocket: this.websockets.sign(
+          [getWebsocketInformation(channelResult.entity)],
+          context.user.id,
+        )[0],
         resource: ChannelObject.mapTo(resultEntity),
       };
     } catch (err) {
@@ -221,14 +224,18 @@ export class ChannelCrudController
     });
 
     try {
-      const result = await this.service.save(entity, {}, getExecutionContext(request));
+      const context = getExecutionContext(request);
+      const result = await this.service.save(entity, {}, context);
 
       if (result.entity) {
         reply.code(201);
       }
 
       return {
-        websocket: getWebsocketInformation(result.entity),
+        websocket: this.websockets.sign(
+          [getWebsocketInformation(result.entity)],
+          context.user.id,
+        )[0],
         resource: ChannelObject.mapTo(result.entity),
       };
     } catch (err) {

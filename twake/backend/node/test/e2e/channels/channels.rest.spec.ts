@@ -470,7 +470,7 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(channelGetResult.websocket).toMatchObject({
         name: creationResult.entity.name,
         room: `/channels/${creationResult.entity.id}`,
-        token: "",
+        token: expect.any(String),
       });
 
       done();
@@ -623,7 +623,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(channelCreateResult.websocket).toMatchObject({
         room: `/channels/${createdChannel.id}`,
-        token: "",
+        token: expect.any(String),
       });
       expect(createdChannel).toBeDefined();
       done();
