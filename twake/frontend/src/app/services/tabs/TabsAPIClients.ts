@@ -2,6 +2,12 @@ import { TabType } from 'app/models/Tab';
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
 
+type TabKey = {
+  companyId: string;
+  workspaceId: string;
+  channelId: string;
+};
+
 @TwakeService('TabsAPIClientService')
 class TabsAPIClient {
   private readonly prefixUrl: string = '/internal/services/channels/v1';
@@ -11,7 +17,7 @@ class TabsAPIClient {
     return this.realtime.get(channelId) || [];
   }
 
-  async save(companyId: string, workspaceId: string, channelId: string, tab: TabType) {
+  async save({ companyId, workspaceId, channelId }: TabKey, tab: TabType) {
     await Api.post<{ resource: TabType }, { resource: TabType }>(
       `${
         this.prefixUrl
@@ -22,7 +28,7 @@ class TabsAPIClient {
     );
   }
 
-  async list(companyId: string, workspaceId: string, channelId: string): Promise<TabType[]> {
+  async list({ companyId, workspaceId, channelId }: TabKey): Promise<TabType[]> {
     const response = await Api.get<{ resources: TabType[]; websockets: any[] }>(
       `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs?websockets=1`,
     );
@@ -30,7 +36,7 @@ class TabsAPIClient {
     return response.resources && response.resources.length ? response.resources : [];
   }
 
-  async remove(companyId: string, workspaceId: string, channelId: string, tabId: string) {
+  async remove({ companyId, workspaceId, channelId }: TabKey, tabId: string) {
     await Api.delete<any>(
       `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/${tabId}`,
     );

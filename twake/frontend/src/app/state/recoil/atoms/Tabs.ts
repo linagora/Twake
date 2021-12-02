@@ -8,6 +8,6 @@ export type AtomTabKey = { companyId: string; workspaceId: string; channelId: st
 export const TabState = atomFamily<TabType[], AtomTabKey>({
   key: 'TabState',
   default: async ({ companyId, workspaceId, channelId }) => {
-    return await TabsAPIClients.list(companyId, workspaceId, channelId);
+    return await TabsAPIClients.list({ companyId, workspaceId, channelId });
   },
 });

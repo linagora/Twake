@@ -20,17 +20,17 @@ export default function useTabs() {
   );
 
   const save = async (tab: TabType) => {
-    await TabsAPIClients.save(companyId, workspaceId, channelId, tab);
+    await TabsAPIClients.save({ companyId, workspaceId, channelId }, tab);
     await refresh();
   };
 
   const remove = async (tabId: string) => {
-    await TabsAPIClients.remove(companyId, workspaceId, channelId, tabId);
+    await TabsAPIClients.remove({ companyId, workspaceId, channelId }, tabId);
     await refresh();
   };
 
   const refresh = async () => {
-    const tabsRefreshed = await TabsAPIClients.list(companyId, workspaceId, channelId);
+    const tabsRefreshed = await TabsAPIClients.list({ companyId, workspaceId, channelId });
     if (tabsRefreshed) setTabs(tabsRefreshed);
   };
 
@@ -38,11 +38,12 @@ export default function useTabs() {
 }
 
 export function useTab(tabId: string) {
-  const { tabs, remove } = useTabs();
+  const { tabs, remove, save } = useTabs();
   return {
     tab: tabs.find(t => t.id === tabId),
     remove: () => {
       remove(tabId);
     },
+    save: save,
   };
 }

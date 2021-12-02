@@ -16,12 +16,9 @@ import AccessRightsService from 'app/services/AccessRightsService';
 
 export default (): JSX.Element => {
   const { workspaceId, tabId } = RouterServices.getStateFromRoute();
-  const { tabs, save, remove } = useTabs();
+  const { tabs, save } = useTabs();
   const currentUser = UserService.getCurrentUser();
   const tabsList = [...tabs];
-
-  const saveTab = async (tab: TabType) => await save(tab);
-  const removeTab = async (tabId: string) => await remove(tabId || '');
 
   if (tabId && tabs.map(e => e.id).indexOf(tabId || '') < 0) {
     const route: string = RouterServices.generateRouteFromState({
@@ -43,9 +40,7 @@ export default (): JSX.Element => {
                     <Tab
                       currentUserId={currentUser.id}
                       selected={tabId === tab.id}
-                      key={tab.id}
-                      tabType={tab}
-                      saveTab={saveTab}
+                      tabId={tab.id}
                     />
                   }
                   key={tab.id}
@@ -63,7 +58,7 @@ export default (): JSX.Element => {
             return ModalManager.open(
               <TabsTemplateEditor
                 currentUserId={currentUser.id}
-                onChangeTabs={(item: TabType) => saveTab(item)}
+                onChangeTabs={(item: TabType) => save(item)}
               />,
               {
                 position: 'center',

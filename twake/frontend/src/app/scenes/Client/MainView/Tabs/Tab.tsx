@@ -14,28 +14,31 @@ import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
 import { useTab } from 'app/state/recoil/hooks/useTabs';
 
 type PropsType = {
-  tabType: TabType;
-  saveTab: (tab: TabType) => Promise<void>;
+  tabId: string;
   currentUserId: string;
   selected: boolean;
 };
 
-export default ({ selected, tabType, saveTab, currentUserId }: PropsType): JSX.Element => {
-  const { tabId, workspaceId } = RouterServices.getStateFromRoute();
-  const tab = useTab(tabId || '');
+export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
+  const { workspaceId } = RouterServices.getStateFromRoute();
+  const { tab, remove, save } = useTab(tabId || '');
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasLevel(workspaceId, 'moderator'),
   );
 
-  if (selected && tabType) {
+  if (!tab) {
+    return <></>;
+  }
+
+  if (selected && tab) {
     MainViewService.select(MainViewService.getId(), {
       collection: MainViewService.getConfiguration().collection,
       context: {
-        tabId: tabType.id,
-        configuration: tabType.configuration || {},
-        name: tabType.name,
+        tabId: tab.id,
+        configuration: tab.configuration || {},
+        name: tab.name,
       },
-      app: getApplication(tabType.application_id || ''),
+      app: getApplication(tab.application_id || ''),
       hasTabs: MainViewService.getConfiguration().hasTabs,
     });
   }
@@ -45,16 +48,16 @@ export default ({ selected, tabType, saveTab, currentUserId }: PropsType): JSX.E
       className="align-items-center"
       onClick={() => {
         const route: string = RouterServices.generateRouteFromState({
-          tabId: tabType.id,
+          tabId: tab.id,
         });
         return RouterServices.push(route);
       }}
     >
-      {WorkspacesApps.getAppIconComponent(tabType, { size: 14 })}
+      {WorkspacesApps.getAppIconComponent(tab, { size: 14 })}
       <span style={{ maxWidth: '108px', marginBottom: 0 }} className="tab-name small-right-margin">
-        {capitalize(tabType.name)}
+        {capitalize(tab.name)}
       </span>
-      {tabType.id === tabId && AccessRightsService.hasLevel(workspaceId, 'member') && (
+      {tab.id === tabId && AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Menu
           style={{ lineHeight: 0 }}
           menu={[
@@ -64,10 +67,7 @@ export default ({ selected, tabType, saveTab, currentUserId }: PropsType): JSX.E
               hide: false,
               onClick: () =>
                 ModalManager.open(
-                  <TabsTemplateEditor
-                    tab={tabType}
-                    onChangeTabs={(item: TabType) => saveTab(item)}
-                  />,
+                  <TabsTemplateEditor tab={tab} onChangeTabs={(item: TabType) => save(item)} />,
                   {
                     position: 'center',
                     size: { width: '500px', minHeight: '329px' },
@@ -76,9 +76,9 @@ export default ({ selected, tabType, saveTab, currentUserId }: PropsType): JSX.E
             },
             {
               type: 'menu',
-              hide: currentUserId !== tabType.owner && !isCurrentUserAdmin,
+              hide: currentUserId !== tab.owner && !isCurrentUserAdmin,
               text: <div style={{ color: 'var(--red)' }}>{Languages.t('general.delete')}</div>,
-              onClick: () => tab.remove(),
+              onClick: () => remove(),
             },
           ]}
         >
