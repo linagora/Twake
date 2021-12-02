@@ -1,43 +1,40 @@
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
-import { TestPlatform, init } from "../setup";
+import { init, TestPlatform } from "../setup";
 import {
-  ResourceListResponse,
   ResourceGetResponse,
+  ResourceListResponse,
   ResourceUpdateResponse,
+  User,
 } from "../../../src/utils/types";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { Channel } from "../../../src/services/channels/entities/channel";
-import { ChannelVisibility } from "../../../src/services/channels/types";
+import {
+  ChannelExecutionContext,
+  ChannelVisibility,
+  WorkspaceExecutionContext,
+} from "../../../src/services/channels/types";
 import {
   getPrivateRoomName,
   getPublicRoomName,
 } from "../../../src/services/channels/services/channel/realtime";
-import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
-import { User } from "../../../src/utils/types";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
+import { TestDbService } from "../utils.prepare.db";
+import { ChannelObject } from "../../../src/services/channels/services/channel/types";
+import { getInstance as getCompanyInstance } from "../../../src/services/user/entities/company";
+import UserServiceAPI from "../../../src/services/user/api";
 
-describe.skip("The /internal/services/channels/v1 API", () => {
+describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
+  let testDbService: TestDbService;
 
   beforeEach(async () => {
-    platform = await init({
-      services: [
-        "user",
-        "search",
-        "websocket",
-        "webserver",
-        "channels",
-        "auth",
-        "database",
-        "search",
-        "pubsub",
-      ],
-    });
+    platform = await init();
+    testDbService = new TestDbService(platform);
     channelUtils = getChannelUtils(platform);
   });
 
@@ -84,6 +81,27 @@ describe.skip("The /internal/services/channels/v1 API", () => {
     channel.owner = owner;
 
     return channel;
+  }
+
+  async function getChannelREST(channelId: string): Promise<ChannelObject> {
+    const jwtToken = await platform.auth.getJWTToken();
+
+    const response = await platform.app.inject({
+      method: "GET",
+      url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}`,
+      headers: {
+        authorization: `Bearer ${jwtToken}`,
+      },
+    });
+
+    expect(response.statusCode).toEqual(200);
+
+    const channelGetResult: ResourceGetResponse<ChannelObject> = deserialize(
+      ResourceGetResponse,
+      response.body,
+    );
+
+    return channelGetResult.resource;
   }
 
   describe("The GET /companies/:companyId/workspaces/:workspaceId/channels route", () => {
@@ -155,6 +173,10 @@ describe.skip("The /internal/services/channels/v1 API", () => {
     });
 
     it("should return list of channels the user is member of", async done => {
+      const ws0pk = { id: uuidv1(), company_id: platform.workspace.company_id };
+      await testDbService.createWorkspace(ws0pk);
+      const newUser = await testDbService.createUser([ws0pk]);
+
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel1 = getChannel();
       const channel2 = getChannel();
@@ -172,13 +194,13 @@ describe.skip("The /internal/services/channels/v1 API", () => {
           channel_id: channel1.id,
           workspace_id: channel1.workspace_id,
           company_id: channel1.company_id,
-          user_id: platform.currentUser.id,
+          user_id: newUser.id,
         } as ChannelMember,
         {},
         channelUtils.getChannelContext(channel1, platform.currentUser),
       );
 
-      const jwtToken = await platform.auth.getJWTToken();
+      const jwtToken = await platform.auth.getJWTToken({ sub: newUser.id });
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels`,
@@ -241,6 +263,8 @@ describe.skip("The /internal/services/channels/v1 API", () => {
     });
 
     it("should be able to paginate over channels from pagination information", async done => {
+      await platform.database.getConnector().drop();
+
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
 
       await Promise.all(
@@ -366,7 +390,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
       done();
     });
 
-    it("should return websockets and direct information", async done => {
+    it.skip("should return websockets and direct information", async done => {
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
@@ -451,9 +475,106 @@ describe.skip("The /internal/services/channels/v1 API", () => {
 
       done();
     });
+
+    it("channel counters", async done => {
+      await platform.database.getConnector().drop();
+
+      await testDbService.createDefault(platform);
+
+      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
+
+      const channel = new Channel();
+      channel.name = "Test counters Channel";
+      channel.company_id = platform.workspace.company_id;
+      channel.workspace_id = platform.workspace.workspace_id;
+      channel.is_default = true;
+      channel.visibility = ChannelVisibility.PUBLIC;
+      channel.description = "test counters";
+      channel.channel_group = "my channel group";
+
+      const creationResult = await channelService.channels.save(channel, {}, getContext());
+
+      const channelId = creationResult.entity.id;
+
+      let resource = await getChannelREST(channelId);
+
+      expect(resource).toMatchObject({
+        company_id: platform.workspace.company_id,
+        workspace_id: platform.workspace.workspace_id,
+        // type: expect.stringMatching(/workspace|direct/), // TODO
+        id: expect.any(String),
+        icon: expect.any(String),
+        name: channel.name,
+        description: channel.description,
+        channel_group: channel.channel_group,
+        visibility: channel.visibility,
+        default: channel.is_default,
+        owner: platform.currentUser.id,
+        last_activity: expect.any(Number),
+        archived: false,
+        archivation_date: 0, //Timestamp
+        user_member: expect.any(Object),
+        stats: expect.any(Object),
+      });
+
+      expect(resource.stats).toMatchObject({
+        members: 1,
+        guests: 0,
+        messages: 0,
+      });
+
+      expect(resource.user_member).toMatchObject({
+        id: expect.any(String),
+        user_id: platform.currentUser.id,
+        type: expect.stringMatching(/member|guest|bot/),
+        last_access: 0, //Timestamp in seconds
+        last_increment: 0, //Number
+        favorite: false,
+        // notification_level: "all" | "none" | "group_mentions" | "user_mentions",  // TODO
+      });
+
+      const anotherUserId = uuidv1();
+      await channelService.members.addUsersToChannel(
+        [
+          { id: anotherUserId },
+          { id: uuidv1() },
+          { id: uuidv1() },
+          { id: uuidv1() },
+          { id: uuidv1() },
+        ],
+        creationResult.entity,
+      );
+
+      resource = await getChannelREST(channelId);
+
+      expect(resource.stats).toMatchObject({
+        members: 1,
+        guests: 5,
+        messages: 0,
+      });
+
+      await channelService.members.delete(
+        {
+          ...platform.workspace,
+          channel_id: channelId,
+          user_id: anotherUserId,
+        },
+        { channel: creationResult.entity, user: platform.currentUser } as ChannelExecutionContext,
+      );
+
+      resource = await getChannelREST(channelId);
+
+      expect(resource.stats).toMatchObject({
+        members: 1,
+        guests: 4,
+        messages: 0,
+      });
+
+      done();
+    });
   });
 
-  describe("The POST /companies/:companyId/workspaces/:workspaceId/channels route", () => {
+  describe.skip("The POST /companies/:companyId/workspaces/:workspaceId/channels route", () => {
     it("should 400 when companyId is not valid", async done => {
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels`,
@@ -528,7 +649,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
     });
   });
 
-  describe("The POST /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
+  describe.skip("The POST /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async function updateChannel(jwtToken: string, id: string, resource: any): Promise<Channel> {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
@@ -957,7 +1078,7 @@ describe.skip("The /internal/services/channels/v1 API", () => {
     });
   });
 
-  describe("The DELETE /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
+  describe.skip("The DELETE /companies/:companyId/workspaces/:workspaceId/channels/:id route", () => {
     async function expectDeleteResult(
       jwtToken: string,
       url: string,

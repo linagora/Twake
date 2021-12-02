@@ -8,9 +8,14 @@ const channelMemberSchema = {
     channel_id: { type: "string" },
     company_id: { type: "string" },
     workspace_id: { type: "string" },
-    type: { type: "string" },
+    type: { type: "string", enum: ["member", "guest", "bot"] },
     favorite: { type: "boolean" },
-    notification_level: { type: "string" },
+    last_access: { type: "number" },
+    last_increment: { type: "number" },
+    notification_level: {
+      type: "string",
+      enum: ["all", "none", "group_mentions", "user_mentions"],
+    },
   },
 };
 
@@ -20,6 +25,7 @@ const channelSchema = {
     id: { type: "string" },
     company_id: { type: "string" },
     workspace_id: { type: "string" },
+    type: { type: "string", enum: ["workspace", "direct"] },
     name: { type: "string" },
     description: { type: "string" },
     archivation_date: { type: "number" },
@@ -27,13 +33,22 @@ const channelSchema = {
     channel_group: { type: "string" },
     connectors: { type: ["array", "null"] },
     icon: { type: "string" },
-    is_default: { type: "boolean" },
+    default: { type: "boolean" },
     members: { type: ["array", "null"] },
     users: { type: ["array", "null"] },
     owner: { type: "string" },
-    visibility: { type: "string" },
+    visibility: { type: "string", enum: ["private", "public", "direct"] },
     last_activity: { type: "number" },
     user_member: channelMemberSchema,
+    direct_channel_members: { type: "array" },
+    stats: {
+      type: "object",
+      properties: {
+        members: { type: "number" },
+        guests: { type: "number" },
+        messages: { type: "number" },
+      },
+    },
   },
 };
 

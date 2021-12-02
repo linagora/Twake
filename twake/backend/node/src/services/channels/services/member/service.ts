@@ -1,13 +1,13 @@
-import { RealtimeSaved, RealtimeDeleted, getLogger } from "../../../../core/platform/framework";
+import { getLogger, RealtimeDeleted, RealtimeSaved } from "../../../../core/platform/framework";
 import {
-  DeleteResult,
-  Pagination,
-  ListResult,
-  SaveResult,
-  CrudExeption,
-  OperationType,
-  UpdateResult,
   CreateResult,
+  CrudExeption,
+  DeleteResult,
+  ListResult,
+  OperationType,
+  Pagination,
+  SaveResult,
+  UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import ChannelServiceAPI, { MemberService } from "../../provider";
 
@@ -33,9 +33,18 @@ import {
   PubsubPublish,
 } from "../../../../core/platform/services/pubsub/decorators/publish";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { plainToClass } from "class-transformer";
-import UserServiceAPI from "../../../user/api";
+import UserServiceAPI, { CompaniesServiceAPI } from "../../../user/api";
+import {
+  ChannelCounterEntity,
+  ChannelCounterPrimaryKey,
+  ChannelUserCounterType,
+  TYPE as ChannelCounterEntityType,
+} from "../../entities/channel_counters";
+import { CounterProvider } from "../../../../core/platform/services/counter/provider";
+import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { countRepositoryItems } from "../../../../utils/counters";
+import { getService as getCompanyService } from "../../../user/services/companies";
 
 const USER_CHANNEL_KEYS = [
   "id",
@@ -65,26 +74,45 @@ export class Service implements MemberService {
   version: "1";
   userChannelsRepository: Repository<ChannelMember>;
   channelMembersRepository: Repository<MemberOfChannel>;
+  private channelCounter: CounterProvider<ChannelCounterEntity>;
+  private companies: CompaniesServiceAPI;
 
   constructor(
-    private database: DatabaseServiceAPI,
+    private platformServices: PlatformServicesAPI,
     private channelService: ChannelServiceAPI,
     protected userService: UserServiceAPI,
   ) {}
 
   async init(): Promise<this> {
     try {
-      this.userChannelsRepository = await this.database.getRepository(
+      this.userChannelsRepository = await this.platformServices.database.getRepository(
         "user_channels",
         ChannelMember,
       );
-      this.channelMembersRepository = await this.database.getRepository(
+      this.channelMembersRepository = await this.platformServices.database.getRepository(
         "channel_members",
         MemberOfChannel,
       );
     } catch (err) {
       logger.error({ err }, "Can not initialize channel member service");
     }
+
+    this.companies = getCompanyService(this.platformServices);
+    await this.companies.init();
+
+    const channelCountersRepository =
+      await this.platformServices.database.getRepository<ChannelCounterEntity>(
+        ChannelCounterEntityType,
+        ChannelCounterEntity,
+      );
+
+    this.channelCounter = await this.platformServices.counter.getCounter<ChannelCounterEntity>(
+      channelCountersRepository,
+    );
+
+    this.channelCounter.reviseCounter(async (pk: ChannelCounterPrimaryKey) => {
+      return countRepositoryItems(this.userChannelsRepository, pk);
+    }, 100);
 
     return this;
   }
@@ -264,6 +292,7 @@ export class Service implements MemberService {
 
     await this.userChannelsRepository.remove(getChannelMemberInstance(pk));
     await this.channelMembersRepository.remove(getMemberOfChannelInstance(pk));
+    await this.usersCounterIncrease(channel, pk.user_id, -1);
 
     this.onDeleted(memberToDelete, context.user, channel);
 
@@ -406,6 +435,9 @@ export class Service implements MemberService {
           }
 
           const result = await this.save(member, null, context);
+
+          await this.usersCounterIncrease(channel, user.id);
+
           return {
             channel,
             added: true,
@@ -463,6 +495,9 @@ export class Service implements MemberService {
           }
 
           const result = await this.save(member, null, context);
+
+          await this.usersCounterIncrease(channel, member.user_id);
+
           return { channel, member: result.entity, added: true };
         } catch (err) {
           logger.warn({ err }, "Member has not been added %o", member);
@@ -552,5 +587,19 @@ export class Service implements MemberService {
       memberOrPrimaryKey,
       ...(["company_id", "workspace_id", "channel_id", "user_id"] as const),
     );
+  }
+
+  private async usersCounterIncrease(channel: Channel, userId: string, increaseValue: number = 1) {
+    const isMember = await this.isCompanyMember(channel.company_id, userId);
+    const counter_type = isMember ? ChannelUserCounterType.MEMBERS : ChannelUserCounterType.GUESTS;
+    return this.channelCounter.increase({ id: channel.id, counter_type }, increaseValue);
+  }
+
+  getUsersCount(channelId: string, type: ChannelUserCounterType): Promise<number> {
+    return this.channelCounter.get({ id: channelId, counter_type: type });
+  }
+
+  async isCompanyMember(companyId: string, userId: string): Promise<boolean> {
+    return (await this.companies.getUserRole(companyId, userId)) != "guest";
   }
 }

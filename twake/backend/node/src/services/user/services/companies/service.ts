@@ -7,7 +7,6 @@ import {
   ListResult,
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
@@ -29,7 +28,6 @@ import ExternalGroup, {
   ExternalGroupPrimaryKey,
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
-import { CounterAPI } from "../../../../core/platform/services/counter/types";
 import { CounterProvider } from "../../../../core/platform/services/counter/provider";
 import {
   CompanyCounterEntity,
@@ -232,5 +230,13 @@ export class CompanyService implements CompaniesServiceAPI {
 
   getUsersCount(companyId: string): Promise<number> {
     return this.companyCounter.get(this.cmpCountPk(companyId));
+  }
+
+  async getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole> {
+    const companyUser = await this.getCompanyUser({ id: companyId }, { id: userId });
+    if (!companyUser) {
+      return "guest";
+    }
+    return companyUser.role;
   }
 }

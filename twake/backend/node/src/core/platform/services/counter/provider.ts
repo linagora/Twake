@@ -16,21 +16,25 @@ export class CounterProvider<T extends CounterEntity> {
   private reviseMaxCalls = 0;
   private reviseMaxPeriod = 0;
 
-  private lastRevised = new Map<Partial<T>, LastRevised>();
+  private lastRevisedMap = new Map<string, LastRevised>();
 
   constructor(repository: Repository<T>) {
     this.repository = repository;
     logger.debug(`${this.name} Created counter provider for ${this.repository.table}`);
   }
 
-  increase(pk: Partial<T>, value: number): Promise<void> {
+  async increase(pk: Partial<T>, value: number): Promise<void> {
     return this.repository.save(this.repository.createEntityFromObject({ value, ...pk }));
   }
 
   async get(pk: Partial<T>): Promise<number> {
-    const counter = await this.repository.findOne(pk);
-    const val = counter ? counter.value : 0;
-    return this.revise(pk, val);
+    try {
+      const counter = await this.repository.findOne(pk);
+      const val = counter ? counter.value : 0;
+      return this.revise(pk, val);
+    } catch (e) {
+      throw e;
+    }
   }
 
   reviseCounter(
@@ -46,7 +50,10 @@ export class CounterProvider<T extends CounterEntity> {
 
   private async revise(pk: Partial<T>, currentValue: number): Promise<number> {
     const now = new Date().getTime();
-    const lastRevised: LastRevised = this.lastRevised.get(pk) || { calls: -1, period: now };
+    const lastRevised: LastRevised = this.lastRevisedMap.get(JSON.stringify(pk)) || {
+      calls: -1,
+      period: now,
+    };
 
     if (
       lastRevised.calls >= this.reviseMaxCalls ||
@@ -71,7 +78,7 @@ export class CounterProvider<T extends CounterEntity> {
       lastRevised.calls++;
     }
 
-    this.lastRevised.set(pk, lastRevised);
+    this.lastRevisedMap.set(JSON.stringify(pk), lastRevised);
     return currentValue;
   }
 }

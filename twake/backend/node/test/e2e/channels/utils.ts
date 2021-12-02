@@ -1,4 +1,4 @@
-import { v4 as uuidv4, v1 as uuidv1 } from "uuid";
+import { v1 as uuidv1 } from "uuid";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import {
