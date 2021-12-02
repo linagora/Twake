@@ -11,24 +11,18 @@ import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import { useTab } from 'app/state/recoil/hooks/useTabs';
 
 type PropsType = {
   tabType: TabType;
   saveTab: (tab: TabType) => Promise<void>;
-  removeTab: (tabId: string) => Promise<void>;
   currentUserId: string;
   selected: boolean;
 };
 
-export default ({
-  selected,
-  tabType,
-  saveTab,
-  removeTab,
-  currentUserId,
-}: PropsType): JSX.Element => {
+export default ({ selected, tabType, saveTab, currentUserId }: PropsType): JSX.Element => {
   const { tabId, workspaceId } = RouterServices.getStateFromRoute();
-  //useTab
+  const tab = useTab(tabId || '');
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasLevel(workspaceId, 'moderator'),
   );
@@ -60,7 +54,7 @@ export default ({
       <span style={{ maxWidth: '108px', marginBottom: 0 }} className="tab-name small-right-margin">
         {capitalize(tabType.name)}
       </span>
-      {tabType.id === tabId && /*AccessRightsService.hasLevel(workspaceId, 'member')*/ true && (
+      {tabType.id === tabId && AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Menu
           style={{ lineHeight: 0 }}
           menu={[
@@ -84,7 +78,7 @@ export default ({
               type: 'menu',
               hide: currentUserId !== tabType.owner && !isCurrentUserAdmin,
               text: <div style={{ color: 'var(--red)' }}>{Languages.t('general.delete')}</div>,
-              onClick: () => removeTab(tabType.id || ''),
+              onClick: () => tab.remove(),
             },
           ]}
         >

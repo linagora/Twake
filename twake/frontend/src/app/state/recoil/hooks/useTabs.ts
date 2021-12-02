@@ -1,38 +1,36 @@
+import { useRecoilState } from 'recoil';
+
 import { TabType } from 'app/models/Tab';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import TabsAPIClients from 'app/services/tabs/TabsAPIClients';
-import { useRecoilState } from 'recoil';
 import { AtomTabKey, TabState } from '../atoms/Tabs';
 import useRouterChannel from './useRouterChannel';
 import useRouterCompany from './useRouterCompany';
 import useRouterWorkspace from './useRouterWorkspace';
 
 export default function useTabs() {
-  const company_id = useRouterCompany();
-  const workspace_id = useRouterWorkspace();
-  const channel_id = useRouterChannel();
-  const context: AtomTabKey = { company_id, workspace_id, channel_id };
-  console.log('++++++++++++++++Here in the useTabs Hook:  ', context);
-  useRealtimeRoom(
-    '/companies/91752480-3cc5-11ec-a395-5bf84f5d3e05/workspaces/7936e17a-3d7d-11ec-9c5d-0242ac120006/channels/f6841b52-635b-494b-8b92-f471346990e8/tabs',
-    'UseTabs',
-    () => refresh(),
-  );
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
+  const channelId = useRouterChannel();
+  const context: AtomTabKey = { companyId, workspaceId, channelId };
 
   const [tabs, setTabs] = useRecoilState(TabState(context));
+  useRealtimeRoom<TabType>(TabsAPIClients.websockets(channelId)[0]?.room || '', 'UseTabs', () =>
+    refresh(),
+  );
 
   const save = async (tab: TabType) => {
-    await TabsAPIClients.save(company_id, workspace_id, channel_id, tab);
+    await TabsAPIClients.save(companyId, workspaceId, channelId, tab);
     await refresh();
   };
 
-  const remove = async (tab_id: string) => {
-    await TabsAPIClients.remove(company_id, workspace_id, channel_id, tab_id);
+  const remove = async (tabId: string) => {
+    await TabsAPIClients.remove(companyId, workspaceId, channelId, tabId);
     await refresh();
   };
 
   const refresh = async () => {
-    const tabsRefreshed = await TabsAPIClients.list(company_id, workspace_id, channel_id);
+    const tabsRefreshed = await TabsAPIClients.list(companyId, workspaceId, channelId);
     if (tabsRefreshed) setTabs(tabsRefreshed);
   };
 

@@ -12,9 +12,10 @@ import UserService from 'services/user/UserService';
 import useTabs from 'app/state/recoil/hooks/useTabs';
 
 import './Tabs.scss';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 export default (): JSX.Element => {
-  const { tabId } = RouterServices.getStateFromRoute();
+  const { workspaceId, tabId } = RouterServices.getStateFromRoute();
   const { tabs, save, remove } = useTabs();
   const currentUser = UserService.getCurrentUser();
   const tabsList = [...tabs];
@@ -45,7 +46,6 @@ export default (): JSX.Element => {
                       key={tab.id}
                       tabType={tab}
                       saveTab={saveTab}
-                      removeTab={removeTab}
                     />
                   }
                   key={tab.id}
@@ -55,8 +55,8 @@ export default (): JSX.Element => {
           })}
         </Tabs>
       )}
-      {
-        /*AccessRightsService.hasLevel(workspaceId, 'member') &&*/ <Button
+      {AccessRightsService.hasLevel(workspaceId, 'member') && (
+        <Button
           className="add-tab-button"
           type="text"
           onClick={() => {
@@ -73,7 +73,7 @@ export default (): JSX.Element => {
           }}
           icon={<Plus size={14} />}
         />
-      }
+      )}
     </Row>
   );
 };
