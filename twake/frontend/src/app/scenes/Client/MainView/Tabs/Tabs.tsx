@@ -1,7 +1,6 @@
 import React from 'react';
 import { Plus } from 'react-feather';
 import { TabType } from 'app/models/Tab';
-import { Button } from 'antd';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
@@ -28,7 +27,7 @@ export default (): JSX.Element => {
   }
 
   return (
-    <div style={{ width: '100%', height: '47px', overflow: 'auto' }}>
+    <span style={{ width: '100%', height: '47px', overflow: 'auto' }}>
       {tabsList.sort((a, b) => (a.order || '').localeCompare(b.order || '')) && (
         <span className="main-view-tabs align-items-center">
           <DefaultChannelTab selected={!tabId} />
@@ -44,27 +43,27 @@ export default (): JSX.Element => {
               )
             );
           })}
+          {AccessRightsService.hasLevel(workspaceId, 'member') && (
+            <div
+              className="add-tab-button"
+              onClick={() => {
+                return ModalManager.open(
+                  <TabsTemplateEditor
+                    currentUserId={currentUser.id}
+                    onChangeTabs={(item: TabType) => save(item)}
+                  />,
+                  {
+                    position: 'center',
+                    size: { width: '500px', minHeight: '329px' },
+                  },
+                );
+              }}
+            >
+              <Plus size={14} />
+            </div>
+          )}
         </span>
       )}
-      {AccessRightsService.hasLevel(workspaceId, 'member') && (
-        <Button
-          className="add-tab-button"
-          type="text"
-          onClick={() => {
-            return ModalManager.open(
-              <TabsTemplateEditor
-                currentUserId={currentUser.id}
-                onChangeTabs={(item: TabType) => save(item)}
-              />,
-              {
-                position: 'center',
-                size: { width: '500px', minHeight: '329px' },
-              },
-            );
-          }}
-          icon={<Plus size={14} />}
-        />
-      )}
-    </div>
+    </span>
   );
 };

@@ -6,6 +6,7 @@
 .main-view-tabs {
   height: 47px;
   margin-inline: 8px;
+  overflow: auto;
 
   .tab-component {
     cursor: pointer;
@@ -23,12 +24,9 @@
     margin-right: 8px;
     padding-inline: 8px;
     border-radius: 8px;
+    text-shadow: 0 0 0.25px currentColor;
     color: var(--primary);
     background-color: var(--primary-background);
-  }
-
-  .ant-tabs-tab {
-    margin-right: 8px !important;
   }
 
   .tab-name {
@@ -37,21 +35,18 @@
     overflow: hidden;
     max-width: 108px;
   }
-
   .add-tab-button {
-    vertical-align: top;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 24px;
     height: 24px;
-    line-height: 24px;
     border-radius: var(--border-radius-large);
-    background: var(--grey-background);
-    margin-left: -8px;
+    background-color: var(--grey-light);
 
     &:hover {
-      background-color: var(--grey-light);
+      background-color: var(--secondary-background);
       color: var(--grey-dark);
     }
   }
