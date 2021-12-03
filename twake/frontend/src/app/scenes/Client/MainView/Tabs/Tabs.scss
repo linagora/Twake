@@ -2,43 +2,56 @@
   display: flex;
   align-items: center;
 }
-
-.main-view-tabs {
+.tabs-global-container {
+  width: 100%;
   height: 47px;
+  overflow: auto;
+  .main-view-tabs {
+    height: 47px;
+    margin-inline: 8px;
+    overflow: auto;
 
-  .ant-tabs .ant-tabs-top {
-    line-height: 47px;
-  }
-
-  .ant-tabs-tab {
-    margin-right: 8px !important;
-  }
-
-  .tab-name {
-    &:hover {
-      opacity: 0.8;
-      color: var(--primary);
+    .tab-component {
+      cursor: pointer;
+      line-height: 31px;
+      margin-right: 8px;
+      padding-inline: 8px;
+      &:hover {
+        opacity: 0.8;
+        color: var(--primary);
+      }
     }
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
+    .tab-component-selected {
+      cursor: pointer;
+      line-height: 31px;
+      margin-right: 8px;
+      padding-inline: 8px;
+      border-radius: 8px;
+      text-shadow: 0 0 0.25px currentColor;
+      color: var(--primary);
+      background-color: var(--primary-background);
+    }
 
-  .add-tab-button {
-    vertical-align: top;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
-    border-radius: var(--border-radius-large);
-    background: var(--grey-background);
-    margin-left: -8px;
+    .tab-name {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 108px;
+    }
+    .add-tab-button {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--border-radius-large);
+      background-color: var(--grey-background);
 
-    &:hover {
-      background-color: var(--grey-light);
-      color: var(--grey-dark);
+      &:hover {
+        background-color: var(--grey-light);
+        color: var(--grey-dark);
+      }
     }
   }
 }

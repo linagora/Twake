@@ -1,7 +1,6 @@
 import React from 'react';
 import { Plus } from 'react-feather';
 import { TabType } from 'app/models/Tab';
-import { Button, Row, Tabs } from 'antd';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
@@ -10,9 +9,9 @@ import DefaultChannelTab from 'app/scenes/Client/MainView/Tabs/DefaultChannelTab
 import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
 import UserService from 'services/user/UserService';
 import useTabs from 'app/state/recoil/hooks/useTabs';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 import './Tabs.scss';
-import AccessRightsService from 'app/services/AccessRightsService';
 
 export default (): JSX.Element => {
   const { workspaceId, tabId } = RouterServices.getStateFromRoute();
@@ -28,47 +27,43 @@ export default (): JSX.Element => {
   }
 
   return (
-    <Row align="middle" className="main-view-tabs" wrap={false}>
+    <div className="tabs-global-container">
       {tabsList.sort((a, b) => (a.order || '').localeCompare(b.order || '')) && (
-        <Tabs activeKey={tabId ? tabId : 'default'}>
-          <Tabs.TabPane tab={<DefaultChannelTab selected={!tabId} />} key="default" />
+        <span className="main-view-tabs align-items-center">
+          <DefaultChannelTab selected={!tabId} />
           {tabsList.map((tab: TabType) => {
             return (
               tab.id && (
-                <Tabs.TabPane
-                  tab={
-                    <Tab
-                      currentUserId={currentUser.id}
-                      selected={tabId === tab.id}
-                      tabId={tab.id}
-                    />
-                  }
+                <Tab
                   key={tab.id}
+                  currentUserId={currentUser.id}
+                  selected={tabId === tab.id}
+                  tabId={tab.id}
                 />
               )
             );
           })}
-        </Tabs>
+          {AccessRightsService.hasLevel(workspaceId, 'member') && (
+            <div
+              className="add-tab-button"
+              onClick={() => {
+                return ModalManager.open(
+                  <TabsTemplateEditor
+                    currentUserId={currentUser.id}
+                    onChangeTabs={(item: TabType) => save(item)}
+                  />,
+                  {
+                    position: 'center',
+                    size: { width: '500px', minHeight: '329px' },
+                  },
+                );
+              }}
+            >
+              <Plus size={14} />
+            </div>
+          )}
+        </span>
       )}
-      {AccessRightsService.hasLevel(workspaceId, 'member') && (
-        <Button
-          className="add-tab-button"
-          type="text"
-          onClick={() => {
-            return ModalManager.open(
-              <TabsTemplateEditor
-                currentUserId={currentUser.id}
-                onChangeTabs={(item: TabType) => save(item)}
-              />,
-              {
-                position: 'center',
-                size: { width: '500px', minHeight: '329px' },
-              },
-            );
-          }}
-          icon={<Plus size={14} />}
-        />
-      )}
-    </Row>
+    </div>
   );
 };
