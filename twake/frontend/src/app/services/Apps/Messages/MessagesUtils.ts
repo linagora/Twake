@@ -2,7 +2,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import { Message } from '../../../models/Message';
 import userAsyncGet from 'services/user/AsyncGet';
-import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
 
 export const getSender = (message: Message | undefined) => {
   var senderData: any = {
@@ -40,8 +40,8 @@ export const getSender = (message: Message | undefined) => {
           type: 'app',
           application: app,
           username: 'app#' + app?.identity?.code,
-          firstname: app.identity?.icon,
-          lastname: '',
+          first_name: app.identity?.icon,
+          last_name: '',
           thumbnail: WorkspacesApps.getAppIcon(app),
         };
       }

@@ -22,6 +22,7 @@ import {
   ResourceUpdateResponse,
   User,
 } from "../../../../utils/types";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 
 export class ChannelMemberCrudController
   implements
@@ -30,8 +31,9 @@ export class ChannelMemberCrudController
       ResourceCreateResponse<ChannelMember>,
       ResourceListResponse<ChannelMember>,
       ResourceDeleteResponse
-    > {
-  constructor(protected service: MemberService) {}
+    >
+{
+  constructor(protected websockets: RealtimeServiceAPI, protected service: MemberService) {}
 
   getPrimaryKey(
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
@@ -176,7 +178,10 @@ export class ChannelMemberCrudController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: getChannelRooms(request.params, request.currentUser),
+        websockets: this.websockets.sign(
+          getChannelRooms(request.params, request.currentUser),
+          request.currentUser.id,
+        ),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,

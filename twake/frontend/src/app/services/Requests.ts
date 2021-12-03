@@ -13,7 +13,7 @@ class Requests {
     route: string,
     data: string,
     callback: (result: string | any) => void,
-    options: { disableJWTAuthentication?: boolean } = {},
+    options: { disableJWTAuthentication?: boolean; withBlob?: boolean } = {},
   ) {
     this.logger.trace(`${type} ${route}`);
     if (options?.disableJWTAuthentication) {
@@ -27,16 +27,23 @@ class Requests {
         },
         body: type === 'post' ? data || '{}' : undefined,
       })
-      .then(response => {
-        response.text().then(text => {
-          if(text) this.retrieveJWTToken(text);
-          callback && callback(text);
+        .then(response => {
+          if (options.withBlob) {
+            response.blob().then(blob => {
+              this.retrieveJWTToken(JSON.stringify(blob));
+              callback && callback(blob);
+            });
+          } else {
+            response.text().then(text => {
+              if (text) this.retrieveJWTToken(text);
+              callback && callback(text);
+            });
+          }
+        })
+        .catch(err => {
+          this.logger.error('Error while sending HTTP request', err);
+          callback && callback(JSON.stringify({ errors: [err] }));
         });
-      })
-      .catch(err => {
-        this.logger.error('Error while sending HTTP request', err);
-        callback && callback(JSON.stringify({ errors: [err] }));
-      });
       return;
     }
 

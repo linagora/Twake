@@ -9,36 +9,41 @@ import Languages from 'services/languages/languages';
 export default (): JSX.Element => {
   const { workspaceId } = RouterServices.getStateFromRoute();
 
-  //Disabled until search comes back
-  if (true || !AccessRightsService.hasLevel(workspaceId, 'member')) {
-    return <></>;
-  }
+  const disable = true || !AccessRightsService.hasLevel(workspaceId, 'member');
 
   return (
     <>
       <Col xs={0} sm={0} md={0} lg={6} xl={5} xxl={4}>
         <Row justify="center">
           <Col flex="none" style={{ width: 200 }}>
-            <Input
-              width={200}
-              maxLength={0}
-              suffix={<Search size={16} style={{ color: 'var(--grey-dark)' }} />}
-              placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
-              onClick={() => SearchService.open()}
-            />
+            <div style={{ height: 40 }}>
+              {!disable && (
+                <Input
+                  width={200}
+                  maxLength={0}
+                  suffix={<Search size={16} style={{ color: 'var(--grey-dark)' }} />}
+                  placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
+                  onClick={() => SearchService.open()}
+                />
+              )}
+            </div>
           </Col>
         </Row>
       </Col>
 
       <Col xs={1} sm={1} md={1} lg={0} xl={0} xxl={0}>
-        <Button
-          type="default"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}
-          icon={<Search size={16} />}
-          onClick={() => {
-            SearchService.open();
-          }}
-        />
+        <div style={{ height: 40 }}>
+          {!disable && (
+            <Button
+              type="default"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}
+              icon={<Search size={16} />}
+              onClick={() => {
+                SearchService.open();
+              }}
+            />
+          )}
+        </div>
       </Col>
     </>
   );

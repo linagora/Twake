@@ -6,7 +6,6 @@ export function getWebsocketInformation(workspace: Workspace): WebsocketMetadata
   return {
     name: workspace.name,
     room: getWorkspacePath(workspace),
-    encryption_key: "",
   };
 }
 
@@ -15,16 +14,7 @@ export function getWorkspaceRooms(context: WorkspaceExecutionContext): Websocket
     {
       name: "workspaces",
       room: getRoomName(context),
-      encryption_key: "",
     },
-    // TODO: Add per user room
-    /*
-    {
-      name: "private_user",
-      room: "/companies/{id}/workspaces?user={user_id}",
-      encryption_key: "",
-    },
-    */
   ];
 }
 

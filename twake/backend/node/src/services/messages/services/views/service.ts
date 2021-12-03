@@ -107,7 +107,10 @@ export class ViewsService implements MessageViewsServiceAPI {
           replies_per_thread: options.replies_per_thread || 3,
         });
 
-        if (extendedThread?.last_replies?.length === 0) {
+        if (
+          extendedThread?.last_replies?.length === 0 &&
+          extendedThread.created_at > new Date().getTime() - 1000 * 60 //This is important to avoid removing thread if people loads a channel at the same time people create a thread
+        ) {
           await this.service.threads.delete(
             { id: extendedThread.thread_id },
             { user: { id: null, server_request: true } },

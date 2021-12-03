@@ -27,8 +27,8 @@ export default class UserParameter extends Component {
       attributeOpen: 0,
       subMenuOpened: 0,
       username: user ? user.username : '',
-      lastname: user ? user.lastname : '',
-      firstname: user ? user.firstname : '',
+      last_name: user ? user.last_name : '',
+      first_name: user ? user.first_name : '',
       thumbnail: false,
     };
     Collections.get('users').addListener(this);
@@ -127,8 +127,8 @@ export default class UserParameter extends Component {
                       onClick={() => {
                         this.setState({ thumbnail: 'null' });
                         currentUserService.updateidentity(
-                          this.state.lastname,
-                          this.state.firstname,
+                          this.state.last_name,
+                          this.state.first_name,
                           'null',
                         );
                       }}
@@ -139,40 +139,40 @@ export default class UserParameter extends Component {
                 </div>
                 <div className="parameters_form" style={{ paddingTop: 16 }}>
                   <Input
-                    placeholder={this.state.i18n.t('scenes.apps.account.account.firstname')}
+                    placeholder={this.state.i18n.t('scenes.apps.account.account.first_name')}
                     className={
                       'name ' + (this.state.currentUserService.errorUsernameExist ? 'error' : '')
                     }
                     type="text"
-                    value={this.state.firstname}
+                    value={this.state.first_name}
                     onKeyDown={e => {
                       if (e.keyCode === 13) {
                         currentUserService.updateidentity(
-                          this.state.lastname,
-                          this.state.firstname,
+                          this.state.last_name,
+                          this.state.first_name,
                           this.state.thumbnail,
                         );
                       }
                     }}
-                    onChange={ev => this.setState({ firstname: ev.target.value })}
+                    onChange={ev => this.setState({ first_name: ev.target.value })}
                   />
                   <Input
-                    placeholder={this.state.i18n.t('scenes.apps.account.account.lastname')}
+                    placeholder={this.state.i18n.t('scenes.apps.account.account.last_name')}
                     className={
                       'name ' + (this.state.currentUserService.errorUsernameExist ? 'error' : '')
                     }
                     type="text"
-                    value={this.state.lastname}
+                    value={this.state.last_name}
                     onKeyDown={e => {
                       if (e.keyCode === 13) {
                         currentUserService.updateidentity(
-                          this.state.lastname,
-                          this.state.firstname,
+                          this.state.last_name,
+                          this.state.first_name,
                           this.state.thumbnail,
                         );
                       }
                     }}
-                    onChange={ev => this.setState({ lastname: ev.target.value })}
+                    onChange={ev => this.setState({ last_name: ev.target.value })}
                   />
                   <ButtonWithTimeout
                     href="#"
@@ -180,8 +180,8 @@ export default class UserParameter extends Component {
                     disabled={this.state.currentUserService.loading}
                     onClick={() =>
                       currentUserService.updateidentity(
-                        this.state.lastname,
-                        this.state.firstname,
+                        this.state.last_name,
+                        this.state.first_name,
                         this.state.thumbnail,
                       )
                     }

@@ -32,8 +32,8 @@ export default class WorkspaceParameter extends Component {
       attributeOpen: 0,
       subMenuOpened: 0,
       username: user ? user.username : '',
-      lastname: user ? user.lastname : '',
-      firstname: user ? user.firstname : '',
+      last_name: user ? user.last_name : '',
+      first_name: user ? user.first_name : '',
       thumbnail: false,
       options: this.props.options,
     };

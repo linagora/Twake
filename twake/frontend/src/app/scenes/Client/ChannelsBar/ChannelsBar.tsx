@@ -16,17 +16,16 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
-import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import AccessRightsService from 'app/services/AccessRightsService';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
-import { CompanyHeaderLoading } from './Parts/CurrentUser/CompanyHeader/CompanyHeader';
-
 import './ChannelsBar.scss';
+import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 
 export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
+  const { workspace } = useCurrentWorkspace();
 
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
@@ -52,9 +51,10 @@ export default () => {
     };
   }, []);
 
-  if (!companyId || !workspaceId) {
+  if (!companyId || !workspaceId || !workspace) {
     return <></>;
   }
+
   return (
     <Layout.Sider
       theme="light"
@@ -89,10 +89,9 @@ export const LoadingChannelBar = () => {
     <Layout.Sider
       theme="light"
       width={220}
-      className={classNames('channels_view_loading')}
+      className={classNames('channels_view_loading channels_view')}
       style={{ height: '100%', width: '90%', alignItems: 'center' }}
     >
-      <CompanyHeaderLoading />
       <ChannelLoading />
     </Layout.Sider>
   );
@@ -101,10 +100,8 @@ export const LoadingChannelBar = () => {
 export const ChannelLoading = () => {
   return (
     <div className="channels_view_loader ">
-      <div className="applications_channels_loader small-x-margin">
-        <Skeleton title={false} paragraph={{ rows: 3, width: '100%' }} />
-      </div>
       <div className="small-x-margin">
+        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 3, width: '100%' }} />
         <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
         <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
       </div>

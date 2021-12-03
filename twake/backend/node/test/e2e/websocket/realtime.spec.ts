@@ -43,7 +43,7 @@ describe("The Realtime API", () => {
   describe("Joining rooms", () => {
     it("should fail when token is not defined", async done => {
       const token = await platform.auth.getJWTToken();
-      const name = "testroom";
+      const name = "/ping";
 
       socket.on("connect", () => {
         socket
@@ -64,7 +64,7 @@ describe("The Realtime API", () => {
 
     it("should fail when token is not valid", async done => {
       const token = await platform.auth.getJWTToken();
-      const name = "testroom";
+      const name = "/ping";
       const roomToken = "invalid token";
 
       socket.on("connect", () => {

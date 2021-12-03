@@ -5,7 +5,7 @@ import { WorkspaceType } from './Workspace';
 export type UserType = {
   connected?: boolean;
   email: string;
-  firstname?: string;
+  first_name?: string;
   front_id?: string;
   groups_id?: string[];
   id?: string;
@@ -13,7 +13,7 @@ export type UserType = {
   isNew?: boolean;
   isRobot?: boolean;
   language?: string;
-  lastname?: string;
+  last_name?: string;
   mail_hash?: string;
   mail_verification_override?: any;
   mail_verification_override_mail?: any;

@@ -7,32 +7,32 @@ import Languages from 'services/languages/languages';
 import CurrentUser from 'app/services/user/CurrentUser';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import './Message.scss';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { AtomMessageKey } from 'app/state/recoil/atoms/Messages';
 
 type Props = {
-  messageId: string;
-  previousMessageId: string;
+  messageId: AtomMessageKey;
+  previousMessageId: AtomMessageKey;
   unreadAfter: number;
 };
 
 export default React.memo((props: Props) => {
-  if (!props.previousMessageId) {
-    return <div />;
-  }
-
-  const previousMessage = Collections.get('messages').find(props.previousMessageId);
-  const message = Collections.get('messages').find(props.messageId);
-
-  Collections.get('messages').useListener(useState, [props.messageId, props.previousMessageId]);
+  const { message } = useMessage(props.messageId);
+  const previousMessage = props.previousMessageId
+    ? useMessage(props.previousMessageId).message
+    : null;
 
   const isFirstNewMessage =
-    (message?.creation_date || 0) >= props.unreadAfter &&
-    (previousMessage?.creation_date || 0) < props.unreadAfter;
+    (message?.created_at || 0) >= props.unreadAfter &&
+    (previousMessage?.created_at || 0) < props.unreadAfter;
   const isNewMessage =
     !!(
-      !previousMessage ||
-      (message?.creation_date && isFirstNewMessage && previousMessage?.creation_date)
-    ) && message?.sender !== CurrentUser.get().id;
-  const creation_date = Math.min(new Date().getTime() / 1000, message?.creation_date || 0);
+      previousMessage &&
+      message?.created_at &&
+      isFirstNewMessage &&
+      previousMessage?.created_at
+    ) && message?.user_id !== CurrentUser.get().id;
+  const creation_date = Math.min(new Date().getTime(), message?.created_at || 0);
   return (
     <div className="time_separator">
       {isNewMessage && (
@@ -47,15 +47,15 @@ export default React.memo((props: Props) => {
       {!isNewMessage &&
         !!(
           !previousMessage ||
-          (message?.creation_date || 0) - (previousMessage?.creation_date || 0) > 60 * 60 * 2
+          (message?.created_at || 0) - (previousMessage?.created_at || 0) > 60 * 60 * 2 * 1000
         ) && (
           <div className="message_timeline">
             <div className="time_container">
               <div className="time">
-                {new Date().getTime() / 1000 - (message?.creation_date || 0) > 24 * 60 * 60 ? (
-                  <Moment date={(creation_date || 0) * 1000} format="LL"></Moment>
+                {new Date().getTime() - (message?.created_at || 0) > 24 * 60 * 60 * 1000 ? (
+                  <Moment date={creation_date || 0} format="LL"></Moment>
                 ) : (
-                  <Moment date={(creation_date || 0) * 1000} fromNow></Moment>
+                  <Moment date={creation_date || 0} fromNow></Moment>
                 )}
               </div>
             </div>

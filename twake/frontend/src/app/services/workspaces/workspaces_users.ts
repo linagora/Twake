@@ -5,7 +5,7 @@ import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
-import Numbers from 'services/utils/Numbers.js';
+import Numbers from 'services/utils/Numbers';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import CurrentUser from 'app/services/user/CurrentUser';
 import AlertManager from 'services/AlertManager/AlertManager';

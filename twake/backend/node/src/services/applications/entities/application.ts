@@ -25,7 +25,7 @@ export default class Application {
   @Column("identity", "json")
   identity: ApplicationIdentity;
 
-  //This information is private to the application, make shure not to disclose it
+  //This information is private to the application, make sure not to disclose it
   @Column("api", "encoded_json")
   api: ApplicationApi;
 

@@ -1,3 +1,6 @@
+import { ChannelResource } from 'app/models/Channel';
+import { useChannelMessages, useThreadMessages } from 'app/state/recoil/hooks/useMessages';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
 import React from 'react';
 import Message from './Message';
 import TimeSeparator from './TimeSeparator';
@@ -19,9 +22,30 @@ type Props = {
   repliesAsLink?: boolean;
   unreadAfter: number;
   threadHeader?: string;
+  channel: ChannelResource;
 };
 
 export default React.memo((props: Props) => {
+  const { message } = useMessage({
+    id: props.messageId,
+    threadId: props.messageId,
+    companyId: props.channel.data.company_id || '',
+  });
+  console.log('message: ', message);
+
+  const channelMessages = useChannelMessages({
+    channelId: props.channel.data.id || '',
+    workspaceId: props.channel.data.workspace_id || '',
+    companyId: props.channel.data.company_id || '',
+  });
+  console.log('messages: ', channelMessages);
+
+  const threadMessages = useThreadMessages({
+    threadId: props.messageId,
+    companyId: props.channel.data.company_id || '',
+  });
+  console.log('thread: ', threadMessages);
+
   return (
     <>
       <TimeSeparator

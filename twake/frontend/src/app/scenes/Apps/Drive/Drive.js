@@ -6,7 +6,7 @@ import Icon from 'components/Icon/Icon.js';
 import Loader from 'components/Loader/Loader.js';
 import UploadZone from 'components/Uploads/UploadZone';
 
-import Numbers from 'services/utils/Numbers.js';
+import Numbers from 'services/utils/Numbers';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import './Drive.scss';
 import DriveMultiSelector from 'components/Drive/DriveMultiSelector.js';
@@ -34,7 +34,7 @@ import DriveList from './Lists/List.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { NewFolderInput, NewLinkInput, NewFileInput } from './DriveEditors';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 export default class Drive extends Component {
@@ -69,12 +69,7 @@ export default class Drive extends Component {
     }
   }
   componentWillMount() {
-    this.drive_channel =
-      (this.props.channel || {}).id +
-      '_' +
-      (this.props.tab || {}).id +
-      '_' +
-      Workspaces.currentWorkspaceId;
+    this.drive_channel = (this.props.tab || {}).id + '_' + Workspaces.currentWorkspaceId;
 
     var currentdir = this.state.app_drive_service.current_directory_channels[this.drive_channel];
     if (currentdir && !currentdir.id) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useContext, useState } from 'react';
 
 import 'moment-timezone';
 import moment from 'moment';
@@ -8,134 +8,108 @@ import classNames from 'classnames';
 import { AlertTriangle } from 'react-feather';
 
 import User from 'services/user/UserService';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import UserCard from 'app/components/UserCard/UserCard';
-import { getSender } from 'services/Apps/Messages/MessagesUtils';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import Emojione from 'components/Emojione/Emojione';
-import ListenUsers from 'services/user/ListenUsers';
-import Workspaces from 'services/workspaces/workspaces.js';
 import RouterServices from 'app/services/RouterService';
-import { Message } from 'app/models/Message';
-import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
+import { NodeMessage } from 'app/models/Message';
 import Languages from 'services/languages/languages';
 import Loader from 'components/Loader/Loader.js';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { MessageContext } from '../MessageWithReplies';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
+import { useUser } from 'app/state/recoil/hooks/useUser';
+import { UserType } from 'app/models/User';
+import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 
 type Props = {
-  message: Message;
-  collectionKey: string;
   linkToThread?: boolean;
-  loading: boolean;
-  failed: boolean;
 };
 
 const { Link } = Typography;
 
 export default (props: Props) => {
+  const channelId = useRouterChannel();
+  const workspaceId = useRouterWorkspace();
   const [messageLink, setMessageLink] = useState('');
-  const messageService = MessageListServiceFactory.get(props.collectionKey);
 
-  useEffect(() => {
-    return () => {
-      const senderData = getSender(props.message);
-      if (senderData.type === 'user') {
-        ListenUsers.cancelListenUser(senderData.id);
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  let user_name_node: any = null;
-
-  if (!messageService) {
-    return <></>;
-  }
+  const context = useContext(MessageContext);
+  let { message } = useMessage(context);
+  let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
+  let user = useUser(message.user_id);
+  let { applications: companyApplications } = useCompanyApplications(context.companyId);
+  let application = companyApplications.find(a => a.id === message.application_id);
 
   const scrollToMessage = () => {
-    if (!messageService) {
-      return;
-    }
-
-    if (props.message.parent_message_id) {
-      messageService.scrollTo({ id: props.message.parent_message_id });
+    if (message.thread_id != message.id) {
+      //TODO messageService.scrollTo({ id: message.thread_id });
     }
   };
 
   const updateMessageLink = () => {
-    const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
     const url = RouterServices.generateRouteFromState({
-      workspaceId: workspace.id || '',
-      channelId: props.message.channel_id,
-      messageId: props.message.parent_message_id || props.message.id,
+      workspaceId: workspaceId,
+      channelId: channelId,
+      messageId: message.thread_id || message.id,
     });
     setMessageLink(url);
   };
 
-  const displayUserCard = (user: any) => {
-    //@ts-ignore
-    let box = window.getBoundingClientRect(user_name_node);
-
-    MenusManager.openMenu(
-      [
-        {
-          type: 'react-element',
-          reactElement: () => (
-            <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
-          ),
-        },
-      ],
-      box,
-      null,
-      { margin: 8 },
-    );
+  let userNameRef: ReactNode = null;
+  const displayUserCard = () => {
+    if (user) {
+      let box = (window as any).getBoundingClientRect(userNameRef);
+      MenusManager.openMenu(
+        [
+          {
+            type: 'react-element',
+            reactElement: () => (
+              <UserCard
+                user={user as UserType}
+                onClick={() => ChannelsService.openDiscussion([(user as UserType).id])}
+              />
+            ),
+          },
+        ],
+        box,
+        null,
+        { margin: 8 },
+      );
+    }
   };
-
-  let senderData: any = getSender(props.message);
-  if (senderData.type === 'user') {
-    ListenUsers.listenUser(senderData.id);
-    Collections.get('users').useListener(useState, [senderData.id]);
-  }
-
-  let parentMessage: Message | null = null;
-  if (props.linkToThread) {
-    parentMessage = Collections.get('messages').find(props.message.parent_message_id);
-  }
 
   return (
     <div
       className={classNames('message-content-header-container', {
-        'message-not-sent': props.failed,
+        'message-not-sent': message._status === 'failed',
       })}
     >
       <div className={'message-content-header '}>
         <span
           className="sender-name"
-          ref={node => (user_name_node = node)}
-          onClick={() => senderData.type === 'user' && displayUserCard(senderData)}
+          ref={node => (userNameRef = node)}
+          onClick={() => displayUserCard()}
         >
-          {User.getFullName(senderData)}
+          {message.override?.title ||
+            (!!user && User.getFullName(user)) ||
+            (message.application_id && application?.identity?.name)}
         </span>
-        {senderData.type === 'user' && senderData.status_icon && senderData.status_icon[0] && (
+        {!message.application_id && !!user && user.status_icon && user.status_icon[0] && (
           <div className="sender-status">
-            <Emojione size={12} type={senderData.status_icon[0]} /> {senderData.status_icon[1]}
+            <Emojione size={12} type={user.status_icon[0]} /> {user.status_icon[1]}
           </div>
         )}
 
         {props.linkToThread && (
           <span className="reply-text">
             {Languages.t('scenes.apps.messages.input.replied_to')}
-            <Link onClick={() => scrollToMessage()}>
-              {PseudoMarkdownCompiler.compileToSimpleHTML(
-                parentMessage?.content,
-                parentMessage?.message_type === 1,
-              )}
-            </Link>
+            <Link onClick={() => scrollToMessage()}>{parentMessage?.text}</Link>
           </span>
         )}
 
-        {props.message.creation_date && (
+        {message.created_at && (
           <a
             className="date"
             // eslint-disable-next-line react/jsx-no-target-blank
@@ -147,15 +121,13 @@ export default (props: Props) => {
             <Moment
               tz={moment.tz.guess()}
               format={
-                new Date().getTime() - props.message.creation_date * 1000 > 12 * 60 * 60 * 1000
-                  ? 'lll'
-                  : 'LT'
+                new Date().getTime() - message.created_at > 12 * 60 * 60 * 1000 ? 'lll' : 'LT'
               }
             >
-              {props.message.creation_date * 1000}
+              {message.created_at}
             </Moment>
 
-            {props.message.edited && (
+            {message.edited?.edited_at && (
               <span style={{ textTransform: 'lowercase' }}>
                 {' '}
                 - {Languages.t('scenes.apps.messages.input.edited', [], 'Edited')}
@@ -164,12 +136,12 @@ export default (props: Props) => {
           </a>
         )}
       </div>
-      {props.loading && (
+      {message._status === 'sending' && (
         <div className="loading">
           <Loader color="#999" className="message_header_loader" />
         </div>
       )}
-      {props.failed && !props.loading && (
+      {message._status === 'failed' && (
         <div className="alert_failed_icon">
           <AlertTriangle size={16} />
         </div>

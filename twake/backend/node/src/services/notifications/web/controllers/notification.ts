@@ -10,6 +10,7 @@ import {
 } from "../../../../utils/types";
 import { UserNotificationBadge } from "../../entities";
 import { getWebsocketInformation } from "../../services/realtime";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 
 export class NotificationController
   implements
@@ -18,8 +19,9 @@ export class NotificationController
       ResourceCreateResponse<UserNotificationBadge>,
       ResourceListResponse<UserNotificationBadge>,
       ResourceDeleteResponse
-    > {
-  constructor(protected service: NotificationServiceAPI) {}
+    >
+{
+  constructor(protected realtime: RealtimeServiceAPI, protected service: NotificationServiceAPI) {}
 
   async list(
     request: FastifyRequest<{
@@ -50,7 +52,10 @@ export class NotificationController
         resources,
       },
       ...(request.query.websockets && {
-        websockets: [getWebsocketInformation(request.currentUser)],
+        websockets: this.realtime.sign(
+          [getWebsocketInformation(request.currentUser)],
+          request.currentUser.id,
+        ),
       }),
       ...(page_token && {
         next_page_token: page_token,

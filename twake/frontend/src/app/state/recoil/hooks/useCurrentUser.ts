@@ -7,10 +7,6 @@ import { CurrentUserState } from '../atoms/CurrentUser';
 export const useCurrentUser = () => {
   const [user, setUser] = useRecoilState(CurrentUserState);
 
-  const refresh = async () => {
-    setUser(await UserAPIClient.getCurrent());
-  };
-
   //Depreciated way to get use update from LoginService
   LoginService.recoilUpdateUser = setUser;
   useEffect(() => {
@@ -19,5 +15,9 @@ export const useCurrentUser = () => {
     }
   }, [user]);
 
-  return { user, setUser, refresh };
+  const refresh = async () => {
+    await LoginService.updateUser();
+  };
+
+  return { user, refresh };
 };

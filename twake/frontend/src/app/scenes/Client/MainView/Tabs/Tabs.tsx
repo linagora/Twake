@@ -1,33 +1,26 @@
 import React from 'react';
-import { TabResource } from 'app/models/Tab';
+import { Plus } from 'react-feather';
+import { TabType } from 'app/models/Tab';
 import { Button, Row, Tabs } from 'antd';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
-import Collections from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
-import { Plus } from 'react-feather';
 import DefaultChannelTab from 'app/scenes/Client/MainView/Tabs/DefaultChannelTab';
 import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
 import UserService from 'services/user/UserService';
-import AccessRightsService from 'app/services/AccessRightsService';
+import useTabs from 'app/state/recoil/hooks/useTabs';
 
 import './Tabs.scss';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 export default (): JSX.Element => {
-  const { companyId, workspaceId, channelId, tabId } = RouterServices.getStateFromRoute();
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
-  const TabsCollection = Collections.get(collectionPath, TabResource);
-  const tabsList: TabResource[] = TabsCollection.useWatcher(
-    {},
-    { observedFields: ['id', 'name', 'configuration'] },
-  );
+  const { workspaceId, tabId } = RouterServices.getStateFromRoute();
+  const { tabs, save } = useTabs();
   const currentUser = UserService.getCurrentUser();
+  const tabsList = [...tabs];
 
-  const upsertTab = async (tab: TabResource) => await TabsCollection.upsert(tab);
-  const deleteTab = async (tab: TabResource) => await TabsCollection.remove(tab);
-
-  if (tabId && tabsList.map(e => e.id).indexOf(tabId || '') < 0) {
+  if (tabId && tabs.map(e => e.id).indexOf(tabId || '') < 0) {
     const route: string = RouterServices.generateRouteFromState({
       tabId: '',
     });
@@ -36,24 +29,21 @@ export default (): JSX.Element => {
 
   return (
     <Row align="middle" className="main-view-tabs" wrap={false}>
-      {tabsList.sort((a, b) => (a.data.order || '').localeCompare(b.data.order || '')) && (
+      {tabsList.sort((a, b) => (a.order || '').localeCompare(b.order || '')) && (
         <Tabs activeKey={tabId ? tabId : 'default'}>
           <Tabs.TabPane tab={<DefaultChannelTab selected={!tabId} />} key="default" />
-          {tabsList.map((tab: TabResource) => {
+          {tabsList.map((tab: TabType) => {
             return (
-              tab.data.id && (
+              tab.id && (
                 <Tabs.TabPane
                   tab={
                     <Tab
                       currentUserId={currentUser.id}
-                      selected={tabId === tab.data.id}
-                      key={tab.data.id}
-                      tabResource={tab}
-                      upsertTab={upsertTab}
-                      deleteTab={deleteTab}
+                      selected={tabId === tab.id}
+                      tabId={tab.id}
                     />
                   }
-                  key={tab.data.id}
+                  key={tab.id}
                 />
               )
             );
@@ -68,7 +58,7 @@ export default (): JSX.Element => {
             return ModalManager.open(
               <TabsTemplateEditor
                 currentUserId={currentUser.id}
-                onChangeTabs={(item: TabResource) => upsertTab(item)}
+                onChangeTabs={(item: TabType) => save(item)}
               />,
               {
                 position: 'center',

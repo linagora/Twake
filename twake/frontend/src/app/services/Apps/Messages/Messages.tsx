@@ -18,9 +18,10 @@ import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServic
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import { ChannelResource } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
-import { Message } from '../../../models/Message';
+import { Message, MessageFileType } from '../../../models/Message';
+import MessageAPIClient from './clients/MessageAPIClient';
 import { Application } from 'app/models/App';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 class Messages extends Observable {
@@ -126,7 +127,12 @@ class Messages extends Observable {
     } else return [{ type: 'br' }];
   }
 
-  async sendMessage(value: string, options: { [key: string]: any }, collectionKey: string) {
+  async sendMessage(
+    value: string,
+    options: { [key: string]: any },
+    collectionKey: string,
+    attachements: MessageFileType[],
+  ) {
     return new Promise(async resolve => {
       value = PseudoMarkdownCompiler.transformChannelsUsers(value);
       let channel = await this.findChannel(options.channel_id);
@@ -143,17 +149,10 @@ class Messages extends Observable {
 
         if (!app) {
           AlertManager.alert(() => {}, {
-            text: Languages.t(
-              'services.apps.messages.no_command_possible',
-              [value, app_name],
-              "Nous ne pouvons pas executer la commande '$1' car '$2' n'existe pas ou ne permet pas de créer des commandes.",
-            ),
-            title: Languages.t(
-              'services.apps.messages.no_app',
-              [],
-              "Cette application n'existe pas.",
-            ),
+            text: Languages.t('services.apps.messages.no_command_possible', [value, app_name]),
+            title: Languages.t('services.apps.messages.no_app'),
           });
+
           resolve(false);
           return;
         }
@@ -173,33 +172,10 @@ class Messages extends Observable {
 
       options = options || {};
 
-      let message = this.collection.edit(null);
+      let message: Message = this.collection.edit(null);
       let val = PseudoMarkdownCompiler.compileToJSON(value);
 
-      const editorManager = MessageEditorManager.get(options.channel_id);
-      let filesAttachements =
-        editorManager.filesAttachements[options.parent_message_id || 'main'] || [];
-
-      const filesAttachementsToTwacode =
-        filesAttachements.map(id => {
-          return {
-            type: 'file',
-            mode: filesAttachements.length > 1 ? 'mini' : 'preview',
-            content: id,
-          };
-        }) || {};
-
-      const fileSystemMessage = this.getFileSystemMessage(
-        val.original_str.length,
-        filesAttachementsToTwacode.length > 1,
-      );
-
-      const preparedFiles = filesAttachementsToTwacode.length
-        ? [...fileSystemMessage, ...filesAttachementsToTwacode]
-        : [];
-
-      val.files = preparedFiles;
-      val.prepared.push({ type: 'nop', content: preparedFiles });
+      message.text = value;
       message.channel_id = options.channel_id;
       message.parent_message_id = options.parent_message_id || '';
       message.sender = CurrentUser.get().id;
@@ -210,9 +186,13 @@ class Messages extends Observable {
       message.pinned = false;
       message.responses_count = 0;
 
+      message.files = [
+        ...attachements.filter(f => f.metadata?.type !== 'pending').map(file => file),
+      ];
+
       message.creation_date = new Date().getTime() / 1000 + 10; //To be on the bottom
       message.content = val;
-
+      /*
       ChannelsService.markFrontAsRead(channel.id, message.creation_date);
       this.collection.save(message, collectionKey, (message: Message) => {
         if (message) {
@@ -221,8 +201,9 @@ class Messages extends Observable {
         }
         resolve(message);
       });
+      */
 
-      CurrentUser.updateTutorialStatus('first_message_sent');
+      //TODO      MessageAPIClient.save("", "", message);
     });
   }
 
@@ -498,7 +479,6 @@ class Messages extends Observable {
     const channel = await this.findChannel(message.channel_id);
 
     SideViewService.select(channel.id, {
-      collection: this.getCollection(message.channel_id),
       app: { identity: { code: 'messages' } } as Application,
       context: {
         viewType: 'channel_thread',

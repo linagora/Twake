@@ -15,8 +15,13 @@ export default class TransportSocket implements WebSocketTransport {
     this.transport = transport;
   }
 
-  join(path: string, tag: string, callback: (type: WebsocketEvents | string, event: any) => void) {
-    this.transport?.join(path, tag, callback);
+  join(
+    path: string,
+    token: string,
+    tag: string,
+    callback: (type: WebsocketEvents | string, event: any) => void,
+  ) {
+    this.transport?.join(path, token, tag, callback);
   }
 
   leave(path: string, tag: string) {

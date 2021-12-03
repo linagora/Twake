@@ -10,6 +10,7 @@ import {
   ONLINE_ROOM,
   RealtimeUpdateMessageType,
 } from './OnlineUserRealtimeAPIClient';
+import JWTStorage from '../JWTStorage';
 
 const logger = Logger.getLogger('useOnlineUsers');
 
@@ -68,12 +69,16 @@ export const useOnlineUsers = (): void => {
   }, [websocket, onlineUsers]);
 
   // listen to room events in which online events are pushed
-  useRealtimeRoom<RealtimeUpdateMessageType>(ONLINE_ROOM, 'useOnlineUsers', (action, resource) => {
-    if (action === 'event' && resource?.length) {
-      logger.trace('Updating online users');
-      updateOnline(resource);
-    } else {
-      logger.warn('Received unsupported event', action);
-    }
-  });
+  useRealtimeRoom<RealtimeUpdateMessageType>(
+    { room: ONLINE_ROOM, token: JWTStorage.getJWT() },
+    'useOnlineUsers',
+    (action, resource) => {
+      if (action === 'event' && resource?.length) {
+        logger.trace('Updating online users');
+        updateOnline(resource);
+      } else {
+        logger.warn('Received unsupported event', action);
+      }
+    },
+  );
 };

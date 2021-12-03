@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import 'moment-timezone';
 import MessagesService from 'services/Apps/Messages/Messages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
@@ -12,55 +12,40 @@ import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import './MessageEdition.scss';
 import { EditorState } from 'draft-js';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { MessageContext } from '../MessageWithReplies';
 
 type Props = {
-  /**
-   * The message to edit
-   */
-  message: Message;
-
-  /**
-   * The collection key
-   */
-  collectionKey: string;
-
   /**
    * The editor plugins to enable during edition
    */
   editorPlugins?: string[];
-
-  /**
-   * On message deleted callback
-   */
   onDeleted?: () => void;
-
-  /**
-   * On message edited callback called with the new message content
-   */
   onEdited?: (content?: string) => void;
 };
 
 export default (props: Props) => {
+  const context = useContext(MessageContext);
+  let { message } = useMessage(context);
+
+  return <></>; /*
+
   const editorPlugins = props.editorPlugins || ['emoji', 'mention', 'channel'];
   const format = 'markdown';
-  const channelId = props.message?.channel_id || '';
-  const threadId = props.message?.parent_message_id || '';
-  const messageId = props.message?.id || '';
-  const editorId = `channel:${channelId}/thread:${threadId}/message:${messageId}`;
+  const threadId = message?.thread_id || '';
+  const messageId = message?.id || '';
+  const editorId = `thread:${threadId}/message:${messageId}`;
   const messageEditorService = MessageEditorsManager.get(channelId);
   const [editorState, setEditorState] = useState<EditorState>();
   const [isReady, setReady] = useState(false);
 
   messageEditorService.useListener(useState);
 
-  /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     (async () => {
       const dataParser = RichTextEditorStateService.getDataParser(editorPlugins);
       const initialContent = PseudoMarkdownCompiler.transformBackChannelsUsers(
-        typeof props.message?.content === 'string'
-          ? props.message?.content
-          : props.message?.content?.original_str,
+        typeof message?.content === 'string' ? message?.content : message?.content?.original_str,
       );
 
       await messageEditorService.setContent(threadId, messageId, initialContent);
@@ -75,13 +60,12 @@ export default (props: Props) => {
       setReady(true);
     })();
   }, []);
-  /* eslint-enable react-hooks/exhaustive-deps */
 
   const save = (content: string) => {
     if (!content) {
       AlertManager.confirm(
         () => {
-          MessagesService.deleteMessage(props.message, props.collectionKey);
+          MessagesService.deleteMessage(message, props.collectionKey);
           props.onDeleted && props.onDeleted();
         },
         () => {},
@@ -151,4 +135,5 @@ export default (props: Props) => {
       </div>
     </div>
   );
+  */
 };

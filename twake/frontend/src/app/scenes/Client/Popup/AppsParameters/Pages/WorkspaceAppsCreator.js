@@ -113,18 +113,10 @@ export default class WorkspaceAppsCreator extends Component {
         </div>
         <div className="group_section">
           <div className="label for_input">
-            {Languages.t(
-              'scenes.app.popup.appsparameters.pages.company_label',
-              [],
-              'Entreprise propriétaire',
-            )}
+            {Languages.t('scenes.app.popup.appsparameters.pages.company_label')}
           </div>
           <div className="smalltext" style={{ paddingBottom: 0 }}>
-            {Languages.t(
-              'scenes.app.popup.appsparameters.pages.app_modification_right',
-              [],
-              'Tous les gérants de cette entreprise pourront modifier cette application.',
-            )}
+            {Languages.t('scenes.app.popup.appsparameters.pages.app_modification_right')}
           </div>
           <Input className="full_width" type="text" value={group.name} disabled />
 

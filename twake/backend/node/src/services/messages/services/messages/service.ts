@@ -172,7 +172,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       message = await this.completeMessage(message, { files: item.files || [] });
     }
 
-    this.onSaved(message, { created: messageCreated }, context);
+    await this.onSaved(message, { created: messageCreated }, context);
 
     return new SaveResult<Message>(
       "message",
@@ -273,7 +273,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     await this.repository.save(messageInNewThread);
 
-    this.onSaved(messageInNewThread, { created: true }, context);
+    await this.onSaved(messageInNewThread, { created: true }, context);
 
     await this.repository.remove(messageInOldThread);
     await this.service.threads.addReply(messageInOldThread.thread_id, -1);
@@ -314,7 +314,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         ...pk,
       });
 
-      this.onSaved(msg, { created: false }, context);
+      await this.onSaved(msg, { created: false }, context);
 
       return new DeleteResult<Message>("message", msg, true);
     }
@@ -336,7 +336,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     logger.info(`Deleted message ${pk.id} from thread ${message.thread_id}`);
     await this.repository.save(message);
-    this.onSaved(message, { created: false }, context);
+    await this.onSaved(message, { created: false }, context);
 
     //Only server and application can definively remove a message
     if (
@@ -492,7 +492,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       await this.service.threads.addReply(message.thread_id);
     }
 
-    localEventBus.publish<MessageLocalEvent>("message:saved", {
+    //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
+    await this.service.engine.dispatchMessage({
       resource: message,
       context: context,
       created: options.created,

@@ -13,7 +13,7 @@ socket.on("connect", () => {
       // this one fails
       socket.emit("realtime:join", { name: "/channels" });
       // this one should be OK
-      socket.emit("realtime:join", { name: "/channels", token: "twake" });
+      socket.emit("realtime:join", { name: "/channels", token });
       socket.on("realtime:join:error", message => {
         // will fire when join does not provide a valid token
         console.log("Error on realtime", message);

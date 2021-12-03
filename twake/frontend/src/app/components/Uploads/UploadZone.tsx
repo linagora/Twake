@@ -118,7 +118,10 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
 
     event.preventDefault();
 
-    if (this.props.onAddFiles) return this.props.onAddFiles([...event.target.files]);
+    console.log(event.target.files, event.target);
+
+    const files = event.target.files || event.dataTransfer.files || [];
+    if (this.props.onAddFiles && files.length > 0) return this.props.onAddFiles([...files]);
 
     this.hover(false);
 

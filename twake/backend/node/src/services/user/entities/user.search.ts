@@ -11,10 +11,9 @@ export default {
       email_canonical: entity.email_canonical,
       expanded: expandStringForPrefix(expanded),
     };
-    if (entity.cache?.companies && entity.cache?.workspaces) {
+    if (entity.cache?.companies) {
       return {
         companies: entity.cache?.companies,
-        workspaces: entity.cache?.workspaces,
         ...source,
       };
     }

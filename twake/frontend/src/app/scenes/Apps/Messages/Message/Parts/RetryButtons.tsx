@@ -5,10 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections';
 import { Button } from 'antd';
 import Languages from 'services/languages/languages';
 
-type Props = {
-  message: Message;
-  collectionKey: string;
-};
+type Props = {};
 
 export default (props: Props) => {
   return (
@@ -16,7 +13,7 @@ export default (props: Props) => {
       <Button
         style={{ fontWeight: 500, paddingLeft: 0 }}
         onClick={() => {
-          MessagesService.retrySendMessage(props.message, props.collectionKey);
+          //TODO: MessagesService.retrySendMessage(props.message, props.collectionKey);
         }}
       >
         {Languages.t('general.retry', [], 'Retry')}
@@ -24,7 +21,7 @@ export default (props: Props) => {
       <Button
         style={{ fontWeight: 500 }}
         onClick={() => {
-          MessagesService.deleteMessage(props.message, props.collectionKey);
+          //TODO: MessagesService.deleteMessage(props.message, props.collectionKey);
         }}
       >
         {Languages.t('general.cancel', [], 'Cancel')}

@@ -1,9 +1,14 @@
-import TransportHTTP from "./TransportHTTP";
+import TransportHTTP from './TransportHTTP';
 
 export interface WebSocketTransport {
-  join(room: string, tag: string, onMessage: (type: string, event: any) => void): void;
+  join(
+    room: string,
+    token: string,
+    tag: string,
+    onMessage: (type: string, event: any) => void,
+  ): void;
   leave(room: string, tag: string): void;
-};
+}
 
 export type TransportOptions = {
   rest?: {
@@ -17,4 +22,4 @@ export interface TransportAPI {
   connect(options?: TransportOptions): void;
   getHttp(): TransportHTTP;
   getSocket(): WebSocketTransport;
-};
+}

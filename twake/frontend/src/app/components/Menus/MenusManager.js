@@ -1,10 +1,10 @@
 import Observable from 'app/services/Depreciated/observable.js';
-import Number from 'services/utils/Numbers.js';
+import Number from 'services/utils/Numbers';
 import Globals from 'services/Globals';
 
 /**
  *  Menus manager service, choose where to generate menu
-*/
+ */
 class MenusManager extends Observable {
   constructor() {
     super();

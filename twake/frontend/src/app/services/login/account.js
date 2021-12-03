@@ -100,7 +100,7 @@ class Account {
     });
   }
 
-  subscribeMail(username, password, name, firstname, phone, mail, newsletter, cb, th) {
+  subscribeMail(username, password, name, first_name, phone, mail, newsletter, cb, th) {
     if (this.doing_subscribe) {
       return;
     }
@@ -109,7 +109,7 @@ class Account {
       username: username,
       password: password,
       name: name,
-      firstname: firstname,
+      first_name: first_name,
       phone: phone,
       language: Languages.language,
       newsletter: newsletter,

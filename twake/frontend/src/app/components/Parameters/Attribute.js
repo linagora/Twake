@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Number from 'services/utils/Numbers.js';
+import Number from 'services/utils/Numbers';
 import AttributesManager from './AttributesManager.js';
 import './Parameters.scss';
 import Languages from 'services/languages/languages';

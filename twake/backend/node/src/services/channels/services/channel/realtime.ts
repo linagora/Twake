@@ -7,7 +7,6 @@ export function getWebsocketInformation(channel: Channel): WebsocketMetadata {
   return {
     name: channel.name,
     room: getChannelPath(channel),
-    encryption_key: "",
   };
 }
 

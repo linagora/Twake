@@ -5,13 +5,15 @@ import {
   JoinRoomEvent,
   LeaveRoomEvent,
   ClientEvent,
+  WebsocketRoomSignature,
 } from "../types";
 import { RealtimeRoomManager } from "../api";
 import WebSocketAPI from "../../../services/websocket/provider";
 import { WebSocketUser, WebSocket } from "../../../services/websocket/types";
+import AuthServiceAPI from "../../auth/provider";
 
 export default class RoomManager implements RealtimeRoomManager {
-  constructor(private ws: WebSocketAPI) {}
+  constructor(private ws: WebSocketAPI, private auth: AuthServiceAPI) {}
 
   init(): void {
     this.ws.onUserConnected(event => {
@@ -77,8 +79,25 @@ export default class RoomManager implements RealtimeRoomManager {
       `Checking if user ${user.id} can join room ${joinEvent.name} with token ${joinEvent.token}`,
     );
 
-    // FIXME: We will use JWT to validate the token
-    return joinEvent.token && joinEvent.token === "twake";
+    try {
+      //Public rooms we just check the user is logged in
+      if (joinEvent.name === "/users/online" || joinEvent.name === "/ping") {
+        return !!this.auth.verifyToken(joinEvent.token)?.sub;
+      }
+
+      //Retro-compatibility for mobile up to february 2021 (to remove after this date)
+      if (joinEvent.token === "twake") return true;
+
+      const signature = this.auth.verifyTokenObject<WebsocketRoomSignature>(joinEvent.token);
+      return (
+        signature &&
+        signature.name === JoinRoomEvent.name &&
+        signature.sub === user.id &&
+        signature.nbf > new Date().getTime()
+      );
+    } catch (err) {
+      return false;
+    }
   }
 
   userCanEmitInRoom = this.userCanJoinRoom;

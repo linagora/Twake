@@ -5,7 +5,7 @@ import { getInsertRange } from '../../EditorUtils';
 import CommandSuggestion from './CommandSuggestion';
 import { EditorSuggestionPlugin } from '../';
 import { Application } from 'app/models/App';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 
 export type CommandSuggestionType = {
   command: string;

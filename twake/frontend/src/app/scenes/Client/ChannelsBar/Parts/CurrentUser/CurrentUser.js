@@ -27,8 +27,9 @@ import LockedWorkspacePopup from 'app/components/LockedFeaturesComponents/Locked
 import ModalManager from 'app/components/Modal/ModalManager';
 import CompanyMessagesCounter from 'components/CompanyMessagesCounter/CompanyMessagesCounter';
 import RouterService from 'app/services/RouterService';
-import CompanyAPIClient from 'app/services/CompanyAPIClient';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
+import ConsoleService from 'app/services/Console/ConsoleService';
+import MenuCompanyHeader from './MenuCompanyHeader';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -71,35 +72,14 @@ export default class CurrentUser extends Component {
     clearInterval(this.refreshUserState);
   }
 
-  async fetchCurrentWorkspace(companyId, workspaceId) {
-    const workspace = await WorkspaceAPIClient.get(companyId, workspaceId);
-
-    this.setState({ workspaceName: workspace.name || '' });
-
-    if (this.currentWorkspaceId !== workspaceId) {
-      this.setState({ currentWorkspaceId: workspaceId });
-    }
-  }
-
-  componentDidUpdate() {
-    const { companyId, workspaceId } = RouterService.getStateFromRoute();
-
-    companyId &&
-      workspaceId &&
-      workspaceId !== this.state.currentWorkspaceId &&
-      this.fetchCurrentWorkspace(companyId, workspaceId);
-  }
-
   componentDidMount() {
-    const new_status = { ...this.users_repository.known_objects_by_id[this.user_id].status_icon };
+    const new_status = {
+      ...this.users_repository.known_objects_by_id[this.user_id].status.split(' '),
+    };
 
     if (!new_status[0]) {
       new_status[1] = '';
     }
-
-    const { companyId, workspaceId } = RouterService.getStateFromRoute();
-
-    companyId && workspaceId && this.fetchCurrentWorkspace(companyId, workspaceId);
 
     this.setState({ new_status });
   }
@@ -127,13 +107,135 @@ export default class CurrentUser extends Component {
     var current_user = this.users_repository.known_objects_by_id[this.user_id];
     var usermenu = [
       {
+        type: 'react-element',
+        reactElement: () => <MenuCompanyHeader />,
+      },
+      { type: 'separator' },
+      {
+        type: 'react-element',
+        className: 'menu-cancel-left-padding',
+        reactElement: () => <CompanyMessagesCounter />,
+      },
+    ];
+
+    if (
+      !WorkspaceUserRights.isGroupInvite() &&
+      (AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'moderator') ||
+        AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'admin'))
+    ) {
+      usermenu.push({ type: 'separator' });
+
+      usermenu.push({
+        type: 'menu',
+        text: Languages.t(
+          'scenes.app.channelsbar.currentuser.collaborateurs',
+          [],
+          'Collaborateurs',
+        ),
+        onClick: () => {
+          ModalManagerDepreciated.open(
+            <WorkspaceParameter initial_page={2} />,
+            true,
+            'workspace_parameters',
+          );
+        },
+      });
+
+      usermenu.push({
+        type: 'menu',
+        text: Languages.t(
+          'scenes.app.channelsbar.currentuser.create_workspace_page',
+          [],
+          'Créer un espace de travail',
+        ),
+        onClick: () => {
+          if (FeatureTogglesService.isActiveFeatureName(FeatureNames.MULTIPLE_WORKSPACES)) {
+            ModalManagerDepreciated.open(<CreateWorkspacePage />);
+          } else {
+            ModalManager.open(
+              <LockedWorkspacePopup />,
+              {
+                position: 'center',
+                size: { width: '600px' },
+              },
+              false,
+            );
+          }
+        },
+      });
+    }
+
+    if (!WorkspaceUserRights.isInvite()) {
+      if (WorkspaceUserRights.hasWorkspacePrivilege()) {
+        usermenu.push(
+          { type: 'separator' },
+          {
+            type: 'menu',
+            text: Languages.t(
+              'scenes.app.channelsbar.currentuser.workspace_parameters',
+              [],
+              "Paramètres de l'espace",
+            ),
+            onClick: () => {
+              ModalManagerDepreciated.open(<WorkspaceParameter />, true, 'workspace_parameters');
+            },
+          },
+        );
+
+        if (
+          AccessRightsService.hasCompanyLevel(WorkspaceService.currentGroupId, 'member') &&
+          InitService.server_infos?.configuration?.accounts?.type === 'console'
+        ) {
+          usermenu.push({
+            type: 'menu',
+            text: Languages.t('scenes.app.popup.workspaceparameter.pages.company_identity_title'),
+            rightIcon: 'external-link-alt',
+            onClick: () => {
+              return window.open(
+                ConsoleService.getCompanyManagementUrl(WorkspaceService.currentGroupId),
+                '_blank',
+              );
+            },
+          });
+        }
+      }
+    } else {
+      usermenu.push(
+        { type: 'separator' },
+        {
+          type: 'text',
+          text: Languages.t(
+            'scenes.app.channelsbar.currentuser.invited_status',
+            [],
+            'Vous êtes un invité.',
+          ),
+        },
+        {
+          type: 'menu',
+          text: Languages.t(
+            'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu',
+            [],
+            "Quitter l'espace",
+          ),
+          icon: 'plane-fly',
+          className: 'error',
+          onClick: () => {
+            WorkspacesUsers.leaveWorkspace();
+          },
+        },
+      );
+    }
+
+    usermenu = usermenu.concat([
+      { type: 'separator' },
+      /*{
         type: 'menu',
         text: Languages.t(
           'scenes.app.channelsbar.currentuser.change_my_status',
           [],
           'Changer mon statut',
         ),
-        emoji: (current_user.status_icon || {})[0] || ':smiley:',
+        emoji: (current_user.status.split(' ') || {})[0] || ':smiley:',
         submenu_replace: true,
         submenu: [
           {
@@ -148,7 +250,7 @@ export default class CurrentUser extends Component {
             type: 'react-element',
             reactElement: level => {
               if (this.state.new_status[0].length <= 0) {
-                this.setState({ new_status: current_user.status_icon });
+                this.setState({ new_status: current_user.status.split(' ') });
               }
               return (
                 <InputWithIcon
@@ -196,11 +298,14 @@ export default class CurrentUser extends Component {
             },
           },
         ],
-      },
+      },*/
       {
         type: 'menu',
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),
-        icon: 'cog',
+        rightIcon:
+          InitService.server_infos?.configuration?.accounts?.type === 'console'
+            ? 'external-link-alt'
+            : '',
         onClick: () => {
           if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
             return window.open(
@@ -212,139 +317,9 @@ export default class CurrentUser extends Component {
           }
         },
       },
-      { type: 'separator' },
-      {
-        type: 'react-element',
-        className: 'menu-cancel-left-padding',
-        reactElement: () => <CompanyMessagesCounter />,
-      },
-      {
-        type: 'text',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.workspace_info',
-          [
-            (Collections.get('workspaces').find(WorkspaceService.currentWorkspaceId) || {}).name,
-            (Collections.get('groups').find(WorkspaceService.currentGroupId) || {}).name,
-          ],
-          "Vous êtes dans l'espace de travail $1 du groupe $2.",
-        ),
-      },
-      { type: 'separator' },
-    ];
-    if (!WorkspaceUserRights.isInvite()) {
-      if (WorkspaceUserRights.hasWorkspacePrivilege()) {
-        usermenu.push({
-          type: 'menu',
-          text: Languages.t(
-            'scenes.app.channelsbar.currentuser.workspace_parameters',
-            [],
-            "Paramètres de l'espace",
-          ),
-          icon: 'cog',
-          onClick: () => {
-            ModalManagerDepreciated.open(<WorkspaceParameter />, true, 'workspace_parameters');
-          },
-        });
-      }
-
-      if (WorkspaceUserRights.hasWorkspacePrivilege()) {
-        usermenu.push({
-          type: 'menu',
-          text: Languages.t(
-            'scenes.app.channelsbar.currentuser.add_apps',
-            [],
-            'Chercher des applications',
-          ),
-          icon: 'apps',
-          onClick: () => {
-            ModalManagerDepreciated.open(
-              <WorkspaceParameter initial_page={3} options={'open_search_apps'} />,
-              true,
-              'workspace_parameters',
-            );
-          },
-        });
-      }
-
-      usermenu.push({
-        type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.collaborateurs',
-          [],
-          'Collaborateurs',
-        ),
-        icon: 'users-alt',
-        onClick: () => {
-          ModalManagerDepreciated.open(
-            <WorkspaceParameter initial_page={2} />,
-            true,
-            'workspace_parameters',
-          );
-        },
-      });
-    } else {
-      usermenu.push(
-        {
-          type: 'text',
-          text: Languages.t(
-            'scenes.app.channelsbar.currentuser.invited_status',
-            [],
-            'Vous êtes un invité.',
-          ),
-        },
-        {
-          type: 'menu',
-          text: Languages.t(
-            'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu',
-            [],
-            "Quitter l'espace",
-          ),
-          icon: 'plane-fly',
-          className: 'error',
-          onClick: () => {
-            WorkspacesUsers.leaveWorkspace();
-          },
-        },
-      );
-    }
-
-    if (
-      !WorkspaceUserRights.isGroupInvite() &&
-      (AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'moderator') ||
-        AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'admin'))
-    ) {
-      usermenu.push({ type: 'separator' });
-      usermenu.push({
-        type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.create_workspace_page',
-          [],
-          'Créer un espace de travail',
-        ),
-        icon: 'plus',
-        onClick: () => {
-          if (FeatureTogglesService.isActiveFeatureName(FeatureNames.MULTIPLE_WORKSPACES)) {
-            ModalManagerDepreciated.open(<CreateWorkspacePage />);
-          } else {
-            ModalManager.open(
-              <LockedWorkspacePopup />,
-              {
-                position: 'center',
-                size: { width: '600px' },
-              },
-              false,
-            );
-          }
-        },
-      });
-    }
-
-    usermenu = usermenu.concat([
-      { type: 'separator' },
       {
         type: 'menu',
         text: Languages.t('scenes.app.channelsbar.currentuser.logout', [], 'Se déconnecter'),
-        icon: 'sign-out-alt',
         className: 'error',
         onClick: () => {
           LoginService.logout();
@@ -383,7 +358,6 @@ export default class CurrentUser extends Component {
       <CompanyHeaderUI
         refDivUser={node => (this.node = node)}
         refDivBell={node => (this.bell_node = node)}
-        companyName={this.state.workspaceName || '-'}
         status={status}
         notificationsDisabled={notifications_disabled}
         onClickUser={evt => {

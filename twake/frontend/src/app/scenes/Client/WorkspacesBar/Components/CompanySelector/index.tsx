@@ -75,7 +75,7 @@ export default ({ children }: { children?: ReactNode }) => {
   );
 };
 
-export const CurrentCompanyLogo = () => {
+export const CurrentCompanyLogo = ({ size }: { size?: number }) => {
   const { company } = useCurrentCompany();
 
   if (!company) {
@@ -88,7 +88,11 @@ export const CurrentCompanyLogo = () => {
         className={classNames('image', {
           has_image: !!company.logo,
         })}
-        style={{ backgroundImage: addApiUrlIfNeeded(company.logo, true) }}
+        style={{
+          backgroundImage: addApiUrlIfNeeded(company.logo, true),
+          width: size,
+          height: size,
+        }}
       >
         {`${company.name}-`[0].toUpperCase()}
       </div>

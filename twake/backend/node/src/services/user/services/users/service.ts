@@ -29,7 +29,6 @@ import assert from "assert";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
-import { use } from "chai";
 import { isNumber } from "lodash";
 
 export class UserService implements UsersServiceAPI {

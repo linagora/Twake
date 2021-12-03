@@ -1,11 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React from 'react';
+import React, { useEffect } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout, Skeleton } from 'antd';
 
 import { WorkspaceType } from 'app/models/Workspace';
 import Workspace from './Components/Workspace/Workspace';
-import { useCompanyWorkspaces } from 'app/state/recoil/hooks/useCompanyWorkspaces';
+import { useWorkspaces } from 'app/state/recoil/hooks/useWorkspaces';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import { LoadingWorkspaceIcon } from './Components/Workspace/WorkspaceIcon';
 import CompanySelector from './Components/CompanySelector';
@@ -17,14 +16,19 @@ export default () => {
 
   return (
     <Layout.Sider className="workspaces_view" width={70}>
-      {companyId && companyId.length > 0 ? <WorkspaceListComponent companyId={companyId} /> : <></>}
+      {companyId && <WorkspaceListComponent companyId={companyId} />}
       <CompanySelector />
     </Layout.Sider>
   );
 };
 
 const WorkspaceListComponent = ({ companyId }: { companyId: string }) => {
-  const [workspaces] = useCompanyWorkspaces(companyId);
+  const { workspaces, refresh } = useWorkspaces(companyId);
+
+  useEffect(() => {
+    refresh();
+  }, [companyId]);
+
   return (
     <PerfectScrollbar component="div" className="list">
       {workspaces.map((ws: WorkspaceType) => (

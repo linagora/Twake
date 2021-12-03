@@ -3,12 +3,25 @@ import { atomFamily, selectorFamily, useSetRecoilState } from 'recoil';
 import { WorkspaceType } from 'app/models/Workspace';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import Logger from 'app/services/Logger';
+import _ from 'lodash';
+import Collections from 'app/services/Depreciated/Collections/Collections';
 
 const logger = Logger.getLogger('WorkspaceListState');
 
 export const WorkspaceListStateFamily = atomFamily<WorkspaceType[], string>({
   key: 'WorkspaceListStateFamily',
-  default: companyId => (companyId ? fetchCompanyWorkspaces(companyId) : []),
+  default: () => [],
+
+  //Depreciated
+  effects_UNSTABLE: [
+    ({ onSet }) => {
+      onSet(workspaces =>
+        workspaces.map(w => {
+          Collections.get('workspaces').updateObject(_.cloneDeep(w));
+        }),
+      );
+    },
+  ],
 });
 
 export const WorkspaceGetOrFetch = selectorFamily<
@@ -41,14 +54,6 @@ export const WorkspaceGetOrFetch = selectorFamily<
 
       return result;
     },
-});
-
-export const fetchCompanyWorkspaces = selectorFamily<WorkspaceType[], string>({
-  key: 'fetchCompanyWorkspaces',
-  get: companyId => async () => {
-    logger.debug('fetchCompanyWorkspaces', companyId);
-    return companyId ? await WorkspaceAPIClient.list(companyId) : [];
-  },
 });
 
 export const getWorkspacesForCompany = selectorFamily<WorkspaceType[], string>({
