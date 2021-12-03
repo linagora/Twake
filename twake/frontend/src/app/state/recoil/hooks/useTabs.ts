@@ -15,9 +15,7 @@ export default function useTabs() {
   const context: AtomTabKey = { companyId, workspaceId, channelId };
 
   const [tabs, setTabs] = useRecoilState(TabState(context));
-  useRealtimeRoom<TabType>(TabsAPIClients.websockets(channelId)[0]?.room || '', 'UseTabs', () =>
-    refresh(),
-  );
+  useRealtimeRoom<TabType>(TabsAPIClients.websockets(channelId)[0], 'UseTabs', () => refresh());
 
   const save = async (tab: TabType) => {
     await TabsAPIClients.save({ companyId, workspaceId, channelId }, tab);

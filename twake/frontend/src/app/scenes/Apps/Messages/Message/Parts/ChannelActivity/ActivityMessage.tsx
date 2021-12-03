@@ -5,7 +5,7 @@ import Emojione from 'app/components/Emojione/Emojione';
 import User from 'app/components/Twacode/blocks/User';
 import { ChannelMemberType, ChannelType } from 'app/models/Channel';
 import { TabType } from 'app/models/Tab';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 enum ChannelActivityEnum {
@@ -51,10 +51,11 @@ type PropsType = {
 // i18n but with react nodes as replacements
 // TODO: maybe there is betters ways to do it with lodash
 const translateUsingReactNode = (key: string, replacements: any[]): any[] => {
-  let temp = Languages.t(
-    key,
-    replacements.map((_, i) => `{${i}}`),
-  );
+  let temp =
+    Languages.t(
+      key,
+      replacements.map((_, i) => `{${i}}`),
+    ) || '';
   let list: any[] = [];
   replacements.forEach((replacement, i) => {
     let split = temp.split(`{${i}}`);

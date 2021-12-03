@@ -36,7 +36,7 @@ class User {
     return Login.currentUserId;
   }
 
-  getFullName(user: Pick<UserType, 'username' | 'firstname' | 'lastname' | 'deleted'>): string {
+  getFullName(user: Pick<UserType, 'username' | 'first_name' | 'last_name' | 'deleted'>): string {
     let name: string = user?.username;
 
     if (!name) {
@@ -47,12 +47,12 @@ class User {
       name = Languages.t('general.user.deleted');
     }
 
-    if (user.firstname?.length) {
-      name = user.firstname;
+    if (user.first_name?.length) {
+      name = user.first_name;
     }
 
-    if (user.firstname?.length && user.lastname?.length) {
-      name = `${user.firstname} ${user.lastname}`;
+    if (user.first_name?.length && user.last_name?.length) {
+      name = `${user.first_name} ${user.last_name}`;
     }
 
     return name.charAt(0).toUpperCase() + name.slice(1);
@@ -110,7 +110,7 @@ class User {
       .findBy({})
       .forEach((user: UserType) => {
         if (
-          `${user.username} ${user.firstname} ${user.lastname} ${user.email}`
+          `${user.username} ${user.first_name} ${user.last_name} ${user.email}`
             .toLocaleLowerCase()
             .indexOf(query.toLocaleLowerCase()) >= 0
         ) {

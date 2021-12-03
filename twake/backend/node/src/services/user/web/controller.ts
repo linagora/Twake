@@ -30,6 +30,7 @@ import {
 } from "./types";
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
+import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 
 export class UsersCrudController
   implements
@@ -40,7 +41,7 @@ export class UsersCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(protected service: UserServiceAPI) {}
+  constructor(protected realtime: RealtimeServiceAPI, protected service: UserServiceAPI) {}
 
   async get(
     request: FastifyRequest<{ Params: UserParameters }>,
@@ -113,7 +114,7 @@ export class UsersCrudController
     // return users;
     return {
       resources: resUsers,
-      websockets: [], // empty for now
+      websockets: this.realtime.sign([], context.user.id), // empty for now
     };
   }
 
@@ -161,7 +162,7 @@ export class UsersCrudController
 
     return {
       resources: combos.map(combo => this.service.formatCompany(...combo)),
-      websockets: [],
+      websockets: this.realtime.sign([], context.user.id),
     };
   }
 

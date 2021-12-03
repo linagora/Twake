@@ -392,8 +392,6 @@ export default class CreateCompanyView extends Component {
     if (this.state.page <= 1) {
       if (Object.keys(WorkspaceService.user_workspaces).length > 0) {
         popupManager.close();
-      } else {
-        WorkspaceService.initSelection();
       }
     } else {
       if (

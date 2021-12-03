@@ -125,29 +125,29 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     let directChannels: Channel[] = [];
     let allPublicChannels: Channel[] = [];
     const channelService = platform.getProvider<ChannelServiceAPI>("channels");
+
+    let pagination = new Pagination();
+    do {
+      const page = await channelService.channels.getDirectChannelsInCompany(pagination, company.id);
+      for (const channel of page.getEntities()) {
+        const channelDetail = await channelService.channels.get(
+          {
+            company_id: channel.company_id,
+            workspace_id: "direct",
+            id: channel.id,
+          },
+          {
+            user: { id: "", server_request: true },
+            workspace: { workspace_id: workspaces[0].id, company_id: company.id },
+          },
+        );
+        directChannels.push(channelDetail);
+      }
+      pagination = page.nextPage as Pagination;
+    } while (pagination.page_token);
+
     for (const workspace of workspaces) {
       let pagination = new Pagination();
-      do {
-        const page = await channelService.channels.getDirectChannelsInCompany(
-          pagination,
-          company.id,
-        );
-        for (const channel of page.getEntities()) {
-          const channelDetail = await channelService.channels.get(
-            {
-              company_id: channel.company_id,
-              workspace_id: "direct",
-              id: channel.id,
-            },
-            {
-              user: { id: "", server_request: true },
-              workspace: { workspace_id: workspace.id, company_id: company.id },
-            },
-          );
-          directChannels.push(channelDetail);
-        }
-        pagination = page.nextPage as Pagination;
-      } while (pagination.page_token);
 
       let publicChannels: Channel[] = [];
       pagination = new Pagination();
@@ -248,6 +248,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
         } while (pagination.page_token);
       } catch (err) {
         console.log(`-- Error on the channel ${channel.id}`);
+        console.log(err);
       }
 
       mkdirSync(`${output}/workspaces/${channel.workspace_id}/channels/${channel.id}`, {

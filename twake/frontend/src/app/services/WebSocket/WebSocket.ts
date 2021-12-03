@@ -1,4 +1,9 @@
-import WebSocketFactory from "./WebSocketFactory";
+import WebSocketFactory from './WebSocketFactory';
+
+export type WebsocketRoom = {
+  room: string;
+  token: string;
+};
 
 export enum WebsocketRoomActions {
   Join = 'realtime:join',
@@ -12,8 +17,11 @@ export enum WebsocketEvents {
   JoinError = 'realtime:join:error',
   Resource = 'realtime:resource',
   Event = 'realtime:event',
-};
+}
 
-export type WebSocketListener = <T>(type: WebsocketEvents, event: T) => void;
+export type WebSocketListener = {
+  token: string;
+  callback: <T>(type: WebsocketEvents, event: T) => void;
+};
 
 export default WebSocketFactory;

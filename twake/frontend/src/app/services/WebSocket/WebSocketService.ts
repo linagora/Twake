@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import Logger from 'services/Logger';
 import { WebsocketEvents, WebSocketListener, WebsocketRoomActions } from './WebSocket';
 import { Maybe } from 'app/types';
+import JWTStorage from '../JWTStorage';
 
 export type WebSocketOptions = {
   url: string;
@@ -28,7 +29,7 @@ class WebSocketService extends EventEmitter {
 
   private addEventListeners(): void {
     const reconnectWhenNeeded = () => {
-      if(!this.isConnected()) {
+      if (!this.isConnected()) {
         this.connect();
       }
     };
@@ -152,8 +153,13 @@ class WebSocketService extends EventEmitter {
     Object.keys(this.wsListeners).forEach(key => {
       Object.keys(this.wsListeners[key]).forEach(tag => {
         if (this.wsListeners[key][tag]) {
-          newlyConnected && this.wsListeners[key][tag](WebsocketEvents.Connected, {});
-          this.join(key, tag, this.wsListeners[key][tag]);
+          newlyConnected && this.wsListeners[key][tag].callback(WebsocketEvents.Connected, {});
+          this.join(
+            key,
+            this.wsListeners[key][tag].token,
+            tag,
+            this.wsListeners[key][tag].callback,
+          );
         }
       });
     });
@@ -161,11 +167,11 @@ class WebSocketService extends EventEmitter {
 
   private notify(path: string, type: WebsocketEvents, event: any) {
     if (this.wsListeners[path]) {
-      Object.values(this.wsListeners[path]).forEach(callback => callback?.(type, event));
+      Object.values(this.wsListeners[path]).forEach(callback => callback.callback?.(type, event));
     }
   }
 
-  public getSocket():  SocketIOClient.Socket | null {
+  public getSocket(): SocketIOClient.Socket | null {
     return this.socket;
   }
 
@@ -176,17 +182,22 @@ class WebSocketService extends EventEmitter {
    * @param tag
    * @param callback
    */
-  public join(path: string, tag: string, callback: (type: WebsocketEvents, event: any) => void) {
+  public join(
+    path: string,
+    token: string,
+    tag: string,
+    callback: (type: WebsocketEvents, event: any) => void,
+  ) {
     const name = path.replace(/\/$/, '');
 
     this.logger.debug(`Join room with name='${name}' and tag='${tag}'`);
 
     if (this.socket) {
-      this.socket.emit(WebsocketRoomActions.Join, { name, token: 'twake' });
+      this.socket.emit(WebsocketRoomActions.Join, { name, token });
     }
 
     this.wsListeners[name] = this.wsListeners[name] || {};
-    this.wsListeners[name][tag] = callback;
+    this.wsListeners[name][tag] = { token, callback };
   }
 
   /**
@@ -216,16 +227,20 @@ class WebSocketService extends EventEmitter {
    * @param path
    * @param data
    */
-  public send<T>(path: string, data: T): void {
+  public send<T>(path: string, token: string, data: T): void {
     const name = path.replace(/\/$/, '');
     this.logger.debug(`Send realtime:event with name='${name}'`);
 
     if (this.socket) {
-      this.socket.emit('realtime:event', { name, data });
+      this.socket.emit('realtime:event', { name, data, token });
     }
   }
 
-  public async get<Request, Response>(route: string, request: Request, callback?: (response: Response) => void): Promise<Maybe<Response>> {
+  public async get<Request, Response>(
+    route: string,
+    request: Request,
+    callback?: (response: Response) => void,
+  ): Promise<Maybe<Response>> {
     this.logger.debug(`Get ${route}`);
 
     return new Promise<Maybe<Response>>(resolve => {

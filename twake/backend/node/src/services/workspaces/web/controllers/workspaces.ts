@@ -21,6 +21,7 @@ import { plainToClass } from "class-transformer";
 import { hasCompanyAdminLevel, hasCompanyMemberLevel } from "../../../../utils/company";
 import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
 import { getWorkspaceRooms } from "../../realtime";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 
 export class WorkspacesCrudController
   implements
@@ -32,6 +33,7 @@ export class WorkspacesCrudController
     >
 {
   constructor(
+    protected realtime: RealtimeServiceAPI,
     protected workspaceService: WorkspaceServiceAPI,
     protected companyService: CompaniesServiceAPI,
   ) {}
@@ -153,7 +155,7 @@ export class WorkspacesCrudController
           ),
         ),
       ),
-      websockets: getWorkspaceRooms(context),
+      websockets: this.realtime.sign(getWorkspaceRooms(context), context.user.id),
     };
   }
 

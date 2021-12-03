@@ -303,13 +303,6 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     userPk: UserPrimaryKey,
     role: WorkspaceUserRole,
   ): Promise<void> {
-    const user = await this.users.get(userPk);
-    user.cache = Object.assign(user.cache || {}, {
-      companies: _.uniq([...(user.cache?.companies || []), workspacePk.company_id]),
-      workspaces: _.uniq([...(user.cache?.workspaces || []), workspacePk.id]),
-    });
-    await this.users.save(user, {}, { user: { id: user.id, server_request: true } });
-
     const wurPk = {
       workspaceId: workspacePk.id,
       userId: userPk.id,

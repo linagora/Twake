@@ -52,6 +52,34 @@ export class MessagesEngine implements Initializable {
     );
   }
 
+  async dispatchMessage(e: MessageLocalEvent) {
+    const thread = await this.threadRepository.findOne({
+      id: e.resource.thread_id,
+    });
+
+    await this.channelViewProcessor.process(thread, e);
+    await this.channelMarkedViewProcessor.process(thread, e);
+    await this.userInboxViewProcessor.process(thread, e);
+    await this.userMarkedViewProcessor.process(thread, e);
+    await this.filesViewProcessor.process(thread, e);
+    await this.messageToNotifications.process(thread, e);
+
+    if (e.created) {
+      for (const workspaceId of _.uniq(
+        thread.participants.filter(p => p.type == "channel").map(p => p.workspace_id),
+      )) {
+        localEventBus.publish<ResourceEventsPayload>("channel:message_sent", {
+          message: {
+            thread_id: e.resource.thread_id,
+            sender: e.resource.user_id,
+            workspace_id: workspaceId,
+          },
+          user: e.context.user,
+        });
+      }
+    }
+  }
+
   async init(): Promise<this> {
     this.threadRepository = await this.database.getRepository<Thread>("threads", Thread);
 
@@ -64,31 +92,7 @@ export class MessagesEngine implements Initializable {
     this.pubsub.processor.addHandler(new StatisticsMessageProcessor(this.statistics));
 
     localEventBus.subscribe("message:saved", async (e: MessageLocalEvent) => {
-      const thread = await this.threadRepository.findOne({
-        id: e.resource.thread_id,
-      });
-
-      this.channelViewProcessor.process(thread, e);
-      this.channelMarkedViewProcessor.process(thread, e);
-      this.userInboxViewProcessor.process(thread, e);
-      this.userMarkedViewProcessor.process(thread, e);
-      this.filesViewProcessor.process(thread, e);
-      this.messageToNotifications.process(thread, e);
-
-      if (e.created) {
-        for (const workspaceId of _.uniq(
-          thread.participants.filter(p => p.type == "channel").map(p => p.workspace_id),
-        )) {
-          localEventBus.publish<ResourceEventsPayload>("channel:message_sent", {
-            message: {
-              thread_id: e.resource.thread_id,
-              sender: e.resource.user_id,
-              workspace_id: workspaceId,
-            },
-            user: e.context.user,
-          });
-        }
-      }
+      this.dispatchMessage(e);
     });
 
     return this;

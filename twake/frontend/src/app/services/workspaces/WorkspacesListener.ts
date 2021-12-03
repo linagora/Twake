@@ -7,7 +7,7 @@ import { RightsOrNone } from '../AccessRightsService';
 import Logger from 'services/Logger';
 
 type WebsocketWorkspace = {
-  type: 'remove' | 'add' | 'update_group_privileges' | 'update_workspace_level';
+  type: 'remove' | 'add' | 'update_group_privileges' | 'update_workspace_level';
   group_id: string;
   workspace_id: string;
   level: RightsOrNone;
@@ -36,7 +36,6 @@ class WorkspacesListener {
             Workspaces.removeFromUser(data.workspace);
             Workspaces.notify();
           } else if (data.type === 'add') {
-            Workspaces.addToUser(data.workspace);
             Workspaces.notify();
           }
         }

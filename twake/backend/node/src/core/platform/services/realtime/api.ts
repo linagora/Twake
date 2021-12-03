@@ -18,6 +18,11 @@ export interface RealtimeServiceAPI extends TwakeServiceProvider {
    * Get the entity manager
    */
   getEntityManager(): RealtimeEntityManager;
+
+  /**
+   * Create a token for a room
+   */
+  sign(items: { room: string }[], userId: string): { room: string; token: string }[];
 }
 
 export interface RealtimeRoomManager {

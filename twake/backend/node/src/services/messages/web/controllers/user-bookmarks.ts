@@ -13,6 +13,7 @@ import { ExecutionContext, SaveResult } from "../../../../core/platform/framewor
 import { handleError } from "../../../../utils/handleError";
 import { CompanyExecutionContext } from "../../types";
 import { getUserBookmarksWebsocketRoom } from "../realtime";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 
 export class UserBookmarksController
   implements
@@ -21,8 +22,9 @@ export class UserBookmarksController
       ResourceUpdateResponse<UserMessageBookmark>,
       ResourceListResponse<UserMessageBookmark>,
       ResourceDeleteResponse
-    > {
-  constructor(protected service: MessageServiceAPI) {}
+    >
+{
+  constructor(protected realtime: RealtimeServiceAPI, protected service: MessageServiceAPI) {}
 
   async save(
     request: FastifyRequest<{
@@ -104,7 +106,10 @@ export class UserBookmarksController
         context,
       );
       return {
-        websockets: [{ room: getUserBookmarksWebsocketRoom(context) }],
+        websockets: this.realtime.sign(
+          [{ room: getUserBookmarksWebsocketRoom(context) }],
+          context.user.id,
+        ),
         resources: list.getEntities(),
         ...(list.page_token && {
           next_page_token: list.page_token,

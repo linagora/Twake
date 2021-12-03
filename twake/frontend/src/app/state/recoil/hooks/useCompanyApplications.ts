@@ -1,111 +1,100 @@
-import { useEffect, useRef, useState } from 'react';
-
+import { useState } from 'react';
 import { useRecoilState } from 'recoil';
-
 import Logger from 'app/services/Logger';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from 'app/services/Toaster';
-import { CompanyApplicationsStateFamily } from '../atoms/CurrentCompanyApplications';
-import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
-import { Application } from 'app/models/App';
+import {
+  CompanyApplicationsStateFamily,
+  onChangeCompanyApplications,
+} from '../atoms/CompanyApplications';
+import companyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
 import { useCurrentCompany } from './useCompanies';
+import _ from 'lodash';
+const logger = Logger.getLogger('useApplications');
 
-const _applications: Map<string, Application> = new Map();
-export function getApplication(applicationId?: string) {
-  return _applications.get(applicationId || '');
-}
-
-const _companyApplications: Map<string, Application[]> = new Map();
-export function getCompanyApplications(companyId?: string) {
-  return _companyApplications.get(companyId || '') || [];
-}
-
-const logger = Logger.getLogger('useCompanyApplications');
+/**
+ * Use all applications in a company
+ * @param companyId
+ * @returns
+ */
 export function useCompanyApplications(companyId: string = '') {
   const { company } = useCurrentCompany();
   companyId = companyId || company?.id || '';
 
-  const [companyApplications, setCompanyApplications] = useRecoilState(
-    CompanyApplicationsStateFamily(companyId),
-  );
-  const [isLoadingCompanyApplications, setIsLoadingCompanyApplications] = useState(false);
+  const [applications, setApplications] = useRecoilState(CompanyApplicationsStateFamily(companyId));
+  const [loading, setLoading] = useState(false);
 
-  const handleCompanyApplicationsChanges = useRef(async (companyId: string) => {
-    setIsLoadingCompanyApplications(true);
-    logger.debug(`Proccessing changes for company applications in `, companyId);
+  onChangeCompanyApplications(companyId, applications);
 
+  const refresh = async () => {
     try {
-      const res = await CompanyApplicationsAPIClient.list(companyId);
-      if (res) {
-        res.forEach(application => {
-          _applications.set(application.id, application);
-        });
-        _companyApplications.set(companyId, res);
-        setCompanyApplications(res);
-      }
+      const res = await companyApplicationsAPIClient.list(companyId);
+      if (res) setApplications(res);
     } catch (e) {
       logger.error(`Error while trying to handle company applications changes`, e);
     }
+    setLoading(false);
+  };
 
-    setIsLoadingCompanyApplications(false);
-  });
+  const get = (applicationId: string) => {
+    return applications.find(a => a.id === applicationId);
+  };
 
-  const deleteOneCompanyApplication = async (applicationId: string) => {
-    logger.debug(`Proccessing delete company application ${applicationId} in company `, companyId);
-    setIsLoadingCompanyApplications(true);
-
+  const remove = async (applicationId: string) => {
+    setLoading(true);
     try {
-      const application = await CompanyApplicationsAPIClient.get(companyId, applicationId);
-
-      await CompanyApplicationsAPIClient.remove(companyId, applicationId);
-
-      handleCompanyApplicationsChanges.current(companyId);
+      await companyApplicationsAPIClient.remove(companyId, applicationId);
       Toaster.success(
         Languages.t('app.state.recoil.hooks.use_current_company_applications.toaster_delete', [
-          application.identity.name,
+          get(applicationId)?.identity?.name || 'unknown',
         ]),
       );
     } catch (e) {
-      logger.error(`Error while trying to delete one company application`, e);
+      Toaster.error(`Error while trying to delete one company application`);
+      console.error(e);
     }
-
-    setIsLoadingCompanyApplications(false);
+    await refresh();
   };
 
-  const addOneCompanyApplication = async (applicationId: string) => {
+  const add = async (applicationId: string) => {
     logger.debug(`Proccessing add company application ${applicationId} in company `, companyId);
-    setIsLoadingCompanyApplications(true);
-
+    setLoading(true);
     try {
-      await CompanyApplicationsAPIClient.add(companyId, applicationId);
-
-      handleCompanyApplicationsChanges.current(companyId);
-
-      const application = await CompanyApplicationsAPIClient.get(companyId, applicationId);
+      await companyApplicationsAPIClient.add(companyId, applicationId);
       Toaster.success(
         Languages.t('app.state.recoil.hooks.use_current_company_applications.toaster_add', [
-          application.identity.name,
+          get(applicationId)?.identity?.name || 'unknown',
         ]),
       );
     } catch (e) {
-      logger.error(`Error while trying to add one company application`, e);
+      Toaster.error(`Error while trying to add one company application`);
+      console.error(e);
     }
-
-    setIsLoadingCompanyApplications(false);
+    await refresh();
   };
 
-  const isApplicationInstalledInCompany = (applicationId: string) =>
-    companyApplications.map(a => a.id).filter(id => applicationId === id)[0] ? true : false;
-
-  useEffect(() => {
-    handleCompanyApplicationsChanges.current(companyId);
-  }, [companyId]);
+  const isInstalled = (applicationId: string) => (get(applicationId) ? true : false);
 
   return {
-    companyApplications,
-    isLoadingCompanyApplications,
-    addOneCompanyApplication,
-    deleteOneCompanyApplication,
-    isApplicationInstalledInCompany,
+    applications,
+    get,
+    loading,
+    add,
+    remove,
+    isInstalled,
   };
 }
+
+/**
+ * Use a single application
+ * @param applicationId
+ * @returns
+ */
+export const useCompanyApplication = (companyId: string, applicationId: string) => {
+  const applications = useCompanyApplications(companyId);
+  return {
+    application: applications.get(applicationId),
+    remove: () => applications.remove(applicationId),
+    isInstalled: () => applications.isInstalled(applicationId),
+  };
+};

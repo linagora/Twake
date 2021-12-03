@@ -101,8 +101,6 @@ class Login extends Observable {
     }
 
     AuthService.updateUser(async user => {
-      this.recoilUpdateUser(user);
-
       this.logger.debug('User update result', user);
       if (!user) {
         this.firstInit = true;
@@ -124,6 +122,7 @@ class Login extends Observable {
         RouterServices.push(RouterServices.generateRouteFromState());
       }
 
+      this.recoilUpdateUser(user);
       callback && callback(null, user);
     });
   }

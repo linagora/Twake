@@ -72,6 +72,8 @@ const companyObjectSchema = {
         total_messages: { type: "number" },
       },
     },
+    identity_provider_id: { type: "string" },
+    identity_provider: { type: "string" },
     role: { type: "string", enum: ["owner", "admin", "member", "guest"] },
     status: { type: "string", enum: ["owner", "deactivated", "invited"] },
   },

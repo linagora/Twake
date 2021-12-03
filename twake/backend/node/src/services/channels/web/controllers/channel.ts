@@ -36,7 +36,8 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { getLogger } from "../../../../core/platform/framework";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import { getLogger } from "../../../../core/platform/framework/logger";
 import _ from "lodash";
 import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
 import { ChannelUserCounterType } from "../../entities/channel_counters";
@@ -53,6 +54,7 @@ export class ChannelCrudController
     >
 {
   constructor(
+    protected websockets: RealtimeServiceAPI,
     protected service: ChannelService,
     protected membersService: MemberService,
     protected pendingEmails: ChannelPendingEmailService,
@@ -107,7 +109,7 @@ export class ChannelCrudController
     );
 
     return {
-      websocket: getWebsocketInformation(channel),
+      websocket: this.websockets.sign([getWebsocketInformation(channel)], context.user.id)[0],
       resource: ChannelObject.mapTo(channel, {
         user_member: ChannelMemberObject.mapTo(member),
         stats: {
@@ -197,7 +199,10 @@ export class ChannelCrudController
       }
 
       return {
-        websocket: getWebsocketInformation(channelResult.entity),
+        websocket: this.websockets.sign(
+          [getWebsocketInformation(channelResult.entity)],
+          context.user.id,
+        )[0],
         resource: ChannelObject.mapTo(resultEntity),
       };
     } catch (err) {
@@ -219,14 +224,18 @@ export class ChannelCrudController
     });
 
     try {
-      const result = await this.service.save(entity, {}, getExecutionContext(request));
+      const context = getExecutionContext(request);
+      const result = await this.service.save(entity, {}, context);
 
       if (result.entity) {
         reply.code(201);
       }
 
       return {
-        websocket: getWebsocketInformation(result.entity),
+        websocket: this.websockets.sign(
+          [getWebsocketInformation(result.entity)],
+          context.user.id,
+        )[0],
         resource: ChannelObject.mapTo(result.entity),
       };
     } catch (err) {
@@ -274,7 +283,10 @@ export class ChannelCrudController
         resources: entities.map(a => ChannelObject.mapTo(a)),
       },
       ...(request.query.websockets && {
-        websockets: getWorkspaceRooms(request.params, request.currentUser),
+        websockets: this.websockets.sign(
+          getWorkspaceRooms(request.params, request.currentUser),
+          request.currentUser.id,
+        ),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,
@@ -350,7 +362,10 @@ export class ChannelCrudController
     return {
       resources: list.getEntities(),
       ...(request.query.websockets && {
-        websockets: getWorkspaceRooms(request.params, request.currentUser),
+        websockets: this.websockets.sign(
+          getWorkspaceRooms(request.params, request.currentUser),
+          request.currentUser.id,
+        ),
       }),
       ...(list.page_token && {
         next_page_token: list.page_token,

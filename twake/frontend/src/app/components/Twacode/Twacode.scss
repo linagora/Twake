@@ -71,13 +71,41 @@
     overflow: auto;
     box-sizing: border-box;
     line-break: anywhere;
+
+    pre {
+      margin-bottom: 0;
+    }
   }
   .multiline-code {
     color: var(--white);
     padding: 5px;
     border-radius: var(--border-radius-base);
+    position: relative;
+
+    pre {
+      max-height: 360px;
+      overflow: auto;
+    }
+
     .hljs {
       border-radius: 6px;
+    }
+
+    .expander {
+      cursor: pointer;
+      position: absolute;
+      background: #00000088;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #535353 50%);
+      bottom: 0;
+      padding: 8px;
+      width: 100%;
+    }
+
+    .copy {
+      cursor: pointer;
+      position: absolute;
+      bottom: 0px;
+      right: 8px;
     }
   }
   .inline-code {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import 'moment-timezone';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 
@@ -7,37 +7,50 @@ import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import MenusManager from 'app/components/Menus/MenusManager.js';
 import Languages from 'services/languages/languages';
-import Workspaces from 'services/workspaces/workspaces.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import User from 'services/user/UserService';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import RouterServices from 'app/services/RouterService';
-import { Message } from 'app/models/Message';
-import MessageReactionService from 'app/services/Apps/Messages/MessageReactionService';
 import { Application } from 'app/models/App';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
+import { MessageContext } from '../MessageWithReplies';
+import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
+import _ from 'lodash';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
+import SideViewService from 'app/services/AppView/SideViewService';
 
 type Props = {
-  message: Message;
-  collectionKey: string;
   onOpen?: () => void;
   onClose?: () => void;
   threadHeader?: string;
 };
 
 export default (props: Props) => {
+  const channelId = useRouterChannel();
+  const workspaceId = useRouterWorkspace();
+  const context = useContext(MessageContext);
+  let { message, react, remove, pin } = useMessage(context);
+
+  const location = `message-${message.id}`;
+  const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
+    location,
+    useContext(ViewContext).type,
+  );
+
   const menu: any[] = [];
 
   const triggerApp = (app: any) => {
     var data = {
-      channel: Collections.get('channels').find(props.message.channel_id),
-      parent_message: Collections.get('messages').find(props.message.parent_message_id) || null,
-      message: props.message,
+      channel: {}, //TODO Collections.get('channels').find(message.channel_id),
+      parent_message: {}, //TODO Collections.get('messages').find(message.parent_message_id) || null,
+      message: message,
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'action', data);
   };
@@ -47,37 +60,36 @@ export default (props: Props) => {
     evt && evt.preventDefault() && evt.stopPropagation();
   };
 
-  if (props.message._user_ephemeral) {
+  if (message.ephemeral) {
     menu.push({
       type: 'menu',
       text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
       className: 'error',
       onClick: () => {
-        MessagesService.deleteMessage(props.message, props.collectionKey);
+        remove();
       },
     });
   } else {
-    if (!props.message.parent_message_id) {
+    if (message.thread_id == message.id) {
       menu.push({
         type: 'menu',
         text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
         onClick: () => {
-          MessagesService.showMessage(props.message.id);
+          MessagesService.showMessage(message.id);
         },
       });
     }
 
-    if (!props.message.parent_message_id) {
-      if (!(props.message.hidden_data || {}).disable_pin) {
+    if (message.thread_id == message.id) {
+      if (!message.context?.disable_pin) {
         menu.push({
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
           onClick: () => {
-            const workspace = Collections.get('workspaces').find(Workspaces.currentWorkspaceId);
             const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-              workspaceId: workspace.id,
-              channelId: props.message.channel_id,
-              messageId: props.message.parent_message_id || props.message.id,
+              workspaceId: workspaceId,
+              channelId: channelId,
+              messageId: message.thread_id || message.id,
             })}`;
             const el = document.createElement('textarea');
             el.value = url;
@@ -91,7 +103,7 @@ export default (props: Props) => {
         menu.push({
           type: 'menu',
           text: Languages.t(
-            !props.message.pinned
+            !message.pinned_info?.pinned_at
               ? 'scenes.apps.messages.message.pin_button'
               : 'scenes.apps.messages.message.unpin_button',
             [],
@@ -99,7 +111,7 @@ export default (props: Props) => {
           ),
           className: 'option_button',
           onClick: () => {
-            MessagesService.pinMessage(props.message, !props.message.pinned, props.collectionKey);
+            pin(!message.pinned_info?.pinned_at);
           },
         });
       }
@@ -138,51 +150,44 @@ export default (props: Props) => {
     }
 
     if (
-      props.message.sender === User.getCurrentUserId() ||
-      (props.message.application_id &&
-        (props.message.hidden_data || {}).allow_delete === 'everyone') ||
-      (props.message.application_id &&
+      message.user_id === User.getCurrentUserId() ||
+      (message.application_id && message.context?.allow_delete === 'everyone') ||
+      (message.application_id &&
         WorkspaceUserRights.hasWorkspacePrivilege() &&
-        (props.message.hidden_data || {}).allow_delete === 'administrators')
+        message.context?.allow_delete === 'administrators')
     ) {
-      if (menu.length > 0 && (!props.message.application_id || !props.message.responses_count)) {
+      if (menu.length > 0 && (!message.application_id || !message?.stats?.replies)) {
         menu.push({ type: 'separator' });
       }
-      if (!props.message.application_id) {
+      if (!message.application_id) {
         menu.push({
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Edit'),
           onClick: () => {
-            MessageEditorsManager.get(props.message?.channel_id || '').openEditor(
-              props.message?.parent_message_id || '',
-              props.message?.id || '',
-              'edition',
-            );
+            setVisibleEditor({ location, subLocation: '' });
           },
         });
       }
-      if (!props.message.responses_count) {
+      if (message?.stats?.replies <= 1) {
         menu.push({
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
           className: 'error',
           onClick: () => {
-            AlertManager.confirm(() =>
-              MessagesService.deleteMessage(props.message, props.collectionKey),
-            );
+            AlertManager.confirm(() => remove());
           },
         });
       }
     }
   }
 
-  if (props.message._user_ephemeral) {
+  if (message.ephemeral) {
     return (
       <div className="message-options right">
         <div
           className="option"
           onClick={() => {
-            MessagesService.deleteMessage(props.message, props.collectionKey);
+            remove();
           }}
         >
           <Trash2 size={16} />
@@ -190,6 +195,10 @@ export default (props: Props) => {
       </div>
     );
   }
+
+  const userReactions = (message.reactions || [])?.filter(r =>
+    r.users.includes(User.getCurrentUserId()),
+  );
 
   return (
     <div>
@@ -211,15 +220,11 @@ export default (props: Props) => {
               reactElement: () => {
                 return (
                   <EmojiPicker
-                    selected={props.message._user_reaction || ''}
+                    selected={userReactions.map(e => e.name) || []}
                     onChange={(emoji: any) => {
                       MenusManager.closeMenu();
                       props.onClose && props.onClose();
-                      MessageReactionService.react(
-                        props.message,
-                        emoji.colons,
-                        props.collectionKey,
-                      );
+                      react([emoji.colons], 'toggle');
                     }}
                   />
                 );
@@ -234,7 +239,13 @@ export default (props: Props) => {
           <div
             className="option"
             onClick={() => {
-              MessagesService.showMessage(props.message.parent_message_id || props.message.id);
+              SideViewService.select(channelId, {
+                app: { identity: { code: 'messages' } } as Application,
+                context: {
+                  viewType: 'channel_thread',
+                  threadId: message.thread_id || message.id,
+                },
+              });
             }}
           >
             <ArrowUpRight size={16} />

@@ -131,7 +131,14 @@ export class TestDbService {
     user.last_name = options.lastName || `test${random}_last_name`;
     user.email_canonical = options.email || `test${random}@twake.app`;
     user.identity_provider_id = user.id;
-    user.cache = options.cache || user.cache;
+    user.cache = options.cache || user.cache || { companies: [] };
+
+    //Fixme this is cheating, we should correctly set the cache in internal mode in the code
+    user.cache.companies = [
+      ...(user.cache.companies || []),
+      ...workspacesPk.map(w => w.company_id),
+    ];
+    console.log(user.cache);
 
     if (options.email) {
       user.email_canonical = options.email;

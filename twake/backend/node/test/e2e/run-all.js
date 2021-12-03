@@ -6,7 +6,9 @@ const cp = require("child_process");
 
 function exec(command, args) {
   return new Promise(done => {
-    const cmd = cp.spawn(command, args);
+    const cmd = cp.spawn(command, args, {
+      shell: true,
+    });
 
     let data = "";
     let error = "";
@@ -16,12 +18,15 @@ function exec(command, args) {
     });
 
     cmd.stderr.on("data", function (data) {
+      //Fixme: missing logs shows with console.log(data.toString()) ??
       error += data.toString() + "\n";
     });
 
     cmd.on("exit", function (code) {
       cmd.kill(9);
-      done({ code, data, error });
+
+      //The delay is to make sure we get all the missing logs
+      setTimeout(() => done({ code, data, error }), code === 0 ? 1 : 5000);
     });
   });
 }
@@ -45,7 +50,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
 
   for (const path of srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
-    const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose`;
+    const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
     try {
       const out = await exec("jest", args.split(" "));
       if (out.code !== 0) {

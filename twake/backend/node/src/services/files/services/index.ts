@@ -9,10 +9,14 @@ import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
-import { PreviewPubsubRequest } from "../../../../src/services/previews/types";
+import {
+  PreviewClearPubsubRequest,
+  PreviewPubsubRequest,
+} from "../../../../src/services/previews/types";
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
+import { DeleteResult, CrudExeption } from "../../../core/platform/framework/api/crud-service";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -222,6 +226,7 @@ class Service implements FileServiceAPI {
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; type: string; size: number }> {
     const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+
     if (!entity) {
       throw "File not found";
     }
@@ -245,8 +250,8 @@ class Service implements FileServiceAPI {
     };
   }
 
-  async get(id: string, context: CompanyExecutionContext): Promise<File> {
-    return this.repository.findOne({ company_id: context.company.id, id });
+  get(id: string, context: CompanyExecutionContext): Promise<File> {
+    return this.repository.findOne({ id, company_id: context.company.id });
   }
 
   getThumbnailRoute(file: File, index: string) {
@@ -255,6 +260,37 @@ class Service implements FileServiceAPI {
 
   getDownloadRoute(file: File) {
     return getDownloadRoute(file);
+  }
+
+  async delete(id: string, context: CompanyExecutionContext): Promise<DeleteResult<File>> {
+    const fileToDelete = await this.repository.findOne({ id, company_id: context.company.id });
+
+    if (!fileToDelete) {
+      throw new CrudExeption("File not found", 404);
+    }
+
+    await this.repository.remove(fileToDelete);
+
+    const path = getFilePath(fileToDelete);
+
+    await this.storage.remove(path, {
+      totalChunks: fileToDelete.upload_data.chunks,
+    });
+
+    if (fileToDelete.thumbnails.length > 0) {
+      await this.pubsub.publish<PreviewClearPubsubRequest>("services:preview:clear", {
+        data: {
+          document: {
+            id: JSON.stringify(_.pick(fileToDelete, "id", "company_id")),
+            provider: this.storage.getConnectorType(),
+            path: `${path}/thumbnails/`,
+            thumbnails_number: fileToDelete.thumbnails.length,
+          },
+        },
+      });
+    }
+
+    return new DeleteResult("files", fileToDelete, true);
   }
 }
 

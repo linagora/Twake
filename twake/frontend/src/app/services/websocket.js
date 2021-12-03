@@ -1,4 +1,4 @@
-import Number from 'services/utils/Numbers.js';
+import Number from 'services/utils/Numbers';
 import Observable from 'app/services/Depreciated/observable.js';
 import LoginService from 'app/services/login/LoginService';
 import Logger from 'app/services/Logger';
@@ -106,17 +106,17 @@ class DeprecatedWebsocket extends Observable {
     if (this.subscribed[route].length === 1) {
       const unid = Number.unid();
       this.subscribedKey[route] = unid;
-      WebSocket.get().join('previous::' + route, '', (type, data) => {
-          if (type === 'realtime:event') {
-            this.message(unid, data.name, data.data);
-          }
-          if (type === 'connected') {
-            this.updateConnected(true);
-          }
-          if (type === 'disconnected') {
-            this.updateConnected(false);
-          }
-        });
+      WebSocket.get().join('previous::' + route, '', '', (type, data) => {
+        if (type === 'realtime:event') {
+          this.message(unid, data.name, data.data);
+        }
+        if (type === 'connected') {
+          this.updateConnected(true);
+        }
+        if (type === 'disconnected') {
+          this.updateConnected(false);
+        }
+      });
     }
   }
 

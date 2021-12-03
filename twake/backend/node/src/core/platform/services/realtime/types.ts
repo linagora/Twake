@@ -8,6 +8,12 @@ export enum RealtimeEntityActionType {
   Event = "event",
 }
 
+export interface WebsocketRoomSignature {
+  name: string; //Ws room name
+  sub: string; //User id
+  nbf: number; //Not before
+}
+
 export class ResourcePath {
   constructor(readonly path: string[] = ["/"], readonly name: string = "default") {}
 

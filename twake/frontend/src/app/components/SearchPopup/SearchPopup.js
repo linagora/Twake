@@ -261,7 +261,7 @@ export default class SearchPopup extends React.Component {
                               return (
                                 (i_user > 1 ? ', ' : ' ') +
                                 (item.channel.members > 2
-                                  ? user.firstname || user.username
+                                  ? user.first_name || user.username
                                   : UserService.getFullName(user))
                               );
                             }

@@ -98,7 +98,8 @@ class MessageSystem
 
     public function save($object, $options, $current_user = null, $application = null)
     {
-        $channel = $this->getInfosFromChannel($object["channel_id"]);   
+        $channel = $this->getInfosFromChannel($object["channel_id"]);
+        
         if(!$channel){
             return;
         }
@@ -208,18 +209,6 @@ class MessageSystem
         ]];
 
         $files = [];
-        foreach(($object["content"]["files"] ?: $object["files"] ?: []) as $file){
-            if($file["type"] == "file"){
-                $files[] = [
-                    "id" => $file["content"],
-                    "metadata" => [
-                        "source" => "drive",
-                        "external_id" => $file["content"],
-                        "has_preview" => $file["mode"] === "preview"
-                    ]
-                ];
-            }
-        }
 
         $ephemeral = (isset($object["_once_ephemeral_message"]) && $object["_once_ephemeral_message"] || isset($object["ephemeral_id"]) && $object["ephemeral_id"]);
 
@@ -232,7 +221,7 @@ class MessageSystem
             ] : null,
             "text" => $object["content"]["original_str"] ?: $object["content"]["fallback_string"],
             "blocks" => $blocks,
-            "files" => $files,
+            "files" => $object["files"],
             "context" => $object["hidden_data"]
         ];
     }
@@ -273,19 +262,10 @@ class MessageSystem
                 }
             }
             
-        $files = [];
-        foreach($message["files"] ?: [] as $file){
-            $files[] = array_merge($file, [
-                "content" => $file["id"],
-                "mode" => $file["metadata"]["has_preview"] ? "preview" : "mini",
-                "type" => "file"
-            ]);
-        }
 
         $phpMessage->setContent([
             "fallback_string" => $message["text"],
             "original_str" => $message["text"],
-            "files" => $files,
             "prepared" => $prepared
         ]);
 
@@ -302,6 +282,8 @@ class MessageSystem
             $array["_user_ephemeral"] = true;
         }
 
+        $array["files"] = $message["files"];
+        
         return $array;
     }
 

@@ -2,6 +2,7 @@ import Api from '../Api';
 import { CompanyType } from 'app/models/Company';
 import { WorkspaceType } from 'app/models/Workspace';
 import { TwakeService } from '../Decorators/TwakeService';
+import { WebsocketRoom } from '../WebSocket/WebSocket';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
 
@@ -13,15 +14,24 @@ export type UpdateWorkspaceBody = {
 
 @TwakeService('WorkspaceAPIClientService')
 class WorkspaceAPIClient {
+  private realtime: Map<string, WebsocketRoom[]> = new Map();
+
+  websockets(companyId: string): WebsocketRoom[] {
+    return this.realtime.get(companyId) || [];
+  }
+
   /**
    * Get all workspaces for a company
    *
    * @param companyId
    */
   async list(companyId: string): Promise<WorkspaceType[]> {
-    return Api.get<{ resources: WorkspaceType[] }>(`${PREFIX}/${companyId}/workspaces`).then(
-      result => (result.resources && result.resources.length ? result.resources : []),
-    );
+    return Api.get<{ resources: WorkspaceType[]; websockets: WebsocketRoom[] }>(
+      `${PREFIX}/${companyId}/workspaces?websockets=1`,
+    ).then(result => {
+      this.realtime.set(companyId, result.websockets);
+      return result.resources && result.resources.length ? result.resources : [];
+    });
   }
 
   /**
@@ -37,6 +47,27 @@ class WorkspaceAPIClient {
     ).then(result => result.resource);
   }
 
+  /**
+   * Create a workspace
+   *
+   * @param companyId
+   * @param workspace
+   * @returns the updated workspace
+   */
+  async create(companyId: string, workspace: WorkspaceUpdateResource): Promise<WorkspaceType> {
+    return Api.post<UpdateWorkspaceBody, { resource: WorkspaceType }>(
+      `${PREFIX}/${companyId}/workspaces`,
+      { resource: workspace },
+    ).then(result => result.resource);
+  }
+
+  /**
+   * Delete a workspace
+   *
+   * @param companyId
+   * @param workspace
+   * @returns the updated workspace
+   */
   async delete(companyId: string, workspaceId: string): Promise<WorkspaceType> {
     return Api.delete<{ resource: WorkspaceType }>(
       `${PREFIX}/${companyId}/workspaces/${workspaceId}`,

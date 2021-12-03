@@ -22,7 +22,6 @@ import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
 import WorkspaceAPIClient from './WorkspaceAPIClient';
 import Logger from 'services/Logger';
-import { getBestCandidateWorkspace } from 'app/state/recoil/utils/BestCandidateUtils';
 
 class Workspaces extends Observable {
   constructor() {
@@ -48,11 +47,13 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId, notify = false) {
+    console.log('updateCurrentWorkspaceId', workspaceId, this.currentWorkspaceId);
     if (this.currentWorkspaceId !== workspaceId && workspaceId) {
       const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
       if (!workspace) {
         return;
       }
+      console.log('updateCurrentWorkspaceId B', workspaceId);
 
       this.currentWorkspaceId = workspaceId;
       this.currentWorkspaceIdByGroup[workspace.company_id] = workspaceId;
@@ -85,54 +86,10 @@ class Workspaces extends Observable {
 
   updateCurrentCompanyId(companyId, notify = false) {
     if (this.currentGroupId !== companyId && companyId) {
+      Groups.currentGroupId = companyId;
       this.currentGroupId = companyId;
-      UserNotifications.subscribeToCurrentCompanyNotifications(companyId);
       notify && this.notify();
     }
-  }
-
-  async initSelection() {
-    if ((Globals.store_public_access_get_data || {}).public_access_token) {
-      return;
-    }
-    const user = User.getCurrentUser();
-
-    const bestCandidateWorkspace = getBestCandidateWorkspace(Groups.currentGroupId, user);
-
-    if (!bestCandidateWorkspace) {
-      this.openNoWorkspacesPage();
-    }
-
-    if (bestCandidateWorkspace.id !== this.currentWorkspaceId) {
-      this.select(bestCandidateWorkspace, true);
-    }
-
-    /*
-    let { workspaceId } = RouterServices.getStateFromRoute();
-    const routerWorkspaceId = workspaceId;
-
-    const autoload_workspaces = await LocalStorage.getItem('default_workspace_id');
-
-    workspaceId = workspaceId || autoload_workspaces || '';
-
-    let workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
-    if (!workspace) {
-      workspace = DepreciatedCollections.get('workspaces').findBy({})[0];
-      workspaceId = workspace?.id;
-    }
-
-    if (!routerWorkspaceId || !workspace) {
-      if (
-        !workspace ||
-        DepreciatedCollections.get('users').known_objects_by_id[User.getCurrentUserId()]?.is_new
-      ) {
-        this.openNoWorkspacesPage();
-      } else if (workspaceId !== this.currentWorkspaceId) {
-        this.select(workspace, true);
-      }
-    }
-    */
-    return;
   }
 
   openNoWorkspacesPage() {
@@ -207,15 +164,6 @@ class Workspaces extends Observable {
     this.notify();
   }
 
-  addToUser(workspace) {
-    var id = workspace.id;
-    DepreciatedCollections.get('workspaces').updateObject(workspace);
-    this.user_workspaces[id] = DepreciatedCollections.get('workspaces').known_objects_by_id[id];
-
-    AccessRightsService.updateLevel(workspace.id, workspace.role);
-    // TODO: Move to another service
-  }
-
   removeFromUser(workspace) {
     if (!workspace) {
       return;
@@ -223,10 +171,6 @@ class Workspaces extends Observable {
 
     var id = workspace.id || workspace;
     delete this.user_workspaces[id];
-
-    if (id === this.currentWorkspaceId) {
-      this.initSelection(Groups.currentGroupId);
-    }
   }
 
   getOrderedWorkspacesInGroup(group_id) {
@@ -247,41 +191,26 @@ class Workspaces extends Observable {
     return object;
   }
 
-  createWorkspace(wsName, wsMembers, groupId, groupName, groupCreationData) {
+  async createWorkspace(wsName, wsMembers, groupId, groupName, groupCreationData) {
     var that = this;
-    var data = {
-      name: wsName,
-      groupId: groupId,
-      group_name: groupName,
-      group_creation_data: groupCreationData,
-      channels: [],
-    };
     that.loading = true;
     that.notify();
-    Api.post('/ajax/workspace/create', data, function (res) {
-      var workspace = undefined;
-      if (res.data && res.data.workspace) {
-        //Update rights and more
-        loginService.updateUser();
-
-        that.addToUser(res.data.workspace);
-        workspace = res.data.workspace;
-        if (wsMembers.length > 0) {
-          //Invite using console
-          ConsoleService.addMailsInWorkspace({
-            workspace_id: res.data.workspace.id || '',
-            company_id: res.data.workspace.group.id || '',
-            emails: wsMembers,
-          }).finally(() => {
-            that.loading = false;
-            popupManager.close();
-            if (workspace) {
-              that.select(workspace);
-            } else {
-              that.notify();
-            }
-          });
-        } else {
+    const res = await WorkspaceAPIClient.create(groupId, {
+      name: wsName,
+      logo: '',
+      default: false,
+    });
+    var workspace = res;
+    if (workspace) {
+      //Update rights and more
+      loginService.updateUser();
+      if (wsMembers.length > 0) {
+        //Invite using console
+        ConsoleService.addMailsInWorkspace({
+          workspace_id: workspace.id || '',
+          company_id: workspace.group.id || '',
+          emails: wsMembers,
+        }).finally(() => {
           that.loading = false;
           popupManager.close();
           if (workspace) {
@@ -289,10 +218,17 @@ class Workspaces extends Observable {
           } else {
             that.notify();
           }
+        });
+      } else {
+        that.loading = false;
+        popupManager.close();
+        if (workspace) {
+          that.select(workspace);
+        } else {
+          that.notify();
         }
       }
-      that.initSelection();
-    });
+    }
   }
 
   async updateWorkspaceName(name) {

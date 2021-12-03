@@ -9,10 +9,8 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Languages from 'services/languages/languages';
-import {
-  useCompanyApplications,
-  getCompanyApplications,
-} from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
+import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 
 const { Option } = Select;
@@ -29,7 +27,7 @@ export default (props: PropsType): JSX.Element => {
   const [workspacesApps, setWorkspacesApps] = useState<AppType[]>([]);
   const { company } = useCurrentCompany();
 
-  const { companyApplications } = useCompanyApplications(company?.id || '');
+  const { applications: companyApplications } = useCompanyApplications(company?.id || '');
 
   useEffect(() => {
     generateWorkspacesApps();

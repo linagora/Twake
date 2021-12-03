@@ -5,6 +5,7 @@ import { Consumes, logger, TwakeService } from "../../framework";
 import LocalConnectorService, { LocalConfiguration } from "./connectors/local/service";
 import S3ConnectorService, { S3Configuration } from "./connectors/S3/service";
 import StorageAPI, {
+  DeleteOptions,
   ReadOptions,
   StorageConnectorAPI,
   WriteMetadata,
@@ -76,6 +77,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
 
   async read(path: string, options?: ReadOptions): Promise<Readable> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
 
       let decipher: Decipher;
@@ -117,7 +119,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     }
   }
 
-  async _read(path: string) {
+  async _read(path: string): Promise<Readable> {
     let stream = await this.getConnector().read(path);
     if (this.encryptionOptions.secret) {
       try {
@@ -134,9 +136,12 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     return stream;
   }
 
-  async remove(path: string) {
+  async remove(path: string, options?: DeleteOptions) {
     try {
-      this.getConnector().remove(path);
+      for (let count = 1; count <= options.totalChunks || 1; count++) {
+        const chunk = options.totalChunks ? `${path}/chunk${count}` : path;
+        await this.getConnector().remove(chunk);
+      }
       return true;
     } catch (err) {
       logger.error("Unable to remove file %s", err);

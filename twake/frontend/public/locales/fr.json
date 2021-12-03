@@ -328,7 +328,7 @@
     "scenes.app.popup.appsparameters.pages.available_publication_alert": "La publication de votre application est actuellement en attente de validation par les équipes de Twake.",
     "scenes.app.popup.appsparameters.pages.button_force": "Forcer dans toute l'entreprise",
     "scenes.app.popup.appsparameters.pages.call_event_handlers": "Évènement de type {{$1}} et d'identifiant {{$2}}, avec les passifs {{$3}}",
-    "scenes.app.popup.appsparameters.pages.company_label": "Entreprise propriétaire",
+    "scenes.app.popup.appsparameters.pages.company_label": "Propriétaire de l'entreprise",
     "scenes.app.popup.appsparameters.pages.configuration_label": "Configuration",
     "scenes.app.popup.appsparameters.pages.create_app_button": "Créer une application",
     "scenes.app.popup.appsparameters.pages.create_my_app": "Créer mon application",

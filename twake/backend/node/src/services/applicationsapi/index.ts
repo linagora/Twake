@@ -5,7 +5,7 @@ import { ApplicationsApiServiceAPI } from "./api";
 import { ApplicationServiceAPI } from "../applications/api";
 import { getService } from "./services";
 
-@Prefix("/api/v1")
+@Prefix("/api")
 @Consumes(["platform-services", "applications"])
 export default class ApplicationsApiService extends TwakeService<ApplicationsApiServiceAPI> {
   version = "1";

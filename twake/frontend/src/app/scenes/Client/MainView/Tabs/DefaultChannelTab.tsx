@@ -13,14 +13,11 @@ import ConnectorsListManager from 'app/components/ConnectorsListManager/Connecto
 import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
-import { getApplication } from 'app/state/recoil/hooks/useCompanyApplications';
-import { getCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
-  const apps = getCompanyApplications(Groups.currentGroupId).filter(
-    (app: any) => (app?.display || {}).channel,
-  );
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
 
   const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
@@ -44,9 +41,6 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
       channelResource.data.connectors.map((id: string) => getApplication(id))
     );
   };
-
-  const configurable = (item: any) =>
-    ((item.display || {}).configuration || {}).can_configure_in_channel;
 
   if (selected) {
     MainViewService.select(MainViewService.getId(), {
@@ -92,12 +86,15 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
                 {
                   type: 'react-element',
                   reactElement: () => {
+                    const apps = getCompanyApplications(Groups.currentGroupId).filter(
+                      (app: Application) => app?.display?.twake?.configuration?.includes('channel'),
+                    );
+
                     if (apps.length) {
                       return (
                         <ConnectorsListManager
                           list={apps}
                           current={current() || []}
-                          configurable={configurable}
                           onChange={onChange}
                           onConfig={configureChannelConnector}
                         />

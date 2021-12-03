@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { Layout, Row, Col, Typography } from 'antd';
+import React, { useCallback, useState } from 'react';
+import classNames from 'classnames';
 import { Minus, Plus } from 'react-feather';
-import './styles.scss';
+import { Layout, Row, Col, Typography } from 'antd';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import moment from 'moment';
+
 import PendingFileRow from './PendingFileRow';
 import Languages from 'services/languages/languages';
 import { PendingFileRecoilType } from 'app/models/File';
-import { useUploadHook } from 'app/state/recoil/hooks/useUploadHook';
-import classNames from 'classnames';
+import { useUpload } from 'app/state/recoil/hooks/useUpload';
+
+import './styles.scss';
 
 type PropsType = {
   pendingFilesState: PendingFileRecoilType[];
@@ -15,8 +19,34 @@ type PropsType = {
 const { Text } = Typography;
 const { Header, Content } = Layout;
 export default ({ pendingFilesState }: PropsType) => {
-  const { getOnePendingFile, currentTask } = useUploadHook();
+  const { getOnePendingFile, currentTask } = useUpload();
   const [hiddenPendingFiles, setHiddenPendingFiles] = useState<boolean>(false);
+
+  const handleTimeChange = useCallback(() => {
+    const pendingFiles = pendingFilesState.map(state => getOnePendingFile(state.id));
+    const uploadingFiles = pendingFiles.filter(f => f?.resumable && f.resumable.isUploading());
+
+    const remainingSizeTotal = uploadingFiles
+      .map(f => (1 - f.progress) * f.originalFile.size)
+      .reduce((accumulator: number, nextValue: number) => accumulator + nextValue, 0);
+
+    const speed =
+      uploadingFiles
+        .map(f => f.speed)
+        .reduce((accumulator: number, nextValue: number) => accumulator + nextValue, 0) /
+      uploadingFiles.map(f => f.speed).length;
+
+    const timeRemainingInMs = remainingSizeTotal / speed;
+
+    const momentTimeRemaining = moment(new Date().getTime() + timeRemainingInMs).fromNow();
+
+    // TODO translation
+    if (momentTimeRemaining !== 'Invalid date') {
+      return `Will end ${momentTimeRemaining}...`;
+    } else {
+      return `Waiting for time approximations...`;
+    }
+  }, [getOnePendingFile, pendingFilesState]);
 
   return pendingFilesState.length > 0 ? (
     <Layout className="pending-files-list-layout">
@@ -40,14 +70,28 @@ export default ({ pendingFilesState }: PropsType) => {
       </Header>
       {!hiddenPendingFiles && (
         <Content className="pending-files-list-content">
-          {pendingFilesState.length > 0 &&
-            pendingFilesState.map((pendingFileState, index) => (
-              <PendingFileRow
-                key={`${pendingFileState.file?.id}-${index}`}
-                pendingFileState={pendingFileState}
-                pendingFile={getOnePendingFile(pendingFileState.id)}
-              />
-            ))}
+          <PerfectScrollbar
+            options={{ suppressScrollX: true, suppressScrollY: false }}
+            component="div"
+            style={{ width: '100%', height: 114 }}
+          >
+            <Row justify="start" align="middle" style={{ background: '#DFE7FE' }}>
+              <Col className="small-left-margin">
+                <Text style={{ color: '#6C6C6D' }}>{handleTimeChange()}</Text>
+              </Col>
+            </Row>
+
+            <>
+              {pendingFilesState.length > 0 &&
+                pendingFilesState.map((pendingFileState, index) => (
+                  <PendingFileRow
+                    key={`${pendingFileState.file?.id}-${index}`}
+                    pendingFileState={pendingFileState}
+                    pendingFile={getOnePendingFile(pendingFileState.id)}
+                  />
+                ))}
+            </>
+          </PerfectScrollbar>
         </Content>
       )}
     </Layout>

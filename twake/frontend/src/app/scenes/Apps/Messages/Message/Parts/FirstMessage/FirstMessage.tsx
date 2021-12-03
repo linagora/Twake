@@ -8,14 +8,15 @@ import DirectChannelFirstMessage from './DirectChannelFirstMessage';
 import './FirstMessage.scss';
 
 type Props = {
+  companyId: string;
+  workspaceId: string;
   channelId: string;
   refDom?: (node: any) => any;
 };
 
 export default (props: Props) => {
-  const context = MessageLoaderFactory.channelsContextById[props.channelId];
-  const companyId = context.companyId;
-  const workspaceId = context.workspaceId;
+  const companyId = props.companyId;
+  const workspaceId = props.workspaceId;
   const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
   const channelCollection = Collections.get(path, ChannelResource);
 

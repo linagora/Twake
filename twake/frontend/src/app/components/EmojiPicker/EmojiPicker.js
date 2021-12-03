@@ -5,6 +5,7 @@ import { getAsFrontUrl } from 'app/services/utils/URLUtils';
 import './EmojiPicker.scss';
 import 'emoji-mart/css/emoji-mart.css';
 import Languages from 'services/languages/languages';
+import { isArray } from 'lodash';
 
 Picker.defaultProps.backgroundImageFn = function backgroundImageFn(set, sheetSize) {
   sheetSize = 20;
@@ -88,8 +89,15 @@ export default class EmojiPicker extends React.Component {
       ':smile:',
       ':confused:',
     ];
-    if (this.props.selected && pref.indexOf(this.props.selected) < 0) {
+    if (
+      typeof this.props.selected === 'string' &&
+      this.props.selected &&
+      pref.indexOf(this.props.selected) < 0
+    ) {
       pref.unshift(this.props.selected);
+    }
+    if (isArray(this.props.selected)) {
+      this.props.selected.forEach(s => pref.unshift(s));
     }
     return pref;
   }

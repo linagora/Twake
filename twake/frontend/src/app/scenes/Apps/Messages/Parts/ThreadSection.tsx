@@ -1,102 +1,45 @@
-import React, { Component } from 'react';
+import React, { ReactNode } from 'react';
 import 'moment-timezone';
-import User from 'services/user/UserService';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import { getSender } from 'app/services/Apps/Messages/MessagesUtils';
-import Draggable from 'components/Draggable/Draggable';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import Icon from 'components/Icon/Icon.js';
-import { Message } from 'app/models/Message';
 import './Threads.scss';
-import UserOnlineStatus from 'app/components/OnlineUserStatus/OnlineUserStatus';
+import ThreadAvatar from './ThreadAvatar';
 
 type Props = {
-  message?: Message;
   compact?: boolean;
-  onClick?: (value: any) => any | void;
   gradient?: boolean;
   small?: boolean;
   head?: boolean;
   alinea?: boolean;
-  children?: any;
+  children?: ReactNode;
   noSenderSpace?: boolean;
+  withAvatar?: boolean;
+  pinned?: boolean;
   className?: string;
-  delayRender?: boolean;
-  canDrag?: boolean;
+  onClick?: any;
 };
 
-export default class ThreadSection extends Component<Props> {
-  node: any;
-  listener: any;
-
-  componentWillUnmount() {
-    if (this.listener) {
-      Collections.get('users').removeListener(this.listener);
-    }
-  }
-
-  render() {
-    let senderData: any = getSender(this.props.message);
-    if (senderData.type === 'user') {
-      this.listener = Collections.get('users').addListener(this);
-      Collections.get('users').listenOnly(this, [senderData.id]);
-    }
-    if (!senderData.type || senderData.type === 'unknown') {
-      senderData = false;
-    }
-
-    return (
-      <Draggable
-        refDraggable={(node: any) => {
-          this.node = node;
-        }}
-        dragHandler="js-drag-handler-message"
-        data={{ type: 'message', data: this.props.message }}
-        parentClassOnDrag="dragged"
-        onDragStart={(evt: any) => {}}
-        minMove={10}
-        className={
-          'thread-section ' +
-          (this.props.compact ? 'compact ' : '') +
-          (this.props.gradient ? 'gradient ' : '') +
-          (this.props.small ? 'small-section ' : '') +
-          (this.props.alinea ? 'alinea ' : '') +
-          (this.props.head ? 'head-section ' : '') +
-          (this.props.message?.sender && this.props.message.pinned ? 'pinned-section ' : '') +
-          (this.props.className ? this.props.className + ' ' : '')
-        }
-        onClick={this.props.onClick}
-        deactivated={!this.props.canDrag}
-      >
-        <div className="message">
-          {!this.props.noSenderSpace && (
-            <div className="sender-space">
-              {senderData && senderData.type !== 'app' && (
-                <div
-                  className="sender-head"
-                  style={{
-                    backgroundImage: "url('" + User.getThumbnail(senderData) + "')",
-                  }}
-                >
-                  <UserOnlineStatus user={senderData} size={this.props.small ? 'small' : 'medium'}/>
-                </div>
-              )}
-              {senderData && senderData.type === 'app' && (
-                <Icon
-                  className="no-margin-left"
-                  style={{ fontSize: this.props.small ? '16px' : '24px' }}
-                  type={
-                    senderData.application
-                      ? WorkspacesApps.getAppIcon(senderData.application)
-                      : 'puzzle-piece' || 'puzzle-piece'
-                  }
-                />
-              )}
-            </div>
-          )}
-          {!this.props.delayRender && this.props.children}
-        </div>
-      </Draggable>
-    );
-  }
-}
+export default (props: Props) => {
+  return (
+    <div
+      onClick={props.onClick}
+      className={
+        'thread-section ' +
+        (props.compact ? 'compact ' : '') +
+        (props.gradient ? 'gradient ' : '') +
+        (props.small ? 'small-section ' : '') +
+        (props.alinea ? 'alinea ' : '') +
+        (props.head ? 'head-section ' : '') +
+        (props.pinned ? 'pinned-section ' : '') +
+        (props.className ? props.className + ' ' : '')
+      }
+    >
+      <div className="message">
+        {!props.noSenderSpace && (
+          <div className="sender-space">
+            {props.withAvatar && <ThreadAvatar small={props.small} />}
+          </div>
+        )}
+        {props.children}
+      </div>
+    </div>
+  );
+};

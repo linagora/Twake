@@ -17,6 +17,7 @@ import {
   MessageWithReplies,
 } from "../../types";
 import { keyBy } from "lodash";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 
 export class ViewsController
   implements
@@ -27,7 +28,7 @@ export class ViewsController
       ResourceDeleteResponse
     >
 {
-  constructor(protected service: MessageServiceAPI) {}
+  constructor(protected realtime: RealtimeServiceAPI, protected service: MessageServiceAPI) {}
 
   async list(
     request: FastifyRequest<{
@@ -64,11 +65,14 @@ export class ViewsController
       return {
         resources: entities,
         ...(request.query.websockets && {
-          websockets: [
-            {
-              room: `/companies/${context.channel.company_id}/workspaces/${context.channel.workspace_id}/channels/${context.channel.id}/feed`,
-            },
-          ],
+          websockets: this.realtime.sign(
+            [
+              {
+                room: `/companies/${context.channel.company_id}/workspaces/${context.channel.workspace_id}/channels/${context.channel.id}/feed`,
+              },
+            ],
+            context.user.id,
+          ),
         }),
         ...(resources.page_token && {
           next_page_token: resources.page_token,

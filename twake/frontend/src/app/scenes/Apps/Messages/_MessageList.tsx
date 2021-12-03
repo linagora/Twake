@@ -1,14 +1,14 @@
-import React, { createRef, RefObject } from 'react';
+import React, { createRef, RefObject, Suspense } from 'react';
 import { IndexLocationWithAlign, ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import classNames from 'classnames';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import Logger from 'app/services/Logger';
-import Message from './Message/MessageAndTimeSeparator';
+import Message from './_Message/MessageAndTimeSeparator';
 import GoToBottom from './Parts/GoToBottom';
 import { Message as MessageModel } from 'app/models/Message';
 import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
-import MessageComponent from './Message/Message';
+import MessageComponent from './_Message/Message';
 import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
@@ -16,7 +16,7 @@ import { ChannelResource } from 'app/models/Channel';
 import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
 import InitService from 'app/services/InitService';
 import _ from 'lodash';
-import FirstMessage from './Message/Parts/FirstMessage/FirstMessage';
+import FirstMessage from './_Message/Parts/FirstMessage/FirstMessage';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;
@@ -493,15 +493,7 @@ export default class MessagesList extends React.Component<Props, State> {
                   !!message.id &&
                   this.service.hightlight === message.id;
 
-                if (message?.hidden_data?.type === 'limit_channel')
-                  return (
-                    <LockedHistoryBanner
-                      companySubscriptionUrl={
-                        InitService.server_infos?.configuration?.accounts?.console
-                          ?.company_subscription_url || ''
-                      }
-                    />
-                  );
+                if (message?.hidden_data?.type === 'limit_channel') return <LockedHistoryBanner />;
 
                 if (message.channel_id && message?.hidden_data?.type === 'init_channel') {
                   return <FirstMessage channelId={message.channel_id} />;
@@ -520,18 +512,21 @@ export default class MessagesList extends React.Component<Props, State> {
 
                 return (
                   <div>
-                    <Message
-                      deleted={deleted}
-                      noReplies={deleted}
-                      key={message.id || message.front_id}
-                      messageId={message.id || message.front_id || ''}
-                      threadHeader={this.props.threadId}
-                      previousMessageId={this.getPreviousMessage(message)?.id || ''}
-                      unreadAfter={this.props.unreadAfter}
-                      highlighted={highlight}
-                      collectionKey={this.props.collectionKey}
-                      repliesAsLink={!this.props.threadId}
-                    />
+                    <Suspense fallback={<></>}>
+                      <Message
+                        channel={this.props.channel}
+                        deleted={deleted}
+                        noReplies={deleted}
+                        key={message.id || message.front_id}
+                        messageId={message.id || message.front_id || ''}
+                        threadHeader={this.props.threadId}
+                        previousMessageId={this.getPreviousMessage(message)?.id || ''}
+                        unreadAfter={this.props.unreadAfter}
+                        highlighted={highlight}
+                        collectionKey={this.props.collectionKey}
+                        repliesAsLink={!this.props.threadId}
+                      />
+                    </Suspense>
                   </div>
                 );
               }}

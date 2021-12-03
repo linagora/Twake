@@ -1,6 +1,7 @@
 import { TabType } from 'app/models/Tab';
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
+import { WebsocketRoom } from '../WebSocket/WebSocket';
 
 type TabKey = {
   companyId: string;
@@ -11,7 +12,7 @@ type TabKey = {
 @TwakeService('TabsAPIClientService')
 class TabsAPIClient {
   private readonly prefixUrl: string = '/internal/services/channels/v1';
-  private realtime: Map<string, any[]> = new Map();
+  private realtime: Map<string, WebsocketRoom[]> = new Map();
 
   websockets(channelId: string) {
     return this.realtime.get(channelId) || [];
@@ -29,7 +30,7 @@ class TabsAPIClient {
   }
 
   async list({ companyId, workspaceId, channelId }: TabKey): Promise<TabType[]> {
-    const response = await Api.get<{ resources: TabType[]; websockets: any[] }>(
+    const response = await Api.get<{ resources: TabType[]; websockets: WebsocketRoom[] }>(
       `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs?websockets=1`,
     );
     this.realtime.set(channelId, response.websockets);

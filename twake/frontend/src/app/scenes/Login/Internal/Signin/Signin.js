@@ -176,7 +176,7 @@ export default class Signin extends Component {
             )}
 
           <Input
-            id="lastname_create"
+            id="last_name_create"
             refInput={ref => {
               this.input = ref;
             }}
@@ -186,19 +186,19 @@ export default class Signin extends Component {
                 this.next();
               }
             }}
-            placeholder={this.state.i18n.t('scenes.login.create_account.lastname')}
+            placeholder={this.state.i18n.t('scenes.login.create_account.last_name')}
             value={this.state.name}
             onChange={evt => this.setState({ name: evt.target.value })}
           />
           <Input
-            id="firstname_create"
+            id="first_name_create"
             className="bottom-margin medium full_width"
             onKeyDown={e => {
               if (e.keyCode === 13) {
                 this.next();
               }
             }}
-            placeholder={this.state.i18n.t('scenes.login.create_account.firstname')}
+            placeholder={this.state.i18n.t('scenes.login.create_account.first_name')}
             value={this.state.firstName}
             onChange={evt => this.setState({ firstName: evt.target.value })}
           />

@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
-import { Skeleton } from 'antd';
+import { Avatar, Badge, Skeleton } from 'antd';
 
 import UserService from 'services/user/UserService';
 import Icon from 'components/Icon/Icon.js';
@@ -9,15 +9,16 @@ import NotificationDelay from '../Notifications/NotificationDelay';
 
 import './CompanyHeader.scss';
 import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 
 type PropsType = {
-  companyName: string;
   onClickUser?: (event: any) => void;
   refDivUser: any;
 };
 
 export default (props: PropsType): JSX.Element => {
   const { user } = useCurrentUser();
+  const { workspace } = useCurrentWorkspace();
 
   return (
     <div className="current-company-header">
@@ -27,7 +28,7 @@ export default (props: PropsType): JSX.Element => {
         onClick={evt => props.onClickUser && props.onClickUser(evt)}
       >
         <div className="name">
-          <div className="text">{props.companyName}</div>
+          <div className="text">{workspace?.name || '-'}</div>
           <div className="icon">
             <Icon type="angle-down" />
           </div>
@@ -35,6 +36,10 @@ export default (props: PropsType): JSX.Element => {
 
         {user && (
           <div className="user-info">
+            <Badge count={1} size="small" dot offset={[-8, 16]} color="green">
+              <Avatar size={16} src={UserService.getThumbnail(user)} />
+            </Badge>
+
             {!!(user.status_icon || [])[0] && <Emojione type={user.status_icon![0]} />}
 
             <span className="text">
@@ -45,16 +50,6 @@ export default (props: PropsType): JSX.Element => {
       </div>
       <div className="notifications">
         <NotificationDelay />
-      </div>
-    </div>
-  );
-};
-
-export const CompanyHeaderLoading = () => {
-  return (
-    <div className="current_company_header_loader ">
-      <div className="current_company_loader small-x-margin">
-        <Skeleton title={{ style: { height: 22 }, width: '50%' }} />
       </div>
     </div>
   );
