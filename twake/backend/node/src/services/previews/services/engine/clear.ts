@@ -47,7 +47,7 @@ export class ClearProcessor
     }
 
     for (let i = 0; i < message.document.thumbnails_number; i++) {
-      await this.storage.delete(`${message.document.path.replace(/\/$/, "")}/${i}.png`);
+      await this.storage.remove(`${message.document.path.replace(/\/$/, "")}/${i}.png`);
     }
 
     return { document: message.document, thumbnails: [] };
