@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import RouterServices from 'app/services/RouterService';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Menu from 'components/Menus/Menu.js';
@@ -63,9 +64,10 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
 
   return (
     <span
-      className={
-        selected ? 'tab-component-selected align-items-center' : 'tab-component align-items-center'
-      }
+      className={classNames({
+        'tab-component-selected align-items-center': selected,
+        'tab-component align-items-center': !selected,
+      })}
       onClick={() => {
         const route: string = RouterServices.generateRouteFromState({
           tabId: '',

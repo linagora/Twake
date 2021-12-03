@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { TabType } from 'app/models/Tab';
 import RouterServices from 'app/services/RouterService';
 import TabsTemplateEditor from './TabsTemplateEditor';
@@ -45,9 +46,10 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
 
   return (
     <span
-      className={
-        selected ? 'tab-component-selected align-items-center' : 'tab-component align-items-center'
-      }
+      className={classNames({
+        'tab-component-selected align-items-center': selected,
+        'tab-component align-items-center': !selected,
+      })}
       onClick={() => {
         const route: string = RouterServices.generateRouteFromState({
           tabId: tab.id,

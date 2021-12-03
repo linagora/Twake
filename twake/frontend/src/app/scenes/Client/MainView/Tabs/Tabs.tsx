@@ -9,9 +9,9 @@ import DefaultChannelTab from 'app/scenes/Client/MainView/Tabs/DefaultChannelTab
 import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
 import UserService from 'services/user/UserService';
 import useTabs from 'app/state/recoil/hooks/useTabs';
+import AccessRightsService from 'app/services/AccessRightsService';
 
 import './Tabs.scss';
-import AccessRightsService from 'app/services/AccessRightsService';
 
 export default (): JSX.Element => {
   const { workspaceId, tabId } = RouterServices.getStateFromRoute();
@@ -27,7 +27,7 @@ export default (): JSX.Element => {
   }
 
   return (
-    <span style={{ width: '100%', height: '47px', overflow: 'auto' }}>
+    <div className="tabs-global-container">
       {tabsList.sort((a, b) => (a.order || '').localeCompare(b.order || '')) && (
         <span className="main-view-tabs align-items-center">
           <DefaultChannelTab selected={!tabId} />
@@ -64,6 +64,6 @@ export default (): JSX.Element => {
           )}
         </span>
       )}
-    </span>
+    </div>
   );
 };
