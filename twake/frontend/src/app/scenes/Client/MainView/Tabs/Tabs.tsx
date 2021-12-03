@@ -1,7 +1,7 @@
 import React from 'react';
 import { Plus } from 'react-feather';
 import { TabType } from 'app/models/Tab';
-import { Button, Row, Tabs } from 'antd';
+import { Button } from 'antd';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/Modal/ModalManager';
@@ -28,27 +28,23 @@ export default (): JSX.Element => {
   }
 
   return (
-    <Row align="middle" className="main-view-tabs" wrap={false}>
+    <div style={{ width: '100%', height: '47px', overflow: 'auto' }}>
       {tabsList.sort((a, b) => (a.order || '').localeCompare(b.order || '')) && (
-        <Tabs activeKey={tabId ? tabId : 'default'}>
-          <Tabs.TabPane tab={<DefaultChannelTab selected={!tabId} />} key="default" />
+        <span className="main-view-tabs align-items-center">
+          <DefaultChannelTab selected={!tabId} />
           {tabsList.map((tab: TabType) => {
             return (
               tab.id && (
-                <Tabs.TabPane
-                  tab={
-                    <Tab
-                      currentUserId={currentUser.id}
-                      selected={tabId === tab.id}
-                      tabId={tab.id}
-                    />
-                  }
+                <Tab
                   key={tab.id}
+                  currentUserId={currentUser.id}
+                  selected={tabId === tab.id}
+                  tabId={tab.id}
                 />
               )
             );
           })}
-        </Tabs>
+        </span>
       )}
       {AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Button
@@ -69,6 +65,6 @@ export default (): JSX.Element => {
           icon={<Plus size={14} />}
         />
       )}
-    </Row>
+    </div>
   );
 };

@@ -5,9 +5,26 @@
 
 .main-view-tabs {
   height: 47px;
+  margin-inline: 8px;
 
-  .ant-tabs .ant-tabs-top {
-    line-height: 47px;
+  .tab-component {
+    cursor: pointer;
+    line-height: 31px;
+    margin-right: 8px;
+    padding-inline: 8px;
+    &:hover {
+      opacity: 0.8;
+      color: var(--primary);
+    }
+  }
+  .tab-component-selected {
+    cursor: pointer;
+    line-height: 31px;
+    margin-right: 8px;
+    padding-inline: 8px;
+    border-radius: 8px;
+    color: var(--primary);
+    background-color: var(--primary-background);
   }
 
   .ant-tabs-tab {
@@ -15,13 +32,10 @@
   }
 
   .tab-name {
-    &:hover {
-      opacity: 0.8;
-      color: var(--primary);
-    }
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    max-width: 108px;
   }
 
   .add-tab-button {

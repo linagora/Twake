@@ -45,7 +45,9 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
 
   return (
     <span
-      className="align-items-center"
+      className={
+        selected ? 'tab-component-selected align-items-center' : 'tab-component align-items-center'
+      }
       onClick={() => {
         const route: string = RouterServices.generateRouteFromState({
           tabId: tab.id,
@@ -54,10 +56,8 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
       }}
     >
       {WorkspacesApps.getAppIconComponent(tab, { size: 14 })}
-      <span style={{ maxWidth: '108px', marginBottom: 0 }} className="tab-name small-right-margin">
-        {capitalize(tab.name)}
-      </span>
-      {tab.id === tabId && AccessRightsService.hasLevel(workspaceId, 'member') && (
+      <span className="tab-name small-right-margin">{capitalize(tab.name)}</span>
+      {selected && AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Menu
           style={{ lineHeight: 0 }}
           menu={[

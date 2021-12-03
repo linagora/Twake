@@ -63,7 +63,9 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
 
   return (
     <span
-      className="align-items-center"
+      className={
+        selected ? 'tab-component-selected align-items-center' : 'tab-component align-items-center'
+      }
       onClick={() => {
         const route: string = RouterServices.generateRouteFromState({
           tabId: '',
@@ -73,7 +75,9 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
     >
       <MessageCircle size={14} className="small-right-margin" />
 
-      <span className="small-right-margin">{Languages.t('scenes.app.mainview.discussion')}</span>
+      <span className="tab-name small-right-margin">
+        {Languages.t('scenes.app.mainview.discussion')}
+      </span>
 
       {!!selected && AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Menu
