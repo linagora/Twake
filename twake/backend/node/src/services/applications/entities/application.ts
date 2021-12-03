@@ -78,20 +78,20 @@ type ApplicationIdentity = {
 };
 
 type ApplicationPublication = {
-  published: boolean; //Publication accepted
+  published: boolean; //Publication accepted // RO
   pending: boolean; //Publication requested
 };
 
 type ApplicationStatistics = {
-  createdAt: number;
-  updatedAt: number;
-  version: number;
+  createdAt: number; // RO
+  updatedAt: number; // RO
+  version: number; // RO
 };
 
 type ApplicationApi = {
   hooksUrl: string;
   allowedIps: string;
-  privateKey: string;
+  privateKey: string; // RO
 };
 
 type ApplicationScopes =

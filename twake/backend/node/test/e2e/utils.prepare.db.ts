@@ -15,6 +15,7 @@ import { DatabaseServiceAPI } from "../../src/core/platform/services/database/ap
 import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
 import Device from "../../src/services/user/entities/device";
 import WorkspaceServicesAPI from "../../src/services/workspaces/api";
+import PlatformService from "../../src/core/platform/services/platform-services";
 
 export type uuid = string;
 
@@ -22,9 +23,15 @@ export class TestDbService {
   private deviceRepository: Repository<Device>;
   private workspaceService: WorkspaceServicesAPI;
 
-  public static async getInstance(testPlatform: TestPlatform): Promise<TestDbService> {
+  public static async getInstance(
+    testPlatform: TestPlatform,
+    createDefault = false,
+  ): Promise<TestDbService> {
     const instance = new this(testPlatform);
     await instance.init();
+    if (createDefault) {
+      await instance.createDefault(testPlatform);
+    }
     return instance;
   }
 
@@ -215,7 +222,10 @@ export class TestDbService {
     return this.userService.companies.getUsersCount(companyId);
   }
 
-  async createDefault(platform: TestPlatform, isAdmin: boolean = true): Promise<void> {
+  async createDefault(
+    platform: TestPlatform = this.testPlatform,
+    isAdmin: boolean = true,
+  ): Promise<TestDbService> {
     await this.createCompany(platform.workspace.company_id);
     const ws0pk = {
       id: platform.workspace.workspace_id,
@@ -231,5 +241,6 @@ export class TestDbService {
       },
       platform.currentUser.id,
     );
+    return this;
   }
 }
