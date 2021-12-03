@@ -46,10 +46,10 @@
       width: 24px;
       height: 24px;
       border-radius: var(--border-radius-large);
-      background-color: var(--grey-light);
+      background-color: var(--grey-background);
 
       &:hover {
-        background-color: var(--secondary-background);
+        background-color: var(--grey-light);
         color: var(--grey-dark);
       }
     }
