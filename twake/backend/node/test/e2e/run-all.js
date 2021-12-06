@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
 
-function exec(command, args) {
+function exec(command, args, debug = false) {
   return new Promise(done => {
     const cmd = cp.spawn(command, args, {
       shell: true,
@@ -14,11 +14,12 @@ function exec(command, args) {
     let error = "";
 
     cmd.stdout.on("data", function (data) {
+      if(debug) console.log(data);
       data += data.toString() + "\n";
     });
 
     cmd.stderr.on("data", function (data) {
-      //Fixme: missing logs shows with console.log(data.toString()) ??
+      if(debug) console.log(data);
       error += data.toString() + "\n";
     });
 
@@ -54,6 +55,8 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
     try {
       const out = await exec("jest", args.split(" "));
       if (out.code !== 0) {
+        //To get all the logs
+        await exec("jest", args.split(" "), true);
         console.log(`FAIL ${testName}`);
         console.log(`-- Data\n ${out.data}`);
         console.log(`-- Error\n ${out.error || "(no error)"}`);
