@@ -5,10 +5,7 @@
     "accounts": {
       "_type": "console",
       "type": "internal",
-      "internal": {
-        "disable_account_creation": false,
-        "disable_email_verification": true
-      },
+      "internal": {},
       "console": {
         "account_management_url": "http://web.twake-console.local/profile",
         "authority": "http://auth.example.com/",
@@ -19,6 +16,7 @@
     }
   },
   "console": {
+    "_type": "remote",
     "type": "internal",
     "remote": {
       "username": "",
@@ -28,7 +26,9 @@
         "token": "12345678"
       }
     },
-    "internal": {}
+    "internal": {
+      "disable_account_creation": false
+    }
   },
   "sentry": {
     "dsn": ""

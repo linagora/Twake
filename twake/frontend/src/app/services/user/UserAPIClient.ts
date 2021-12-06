@@ -54,7 +54,7 @@ class UserAPIClient {
   }
 
   async getCurrent(disableJWTAuthentication = false): Promise<UserType> {
-    return Api.get<{resource: UserType}>(
+    return Api.get<{ resource: UserType }>(
       '/internal/services/users/v1/users/me',
       undefined,
       false,
@@ -63,7 +63,9 @@ class UserAPIClient {
   }
 
   async getCompany(companyId: string): Promise<CompanyType> {
-    return Api.get<{resource:CompanyType}>(`/internal/services/users/v1/companies/${companyId}`).then(a=>a.resource);
+    return Api.get<{ resource: CompanyType }>(
+      `/internal/services/users/v1/companies/${companyId}`,
+    ).then(a => a.resource);
   }
 
   async logout() {

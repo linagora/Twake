@@ -40,7 +40,7 @@ export default class VerifyMail extends Component {
   render() {
     return (
       <div className="verify_mail">
-        <div className="center_box_container login_view skew_in_bottom_nobounce">
+        <div className="center_box_container login_view fade_in">
           <div className="center_box white_box_with_shadow" style={{ width: '400px' }}>
             <div className="title">
               {Languages.t('scenes.login.verifymail.alert', [], 'Nous vérifions votre e-mail !')}

@@ -54,7 +54,7 @@ export const useCurrentCompany = () => {
 
   //If there is no company for this user, display the no company page
   if (user?.companies?.length === 0) {
-    WorkspacesService.openNoWorkspacesPage();
+    WorkspacesService.openNoCompaniesPage();
   }
 
   //If there is nothing in router or company in router isn't available for the user, try to use the best candidate available
@@ -108,6 +108,6 @@ export function useBestCandidateCompany(user: UserType | undefined): CompanyType
     companies.find(o => o.company.id === storageCompanyId)?.company ||
     companies.sort(
       (a, b) => (a.company?.stats?.total_members || 0) - (b.company?.stats?.total_members || 0),
-    )[0].company
+    )?.[0]?.company
   );
 }
