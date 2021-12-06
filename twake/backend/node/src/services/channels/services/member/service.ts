@@ -19,7 +19,12 @@ import {
   getMemberOfChannelInstance,
   MemberOfChannel,
 } from "../../entities";
-import { ChannelExecutionContext, ChannelVisibility, WorkspaceExecutionContext } from "../../types";
+import {
+  ChannelExecutionContext,
+  ChannelMemberType,
+  ChannelVisibility,
+  WorkspaceExecutionContext,
+} from "../../types";
 import { Channel, ResourceEventsPayload, User } from "../../../../utils/types";
 import { cloneDeep, isNil, omitBy } from "lodash";
 import { updatedDiff } from "deep-object-diff";
@@ -111,8 +116,15 @@ export class Service implements MemberService {
     );
 
     this.channelCounter.reviseCounter(async (pk: ChannelCounterPrimaryKey) => {
-      return countRepositoryItems(this.userChannelsRepository, pk);
-    }, 100);
+      const type = ChannelUserCounterType.MEMBERS
+        ? ChannelMemberType.MEMBER
+        : ChannelMemberType.GUEST;
+      return countRepositoryItems(
+        this.channelMembersRepository,
+        { channel_id: pk.id, company_id: pk.company_id, workspace_id: pk.workspace_id },
+        { type },
+      );
+    }, 400);
 
     return this;
   }
@@ -590,13 +602,22 @@ export class Service implements MemberService {
   }
 
   private async usersCounterIncrease(channel: Channel, userId: string, increaseValue: number = 1) {
-    const isMember = await this.isCompanyMember(channel.company_id, userId);
+    // const isMember = await this.isCompanyMember(channel.company_id, userId);
+    const isMember = true; // Since actually all users are now added to the channel as members, we are removing the guest counter for now.
     const counter_type = isMember ? ChannelUserCounterType.MEMBERS : ChannelUserCounterType.GUESTS;
-    return this.channelCounter.increase({ id: channel.id, counter_type }, increaseValue);
+    return this.channelCounter.increase(
+      {
+        id: channel.id,
+        company_id: channel.company_id,
+        workspace_id: channel.workspace_id,
+        counter_type,
+      },
+      increaseValue,
+    );
   }
 
-  getUsersCount(channelId: string, type: ChannelUserCounterType): Promise<number> {
-    return this.channelCounter.get({ id: channelId, counter_type: type });
+  getUsersCount(pk: ChannelCounterPrimaryKey): Promise<number> {
+    return this.channelCounter.get(pk);
   }
 
   async isCompanyMember(companyId: string, userId: string): Promise<boolean> {

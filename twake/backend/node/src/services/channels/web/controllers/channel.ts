@@ -113,14 +113,19 @@ export class ChannelCrudController
       resource: ChannelObject.mapTo(channel, {
         user_member: ChannelMemberObject.mapTo(member),
         stats: {
-          members: await this.membersService.getUsersCount(
-            channel.id,
-            ChannelUserCounterType.MEMBERS,
-          ),
-          guests: await this.membersService.getUsersCount(
-            channel.id,
-            ChannelUserCounterType.GUESTS,
-          ),
+          members: await this.membersService.getUsersCount({
+            id: channel.id,
+            company_id: channel.company_id,
+            workspace_id: channel.workspace_id,
+            counter_type: ChannelUserCounterType.MEMBERS,
+          }),
+          guests: 0, // Since actually all users are now added to the channel as members, we are removing the guest counter for now.
+          // guests: await this.membersService.getUsersCount({
+          //   id: channel.id,
+          //   company_id: channel.company_id,
+          //   workspace_id: channel.workspace_id,
+          //   counter_type: ChannelUserCounterType.GUESTS,
+          // }),
           messages: 0,
         },
       }),

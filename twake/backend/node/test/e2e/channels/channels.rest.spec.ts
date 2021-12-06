@@ -476,7 +476,7 @@ describe("The /internal/services/channels/v1 API", () => {
       done();
     });
 
-    it("channel counters", async done => {
+    it.only("channel counters", async done => {
       await platform.database.getConnector().drop();
 
       await testDbService.createDefault(platform);
@@ -548,8 +548,8 @@ describe("The /internal/services/channels/v1 API", () => {
       resource = await getChannelREST(channelId);
 
       expect(resource.stats).toMatchObject({
-        members: 1,
-        guests: 5,
+        members: 6,
+        guests: 0,
         messages: 0,
       });
 
@@ -565,8 +565,8 @@ describe("The /internal/services/channels/v1 API", () => {
       resource = await getChannelREST(channelId);
 
       expect(resource.stats).toMatchObject({
-        members: 1,
-        guests: 4,
+        members: 5,
+        guests: 0,
         messages: 0,
       });
 
