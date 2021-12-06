@@ -58,7 +58,8 @@ export default class RealtimeService
       const token = this.auth.sign({
         sub,
         name: item.room,
-        iat: Math.round(new Date().getTime() / 1000) + 60 * 60 * 24,
+        //Fixme, reduce this number but also in frontend reload the websocket token after this ends
+        iat: Math.round(new Date().getTime() / 1000) + 60 * 60 * 24 * 31,
         nbf: Math.round(new Date().getTime() / 1000) - 60,
       });
       return {

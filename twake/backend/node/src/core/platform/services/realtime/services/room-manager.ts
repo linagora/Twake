@@ -88,13 +88,11 @@ export default class RoomManager implements RealtimeRoomManager {
 
       const signature = this.auth.verifyTokenObject<WebsocketRoomSignature>(joinEvent.token);
 
-      console.log("signature: ", signature);
-
       return (
         signature &&
-        signature.name === JoinRoomEvent.name &&
+        signature.name === joinEvent.name &&
         signature.sub === user.id &&
-        signature.iat > new Date().getTime()
+        signature.iat > Math.round(new Date().getTime() / 1000)
       );
     } catch (err) {
       console.log(err);
