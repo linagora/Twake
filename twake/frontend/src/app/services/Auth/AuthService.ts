@@ -29,7 +29,7 @@ type InitState = '' | 'initializing' | 'initialized';
 
 @TwakeService('AuthService')
 class AuthService {
-  private provider: AuthProvider<any, any> | null = null;
+  private provider: AuthProvider<any, any, any> | null = null;
   private logger: Logger.Logger;
   private initState: InitState = '';
   currentUserId: string = '';
@@ -38,7 +38,7 @@ class AuthService {
     this.logger = Logger.getLogger('AuthService');
   }
 
-  getProvider(): AuthProvider<any, any> {
+  getProvider(): AuthProvider<any, any, any> {
     if (this.provider) {
       return this.provider;
     }
@@ -137,7 +137,6 @@ class AuthService {
 
     if (!provider.signIn) {
       this.logger.info('Selected provider does not support signIn');
-
       throw new Error('Selected provider does not support signIn');
     }
 
@@ -155,6 +154,25 @@ class AuthService {
           return UserAPIClient.getCurrent(true);
         }
       });
+  }
+
+  async signup(params: {
+    email: string;
+    password: string;
+    first_name: string;
+    last_name: string;
+    username: string;
+  }) {
+    const provider = this.getProvider();
+
+    if (!provider.signUp) {
+      this.logger.info('Selected provider does not support signUp');
+      throw new Error('Selected provider does not support signUp');
+    }
+
+    return provider.signUp(params).then(() => {
+      return this.login(params);
+    });
   }
 
   logout(reload: boolean = true): Promise<void> {

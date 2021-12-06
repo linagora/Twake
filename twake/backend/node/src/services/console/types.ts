@@ -121,6 +121,7 @@ export type ProcessReport = {
 export type ConsoleType = "remote" | "internal";
 
 export type ConsoleOptions = {
+  type: "remote" | "internal";
   username: string;
   password: string;
   url: string;
@@ -128,6 +129,7 @@ export type ConsoleOptions = {
     token: string;
     public_key?: string;
   };
+  disable_account_creation: boolean;
 };
 
 export type ConsoleHookCompany = {
@@ -204,5 +206,6 @@ export interface AuthRequest {
 }
 
 export interface AuthResponse {
-  access_token: AccessToken;
+  access_token?: AccessToken;
+  error?: string;
 }

@@ -5,7 +5,7 @@ import crypto from "crypto";
 import { ConsoleServiceAPI } from "../api";
 // import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { ConsoleController } from "./controller";
-import { ConsoleHookBody, ConsoleHookQueryString } from "../types";
+import { ConsoleHookBody, ConsoleHookQueryString, ConsoleOptions } from "../types";
 import UserServiceAPI from "../../user/api";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 
@@ -15,11 +15,13 @@ const routes: FastifyPluginCallback<{
   service: ConsoleServiceAPI;
   authService: AuthServiceAPI;
   userService: UserServiceAPI;
+  options: ConsoleOptions;
 }> = (fastify: FastifyInstance, options, next) => {
   const controller = new ConsoleController(
     options.service,
     options.authService,
     options.userService,
+    options.options,
   );
 
   const accessControl = async (
@@ -61,6 +63,12 @@ const routes: FastifyPluginCallback<{
     url: "/login",
     schema: authenticationSchema,
     handler: controller.auth.bind(controller),
+  });
+
+  fastify.route({
+    method: "POST",
+    url: "/signup",
+    handler: controller.signup.bind(controller),
   });
 
   fastify.route({

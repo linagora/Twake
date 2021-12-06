@@ -341,6 +341,8 @@ class Resumable
         $this->doctrine->persist($uploadstate);
         $this->doctrine->flush();
 
+        sleep(1);
+
         return $identifier;
     }
 

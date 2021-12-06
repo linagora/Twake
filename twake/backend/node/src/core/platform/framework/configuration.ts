@@ -3,10 +3,11 @@ import configuration from "../../config";
 import { TwakeServiceConfiguration } from "./api";
 export class Configuration implements TwakeServiceConfiguration {
   configuration: IConfig;
+  serviceConfiguration: IConfig;
 
   constructor(path: string) {
     try {
-      this.configuration = configuration.get(path);
+      this.serviceConfiguration = configuration.get(path);
     } catch {
       // NOP
     }
@@ -16,9 +17,11 @@ export class Configuration implements TwakeServiceConfiguration {
     let value: T;
 
     try {
-      value = (this.configuration as unknown) as T;
+      value = this.serviceConfiguration as unknown as T;
       if (name) {
-        value = this.configuration && this.configuration.get(name);
+        value =
+          this.serviceConfiguration &&
+          (this.serviceConfiguration.get(name) || configuration.get(name));
       }
     } catch {
       value = defaultValue || null;

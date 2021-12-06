@@ -61,15 +61,6 @@ export default class WelcomePage extends Component {
               <Emojione type=":crying_cat_face:" />
             </div>
 
-            {auth?.type === 'internal' && (
-              <div
-                className="button big"
-                onClick={() => Workspaces.openCreateCompanyPage(<CreateCompanyView />)}
-              >
-                {Languages.t('scenes.app.workspaces.welcome_page.create_my_company')}
-              </div>
-            )}
-
             <div className="retry">
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" className="link" onClick={() => this.retry()}>
@@ -78,32 +69,6 @@ export default class WelcomePage extends Component {
             </div>
 
             <div className="otherMail text">
-              {auth?.type === 'internal' && (
-                <>
-                  <div className="label">
-                    {Languages.t(
-                      'scenes.app.workspaces.welcome_page.may_be_invited_with_secondary_emails',
-                    )}
-                  </div>
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a
-                    className="blue_link"
-                    onClick={() =>
-                      popupManager.open(
-                        <SecondMail
-                          onReturn={() => {
-                            this.retry();
-                            this.setState({ page: 1 });
-                          }}
-                        />,
-                      )
-                    }
-                  >
-                    {Languages.t('scenes.app.workspaces.welcome_page.add_secondary_emails')}
-                  </a>
-                </>
-              )}
-
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a className="blue_link" onClick={() => LoginService.logout()}>
                 {Languages.t('scenes.apps.account.account.logout')}
