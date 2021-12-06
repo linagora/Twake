@@ -58,7 +58,8 @@ export default class RealtimeService
       const token = this.auth.sign({
         sub,
         name: item.room,
-        nbf: new Date().getTime() + 1000 * 60 * 60 * 24,
+        iat: Math.round(new Date().getTime() / 1000) + 60 * 60 * 24,
+        nbf: Math.round(new Date().getTime() / 1000) - 60,
       });
       return {
         ...item,
