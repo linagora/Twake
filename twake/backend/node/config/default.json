@@ -5,7 +5,9 @@
     "accounts": {
       "_type": "console",
       "type": "internal",
-      "internal": {},
+      "internal": {
+        "disable_account_creation": false
+      },
       "console": {
         "account_management_url": "http://web.twake-console.local/profile",
         "authority": "http://auth.example.com/",
