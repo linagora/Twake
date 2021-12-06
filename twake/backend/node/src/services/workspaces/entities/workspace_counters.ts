@@ -16,3 +16,7 @@ export class WorkspaceCounterEntity extends CounterEntity {
 }
 
 export type WorkspaceCounterPrimaryKey = Pick<WorkspaceCounterEntity, "id" | "counter_type">;
+
+export enum WorkspaceCounterType {
+  MEMBERS = "members",
+}

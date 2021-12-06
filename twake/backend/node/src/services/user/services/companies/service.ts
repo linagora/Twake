@@ -72,7 +72,9 @@ export class CompanyService implements CompaniesServiceAPI {
     );
 
     this.companyCounter.reviseCounter(async (pk: CompanyCounterPrimaryKey) => {
-      return countRepositoryItems(this.companyUserRepository, pk);
+      if (pk.counter_type == "members") {
+        return countRepositoryItems(this.companyUserRepository, { group_id: pk.id });
+      }
     });
 
     return this;
@@ -229,7 +231,7 @@ export class CompanyService implements CompaniesServiceAPI {
   }
 
   getUsersCount(companyId: string): Promise<number> {
-    return this.companyCounter.get(this.cmpCountPk(companyId));
+    return this.getCompany({ id: companyId }).then(a => a.memberCount);
   }
 
   async getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole> {

@@ -16,3 +16,7 @@ export class CompanyCounterEntity extends CounterEntity {
 }
 
 export type CompanyCounterPrimaryKey = Pick<CompanyCounterEntity, "id" | "counter_type">;
+
+export enum CompanyCounterType {
+  MEMBERS = "members",
+}

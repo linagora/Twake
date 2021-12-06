@@ -239,4 +239,8 @@ export class TestDbService {
       platform.currentUser.id,
     );
   }
+
+  getRepository = (type, entity) => {
+    return this.database.getRepository<entity>(type, entity);
+  };
 }
