@@ -3,11 +3,6 @@ import Repository from "../core/platform/services/database/services/orm/reposito
 import { Pagination } from "../core/platform/framework/api/crud-service";
 import { isMatch } from "lodash";
 
-export class CounterEntity {
-  @Column("value", "counter")
-  value: number;
-}
-
 export const countRepositoryItems = async (
   repository: Repository<any>,
   pk: any,

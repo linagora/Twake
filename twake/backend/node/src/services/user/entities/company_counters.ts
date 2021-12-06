@@ -1,5 +1,4 @@
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
-import { CounterEntity } from "../../../utils/counters";
 
 export const TYPE = "company_counters";
 
@@ -7,12 +6,15 @@ export const TYPE = "company_counters";
   primaryKey: [["id"], "counter_type"],
   type: TYPE,
 })
-export class CompanyCounterEntity extends CounterEntity {
+export class CompanyCounterEntity {
   @Column("id", "timeuuid")
   id: string;
 
   @Column("counter_type", "string")
   counter_type: string;
+
+  @Column("value", "counter")
+  value: number;
 }
 
 export type CompanyCounterPrimaryKey = Pick<CompanyCounterEntity, "id" | "counter_type">;

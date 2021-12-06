@@ -1,5 +1,4 @@
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
-import { CounterEntity } from "../../../utils/counters";
 
 export const TYPE = "channel_counters";
 
@@ -7,7 +6,7 @@ export const TYPE = "channel_counters";
   primaryKey: [["id"], "counter_type", "company_id", "workspace_id"],
   type: TYPE,
 })
-export class ChannelCounterEntity extends CounterEntity {
+export class ChannelCounterEntity {
   @Column("id", "timeuuid")
   id: string;
 
@@ -19,6 +18,9 @@ export class ChannelCounterEntity extends CounterEntity {
 
   @Column("workspace_id", "timeuuid")
   workspace_id: string;
+
+  @Column("value", "counter")
+  value: number;
 }
 
 export type ChannelCounterPrimaryKey = Pick<

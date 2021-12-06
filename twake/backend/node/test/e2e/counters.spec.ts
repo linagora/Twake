@@ -49,9 +49,7 @@ describe("Counters implementation", () => {
   let testDbService: TestDbService;
 
   beforeAll(async ends => {
-    platform = await init({
-      services: ["database", "pubsub", "webserver", "auth", "counter"],
-    });
+    platform = await init();
 
     testDbService = new TestDbService(platform);
 
@@ -152,86 +150,7 @@ describe("Counters implementation", () => {
       done();
     });
   });
-  describe("Company counters", () => {
-    let counter: CounterProvider;
-    const counterPk = { id: uuidv1(), counter_type: CompanyCounterType.MEMBERS };
 
-    beforeAll(async ends => {
-      counter = await getCounter("company_counters", CompanyCounterEntity);
-
-      const companyUserRepository = await testDbService.getRepository(
-        CompanyUserEntityType,
-        CompanyUser,
-      );
-
-      counter.reviseCounter(async (pk: CompanyCounterPrimaryKey) => {
-        if (pk.counter_type == "members") {
-          return countRepositoryItems(companyUserRepository, { group_id: pk.id });
-        }
-      }, 4);
-
-      await companyUserRepository.save(
-        getCompanyUserInstance({
-          group_id: counterPk.id,
-          user_id: uuidv1(),
-          id: uuidv1(),
-        }),
-      );
-
-      expect(counter).toBeTruthy();
-
-      ends();
-    });
-
-    it("Initializing empty value", async done => {
-      await counter.increase(counterPk, 0);
-      const val = await counter.get(counterPk);
-      expect(val).toEqual(0);
-      done();
-    });
-
-    it("Adding value", async done => {
-      // adding 1
-
-      await counter.increase(counterPk, 1);
-      let val = await counter.get(counterPk);
-      expect(val).toEqual(1);
-
-      // adding 2
-
-      await counter.increase(counterPk, 2);
-      val = await counter.get(counterPk);
-      expect(val).toEqual(3);
-
-      done();
-    });
-
-    it("Subtracting value", async done => {
-      // Subtracting 2
-
-      await counter.increase(counterPk, -2);
-      let val = await counter.get(counterPk);
-      expect(val).toEqual(1);
-
-      // Subtracting 10
-
-      await counter.increase(counterPk, -10);
-      val = await counter.get(counterPk);
-      expect(val).toEqual(-9);
-
-      done();
-    });
-
-    it("Revising counter", async done => {
-      // Subtracting 2
-
-      await counter.increase(counterPk, 1);
-      const val = await counter.get(counterPk);
-      expect(val).toEqual(1);
-
-      done();
-    });
-  });
   describe("Channel counters", () => {
     let counter: CounterProvider;
     let counterPk: ChannelCounterPrimaryKey;
