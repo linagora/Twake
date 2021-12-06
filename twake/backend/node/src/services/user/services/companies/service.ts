@@ -28,21 +28,13 @@ import ExternalGroup, {
   ExternalGroupPrimaryKey,
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
-import { CounterProvider } from "../../../../core/platform/services/counter/provider";
-import {
-  CompanyCounterEntity,
-  CompanyCounterPrimaryKey,
-  TYPE as CompanyCounterEntityType,
-} from "../../entities/company_counters";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
-import { countRepositoryItems } from "../../../../utils/counters";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
   companyRepository: Repository<Company>;
   externalCompanyRepository: Repository<ExternalGroup>;
   companyUserRepository: Repository<CompanyUser>;
-  private companyCounter: CounterProvider<CompanyCounterEntity>;
 
   constructor(private platformServices: PlatformServicesAPI) {}
 
@@ -60,20 +52,6 @@ export class CompanyService implements CompaniesServiceAPI {
         "external_group_repository",
         ExternalGroup,
       );
-
-    const companyCounterRepository =
-      await this.platformServices.database.getRepository<CompanyCounterEntity>(
-        CompanyCounterEntityType,
-        CompanyCounterEntity,
-      );
-
-    this.companyCounter = await this.platformServices.counter.getCounter<CompanyCounterEntity>(
-      companyCounterRepository,
-    );
-
-    this.companyCounter.reviseCounter(async (pk: CompanyCounterPrimaryKey) => {
-      return countRepositoryItems(this.companyUserRepository, pk);
-    });
 
     return this;
   }
@@ -149,10 +127,7 @@ export class CompanyService implements CompaniesServiceAPI {
       user_id: userPk.id,
     });
     if (entity) {
-      await Promise.all([
-        this.userCounterIncrease(companyPk.id, -1),
-        this.companyUserRepository.remove(entity),
-      ]);
+      await Promise.all([this.companyUserRepository.remove(entity)]);
     }
   }
 
@@ -191,7 +166,6 @@ export class CompanyService implements CompaniesServiceAPI {
 
     if (entity == null) {
       entity = getCompanyUserInstance(merge(key, { dateAdded: Date.now() }));
-      await this.userCounterIncrease(entity.group_id, 1);
     }
 
     entity.role = role;
@@ -222,14 +196,8 @@ export class CompanyService implements CompaniesServiceAPI {
     return Promise.resolve(null);
   }
 
-  private cmpCountPk = (id: string) => ({ id, counter_type: "members" });
-
-  private userCounterIncrease(companyId: string, increaseValue: number) {
-    return this.companyCounter.increase(this.cmpCountPk(companyId), increaseValue);
-  }
-
   getUsersCount(companyId: string): Promise<number> {
-    return this.companyCounter.get(this.cmpCountPk(companyId));
+    return this.getCompany({ id: companyId }).then(a => a.memberCount);
   }
 
   async getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole> {

@@ -25,7 +25,7 @@ import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
 import { NewUserInWorkspaceNotification } from "./services/channel/types";
-import { ChannelUserCounterType } from "./entities/channel_counters";
+import { ChannelCounterPrimaryKey, ChannelUserCounterType } from "./entities/channel_counters";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -191,7 +191,7 @@ export interface MemberService
     channels: ChannelPrimaryKey[],
   ): Promise<ListResult<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 
-  getUsersCount(channelId: string, type: ChannelUserCounterType): Promise<number>;
+  getUsersCount(counterPk: ChannelCounterPrimaryKey): Promise<number>;
 }
 
 export interface TabService
