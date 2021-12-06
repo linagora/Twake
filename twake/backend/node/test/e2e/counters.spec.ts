@@ -3,44 +3,28 @@
 import { beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "./setup";
 import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
-import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
 import { v1 as uuidv1 } from "uuid";
 import { CounterAPI } from "../../src/core/platform/services/counter/types";
 import {
   WorkspaceCounterEntity,
   WorkspaceCounterPrimaryKey,
-  WorkspaceCounterType,
+  WorkspaceCounterType
 } from "../../src/services/workspaces/entities/workspace_counters";
 import { CounterProvider } from "../../src/core/platform/services/counter/provider";
 import WorkspaceUser, {
   getInstance as getWorkspaceUserInstance,
-  TYPE as WorkspaceUserEntityType,
+  TYPE as WorkspaceUserEntityType
 } from "../../src/services/workspaces/entities/workspace_user";
-
-import CompanyUser, {
-  getInstance as getCompanyUserInstance,
-  TYPE as CompanyUserEntityType,
-} from "../../src/services/user/entities/company_user";
 
 import { countRepositoryItems } from "../../src/utils/counters";
 import { TestDbService } from "./utils.prepare.db";
 import {
-  CompanyCounterEntity,
-  CompanyCounterPrimaryKey,
-  CompanyCounterType,
-} from "../../src/services/user/entities/company_counters";
-import {
   ChannelCounterEntity,
   ChannelCounterPrimaryKey,
-  ChannelUserCounterType,
+  ChannelUserCounterType
 } from "../../src/services/channels/entities/channel_counters";
 import { ChannelMemberType } from "../../src/services/channels/types";
-import {
-  ChannelMember,
-  getChannelMemberInstance,
-  getMemberOfChannelInstance,
-  MemberOfChannel,
-} from "../../src/services/channels/entities";
+import { getMemberOfChannelInstance, MemberOfChannel } from "../../src/services/channels/entities";
 
 describe("Counters implementation", () => {
   let platform: TestPlatform;
