@@ -40,6 +40,16 @@ export class ConsoleController {
     }
   }
 
+  async signup(
+    request: FastifyRequest<{
+      Body: { email: string; password: string; first_name: string; last_name: string };
+    }>,
+  ): Promise<AuthResponse> {
+    //TODO: Allow only if no console is set up in this case everyone will be in the same company
+    //TODO: Allow only if signup isn't disabled
+    return { access_token: await this.authByPassword(request.body.email, request.body.password) };
+  }
+
   async tokenRenewal(request: FastifyRequest): Promise<AuthResponse> {
     return {
       access_token: this.authService.generateJWT(

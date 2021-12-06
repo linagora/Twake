@@ -65,6 +65,12 @@ const routes: FastifyPluginCallback<{
 
   fastify.route({
     method: "POST",
+    url: "/signup",
+    handler: controller.signup.bind(controller),
+  });
+
+  fastify.route({
+    method: "POST",
     url: "/token",
     preValidation: [fastify.authenticate],
     schema: tokenRenewalSchema,

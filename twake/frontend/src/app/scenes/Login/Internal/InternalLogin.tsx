@@ -5,7 +5,6 @@ import Languages from 'services/languages/languages';
 import InitService from 'services/InitService';
 import LoginService from 'app/services/login/LoginService';
 import Icon from 'components/Icon/Icon.js';
-import InteractiveLoginBackground from 'components/InteractiveLoginBackground/InteractiveLoginBackground.js';
 import './login.scss';
 
 import LoginView from './LoginView/LoginView.js';
@@ -16,8 +15,8 @@ import Error from './Error/Error';
 import { Typography } from 'antd';
 
 export default () => {
-  LoginService.useListener(useState);
-  Languages.useListener(useState);
+  LoginService.useListener();
+  Languages.useListener();
   const [server_infos_loaded, server_infos] = InitService.useWatcher(() => [
     InitService.server_infos_loaded,
     InitService.server_infos,
@@ -40,10 +39,6 @@ export default () => {
     <div className='loginPage'>
       {server_infos_loaded && !server_infos?.configuration?.branding?.name && (
         <div className="twake_logo" />
-      )}
-
-      {['logged_out', 'signin', 'forgot_password'].indexOf(LoginService.state) !== -1 && (
-        <InteractiveLoginBackground />
       )}
 
       {LoginService.state === 'error' && <Error />}
