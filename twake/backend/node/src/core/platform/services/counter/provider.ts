@@ -1,5 +1,4 @@
 import Repository from "../database/services/orm/repository/repository";
-import { CounterEntity } from "../../../../utils/counters";
 import { logger } from "../../framework";
 
 type LastRevised = {
@@ -7,7 +6,7 @@ type LastRevised = {
   period: number;
 };
 
-export class CounterProvider<T extends CounterEntity> {
+export class CounterProvider<T> {
   private name = "CounterProvider";
 
   protected readonly repository: Repository<T>;
@@ -30,7 +29,7 @@ export class CounterProvider<T extends CounterEntity> {
   async get(pk: Partial<T>): Promise<number> {
     try {
       const counter = await this.repository.findOne(pk);
-      const val = counter ? counter.value : 0;
+      const val = counter ? (counter as any).value : 0;
       return this.revise(pk, val);
     } catch (e) {
       throw e;

@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import RouterServices from 'app/services/RouterService';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Menu from 'components/Menus/Menu.js';
@@ -63,7 +64,10 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
 
   return (
     <span
-      className="align-items-center"
+      className={classNames({
+        'tab-component-selected align-items-center': selected,
+        'tab-component align-items-center': !selected,
+      })}
       onClick={() => {
         const route: string = RouterServices.generateRouteFromState({
           tabId: '',
@@ -73,7 +77,9 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
     >
       <MessageCircle size={14} className="small-right-margin" />
 
-      <span className="small-right-margin">{Languages.t('scenes.app.mainview.discussion')}</span>
+      <span className="tab-name small-right-margin">
+        {Languages.t('scenes.app.mainview.discussion')}
+      </span>
 
       {!!selected && AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Menu

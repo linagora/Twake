@@ -6,6 +6,7 @@ import { Button } from 'antd';
 import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import './style.scss';
+import InitService from 'app/services/InitService';
 
 export default () => {
   const retry = () => {
@@ -34,7 +35,10 @@ export default () => {
               <br />
               <br />
 
-              <ChangeCompany />
+              {InitService.server_infos?.configuration?.accounts?.type === 'console' && (
+                <ChangeCompany />
+              )}
+
               <br />
 
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}

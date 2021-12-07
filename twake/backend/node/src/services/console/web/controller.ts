@@ -9,6 +9,7 @@ import {
   ConsoleHookPreferenceContent,
   ConsoleHookResponse,
   ConsoleHookUser,
+  ConsoleOptions,
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
@@ -18,6 +19,9 @@ import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import UserServiceAPI from "../../user/api";
 import assert from "assert";
 import { logger } from "../../../core/platform/framework/logger";
+import { getInstance } from "../../../services/user/entities/user";
+import { getInstance as getCompanyInstance } from "../../../services/user/entities/company";
+import Workspace from "../../../services/workspaces/entities/workspace";
 
 export class ConsoleController {
   private passwordEncoder: PasswordEncoder;
@@ -26,6 +30,7 @@ export class ConsoleController {
     protected consoleService: ConsoleServiceAPI,
     protected authService: AuthServiceAPI,
     protected userService: UserServiceAPI,
+    protected options: ConsoleOptions,
   ) {
     this.passwordEncoder = new PasswordEncoder();
   }
@@ -37,6 +42,80 @@ export class ConsoleController {
       return { access_token: await this.authByPassword(request.body.email, request.body.password) };
     } else {
       throw CrudExeption.badRequest("remote_access_token or email+password are required");
+    }
+  }
+
+  async signup(
+    request: FastifyRequest<{
+      Body: { email: string; password: string; first_name: string; last_name: string };
+    }>,
+  ): Promise<AuthResponse> {
+    try {
+      //Allow only if no console is set up in this case everyone will be in the same company
+      //Console is set up
+      if (this.options.type !== "internal") {
+        throw new Error("Unable to signup in console mode");
+      }
+
+      //Allow only if signup isn't disabled
+      if (this.options.disable_account_creation) {
+        throw new Error("Account creation is disabled");
+      }
+
+      const email = request.body.email.trim().toLocaleLowerCase();
+      if (await this.userService.users.getByEmail(email)) {
+        throw new Error("This email is already used");
+      }
+
+      try {
+        const newUser = getInstance({
+          first_name: request.body.first_name,
+          last_name: request.body.last_name,
+          email_canonical: email,
+          username_canonical: email.replace("@", "."),
+        });
+        const user = await this.userService.users.create(newUser);
+        await this.userService.users.setPassword({ id: user.entity.id }, request.body.password);
+
+        //Create a global company for all users in local mode
+        const companies = await this.userService.companies.getCompanies();
+        let company = companies.getEntities()?.[0];
+        if (!company) {
+          const newCompany = getCompanyInstance({
+            name: "Twake",
+          });
+          company = await this.userService.companies.createCompany(newCompany);
+        }
+        await this.userService.companies.setUserRole(company.id, user.entity.id, "admin");
+
+        //In case someone invited us to a workspace
+        await this.userService.workspaces.processPendingUser(user.entity);
+
+        //If user is in no workspace, then we create one for they
+        const workspaces = await this.userService.workspaces.getAllForUser(
+          { userId: user.entity.id },
+          { id: company.id },
+        );
+        if (workspaces.length === 0) {
+          this.userService.workspaces.create(
+            {
+              company_id: company.id,
+              name: `${
+                newUser.first_name || newUser.last_name || newUser.username_canonical
+              }'s space`,
+            } as Workspace,
+            { user: { id: user.entity.id } },
+          );
+        }
+
+        return {
+          access_token: await this.authByPassword(request.body.email, request.body.password),
+        };
+      } catch (err) {
+        throw new Error("An unknown error occured");
+      }
+    } catch (err) {
+      return { error: err.toString() };
     }
   }
 

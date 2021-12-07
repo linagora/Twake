@@ -8,6 +8,7 @@ import AuthService from 'services/Auth/AuthService';
 import Application from '../Application';
 import { UserType } from 'app/models/User';
 import { Cookies } from 'react-cookie';
+import UserAPIClient from '../user/UserAPIClient';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -130,6 +131,20 @@ class Login extends Observable {
   setPage(page: string) {
     this.state = page;
     this.notify();
+  }
+
+  async signup(params: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    username: string;
+  }) {
+    return AuthService.signup({
+      ...params,
+      first_name: params.firstName,
+      last_name: params.lastName,
+    });
   }
 
   login(params: any, hide_load = false) {

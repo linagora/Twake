@@ -53,7 +53,7 @@ export default class Signin extends Component {
       (prevState.page === 1 && this.state.page === 2) ||
       (prevState.page === 2 && this.state.page === 3 && this.input)
     ) {
-      this.input.focus();
+      if (this.input) this.input.focus();
     }
   }
   displayStep() {
@@ -72,27 +72,48 @@ export default class Signin extends Component {
           )}
           {this.state.username && this.state.errorUsername && (
             <div className={'text error bottom-margin'}>
-              {this.state.i18n.t('scenes.login.create_account.fill_in_username')}
+              {this.state.i18n.t('scenes.login.create_account.fill_in_username', [])}
             </div>
           )}
+
           <Input
-            onBlur={() => this.updateFieldError('errorUsername', () => this.checkUsername())}
-            refInput={ref => {
-              this.input = ref;
-            }}
-            id="username_create"
-            className={
-              'bottom-margin medium full_width ' + (this.state.errorUsername ? 'error' : '')
-            }
+            id="first_name_create"
+            className="bottom-margin medium full_width"
             onKeyDown={e => {
               if (e.keyCode === 13) {
                 this.next();
               }
             }}
-            placeholder={this.state.i18n.t('scenes.login.create_account.username')}
-            value={this.state.username}
-            onChange={evt => this.setState({ username: evt.target.value })}
+            placeholder={this.state.i18n.t(
+              'scenes.login.create_account.first_name',
+              [],
+              'First name',
+            )}
+            value={this.state.firstName}
+            onChange={evt => this.setState({ firstName: evt.target.value })}
           />
+          <Input
+            id="last_name_create"
+            refInput={ref => {
+              this.input = ref;
+            }}
+            className="bottom-margin medium full_width"
+            onKeyDown={e => {
+              if (e.keyCode === 13) {
+                this.next();
+              }
+            }}
+            placeholder={this.state.i18n.t(
+              'scenes.login.create_account.last_name',
+              [],
+              'Last name',
+            )}
+            value={this.state.name}
+            onChange={evt => this.setState({ name: evt.target.value })}
+          />
+
+          <br />
+          <br />
 
           {this.state.login.error_subscribe_mailalreadyused && this.state.email && (
             <div className="text error bottom-margin">
@@ -160,95 +181,8 @@ export default class Signin extends Component {
         </div>
       );
     }
-    if (this.state.page === 2) {
-      return (
-        <div className="">
-          <div className="subtitle">
-            {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_a')}{' '}
-            <Emojione type=":raised_hand:" />
-          </div>
-          {(!InitService.server_infos?.configuration?.branding?.name ||
-            InitService.server_infos?.configuration?.branding.enable_newsletter) &&
-            ((InitService.server_infos || {}).branding || {}).enable_newsletter !== false && (
-              <div className="subtitle">
-                {this.state.i18n.t('scenes.login.create_account.step_2_subtitle_b')}
-              </div>
-            )}
-
-          <Input
-            id="last_name_create"
-            refInput={ref => {
-              this.input = ref;
-            }}
-            className="bottom-margin medium full_width"
-            onKeyDown={e => {
-              if (e.keyCode === 13) {
-                this.next();
-              }
-            }}
-            placeholder={this.state.i18n.t('scenes.login.create_account.last_name')}
-            value={this.state.name}
-            onChange={evt => this.setState({ name: evt.target.value })}
-          />
-          <Input
-            id="first_name_create"
-            className="bottom-margin medium full_width"
-            onKeyDown={e => {
-              if (e.keyCode === 13) {
-                this.next();
-              }
-            }}
-            placeholder={this.state.i18n.t('scenes.login.create_account.first_name')}
-            value={this.state.firstName}
-            onChange={evt => this.setState({ firstName: evt.target.value })}
-          />
-          {(!InitService.server_infos?.configuration?.branding?.name ||
-            InitService.server_infos?.configuration?.branding.enable_newsletter) &&
-            ((InitService.server_infos || {}).branding || {}).enable_newsletter !== false && [
-              <Input
-                key="phone"
-                id="phone_number_create"
-                className="bottom-margin medium full_width"
-                onKeyDown={e => {
-                  if (e.keyCode === 13) {
-                    this.next();
-                  }
-                }}
-                placeholder={'+11 1 23 45 67 89'}
-                value={this.state.phone}
-                onChange={evt => this.setState({ phone: evt.target.value })}
-              />,
-              <Checkbox
-                key="newsletter"
-                small
-                value={this.state.newsletter}
-                onChange={value => {
-                  this.setState({ newsletter: value });
-                }}
-                label={this.state.i18n.t('scenes.login.create_account.newsletter')}
-              />,
-            ]}
-
-          <div className="bottom">
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a href="#" className="returnBtn blue_link" onClick={() => this.previous()}>
-              {this.state.i18n.t('general.back')}
-            </a>
-            <ButtonWithTimeout
-              id="continue2_btn"
-              medium
-              disabled={this.state.login.login_loading}
-              onClick={() => this.next()}
-              value={this.state.i18n.t('general.continue')}
-              loading={this.state.login.login_loading}
-              loadingTimeout={2000}
-            />
-          </div>
-        </div>
-      );
-    }
     if (
-      this.state.page == 3 &&
+      this.state.page == 2 &&
       !InitService.server_infos?.configuration?.accounts?.type?.internal?.disable_email_verification
     ) {
       return (
@@ -284,7 +218,7 @@ export default class Signin extends Component {
       );
     }
     if (
-      this.state.page == 3 &&
+      this.state.page == 2 &&
       InitService.server_infos?.configuration?.accounts?.type?.internal?.disable_email_verification
     ) {
       return (
@@ -314,7 +248,7 @@ export default class Signin extends Component {
   };
 
   checkForm() {
-    return this.checkUsername() && this.checkMail() && this.checkPassword();
+    return this.checkMail() && this.checkPassword();
   }
 
   previous() {
@@ -324,37 +258,22 @@ export default class Signin extends Component {
       this.setState({ page: this.state.page - 1 });
     }
   }
-  subscribeMail() {
-    AccountService.subscribeMail(
-      this.state.username,
-      this.state.password,
-      this.state.name,
-      this.state.firstName,
-      this.state.phone,
-      this.state.email,
-      this.state.newsletter,
-      this.sub,
-      this,
-    );
-  }
-  next() {
+  async next() {
     if (this.state.page === 1) {
       if (this.checkForm()) {
-        AccountService.checkMailandUsername(
-          this.state.email,
-          this.state.username,
-          (th, value) => {
-            if (value === 0) {
-              this.setState({ page: this.state.page + 1 });
-            } else {
-              this.setState({});
-            }
-          },
-          this,
-        );
+        try {
+          await LoginService.signup({
+            username: this.state.email,
+            email: this.state.email,
+            firstName: this.state.firstName,
+            lastName: this.state.lastName,
+            password: this.state.password,
+          });
+          this.setState({ page: this.state.page + 1 });
+        } catch (err) {
+          this.setState({ errorMail: true });
+        }
       }
-    } else if (this.state.page === 2) {
-      this.subscribeMail();
     } else {
       this.setState({ page: this.state.page + 1 });
     }
@@ -380,10 +299,6 @@ export default class Signin extends Component {
         break;
       case 2:
         that.setState({ invalidForm: true });
-        that.setState({ usernameAvailable: false });
-        break;
-      case 3:
-        that.setState({ invalidForm: true });
         that.setState({ mailAvailable: false });
         that.setState({ usernameAvailable: false });
         break;
@@ -394,11 +309,11 @@ export default class Signin extends Component {
   render() {
     return (
       <div className="signin">
-        <div className="center_box_container login_view skew_in_bottom_nobounce">
+        <div className="center_box_container login_view fade_in">
           <div className="center_box white_box_with_shadow" style={{ width: '400px' }}>
-            <StepCounter total={3} current={this.state.page} />
+            <StepCounter total={2} current={this.state.page} />
             <div className="title">
-              {this.state.i18n.t('scenes.login.create_account.title')} {this.state.page}/3
+              {this.state.i18n.t('scenes.login.create_account.title')} {this.state.page}/2
             </div>
             {this.displayStep()}
           </div>

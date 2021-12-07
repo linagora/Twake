@@ -11,7 +11,7 @@ export enum RealtimeEntityActionType {
 export interface WebsocketRoomSignature {
   name: string; //Ws room name
   sub: string; //User id
-  nbf: number; //Not before
+  iat: number; //Deadline
 }
 
 export class ResourcePath {

@@ -16,8 +16,11 @@ const OIDC_SIGNOUT_URL = '/signout';
 const OIDC_SILENT_URL = '/oidcsilientrenew';
 const OIDC_CLIENT_ID = 'twake';
 
-@TwakeService("OIDCAuthProvider")
-export default class OIDCAuthProviderService extends Observable implements AuthProvider<unknown, unknown> {
+@TwakeService('OIDCAuthProvider')
+export default class OIDCAuthProviderService
+  extends Observable
+  implements AuthProvider<unknown, unknown, unknown>
+{
   private logger: Logger.Logger;
   private userManager: Oidc.UserManager | null = null;
   private initialized: boolean = false;
@@ -25,7 +28,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
   constructor(private configuration?: ConsoleConfiguration) {
     super();
-    this.logger = Logger.getLogger("OIDCLoginProvider");
+    this.logger = Logger.getLogger('OIDCLoginProvider');
     this.logger.debug('OIDC configuration', configuration);
   }
 
@@ -36,7 +39,7 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     }
 
     if (!this.userManager) {
-      Oidc.Log.logger = Logger.getLogger("OIDCClient");
+      Oidc.Log.logger = Logger.getLogger('OIDCClient');
       Oidc.Log.level = EnvironmentService.isProduction() ? Oidc.Log.WARN : Oidc.Log.DEBUG;
 
       this.userManager = new Oidc.UserManager({
@@ -68,7 +71,10 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
 
         this.getJWTFromOidcToken(user, (err, jwt) => {
           if (err) {
-            this.logger.error('OIDC user loaded listener, error while getting the JWT from OIDC token', err);
+            this.logger.error(
+              'OIDC user loaded listener, error while getting the JWT from OIDC token',
+              err,
+            );
             // FIXME: Should we return?
             //return;
           }
@@ -182,8 +188,12 @@ export default class OIDCAuthProviderService extends Observable implements AuthP
     await this.silentLogin();
   }
 
+  async signUp(): Promise<void> {
+    console.error("This doesn't exists for console provider.");
+  }
+
   async signOut(): Promise<void> {
-    this.logger.info("Signout");
+    this.logger.info('Signout');
 
     if (!this.userManager) {
       return;

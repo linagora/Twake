@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { TabType } from 'app/models/Tab';
 import RouterServices from 'app/services/RouterService';
 import TabsTemplateEditor from './TabsTemplateEditor';
@@ -45,7 +46,10 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
 
   return (
     <span
-      className="align-items-center"
+      className={classNames({
+        'tab-component-selected align-items-center': selected,
+        'tab-component align-items-center': !selected,
+      })}
       onClick={() => {
         const route: string = RouterServices.generateRouteFromState({
           tabId: tab.id,
@@ -54,10 +58,8 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
       }}
     >
       {WorkspacesApps.getAppIconComponent(tab, { size: 14 })}
-      <span style={{ maxWidth: '108px', marginBottom: 0 }} className="tab-name small-right-margin">
-        {capitalize(tab.name)}
-      </span>
-      {tab.id === tabId && AccessRightsService.hasLevel(workspaceId, 'member') && (
+      <span className="tab-name small-right-margin">{capitalize(tab.name)}</span>
+      {selected && AccessRightsService.hasLevel(workspaceId, 'member') && (
         <Menu
           style={{ lineHeight: 0 }}
           menu={[

@@ -314,9 +314,13 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     }
 
     // Remove user from companies not in the console
-    for (const company of await this.userService.companies.getAllForUser(user.id)) {
-      if (!companies.map(c => c.id).includes(company.id)) {
-        await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
+    const currentCompanies = await this.userService.companies.getAllForUser(user.id);
+    for (const company of currentCompanies) {
+      if (!companies.map(c => c.id).includes(company.group_id)) {
+        await this.userService.companies.removeUserFromCompany(
+          { id: company.group_id },
+          { id: user.id },
+        );
       }
     }
 

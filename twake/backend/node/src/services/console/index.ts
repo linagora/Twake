@@ -17,7 +17,7 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
 
   async doInit(): Promise<this> {
     const type = this.configuration.get<ConsoleType>("type");
-    const options: ConsoleOptions = this.configuration.get<ConsoleOptions>(type);
+    const options: ConsoleOptions = { ...this.configuration.get<ConsoleOptions>(type), type };
 
     this.service = getService(
       this.context.getProvider<DatabaseServiceAPI>("database"),
@@ -38,6 +38,7 @@ export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
         service: this.service,
         authService: authService,
         userService: userService,
+        options,
       });
       next();
     });
