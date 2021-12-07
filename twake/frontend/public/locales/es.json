@@ -731,7 +731,7 @@
     "scenes.apps.drive.right_preview.versions": "Versiones",
     "scenes.client.channelbar.channelmemberslist.title": "Usuarios en {{$1}}",
     "scenes.client.channelbar.channelmemberslist.loader": "Cargar más",
-    "scenes.client.channelbar.channelmemberslist.autocomplete": "Agregar o buscar usuario",
+    "scenes.client.channelbar.channelmemberslist.autocomplete": "Buscar usuario",
     "components.leftbar.channel.workspaceschannels.menu.option_2": "Unirse a un canal",
     "scenes.apps.tasks.active_tasks": "Tareas activas",
     "scenes.app.popup.appsparameters.pages.subtitle_informations": "Información relacionada con la gestión de aplicaciones",
