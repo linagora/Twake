@@ -33,6 +33,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
   }
 
   getConnector(): StorageConnectorAPI {
+    //Fixme do not reload connector everytime
     const type = this.getConnectorType();
     if (type === "S3") {
       logger.info("Using 'S3' connector for storage.");
@@ -49,12 +50,12 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
 
   async write(path: string, stream: Stream, options?: WriteOptions): Promise<WriteMetadata> {
     try {
-      if (options.encryptionKey) {
+      if (options?.encryptionKey) {
         const [key, iv] = options.encryptionKey.split(".");
         const cipher = createCipheriv(options.encryptionAlgo, key, iv);
         stream = stream.pipe(cipher);
       }
-      if (options.chunkNumber) path = `${path}/chunk${options.chunkNumber}`;
+      if (options?.chunkNumber) path = `${path}/chunk${options.chunkNumber}`;
 
       if (this.encryptionOptions.secret) {
         try {
@@ -68,6 +69,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
           logger.error("Unable to createCipheriv: %s", err);
         }
       }
+
       return await this.getConnector().write(path, stream);
     } catch (err) {
       logger.error(err);
@@ -81,12 +83,12 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
       const self = this;
 
       let decipher: Decipher;
-      if (options.encryptionKey) {
+      if (options?.encryptionKey) {
         const [key, iv] = options.encryptionKey.split(".");
         decipher = createDecipheriv(options.encryptionAlgo, key, iv);
       }
 
-      const chunks = options.totalChunks || 1;
+      const chunks = options?.totalChunks || 1;
       let count = 1;
       let stream;
       async function factory(callback: (err?: Error, stream?: Stream) => unknown) {
@@ -95,7 +97,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
           return;
         }
 
-        const chunk = options.totalChunks ? `${path}/chunk${count}` : path;
+        const chunk = options?.totalChunks ? `${path}/chunk${count}` : path;
         count += 1;
 
         try {
@@ -138,8 +140,8 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
 
   async remove(path: string, options?: DeleteOptions) {
     try {
-      for (let count = 1; count <= options.totalChunks || 1; count++) {
-        const chunk = options.totalChunks ? `${path}/chunk${count}` : path;
+      for (let count = 1; count <= (options?.totalChunks || 1); count++) {
+        const chunk = options?.totalChunks ? `${path}/chunk${count}` : path;
         await this.getConnector().remove(chunk);
       }
       return true;

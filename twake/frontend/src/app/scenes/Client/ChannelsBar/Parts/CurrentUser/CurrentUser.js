@@ -110,13 +110,20 @@ export default class CurrentUser extends Component {
         type: 'react-element',
         reactElement: () => <MenuCompanyHeader />,
       },
-      { type: 'separator' },
-      {
-        type: 'react-element',
-        className: 'menu-cancel-left-padding',
-        reactElement: () => <CompanyMessagesCounter />,
-      },
     ];
+
+    if (!FeatureTogglesService.isActiveFeatureName(FeatureNames.MESSAGE_HISTORY)) {
+      usermenu.push(
+        ...[
+          { type: 'separator' },
+          {
+            type: 'react-element',
+            className: 'menu-cancel-left-padding',
+            reactElement: () => <CompanyMessagesCounter />,
+          },
+        ],
+      );
+    }
 
     if (
       !WorkspaceUserRights.isGroupInvite() &&

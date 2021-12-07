@@ -192,7 +192,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       "chat:edit_files": true,
       "chat:unlimited_storage": true,
     };
-    if (companyDTO.limits.members < 0) {
+    if (companyDTO.limits.members < 0 && this.infos.type === "remote") {
       //Hack to say this is free version
       planFeatures = {
         "chat:guests": false,
