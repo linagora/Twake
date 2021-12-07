@@ -135,7 +135,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
             float: 'right',
           }}
         >
-          {Languages.t(channel?.id ? 'general.edit' : 'general.create')}
+          {Languages.t(channel?.id ? 'general.save' : 'general.create')}
         </Button>
       }
     >
