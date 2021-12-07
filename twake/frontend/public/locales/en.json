@@ -280,7 +280,7 @@
     "scenes.app.channelsbar.currentuser.reactivate_notifications": "Reactivate",
     "scenes.app.channelsbar.currentuser.user_parameter": "Notification settings",
     "scenes.app.channelsbar.currentuser.company_messages_counter_header": "Messages number",
-    "scenes.app.channelsbar.currentuser.company_messages_counter_info": "On the free version of Twake, you cannot access more than the {{$1}} more recent messages.",
+    "scenes.app.channelsbar.currentuser.company_messages_counter_info": "On the free version of Twake, you cannot access more than {{$1}} recent messages.",
     "scenes.app.channelsbar.currentuser.company_messages_counter_link": "Show more plans",
     "scenes.app.channelsbar.channelsuser.new_private_discussion": "New private discussion",
     "scenes.app.channelsbar.channelsuser.no_private_message_invite_collaboraters": "No private messages. Invite users!",
