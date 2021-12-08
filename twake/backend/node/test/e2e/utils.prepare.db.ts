@@ -250,4 +250,8 @@ export class TestDbService {
     );
     return this;
   }
+
+  getRepository = (type, entity) => {
+    return this.database.getRepository<entity>(type, entity);
+  };
 }

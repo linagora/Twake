@@ -32,7 +32,7 @@ export default class LoginView extends Component {
     }
 
     return (
-      <div className="center_box_container login_view skew_in_bottom_nobounce">
+      <div className="center_box_container login_view fade_in">
         <div className="center_box white_box_with_shadow">
           <div className="title">
             {!((InitService.server_infos || {}).branding || {}).logo &&
@@ -72,7 +72,11 @@ export default class LoginView extends Component {
                 placeholder={this.state.i18n.t('scenes.login.home.email')}
                 onKeyDown={e => {
                   if (e.keyCode === 13 && !this.state.login.login_loading) {
-                    LoginService.login({ username: this.state.form_login, password: this.state.form_password, remember_me: true });
+                    LoginService.login({
+                      username: this.state.form_login,
+                      password: this.state.form_password,
+                      remember_me: true,
+                    });
                   }
                 }}
                 onChange={evt => this.setState({ form_login: evt.target.value })}
@@ -88,7 +92,11 @@ export default class LoginView extends Component {
                 placeholder={this.state.i18n.t('scenes.login.home.password')}
                 onKeyDown={e => {
                   if (e.keyCode === 13 && !this.state.login.login_loading) {
-                    LoginService.login({ username: this.state.form_login, password: this.state.form_password, remember_me: true });
+                    LoginService.login({
+                      username: this.state.form_login,
+                      password: this.state.form_password,
+                      remember_me: true,
+                    });
                   }
                 }}
                 onChange={evt => this.setState({ form_password: evt.target.value })}
@@ -107,7 +115,11 @@ export default class LoginView extends Component {
                 style={{ marginBottom: 8 }}
                 disabled={this.state.login.login_loading}
                 onClick={() =>
-                  LoginService.login({ username: this.state.form_login, password: this.state.form_password, remember_me: true })
+                  LoginService.login({
+                    username: this.state.form_login,
+                    password: this.state.form_password,
+                    remember_me: true,
+                  })
                 }
               >
                 {this.state.i18n.t('scenes.login.home.login_btn')}
@@ -122,7 +134,7 @@ export default class LoginView extends Component {
                   {this.state.i18n.t('scenes.login.home.create_account')}
                 </Typography.Link>
               )}
-
+              {/*
               <Typography.Link
                 onClick={() => this.state.login.changeState('forgot_password')}
                 id="forgot_password_btn"
@@ -130,6 +142,7 @@ export default class LoginView extends Component {
               >
                 {this.state.i18n.t('scenes.login.home.lost_password')}
               </Typography.Link>
+              */}
             </div>
           )}
         </div>

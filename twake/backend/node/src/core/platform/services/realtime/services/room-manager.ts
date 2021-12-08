@@ -75,9 +75,7 @@ export default class RoomManager implements RealtimeRoomManager {
    * @return Promise<boolean> true if can join, false otherwise. Never rejects.
    */
   async userCanJoinRoom(user: WebSocketUser, joinEvent: JoinRoomEvent): Promise<boolean> {
-    logger.info(
-      `Checking if user ${user.id} can join room ${joinEvent.name} with token ${joinEvent.token}`,
-    );
+    logger.info(`Checking if user ${user.id} can join room ${joinEvent.name} with token`);
 
     try {
       //Public rooms we just check the user is logged in
@@ -89,13 +87,15 @@ export default class RoomManager implements RealtimeRoomManager {
       if (joinEvent.token === "twake") return true;
 
       const signature = this.auth.verifyTokenObject<WebsocketRoomSignature>(joinEvent.token);
+
       return (
         signature &&
-        signature.name === JoinRoomEvent.name &&
+        signature.name === joinEvent.name &&
         signature.sub === user.id &&
-        signature.nbf > new Date().getTime()
+        signature.iat > Math.round(new Date().getTime() / 1000)
       );
     } catch (err) {
+      console.log(err);
       return false;
     }
   }
