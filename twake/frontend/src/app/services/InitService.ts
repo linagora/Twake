@@ -48,15 +48,14 @@ class InitService extends Observable {
   public app_ready: boolean = false;
   private logger = Logger.getLogger('InitService');
 
+  async getServer() {
+    return await Api.get<ServerInfoType>('/internal/services/general/v1/server', undefined, false, {
+      disableJWTAuthentication: true,
+    });
+  }
+
   async init() {
-    this.server_infos = await Api.get<ServerInfoType>(
-      '/internal/services/general/v1/server',
-      undefined,
-      false,
-      {
-        disableJWTAuthentication: true,
-      },
-    );
+    this.server_infos = await this.getServer();
 
     if (this.server_infos?.status !== 'ready') {
       this.logger.debug('Server is not ready', this.server_infos);

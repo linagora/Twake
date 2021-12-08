@@ -38,21 +38,6 @@ class UserAPIClient {
     return WorkspaceAPIClient.listCompanies(userId);
   }
 
-  /**
-   * Get users from their IDs
-   *
-   * @param users
-   * @deprecated use list(users: string[])
-   * @returns
-   */
-  async _list(users: string[] = []): Promise<UserType[]> {
-    return new Promise<UserType[]>(resolve => {
-      Api.post('/ajax/users/all/get', { id: users }, (res: { data?: UserType[] }) => {
-        resolve(res.data || []);
-      });
-    });
-  }
-
   async getCurrent(disableJWTAuthentication = false): Promise<UserType> {
     return Api.get<{ resource: UserType }>(
       '/internal/services/users/v1/users/me',

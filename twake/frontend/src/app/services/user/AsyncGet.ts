@@ -19,15 +19,16 @@ export default async (id: string): Promise<UserType | null> => {
     return null;
   }
 
-  if (currentUserRequests[id]) {
+  if (currentUserRequests[id] !== undefined) {
     // there are already pending requests for the same user, wait for them
-    // FIXME: We should have a timeout
     await currentUserRequests[id];
-    delete currentUserRequests[id];
+    setTimeout(() => {
+      delete currentUserRequests[id];
+    }, 60 * 1000);
     return usersCollection.known_objects_by_id[id];
   } else {
     const userPromise = new Promise<UserType | null>(async resolve => {
-      const users = await UserAPIClient._list([id]);
+      const users = await UserAPIClient.list([id]);
       const user = users.length ? users[0] : null;
       user && usersCollection.updateObject(user);
       if (!user || !user?.id) doNotRetry.set(id, true);
