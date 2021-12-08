@@ -115,6 +115,7 @@ class Login extends Observable {
           }, 10000);
           return;
         } else {
+          console.log('Unable to fetch user even if server is up');
           this.firstInit = true;
           this.state = 'logged_out';
           this.notify();

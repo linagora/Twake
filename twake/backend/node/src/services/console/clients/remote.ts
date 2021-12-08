@@ -324,12 +324,6 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       }
     }
 
-    // Update user cache with companies
-    user.cache = Object.assign(user.cache || {}, {
-      companies: _.uniq([...companies.map(c => c.id)]),
-    });
-    await this.userService.users.save(user, {}, { user: { id: user.id, server_request: true } });
-
     return user;
   }
 
