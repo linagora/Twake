@@ -7,6 +7,7 @@ import CurrentUser from './CurrentUser';
 
 @TwakeService('UserAPIClientService')
 class UserAPIClient {
+  private readonly prefixUrl: string = '/internal/services/users/v1';
   /**
    * Get users from their ID
    *
@@ -70,6 +71,12 @@ class UserAPIClient {
 
   async logout() {
     return Api.post('users/logout', {});
+  }
+
+  async updateUserStatus(user: string) {
+    await Api.post<{ resource: string }, { resource: UserType }>(`${this.prefixUrl}/users/me`, {
+      resource: user,
+    });
   }
 
   /**

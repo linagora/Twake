@@ -31,12 +31,13 @@ import {
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
+import coalesce from "../../../utils/coalesce";
 
 export class UsersCrudController
   implements
     CrudController<
       ResourceGetResponse<UserObject>,
-      ResourceCreateResponse<User>,
+      ResourceCreateResponse<UserObject>,
       ResourceListResponse<UserObject>,
       ResourceDeleteResponse
     >
@@ -65,6 +66,30 @@ export class UsersCrudController
     return {
       resource: await this.service.formatUser(user, { includeCompanies: context.user.id === id }),
       websocket: undefined, // empty for now
+    };
+  }
+
+  async save(
+    request: FastifyRequest<{ Body: { resource: Partial<UserObject> }; Params: UserParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceCreateResponse<UserObject>> {
+    const context = getExecutionContext(request);
+
+    const user = await this.service.users.get(
+      { id: context.user.id },
+      getExecutionContext(request),
+    );
+    if (!user) {
+      reply.notFound(`User ${context.user.id} not found`);
+      return;
+    }
+
+    user.status_icon = coalesce(request.body.resource.status, user.status_icon);
+
+    await this.service.users.save(user, {}, context);
+
+    return {
+      resource: await this.service.formatUser(user),
     };
   }
 

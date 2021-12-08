@@ -48,6 +48,15 @@ const routes: FastifyPluginCallback<{
   });
 
   fastify.route({
+    method: "POST",
+    url: `${usersUrl}/me`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: setUserPreferencesSchema,
+    handler: usersController.save.bind(usersController),
+  });
+
+  fastify.route({
     method: "GET",
     url: `${usersUrl}`,
     preHandler: accessControl,

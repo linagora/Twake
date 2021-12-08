@@ -15,9 +15,14 @@ export const useCurrentUser = () => {
     }
   }, [user]);
 
+  const updateStatus = async (user: string) => {
+    await UserAPIClient.updateUserStatus(user);
+    await refresh();
+  };
+
   const refresh = async () => {
     await LoginService.updateUser();
   };
 
-  return { user, refresh };
+  return { user, refresh, updateStatus };
 };
