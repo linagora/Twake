@@ -84,7 +84,7 @@ export class UsersCrudController
       return;
     }
 
-    user.status_icon = coalesce(request.body.resource.status, user.status_icon);
+    user.status_icon = coalesce(request.body.resource, user.status_icon);
 
     await this.service.users.save(user, {}, context);
 

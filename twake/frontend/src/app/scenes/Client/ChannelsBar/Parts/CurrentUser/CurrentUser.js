@@ -30,6 +30,8 @@ import RouterService from 'app/services/RouterService';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import MenuCompanyHeader from './MenuCompanyHeader';
+import { red } from '@material-ui/core/colors';
+import SaveNewStatus from './SaveNewStatus';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -52,6 +54,7 @@ export default class CurrentUser extends Component {
       ':sleeping_accommodation:',
     ];
   }
+
   componentWillMount() {
     this.user_id = UserService.getCurrentUserId();
 
@@ -76,21 +79,19 @@ export default class CurrentUser extends Component {
     const new_status = {
       ...this.users_repository.known_objects_by_id[this.user_id].status.split(' '),
     };
-
     if (!new_status[0]) {
       new_status[1] = '';
     }
-
-    this.setState({ new_status });
+    this.setState({ new_status } || [new_status[0], '']);
   }
-  updateStatus(value) {
+
+  async updateStatus(value) {
     value = value || this.state.new_status;
-    CurrentUserService.updateStatusIcon([
+    await CurrentUserService.updateStatusIcon([
       value[0] === 'trash' ? '' : value[0],
-      value[0] === 'trash' ? '' : value[1],
+      value[1] === 'trash' ? '' : value[1],
     ]);
     MenusManager.closeMenu();
-    this.setState({ new_status: ['', ''] });
     MenusManager.notify();
   }
 
@@ -228,14 +229,11 @@ export default class CurrentUser extends Component {
 
     usermenu = usermenu.concat([
       { type: 'separator' },
-      /*{
+
+      {
         type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.change_my_status',
-          [],
-          'Changer mon statut',
-        ),
-        emoji: (current_user.status.split(' ') || {})[0] || ':smiley:',
+        text: Languages.t('scenes.app.channelsbar.currentuser.change_my_status'),
+        emoji: this.state.new_status[0] || (current_user.status.split(' ') || {})[0] || ':smiley:',
         submenu_replace: true,
         submenu: [
           {
@@ -249,14 +247,18 @@ export default class CurrentUser extends Component {
           {
             type: 'react-element',
             reactElement: level => {
+              this.setState({
+                new_status: [this.state.new_status[0], ''],
+              });
+
               if (this.state.new_status[0].length <= 0) {
                 this.setState({ new_status: current_user.status.split(' ') });
               }
+
               return (
                 <InputWithIcon
                   focusOnDidMount
                   menu_level={level}
-                  preferedEmoji={this.preferedEmojisStatus}
                   placeholder={Languages.t(
                     'scenes.app.popup.appsparameters.pages.status_tilte',
                     [],
@@ -280,25 +282,12 @@ export default class CurrentUser extends Component {
             type: 'react-element',
             reactElement: level => {
               return (
-                <div className="menu-buttons">
-                  <Button
-                    disabled={this.state.new_status[1].length <= 0}
-                    type="button"
-                    value={Languages.t(
-                      'scenes.app.channelsbar.currentuser.update',
-                      [],
-                      'Mettre à jour',
-                    )}
-                    onClick={() => {
-                      this.updateStatus();
-                    }}
-                  />
-                </div>
+                <SaveNewStatus status={this.state.new_status} updateStatus={this.updateStatus} />
               );
             },
           },
         ],
-      },*/
+      },
       {
         type: 'menu',
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),

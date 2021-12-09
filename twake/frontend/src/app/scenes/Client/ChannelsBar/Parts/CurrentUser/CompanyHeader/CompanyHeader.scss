@@ -72,7 +72,13 @@
       align-items: center;
 
       .ant-badge-status {
-        height: 16px;
+        align-items: center;
+        margin-right: 5px;
+
+        .ant-badge-status-text {
+          display: none;
+        }
+
         .ant-avatar-image {
           width: 16px;
           height: 16px;
@@ -121,7 +127,7 @@
       }
 
       .emoji-container {
-        margin-right: 4px;
+        margin-right: 3px;
         display: inline-block;
         height: 16px;
       }

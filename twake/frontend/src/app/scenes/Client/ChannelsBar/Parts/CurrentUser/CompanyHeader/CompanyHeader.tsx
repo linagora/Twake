@@ -36,11 +36,12 @@ export default (props: PropsType): JSX.Element => {
 
         {user && (
           <div className="user-info">
-            <Badge count={1} size="small" dot offset={[-8, 16]} color="green">
+            <Badge count={1} size="small" dot color="green" />
+            {!!(user.status || [])[0] && user.status ? (
+              <Emojione className="emoji-status" type={user.status.split(' ')[0]} />
+            ) : (
               <Avatar size={16} src={UserService.getThumbnail(user)} />
-            </Badge>
-
-            {!!(user.status_icon || [])[0] && <Emojione type={user.status_icon![0]} />}
+            )}
 
             <span className="text">
               {UserService.getFullName(user)} ({user.email})

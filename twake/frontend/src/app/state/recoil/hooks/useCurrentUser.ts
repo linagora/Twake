@@ -3,6 +3,7 @@ import LoginService from 'app/services/login/LoginService';
 import UserAPIClient from 'app/services/user/UserAPIClient';
 import { useRecoilState } from 'recoil';
 import { CurrentUserState } from '../atoms/CurrentUser';
+import { UserType } from 'app/models/User';
 
 export const useCurrentUser = () => {
   const [user, setUser] = useRecoilState(CurrentUserState);
@@ -15,8 +16,13 @@ export const useCurrentUser = () => {
     }
   }, [user]);
 
-  const updateStatus = async (user: string) => {
-    await UserAPIClient.updateUserStatus(user);
+  const updateStatus = async (userStatus: string[]) => {
+    await UserAPIClient.updateUserStatus(`${userStatus[0]} ${userStatus[1]}`);
+    if (user) {
+      const updateUser: UserType = { ...user, status: userStatus[0], status_icon: userStatus };
+
+      setUser(updateUser);
+    }
     await refresh();
   };
 
