@@ -20,7 +20,6 @@ export const useCurrentUser = () => {
     await UserAPIClient.updateUserStatus(`${userStatus[0]} ${userStatus[1]}`);
     if (user) {
       const updateUser: UserType = { ...user, status: userStatus[0], status_icon: userStatus };
-
       setUser(updateUser);
     }
     await refresh();

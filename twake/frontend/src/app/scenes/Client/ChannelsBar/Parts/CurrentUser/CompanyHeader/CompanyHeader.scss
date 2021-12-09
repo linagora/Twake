@@ -78,17 +78,16 @@
         .ant-badge-status-text {
           display: none;
         }
-
-        .ant-avatar-image {
-          width: 16px;
-          height: 16px;
-          line-height: 16px;
-          font-size: 18px;
-          overflow: clip;
-          border-radius: 50%;
-          margin-right: 8px;
-          vertical-align: top;
-        }
+      }
+      .ant-avatar-image {
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        font-size: 18px;
+        overflow: clip;
+        border-radius: 50%;
+        margin-right: 3px;
+        vertical-align: top;
       }
 
       .status {

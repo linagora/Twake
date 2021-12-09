@@ -18,7 +18,6 @@ import NotificationParameters from 'services/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/scenes/Client/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
 import ModalManagerDepreciated from 'services/popupManager/popupManager';
-import Button from 'components/Buttons/Button.js';
 import InitService from 'app/services/InitService';
 import AccessRightsService from 'services/AccessRightsService';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -26,11 +25,8 @@ import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureToggles
 import LockedWorkspacePopup from 'app/components/LockedFeaturesComponents/LockedWorkspacePopup/LockedWorkspacePopup';
 import ModalManager from 'app/components/Modal/ModalManager';
 import CompanyMessagesCounter from 'components/CompanyMessagesCounter/CompanyMessagesCounter';
-import RouterService from 'app/services/RouterService';
-import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import MenuCompanyHeader from './MenuCompanyHeader';
-import { red } from '@material-ui/core/colors';
 import SaveNewStatus from './SaveNewStatus';
 
 export default class CurrentUser extends Component {
@@ -234,7 +230,7 @@ export default class CurrentUser extends Component {
         type: 'menu',
         text: Languages.t('scenes.app.channelsbar.currentuser.change_my_status'),
         emoji: this.state.new_status[0] || (current_user.status.split(' ') || {})[0] || ':smiley:',
-        submenu_replace: true,
+        submenu_replace: false,
         submenu: [
           {
             type: 'title',
