@@ -86,7 +86,9 @@ export class Service implements MemberService {
     private platformServices: PlatformServicesAPI,
     private channelService: ChannelServiceAPI,
     protected userService: UserServiceAPI,
-  ) {}
+  ) {
+    this.companies = this.userService.companies;
+  }
 
   async init(): Promise<this> {
     try {
@@ -101,9 +103,6 @@ export class Service implements MemberService {
     } catch (err) {
       logger.error({ err }, "Can not initialize channel member service");
     }
-
-    this.companies = getCompanyService(this.platformServices);
-    await this.companies.init();
 
     const channelCountersRepository =
       await this.platformServices.database.getRepository<ChannelCounterEntity>(

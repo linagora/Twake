@@ -13,6 +13,7 @@ import ApplicationLoader from './components/Loader/ApplicationLoader';
 
 import 'app/ui.scss';
 import 'app/theme.less';
+import { DebugButton } from './state/recoil/utils/Devtools';
 
 const delayMessage = 5000;
 
@@ -51,6 +52,7 @@ export default () => {
 
   return (
     <RecoilRoot>
+      <DebugButton />
       <Integration>
         <Router history={RouterServices.history}>
           <Switch>

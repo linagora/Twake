@@ -39,11 +39,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   if (messages.length === 0) {
     return (
       <div style={{ flex: 1 }}>
-        <FirstMessage
-          channelId={channelId || ''}
-          companyId={companyId || ''}
-          workspaceId={workspaceId || ''}
-        />
+        <FirstMessage />
       </div>
     );
   }
@@ -59,13 +55,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
           let head = <></>;
           if (window.reachedStart && currentIndex === 0) {
-            head = (
-              <FirstMessage
-                channelId={channelId || ''}
-                companyId={m.companyId}
-                workspaceId={workspaceId || ''}
-              />
-            );
+            head = <FirstMessage />;
           }
 
           if (MessageHistoryService.shouldLimitMessages(company, window.start, messages.length)) {

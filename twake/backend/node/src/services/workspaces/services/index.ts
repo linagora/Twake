@@ -3,7 +3,7 @@ import WorkspaceServicesAPI, { WorkspaceServiceAPI } from "../api";
 import { getService as getWorkspaceService } from "./workspace";
 import { getService as getCompaniesService } from "../../user/services/companies";
 import { getService as getUsersService } from "../../user/services/users";
-import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
+import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
 import { ConsoleServiceAPI } from "../../console/api";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../applications/api";
@@ -14,8 +14,9 @@ export function getService(
   consoleService: ConsoleServiceAPI,
   applicationsService: ApplicationServiceAPI,
   auth: AuthServiceAPI,
+  users: UserServiceAPI,
 ): WorkspaceServicesAPI {
-  return new Service(platformServices, consoleService, applicationsService, auth);
+  return new Service(platformServices, consoleService, applicationsService, auth, users);
 }
 
 class Service implements WorkspaceServicesAPI {
@@ -29,8 +30,9 @@ class Service implements WorkspaceServicesAPI {
     readonly console: ConsoleServiceAPI,
     readonly applications: ApplicationServiceAPI,
     readonly auth: AuthServiceAPI,
+    protected userService: UserServiceAPI,
   ) {
-    this.companies = getCompaniesService(platformServices);
+    this.companies = this.userService.companies;
     this.users = getUsersService(platformServices);
     this.workspaces = getWorkspaceService(
       platformServices,

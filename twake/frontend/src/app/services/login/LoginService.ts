@@ -107,6 +107,7 @@ class Login extends Observable {
       if (!user) {
         //Ping server
         const infos = await InitService.getServer();
+        console.log(infos);
         if (!infos) {
           //We are disconnected
           console.log('We are disconnected, we will get user again in 10 seconds');
