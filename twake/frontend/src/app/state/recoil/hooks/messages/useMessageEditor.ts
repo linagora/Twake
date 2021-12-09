@@ -3,16 +3,17 @@ import MessageAPIClient from 'app/services/Apps/Messages/clients/MessageAPIClien
 import {} from 'app/services/Realtime/useRealtime';
 import _ from 'lodash';
 import { useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { MessageState, ThreadMessagesState } from '../atoms/Messages';
+import { MessageState, ThreadMessagesState } from '../../atoms/Messages';
 import {
   MessagesEditorState,
   VisibleMessagesEditorLocationActiveSelector,
   VisibleMessagesEditorLocationState,
-} from '../atoms/MessagesEditor';
+} from '../../atoms/MessagesEditor';
 import { useMessage } from './useMessage';
-import { messageToMessageWithReplies } from './useMessages';
 import { v1 as uuidv1 } from 'uuid';
 import MessageThreadAPIClient from 'app/services/Apps/Messages/clients/MessageThreadAPIClient';
+import { messageToMessageWithReplies } from './utils';
+import Login from 'app/services/login/LoginService';
 
 export type EditorKey = {
   companyId: string;
@@ -62,6 +63,8 @@ export const useMessageEditor = (key: EditorKey) => {
     const editedMessage: Partial<NodeMessage> = _.cloneDeep(message) || {
       _status: 'sending',
       thread_id: key.threadId,
+      created_at: new Date().getTime(),
+      user_id: Login.currentUserId,
       id: uuidv1(),
     };
     editedMessage.text = editor.value || editedMessage.text;

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { Suspense, useContext, useState } from 'react';
 import Message from './Message';
 import Responses from './Responses';
 import ReplyBlock from './Parts/ReplyBlock';
@@ -6,7 +6,7 @@ import LoadMoreReplies from './Parts/LoadMoreReplies';
 import { MessagesListContext } from '../MessagesList';
 import ThreadSection from '../Parts/ThreadSection';
 import Thread from '../Parts/Thread';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import ActivityMessage, { ActivityType } from './Parts/ChannelActivity/ActivityMessage';
 
 export const MessageContext = React.createContext({ companyId: '', threadId: '', id: '' });

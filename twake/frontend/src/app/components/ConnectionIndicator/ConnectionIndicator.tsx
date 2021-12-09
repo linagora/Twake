@@ -18,7 +18,7 @@ export default () => {
     WebSocket.get().on(WebsocketEvents.Connected, () => {
       setState({ connected: true, reconnecting: false });
     });
-  }, []);
+  }, [setState]);
 
   return (
     <div className={'connection_indicator ' + (connected === false ? 'visible' : '')}>

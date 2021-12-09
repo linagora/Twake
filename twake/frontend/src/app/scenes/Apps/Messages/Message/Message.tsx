@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import MessageContent from './Parts/MessageContent';
 
 type Props = {};

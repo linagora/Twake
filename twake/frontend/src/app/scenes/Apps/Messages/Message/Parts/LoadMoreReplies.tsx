@@ -1,4 +1,4 @@
-import { useThreadMessages } from 'app/state/recoil/hooks/useMessages';
+import { useThreadMessages } from 'app/state/recoil/hooks/messages/useThreadMessages';
 import React, { useContext } from 'react';
 import Languages from 'services/languages/languages';
 import ThreadSection from '../../Parts/ThreadSection';

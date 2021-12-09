@@ -1,25 +1,20 @@
 import React, { useContext, useState } from 'react';
 import 'moment-timezone';
 import classNames from 'classnames';
-import Twacode from 'components/Twacode/Twacode';
-import MessagesService from 'services/Apps/Messages/Messages';
 import Reactions from './Reactions';
 import Options from './Options';
 import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEdition from './MessageEdition';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import { Message } from 'app/models/Message';
 import DeletedContent from './DeletedContent';
 import RetryButtons from './RetryButtons';
 import FileComponent from 'app/components/File/FileComponent';
 import { Row } from 'antd';
 import Globals from 'services/Globals';
-import RouterService from 'app/services/RouterService';
 import { MessageContext } from '../MessageWithReplies';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import Blocks from './Blocks';
-import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 
 type Props = {
@@ -70,8 +65,8 @@ export default (props: Props) => {
   );
 
   const showEdition = !props.linkToThread && editorIsActive;
-  const messageIsLoading = (message as any)._creating || (message as any)._updating;
-  const messageSaveFailed = (message as any)._failed;
+  const messageIsLoading = (message as any)._status === 'sending';
+  const messageSaveFailed = (message as any)._status === 'failed';
 
   return (
     <div
@@ -160,7 +155,7 @@ export default (props: Props) => {
           )}
         </div>
       )}
-      {!showEdition && !deleted && !messageSaveFailed && didMouseOver && (
+      {!showEdition && !deleted && !messageSaveFailed && didMouseOver && !messageIsLoading && (
         <Options
           onOpen={() => setActive(true)}
           onClose={() => setActive(false)}

@@ -1,7 +1,4 @@
 import React from 'react';
-import { Message } from 'app/models/Message';
-import MessagesService from 'services/Apps/Messages/Messages';
-import Collections from 'app/services/Depreciated/Collections/Collections';
 import { Button } from 'antd';
 import Languages from 'services/languages/languages';
 

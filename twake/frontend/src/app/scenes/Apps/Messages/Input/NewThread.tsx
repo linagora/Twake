@@ -7,7 +7,7 @@ import Languages from 'services/languages/languages';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import './Input.scss';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
-import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 
 type Props = {
   useButton?: boolean;

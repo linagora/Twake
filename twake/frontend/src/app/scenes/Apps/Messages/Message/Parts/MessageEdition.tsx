@@ -12,7 +12,7 @@ import EditorToolbar from 'app/components/RichTextEditor/EditorToolbar';
 import RichTextEditorStateService from 'app/components/RichTextEditor/EditorStateService';
 import './MessageEdition.scss';
 import { EditorState } from 'draft-js';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { MessageContext } from '../MessageWithReplies';
 
 type Props = {

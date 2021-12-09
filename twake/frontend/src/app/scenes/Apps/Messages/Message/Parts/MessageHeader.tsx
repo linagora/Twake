@@ -16,7 +16,7 @@ import RouterServices from 'app/services/RouterService';
 import { NodeMessage } from 'app/models/Message';
 import Languages from 'services/languages/languages';
 import Loader from 'components/Loader/Loader.js';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { MessageContext } from '../MessageWithReplies';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
@@ -38,9 +38,14 @@ export default (props: Props) => {
   const context = useContext(MessageContext);
   let { message } = useMessage(context);
   let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
+
+  /*
   let user = useUser(message.user_id);
   let { applications: companyApplications } = useCompanyApplications(context.companyId);
   let application = companyApplications.find(a => a.id === message.application_id);
+*/
+  let user: any = null;
+  let application: any = null;
 
   const scrollToMessage = () => {
     if (message.thread_id != message.id) {

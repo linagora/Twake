@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { useChannelMessages, useThreadMessages } from 'app/state/recoil/hooks/useMessages';
+import { useChannelMessages } from 'app/state/recoil/hooks/messages/useChannelMessages';
 import ListBuilder from './ListBuilder';
 import TimeSeparator from './Message/TimeSeparator';
 import MessageWithReplies from './Message/MessageWithReplies';
@@ -26,52 +26,42 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
   const { company } = useCurrentCompany();
 
-  useEffect(() => {
-    (async () => {
-      if (window.reachedEnd) {
-        loadMore('future');
-      } else {
-        loadMore('history');
-      }
-    })();
-  }, [channelId]);
-
-  if (messages.length === 0) {
-    return (
-      <div style={{ flex: 1 }}>
-        <FirstMessage />
-      </div>
-    );
-  }
-
   return (
     <MessagesListContext.Provider value={{ hideReplies: false }}>
-      <ListBuilder
-        items={messages}
-        itemId={m => m.threadId}
-        itemContent={(index, m) => {
-          const currentIndex = messages.map(m => m.threadId).indexOf(m.threadId);
-          const previous = messages[currentIndex - 1];
+      <Suspense fallback="">
+        <ListBuilder
+          items={messages}
+          itemId={m => m.threadId}
+          emptyListComponent={<FirstMessage />}
+          itemContent={(index, m) => {
+            const currentIndex = messages.map(m => m.threadId).indexOf(m.threadId);
+            const previous = messages[currentIndex - 1];
 
-          let head = <></>;
-          if (window.reachedStart && currentIndex === 0) {
-            head = <FirstMessage />;
-          }
+            let head = <></>;
+            if (window.reachedStart && currentIndex === 0) {
+              head = <FirstMessage />;
+            }
 
-          if (MessageHistoryService.shouldLimitMessages(company, window.start, messages.length)) {
-            head = <LockedHistoryBanner />;
-          }
+            if (MessageHistoryService.shouldLimitMessages(company, window.start, messages.length)) {
+              head = <LockedHistoryBanner />;
+            }
 
-          return (
-            <Suspense fallback="" key={m.threadId}>
-              {head}
-              <TimeSeparator messageId={m} previousMessageId={previous} unreadAfter={0} />
-              <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
-            </Suspense>
-          );
-        }}
-        loadMore={loadMore}
-      />
+            return (
+              <div key={m.threadId}>
+                {head}
+                <TimeSeparator
+                  key={previous?.threadId || m?.threadId}
+                  messageId={m}
+                  previousMessageId={previous}
+                  unreadAfter={0}
+                />
+                <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
+              </div>
+            );
+          }}
+          loadMore={loadMore}
+        />
+      </Suspense>
     </MessagesListContext.Provider>
   );
 };

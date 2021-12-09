@@ -6,7 +6,7 @@ import Icon from 'components/Icon/Icon.js';
 import './Threads.scss';
 import UserOnlineStatus from 'app/components/OnlineUserStatus/OnlineUserStatus';
 import { MessageContext } from '../Message/MessageWithReplies';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import { useUser } from 'app/state/recoil/hooks/useUser';
 
@@ -17,6 +17,9 @@ type Props = {
 export default (props: Props) => {
   const context = useContext(MessageContext);
   let { message } = useMessage(context);
+
+  return <div className="sender-head" style={{}}></div>;
+  /*
   let user = useUser(message.user_id);
   let { applications: companyApplications } = useCompanyApplications(context.companyId);
   let application = companyApplications.find(a => a.id === message.application_id);
@@ -29,9 +32,7 @@ export default (props: Props) => {
           style={{
             backgroundImage: "url('" + User.getThumbnail(user) + "')",
           }}
-        >
-          <UserOnlineStatus user={user} size={props.small ? 'small' : 'medium'} />
-        </div>
+        ></div>
       )}
       {!!message.application_id && (
         <Icon
@@ -43,5 +44,5 @@ export default (props: Props) => {
         />
       )}
     </>
-  );
+  );*/
 };

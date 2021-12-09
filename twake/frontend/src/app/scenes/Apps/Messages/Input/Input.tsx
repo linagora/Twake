@@ -22,7 +22,7 @@ import RouterService from 'app/services/RouterService';
 import { FileType } from 'app/models/File';
 import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
-import { useMessageEditor } from 'app/state/recoil/hooks/useMessageEditor';
+import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 
