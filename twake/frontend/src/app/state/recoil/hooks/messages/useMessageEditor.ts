@@ -2,8 +2,7 @@ import { NodeMessage } from 'app/models/Message';
 import MessageAPIClient from 'app/services/Apps/Messages/clients/MessageAPIClient';
 import {} from 'app/services/Realtime/useRealtime';
 import _ from 'lodash';
-import { useRecoilCallback, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { MessageState, ThreadMessagesState } from '../../atoms/Messages';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {
   MessagesEditorState,
   VisibleMessagesEditorLocationActiveSelector,
@@ -12,7 +11,7 @@ import {
 import { useMessage } from './useMessage';
 import { v1 as uuidv1 } from 'uuid';
 import MessageThreadAPIClient from 'app/services/Apps/Messages/clients/MessageThreadAPIClient';
-import { messageToMessageWithReplies } from './utils';
+import { useAddMessage } from './utils';
 import Login from 'app/services/login/LoginService';
 
 export type EditorKey = {
@@ -39,42 +38,26 @@ export const useMessageEditor = (key: EditorKey) => {
       id: key.messageId,
     }).message;
 
-  const propagateMessage = useRecoilCallback(
-    ({ set, snapshot }) =>
-      async (companyId: string, message: NodeMessage) => {
-        //console.log(message);
-        //Propagate in single message atoms
-        set(
-          MessageState({ id: message.id, threadId: message.thread_id, companyId }),
-          messageToMessageWithReplies(message),
-        );
-        //Propagate in threads
-        set(ThreadMessagesState({ threadId: message.thread_id, companyId }), [
-          ...((await snapshot.getPromise(
-            ThreadMessagesState({ threadId: message.thread_id, companyId }),
-          )) || []),
-          { id: message.id, threadId: message.thread_id, companyId },
-        ]);
-      },
-    [],
-  );
+  const propagateMessage = useAddMessage(key);
 
   const send = async () => {
     const editedMessage: Partial<NodeMessage> = _.cloneDeep(message) || {
-      _status: 'sending',
-      thread_id: key.threadId,
+      thread_id: key.threadId || uuidv1(),
       created_at: new Date().getTime(),
       user_id: Login.currentUserId,
-      id: uuidv1(),
     };
     editedMessage.text = editor.value || editedMessage.text;
     editedMessage.files = editor.files || editedMessage.files;
-    propagateMessage(key.companyId, _.cloneDeep(editedMessage as NodeMessage));
+
+    const tempMessage = {
+      ..._.cloneDeep(editedMessage as NodeMessage),
+      _status: 'sending',
+      id: uuidv1(),
+    };
+    propagateMessage(tempMessage as NodeMessage);
 
     try {
       let newMessage = null;
-      editedMessage._status = undefined;
-      editedMessage.id = undefined;
       if (key.threadId || key.messageId) {
         newMessage = await MessageAPIClient.save(key.companyId, key.threadId || '', editedMessage);
       } else {
@@ -93,12 +76,11 @@ export const useMessageEditor = (key: EditorKey) => {
       if (!newMessage) {
         throw new Error('Not sent');
       }
-      editedMessage._status = 'sent';
-      propagateMessage(key.companyId, _.cloneDeep(editedMessage as NodeMessage));
-      propagateMessage(key.companyId, _.cloneDeep(newMessage));
+
+      propagateMessage({ ...tempMessage, _status: 'sent' });
+      propagateMessage(newMessage);
     } catch (err) {
-      editedMessage._status = 'failed';
-      propagateMessage(key.companyId, _.cloneDeep(editedMessage as NodeMessage));
+      propagateMessage({ ...tempMessage, _status: 'failed' });
     }
   };
 

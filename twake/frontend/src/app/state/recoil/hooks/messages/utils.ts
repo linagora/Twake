@@ -1,48 +1,38 @@
 import { MessageWithReplies, NodeMessage } from 'app/models/Message';
-import Numbers from 'app/services/utils/Numbers';
+import _ from 'lodash';
+import { useAddMessageToChannel, useRemoveMessageFromChannel } from './useChannelMessages';
+import { useSetMessage } from './useMessage';
+import { useAddMessageToThread, useRemoveMessageFromThread } from './useThreadMessages';
 
-/**
- * This is the hook to work with feed window (from where to where we are looking the messages)
- * useful mostly in case of jumps
- */
-type WindowType = { start: string; end: string; reachedStart: boolean; reachedEnd: boolean };
-const windows: Map<string, WindowType> = new Map();
-export const useMessagesWindow = (key: string) => {
-  if (!windows.has(key))
-    windows.set(key, { start: '', end: '', reachedEnd: false, reachedStart: false });
-  const window = windows.get(key) as WindowType;
+export const useAddMessage = (key: {
+  companyId: string;
+  workspaceId?: string;
+  channelId?: string;
+}) => {
+  const addToThread = useAddMessageToThread(key.companyId);
+  const removeFromThread = useRemoveMessageFromThread(key.companyId);
+  const channelKey = {
+    companyId: key.companyId,
+    workspaceId: key.workspaceId || '',
+    channelId: key.channelId || '',
+  };
+  const addToChannel = useAddMessageToChannel(channelKey);
+  const removeFromChannel = useRemoveMessageFromChannel(channelKey);
+  const setMessage = useSetMessage(key.companyId);
 
-  const updateWindowFromIds = (ids: string[]) => {
-    const min = ids.reduce((a, b) => Numbers.minTimeuuid(a, b), ids[0]);
-    const max = ids.reduce((a, b) => Numbers.maxTimeuuid(a, b), ids[0]);
-    if (max !== window.end || min !== window.start) {
-      windows.set(key, {
-        ...window,
-        start: min,
-        end: max,
-      });
+  return (message: NodeMessage) => {
+    const isThread = message.thread_id === message.id;
+
+    console.log('addMessage', message, isThread, message._status === 'sent');
+
+    setMessage(messageToMessageWithReplies(message));
+    if (message._status === 'sent') {
+      if (!isThread) removeFromThread([message]);
+      if (isThread) removeFromChannel([message]);
+    } else {
+      if (!isThread) addToThread([message], { atBottom: true });
+      if (isThread) addToChannel([message], { atBottom: true });
     }
-  };
-
-  const reachEdge = (status: { reachedStart?: boolean; reachedEnd?: boolean }) => {
-    windows.set(key, {
-      ...window,
-      ...status,
-    });
-  };
-
-  const isInWindow = (id: string) => {
-    return (
-      (Numbers.compareTimeuuid(id, window.start) >= 0 || !window.start) &&
-      (Numbers.compareTimeuuid(id, window.end) <= 0 || !window.end)
-    );
-  };
-
-  return {
-    window,
-    updateWindowFromIds,
-    reachEdge,
-    isInWindow,
   };
 };
 

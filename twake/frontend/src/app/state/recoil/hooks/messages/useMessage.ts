@@ -1,7 +1,6 @@
 import MessageAPIClient from 'app/services/Apps/Messages/clients/MessageAPIClient';
 import _ from 'lodash';
 import User from 'app/services/user/UserService';
-import { useEffect } from 'react';
 import { useRecoilCallback, useRecoilState } from 'recoil';
 import { AtomMessageKey, MessageState } from '../../atoms/Messages';
 import { NodeMessage, NodeMessageSubType, ReactionType } from 'app/models/Message';

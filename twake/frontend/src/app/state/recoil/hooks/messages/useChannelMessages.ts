@@ -1,29 +1,27 @@
 import { MessageWithReplies, NodeMessage } from 'app/models/Message';
 import MessageViewAPIClient from 'app/services/Apps/Messages/clients/MessageViewAPIClient';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import Numbers from 'app/services/utils/Numbers';
 import _ from 'lodash';
-import { useRecoilCallback, useRecoilState } from 'recoil';
-import {
-  AtomChannelKey,
-  AtomThreadKey,
-  ChannelMessagesState,
-  MessageState,
-  MessagesWindowState,
-  ThreadMessagesState,
-} from '../../atoms/Messages';
+import { useRecoilState } from 'recoil';
+import { AtomChannelKey, AtomMessageKey, ChannelMessagesState } from '../../atoms/Messages';
 import { useSetMessage } from './useMessage';
-import { useAddToThread } from './useThreadMessages';
-import { messageToMessageWithReplies, useMessagesWindow } from './utils';
+import { useAddMessageToThread } from './useThreadMessages';
+import { messageToMessageWithReplies } from './utils';
+import {
+  getListWindow,
+  AddToWindowOptions,
+  useAddToWindowedList,
+  useRemoveFromWindowedList,
+} from './windows';
 
 //TODO make this more easy to duplicate for other views
 export const useChannelMessages = (key: AtomChannelKey) => {
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
-  const { window, updateWindowFromIds, isInWindow, reachEdge } = useMessagesWindow(key.channelId);
+  const { window, updateWindowFromIds, isInWindow, reachEdge } = getListWindow(key.channelId);
   const currentWindowedMessages = messages.filter(message => isInWindow(message.threadId));
 
   const setMessage = useSetMessage(key.companyId);
-  const addToThread = useAddToThread(key.companyId);
+  const addToThread = useAddMessageToThread(key.companyId);
 
   const loadMore = async (direction: 'future' | 'history' = 'future') => {
     if (window.reachedEnd && direction === 'future') {
@@ -66,6 +64,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     setMessages(allMessages);
   };
 
+  /*
   const { send } = useRealtimeRoom<MessageWithReplies>(
     MessageViewAPIClient.feedWebsockets(key.channelId)[0],
     'useChannelMessages',
@@ -91,13 +90,13 @@ export const useChannelMessages = (key: AtomChannelKey) => {
         setMessages(allMessages);
       }
     },
-  );
+  );*/
 
   return {
     messages: currentWindowedMessages,
     window,
     loadMore,
-    send,
+    send: () => {},
     jumpTo: () => {},
   };
 };
@@ -120,9 +119,44 @@ const updateRecoilFromMessage = (
 
   setMessage(mwr);
   if (mwr.last_replies) {
-    addToThread(mwr.last_replies);
+    addToThread(mwr.last_replies, { reachedEnd: true, atBottom: true });
     mwr.last_replies.forEach(m => {
       setMessage(m);
     });
   }
+};
+
+export const useAddMessageToChannel = (key: AtomChannelKey) => {
+  const updater = useAddToWindowedList(key.companyId);
+  return (messages: NodeMessage[], options?: AddToWindowOptions) => {
+    const windowKey = key.channelId;
+    const atom = ChannelMessagesState(key);
+    updater<AtomMessageKey>(
+      messages.map(m => {
+        return {
+          id: m.id,
+          threadId: m.thread_id,
+          companyId: key.companyId,
+        };
+      }),
+      { ...options, windowKey, atom, getId: m => m.threadId || '' },
+    );
+  };
+};
+
+export const useRemoveMessageFromChannel = (key: AtomChannelKey) => {
+  const remover = useRemoveFromWindowedList(key.companyId);
+  return (messages: NodeMessage[]) => {
+    const atom = ChannelMessagesState(key);
+    remover<AtomMessageKey>(
+      messages.map(m => {
+        return {
+          id: m.id,
+          threadId: m.thread_id,
+          companyId: key.companyId,
+        };
+      }),
+      { atom, getId: m => m.threadId || '' },
+    );
+  };
 };
