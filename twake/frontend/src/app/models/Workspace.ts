@@ -1,3 +1,5 @@
+import { UserType } from './User';
+
 export type WorkspaceType = {
   id: string;
   company_id: string;
@@ -23,6 +25,7 @@ export type WorkspaceUserCompanyType = {
   };
 };
 
+export type WorkspaceUserRole = 'moderator' | 'member';
 export type WorkspaceUserType = {
   id: string;
   provider: string; //"console",
@@ -38,6 +41,11 @@ export type WorkspaceUserType = {
 
   status: string; //Single string for the status
   last_activity: number;
+
+  role: WorkspaceUserRole;
+  user_id: string;
+  workspace_id: string;
+  user: UserType;
 
   //Below is only if this is myself
   preference: {

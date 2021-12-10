@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Col, Row, Typography } from 'antd';
 import classNames from 'classnames';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
+
 import Strings from 'app/services/utils/strings';
 import UsersService from 'services/user/UserService';
 import Languages from 'services/languages/languages';
@@ -11,6 +12,8 @@ import Icon from '../Icon/Icon';
 import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import AutoCompleteExtended from 'components/AutoCompleteExtended/AutoCompleteExtended';
 import { UserType } from 'app/models/User';
+import UserAPIClient from 'app/services/user/UserAPIClient';
+
 import './UserListManager.scss';
 
 type PropsType = {
@@ -59,12 +62,12 @@ const UserListManager = (props: PropsType) => {
       callback([]);
       return;
     }
-    UsersService.search(
+    UserAPIClient.search(
       text,
       {
         scope: props.scope,
-        workspace_id: Workspaces.currentWorkspaceId,
-        group_id: Workspaces.currentGroupId,
+        companyId: Workspaces.currentGroupId,
+        workspaceId: Workspaces.currentWorkspaceId,
       },
       (res: any) => {
         res = res.filter((el: any) => !!el);
