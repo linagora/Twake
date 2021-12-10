@@ -139,9 +139,7 @@ export default (props: Props) => {
                           size: f.metadata.size || 0,
                           company_id: f.company_id || companyId,
                           // TODO Get route using a service ?
-                          thumbnail: f.metadata?.thumbnails?.[0]?.url
-                            ? `${Globals.api_root_url}/internal/services/files/v1${f.metadata.thumbnails[0].url}`
-                            : undefined,
+                          thumbnail: f.metadata?.thumbnails?.[0]?.url || '',
                           type: f.metadata.type || '',
                         }}
                       />

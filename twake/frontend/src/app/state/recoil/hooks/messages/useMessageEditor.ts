@@ -61,7 +61,7 @@ export const useMessageEditor = (key: EditorKey) => {
     const tempMessage = {
       ...editedMessage,
       _status: 'sending',
-      id: uuidv1(),
+      id: editedMessage.thread_id || (key.threadId ? uuidv1() : editedMessage.thread_id),
     };
     propagateMessage(tempMessage as NodeMessage);
 

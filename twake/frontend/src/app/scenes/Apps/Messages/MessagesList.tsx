@@ -28,40 +28,38 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: false }}>
-      <Suspense fallback="">
-        <ListBuilder
-          items={messages}
-          itemId={m => m.threadId}
-          emptyListComponent={<FirstMessage />}
-          itemContent={(index, m) => {
-            const currentIndex = messages.map(m => m.threadId).indexOf(m.threadId);
-            const previous = messages[currentIndex - 1];
+      <ListBuilder
+        items={messages}
+        itemId={m => m.threadId}
+        emptyListComponent={<FirstMessage />}
+        itemContent={(index, m) => {
+          const currentIndex = messages.map(m => m.threadId).indexOf(m.threadId);
+          const previous = messages[currentIndex - 1];
 
-            let head = <></>;
-            if (window.reachedStart && currentIndex === 0) {
-              head = <FirstMessage />;
-            }
+          let head = <></>;
+          if (window.reachedStart && currentIndex === 0) {
+            head = <FirstMessage />;
+          }
 
-            if (MessageHistoryService.shouldLimitMessages(company, window.start, messages.length)) {
-              head = <LockedHistoryBanner />;
-            }
+          if (MessageHistoryService.shouldLimitMessages(company, window.start, messages.length)) {
+            head = <LockedHistoryBanner />;
+          }
 
-            return (
-              <div key={m.threadId}>
-                {head}
-                <TimeSeparator
-                  key={previous?.threadId || m?.threadId}
-                  messageId={m}
-                  previousMessageId={previous}
-                  unreadAfter={0}
-                />
-                <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
-              </div>
-            );
-          }}
-          loadMore={loadMore}
-        />
-      </Suspense>
+          return (
+            <div key={m.threadId}>
+              {head}
+              <TimeSeparator
+                key={previous?.threadId || m?.threadId}
+                messageId={m}
+                previousMessageId={previous}
+                unreadAfter={0}
+              />
+              <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
+            </div>
+          );
+        }}
+        loadMore={loadMore}
+      />
     </MessagesListContext.Provider>
   );
 };

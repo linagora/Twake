@@ -49,31 +49,33 @@ export default React.memo(({ emptyListComponent, itemId, loadMore, items, itemCo
 
   return (
     <>
-      <Virtuoso
-        ref={virtuosoRef}
-        initialTopMostItemIndex={items.length - 1}
-        firstItemIndex={firstItemIndex.current}
-        itemContent={itemContent}
-        data={items}
-        followOutput={'smooth'}
-        alignToBottom
-        startReached={async () => {
-          logger.log('startReached: ', items.length);
-          await more('history');
-          logger.log('loaded history: ', items.length);
-        }}
-        endReached={async () => {
-          logger.log('endReached: ', items.length);
-          await more('future');
-          logger.log('loaded future: ', items.length);
-        }}
-        atBottomStateChange={atBottom => logger.log('position: atBottom', atBottom)}
-        atTopStateChange={atTop => {
-          logger.log('position: atTop', atTop);
-        }}
-        computeItemKey={(_index, item) => itemId(item)}
-        //overscan={{ main: 1000, reverse: 1000 }}
-      />
+      <Suspense fallback={<div style={{ flex: 1 }}></div>}>
+        <Virtuoso
+          ref={virtuosoRef}
+          initialTopMostItemIndex={items.length - 1}
+          firstItemIndex={firstItemIndex.current}
+          itemContent={itemContent}
+          data={items}
+          followOutput={'smooth'}
+          alignToBottom
+          startReached={async () => {
+            logger.log('startReached: ', items.length);
+            await more('history');
+            logger.log('loaded history: ', items.length);
+          }}
+          endReached={async () => {
+            logger.log('endReached: ', items.length);
+            await more('future');
+            logger.log('loaded future: ', items.length);
+          }}
+          atBottomStateChange={atBottom => logger.log('position: atBottom', atBottom)}
+          atTopStateChange={atTop => {
+            logger.log('position: atTop', atTop);
+          }}
+          computeItemKey={(_index, item) => itemId(item)}
+          //overscan={{ main: 1000, reverse: 1000 }}
+        />
+      </Suspense>
     </>
   );
 });

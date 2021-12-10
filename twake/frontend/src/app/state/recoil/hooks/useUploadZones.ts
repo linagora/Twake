@@ -1,49 +1,65 @@
+import React, { useEffect } from 'react';
+import FileUploadService from 'app/components/FileUploads/FileUploadService';
 import { MessageFileType } from 'app/models/Message';
-import MessagePendingUploadZonesService, {
-  Events as PendingUploadZonesEvents,
-} from 'app/services/Apps/Messages/MessagePendingUploadZonesService';
-import { useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import { PendingUploadZonesListState } from '../atoms/PendingUploadZonesList';
-
-type handleUploadZonesChangeType = (list: Map<string, MessageFileType[]>) => void;
+import { useUpload } from './useUpload';
+import { PendingFileType } from 'app/models/File';
 
 export const useUploadZones = (zoneId: string) => {
-  const [uploadZonesListState, setUploadZonesListState] = useRecoilState(
-    PendingUploadZonesListState,
-  );
-
-  const handleUploadZonesChange = useRef<handleUploadZonesChangeType>(list => {
-    setUploadZonesListState(list);
-  });
+  const { pendingFilesListState, currentTask, getOnePendingFile } = useUpload();
+  const [files, setFiles] = useRecoilState(PendingUploadZonesListState(zoneId));
 
   useEffect(() => {
-    const currentHandleUploadZonesChange = handleUploadZonesChange.current;
-    if (currentHandleUploadZonesChange) {
-      MessagePendingUploadZonesService.addListener(
-        PendingUploadZonesEvents.ON_CHANGE,
-        currentHandleUploadZonesChange,
-      );
+    if (currentTask.files.length > 0) {
+      const updated = files.map(f => {
+        const upToDate = getOnePendingFile(f.metadata?.external_id || '');
+        if (upToDate) {
+          f = pendingFileToMessageFile(f, upToDate);
+        }
+        return f;
+      });
+      setFiles(updated);
     }
+  }, [currentTask]);
 
-    return () => {
-      MessagePendingUploadZonesService.removeListener(
-        PendingUploadZonesEvents.ON_CHANGE,
-        currentHandleUploadZonesChange,
-      );
-    };
-  }, []);
-
-  let currentUploadZoneFilesList: MessageFileType[] = [];
-
-  if (uploadZonesListState?.get(zoneId)) {
-    currentUploadZoneFilesList = uploadZonesListState.get(zoneId) || [];
-  }
-
-  const clearZone = (zoneId: string): void => MessagePendingUploadZonesService.clearZone(zoneId);
-  return {
-    uploadZonesListState,
-    currentUploadZoneFilesList,
-    clearZone,
+  const upload = async (list: File[]) => {
+    const newFiles = await FileUploadService.upload(list);
+    setFiles([
+      ...files,
+      ...newFiles.map(f => {
+        return {
+          metadata: {
+            source: 'pending',
+            external_id: f.id,
+          },
+        };
+      }),
+    ]);
   };
+
+  const clear = () => setFiles([]);
+
+  return {
+    files,
+    setFiles,
+    upload,
+    clear,
+  };
+};
+
+const pendingFileToMessageFile = (f: MessageFileType, upToDate: PendingFileType) => {
+  return {
+    ...f,
+    id: upToDate.backendFile?.id,
+    company_id: upToDate.backendFile?.company_id,
+    metadata: {
+      ...f.metadata,
+      source: upToDate.status === 'success' ? 'internal' : 'pending',
+      type: upToDate.backendFile?.metadata?.mime,
+      size: upToDate.backendFile?.upload_data?.size,
+      name: upToDate.backendFile?.metadata?.name,
+      thumbnails: upToDate.backendFile?.thumbnails,
+    },
+  } as MessageFileType;
 };
