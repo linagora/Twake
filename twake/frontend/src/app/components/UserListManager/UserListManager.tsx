@@ -192,9 +192,11 @@ const UserListManager = (props: PropsType) => {
               autoFocus
               onSearch={(text, cb) => filter(text, cb)}
               render={(user: UserType) => (
-                <Row align="middle" gutter={[8, 8]}>
-                  <UserOrMail item={user} />
-                </Row>
+                <React.Suspense fallback={<></>}>
+                  <Row align="middle" gutter={[8, 8]}>
+                    <UserOrMail item={user} />
+                  </Row>
+                </React.Suspense>
               )}
             />
           )}
