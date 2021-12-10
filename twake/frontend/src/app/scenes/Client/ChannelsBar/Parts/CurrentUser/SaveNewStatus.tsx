@@ -1,13 +1,13 @@
-import React, { useEffect, useCallback, useState } from 'react';
-import { Trash2 } from 'react-feather';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
+import { Button } from 'antd';
 
-import Button from 'components/Buttons/Button.js';
 import Languages from 'services/languages/languages';
 import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
-
-import './SaveNewStatus.scss';
 import MenusManager from 'app/components/Menus/MenusManager';
 import InputWithIcon from 'app/components/Inputs/InputWithIcon';
+import classNames from 'classnames';
+
+import './SaveNewStatus.scss';
 
 type PropsType = {
   level: any;
@@ -18,6 +18,7 @@ export default (props: PropsType): JSX.Element => {
   const icon = user?.status?.split(' ')[0] || '';
   const text = user?.status?.split(' ').slice(1).join(' ') || '';
   const [status, setStatus] = useState([icon, text]);
+  const toto = useRef(status);
 
   const save = useCallback(() => {
     updateStatus(status);
@@ -43,7 +44,11 @@ export default (props: PropsType): JSX.Element => {
   }, [updateStatus]);
 
   return (
-    <>
+    <div
+      onKeyDown={evt => {
+        if (evt.key === 'Enter') save();
+      }}
+    >
       <InputWithIcon
         focusOnDidMount
         menu_level={props.level}
@@ -57,14 +62,21 @@ export default (props: PropsType): JSX.Element => {
           setStatus(value);
         }}
       />
-      <div className="save-new-status-container" tabIndex={0}>
-        <Trash2 className="reset-status-icon" size={16} onClick={reset} />
-        <Button
-          type="button"
-          value={Languages.t('scenes.app.channelsbar.currentuser.update', [], 'Mettre à jour')}
-          onClick={save}
-        />
+      <div className="save-new-status-container">
+        {
+          <Button
+            className={classNames({ 'error-button': toto.current === status })}
+            type={toto.current === status ? 'default' : 'ghost'}
+            onClick={toto.current === status ? reset : save}
+          >
+            {Languages.t(
+              toto.current === status
+                ? 'scenes.app.channelsbar.currentuser.reset'
+                : 'scenes.app.channelsbar.currentuser.update',
+            )}
+          </Button>
+        }
       </div>
-    </>
+    </div>
   );
 };

@@ -1,15 +1,15 @@
 .save-new-status-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  .reset-status-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-
+  margin-top: 8px;
+  .error-button {
+    color: var(--error);
+    border: 1px solid var(--error);
     &:hover {
       color: var(--error);
+
+      border: 1px solid var(--error);
     }
   }
 }

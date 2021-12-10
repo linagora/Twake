@@ -845,5 +845,7 @@
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size": "La taille maximale du logo est de 5 Mo",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Mauvais format, seuls les png, gif et jpg sont autorisés",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Erreur inconnue",
-    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Erreur"
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Erreur",
+    "scenes.app.channelsbar.currentuser.reset": "Réinitialiser"
+
 }
