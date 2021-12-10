@@ -37,10 +37,8 @@ export default (props: PropsType): JSX.Element => {
         {user && (
           <div className="user-info">
             <Badge count={1} size="small" dot color="green" />
-            {user.status ? (
+            {!!user.status && (
               <Emojione className="emoji-status" type={user.status.split(' ')[0]} />
-            ) : (
-              <Avatar size={16} src={UserService.getThumbnail(user)} />
             )}
 
             <span className="text">

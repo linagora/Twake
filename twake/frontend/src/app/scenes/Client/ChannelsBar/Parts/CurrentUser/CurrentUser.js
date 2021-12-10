@@ -81,16 +81,6 @@ export default class CurrentUser extends Component {
     this.setState({ new_status } || [new_status[0], '']);
   }
 
-  async updateStatus(value) {
-    value = value || this.state.new_status;
-    await CurrentUserService.updateStatusIcon([
-      value[0] === 'trash' ? '' : value[0],
-      value[1] === 'trash' ? '' : value[1],
-    ]);
-    MenusManager.closeMenu();
-    MenusManager.notify();
-  }
-
   onClickUser(evt) {
     this.state.showingMenu ? this.hideMenu() : this.showMenu();
     this.setState({ showingMenu: !this.state.showingMenu });
@@ -229,7 +219,7 @@ export default class CurrentUser extends Component {
       {
         type: 'menu',
         text: Languages.t('scenes.app.channelsbar.currentuser.change_my_status'),
-        emoji: this.state.new_status[0] || (current_user.status.split(' ') || {})[0] || ':smiley:',
+        emoji: (current_user.status.split(' ') || {})[0] || ':smiley:',
         submenu_replace: false,
         submenu: [
           {
@@ -240,46 +230,11 @@ export default class CurrentUser extends Component {
               'Changer mon statut',
             ),
           },
-          {
-            type: 'react-element',
-            reactElement: level => {
-              this.setState({
-                new_status: [this.state.new_status[0], ''],
-              });
-
-              if (this.state.new_status[0].length <= 0) {
-                this.setState({ new_status: current_user.status.split(' ') });
-              }
-
-              return (
-                <InputWithIcon
-                  focusOnDidMount
-                  menu_level={level}
-                  placeholder={Languages.t(
-                    'scenes.app.popup.appsparameters.pages.status_tilte',
-                    [],
-                    'Status',
-                  )}
-                  value={this.state.new_status}
-                  onChange={value => {
-                    if (value[0] === 'trash') {
-                      this.updateStatus(value);
-                    } else {
-                      this.setState({ new_status: value });
-                      MenusManager.notify();
-                    }
-                  }}
-                />
-              );
-            },
-          },
 
           {
             type: 'react-element',
             reactElement: level => {
-              return (
-                <SaveNewStatus status={this.state.new_status} updateStatus={this.updateStatus} />
-              );
+              return <SaveNewStatus level={level} />;
             },
           },
         ],

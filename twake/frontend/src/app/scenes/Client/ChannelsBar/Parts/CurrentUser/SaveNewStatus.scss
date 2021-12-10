@@ -1,0 +1,15 @@
+.save-new-status-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .reset-status-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--error);
+    }
+  }
+}
