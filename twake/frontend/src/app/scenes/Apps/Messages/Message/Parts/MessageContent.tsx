@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { Suspense, useContext, useState } from 'react';
 import 'moment-timezone';
 import classNames from 'classnames';
 import Reactions from './Reactions';
@@ -80,7 +80,9 @@ export default (props: Props) => {
       }}
       onClick={() => setActive(false)}
     >
-      <MessageHeader linkToThread={props.linkToThread} />
+      <Suspense fallback={''}>
+        <MessageHeader linkToThread={props.linkToThread} />
+      </Suspense>
       {!!showEdition && !deleted && (
         <div className="content-parent">
           <MessageEdition

@@ -199,7 +199,7 @@ export type NodeMessage = {
 
   ephemeral: EphemeralMessage | null; //Used for non-persisted messages (like interractive messages)
 
-  _status?: 'sending' | 'failed' | 'sent';
+  _status?: 'sending' | 'failed' | 'sent' | 'cancelled';
 };
 
 export type MessageWithReplies = NodeMessage & {

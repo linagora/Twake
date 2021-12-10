@@ -1,4 +1,4 @@
-import { NodeMessage } from 'app/models/Message';
+import { MessageWithReplies, NodeMessage } from 'app/models/Message';
 import MessageAPIClient from 'app/services/Apps/Messages/clients/MessageAPIClient';
 import {} from 'app/services/Realtime/useRealtime';
 import _ from 'lodash';
@@ -8,11 +8,13 @@ import {
   VisibleMessagesEditorLocationActiveSelector,
   VisibleMessagesEditorLocationState,
 } from '../../atoms/MessagesEditor';
-import { useMessage } from './useMessage';
+import { useMessage, useSetMessage } from './useMessage';
 import { v1 as uuidv1 } from 'uuid';
 import MessageThreadAPIClient from 'app/services/Apps/Messages/clients/MessageThreadAPIClient';
-import { useAddMessage } from './utils';
 import Login from 'app/services/login/LoginService';
+import { messageToMessageWithReplies } from './utils';
+import { useAddMessageToChannel, useRemoveMessageFromChannel } from './useChannelMessages';
+import { useAddMessageToThread, useRemoveMessageFromThread } from './useThreadMessages';
 
 export type EditorKey = {
   companyId: string;
@@ -31,26 +33,33 @@ export const useMessageEditor = (key: EditorKey) => {
   const [editor, setEditor] = useRecoilState(MessagesEditorState(location));
 
   let message: NodeMessage | null = null;
-  if (key.messageId)
+  if (key.messageId) {
     message = useMessage({
       companyId: key.companyId,
       threadId: key.threadId || '',
       id: key.messageId,
     }).message;
+  }
 
-  const propagateMessage = useAddMessage(key);
+  const propagateMessage = useAddMessageFromEditor(key);
 
-  const send = async () => {
-    const editedMessage: Partial<NodeMessage> = _.cloneDeep(message) || {
+  const send = async (message?: Partial<NodeMessage>) => {
+    if (!message) {
+      message = {
+        text: editor.value,
+        files: editor.files,
+      };
+    }
+
+    const editedMessage = {
       thread_id: key.threadId || uuidv1(),
       created_at: new Date().getTime(),
       user_id: Login.currentUserId,
-    };
-    editedMessage.text = editor.value || editedMessage.text;
-    editedMessage.files = editor.files || editedMessage.files;
+      ...message,
+    } as NodeMessage;
 
     const tempMessage = {
-      ..._.cloneDeep(editedMessage as NodeMessage),
+      ...editedMessage,
       _status: 'sending',
       id: uuidv1(),
     };
@@ -62,7 +71,7 @@ export const useMessageEditor = (key: EditorKey) => {
         newMessage = await MessageAPIClient.save(key.companyId, key.threadId || '', editedMessage);
       } else {
         newMessage = await MessageThreadAPIClient.save(key.companyId, {
-          message: editedMessage as NodeMessage,
+          message: editedMessage,
           participants: [
             {
               type: 'channel',
@@ -84,10 +93,22 @@ export const useMessageEditor = (key: EditorKey) => {
     }
   };
 
+  const retry = async (message: MessageWithReplies) => {
+    propagateMessage({ ...message, _status: 'cancelled' });
+    //Fixme, to do the update we use the recoil snapshot that is not updated between two changes
+    window.requestAnimationFrame(() => send({ ...message, id: undefined, _status: undefined }));
+  };
+
+  const cancel = (message: MessageWithReplies) => {
+    propagateMessage({ ...message, _status: 'cancelled' });
+  };
+
   return {
     editor,
     key: location,
     send,
+    retry,
+    cancel,
     setEditor,
     setValue: (value: string) => setEditor({ ...editor, value }),
     setFiles: (files: any[]) => setEditor({ ...editor, files }),
@@ -100,4 +121,34 @@ export const useVisibleMessagesEditorLocation = (location: string, subLocation: 
     VisibleMessagesEditorLocationActiveSelector({ location, subLocation }),
   );
   return { active, set };
+};
+
+export const useAddMessageFromEditor = (key: {
+  companyId: string;
+  workspaceId?: string;
+  channelId?: string;
+}) => {
+  const addToThread = useAddMessageToThread(key.companyId);
+  const removeFromThread = useRemoveMessageFromThread(key.companyId);
+  const channelKey = {
+    companyId: key.companyId,
+    workspaceId: key.workspaceId || '',
+    channelId: key.channelId || '',
+  };
+  const addToChannel = useAddMessageToChannel(channelKey);
+  const removeFromChannel = useRemoveMessageFromChannel(channelKey);
+  const setMessage = useSetMessage(key.companyId);
+
+  return (message: NodeMessage) => {
+    const isThread = message.thread_id === message.id;
+
+    setMessage(messageToMessageWithReplies(message));
+    if (message._status === 'sent' || message._status === 'cancelled') {
+      if (!isThread) removeFromThread([message]);
+      if (isThread) removeFromChannel([message]);
+    } else {
+      if (!isThread) addToThread([message], { atBottom: true });
+      if (isThread) addToChannel([message], { atBottom: true });
+    }
+  };
 };

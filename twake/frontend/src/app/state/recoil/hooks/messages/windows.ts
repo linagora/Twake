@@ -12,7 +12,7 @@ const windows: Map<string, WindowType> = new Map();
 export const getListWindow = (key: string) => {
   if (!windows.has(key))
     windows.set(key, { start: '', end: '', reachedEnd: false, reachedStart: false });
-  const window = windows.get(key) as WindowType;
+  let window = windows.get(key) as WindowType;
 
   const updateWindowFromIds = (ids: string[]) => {
     const min = ids.reduce((a, b) => Numbers.minTimeuuid(a, b), ids[0]);
@@ -24,15 +24,18 @@ export const getListWindow = (key: string) => {
         end: max,
       });
     }
-    return windows.get(key);
+    window = windows.get(key) as WindowType;
+    return window;
   };
 
   const reachEdge = (status: { reachedStart?: boolean; reachedEnd?: boolean }) => {
+    status = _.pick(status, 'reachedEnd', 'reachedStart');
     windows.set(key, {
       ...window,
       ...status,
     });
-    return windows.get(key) as WindowType;
+    window = windows.get(key) as WindowType;
+    return window;
   };
 
   const isInWindow = (id: string) => {
@@ -78,15 +81,19 @@ export const useAddToWindowedList = (companyId: string) => {
 
         //Update the current window
         let { window, updateWindowFromIds, reachEdge } = getListWindow(options.windowKey);
+        if (options.reachedEnd || (options.atBottom && !window.end))
+          options = { ...options, reachedEnd: true };
         if (options.reachedEnd || options.reachedStart) window = reachEdge(options);
         if ((options.atBottom && window.reachedEnd) || options.inWindow)
           updateWindowFromIds([window.start, window.end, ...items.map(m => getId(m))]);
 
         const atom = options.atom;
-        set(
-          atom,
-          _.uniqBy([...(snapshot.getLoadable(atom).valueMaybe() || []), ...items], m => getId(m)),
+        const newList = _.uniqBy(
+          [...(snapshot.getLoadable(atom).valueMaybe() || []), ...items],
+          m => getId(m),
         );
+
+        set(atom, newList);
       },
     [companyId],
   );
@@ -98,18 +105,15 @@ export const useRemoveFromWindowedList = (companyId: string) => {
       async <T>(items: T[], options: RemoveFromWindowedListOptions<T>) => {
         if (items.length === 0) return;
 
-        console.log('addMessage remove: ', items);
-
         const getId = options.getId || ((m: any) => m?.id);
 
         const toRemove = items.map(m => getId(m));
 
         const atom = options.atom;
+
         const newList = (snapshot.getLoadable(atom).valueMaybe() || []).filter(
           m => !toRemove.includes(getId(m)),
         );
-
-        console.log('addMessage newList: ', newList);
 
         set(atom, newList);
       },

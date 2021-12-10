@@ -11,10 +11,8 @@ type Props = {
 };
 
 export default ({ threadId, companyId }: Props) => {
-  let { messages } = useThreadMessages({ companyId, threadId });
+  let { messages, window } = useThreadMessages({ companyId, threadId });
   //TODO use window to open more or less messages here
-
-  console.log('addMessage torender: ', messages);
 
   return (
     <>

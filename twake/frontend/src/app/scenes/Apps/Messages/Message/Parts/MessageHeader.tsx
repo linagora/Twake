@@ -23,6 +23,9 @@ import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
 import { useUser } from 'app/state/recoil/hooks/useUser';
 import { UserType } from 'app/models/User';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { useRecoilState, useRecoilStateLoadable } from 'recoil';
+import { UsersState } from 'app/state/recoil/atoms/Users';
+import { CompanyApplicationsStateFamily } from 'app/state/recoil/atoms/CompanyApplications';
 
 type Props = {
   linkToThread?: boolean;
@@ -39,13 +42,10 @@ export default (props: Props) => {
   let { message } = useMessage(context);
   let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
 
-  /*
   let user = useUser(message.user_id);
-  let { applications: companyApplications } = useCompanyApplications(context.companyId);
+  const companyApplications =
+    useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   let application = companyApplications.find(a => a.id === message.application_id);
-*/
-  let user: any = null;
-  let application: any = null;
 
   const scrollToMessage = () => {
     if (message.thread_id != message.id) {

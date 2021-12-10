@@ -11,14 +11,10 @@ import {
 
 //TODO this also could jump, do we need windows too ?
 export const useThreadMessages = (key: AtomThreadKey) => {
-  const { window, updateWindowFromIds, isInWindow } = getListWindow(key.threadId);
+  const { window, isInWindow } = getListWindow(key.threadId);
   let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
 
-  console.log('reachedEnd? part1', messages);
-
   messages = messages.filter(message => isInWindow(message.id || ''));
-
-  console.log('reachedEnd? part2', messages);
 
   return {
     messages,
@@ -31,6 +27,7 @@ export const useThreadMessages = (key: AtomThreadKey) => {
 export const useAddMessageToThread = (companyId: string) => {
   const updater = useAddToWindowedList(companyId);
   return (messages: NodeMessage[], options?: AddToWindowOptions) => {
+    messages = messages.filter(m => m.id !== m.thread_id);
     if (messages.length === 0) return;
     const threadId = messages[0].thread_id;
     const windowKey = threadId;

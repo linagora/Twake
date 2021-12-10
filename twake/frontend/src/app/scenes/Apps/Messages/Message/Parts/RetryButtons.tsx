@@ -1,28 +1,28 @@
-import React from 'react';
-import { Button } from 'antd';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
+import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
+import React, { useContext, useEffect } from 'react';
 import Languages from 'services/languages/languages';
+import { MessageContext } from '../MessageWithReplies';
 
 type Props = {};
 
 export default (props: Props) => {
+  const context = useContext(MessageContext);
+  const { message } = useMessage(context);
+  const { retry, cancel } = useMessageEditor(context);
+
   return (
     <div>
-      <Button
-        style={{ fontWeight: 500, paddingLeft: 0 }}
-        onClick={() => {
-          //TODO: MessagesService.retrySendMessage(props.message, props.collectionKey);
-        }}
+      <span
+        className="link"
+        style={{ fontWeight: 500, marginRight: 8 }}
+        onClick={() => retry(message)}
       >
-        {Languages.t('general.retry', [], 'Retry')}
-      </Button>
-      <Button
-        style={{ fontWeight: 500 }}
-        onClick={() => {
-          //TODO: MessagesService.deleteMessage(props.message, props.collectionKey);
-        }}
-      >
-        {Languages.t('general.cancel', [], 'Cancel')}
-      </Button>
+        {Languages.t('general.retry')}
+      </span>
+      <span className="link red" style={{ fontWeight: 500 }} onClick={() => cancel(message)}>
+        {Languages.t('general.remove')}
+      </span>
     </div>
   );
 };
