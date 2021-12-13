@@ -1,5 +1,5 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { CrudExeption, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
 import { MemberService } from "../../provider";
 import {
@@ -51,9 +51,7 @@ export class ChannelMemberCrudController
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<ChannelMember>> {
     if (!isCurrentUser(request.params.member_id, request.currentUser)) {
-      reply.badRequest("User does not have enough rights to get member");
-
-      return;
+      throw CrudExeption.badRequest("User does not have enough rights to get member");
     }
 
     const resource = await this.service.get(
@@ -62,9 +60,7 @@ export class ChannelMemberCrudController
     );
 
     if (!resource) {
-      reply.notFound(`Channel member ${request.params.member_id} not found`);
-
-      return;
+      throw CrudExeption.notFound(`Channel member ${request.params.member_id} not found`);
     }
 
     return {
@@ -110,9 +106,7 @@ export class ChannelMemberCrudController
     });
 
     if (!isCurrentUser(entity.user_id, request.currentUser)) {
-      reply.badRequest("Current user can not update this member");
-
-      return;
+      throw CrudExeption.badRequest("Current user can not update this member");
     }
 
     try {

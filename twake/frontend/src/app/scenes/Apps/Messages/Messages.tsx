@@ -23,7 +23,7 @@ export default (props: Props) => {
 
   return (
     <div className="messages-view">
-      <Suspense fallback="">
+      <Suspense fallback="loading...">
         <MessagesList
           companyId={companyId}
           workspaceId={workspaceId}

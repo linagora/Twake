@@ -261,8 +261,7 @@ export class WorkspaceUsersCrudController
     );
 
     if (!companyUser) {
-      reply.badRequest(`User ${userId} does not belong to this company`);
-      return;
+      throw CrudExeption.badRequest(`User ${userId} does not belong to this company`);
     }
 
     const workspaceUser = await this.workspaceService.getUser({
@@ -273,8 +272,7 @@ export class WorkspaceUsersCrudController
     if (request.params.user_id) {
       // ON UPDATE
       if (!workspaceUser) {
-        reply.notFound(`User ${userId} not found in this workspace`);
-        return;
+        throw CrudExeption.notFound(`User ${userId} not found in this workspace`);
       }
       await this.workspaceService.updateUserRole(
         { workspaceId: context.workspace_id, userId },
@@ -311,8 +309,7 @@ export class WorkspaceUsersCrudController
     });
 
     if (!workspaceUser) {
-      reply.notFound("Default channel has not been found");
-      return;
+      throw CrudExeption.notFound("Default channel has not been found");
     }
 
     await this.workspaceService.removeUser({
