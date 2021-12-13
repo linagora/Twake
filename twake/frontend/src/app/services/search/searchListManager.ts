@@ -8,6 +8,7 @@ import RouterServices from 'services/RouterService';
 import { getUserParts } from 'app/components/Member/UserParts';
 import Observable from 'services/Observable/Observable';
 import Api from '../Api';
+import UserAPIClient from '../user/UserAPIClient';
 
 export type GenericChannel = {
   type: 'user' | 'direct' | 'workspace';
@@ -90,35 +91,20 @@ class SearchListManager extends Observable {
   }): Promise<(UserType | ChannelResource)[]> {
     if (collectionPath?.length) {
       return this.workspaceChannels.length === 0
-          ? await Collection.get(collectionPath, ChannelResource).findSync({})
-          : Collection.get(collectionPath, ChannelResource).find({});
+        ? await Collection.get(collectionPath, ChannelResource).findSync({})
+        : Collection.get(collectionPath, ChannelResource).find({});
     } else {
       let users: UserType[] = [];
-      users.push(...(await this.searchUsers(search || '')));
+      users.push(...(await this.searchUsers(search || '')).filter(u => !!u));
       return users;
     }
   }
 
   private async searchUsers(text: string) {
-    const result = new Promise<UserType[]>((resolve, reject) => {
-      if (text) {
-        const users: UserType[] = [];
-
-        UsersService.search(
-          Strings.removeAccents(text),
-          {
-            scope: 'group',
-            group_id: Workspaces.currentGroupId,
-            workspace_id: '',
-          },
-          (res: UserType[]) => users.push(...res.filter((el: UserType) => !!el)),
-        );
-        return resolve(users);
-      }
-      return resolve([]);
+    return UserAPIClient.search<UserType>(Strings.removeAccents(text), {
+      scope: 'company',
+      companyId: Workspaces.currentGroupId,
     });
-
-    return result;
   }
 
   private filterWorkspaceChannels({

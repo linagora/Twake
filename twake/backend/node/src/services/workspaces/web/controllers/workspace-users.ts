@@ -135,7 +135,7 @@ export class WorkspaceUsersCrudController
         new Pagination(request.query.page_token, request.query.limit),
         {
           search: request.query.search,
-          workspaceId: context.workspace_id,
+          companyId: context.company_id,
         },
         context,
       );
@@ -143,12 +143,12 @@ export class WorkspaceUsersCrudController
       nextPageToken = users.nextPage?.page_token;
 
       for (const user of users.getEntities()) {
-        allWorkspaceUsers.push(
-          await this.workspaceService.getUser({
-            workspaceId: context.workspace_id,
-            userId: user.id,
-          }),
-        );
+        const res = await this.workspaceService.getUser({
+          workspaceId: context.workspace_id,
+          userId: user.id,
+        });
+
+        if (res) allWorkspaceUsers.push(res);
       }
     } else {
       const result = await this.workspaceService.getUsers(

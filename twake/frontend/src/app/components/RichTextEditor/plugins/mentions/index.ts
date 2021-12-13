@@ -13,6 +13,9 @@ import { UserType } from 'app/models/User';
 import { ChannelMemberResource } from 'app/models/Channel';
 import UserService from 'services/user/UserService';
 import RouterService from 'app/services/RouterService';
+import UserAPIClient from 'app/services/user/UserAPIClient';
+import { WorkspaceUserType } from 'app/models/Workspace';
+import Strings from 'app/services/utils/strings';
 
 import './style.scss';
 
@@ -40,10 +43,10 @@ const resolver = (
   callback: (mentions: MentionSuggestionType[]) => void,
 ) => {
   const result: Array<MentionSuggestionType & { autocomplete_id: number }> = [];
+  const { companyId, workspaceId, channelId } = RouterService.getStateFromRoute();
 
   if (AccessRightsService.getCompanyLevel(WorkspaceService.currentGroupId) === 'guest') {
     // user is guest, lookup for channel members only
-    const { companyId, workspaceId, channelId } = RouterService.getStateFromRoute();
     const channelMembersCollection = Collections.get(
       getChannelMembers(companyId, workspaceId, channelId),
       ChannelMemberResource,
@@ -64,12 +67,23 @@ const resolver = (
 
     callback(result);
   } else {
-    WorkspacesUser.searchUserInWorkspace(text, (users: Array<any>) => {
-      for (let j = 0; j < Math.min(max, users.length); j++) {
-        result[j] = { ...users[j], ...{ autocomplete_id: j } };
-      }
-      callback(result);
-    });
+    UserAPIClient.search<WorkspaceUserType>(
+      Strings.removeAccents(text),
+      {
+        scope: 'workspace',
+        companyId,
+        workspaceId,
+      },
+      wsUsers => {
+        const users = wsUsers.map(wsUser => wsUser.user);
+
+        for (let j = 0; j < Math.min(max, users.length); j++) {
+          result[j] = { ...users[j], ...{ autocomplete_id: j } };
+        }
+
+        callback(result);
+      },
+    );
   }
 };
 

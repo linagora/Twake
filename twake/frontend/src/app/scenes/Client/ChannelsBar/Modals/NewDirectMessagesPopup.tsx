@@ -70,7 +70,7 @@ const NewDirectMessagesPopup: FC = () => {
           users={[]}
           canRemoveMyself
           noPlaceholder
-          scope="group"
+          scope="company"
           autoFocus
           onUpdate={(ids: string[]) => setNewUserDiscussion(ids)}
         />
