@@ -20,7 +20,7 @@ export default ({ companyId, threadId }: Props) => {
   });
 
   return (
-    <MessagesListContext.Provider value={{ hideReplies: true }}>
+    <MessagesListContext.Provider value={{ hideReplies: true, withBlock: false }}>
       <ListBuilder
         key={threadId}
         items={messages}

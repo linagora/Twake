@@ -14,41 +14,38 @@ import './MessageEdition.scss';
 import { EditorState } from 'draft-js';
 import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { MessageContext } from '../MessageWithReplies';
+import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
+import {
+  useMessageEditor,
+  useVisibleMessagesEditorLocation,
+} from 'app/state/recoil/hooks/messages/useMessageEditor';
 
 type Props = {
   /**
    * The editor plugins to enable during edition
    */
   editorPlugins?: string[];
-  onDeleted?: () => void;
-  onEdited?: (content?: string) => void;
 };
 
 export default (props: Props) => {
   const context = useContext(MessageContext);
-  let { message } = useMessage(context);
+  let { message, remove, save: updateMessage } = useMessage(context);
 
-  return <></>; /*
+  const location = `message-${context.id}`;
+  const subLocation = useContext(ViewContext).type;
+  const editorId = `thread:${context.threadId}/message:${context.id}`;
+  const { close } = useVisibleMessagesEditorLocation(location, subLocation);
 
   const editorPlugins = props.editorPlugins || ['emoji', 'mention', 'channel'];
   const format = 'markdown';
-  const threadId = message?.thread_id || '';
-  const messageId = message?.id || '';
-  const editorId = `thread:${threadId}/message:${messageId}`;
-  const messageEditorService = MessageEditorsManager.get(channelId);
+
   const [editorState, setEditorState] = useState<EditorState>();
   const [isReady, setReady] = useState(false);
-
-  messageEditorService.useListener(useState);
 
   useEffect(() => {
     (async () => {
       const dataParser = RichTextEditorStateService.getDataParser(editorPlugins);
-      const initialContent = PseudoMarkdownCompiler.transformBackChannelsUsers(
-        typeof message?.content === 'string' ? message?.content : message?.content?.original_str,
-      );
-
-      await messageEditorService.setContent(threadId, messageId, initialContent);
+      const initialContent = message?.text || '';
 
       setEditorState(() =>
         RichTextEditorStateService.get(editorId, {
@@ -57,16 +54,22 @@ export default (props: Props) => {
           initialContent: dataParser.fromString(initialContent, format),
         }),
       );
+
       setReady(true);
     })();
   }, []);
 
-  const save = (content: string) => {
+  const getContentOutput = (editorState: EditorState) => {
+    return RichTextEditorStateService.getDataParser(editorPlugins).toString(editorState, format);
+  };
+
+  const save = () => {
+    let content = null;
+    if (editorState) content = getContentOutput(editorState);
     if (!content) {
       AlertManager.confirm(
         () => {
-          MessagesService.deleteMessage(message, props.collectionKey);
-          props.onDeleted && props.onDeleted();
+          remove();
         },
         () => {},
         {
@@ -74,10 +77,9 @@ export default (props: Props) => {
         },
       );
     } else {
-      MessagesService.editMessage(messageId, content, props.collectionKey);
-      props.onEdited && props.onEdited(content);
+      updateMessage({ ...message, text: content });
     }
-    messageEditorService.closeEditor();
+    close();
   };
 
   const setRichTextEditorState = (editorState: EditorState): void => {
@@ -90,13 +92,10 @@ export default (props: Props) => {
   ) : (
     <div className="message-edition">
       <MessageInput
-        ref={node => messageEditorService.setInputNode(threadId, messageId, 'edition', node)}
-        channelId={channelId}
-        threadId={threadId}
-        messageId={messageId}
-        collectionKey={props.collectionKey}
+        threadId={context.threadId}
+        messageId={context.id}
         context={'edition'}
-        onSend={content => save(content)}
+        onSend={content => save()}
         editorState={editorState}
         onChange={editorState => {
           setRichTextEditorState(editorState);
@@ -119,8 +118,7 @@ export default (props: Props) => {
             className="primary small-right-margin"
             small
             onClick={async () => {
-              const message = await messageEditorService.getContent(threadId, messageId);
-              save(message);
+              save();
             }}
             value={Languages.t('scenes.apps.messages.message.save_button', [], 'Save')}
           ></Button>
@@ -128,12 +126,11 @@ export default (props: Props) => {
           <Button
             className="secondary-light"
             small
-            onClick={() => messageEditorService.closeEditor()}
+            onClick={() => close()}
             value={Languages.t('scenes.apps.messages.message.cancel_button', [], 'Cancel')}
           ></Button>
         </div>
       </div>
     </div>
   );
-  */
 };

@@ -36,7 +36,7 @@ const MessageType = () => {
   }
 
   return (
-    <Thread withBlock>
+    <Thread withBlock={listContext.withBlock}>
       <HeadMessage />
       {!listContext.hideReplies && (
         <>

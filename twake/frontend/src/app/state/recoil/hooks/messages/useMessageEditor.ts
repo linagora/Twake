@@ -120,7 +120,13 @@ export const useVisibleMessagesEditorLocation = (location: string, subLocation: 
   const active = useRecoilValue(
     VisibleMessagesEditorLocationActiveSelector({ location, subLocation }),
   );
-  return { active, set };
+  return {
+    active,
+    set,
+    close: () => {
+      set({ location: '', subLocation: '' });
+    },
+  };
 };
 
 export const useAddMessageFromEditor = (key: {

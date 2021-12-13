@@ -86,10 +86,7 @@ export default (props: Props) => {
       </Suspense>
       {!!showEdition && !deleted && (
         <div className="content-parent">
-          <MessageEdition
-            onDeleted={() => console.log('Message has been deleted')}
-            onEdited={() => console.log('Message has been edited')}
-          />
+          <MessageEdition />
         </div>
       )}
       {!showEdition && (
