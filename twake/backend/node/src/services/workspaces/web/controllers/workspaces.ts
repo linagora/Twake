@@ -89,6 +89,7 @@ export class WorkspacesCrudController
 
     response.header("Content-disposition", `inline; filename="${filename}"`);
     response.type("image/png");
+
     response.send(data.file);
   }
 

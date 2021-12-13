@@ -52,7 +52,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
     try {
       if (options?.encryptionKey) {
         const [key, iv] = options.encryptionKey.split(".");
-        const cipher = createCipheriv(options.encryptionAlgo, key, iv);
+        const cipher = createCipheriv(options.encryptionAlgo || this.algorithm, key, iv);
         stream = stream.pipe(cipher);
       }
       if (options?.chunkNumber) path = `${path}/chunk${options.chunkNumber}`;
@@ -85,7 +85,7 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
       let decipher: Decipher;
       if (options?.encryptionKey) {
         const [key, iv] = options.encryptionKey.split(".");
-        decipher = createDecipheriv(options.encryptionAlgo, key, iv);
+        decipher = createDecipheriv(options.encryptionAlgo || this.algorithm, key, iv);
       }
 
       const chunks = options?.totalChunks || 1;
