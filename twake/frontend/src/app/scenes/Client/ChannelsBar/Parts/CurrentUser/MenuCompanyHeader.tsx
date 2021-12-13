@@ -11,7 +11,7 @@ export default () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'row', height: 48, alignItems: 'start' }}>
       <div style={{ width: 40, height: 32 }}>
-        <CurrentCompanyLogo size={32} />
+        <CurrentCompanyLogo size={32} withCompanyName={false} />
       </div>
       <div style={{ flex: 1, lineHeight: '1.2em' }}>
         <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
