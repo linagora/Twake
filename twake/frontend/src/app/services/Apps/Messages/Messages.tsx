@@ -187,7 +187,7 @@ class Messages extends Observable {
       message.responses_count = 0;
 
       message.files = [
-        ...attachements.filter(f => f.metadata?.type !== 'pending').map(file => file),
+        ...attachements.filter(f => f.metadata?.source !== 'pending').map(file => file),
       ];
 
       message.creation_date = new Date().getTime() / 1000 + 10; //To be on the bottom

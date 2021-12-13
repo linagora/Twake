@@ -223,22 +223,6 @@ class FileUploadService {
     });
   }
 
-  public getFileThumbnailUrl({
-    companyId,
-    fileId,
-    thumbnailId,
-  }: {
-    companyId: string;
-    fileId: string;
-    thumbnailId: string;
-  }): string {
-    return FileUploadAPIClient.getFileThumbnailUrl({
-      companyId,
-      fileId,
-      thumbnailId,
-    });
-  }
-
   public async deleteOneFile({
     companyId,
     fileId,

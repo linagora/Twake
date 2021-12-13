@@ -9,6 +9,7 @@ import Globals from 'services/Globals';
 import { PendingFileRecoilType } from 'app/models/File';
 import { MessageFileType } from 'app/models/Message';
 import _ from 'lodash';
+import FileUploadAPIClient from 'app/components/FileUploads/FileUploadAPIClient';
 
 type PropsType = {
   zoneId: string;
@@ -33,15 +34,15 @@ export default ({ zoneId, onChange, initialValue }: PropsType) => {
       {files.map((file, index) => {
         const id = file.metadata?.external_id || '';
 
-        let status: PendingFileRecoilType['status'] | undefined;
+        let status: PendingFileRecoilType['status'] | undefined = 'success';
         let progress = 1;
 
         let formatedFile: DataFileType = {
           id: id,
           name: file.metadata?.name || '',
           size: file.metadata?.size || 0,
-          thumbnail: file.metadata?.thumbnails?.[0]?.url || '',
-          type: file.metadata?.type as DataFileType['type'],
+          thumbnail: FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file) || '',
+          type: FileUploadAPIClient.mimeToType(file.metadata?.mime || ''),
         };
 
         if (file?.metadata?.source === 'pending') {
@@ -54,7 +55,7 @@ export default ({ zoneId, onChange, initialValue }: PropsType) => {
             name: pendingFile.originalFile.name,
             size: pendingFile.originalFile.size,
             thumbnail: URL.createObjectURL(pendingFile.originalFile),
-            type: pendingFile.originalFile.type as DataFileType['type'],
+            type: FileUploadAPIClient.mimeToType(pendingFile.originalFile.type || ''),
           };
           status = pendingFile.status || undefined;
           progress = pendingFile.progress;
@@ -68,6 +69,7 @@ export default ({ zoneId, onChange, initialValue }: PropsType) => {
               file={formatedFile}
               status={status}
               progress={progress}
+              onRemove={() => setFiles(files.filter(f => f.id !== file.id))}
             />
           </Col>
         ) : (

@@ -16,6 +16,7 @@ import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import Blocks from './Blocks';
 import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
+import FileUploadAPIClient from 'app/components/FileUploads/FileUploadAPIClient';
 
 type Props = {
   linkToThread?: boolean;
@@ -139,8 +140,9 @@ export default (props: Props) => {
                           size: f.metadata.size || 0,
                           company_id: f.company_id || companyId,
                           // TODO Get route using a service ?
-                          thumbnail: f.metadata?.thumbnails?.[0]?.url || '',
-                          type: f.metadata.type || '',
+                          thumbnail:
+                            FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(f) || '',
+                          type: FileUploadAPIClient.mimeToType(f.metadata.mime || ''),
                         }}
                       />
                     ) : (

@@ -17,6 +17,9 @@ export class MessageFile {
   @Column("id", "timeuuid", { order: "DESC" })
   id?: string;
 
+  @Column("company_id", "timeuuid")
+  company_id?: string;
+
   @Column("metadata", "encoded_json")
   metadata: MessageFileMetadata;
 }
@@ -26,9 +29,9 @@ export type MessageFileMetadata = {
   external_id: string | any;
 
   name?: string; //Original file name
-  type?: string; //Original file mime
+  mime?: string; //Original file mime
   size?: number; //Original file weight
-  thumbnails?: (Thumbnail & { url: string })[]; //Url to thumbnail (or set it to undefined if no relevant)
+  thumbnails?: Thumbnail[]; //Url to thumbnail (or set it to undefined if no relevant)
 };
 
 export type MessageFilePrimaryKey = Pick<MessageFile, "message_id" | "id">;

@@ -51,12 +51,12 @@ export const useUploadZones = (zoneId: string) => {
 const pendingFileToMessageFile = (f: MessageFileType, upToDate: PendingFileType) => {
   return {
     ...f,
-    id: upToDate.backendFile?.id,
     company_id: upToDate.backendFile?.company_id,
     metadata: {
       ...f.metadata,
       source: upToDate.status === 'success' ? 'internal' : 'pending',
-      type: upToDate.backendFile?.metadata?.mime,
+      external_id: upToDate.status === 'success' ? upToDate.backendFile?.id : upToDate.id,
+      mime: upToDate.backendFile?.metadata?.mime,
       size: upToDate.backendFile?.upload_data?.size,
       name: upToDate.backendFile?.metadata?.name,
       thumbnails: upToDate.backendFile?.thumbnails,

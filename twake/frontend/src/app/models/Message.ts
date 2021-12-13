@@ -6,22 +6,9 @@ export type ThumbnailType = {
   id: string; //Url to thumbnail (or set it to undefined if no relevant)
   index: number;
   size: number;
-  type: string;
+  mime: string;
   url: string;
 };
-
-export type MessageFileMetadataType =
-  | 'link'
-  | 'code'
-  | 'document'
-  | 'image'
-  | 'pdf'
-  | 'slides'
-  | 'sound'
-  | 'spreadsheet'
-  | 'video'
-  | 'archive'
-  | 'other';
 
 export type MessageFileMetadataSource = 'internal' | 'drive' | string;
 
@@ -38,8 +25,7 @@ export type MessageFileType = {
     external_id: string;
     name?: string; //Original name
     size?: number; //Original weight
-    extension?: string; //File extension
-    type?: MessageFileMetadataType | string;
+    mime?: string;
     thumbnails?: ThumbnailType[];
   };
 };
