@@ -39,9 +39,10 @@ export default (props: Props) => {
   let { message, react, remove, pin } = useMessage(context);
 
   const location = `message-${message.id}`;
+  const subLocation = useContext(ViewContext).type;
   const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
     location,
-    useContext(ViewContext).type,
+    subLocation,
   );
 
   const menu: any[] = [];
@@ -164,7 +165,7 @@ export default (props: Props) => {
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Edit'),
           onClick: () => {
-            setVisibleEditor({ location, subLocation: '' });
+            setVisibleEditor({ location, subLocation });
           },
         });
       }
