@@ -422,7 +422,7 @@ export class WorkspaceUsersCrudController
             status: "error",
             message: "Unable to invite this user to your company",
           });
-          return;
+          continue;
         }
       }
 
