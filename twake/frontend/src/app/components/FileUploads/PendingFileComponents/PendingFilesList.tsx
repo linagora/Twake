@@ -14,11 +14,12 @@ import './styles.scss';
 
 type PropsType = {
   pendingFilesState: PendingFileRecoilType[];
+  visible: boolean;
 };
 
 const { Text } = Typography;
 const { Header, Content } = Layout;
-export default ({ pendingFilesState }: PropsType) => {
+export default ({ pendingFilesState, visible }: PropsType) => {
   const { getOnePendingFile, currentTask } = useUpload();
   const [hiddenPendingFiles, setHiddenPendingFiles] = useState<boolean>(false);
 
@@ -49,7 +50,7 @@ export default ({ pendingFilesState }: PropsType) => {
   }, [getOnePendingFile, pendingFilesState]);
 
   return pendingFilesState.length > 0 ? (
-    <Layout className="pending-files-list-layout">
+    <Layout className={'pending-files-list-layout ' + (visible ? 'visible' : '')}>
       <Header
         className={classNames('pending-files-list-header', {
           hidden: hiddenPendingFiles,

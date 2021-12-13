@@ -1,7 +1,7 @@
 import { MessageFileType } from 'app/models/Message';
-import { atom } from 'recoil';
+import { atomFamily } from 'recoil';
 
-export const PendingUploadZonesListState = atom<Map<string, MessageFileType[]> | undefined>({
+export const PendingUploadZonesListState = atomFamily<MessageFileType[], string>({
   key: 'PendingUploadZonesListState',
-  default: undefined,
+  default: id => [],
 });

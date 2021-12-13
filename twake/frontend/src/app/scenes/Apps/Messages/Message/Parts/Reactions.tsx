@@ -7,7 +7,7 @@ import { ReactionType } from 'app/models/Message';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { MessageContext } from '../MessageWithReplies';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import _ from 'lodash';
 
 export default () => {

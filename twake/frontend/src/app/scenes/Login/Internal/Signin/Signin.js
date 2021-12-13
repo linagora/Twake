@@ -13,6 +13,8 @@ export default class Signin extends Component {
   constructor() {
     super();
 
+    this.disableEmailVerification = true; //Not impoelemnted: InitService.server_infos?.configuration?.accounts?.type?.internal?.disable_email_verification;
+
     this.state = {
       login: LoginService,
       i18n: Languages,
@@ -181,10 +183,7 @@ export default class Signin extends Component {
         </div>
       );
     }
-    if (
-      this.state.page == 2 &&
-      !InitService.server_infos?.configuration?.accounts?.type?.internal?.disable_email_verification
-    ) {
+    if (this.state.page == 2 && !this.disableEmailVerification) {
       return (
         <div>
           <div className="subtitle">
@@ -217,10 +216,7 @@ export default class Signin extends Component {
         </div>
       );
     }
-    if (
-      this.state.page == 2 &&
-      InitService.server_infos?.configuration?.accounts?.type?.internal?.disable_email_verification
-    ) {
+    if (this.state.page == 2 && this.disableEmailVerification) {
       return (
         <div className="">
           <div className="subtitle">

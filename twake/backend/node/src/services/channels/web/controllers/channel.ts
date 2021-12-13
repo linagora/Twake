@@ -1,6 +1,10 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CreateResult,
+  CrudExeption,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   Channel,
@@ -77,18 +81,14 @@ export class ChannelCrudController
     let channel = await this.service.get(this.getPrimaryKey(request), getExecutionContext(request));
 
     if (!channel) {
-      reply.notFound(`Channel ${request.params.id} not found`);
-
-      return;
+      throw CrudExeption.notFound(`Channel ${request.params.id} not found`);
     }
 
     if (Channel.isDirectChannel(channel) || Channel.isPrivateChannel(channel)) {
       const isMember = await this.membersService.isChannelMember(request.currentUser, channel);
 
       if (!isMember) {
-        reply.badRequest("User does not have enough rights to get channel");
-
-        return;
+        throw CrudExeption.badRequest("User does not have enough rights to get channel");
       }
     }
 

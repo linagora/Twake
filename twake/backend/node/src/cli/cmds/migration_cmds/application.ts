@@ -64,6 +64,7 @@ const services = [
   "console",
   "auth",
   "statistics",
+  "realtime",
 ];
 
 const command: yargs.CommandModule<unknown, unknown> = {

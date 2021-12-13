@@ -198,12 +198,8 @@ class AuthService {
 
     this.fetchUser(user => {
       this.logger.debug(`fetchUser response ${JSON.stringify(user)}`);
-      //this.firstInit = true;
       if (!user) {
-        //if (!res.data || res.errors?.length) {
         this.logger.debug('Error while fetching user');
-        WindowState.reset();
-        // TODO: Redirect
       }
 
       callback && callback(user);
@@ -215,6 +211,7 @@ class AuthService {
     UserAPIClient.getCurrent(true)
       .then(result => callback(result))
       .catch(err => {
+        console.log(err);
         this.logger.error('Error while fetching user', err);
         callback();
       });

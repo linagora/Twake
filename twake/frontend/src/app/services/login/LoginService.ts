@@ -9,6 +9,7 @@ import Application from '../Application';
 import { UserType } from 'app/models/User';
 import { Cookies } from 'react-cookie';
 import UserAPIClient from '../user/UserAPIClient';
+import InitService from '../InitService';
 
 class Login extends Observable {
   // Promise resolved when user is defined
@@ -104,17 +105,29 @@ class Login extends Observable {
     AuthService.updateUser(async user => {
       this.logger.debug('User update result', user);
       if (!user) {
-        this.firstInit = true;
-        this.state = 'logged_out';
-        this.notify();
+        //Ping server
+        const infos = await InitService.getServer();
+        if (infos?.status !== 'ready') {
+          //We are disconnected
+          console.log('We are disconnected, we will get user again in 10 seconds');
+          setTimeout(() => {
+            this.updateUser(callback);
+          }, 10000);
+          return;
+        } else {
+          console.log('Unable to fetch user even if server is up');
+          this.firstInit = true;
+          this.state = 'logged_out';
+          this.notify();
 
-        WindowState.setPrefix();
-        WindowState.setSuffix();
-        RouterServices.push(
-          RouterServices.addRedirection(
-            `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
-          ),
-        );
+          WindowState.setPrefix();
+          WindowState.setSuffix();
+          RouterServices.push(
+            RouterServices.addRedirection(
+              `${RouterServices.pathnames.LOGIN}${RouterServices.history.location.search}`,
+            ),
+          );
+        }
       } else {
         this.setCurrentUser(user);
         await Application.start(user);

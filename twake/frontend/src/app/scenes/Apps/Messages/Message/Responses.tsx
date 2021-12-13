@@ -1,5 +1,5 @@
-import React from 'react';
-import { useThreadMessages } from 'app/state/recoil/hooks/useMessages';
+import React, { Suspense } from 'react';
+import { useThreadMessages } from 'app/state/recoil/hooks/messages/useThreadMessages';
 import Message from './Message';
 import TimeSeparator from './TimeSeparator';
 import { MessageContext } from './MessageWithReplies';
@@ -12,7 +12,6 @@ type Props = {
 
 export default ({ threadId, companyId }: Props) => {
   let { messages } = useThreadMessages({ companyId, threadId });
-  //TODO use window to open more or less messages here
 
   return (
     <>

@@ -13,7 +13,7 @@ export function addApiUrlIfNeeded(url: string, asCssUrl?: boolean): string {
     return _wrap(url);
   }
 
-  return _wrap(`${Globals.api_root_url}${url}`).replace(/\/+/g, '/');
+  return _wrap(`${Globals.api_root_url}/${url.replace(/^\//, '').replace(/\/+/g, '/')}`);
 }
 
 export function getAsFrontUrl(path: string): string {

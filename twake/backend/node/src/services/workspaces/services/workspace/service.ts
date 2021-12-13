@@ -198,7 +198,9 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     }
 
     const logoInternalPath = `/workspaces/${workspace.id}/thumbnail.png`;
-    const logoPublicPath = `/internal/services/workspaces/v1/companies/${workspace.company_id}/workspaces/${workspace.id}/thumbnail`;
+    const logoPublicPath = `/internal/services/workspaces/v1/companies/${
+      workspace.company_id
+    }/workspaces/${workspace.id}/thumbnail?t=${new Date().getTime()}`;
     let logoPublicUrl = undefined;
     if (workspace.logo) {
       if (!item.logo || options.logo_b64) {
@@ -207,8 +209,9 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       }
     }
     if (options.logo_b64) {
-      const s = new Readable();
-      s.push(Buffer.from(options.logo_b64, "base64"));
+      var s = new Readable();
+      s.push(Buffer.from(options.logo_b64.split(",").pop(), "base64"));
+      s.push(null);
       await this.platformServices.storage.write(logoInternalPath, s);
       logoPublicUrl = logoPublicPath;
     }

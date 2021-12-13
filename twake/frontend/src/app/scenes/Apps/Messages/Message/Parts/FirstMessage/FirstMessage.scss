@@ -1,13 +1,13 @@
 .first_message {
   width: 100%;
   text-align: center;
-  margin-bottom: 10vh;
-  margin-top: 10vh;
+  padding-bottom: 10vh;
+  padding-top: 10vh;
 
   .emojione {
     width: 88px;
     height: 88px;
-    margin-bottom: 10px;
+    padding-bottom: 10px;
   }
   .icon {
     display: inline-block;
@@ -27,7 +27,7 @@
       background-color: var(--white);
       border-radius: 50%;
       display: inline-block;
-      margin-bottom: 20px;
+      padding-bottom: 20px;
       border: 2px solid #fff;
       margin-left: -40px;
 
@@ -38,7 +38,7 @@
   }
 
   .text {
-    margin-top: 10px;
+    padding-top: 10px;
     opacity: 0.5;
   }
 }

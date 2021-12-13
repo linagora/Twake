@@ -58,9 +58,7 @@ export class UsersCrudController
     const user = await this.service.users.get({ id: id }, getExecutionContext(request));
 
     if (!user) {
-      reply.notFound(`User ${id} not found`);
-
-      return;
+      throw CrudExeption.notFound(`User ${id} not found`);
     }
 
     return {
@@ -152,8 +150,7 @@ export class UsersCrudController
     const user = await this.service.users.get({ id: request.params.id }, context);
 
     if (!user) {
-      reply.notFound(`User ${request.params.id} not found`);
-      return;
+      throw CrudExeption.notFound(`User ${request.params.id} not found`);
     }
 
     const [currentUserCompanies, requestedUserCompanies] = await Promise.all(
@@ -198,8 +195,7 @@ export class UsersCrudController
     const company = await this.service.companies.getCompany({ id: request.params.id });
 
     if (!company) {
-      reply.notFound(`User ${request.params.id} not found`);
-      return;
+      throw CrudExeption.notFound(`User ${request.params.id} not found`);
     }
 
     return {

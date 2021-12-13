@@ -12,6 +12,7 @@ export enum WebsocketRoomActions {
 
 export enum WebsocketEvents {
   Connected = 'connected',
+  Connecting = 'connecting',
   Disconnected = 'disconnected',
   JoinSuccess = 'realtime:join:success',
   JoinError = 'realtime:join:error',

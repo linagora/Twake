@@ -6,9 +6,12 @@ import Icon from 'components/Icon/Icon.js';
 import './Threads.scss';
 import UserOnlineStatus from 'app/components/OnlineUserStatus/OnlineUserStatus';
 import { MessageContext } from '../Message/MessageWithReplies';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import { useUser } from 'app/state/recoil/hooks/useUser';
+import { useRecoilState, useRecoilStateLoadable } from 'recoil';
+import { UsersState } from 'app/state/recoil/atoms/Users';
+import { CompanyApplicationsStateFamily } from 'app/state/recoil/atoms/CompanyApplications';
 
 type Props = {
   small?: boolean;
@@ -17,8 +20,10 @@ type Props = {
 export default (props: Props) => {
   const context = useContext(MessageContext);
   let { message } = useMessage(context);
+
   let user = useUser(message.user_id);
-  let { applications: companyApplications } = useCompanyApplications(context.companyId);
+  const companyApplications =
+    useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   let application = companyApplications.find(a => a.id === message.application_id);
 
   return (
@@ -29,9 +34,7 @@ export default (props: Props) => {
           style={{
             backgroundImage: "url('" + User.getThumbnail(user) + "')",
           }}
-        >
-          <UserOnlineStatus user={user} size={props.small ? 'small' : 'medium'} />
-        </div>
+        ></div>
       )}
       {!!message.application_id && (
         <Icon

@@ -13,7 +13,6 @@ export const useOnlineUser = (id: string): OnlineUserType => {
   const updateUser = useRecoilCallback(
     ({ set }) =>
       (status: { id: string; connected: boolean }) => {
-        logger.debug(`Update status for user ${status.id}`);
         set(OnlineUserStateFamily(status.id), {
           ...status,
           lastSeen: Date.now(),

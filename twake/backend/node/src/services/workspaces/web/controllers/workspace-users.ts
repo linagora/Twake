@@ -135,7 +135,7 @@ export class WorkspaceUsersCrudController
         new Pagination(request.query.page_token, request.query.limit),
         {
           search: request.query.search,
-          workspaceId: context.workspace_id,
+          companyId: context.company_id,
         },
         context,
       );
@@ -143,12 +143,12 @@ export class WorkspaceUsersCrudController
       nextPageToken = users.nextPage?.page_token;
 
       for (const user of users.getEntities()) {
-        allWorkspaceUsers.push(
-          await this.workspaceService.getUser({
-            workspaceId: context.workspace_id,
-            userId: user.id,
-          }),
-        );
+        const res = await this.workspaceService.getUser({
+          workspaceId: context.workspace_id,
+          userId: user.id,
+        });
+
+        if (res) allWorkspaceUsers.push(res);
       }
     } else {
       const result = await this.workspaceService.getUsers(
@@ -261,8 +261,7 @@ export class WorkspaceUsersCrudController
     );
 
     if (!companyUser) {
-      reply.badRequest(`User ${userId} does not belong to this company`);
-      return;
+      throw CrudExeption.badRequest(`User ${userId} does not belong to this company`);
     }
 
     const workspaceUser = await this.workspaceService.getUser({
@@ -273,8 +272,7 @@ export class WorkspaceUsersCrudController
     if (request.params.user_id) {
       // ON UPDATE
       if (!workspaceUser) {
-        reply.notFound(`User ${userId} not found in this workspace`);
-        return;
+        throw CrudExeption.notFound(`User ${userId} not found in this workspace`);
       }
       await this.workspaceService.updateUserRole(
         { workspaceId: context.workspace_id, userId },
@@ -311,8 +309,7 @@ export class WorkspaceUsersCrudController
     });
 
     if (!workspaceUser) {
-      reply.notFound("Default channel has not been found");
-      return;
+      throw CrudExeption.notFound("Default channel has not been found");
     }
 
     await this.workspaceService.removeUser({
@@ -420,12 +417,13 @@ export class WorkspaceUsersCrudController
             createUser,
           );
         } catch (err) {
+          console.error(err);
           responses.push({
             email: invitation.email,
             status: "error",
-            message: "Unable to invite this user to your company",
+            message: "Unable to invite this user to your company" + err,
           });
-          return;
+          continue;
         }
       }
 
