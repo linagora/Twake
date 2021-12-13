@@ -417,10 +417,11 @@ export class WorkspaceUsersCrudController
             createUser,
           );
         } catch (err) {
+          console.log("the error: ", err);
           responses.push({
             email: invitation.email,
             status: "error",
-            message: "Unable to invite this user to your company",
+            message: "Unable to invite this user to your company" + err,
           });
           continue;
         }
