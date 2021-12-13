@@ -8,18 +8,32 @@ import Resumable from 'services/uploadManager/resumable';
 import FileUploadAPIClient from './FileUploadAPIClient';
 import { isPendingFileStatusPending } from './utils/PendingFiles';
 import Logger from 'app/services/Logger';
+import _ from 'lodash';
 
 export enum Events {
-  ON_CHANGE = 'onChange',
+  ON_CHANGE = 'notify',
 }
 
 const logger = Logger.getLogger('Services/FileUploadService');
-class FileUploadService extends EventEmitter {
+class FileUploadService {
   private pendingFiles: PendingFileType[] = [];
   public currentTaskId: string = '';
+  private recoilHandler: Function = () => {};
 
-  onChange() {
-    this.emit(Events.ON_CHANGE, this.pendingFiles);
+  setRecoilHandler(handler: Function) {
+    this.recoilHandler = handler;
+  }
+
+  notify() {
+    const updatedState = this.pendingFiles.map((f: PendingFileType) => {
+      return {
+        id: f.id,
+        status: f.status,
+        progress: f.progress,
+        file: f.backendFile,
+      };
+    });
+    this.recoilHandler(_.cloneDeep(updatedState));
   }
 
   public async upload(fileList: File[]): Promise<PendingFileType[]> {
@@ -52,7 +66,7 @@ class FileUploadService extends EventEmitter {
 
       this.pendingFiles.push(pendingFile);
 
-      this.onChange();
+      this.notify();
 
       // First we create the file object
       const resource = (await FileUploadAPIClient.upload(file, { companyId }))?.resource;
@@ -62,7 +76,7 @@ class FileUploadService extends EventEmitter {
       }
 
       pendingFile.backendFile = resource;
-      this.onChange();
+      this.notify();
 
       // Then we overwrite the file object with resumable
       pendingFile.resumable = this.getResumableInstance({
@@ -97,14 +111,14 @@ class FileUploadService extends EventEmitter {
         pendingFile.backendFile = f;
         pendingFile.lastProgress = new Date().getTime();
         pendingFile.progress = f.progress();
-        this.onChange();
+        this.notify();
       });
 
       pendingFile.resumable.on('fileSuccess', (f: any, message: string) => {
         try {
           pendingFile.backendFile = JSON.parse(message).resource;
           pendingFile.status = 'success';
-          this.onChange();
+          this.notify();
         } catch (e) {
           logger.error(`Error on fileSuccess Event`, e);
         }
@@ -113,7 +127,7 @@ class FileUploadService extends EventEmitter {
       pendingFile.resumable.on('fileError', (f: any, message: any) => {
         pendingFile.status = 'error';
         pendingFile.resumable.cancel();
-        this.onChange();
+        this.notify();
       });
     });
 
@@ -127,7 +141,7 @@ class FileUploadService extends EventEmitter {
     fileId: string;
     companyId: string;
   }): Promise<FileType> {
-    return (await FileUploadAPIClient.get({ fileId, companyId }))?.resource;
+    return _.cloneDeep((await FileUploadAPIClient.get({ fileId, companyId }))?.resource);
   }
 
   public getPendingFile(id: string): PendingFileType {
@@ -143,7 +157,7 @@ class FileUploadService extends EventEmitter {
 
     fileToCancel.status = 'cancel';
     fileToCancel.resumable.cancel();
-    this.onChange();
+    this.notify();
 
     if (fileToCancel.backendFile)
       this.deleteOneFile({
@@ -153,7 +167,7 @@ class FileUploadService extends EventEmitter {
 
     setTimeout(() => {
       this.pendingFiles = this.pendingFiles.filter(f => f.id !== id);
-      this.onChange();
+      this.notify();
     }, timeout);
   }
 
@@ -164,7 +178,7 @@ class FileUploadService extends EventEmitter {
       fileToRetry.status = 'pending';
       fileToRetry.resumable.upload();
 
-      this.onChange();
+      this.notify();
     }
   }
 
@@ -178,7 +192,7 @@ class FileUploadService extends EventEmitter {
       ? fileToCancel.resumable.pause()
       : fileToCancel.resumable.upload();
 
-    this.onChange();
+    this.notify();
   }
 
   private getResumableInstance({
@@ -209,22 +223,6 @@ class FileUploadService extends EventEmitter {
     });
   }
 
-  public getFileThumbnailUrl({
-    companyId,
-    fileId,
-    thumbnailId,
-  }: {
-    companyId: string;
-    fileId: string;
-    thumbnailId: string;
-  }): string {
-    return FileUploadAPIClient.getFileThumbnailUrl({
-      companyId,
-      fileId,
-      thumbnailId,
-    });
-  }
-
   public async deleteOneFile({
     companyId,
     fileId,
@@ -236,7 +234,7 @@ class FileUploadService extends EventEmitter {
 
     if (response.status === 'success') {
       this.pendingFiles = this.pendingFiles.filter(f => f.backendFile?.id !== fileId);
-      this.onChange();
+      this.notify();
     } else {
       logger.error(`Error while processing delete for file`, fileId);
     }

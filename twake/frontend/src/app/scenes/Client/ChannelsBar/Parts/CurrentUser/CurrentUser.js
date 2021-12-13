@@ -110,13 +110,20 @@ export default class CurrentUser extends Component {
         type: 'react-element',
         reactElement: () => <MenuCompanyHeader />,
       },
-      { type: 'separator' },
-      {
-        type: 'react-element',
-        className: 'menu-cancel-left-padding',
-        reactElement: () => <CompanyMessagesCounter />,
-      },
     ];
+
+    if (!FeatureTogglesService.isActiveFeatureName(FeatureNames.MESSAGE_HISTORY)) {
+      usermenu.push(
+        ...[
+          { type: 'separator' },
+          {
+            type: 'react-element',
+            className: 'menu-cancel-left-padding',
+            reactElement: () => <CompanyMessagesCounter />,
+          },
+        ],
+      );
+    }
 
     if (
       !WorkspaceUserRights.isGroupInvite() &&
@@ -127,11 +134,8 @@ export default class CurrentUser extends Component {
 
       usermenu.push({
         type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.collaborateurs',
-          [],
-          'Collaborateurs',
-        ),
+        icon: 'users-alt',
+        text: Languages.t('scenes.app.channelsbar.currentuser.collaborateurs'),
         onClick: () => {
           ModalManagerDepreciated.open(
             <WorkspaceParameter initial_page={2} />,
@@ -143,11 +147,8 @@ export default class CurrentUser extends Component {
 
       usermenu.push({
         type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.create_workspace_page',
-          [],
-          'Créer un espace de travail',
-        ),
+        icon: 'plus',
+        text: Languages.t('scenes.app.channelsbar.currentuser.create_workspace_page'),
         onClick: () => {
           if (FeatureTogglesService.isActiveFeatureName(FeatureNames.MULTIPLE_WORKSPACES)) {
             ModalManagerDepreciated.open(<CreateWorkspacePage />);
@@ -171,11 +172,8 @@ export default class CurrentUser extends Component {
           { type: 'separator' },
           {
             type: 'menu',
-            text: Languages.t(
-              'scenes.app.channelsbar.currentuser.workspace_parameters',
-              [],
-              "Paramètres de l'espace",
-            ),
+            icon: 'cog',
+            text: Languages.t('scenes.app.channelsbar.currentuser.workspace_parameters'),
             onClick: () => {
               ModalManagerDepreciated.open(<WorkspaceParameter />, true, 'workspace_parameters');
             },
@@ -188,6 +186,7 @@ export default class CurrentUser extends Component {
         ) {
           usermenu.push({
             type: 'menu',
+            icon: 'home',
             text: Languages.t('scenes.app.popup.workspaceparameter.pages.company_identity_title'),
             rightIcon: 'external-link-alt',
             onClick: () => {
@@ -204,19 +203,12 @@ export default class CurrentUser extends Component {
         { type: 'separator' },
         {
           type: 'text',
-          text: Languages.t(
-            'scenes.app.channelsbar.currentuser.invited_status',
-            [],
-            'Vous êtes un invité.',
-          ),
+          text: Languages.t('scenes.app.channelsbar.currentuser.invited_status'),
         },
         {
           type: 'menu',
-          text: Languages.t(
-            'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu',
-            [],
-            "Quitter l'espace",
-          ),
+          icon: 'plane-fly',
+          text: Languages.t('scenes.app.popup.workspaceparameter.pages.quit_workspace_menu'),
           icon: 'plane-fly',
           className: 'error',
           onClick: () => {
@@ -301,6 +293,7 @@ export default class CurrentUser extends Component {
       },*/
       {
         type: 'menu',
+        icon: 'user',
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),
         rightIcon:
           InitService.server_infos?.configuration?.accounts?.type === 'console'
@@ -319,6 +312,7 @@ export default class CurrentUser extends Component {
       },
       {
         type: 'menu',
+        icon: 'sign-out-alt',
         text: Languages.t('scenes.app.channelsbar.currentuser.logout', [], 'Se déconnecter'),
         className: 'error',
         onClick: () => {

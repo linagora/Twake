@@ -56,6 +56,7 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
         type: thumb.type,
         width: thumb.width,
         height: thumb.height,
+        url: `/internal/services/files/v1/companies/${entity.company_id}/files/${entity.id}/thumbnails/${index}`,
       };
     });
 

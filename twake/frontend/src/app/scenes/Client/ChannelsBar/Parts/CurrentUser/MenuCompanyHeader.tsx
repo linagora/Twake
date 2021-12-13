@@ -9,20 +9,30 @@ export default () => {
   const { workspace } = useCurrentWorkspace();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', height: 48, alignItems: 'start' }}>
-      <div style={{ width: 40, height: 32 }}>
+    <div style={{ display: 'flex', flexDirection: 'row', height: 38, alignItems: 'start' }}>
+      <div style={{ width: 32, height: 32, marginRight: 8 }}>
         <CurrentCompanyLogo size={32} withCompanyName={false} />
       </div>
       <div style={{ flex: 1, lineHeight: '1.2em' }}>
-        <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          {company.name} - {workspace?.name}
-        </b>
-        <br />
+        <span
+          style={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: '180px',
+            display: 'inline-block',
+          }}
+        >
+          <b>
+            {(company.name || '').substr(0, 16)} - {workspace?.name}
+          </b>
+        </span>
         <span style={{ opacity: 0.5 }}>
           {environment.api_root_url.split('//').pop()?.split('/').shift()}
         </span>
-        <br />
-        <span className="link">Plan {company.plan?.name}</span>
+        <span className="link" style={{ marginLeft: 8 }}>
+          Plan {company.plan?.name}
+        </span>
       </div>
     </div>
   );

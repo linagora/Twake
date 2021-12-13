@@ -1,5 +1,6 @@
 import Api from 'app/services/Api';
 import { FileType } from 'app/models/File';
+import { MessageFileType } from 'app/models/Message';
 
 type ResponseFileType = { resource: FileType };
 type ResponseDeleteFileType = { status: 'success' | 'error' };
@@ -8,6 +9,19 @@ type BaseContentType = { companyId: string };
 type GetContextType = BaseContentType & { fileId: string };
 type DeleteContextType = BaseContentType & { fileId: string };
 type DownloadContextType = BaseContentType & { fileId: string };
+
+type FileTypes =
+  | 'link'
+  | 'code'
+  | 'document'
+  | 'image'
+  | 'pdf'
+  | 'slides'
+  | 'sound'
+  | 'spreadsheet'
+  | 'video'
+  | 'archive'
+  | 'other';
 
 class FileUploadAPIClient {
   private readonly prefixUrl: string = '/internal/services/files/v1';
@@ -44,25 +58,26 @@ class FileUploadAPIClient {
     return fullApiRouteUrl ? Api.route(route) : route;
   }
 
-  public getFileThumbnailUrl({
-    companyId,
-    fileId,
-    thumbnailId,
-  }: {
-    companyId: string;
-    fileId: string;
-    thumbnailId: string;
-  }): string {
+  public getFileThumbnailUrl(file: Pick<FileType, 'id' | 'company_id' | 'thumbnails'>): string {
+    if (!file.thumbnails?.[0]?.index) return '';
     return `${this.getRoute({
-      companyId,
-      fileId,
+      companyId: file.company_id,
+      fileId: file.id,
       fullApiRouteUrl: true,
-    })}/thumbnails/${thumbnailId}`;
+    })}/thumbnails/${file.thumbnails?.[0]?.index}`;
+  }
+
+  public getFileThumbnailUrlFromMessageFile(file: MessageFileType): string {
+    if (file.metadata?.source !== 'internal') return file.metadata?.thumbnails?.[0]?.url || '';
+    return `${this.getRoute({
+      companyId: file.company_id || '',
+      fileId: file.metadata?.external_id || '',
+      fullApiRouteUrl: true,
+    })}/thumbnails/${file.metadata?.thumbnails?.[0]?.index}`;
   }
 
   public delete({ companyId, fileId }: DeleteContextType): Promise<ResponseDeleteFileType> {
     const deleteFileRoute = this.getRoute({ companyId, fileId });
-
     return Api.delete<ResponseDeleteFileType>(deleteFileRoute, undefined);
   }
 
@@ -75,6 +90,15 @@ class FileUploadAPIClient {
 
   public getDownloadRoute({ companyId, fileId }: DownloadContextType): string {
     return this.getRoute({ companyId, fileId, download: true, fullApiRouteUrl: true });
+  }
+
+  public mimeToType(mime: string): FileTypes {
+    if (mime.split('/')[0] === 'image') return 'image';
+    if (mime.split('/')[0] === 'video') return 'video';
+    if (mime.split('/')[0] === 'audio') return 'sound';
+    if (mime === 'application/zip' || mime === 'application/vnd.rar') return 'archive';
+    //TODO add other types
+    return 'other';
   }
 }
 

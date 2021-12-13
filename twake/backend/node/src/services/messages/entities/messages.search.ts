@@ -4,10 +4,8 @@ import { Message } from "./messages";
 export default {
   index: "messages",
   source: (entity: Message) => {
-    const expanded = `${entity.text}`;
     const source: any = {
       text: entity.text,
-      expanded: expandStringForPrefix(expanded),
     };
     if (entity.cache) {
       return {
@@ -22,7 +20,6 @@ export default {
   mongoMapping: {
     text: {
       text: "text",
-      expanded: "text",
     },
   },
   esMapping: {

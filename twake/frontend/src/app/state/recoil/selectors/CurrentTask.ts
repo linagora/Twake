@@ -10,7 +10,7 @@ export const CurrentTaskSelector = selector({
     const currentTaskFiles = list
       ? list.filter(
           f =>
-            FileUploadService.getPendingFile(f.id).uploadTaskId ===
+            FileUploadService.getPendingFile(f.id)?.uploadTaskId ===
               FileUploadService.currentTaskId || f.status === 'error',
         )
       : [];

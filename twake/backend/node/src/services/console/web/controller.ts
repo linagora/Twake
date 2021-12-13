@@ -83,6 +83,7 @@ export class ConsoleController {
         if (!company) {
           const newCompany = getCompanyInstance({
             name: "Twake",
+            plan: { name: "Local", features: {} },
           });
           company = await this.userService.companies.createCompany(newCompany);
         }
@@ -202,8 +203,7 @@ export class ConsoleController {
           break;
         default:
           logger.info("Event not recognized");
-          reply.notImplemented("Unimplemented");
-          return;
+          throw CrudExeption.notImplemented("Unimplemented");
       }
     } catch (e) {
       reply.status(400);

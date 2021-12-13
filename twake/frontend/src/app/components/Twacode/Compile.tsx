@@ -27,17 +27,17 @@ const Compile = (props: Props) => {
   try {
     return (
       <>
-        {content.map((item: any) => {
+        {content.map((item: any, index: number) => {
           if (typeof item === 'string') {
             return (
-              <span key={JSON.stringify(item)} style={textTransform || {}}>
+              <span key={JSON.stringify(item) + index} style={textTransform || {}}>
                 {item}
               </span>
             );
           } else if (Array.isArray(item)) {
             return (
               <Compile
-                key={JSON.stringify(item)}
+                key={JSON.stringify(item) + index}
                 content={item || ''}
                 isApp={isApp}
                 eventContainer={eventContainer}
@@ -49,7 +49,7 @@ const Compile = (props: Props) => {
             if (item.type === 'compile' && isApp && typeof item.content === 'string') {
               return (
                 <Compile
-                  key={JSON.stringify(item)}
+                  key={JSON.stringify(item) + index}
                   content={PseudoMarkdownCompiler.compileToJSON(item.content)}
                   isApp={isApp}
                   eventContainer={eventContainer}
@@ -74,7 +74,7 @@ const Compile = (props: Props) => {
                   textTransform = old_textTransform;
 
                   return (
-                    <span key={JSON.stringify(item)}>
+                    <span key={JSON.stringify(item) + index}>
                       <DynamicComponent
                         type={type.name}
                         child={
