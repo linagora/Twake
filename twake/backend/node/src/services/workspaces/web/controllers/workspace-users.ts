@@ -417,7 +417,7 @@ export class WorkspaceUsersCrudController
             createUser,
           );
         } catch (err) {
-          console.log("the error: ", err);
+          console.error(err);
           responses.push({
             email: invitation.email,
             status: "error",

@@ -127,9 +127,7 @@ export class CompanyService implements CompaniesServiceAPI {
         user.cache?.companies || [],
       ).length != 0
     ) {
-      if (!user.cache) {
-        user.cache = { companies: [] };
-      }
+      if (!user.cache) user.cache = { companies: [] };
       user.cache.companies = list.map(c => c.group_id);
       await this.service.users.save(user, {}, { user: { id: user.id, server_request: true } });
     }
@@ -201,6 +199,7 @@ export class CompanyService implements CompaniesServiceAPI {
     const user = await this.service.users.get({ id: userId });
     if (!(user.cache?.companies || []).includes(companyId)) {
       // Update user cache with companies
+      if (!user.cache) user.cache = { companies: [] };
       user.cache.companies.push(companyId);
       await this.service.users.save(user, {}, { user: { id: user.id, server_request: true } });
     }

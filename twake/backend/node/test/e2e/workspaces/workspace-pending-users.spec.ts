@@ -183,7 +183,6 @@ describe("The /workspace/pending users API", () => {
       expect(resources.length).toBe(3);
 
       for (const item of resources) {
-        console.log("item", item);
         expect(item).toMatchObject({
           email: expect.stringMatching(/first@test-user.com|second@test-user.com|exist@email.com/),
           status: "ok",
@@ -322,7 +321,6 @@ describe("The /workspace/pending users API", () => {
       });
 
       expect(response.statusCode).toBe(200);
-      console.log("response.json()", response.json());
       expect(response.json()).toMatchObject({
         status: "success",
       });
@@ -395,7 +393,6 @@ describe("The /workspace/pending users API", () => {
       expect(response.statusCode).toBe(200);
 
       const resources = response.json()["resources"];
-      console.log("resources", resources);
       expect(resources.length).toBe(2);
 
       expect(resources[0]).toMatchObject({
