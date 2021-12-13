@@ -49,7 +49,7 @@ export default React.memo(({ emptyListComponent, itemId, loadMore, items, itemCo
 
   return (
     <>
-      <Suspense fallback={<div style={{ flex: 1 }}></div>}>
+      <Suspense fallback={<div style={{ flex: 1 }}>load list</div>}>
         <Virtuoso
           ref={virtuosoRef}
           initialTopMostItemIndex={items.length - 1}

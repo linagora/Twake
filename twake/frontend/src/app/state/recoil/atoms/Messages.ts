@@ -23,7 +23,7 @@ export const ThreadMessagesState = atomFamily<
   AtomThreadKey
 >({
   key: 'ThreadMessagesState',
-  default: async () => [],
+  default: () => [],
 });
 
 export const ChannelMessagesState = atomFamily<
@@ -31,5 +31,5 @@ export const ChannelMessagesState = atomFamily<
   AtomChannelKey
 >({
   key: 'ChannelMessagesState',
-  default: async () => [],
+  default: () => [],
 });

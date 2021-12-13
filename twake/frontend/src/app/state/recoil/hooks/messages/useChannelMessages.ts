@@ -105,7 +105,7 @@ export const useAddMessageToChannel = (key: AtomChannelKey) => {
     const atom = ChannelMessagesState(key);
     updater<AtomMessageKey>(
       messages.map(m => {
-        const lastReplies = (m as MessageWithReplies).last_replies;
+        const lastReplies = (m as MessageWithReplies).last_replies || [];
         return {
           id: m.id,
           threadId: m.thread_id,
@@ -124,11 +124,12 @@ export const useRemoveMessageFromChannel = (key: AtomChannelKey) => {
     const atom = ChannelMessagesState(key);
     remover<AtomMessageKey>(
       messages.map(m => {
+        const lastReplies = (m as MessageWithReplies).last_replies || [];
         return {
           id: m.id,
           threadId: m.thread_id,
           companyId: key.companyId,
-          sortId: (m as MessageWithReplies).last_replies.pop()?.id || m.thread_id,
+          sortId: lastReplies[lastReplies.length - 1]?.id || m.thread_id,
         };
       }),
       { atom, getId: m => m.threadId || '' },

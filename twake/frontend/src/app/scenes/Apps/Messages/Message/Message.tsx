@@ -4,5 +4,9 @@ import MessageContent from './Parts/MessageContent';
 type Props = {};
 
 export default (props: Props) => {
-  return <MessageContent />;
+  return (
+    <Suspense fallback="">
+      <MessageContent />
+    </Suspense>
+  );
 };
