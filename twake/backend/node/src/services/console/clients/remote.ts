@@ -324,6 +324,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       }
     }
 
+    await this.userService.users.save(user, {}, { user: { id: user.id, server_request: true } });
+
     return user;
   }
 
