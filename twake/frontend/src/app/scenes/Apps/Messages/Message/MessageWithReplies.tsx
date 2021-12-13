@@ -14,11 +14,12 @@ export const MessageContext = React.createContext({ companyId: '', threadId: '',
 type Props = {
   companyId: string;
   threadId: string;
+  id?: string;
 };
 
-export default ({ threadId, companyId }: Props) => {
+export default ({ threadId, companyId, id }: Props) => {
   return (
-    <MessageContext.Provider value={{ companyId, threadId, id: threadId }}>
+    <MessageContext.Provider value={{ companyId, threadId, id: id || threadId }}>
       <MessageType />
     </MessageContext.Provider>
   );

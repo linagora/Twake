@@ -20,7 +20,10 @@ import {
 export const useChannelMessages = (key: AtomChannelKey) => {
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
   const { window, isInWindow } = getListWindow(key.channelId);
-  const currentWindowedMessages = messages.filter(message => isInWindow(message.threadId));
+  let currentWindowedMessages = messages.filter(message => isInWindow(message.threadId));
+  currentWindowedMessages = currentWindowedMessages.sort((a, b) =>
+    Numbers.compareTimeuuid(a.sortId, b.sortId),
+  );
 
   const setMessage = useSetMessage(key.companyId);
   const addToThread = useAddMessageToThread(key.companyId);
@@ -37,8 +40,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       key.channelId,
       { direction, limit, pageToken: direction === 'future' ? window.end : window.start },
     );
-
-    const nothingNew = newMessages.filter(m => !isInWindow(m.thread_id)).length <= 1;
+    const nothingNew = newMessages.filter(m => !isInWindow(m.thread_id)).length < limit;
 
     addToChannel(newMessages, {
       inWindow: true,
@@ -48,7 +50,11 @@ export const useChannelMessages = (key: AtomChannelKey) => {
 
     newMessages.forEach(m => {
       setMessage(m);
-      addToThread(m.last_replies, { atBottom: true });
+      addToThread(m.last_replies, {
+        threadId: m.thread_id,
+        atBottom: true,
+        reachedStart: m.last_replies.length >= m.stats.replies,
+      });
       m.last_replies.forEach(m2 => {
         setMessage(m2);
       });
@@ -75,6 +81,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
           });
         } else {
           addToThread([message], {
+            threadId: message.thread_id,
             atBottom: true,
           });
         }
@@ -91,31 +98,6 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   };
 };
 
-/**
- * This will set all the messages and threads atoms records from any kind of list
- */
-const updateRecoilFromMessage = (
-  key: { companyId: string },
-  m: MessageWithReplies | NodeMessage,
-  setMessage: Function,
-  addToThread: Function,
-) => {
-  if ((m as MessageWithReplies)?.last_replies?.length === undefined) {
-    m = messageToMessageWithReplies(m);
-  }
-
-  const mwr = _.cloneDeep(m) as MessageWithReplies;
-  mwr.last_replies = mwr.last_replies.filter(m => m.id !== m.thread_id);
-
-  setMessage(mwr);
-  if (mwr.last_replies) {
-    addToThread(mwr.last_replies, { atBottom: true });
-    mwr.last_replies.forEach(m => {
-      setMessage(m);
-    });
-  }
-};
-
 export const useAddMessageToChannel = (key: AtomChannelKey) => {
   const updater = useAddToWindowedList(key.companyId);
   return (messages: NodeMessage[], options?: AddToWindowOptions) => {
@@ -123,10 +105,12 @@ export const useAddMessageToChannel = (key: AtomChannelKey) => {
     const atom = ChannelMessagesState(key);
     updater<AtomMessageKey>(
       messages.map(m => {
+        const lastReplies = (m as MessageWithReplies).last_replies;
         return {
           id: m.id,
           threadId: m.thread_id,
           companyId: key.companyId,
+          sortId: lastReplies[lastReplies.length - 1]?.id || m.thread_id,
         };
       }),
       { ...options, windowKey, atom, getId: m => m.threadId || '' },
@@ -144,6 +128,7 @@ export const useRemoveMessageFromChannel = (key: AtomChannelKey) => {
           id: m.id,
           threadId: m.thread_id,
           companyId: key.companyId,
+          sortId: (m as MessageWithReplies).last_replies.pop()?.id || m.thread_id,
         };
       }),
       { atom, getId: m => m.threadId || '' },

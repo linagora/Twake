@@ -18,12 +18,18 @@ export const MessageState = atomFamily<MessageWithReplies, AtomMessageKey>({
   },
 });
 
-export const ThreadMessagesState = atomFamily<AtomMessageKey[], AtomThreadKey>({
+export const ThreadMessagesState = atomFamily<
+  (AtomMessageKey & { sortId?: string })[],
+  AtomThreadKey
+>({
   key: 'ThreadMessagesState',
   default: async () => [],
 });
 
-export const ChannelMessagesState = atomFamily<AtomMessageKey[], AtomChannelKey>({
+export const ChannelMessagesState = atomFamily<
+  (AtomMessageKey & { sortId?: string })[],
+  AtomChannelKey
+>({
   key: 'ChannelMessagesState',
   default: async () => [],
 });

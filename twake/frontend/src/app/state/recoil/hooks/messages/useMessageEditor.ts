@@ -144,10 +144,10 @@ export const useAddMessageFromEditor = (key: {
 
     setMessage(messageToMessageWithReplies(message));
     if (message._status === 'sent' || message._status === 'cancelled') {
-      if (!isThread) removeFromThread([message]);
+      if (!isThread) removeFromThread([message], { threadId: message.thread_id });
       if (isThread) removeFromChannel([message]);
     } else {
-      if (!isThread) addToThread([message], { atBottom: true });
+      if (!isThread) addToThread([message], { atBottom: true, threadId: message.thread_id });
       if (isThread) addToChannel([message], { atBottom: true });
     }
   };

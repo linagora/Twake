@@ -75,8 +75,6 @@ export const useAddToWindowedList = (companyId: string) => {
   return useRecoilCallback(
     ({ set, snapshot }) =>
       async <T>(items: T[], options: AddToWindowedListOptions<T>) => {
-        if (items.length === 0) return;
-
         const getId = options.getId || ((m: any) => m?.id);
 
         //Update the current window
@@ -84,8 +82,10 @@ export const useAddToWindowedList = (companyId: string) => {
         if (options.reachedEnd || (options.atBottom && !window.end))
           options = { ...options, reachedEnd: true };
         if (options.reachedEnd || options.reachedStart) window = reachEdge(options);
-        if ((options.atBottom && window.reachedEnd) || options.inWindow)
+        if (((options.atBottom && window.reachedEnd) || options.inWindow) && items.length > 0)
           updateWindowFromIds([window.start, window.end, ...items.map(m => getId(m))]);
+
+        if (items.length === 0) return;
 
         const atom = options.atom;
         const newList = _.uniqBy(

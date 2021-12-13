@@ -11,8 +11,7 @@ type Props = {
 };
 
 export default ({ threadId, companyId }: Props) => {
-  let { messages, window } = useThreadMessages({ companyId, threadId });
-  //TODO use window to open more or less messages here
+  let { messages } = useThreadMessages({ companyId, threadId });
 
   return (
     <>

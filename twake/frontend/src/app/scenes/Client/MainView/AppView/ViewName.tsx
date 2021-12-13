@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import AppViewService from 'app/services/AppView/AppViewService';
 import Languages from 'services/languages/languages';
 import { ChannelResource } from 'app/models/Channel';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+import { useWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 
 type PropsType = {
   id: string;
@@ -24,11 +24,10 @@ const ViewName: FC<PropsType> = props => {
     channel = channelCollection.findOne({ id: props.id });
   }
 
+  const { workspace } = useWorkspace((channel as ChannelResource)?.data?.workspace_id || '');
+
   let text = '';
-  if (channel) {
-    const workspace = DepreciatedCollections.get('workspaces').find(
-      (channel as ChannelResource).data.workspace_id,
-    );
+  if (channel && workspace) {
     text =
       (workspace ? workspace.name + ' • ' : '') + ((channel as ChannelResource).data.name || '');
   }

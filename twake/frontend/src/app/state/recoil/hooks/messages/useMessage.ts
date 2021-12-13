@@ -7,7 +7,10 @@ import { NodeMessage, NodeMessageSubType, ReactionType } from 'app/models/Messag
 import { messageToMessageWithReplies } from './utils';
 
 export const useMessage = (partialKey: AtomMessageKey) => {
-  const key = { ...partialKey, id: partialKey.id || partialKey.threadId };
+  const key = {
+    ..._.pick(partialKey, 'threadId', 'companyId'),
+    id: partialKey.id || partialKey.threadId,
+  };
   const [message, setValue] = useRecoilState(MessageState(key));
 
   const get = async () => {

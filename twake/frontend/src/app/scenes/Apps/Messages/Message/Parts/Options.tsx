@@ -25,6 +25,7 @@ import _ from 'lodash';
 import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 import SideViewService from 'app/services/AppView/SideViewService';
+import MainViewService from 'app/services/AppView/MainViewService';
 
 type Props = {
   onOpen?: () => void;
@@ -241,6 +242,7 @@ export default (props: Props) => {
             className="option"
             onClick={() => {
               SideViewService.select(channelId, {
+                collection: MainViewService.getViewCollection(),
                 app: { identity: { code: 'messages' } } as Application,
                 context: {
                   viewType: 'channel_thread',

@@ -88,6 +88,13 @@ export function useCurrentWorkspace() {
   return { workspace, refresh };
 }
 
+export function useWorkspace(workspaceId: string) {
+  const companyId = useRouterCompany();
+  const { workspaces, refresh } = useWorkspaces(companyId);
+  const workspace = workspaces.find(w => w.id == workspaceId);
+  return { workspace, refresh };
+}
+
 /**
  * Workspace priority:
  * 1. Router workspace id

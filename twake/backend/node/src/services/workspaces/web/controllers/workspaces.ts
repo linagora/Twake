@@ -22,7 +22,7 @@ import { hasCompanyAdminLevel, hasCompanyMemberLevel } from "../../../../utils/c
 import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
 import { getWorkspaceRooms } from "../../realtime";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
-import { CrudExeption } from "src/core/platform/framework/api/crud-service";
+import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
 
 export class WorkspacesCrudController
   implements

@@ -3,6 +3,7 @@ import { ChannelResource } from 'app/models/Channel';
 import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 import NewThread from './Input/NewThread';
 import MessagesList from './MessagesList';
+import ThreadMessagesList from './ThreadMessagesList';
 
 type Props = {
   channel: ChannelResource;
@@ -24,12 +25,23 @@ export default (props: Props) => {
   return (
     <div className="messages-view">
       <Suspense fallback="loading...">
-        <MessagesList
-          companyId={companyId}
-          workspaceId={workspaceId}
-          channelId={channelId}
-          threadId={threadId}
-        />
+        {!threadId ? (
+          <MessagesList
+            key={channelId + threadId}
+            companyId={companyId}
+            workspaceId={workspaceId}
+            channelId={channelId}
+            threadId={threadId}
+          />
+        ) : (
+          <ThreadMessagesList
+            key={channelId + threadId}
+            companyId={companyId}
+            workspaceId={workspaceId}
+            channelId={channelId}
+            threadId={threadId}
+          />
+        )}{' '}
       </Suspense>
       <NewThread
         collectionKey=""
