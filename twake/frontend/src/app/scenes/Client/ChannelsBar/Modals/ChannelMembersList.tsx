@@ -15,6 +15,9 @@ import MemberChannelRow from 'scenes/Client/ChannelsBar/Parts/Header/MemberChann
 import ObjectModal from 'components/ObjectModal/ObjectModal';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
+import UserAPIClient from 'app/services/user/UserAPIClient';
+import { WorkspaceUserType } from 'app/models/Workspace';
+import { delayRequest } from 'app/services/utils/managedSearchRequest';
 
 type Props = {
   closable?: boolean;
@@ -70,18 +73,16 @@ const ChannelMembersList: FC<Props> = props => {
     );
   };
 
-  const onSearchMembers = (text: string) => {
-    setSearch(text);
-    return UsersService.search(
+  const onSearchMembers = (text: string) =>
+    UserAPIClient.search<WorkspaceUserType>(
       Strings.removeAccents(text),
       {
         scope: 'workspace',
-        workspace_id: workspace_id || '',
-        group_id: '',
+        companyId: company_id,
+        workspaceId: workspace_id || undefined,
       },
-      filterSearch,
+      list => filterSearch(list.map(wsUser => wsUser.user)),
     );
-  };
 
   return (
     <ObjectModal
@@ -98,7 +99,12 @@ const ChannelMembersList: FC<Props> = props => {
               suffix={<Search size={20} style={{ color: 'var(--grey-dark)' }} />}
               placeholder={Languages.t('scenes.client.channelbar.channelmemberslist.autocomplete')}
               value={search}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchMembers(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setSearch(e.target.value);
+                e.persist();
+
+                delayRequest('channel_members_list_search', () => onSearchMembers(e.target.value));
+              }}
             />
           </Col>
         </Row>
