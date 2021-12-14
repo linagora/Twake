@@ -19,7 +19,7 @@ type SearchUserApiResponse<T> = {
 
 @TwakeService('UserAPIClientService')
 class UserAPIClient {
-  prefix: string = '/internal/services/users/v1';
+  private readonly prefixUrl: string = '/internal/services/users/v1';
 
   /**
    * Get users from their ID
@@ -72,7 +72,7 @@ class UserAPIClient {
   }
 
   async updateUserStatus(user: string) {
-    await Api.post<{ resource: string }, { resource: UserType }>(`${this.prefix}/users/me`, {
+    await Api.post<{ resource: string }, { resource: UserType }>(`${this.prefixUrl}/users/me`, {
       resource: user,
     });
   }
@@ -118,7 +118,7 @@ class UserAPIClient {
     let route = '';
 
     if (context.scope === 'company') {
-      route = `${this.prefix}/users${
+      route = `${this.prefixUrl}/users${
         query.length
           ? `?search=${encodeURIComponent(query)}${
               context.companyId && context.scope === 'company'
