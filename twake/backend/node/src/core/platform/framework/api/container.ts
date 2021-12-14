@@ -22,6 +22,8 @@ export abstract class TwakeContainer
 
   abstract loadComponents(): Promise<Map<string, TwakeComponent>>;
 
+  abstract loadComponent(name: string): Promise<TwakeComponent>;
+
   getProvider<T extends TwakeServiceProvider>(name: string): T {
     const service = this.components.get(name)?.getServiceInstance();
 
@@ -34,7 +36,11 @@ export abstract class TwakeContainer
 
   async doInit(): Promise<this> {
     this.components = await this.loadComponents();
-    ComponentUtils.buildDependenciesTree(this.components);
+    await ComponentUtils.buildDependenciesTree(this.components, async (name: string) => {
+      const component = await this.loadComponent(name);
+      if (component) this.components.set(name, component);
+      return component;
+    });
 
     await this.launchInit();
 

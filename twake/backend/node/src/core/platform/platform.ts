@@ -20,6 +20,18 @@ export class TwakePlatform extends TwakeContainer {
       },
     );
   }
+
+  async loadComponent(name: string): Promise<TwakeComponent> {
+    return (
+      await ComponentUtils.loadComponents(
+        [this.options.servicesPath, path.resolve(__dirname, "./services/")],
+        [name],
+        {
+          getProvider: this.getProvider.bind(this),
+        },
+      )
+    ).get(name);
+  }
 }
 
 export class TwakePlatformConfiguration {
