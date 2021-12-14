@@ -9,24 +9,47 @@ import {
 } from "../index";
 import { Loader } from "./loader";
 
-export function buildDependenciesTree(components: Map<string, TwakeComponent>): void {
+export async function buildDependenciesTree(
+  components: Map<string, TwakeComponent>,
+  loadComponent: Function,
+): Promise<void> {
   for (const [name, component] of components) {
     const dependencies: string[] = component.getServiceInstance().getConsumes() || [];
 
-    dependencies.forEach(dependencyName => {
+    for (let dependencyName of dependencies) {
       if (name === dependencyName) {
         throw new Error(`There is a circular dependency for component ${dependencyName}`);
       }
-      const dependencyComponent = components.get(dependencyName);
+      let dependencyComponent = components.get(dependencyName);
 
       if (!dependencyComponent) {
-        throw new Error(
-          `The component dependency ${dependencyName} has not been found for component ${name}`,
-        );
+        //Except in the tests, we allow this to happen with a warning
+        if (process.env.NODE_ENV === "test") {
+          throw new Error(
+            `The component dependency ${dependencyName} has not been found for component ${name}`,
+          );
+        } else {
+          console.warn(
+            `The component dependency ${dependencyName} has not been found for component ${name}`,
+          );
+
+          try {
+            dependencyComponent = await loadComponent(name);
+            if (dependencyComponent) components.set(name, dependencyComponent);
+          } catch (err) {
+            dependencyComponent = null;
+          }
+
+          if (!dependencyComponent) {
+            throw new Error(
+              `The component dependency ${dependencyName} has not been found for component ${name} even with async load`,
+            );
+          }
+        }
       }
 
       component.addDependency(dependencyComponent);
-    });
+    }
   }
 }
 

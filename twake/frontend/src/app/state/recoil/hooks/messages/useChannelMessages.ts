@@ -61,17 +61,14 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     });
   };
 
-  const { send } = useRealtimeRoom<MessageWithReplies>(
+  useRealtimeRoom<MessageWithReplies>(
     MessageViewAPIClient.feedWebsockets(key.channelId)[0],
     'useChannelMessages',
     async (action: string, event: any) => {
-      console.log(action, event);
-
       //This will make sure the realtime event doesn't arrive before the server response
-      if (event?.user_id === LoginService.currentUserId) {
-        await new Promise(r => setTimeout(r, 500));
+      if (event?.user_id === LoginService.currentUserId && action === 'created') {
+        await new Promise(r => setTimeout(r, 1000));
       }
-
       if (action === 'created' || action === 'updated') {
         const message = event as NodeMessage;
         setMessage(message);

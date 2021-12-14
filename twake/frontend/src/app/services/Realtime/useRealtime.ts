@@ -12,6 +12,9 @@ export type RealtimeRoomService<T> = {
   emit: (event: string, data: T) => void;
 };
 
+type RealtimeSimpleEvent = { data: any };
+type RealtimeResourceEvent<T> = { action: RealtimeEventAction; resource: T };
+
 /**
  * Subscribe to a room using websocket channel.
  *
@@ -28,11 +31,21 @@ const useRealtimeRoom = <T>(
   onEvent: (action: RealtimeEventAction, event: T) => void,
 ) => {
   const { websocket } = useWebSocket();
-  const [lastEvent, setLastEvent] = useState<{ action: RealtimeEventAction; resource: T }>();
-  const [room] = useState(roomConf);
+  const [lastEvent, setLastEvent] = useState<{ action: RealtimeEventAction; payload: T }>();
+  const [room, setRoom] = useState(roomConf);
   const [tag] = useState(tagName);
   // subscribe once
   const subscribed = useRef(false);
+
+  useEffect(() => {
+    if (room !== roomConf) {
+      setRoom(roomConf);
+      if (subscribed.current && websocket) {
+        websocket.leave(room.room, tag);
+        subscribed.current = false;
+      }
+    }
+  }, [roomConf?.room, roomConf?.token, tagName]);
 
   useEffect(() => {
     if (room && websocket && !subscribed.current) {
@@ -40,10 +53,15 @@ const useRealtimeRoom = <T>(
         room.room,
         room.token,
         tag,
-        (type: string, event: { action: RealtimeEventAction; resource: T }) => {
+        (type: string, event: RealtimeResourceEvent<T> | RealtimeSimpleEvent) => {
           logger.debug('Received WebSocket event', type, event);
           if (type === 'realtime:resource') {
-            setLastEvent(event);
+            setLastEvent({
+              action: (event as RealtimeResourceEvent<T>).action,
+              payload: (event as RealtimeResourceEvent<T>).resource,
+            });
+          } else if (type === 'realtime:event') {
+            setLastEvent({ action: 'event', payload: (event as RealtimeSimpleEvent).data });
           } else if (type === 'realtime:join:success') {
             logger.debug(`Room ${room} has been joined`);
           } else {
@@ -57,7 +75,7 @@ const useRealtimeRoom = <T>(
 
   useEffect(() => {
     if (lastEvent) {
-      onEvent(lastEvent.action, lastEvent.resource);
+      onEvent(lastEvent.action, lastEvent.payload);
     }
   }, [lastEvent]);
 

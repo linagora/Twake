@@ -170,7 +170,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
                 this.openEmojiPicker();
               }}
             >
-              <Emojione type={icon} />
+              <Emojione type={icon} size={24} />
             </div>
           </Col>
           <Col flex="auto">

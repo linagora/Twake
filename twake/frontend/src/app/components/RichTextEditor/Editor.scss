@@ -5,25 +5,24 @@
   overflow: hidden;
   white-space: nowrap !important;
   text-overflow: ellipsis;
-  max-width:90%;
+  max-width: 90%;
 }
 
 .public-DraftStyleDefault-pre {
   margin-bottom: 0;
 }
 
-
 .public-DraftEditor-content {
   // looks like contenteditable have some defaults from browser which are hard to harmonize around all the editor places...
   overflow-wrap: anywhere !important;
 }
 
-
 .editor-hide-placeholder .public-DraftEditorPlaceholder-root {
   display: none;
 }
 
-.editor-blockquote {
+.editor-blockquote,
+blockquote {
   background-color: var(--grey-background);
   border-left: 3px solid var(--grey-dark);
   padding-left: 5px;
@@ -31,7 +30,8 @@
   margin-top: 5px;
 }
 
-.editor-code-block {
+.editor-code-block,
+code {
   border-radius: 3px;
   vertical-align: middle;
   margin-bottom: 0;
