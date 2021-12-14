@@ -711,7 +711,7 @@
     "scenes.apps.drive.download_all_button": "Download all",
     "components.inputs.input_with_select.input.placeholder": "Channel name",
     "components.inputs.input_with_select.select.placeholder": "Section name",
-    "components.inputs.input_with_select.select.no_sections": "Start writing the name of your first channel section.",
+    "components.inputs.input_with_select.select.no_sections": "You can group your channels here",
     "components.inputs.input_with_select.button.tooltip": "Set a channel section",
     "scenes.apps.messages.message.activity_message.a_added_b_to_the_channel": "{{$1}} added {{$2}} to the channel",
     "scenes.apps.messages.message.activity_message.a_removed_b_from_the_channel": "{{$1}} removed {{$2}} from the channel",

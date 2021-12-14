@@ -779,7 +779,7 @@
     "scenes.apps.drive.default_link_name": "Sans titre",
     "components.emoji_picker.input_search_placeholder": "Rechercher",
     "scenes.apps.messages.message.activity_message.a_removed_b_from_the_channel": "{{$1}} a retiré {{$2}} de la chaine",
-    "components.inputs.input_with_select.select.no_sections": "Commencez à écrire le nom de votre groupe de chaines.",
+    "components.inputs.input_with_select.select.no_sections": "Vous pouvez grouper vos chaines ici",
     "services.apps.messages.message_editor_service.upload_error_toaster": "{{$1}} - Vous ne pouvez pas ajouter plus de {{$2}} fichiers dans un message",
     "scenes.apps.messages.message.parts.deleted_content.text.current_user": "Vous avez supprimé ce message",
     "scenes.apps.messages.message.parts.deleted_content.text": "{{$1}} a supprimé son message",
@@ -848,5 +848,4 @@
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Erreur inconnue",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Erreur",
     "scenes.app.channelsbar.currentuser.reset": "Réinitialiser"
-
 }
