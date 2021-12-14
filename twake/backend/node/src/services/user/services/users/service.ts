@@ -90,11 +90,11 @@ export class UserService implements UsersServiceAPI {
     throw new Error("Method not implemented.");
   }
 
-  @RealtimeSaved<User>((user, context) => {
+  @RealtimeSaved<User>((user, _context) => {
     return [
       {
         room: `/me/${user.id}`,
-        resource: {}, // FIX ME add user with formatUser function
+        resource: user,
       },
     ];
   })
@@ -192,6 +192,7 @@ export class UserService implements UsersServiceAPI {
     const user = await this.repository.findOne(pk);
     if (!user.preferences) user.preferences = {};
     for (const key in preferences) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       user.preferences[key] = preferences[key];
     }

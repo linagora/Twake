@@ -1,27 +1,22 @@
-import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { WebsocketMetadata } from "../../utils/types";
-import UserEntity from "./entities/user";
+import { UserObject } from "./web/types";
 
-export function getWebsocketInformation(user: UserEntity): WebsocketMetadata {
-  return {
-    name: getName(user.id),
-    room: getRoom(user.id),
-  };
-}
-
-export function getUserRooms(context: ExecutionContext): WebsocketMetadata[] {
+/**
+ * User Rooms
+ */
+export function getUserRooms(user: UserObject): WebsocketMetadata[] {
   return [
     {
-      name: getName(context.user.id),
-      room: getRoom(context.user.id),
+      name: getUserName(user.id),
+      room: getUserRoom(user.id),
     },
   ];
 }
 
-export function getRoom(userId: string): string {
+export function getUserRoom(userId: string): string {
   return `/me/${userId}`;
 }
 
-export function getName(userId: string): string {
+export function getUserName(userId: string): string {
   return `user-room-${userId}`;
 }

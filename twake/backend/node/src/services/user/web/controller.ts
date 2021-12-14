@@ -62,9 +62,13 @@ export class UsersCrudController
       throw CrudExeption.notFound(`User ${id} not found`);
     }
 
+    const userObject = await this.service.formatUser(user, {
+      includeCompanies: context.user.id === id,
+    });
+
     return {
-      resource: await this.service.formatUser(user, { includeCompanies: context.user.id === id }),
-      websocket: this.realtime.sign(getUserRooms(context), context.user.id)[0],
+      resource: userObject,
+      websocket: this.realtime.sign(getUserRooms(userObject), context.user.id)[0],
     };
   }
 
