@@ -858,5 +858,6 @@
     "scenes.join.join_workspace_from_company": "Join {{$1}} from {{$2}}!",
     "scenes.join.twake_description": "Twake is an open-source digital workspace built to improve your team productivity",
     "scenes.join.login_first_button": "Log in or create an account first",
-    "scenes.join.join_the_team_button": "Join the team"
+    "scenes.join.join_the_team_button": "Join the team",
+    "scenes.app.channelsbar.currentuser.reset": "Reset"
 }
