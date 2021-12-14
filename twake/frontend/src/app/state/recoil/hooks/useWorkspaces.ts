@@ -39,7 +39,7 @@ export const useWorkspaces = (companyId: string = '') => {
   };
 
   //Fixme: use the token got from backend here
-  useRealtimeRoom<WorkspaceType>(
+  const { send } = useRealtimeRoom<WorkspaceType>(
     WorkspaceAPIClient.websockets(companyId)[0],
     'useWorkspaces',
     (action, resource) => {

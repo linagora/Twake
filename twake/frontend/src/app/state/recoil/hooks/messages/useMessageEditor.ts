@@ -15,6 +15,7 @@ import Login from 'app/services/login/LoginService';
 import { messageToMessageWithReplies } from './utils';
 import { useAddMessageToChannel, useRemoveMessageFromChannel } from './useChannelMessages';
 import { useAddMessageToThread, useRemoveMessageFromThread } from './useThreadMessages';
+import { useRef } from 'react';
 
 export type EditorKey = {
   companyId: string;
@@ -31,6 +32,7 @@ export const useMessageEditor = (key: EditorKey) => {
     ? `reply-${key.threadId}`
     : `new-${key.channelId}`;
   const [editor, setEditor] = useRecoilState(MessagesEditorState(location));
+  const editorRef = useRef(editor);
 
   let message: NodeMessage | null = null;
   if (key.messageId) {
@@ -46,8 +48,8 @@ export const useMessageEditor = (key: EditorKey) => {
   const send = async (message?: Partial<NodeMessage>) => {
     if (!message) {
       message = {
-        text: editor.value,
-        files: editor.files,
+        text: editorRef.current.value,
+        files: editorRef.current.files,
       };
     }
 
@@ -103,15 +105,20 @@ export const useMessageEditor = (key: EditorKey) => {
     propagateMessage({ ...message, _status: 'cancelled' });
   };
 
+  const setEditorRef = (editor: { value: string; files: any[] }) => {
+    editorRef.current = editor;
+    setEditor(editorRef.current);
+  };
+
   return {
     editor,
     key: location,
     send,
     retry,
     cancel,
-    setEditor,
-    setValue: (value: string) => setEditor({ ...editor, value }),
-    setFiles: (files: any[]) => setEditor({ ...editor, files }),
+    setEditor: setEditorRef,
+    setValue: (value: string) => setEditorRef({ ...editor, value }),
+    setFiles: (files: any[]) => setEditorRef({ ...editor, files }),
   };
 };
 

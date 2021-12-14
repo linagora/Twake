@@ -52,7 +52,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
 
   async get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<PublicApplication> {
     const entity = await this.repository.findOne(pk);
-    return entity.getPublicObject();
+    return entity?.getPublicObject();
   }
 
   async list<ListOptions>(
@@ -76,7 +76,10 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     }
     entities.filterEntities(app => app.publication.published);
 
-    const applications = entities.getEntities().map(app => app.getPublicObject());
+    const applications = entities
+      .getEntities()
+      .filter(app => app)
+      .map(app => app.getPublicObject());
     return new ListResult(entities.type, applications, entities.nextPage);
   }
 
@@ -96,7 +99,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
       applicationListResult.filterEntities(app => app.publication.published && app.is_default);
 
       for (const application of applicationListResult.getEntities()) {
-        entities.push(application.getPublicObject());
+        if (application) entities.push(application.getPublicObject());
       }
     } while (page.page_token);
 

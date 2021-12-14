@@ -1,7 +1,6 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { useThreadMessages } from 'app/state/recoil/hooks/messages/useThreadMessages';
 import Message from './Message';
-import TimeSeparator from './TimeSeparator';
 import { MessageContext } from './MessageWithReplies';
 import ThreadSection from '../Parts/ThreadSection';
 

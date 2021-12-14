@@ -25,6 +25,7 @@ import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import { delayRequest } from 'app/services/utils/managedSearchRequest';
 
 type Props = {
   messageId?: string;
@@ -111,13 +112,14 @@ export default (props: Props) => {
 
   const onSend = () => {
     const content = getContentOutput(editorState);
+    setValue(content);
 
     if (props.onSend) {
       props.onSend(content);
       return;
     }
 
-    if (content || messageEditorService.hasAttachments(props.threadId)) {
+    if (content || editor.files.length > 0) {
       send();
       setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
       clearUploads();
@@ -147,8 +149,7 @@ export default (props: Props) => {
 
   const isEmpty = (): boolean => {
     return (
-      editorState.getCurrentContent().getPlainText().trim().length === 0 &&
-      !messageEditorService.hasAttachments(props.threadId)
+      editorState.getCurrentContent().getPlainText().trim().length === 0 && !editor.files.length
     );
   };
 
@@ -162,7 +163,10 @@ export default (props: Props) => {
   };
 
   const onChange = async (editorState: EditorState) => {
-    setValue(getContentOutput(editorState));
+    //Delay request make the input faster (getContentOutput is a heavy call)
+    delayRequest(`editor-${editorId}`, () => {
+      setValue(getContentOutput(editorState));
+    });
     if (props.onChange) {
       props.onChange(editorState);
       return;
