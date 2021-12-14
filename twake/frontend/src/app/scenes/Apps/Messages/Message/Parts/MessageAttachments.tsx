@@ -34,6 +34,7 @@ export default () => {
         file.metadata ? (
           <PossiblyPendingAttachment
             key={i}
+            type={'message'}
             file={file}
             onRemove={() => setFiles(files.filter(f => f.id !== file.id))}
           />

@@ -37,6 +37,7 @@ export default ({ zoneId, onChange, initialValue }: PropsType) => {
           <Col key={index}>
             <PossiblyPendingAttachment
               file={file}
+              type={'input'}
               onRemove={() => setFiles(files.filter(f => f.id !== file.id))}
             />
           </Col>

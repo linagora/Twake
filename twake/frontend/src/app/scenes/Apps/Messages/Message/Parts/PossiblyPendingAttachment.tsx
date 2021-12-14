@@ -10,9 +10,10 @@ import { MessageFileType } from 'app/models/Message';
 type PropsType = {
   file: MessageFileType;
   onRemove?: Function;
+  type: 'input' | 'message';
 };
 
-export default ({ file, onRemove }: PropsType) => {
+export default ({ file, onRemove, type }: PropsType) => {
   const { getOnePendingFile } = useUpload();
 
   const id = file.metadata?.external_id || '';
@@ -48,7 +49,7 @@ export default ({ file, onRemove }: PropsType) => {
   return formatedFile ? (
     <FileComponent
       className="small-right-margin small-bottom-margin"
-      type="input"
+      type={type}
       file={formatedFile}
       status={status}
       progress={progress}
