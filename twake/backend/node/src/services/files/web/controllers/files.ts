@@ -48,7 +48,6 @@ export class FileController {
     const data = await this.service.download(params.id, context);
     const filename = data.name.replace(/[^a-zA-Z0-9 -_.]/g, "");
 
-    response.header("Access-Control-Allow-Headers", "*");
     response.header("Content-disposition", `attachment; filename="${filename}"`);
     if (data.size) response.header("Content-Length", data.size);
     response.type(data.mime);
