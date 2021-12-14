@@ -147,6 +147,7 @@ export const getCompanySchema = {
       type: "object",
       properties: {
         resource: companyObjectSchema,
+        websocket: webSocketSchema,
       },
       required: ["resource"],
     },

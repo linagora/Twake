@@ -29,6 +29,7 @@ import ExternalGroup, {
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { RealtimeSaved } from "../../../../core/platform/framework";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -60,6 +61,15 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.externalCompanyRepository.findOne(pk);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @RealtimeSaved<Company>((company, _context) => {
+    return [
+      {
+        room: `/company/${company.id}`,
+        resource: company,
+      },
+    ];
+  })
   async updateCompany(company: Company): Promise<Company> {
     if (company.identity_provider_id && !company.identity_provider) {
       company.identity_provider = "console";

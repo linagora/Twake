@@ -1,13 +1,13 @@
 import { WebsocketMetadata } from "../../utils/types";
-import { UserObject } from "./web/types";
+import CompanyEntity from "./entities/company";
+import UserEntity from "./entities/user";
 
 /**
  * User Rooms
  */
-export function getUserRooms(user: UserObject): WebsocketMetadata[] {
+export function getUserRooms(user: UserEntity): WebsocketMetadata[] {
   return [
     {
-      name: getUserName(user.id),
       room: getUserRoom(user.id),
     },
   ];
@@ -19,4 +19,23 @@ export function getUserRoom(userId: string): string {
 
 export function getUserName(userId: string): string {
   return `user-room-${userId}`;
+}
+
+/**
+ * Company Rooms
+ */
+export function getCompanyRooms(company: CompanyEntity): WebsocketMetadata[] {
+  return [
+    {
+      room: getCompanyRoom(company.id),
+    },
+  ];
+}
+
+export function getCompanyRoom(companyId: string): string {
+  return `/company/${companyId}`;
+}
+
+export function getCompanyName(companyId: string): string {
+  return `company-room-${companyId}`;
 }

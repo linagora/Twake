@@ -32,7 +32,7 @@ import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import coalesce from "../../../utils/coalesce";
-import { getUserRooms } from "../realtime";
+import { getCompanyRooms, getUserRooms } from "../realtime";
 
 export class UsersCrudController
   implements
@@ -68,7 +68,9 @@ export class UsersCrudController
 
     return {
       resource: userObject,
-      websocket: this.realtime.sign(getUserRooms(userObject), context.user.id)[0],
+      websocket: context.user.id
+        ? this.realtime.sign(getUserRooms(user), context.user.id)[0]
+        : undefined,
     };
   }
 
@@ -198,14 +200,17 @@ export class UsersCrudController
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<CompanyObject>> {
     const company = await this.service.companies.getCompany({ id: request.params.id });
+    const context = getExecutionContext(request);
 
     if (!company) {
-      throw CrudExeption.notFound(`User ${request.params.id} not found`);
+      throw CrudExeption.notFound(`Company ${request.params.id} not found`);
     }
 
     return {
       resource: this.service.formatCompany(company, null, await this.getCompanyStats(company)),
-      websocket: undefined, // empty for now
+      websocket: context.user.id
+        ? this.realtime.sign(getCompanyRooms(company), context.user.id)[0]
+        : undefined,
     };
   }
 

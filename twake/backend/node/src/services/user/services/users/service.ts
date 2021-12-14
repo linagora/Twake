@@ -94,7 +94,7 @@ export class UserService implements UsersServiceAPI {
     return [
       {
         room: `/me/${user.id}`,
-        resource: user,
+        resource: {}, // FIX ME we should formatUser here
       },
     ];
   })
