@@ -3,6 +3,8 @@ import { UserType } from 'app/models/User';
 import { WorkspaceUserType } from 'app/models/Workspace';
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
+import RouterService from '../RouterService';
+import { WebsocketRoom } from '../WebSocket/WebSocket';
 import WorkspaceAPIClient from '../workspaces/WorkspaceAPIClient';
 import CurrentUser from './CurrentUser';
 
@@ -20,6 +22,11 @@ type SearchUserApiResponse<T> = {
 @TwakeService('UserAPIClientService')
 class UserAPIClient {
   private readonly prefixUrl: string = '/internal/services/users/v1';
+  private realtime: Map<string, WebsocketRoom> = new Map();
+
+  websocket(userId: string): WebsocketRoom {
+    return this.realtime.get(userId) || { room: '', token: '' };
+  }
 
   /**
    * Get users from their ID
@@ -53,12 +60,15 @@ class UserAPIClient {
   }
 
   async getCurrent(disableJWTAuthentication = false): Promise<UserType> {
-    return Api.get<{ resource: UserType }>(
+    return Api.get<{ resource: UserType; websocket: WebsocketRoom }>(
       '/internal/services/users/v1/users/me',
       undefined,
       false,
       { disableJWTAuthentication },
-    ).then(result => result.resource);
+    ).then(result => {
+      result.resource.id && this.realtime.set(result.resource.id, result.websocket);
+      return result.resource;
+    });
   }
 
   async getCompany(companyId: string): Promise<CompanyType> {

@@ -32,6 +32,7 @@ import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import coalesce from "../../../utils/coalesce";
+import { getUserRooms } from "../realtime";
 
 export class UsersCrudController
   implements
@@ -63,7 +64,7 @@ export class UsersCrudController
 
     return {
       resource: await this.service.formatUser(user, { includeCompanies: context.user.id === id }),
-      websocket: undefined, // empty for now
+      websocket: this.realtime.sign(getUserRooms(context), context.user.id)[0],
     };
   }
 

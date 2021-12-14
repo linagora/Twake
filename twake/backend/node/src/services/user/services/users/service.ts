@@ -30,6 +30,7 @@ import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { isNumber } from "lodash";
+import { RealtimeSaved } from "../../../../core/platform/framework";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -89,6 +90,14 @@ export class UserService implements UsersServiceAPI {
     throw new Error("Method not implemented.");
   }
 
+  @RealtimeSaved<User>((user, context) => {
+    return [
+      {
+        room: `/me/${user.id}`,
+        resource: {}, // FIX ME add user with formatUser function
+      },
+    ];
+  })
   async save<SaveOptions>(
     user: User,
     options?: SaveOptions,
