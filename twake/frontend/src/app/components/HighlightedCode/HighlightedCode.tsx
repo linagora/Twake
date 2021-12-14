@@ -6,14 +6,15 @@ import { Tooltip } from 'antd';
 import { ToasterService } from 'app/services/Toaster';
 
 export default ({ code, className }: { code: string; className?: string }) => {
-  const [expanded, setExpanded] = useState(false);
+  let renderedCode = code.replace(/\t/g, '  ');
+
+  const [expanded, setExpanded] = useState(renderedCode.split('\n').length < 5);
   const ref = React.createRef<any>();
 
   useEffect(() => {
     hljs.highlightElement(ref.current);
   }, [expanded]);
 
-  let renderedCode = code.replace(/\t/g, '  ');
   renderedCode = renderedCode
     .split('\n')
     .slice(0, expanded ? 100000000 : 5)

@@ -76,6 +76,8 @@ export class CompanyService implements CompaniesServiceAPI {
       const extCompany = (await this.getExtCompany(key)) || getExternalGroupInstance(key);
 
       extCompany.company_id = company.id;
+      extCompany.external_id = company.identity_provider_id;
+      extCompany.service_id = company.identity_provider;
 
       await this.externalCompanyRepository.save(extCompany);
     }

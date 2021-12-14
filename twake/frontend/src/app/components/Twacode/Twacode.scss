@@ -123,14 +123,17 @@
     margin-bottom: 10px;
   }
   .multiline-quote,
-  .one-line-quote {
+  .one-line-quote,
+  blockquote {
     display: block;
     width: 100%;
-    border-left: 3px solid var(--grey-background);
+    border-left: 3px solid var(--grey-dark);
     padding-left: 5px;
+    border-radius: 3px;
     box-sizing: border-box;
   }
-  .one-line-quote {
+  .one-line-quote,
+  blockquote {
     margin-bottom: 5px;
     margin-top: 5px;
   }
