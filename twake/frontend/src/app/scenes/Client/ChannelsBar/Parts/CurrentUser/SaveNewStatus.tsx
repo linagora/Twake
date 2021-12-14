@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useRef } from 'react';
-import { Button } from 'antd';
+import React, { useCallback, useState, useRef, useEffect } from 'react';
+import { Button, Input } from 'antd';
 import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
@@ -19,6 +19,7 @@ export default ({ level }: PropsType): JSX.Element => {
   const text = user?.status?.split(' ').slice(1).join(' ') || '';
   const [status, setStatus] = useState([icon, text]);
   const statusRef = useRef(status);
+  const inputRef = useRef<Input>();
 
   const save = useCallback(() => {
     updateStatus(status);
@@ -30,6 +31,10 @@ export default ({ level }: PropsType): JSX.Element => {
     MenusManager.closeMenu();
   }, [updateStatus]);
 
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   return (
     <div
       onKeyDown={evt => {
@@ -37,6 +42,7 @@ export default ({ level }: PropsType): JSX.Element => {
       }}
     >
       <InputWithIcon
+        inputRef={(node: Input) => node && (inputRef.current = node)}
         focusOnDidMount
         menu_level={level}
         placeholder={Languages.t(
@@ -47,22 +53,21 @@ export default ({ level }: PropsType): JSX.Element => {
         value={status}
         onChange={(value: string[]) => {
           setStatus(value);
+          inputRef.current?.focus();
         }}
       />
-      <div className="save-new-status-container" tabIndex={0}>
-        {
-          <Button
-            className={classNames({ 'error-button': statusRef.current === status })}
-            type={statusRef.current === status ? 'default' : 'ghost'}
-            onClick={statusRef.current === status ? reset : save}
-          >
-            {Languages.t(
-              statusRef.current === status
-                ? 'scenes.app.channelsbar.currentuser.reset'
-                : 'scenes.app.channelsbar.currentuser.update',
-            )}
-          </Button>
-        }
+      <div className="save-new-status-container">
+        <Button
+          className={classNames({ 'error-button': statusRef.current === status })}
+          type={statusRef.current === status ? 'default' : 'ghost'}
+          onClick={statusRef.current === status ? reset : save}
+        >
+          {Languages.t(
+            statusRef.current === status
+              ? 'scenes.app.channelsbar.currentuser.reset'
+              : 'scenes.app.channelsbar.currentuser.update',
+          )}
+        </Button>
       </div>
     </div>
   );
