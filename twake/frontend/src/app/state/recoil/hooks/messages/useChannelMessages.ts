@@ -67,7 +67,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     async (action: string, event: any) => {
       //This will make sure the realtime event doesn't arrive before the server response
       if (event?.user_id === LoginService.currentUserId && action === 'created') {
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 1000));
       }
       if (action === 'created' || action === 'updated') {
         const message = event as NodeMessage;

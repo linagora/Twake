@@ -16,7 +16,8 @@ import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import Blocks from './Blocks';
 import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
-import FileUploadAPIClient from 'app/components/FileUploads/FileUploadAPIClient';
+import PossiblyPendingAttachment from './PossiblyPendingAttachment';
+import MessageAttachments from './MessageAttachments';
 
 type Props = {
   linkToThread?: boolean;
@@ -123,31 +124,9 @@ export default (props: Props) => {
                   </>
                 )}
               </div>
-              {message?.files && message?.files?.length > 0 && (
-                <Row justify="start" align="middle" className="small-top-margin" wrap>
-                  {message.files.map((f, i) =>
-                    f.metadata ? (
-                      <FileComponent
-                        key={i}
-                        className="small-right-margin small-bottom-margin"
-                        type="message"
-                        file={{
-                          id: f.metadata.external_id,
-                          name: f.metadata.name || '',
-                          size: f.metadata.size || 0,
-                          company_id: f.company_id || companyId,
-                          // TODO Get route using a service ?
-                          thumbnail:
-                            FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(f) || '',
-                          type: FileUploadAPIClient.mimeToType(f.metadata.mime || ''),
-                        }}
-                      />
-                    ) : (
-                      <></>
-                    ),
-                  )}
-                </Row>
-              )}
+
+              {message?.files && message?.files?.length > 0 && <MessageAttachments />}
+
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}
             </>
