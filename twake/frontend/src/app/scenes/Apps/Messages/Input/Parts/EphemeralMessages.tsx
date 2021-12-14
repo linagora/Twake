@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import CurrentUser from 'app/services/user/CurrentUser';
-import MessageComponent from '../../_Message/Message';
 import MessagesService from 'services/Apps/Messages/Messages';
 
 type Props = {
@@ -54,7 +53,8 @@ export default (props: Props) => {
       <div className="ephemerals_text">
         {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
       </div>
-      {lastEphemeral && (
+      {
+        lastEphemeral /*&& (
         <MessageComponent
           noBlock
           noReplies
@@ -62,7 +62,8 @@ export default (props: Props) => {
           collectionKey={props.collectionKey}
           messageId={lastEphemeral.id || lastEphemeral.front_id}
         />
-      )}
+      )*/
+      }
     </div>
   );
 };

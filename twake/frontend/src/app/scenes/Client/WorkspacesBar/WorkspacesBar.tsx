@@ -30,7 +30,7 @@ const WorkspaceListComponent = ({ companyId }: { companyId: string }) => {
   }, [companyId]);
 
   return (
-    <PerfectScrollbar component="div" className="list">
+    <PerfectScrollbar component="div" className="list" options={{ suppressScrollX: true }}>
       {workspaces.map((ws: WorkspaceType) => (
         <Workspace key={ws.id} workspace={ws} />
       ))}

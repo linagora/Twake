@@ -85,6 +85,8 @@ export interface CompanyObject {
   stats?: CompanyStatsObject;
   role?: CompanyUserRole;
   status?: CompanyUserStatus;
+  identity_provider: string;
+  identity_provider_id: string;
 }
 
 export interface RegisterDeviceBody {

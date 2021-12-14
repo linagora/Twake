@@ -585,6 +585,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0] || new MessageFile();
       entity.message_id = message.id;
       entity.id = file.id || undefined;
+      entity.company_id = file.company_id;
 
       //For internal files, we have a special additional sync
       if (file.metadata?.source == "internal") {

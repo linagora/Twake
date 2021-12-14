@@ -14,7 +14,13 @@ import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
 
 type MenuObjectType = { [key: string]: any };
 
-export default ({ children }: { children?: ReactNode }) => {
+export default ({
+  children,
+  withCompanyName = true,
+}: {
+  children?: ReactNode;
+  withCompanyName?: boolean;
+}) => {
   const { user } = useCurrentUser();
 
   return (
@@ -69,13 +75,19 @@ export default ({ children }: { children?: ReactNode }) => {
       ]}
       position="top"
     >
-      {!children && <CurrentCompanyLogo />}
+      {!children && <CurrentCompanyLogo withCompanyName={withCompanyName} />}
       {!!children && children}
     </Menu>
   );
 };
 
-export const CurrentCompanyLogo = ({ size }: { size?: number }) => {
+export const CurrentCompanyLogo = ({
+  size,
+  withCompanyName = true,
+}: {
+  size?: number;
+  withCompanyName?: boolean;
+}) => {
   const { company } = useCurrentCompany();
 
   if (!company) {
@@ -96,7 +108,7 @@ export const CurrentCompanyLogo = ({ size }: { size?: number }) => {
       >
         {`${company.name}-`[0].toUpperCase()}
       </div>
-      <div className="name">{company.name}</div>
+      {withCompanyName ? <div className="name">{company.name}</div> : <></>}
     </div>
   );
 };

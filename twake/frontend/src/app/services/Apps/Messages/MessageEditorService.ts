@@ -3,7 +3,6 @@ import Observable from 'app/services/Depreciated/observable';
 import LocalStorage from 'app/services/LocalStorage';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import Languages from 'services/languages/languages';
-import MessagePendingUploadZonesService from './MessagePendingUploadZonesService';
 
 // FIX ME use real File type instead
 type FileType = { [key: string]: any };

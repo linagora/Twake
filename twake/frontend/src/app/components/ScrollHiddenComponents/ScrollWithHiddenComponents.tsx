@@ -32,7 +32,6 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
   }, [tag, ref, disabled]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
-
   const beacon: number[] = service.useWatcher(() => [
     service.state.beaconTop.length,
     service.state.beaconBottom.length,
@@ -46,13 +45,13 @@ const ScrollWithHiddenComponents: FC<PropsType> = ({
   };
 
   const previousBeacon = () => {
-    const previousNode = service.state.beaconTop.sort((a: any, b: any) => b.top - a.top)[0].node;
-    return animateScrollTo(alignCenter(previousNode), optionsScroller);
+    const previousNode = service.state.beaconTop.sort((a: any, b: any) => b.top - a.top)?.[0]?.node;
+    if (previousNode) return animateScrollTo(alignCenter(previousNode), optionsScroller);
   };
 
   const nextBeacon = () => {
-    const nextNode = service.state.beaconBottom.sort((a: any, b: any) => a.top - b.top)[0].node;
-    return animateScrollTo(alignCenter(nextNode), optionsScroller);
+    const nextNode = service.state.beaconBottom.sort((a: any, b: any) => a.top - b.top)?.[0]?.node;
+    if (nextNode) return animateScrollTo(alignCenter(nextNode), optionsScroller);
   };
 
   const hideScrollComponent = (beaconLength: number): string => (beaconLength > 0 ? '' : 'hide');

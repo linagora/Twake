@@ -15,7 +15,7 @@ import ChatUploadsViewer from 'app/components/FileUploads/UploadsViewer';
 import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
 import Viewer from 'scenes/Apps/Drive/Viewer/Viewer';
 import ModalComponent from 'app/components/Modal/ModalComponent';
-import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator.js';
+import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator';
 import SearchPopup from 'components/SearchPopup/SearchPopup.js';
 import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars, { LoadingSidebar } from './SideBars';

@@ -1,8 +1,5 @@
 import { UserType } from 'app/models/User';
 import Logger from 'app/services/Logger';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
-import Workspaces from 'app/services/workspaces/workspaces';
-import Groups from 'app/services/workspaces/groups';
 import AccessRightsService from 'app/services/AccessRightsService';
 import CurrentUser from 'app/services/user/CurrentUser';
 import Languages from 'app/services/languages/languages';
@@ -10,15 +7,9 @@ import JWT from 'app/services/JWTStorage';
 import Collections from 'app/services/Collections/Collections';
 import Globals from 'app/services/Globals';
 import UserNotifications from 'app/services/user/UserNotifications';
-import ws from 'app/services/websocket';
 import WorkspacesListener from './workspaces/WorkspacesListener';
-import WorkspaceAPIClient from './workspaces/WorkspaceAPIClient';
-import UserNotificationAPIClient from './user/UserNotificationAPIClient';
-import { CompanyType } from 'app/models/Company';
 import LocalStorage from './LocalStorage';
 import WebSocket from './WebSocket/WebSocket';
-import RouterService from './RouterService';
-import CompanyAPIClient from './CompanyAPIClient';
 
 class Application {
   private logger: Logger.Logger;
@@ -39,7 +30,9 @@ class Application {
     this.started = true;
     this.logger.info('Starting application for user', user);
 
-    await WebSocket.get().connect();
+    const ws = WebSocket.get();
+
+    ws.connect();
     this.configureCollections(user);
 
     WorkspacesListener.startListen();
@@ -48,11 +41,6 @@ class Application {
     UserNotifications.start();
     CurrentUser.start();
     user.language && Languages.setLanguage(user.language);
-
-    ws.onReconnect('login', () => {
-      this.logger.info('WS Reconnected');
-      // TODO: Get the last user data
-    });
   }
 
   stop(): void {

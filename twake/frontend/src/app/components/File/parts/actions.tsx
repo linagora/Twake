@@ -20,9 +20,16 @@ type PropsType = {
   status?: PendingFileRecoilType['status'];
   deletable?: boolean;
   actionMenu?: boolean;
+  onRemove?: Function;
 };
 
-export const FileActions = ({ file, status, deletable, actionMenu }: PropsType): JSX.Element => {
+export const FileActions = ({
+  file,
+  status,
+  deletable,
+  actionMenu,
+  onRemove,
+}: PropsType): JSX.Element => {
   const { cancelUpload, deleteOneFile, downloadOneFile, retryUpload } = useUpload();
   const menuRef = useRef<HTMLElement>();
 
@@ -56,9 +63,13 @@ export const FileActions = ({ file, status, deletable, actionMenu }: PropsType):
     e.preventDefault();
     e.stopPropagation();
 
-    status && isPendingFileStatusSuccess(status)
-      ? file.id && deleteOneFile(file.id)
-      : cancelUpload(file.id);
+    if (status && isPendingFileStatusSuccess(status)) {
+      if (file.id) deleteOneFile(file.id);
+    } else {
+      cancelUpload(file.id);
+    }
+
+    if (onRemove) onRemove();
   };
 
   const onClickRetry = () => {

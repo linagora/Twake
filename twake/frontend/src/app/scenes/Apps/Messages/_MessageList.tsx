@@ -1,14 +1,16 @@
+//@ts-nocheck
+
 import React, { createRef, RefObject, Suspense } from 'react';
 import { IndexLocationWithAlign, ListRange, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import classNames from 'classnames';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import Logger from 'app/services/Logger';
-import Message from './_Message/MessageAndTimeSeparator';
+import Message from './__old/_Message/MessageAndTimeSeparator';
 import GoToBottom from './Parts/GoToBottom';
 import { Message as MessageModel } from 'app/models/Message';
 import { MessageLoader } from 'app/services/Apps/Messages/MessageLoader';
-import MessageComponent from './_Message/Message';
+import MessageComponent from './__old/_Message/Message';
 import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
@@ -16,7 +18,7 @@ import { ChannelResource } from 'app/models/Channel';
 import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
 import InitService from 'app/services/InitService';
 import _ from 'lodash';
-import FirstMessage from './_Message/Parts/FirstMessage/FirstMessage';
+import FirstMessage from './__old/_Message/Parts/FirstMessage/FirstMessage';
 
 const START_INDEX = 100000;
 const DEFAULT_PAGE_SIZE = 25;

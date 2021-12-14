@@ -85,6 +85,7 @@
         .ant-progress-bg {
           border-radius: 0 0 8px 8px;
           height: 2px !important;
+          transition: all 0.2s;
         }
       }
     }

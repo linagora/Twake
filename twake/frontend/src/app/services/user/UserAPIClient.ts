@@ -1,13 +1,26 @@
 import { CompanyType } from 'app/models/Company';
 import { UserType } from 'app/models/User';
+import { WorkspaceUserType } from 'app/models/Workspace';
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
 import WorkspaceAPIClient from '../workspaces/WorkspaceAPIClient';
 import CurrentUser from './CurrentUser';
 
+type SearchContextType = {
+  scope: 'company' | 'workspace';
+  companyId?: string;
+  workspaceId?: string;
+};
+
+type SearchUserApiResponse<T> = {
+  next_page_token: unknown;
+  resources: T[];
+};
+
 @TwakeService('UserAPIClientService')
 class UserAPIClient {
-  private readonly prefixUrl: string = '/internal/services/users/v1';
+  prefix: string = '/internal/services/users/v1';
+
   /**
    * Get users from their ID
    *
@@ -39,21 +52,6 @@ class UserAPIClient {
     return WorkspaceAPIClient.listCompanies(userId);
   }
 
-  /**
-   * Get users from their IDs
-   *
-   * @param users
-   * @deprecated use list(users: string[])
-   * @returns
-   */
-  async _list(users: string[] = []): Promise<UserType[]> {
-    return new Promise<UserType[]>(resolve => {
-      Api.post('/ajax/users/all/get', { id: users }, (res: { data?: UserType[] }) => {
-        resolve(res.data || []);
-      });
-    });
-  }
-
   async getCurrent(disableJWTAuthentication = false): Promise<UserType> {
     return Api.get<{ resource: UserType }>(
       '/internal/services/users/v1/users/me',
@@ -74,7 +72,7 @@ class UserAPIClient {
   }
 
   async updateUserStatus(user: string) {
-    await Api.post<{ resource: string }, { resource: UserType }>(`${this.prefixUrl}/users/me`, {
+    await Api.post<{ resource: string }, { resource: UserType }>(`${this.prefix}/users/me`, {
       resource: user,
     });
   }
@@ -92,6 +90,53 @@ class UserAPIClient {
       false,
       { disableJWTAuthentication: true },
     ).then(result => result.data);
+  }
+
+  async search<T>(query: string, context: SearchContextType, callback?: (users: T[]) => void) {
+    let result: T[] = [];
+
+    if (query === 'me') {
+      const currentUser = await this.getCurrent();
+      result = [
+        context.scope === 'workspace'
+          ? ({ user: currentUser } as unknown as T)
+          : (currentUser as unknown as T),
+        ...result,
+      ];
+    } else {
+      result = await Api.get<SearchUserApiResponse<T>>(
+        this.getSearchUsersRoute(query, context),
+      ).then(data => data.resources);
+    }
+
+    if (callback) callback(result);
+
+    return result;
+  }
+
+  getSearchUsersRoute(query: string = '', context: SearchContextType) {
+    let route = '';
+
+    if (context.scope === 'company') {
+      route = `${this.prefix}/users${
+        query.length
+          ? `?search=${encodeURIComponent(query)}${
+              context.companyId && context.scope === 'company'
+                ? `&search_company_id=${context.companyId}`
+                : ''
+            }`
+          : ''
+      }`;
+    }
+
+    if (context.scope === 'workspace') {
+      const workspacePrefix = '/internal/services/workspaces/v1/companies';
+      route = `${workspacePrefix}/${context.companyId}/workspaces/${context.workspaceId}/users${
+        query.length > 0 ? `?search=${encodeURIComponent(query)}` : ''
+      }`;
+    }
+
+    return route;
   }
 }
 
