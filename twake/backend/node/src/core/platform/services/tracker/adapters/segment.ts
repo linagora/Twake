@@ -30,7 +30,11 @@ export default class Segment implements AnalyticsAbtract {
     ) & { traits?: any; timestamp?: Date; context?: any },
     callback?: (err: Error) => void,
   ): void {
-    this.analytics.identify(message, callback);
+    try {
+      this.analytics.identify(message, callback);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   public track(
@@ -40,7 +44,11 @@ export default class Segment implements AnalyticsAbtract {
     ) & { event: string; properties?: any; timestamp?: Date; context?: any },
     callback?: (err: Error) => void,
   ): void {
-    this.analytics.track(message, callback);
+    try {
+      this.analytics.track(message, callback);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   public remove(message: { userId: string }, callback: (err: Error) => void) {

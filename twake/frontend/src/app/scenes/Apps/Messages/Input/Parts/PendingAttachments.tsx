@@ -19,7 +19,6 @@ type PropsType = {
 };
 
 export default ({ zoneId, onChange, initialValue }: PropsType) => {
-  const { getOnePendingFile } = useUpload();
   const { files, setFiles } = useUploadZones(zoneId);
 
   useEffect(() => {
@@ -27,6 +26,7 @@ export default ({ zoneId, onChange, initialValue }: PropsType) => {
   }, []);
 
   useEffect(() => {
+    console.log(files);
     if (onChange) onChange(files);
   }, [files]);
 

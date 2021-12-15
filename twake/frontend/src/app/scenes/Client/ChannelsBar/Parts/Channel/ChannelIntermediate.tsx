@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import ChannelUI from './Channel';
 import ChannelMenu from './ChannelMenu';
@@ -7,6 +7,8 @@ import { Collection } from 'services/CollectionsReact/Collections';
 import { getUserParts } from 'app/components/Member/UserParts';
 import { NotificationResource } from 'app/models/Notification';
 import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
+import { useSetChannel } from 'app/state/recoil/hooks/useChannels';
+import _ from 'lodash';
 
 type Props = {
   channel: ChannelType;
@@ -16,6 +18,11 @@ type Props = {
 export default (props: Props): JSX.Element => {
   const [isActive, setActive] = useState<boolean>(false);
   const isDirectChannel = props.channel.visibility === 'direct';
+
+  const { set } = useSetChannel();
+  useEffect(() => {
+    set(_.cloneDeep(props.channel));
+  }, [props.channel]);
 
   const menu = (channel: ChannelResource) => {
     if (!channel) return <></>;
@@ -40,7 +47,10 @@ export default (props: Props): JSX.Element => {
 
   useUsersListener(props.channel.members);
 
-  const notifications = Collection.get('/notifications/v1/badges/', NotificationResource).useWatcher({ channel_id: props.channel.id });
+  const notifications = Collection.get(
+    '/notifications/v1/badges/',
+    NotificationResource,
+  ).useWatcher({ channel_id: props.channel.id });
   const { avatar, name } = isDirectChannel
     ? getUserParts({
         usersIds: props.channel.members || [],

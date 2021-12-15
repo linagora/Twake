@@ -16,13 +16,21 @@ type PropsType = {
 export default ({ file, onRemove, type }: PropsType) => {
   const { getOnePendingFile } = useUpload();
 
-  const id = file.metadata?.external_id || '';
+  const id =
+    (typeof file.metadata?.external_id === 'string'
+      ? file.metadata?.external_id
+      : file.metadata?.external_id?.id) || '';
+  const companyId =
+    (typeof file.metadata?.external_id === 'string'
+      ? file.company_id
+      : file.metadata?.external_id?.company_id) || '';
 
   let status: PendingFileRecoilType['status'] | undefined = 'success';
   let progress = 1;
 
   let formatedFile: DataFileType = {
     id: id,
+    company_id: companyId,
     name: file.metadata?.name || '',
     size: file.metadata?.size || 0,
     thumbnail: FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file) || '',
@@ -37,6 +45,7 @@ export default ({ file, onRemove, type }: PropsType) => {
     }
     formatedFile = {
       id: pendingFile?.backendFile?.id || '',
+      company_id: pendingFile?.backendFile?.company_id || '',
       name: pendingFile.originalFile.name,
       size: pendingFile.originalFile.size,
       thumbnail: URL.createObjectURL(pendingFile.originalFile),

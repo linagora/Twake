@@ -562,7 +562,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     });
 
     const sameFile = (a: MessageFile["metadata"], b: MessageFile["metadata"]) => {
-      return a.external_id == b.external_id && a.source == b.source;
+      return _.isEqual(a.external_id, b.external_id) && a.source === b.source;
     };
 
     //Delete all existing msg files not in the new files object
@@ -573,7 +573,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     ).getEntities();
     for (const entity of existingMsgFiles) {
       if (!files.some(f => sameFile(f.metadata, entity.metadata))) {
-        //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
         await this.msgFilesRepository.remove(entity);
       }
     }
@@ -604,7 +603,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       entity.metadata = file.metadata;
 
-      //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
       await this.msgFilesRepository.save(entity);
 
       message.files.push(entity);

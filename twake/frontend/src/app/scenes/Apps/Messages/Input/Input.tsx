@@ -14,18 +14,13 @@ import Languages from 'app/services/languages/languages';
 import { TextCount, TextCountService } from 'app/components/RichTextEditor/TextCount/';
 import UploadZone from 'app/components/Uploads/UploadZone';
 import Workspaces from 'services/workspaces/workspaces';
-import { useUpload } from 'app/state/recoil/hooks/useUpload';
 import './Input.scss';
-import Attachments from './Parts/Attachments';
-import FileUploadService from 'app/components/FileUploads/FileUploadService';
-import RouterService from 'app/services/RouterService';
 import { FileType } from 'app/models/File';
-import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
+import { useChannel } from 'app/state/recoil/hooks/useChannels';
 
 type Props = {
   messageId?: string;
@@ -48,6 +43,8 @@ type Props = {
 };
 
 export default (props: Props) => {
+  const { channel } = useChannel(props.channelId || '');
+
   const {
     editor,
     setValue,
@@ -56,7 +53,7 @@ export default (props: Props) => {
     key: editorId,
   } = useMessageEditor({
     companyId: useRouterCompany(),
-    workspaceId: useRouterWorkspace(),
+    workspaceId: channel.workspace_id || '',
     channelId: props.channelId,
     threadId: props.threadId,
     messageId: props.messageId,
