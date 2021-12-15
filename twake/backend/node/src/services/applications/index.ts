@@ -7,7 +7,7 @@ import { PlatformServicesAPI } from "../../core/platform/services/platform-servi
 import UserServiceAPI from "../user/api";
 
 @Prefix("/internal/services/applications/v1")
-@Consumes(["platform-services", "user"])
+@Consumes(["platform-services"])
 export default class ApplicationsService extends TwakeService<ApplicationServiceAPI> {
   version = "1";
   name = "applications";
@@ -19,9 +19,8 @@ export default class ApplicationsService extends TwakeService<ApplicationService
 
   public async doInit(): Promise<this> {
     const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
-    const userService = this.context.getProvider<UserServiceAPI>("user");
     const fastify = platformServices.fastify.getServer();
-    this.service = getService(platformServices, userService);
+    this.service = getService(platformServices, null);
     await this.service.init(this.context);
 
     fastify.register((instance, _opts, next) => {
