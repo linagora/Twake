@@ -7,11 +7,13 @@ import {
   CompanyApplicationsStateFamily,
   onChangeCompanyApplications,
 } from '../atoms/CompanyApplications';
-import companyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
+import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
 import { useCurrentCompany } from './useCompanies';
 import _ from 'lodash';
-const logger = Logger.getLogger('useApplications');
+import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { Application } from 'app/models/App';
 
+const logger = Logger.getLogger('useApplications');
 /**
  * Use all applications in a company
  * @param companyId
@@ -28,7 +30,7 @@ export function useCompanyApplications(companyId: string = '') {
 
   const refresh = async () => {
     try {
-      const res = await companyApplicationsAPIClient.list(companyId);
+      const res = await CompanyApplicationsAPIClient.list(companyId);
       if (res) setApplications(res);
     } catch (e) {
       logger.error(`Error while trying to handle company applications changes`, e);
@@ -43,7 +45,7 @@ export function useCompanyApplications(companyId: string = '') {
   const remove = async (applicationId: string) => {
     setLoading(true);
     try {
-      await companyApplicationsAPIClient.remove(companyId, applicationId);
+      await CompanyApplicationsAPIClient.remove(companyId, applicationId);
       Toaster.success(
         Languages.t('app.state.recoil.hooks.use_current_company_applications.toaster_delete', [
           get(applicationId)?.identity?.name || 'unknown',
@@ -60,7 +62,7 @@ export function useCompanyApplications(companyId: string = '') {
     logger.debug(`Proccessing add company application ${applicationId} in company `, companyId);
     setLoading(true);
     try {
-      await companyApplicationsAPIClient.add(companyId, applicationId);
+      await CompanyApplicationsAPIClient.add(companyId, applicationId);
       Toaster.success(
         Languages.t('app.state.recoil.hooks.use_current_company_applications.toaster_add', [
           get(applicationId)?.identity?.name || 'unknown',
@@ -74,6 +76,12 @@ export function useCompanyApplications(companyId: string = '') {
   };
 
   const isInstalled = (applicationId: string) => (get(applicationId) ? true : false);
+
+  const room = CompanyApplicationsAPIClient.websockets(company.id || '')[0];
+
+  useRealtimeRoom<Application[]>(room, 'useCompanyApplications', (_action, _resource) => {
+    refresh();
+  });
 
   return {
     applications,

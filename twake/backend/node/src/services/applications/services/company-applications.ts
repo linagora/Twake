@@ -5,20 +5,17 @@ import CompanyApplication, {
   CompanyApplicationWithApplication,
 } from "../entities/company-application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger } from "../../../core/platform/framework";
+import { logger, RealtimeDeleted, RealtimeSaved } from "../../../core/platform/framework";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import {
-  CreateResult,
   DeleteResult,
   ListResult,
   OperationType,
-  Paginable,
   Pagination,
   SaveResult,
-  UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 import { CompanyExecutionContext } from "../web/types";
-import Application, { ApplicationPrimaryKey } from "../entities/application";
+import { getCompanyApplicationRoom } from "../realtime";
 
 export function getService(
   platformService: PlatformServicesAPI,
@@ -66,6 +63,15 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @RealtimeSaved<CompanyApplication>((companyApplication, _context) => {
+    return [
+      {
+        room: getCompanyApplicationRoom(companyApplication.id),
+        resource: companyApplication,
+      },
+    ];
+  })
   async save<SaveOptions>(
     item: Pick<CompanyApplicationPrimaryKey, "company_id" | "application_id">,
     _?: SaveOptions,
@@ -105,6 +111,15 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @RealtimeDeleted<CompanyApplication>((companyApplication, _context) => {
+    return [
+      {
+        room: getCompanyApplicationRoom(companyApplication.id),
+        resource: companyApplication,
+      },
+    ];
+  })
   async delete(
     pk: CompanyApplicationPrimaryKey,
     context?: CompanyExecutionContext,
