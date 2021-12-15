@@ -1,15 +1,12 @@
 import { atomFamily } from 'recoil';
 
-export type AtomChannelIdKey = {
+export type ChannelWritingActivityType = {
   threadId: string;
   userId: string;
   name: string;
-  isWritting: boolean;
 };
 
-export const ChannelWrittingActivityState = atomFamily<AtomChannelIdKey[], AtomChannelIdKey>({
-  key: 'ChannelWrittingActivityState',
-  default: AtomChannelIdKey => {
-    return {};
-  },
+export const ChannelWritingActivityState = atomFamily<ChannelWritingActivityType[], string>({
+  key: 'ChannelWritingActivityState',
+  default: [],
 });

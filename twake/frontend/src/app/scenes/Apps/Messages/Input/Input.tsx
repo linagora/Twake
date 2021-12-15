@@ -21,6 +21,8 @@ import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEdit
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import { useChannel } from 'app/state/recoil/hooks/useChannels';
+import IsWriting from './Parts/IsWriting';
+import useChannelActivityWriting from 'app/state/recoil/hooks/useChannelWritingActivity';
 
 type Props = {
   messageId?: string;
@@ -71,6 +73,9 @@ export default (props: Props) => {
     RichTextEditorStateService.get(editorId, { plugins: editorPlugins }),
   );
   const [isTooLong, setTooLong] = useState(false);
+
+  const { iAmWriting } = useChannelActivityWriting(props.channelId || '', props.threadId);
+
   useEffect(() => {
     setTooLong(TextCountService.getStats(editorState).isTooLong);
   }, [editorState]);
@@ -100,6 +105,7 @@ export default (props: Props) => {
     if (props.editorState && props.editorState !== editorState) {
       setEditorState(props.editorState);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.editorState]);
 
@@ -168,6 +174,7 @@ export default (props: Props) => {
       props.onChange(editorState);
       return;
     }
+    iAmWriting();
     setRichTextEditorState(editorState);
   };
 
@@ -293,6 +300,7 @@ export default (props: Props) => {
             onRichTextChange={editorState => setRichTextEditorState(editorState)}
           />
         )}
+        <IsWriting channelId={props.channelId || ''} threaId={props.threadId} />
       </UploadZone>
     </div>
   );
