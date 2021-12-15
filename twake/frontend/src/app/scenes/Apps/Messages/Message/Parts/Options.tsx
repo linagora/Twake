@@ -18,13 +18,14 @@ import { Application } from 'app/models/App';
 import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 import { MessageContext } from '../MessageWithReplies';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
 import _ from 'lodash';
-import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 import SideViewService from 'app/services/AppView/SideViewService';
+import MainViewService from 'app/services/AppView/MainViewService';
 
 type Props = {
   onOpen?: () => void;
@@ -39,9 +40,10 @@ export default (props: Props) => {
   let { message, react, remove, pin } = useMessage(context);
 
   const location = `message-${message.id}`;
+  const subLocation = useContext(ViewContext).type;
   const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
     location,
-    useContext(ViewContext).type,
+    subLocation,
   );
 
   const menu: any[] = [];
@@ -164,7 +166,7 @@ export default (props: Props) => {
           type: 'menu',
           text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Edit'),
           onClick: () => {
-            setVisibleEditor({ location, subLocation: '' });
+            setVisibleEditor({ location, subLocation });
           },
         });
       }
@@ -240,6 +242,7 @@ export default (props: Props) => {
             className="option"
             onClick={() => {
               SideViewService.select(channelId, {
+                collection: MainViewService.getViewCollection(),
                 app: { identity: { code: 'messages' } } as Application,
                 context: {
                   viewType: 'channel_thread',

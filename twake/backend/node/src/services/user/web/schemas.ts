@@ -122,6 +122,7 @@ export const getUsersSchema = {
   },
 };
 
+//Not used because it causes issues with the features json object
 export const getUserCompaniesSchema = {
   type: "object",
   response: {
@@ -135,6 +136,7 @@ export const getUserCompaniesSchema = {
   },
 };
 
+//Not used because it causes issues with the features json object
 export const getCompanySchema = {
   type: "object",
   response: {

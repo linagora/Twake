@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Divider, Progress, Row, Typography } from 'antd';
+import { Col, Progress, Row, Typography } from 'antd';
 import './CompanyMessagesCounter.scss';
 import i18n from 'i18next';
 
 import Languages from 'services/languages/languages';
-import MessageHistoryService from 'services/Apps/Messages/MessageHistoryService';
 import InitService from 'services/InitService';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
+import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
 
 const { Text, Title, Link } = Typography;
 const CompanyMessagesCounter = () => {
-  const [messagesCount, setMessagesCount] = useState<number>();
+  const [messagesCount, setMessagesCount] = useState<number>(1);
   let companyMessagesLimit = MessageHistoryService.getLimitCompanyMessages();
 
   const { company } = useCurrentCompany();
@@ -21,12 +22,12 @@ const CompanyMessagesCounter = () => {
   const onClickLink = () => window.open(companySubscriptionUrl, 'blank');
 
   useEffect(() => {
-    if (companyMessagesLimit && company) {
-      setMessagesCount(company.stats?.total_messages || 0);
+    if (company) {
+      setMessagesCount(company.stats?.total_messages || 1);
     }
-  }, [company, companyMessagesLimit]);
+  }, [company]);
 
-  return companyMessagesLimit && messagesCount !== undefined ? (
+  return !FeatureTogglesService.getFeatureValue(FeatureNames.MESSAGE_HISTORY) ? (
     <>
       <Row
         justify="space-around"

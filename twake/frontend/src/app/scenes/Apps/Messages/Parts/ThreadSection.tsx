@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, Suspense } from 'react';
 import 'moment-timezone';
 import './Threads.scss';
 import ThreadAvatar from './ThreadAvatar';
@@ -35,7 +35,11 @@ export default (props: Props) => {
       <div className="message">
         {!props.noSenderSpace && (
           <div className="sender-space">
-            {props.withAvatar && <ThreadAvatar small={props.small} />}
+            {props.withAvatar && (
+              <Suspense fallback={''}>
+                <ThreadAvatar small={props.small} />
+              </Suspense>
+            )}
           </div>
         )}
         {props.children}

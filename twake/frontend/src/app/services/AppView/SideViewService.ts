@@ -5,6 +5,10 @@ class _SideViewService extends AppViewService {
     return this.getConfiguration()?.context?.viewType || '';
   }
 
+  public getViewCollection() {
+    return this.getConfiguration().collection;
+  }
+
   public select(id: string, configuration?: ViewConfiguration) {
     super.select(id, configuration);
   }

@@ -7,10 +7,13 @@ import { PlatformServicesAPI } from "../../../core/platform/services/platform-se
 import { getService as getApplicationService } from "./applications";
 import { getService as getCompanyApplicationService } from "./company-applications";
 import { getService as getCompaniesService } from "../../user/services/companies";
-import { CompaniesServiceAPI } from "../../user/api";
+import UserServiceAPI, { CompaniesServiceAPI } from "../../user/api";
 
-export function getService(platformService: PlatformServicesAPI): ApplicationServiceAPI {
-  return new Service(platformService);
+export function getService(
+  platformService: PlatformServicesAPI,
+  userServiceAPI: UserServiceAPI,
+): ApplicationServiceAPI {
+  return new Service(platformService, userServiceAPI);
 }
 
 class Service {
@@ -19,10 +22,10 @@ class Service {
   companyApplications: CompanyApplicationServiceAPI;
   companies: CompaniesServiceAPI;
 
-  constructor(readonly platformService: PlatformServicesAPI) {
+  constructor(readonly platformService: PlatformServicesAPI, userServiceAPI: UserServiceAPI) {
     this.applications = getApplicationService(platformService);
     this.companyApplications = getCompanyApplicationService(platformService, this.applications);
-    this.companies = getCompaniesService(platformService);
+    this.companies = getCompaniesService(platformService, userServiceAPI);
   }
 
   async init(): Promise<this> {

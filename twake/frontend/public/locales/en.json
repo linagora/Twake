@@ -543,6 +543,7 @@
     "scenes.apps.messages.message.show_responses_button": "View all answers",
     "scenes.apps.messages.message.types.first_channel_message_text": "This is the first message of the channel",
     "scenes.apps.messages.message.types.first_message_text": "This is the first message",
+    "scenes.apps.messages.message.types.no_message_in_thread": "Nobody replied yet.",
     "scenes.apps.messages.messageslist.get_writing_user": "is writing...",
     "scenes.apps.messages.messageslist.get_writing_users": "are writing...",
     "scenes.apps.messages.messageslist.go_last_message_button": "Go to last message",
@@ -710,7 +711,7 @@
     "scenes.apps.drive.download_all_button": "Download all",
     "components.inputs.input_with_select.input.placeholder": "Channel name",
     "components.inputs.input_with_select.select.placeholder": "Section name",
-    "components.inputs.input_with_select.select.no_sections": "Start writing the name of your first channel section.",
+    "components.inputs.input_with_select.select.no_sections": "You can group your channels here",
     "components.inputs.input_with_select.button.tooltip": "Set a channel section",
     "scenes.apps.messages.message.activity_message.a_added_b_to_the_channel": "{{$1}} added {{$2}} to the channel",
     "scenes.apps.messages.message.activity_message.a_removed_b_from_the_channel": "{{$1}} removed {{$2}} from the channel",
@@ -727,8 +728,8 @@
     "scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.loader": "Load more",
     "general.re_send": "Re-send",
     "general.verify": "Verify",
-    "components.unverified_account.typography_text_danger": "You have {{$1}} day(s) left in your trial period. Trial account will be blocked after 7 days and deleted permanently after 1 month of registration. You can verify your account by clicking \"Verify my account\" button in the verification email that we sent you.",
-    "components.unverified_account.verification_details": "We’ve sent verification details to",
+    "components.unverified_account.typography_text_danger": "Please verify your account within {{$1}} days. If not, your account will be blocked after 7 days and permanently deleted after 30 days. You can verify your account through the verification email.",
+    "components.unverified_account.verification_details": "We have sent verification email to",
     "components.account_verification_status_sentence": "Your account status is: {{$1}}",
     "components.account_verication_status_unverified": "Unverified",
     "components.account_verication_status_blocked": "Locked",
@@ -857,5 +858,6 @@
     "scenes.join.join_workspace_from_company": "Join {{$1}} from {{$2}}!",
     "scenes.join.twake_description": "Twake is an open-source digital workspace built to improve your team productivity",
     "scenes.join.login_first_button": "Log in or create an account first",
-    "scenes.join.join_the_team_button": "Join the team"
+    "scenes.join.join_the_team_button": "Join the team",
+    "scenes.app.channelsbar.currentuser.reset": "Reset"
 }

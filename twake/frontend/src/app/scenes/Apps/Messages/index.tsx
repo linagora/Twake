@@ -18,6 +18,7 @@ export default (props: Props) => {
   if (!props.channel) {
     return <></>;
   }
+
   return (
     <Messages
       channel={props.channel}

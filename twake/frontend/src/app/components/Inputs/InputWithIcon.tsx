@@ -170,7 +170,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
                 this.openEmojiPicker();
               }}
             >
-              <Emojione type={icon} />
+              <Emojione type={icon} size={24} />
             </div>
           </Col>
           <Col flex="auto">
@@ -179,7 +179,11 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
                 size={'large'}
                 style={{ paddingLeft: 15 }}
                 autoFocus
-                ref={obj => (this.input = obj)}
+                ref={obj => {
+                  this.input = obj;
+
+                  this.props.inputRef(obj);
+                }}
                 type="text"
                 placeholder={this.props.placeholder}
                 value={this.props.value[1]}

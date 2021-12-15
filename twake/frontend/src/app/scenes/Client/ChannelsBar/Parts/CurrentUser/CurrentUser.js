@@ -18,7 +18,6 @@ import NotificationParameters from 'services/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/scenes/Client/Popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import CompanyHeaderUI from 'app/scenes/Client/ChannelsBar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
 import ModalManagerDepreciated from 'services/popupManager/popupManager';
-import Button from 'components/Buttons/Button.js';
 import InitService from 'app/services/InitService';
 import AccessRightsService from 'services/AccessRightsService';
 import Workspaces from 'services/workspaces/workspaces.js';
@@ -26,10 +25,9 @@ import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureToggles
 import LockedWorkspacePopup from 'app/components/LockedFeaturesComponents/LockedWorkspacePopup/LockedWorkspacePopup';
 import ModalManager from 'app/components/Modal/ModalManager';
 import CompanyMessagesCounter from 'components/CompanyMessagesCounter/CompanyMessagesCounter';
-import RouterService from 'app/services/RouterService';
-import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import MenuCompanyHeader from './MenuCompanyHeader';
+import SaveNewStatus from './SaveNewStatus';
 
 export default class CurrentUser extends Component {
   constructor() {
@@ -52,6 +50,7 @@ export default class CurrentUser extends Component {
       ':sleeping_accommodation:',
     ];
   }
+
   componentWillMount() {
     this.user_id = UserService.getCurrentUserId();
 
@@ -76,22 +75,10 @@ export default class CurrentUser extends Component {
     const new_status = {
       ...this.users_repository.known_objects_by_id[this.user_id].status.split(' '),
     };
-
     if (!new_status[0]) {
       new_status[1] = '';
     }
-
-    this.setState({ new_status });
-  }
-  updateStatus(value) {
-    value = value || this.state.new_status;
-    CurrentUserService.updateStatusIcon([
-      value[0] === 'trash' ? '' : value[0],
-      value[0] === 'trash' ? '' : value[1],
-    ]);
-    MenusManager.closeMenu();
-    this.setState({ new_status: ['', ''] });
-    MenusManager.notify();
+    this.setState({ new_status } || [new_status[0], '']);
   }
 
   onClickUser(evt) {
@@ -110,13 +97,20 @@ export default class CurrentUser extends Component {
         type: 'react-element',
         reactElement: () => <MenuCompanyHeader />,
       },
-      { type: 'separator' },
-      {
-        type: 'react-element',
-        className: 'menu-cancel-left-padding',
-        reactElement: () => <CompanyMessagesCounter />,
-      },
     ];
+
+    if (!FeatureTogglesService.isActiveFeatureName(FeatureNames.MESSAGE_HISTORY)) {
+      usermenu.push(
+        ...[
+          { type: 'separator' },
+          {
+            type: 'react-element',
+            className: 'menu-cancel-left-padding',
+            reactElement: () => <CompanyMessagesCounter />,
+          },
+        ],
+      );
+    }
 
     if (
       !WorkspaceUserRights.isGroupInvite() &&
@@ -127,11 +121,8 @@ export default class CurrentUser extends Component {
 
       usermenu.push({
         type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.collaborateurs',
-          [],
-          'Collaborateurs',
-        ),
+        icon: 'users-alt',
+        text: Languages.t('scenes.app.channelsbar.currentuser.collaborateurs'),
         onClick: () => {
           ModalManagerDepreciated.open(
             <WorkspaceParameter initial_page={2} />,
@@ -143,11 +134,8 @@ export default class CurrentUser extends Component {
 
       usermenu.push({
         type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.create_workspace_page',
-          [],
-          'Créer un espace de travail',
-        ),
+        icon: 'plus',
+        text: Languages.t('scenes.app.channelsbar.currentuser.create_workspace_page'),
         onClick: () => {
           if (FeatureTogglesService.isActiveFeatureName(FeatureNames.MULTIPLE_WORKSPACES)) {
             ModalManagerDepreciated.open(<CreateWorkspacePage />);
@@ -171,11 +159,8 @@ export default class CurrentUser extends Component {
           { type: 'separator' },
           {
             type: 'menu',
-            text: Languages.t(
-              'scenes.app.channelsbar.currentuser.workspace_parameters',
-              [],
-              "Paramètres de l'espace",
-            ),
+            icon: 'cog',
+            text: Languages.t('scenes.app.channelsbar.currentuser.workspace_parameters'),
             onClick: () => {
               ModalManagerDepreciated.open(<WorkspaceParameter />, true, 'workspace_parameters');
             },
@@ -188,6 +173,7 @@ export default class CurrentUser extends Component {
         ) {
           usermenu.push({
             type: 'menu',
+            icon: 'home',
             text: Languages.t('scenes.app.popup.workspaceparameter.pages.company_identity_title'),
             rightIcon: 'external-link-alt',
             onClick: () => {
@@ -204,19 +190,12 @@ export default class CurrentUser extends Component {
         { type: 'separator' },
         {
           type: 'text',
-          text: Languages.t(
-            'scenes.app.channelsbar.currentuser.invited_status',
-            [],
-            'Vous êtes un invité.',
-          ),
+          text: Languages.t('scenes.app.channelsbar.currentuser.invited_status'),
         },
         {
           type: 'menu',
-          text: Languages.t(
-            'scenes.app.popup.workspaceparameter.pages.quit_workspace_menu',
-            [],
-            "Quitter l'espace",
-          ),
+          icon: 'plane-fly',
+          text: Languages.t('scenes.app.popup.workspaceparameter.pages.quit_workspace_menu'),
           icon: 'plane-fly',
           className: 'error',
           onClick: () => {
@@ -228,15 +207,12 @@ export default class CurrentUser extends Component {
 
     usermenu = usermenu.concat([
       { type: 'separator' },
-      /*{
+
+      {
         type: 'menu',
-        text: Languages.t(
-          'scenes.app.channelsbar.currentuser.change_my_status',
-          [],
-          'Changer mon statut',
-        ),
+        text: Languages.t('scenes.app.channelsbar.currentuser.change_my_status'),
         emoji: (current_user.status.split(' ') || {})[0] || ':smiley:',
-        submenu_replace: true,
+        submenu_replace: false,
         submenu: [
           {
             type: 'title',
@@ -246,61 +222,18 @@ export default class CurrentUser extends Component {
               'Changer mon statut',
             ),
           },
-          {
-            type: 'react-element',
-            reactElement: level => {
-              if (this.state.new_status[0].length <= 0) {
-                this.setState({ new_status: current_user.status.split(' ') });
-              }
-              return (
-                <InputWithIcon
-                  focusOnDidMount
-                  menu_level={level}
-                  preferedEmoji={this.preferedEmojisStatus}
-                  placeholder={Languages.t(
-                    'scenes.app.popup.appsparameters.pages.status_tilte',
-                    [],
-                    'Status',
-                  )}
-                  value={this.state.new_status}
-                  onChange={value => {
-                    if (value[0] === 'trash') {
-                      this.updateStatus(value);
-                    } else {
-                      this.setState({ new_status: value });
-                      MenusManager.notify();
-                    }
-                  }}
-                />
-              );
-            },
-          },
 
           {
             type: 'react-element',
             reactElement: level => {
-              return (
-                <div className="menu-buttons">
-                  <Button
-                    disabled={this.state.new_status[1].length <= 0}
-                    type="button"
-                    value={Languages.t(
-                      'scenes.app.channelsbar.currentuser.update',
-                      [],
-                      'Mettre à jour',
-                    )}
-                    onClick={() => {
-                      this.updateStatus();
-                    }}
-                  />
-                </div>
-              );
+              return <SaveNewStatus level={level} />;
             },
           },
         ],
-      },*/
+      },
       {
         type: 'menu',
+        icon: 'user',
         text: Languages.t('scenes.app.channelsbar.currentuser.title', [], 'Paramètres du compte'),
         rightIcon:
           InitService.server_infos?.configuration?.accounts?.type === 'console'
@@ -319,6 +252,7 @@ export default class CurrentUser extends Component {
       },
       {
         type: 'menu',
+        icon: 'sign-out-alt',
         text: Languages.t('scenes.app.channelsbar.currentuser.logout', [], 'Se déconnecter'),
         className: 'error',
         onClick: () => {

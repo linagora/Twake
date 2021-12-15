@@ -11,6 +11,8 @@ import AlertManager from 'services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages';
 import JWTStorage from 'services/JWTStorage';
 import Globals from 'services/Globals';
+import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import UserAPIClient from './UserAPIClient';
 
 class CurrentUser extends Observable {
   loading: boolean;
@@ -68,7 +70,14 @@ class CurrentUser extends Observable {
     return Collections.get('users').find(Login.currentUserId);
   }
 
-  updateStatusIcon(status: any) {
+  updateUserStatus = (newStatus: string[]) => {
+    return () => {
+      const { updateStatus } = useCurrentUser();
+      updateStatus(newStatus);
+    };
+  };
+
+  async updateStatusIcon(status: string[]) {
     const data = {
       status,
     };
@@ -76,10 +85,10 @@ class CurrentUser extends Observable {
       id: Login.currentUserId,
       status_icon: status,
     };
+
     Collections.get('users').updateObject(update);
-    Api.post('/ajax/users/account/update_status', data, () => {
-      ws.publish('users/' + Login.currentUserId, { user: update });
-    });
+    this.updateUserStatus(status);
+    await UserAPIClient.updateUserStatus(`${status[0]} ${status[1]}`);
   }
 
   updateTutorialStatus(key: string, set_false?: unknown) {

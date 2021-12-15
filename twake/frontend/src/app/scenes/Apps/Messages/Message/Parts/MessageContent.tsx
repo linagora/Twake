@@ -1,26 +1,23 @@
-import React, { useContext, useState } from 'react';
+import React, { Suspense, useContext, useState } from 'react';
 import 'moment-timezone';
 import classNames from 'classnames';
-import Twacode from 'components/Twacode/Twacode';
-import MessagesService from 'services/Apps/Messages/Messages';
 import Reactions from './Reactions';
 import Options from './Options';
 import MessageHeader from './MessageHeader';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEdition from './MessageEdition';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import { Message } from 'app/models/Message';
 import DeletedContent from './DeletedContent';
 import RetryButtons from './RetryButtons';
 import FileComponent from 'app/components/File/FileComponent';
 import { Row } from 'antd';
 import Globals from 'services/Globals';
-import RouterService from 'app/services/RouterService';
 import { MessageContext } from '../MessageWithReplies';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import Blocks from './Blocks';
-import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
+import PossiblyPendingAttachment from './PossiblyPendingAttachment';
+import MessageAttachments from './MessageAttachments';
 
 type Props = {
   linkToThread?: boolean;
@@ -70,8 +67,8 @@ export default (props: Props) => {
   );
 
   const showEdition = !props.linkToThread && editorIsActive;
-  const messageIsLoading = (message as any)._creating || (message as any)._updating;
-  const messageSaveFailed = (message as any)._failed;
+  const messageIsLoading = (message as any)._status === 'sending';
+  const messageSaveFailed = (message as any)._status === 'failed';
 
   return (
     <div
@@ -85,13 +82,12 @@ export default (props: Props) => {
       }}
       onClick={() => setActive(false)}
     >
-      <MessageHeader linkToThread={props.linkToThread} />
+      <Suspense fallback={''}>
+        <MessageHeader linkToThread={props.linkToThread} />
+      </Suspense>
       {!!showEdition && !deleted && (
         <div className="content-parent">
-          <MessageEdition
-            onDeleted={() => console.log('Message has been deleted')}
-            onEdited={() => console.log('Message has been edited')}
-          />
+          <MessageEdition />
         </div>
       )}
       {!showEdition && (
@@ -128,39 +124,16 @@ export default (props: Props) => {
                   </>
                 )}
               </div>
-              {message?.files && message?.files?.length > 0 && (
-                <Row justify="start" align="middle" className="small-top-margin" wrap>
-                  {message.files.map((f, i) =>
-                    f.metadata ? (
-                      <FileComponent
-                        key={i}
-                        className="small-right-margin small-bottom-margin"
-                        type="message"
-                        file={{
-                          id: f.metadata.external_id,
-                          name: f.metadata.name || '',
-                          size: f.metadata.size || 0,
-                          company_id: f.company_id || companyId,
-                          // TODO Get route using a service ?
-                          thumbnail: f.metadata?.thumbnails?.[0]?.url
-                            ? `${Globals.api_root_url}/internal/services/files/v1${f.metadata.thumbnails[0].url}`
-                            : undefined,
-                          type: f.metadata.type || '',
-                        }}
-                      />
-                    ) : (
-                      <></>
-                    ),
-                  )}
-                </Row>
-              )}
+
+              {message?.files && message?.files?.length > 0 && <MessageAttachments />}
+
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}
             </>
           )}
         </div>
       )}
-      {!showEdition && !deleted && !messageSaveFailed && didMouseOver && (
+      {!showEdition && !deleted && !messageSaveFailed && didMouseOver && !messageIsLoading && (
         <Options
           onOpen={() => setActive(true)}
           onClose={() => setActive(false)}

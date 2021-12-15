@@ -16,13 +16,16 @@ import RouterServices from 'app/services/RouterService';
 import { NodeMessage } from 'app/models/Message';
 import Languages from 'services/languages/languages';
 import Loader from 'components/Loader/Loader.js';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { MessageContext } from '../MessageWithReplies';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
 import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
 import { useUser } from 'app/state/recoil/hooks/useUser';
 import { UserType } from 'app/models/User';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { useRecoilState, useRecoilStateLoadable } from 'recoil';
+import { UsersState } from 'app/state/recoil/atoms/Users';
+import { CompanyApplicationsStateFamily } from 'app/state/recoil/atoms/CompanyApplications';
 
 type Props = {
   linkToThread?: boolean;
@@ -38,8 +41,10 @@ export default (props: Props) => {
   const context = useContext(MessageContext);
   let { message } = useMessage(context);
   let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
+
   let user = useUser(message.user_id);
-  let { applications: companyApplications } = useCompanyApplications(context.companyId);
+  const companyApplications =
+    useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   let application = companyApplications.find(a => a.id === message.application_id);
 
   const scrollToMessage = () => {

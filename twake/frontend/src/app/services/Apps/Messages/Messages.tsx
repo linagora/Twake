@@ -23,6 +23,7 @@ import MessageAPIClient from './clients/MessageAPIClient';
 import { Application } from 'app/models/App';
 import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
+import MainViewService from 'app/services/AppView/MainViewService';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -187,7 +188,7 @@ class Messages extends Observable {
       message.responses_count = 0;
 
       message.files = [
-        ...attachements.filter(f => f.metadata?.type !== 'pending').map(file => file),
+        ...attachements.filter(f => f.metadata?.source !== 'pending').map(file => file),
       ];
 
       message.creation_date = new Date().getTime() / 1000 + 10; //To be on the bottom
@@ -479,6 +480,7 @@ class Messages extends Observable {
     const channel = await this.findChannel(message.channel_id);
 
     SideViewService.select(channel.id, {
+      collection: MainViewService.getViewCollection(),
       app: { identity: { code: 'messages' } } as Application,
       context: {
         viewType: 'channel_thread',

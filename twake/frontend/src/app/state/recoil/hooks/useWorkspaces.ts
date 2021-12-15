@@ -39,7 +39,7 @@ export const useWorkspaces = (companyId: string = '') => {
   };
 
   //Fixme: use the token got from backend here
-  useRealtimeRoom<WorkspaceType>(
+  const { send } = useRealtimeRoom<WorkspaceType>(
     WorkspaceAPIClient.websockets(companyId)[0],
     'useWorkspaces',
     (action, resource) => {
@@ -85,6 +85,13 @@ export function useCurrentWorkspace() {
   Workspaces.updateCurrentCompanyId(workspace?.company_id || '');
   //End
 
+  return { workspace, refresh };
+}
+
+export function useWorkspace(workspaceId: string) {
+  const companyId = useRouterCompany();
+  const { workspaces, refresh } = useWorkspaces(companyId);
+  const workspace = workspaces.find(w => w.id == workspaceId);
   return { workspace, refresh };
 }
 

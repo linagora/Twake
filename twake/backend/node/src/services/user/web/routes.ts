@@ -48,6 +48,15 @@ const routes: FastifyPluginCallback<{
   });
 
   fastify.route({
+    method: "POST",
+    url: `${usersUrl}/me`,
+    preHandler: accessControl,
+    preValidation: [fastify.authenticate],
+    schema: setUserPreferencesSchema,
+    handler: usersController.save.bind(usersController),
+  });
+
+  fastify.route({
     method: "GET",
     url: `${usersUrl}`,
     preHandler: accessControl,
@@ -62,7 +71,7 @@ const routes: FastifyPluginCallback<{
     url: `${usersUrl}/:id/companies`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    schema: getUserCompaniesSchema,
+    //schema: getUserCompaniesSchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
     handler: usersController.getUserCompanies.bind(usersController),
   });
 
@@ -70,7 +79,7 @@ const routes: FastifyPluginCallback<{
   fastify.route({
     method: "GET",
     url: "/companies/:id",
-    schema: getCompanySchema,
+    //schema: getCompanySchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
     handler: usersController.getCompany.bind(usersController),
   });
 

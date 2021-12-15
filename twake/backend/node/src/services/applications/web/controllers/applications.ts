@@ -12,11 +12,9 @@ import Application, { PublicApplication } from "../../entities/application";
 import {
   CrudExeption,
   ExecutionContext,
-  SaveResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import _ from "lodash";
-import uuid from "node-uuid";
-import { logger as log } from "../../../../core/platform/framework";
+import { randomBytes } from "crypto";
 
 export class ApplicationController
   implements
@@ -60,10 +58,6 @@ export class ApplicationController
     }>,
   ): Promise<ResourceListResponse<PublicApplication>> {
     const context = getExecutionContext(request);
-    // TODO: check published;
-
-    // const userInCompany = await this.userInCompany(request);
-
     const entities = await this.service.applications.list(
       request.query,
       { search: request.query.search },
@@ -114,7 +108,7 @@ export class ApplicationController
       entity.display = app.display;
 
       entity.stats.updatedAt = now;
-      entity.stats.version++; // TODO: do we increase it every update?
+      entity.stats.version++;
 
       const res = await this.service.applications.save(entity);
       entity = res.entity;
@@ -123,7 +117,7 @@ export class ApplicationController
 
       app.is_default = false;
       app.publication.published = false;
-      app.api.privateKey = uuid.v1(); // TODO: generate proper key
+      app.api.privateKey = randomBytes(32).toString("base64");
 
       app.stats = {
         createdAt: now,

@@ -13,6 +13,7 @@ import UsersService from 'services/user/UserService';
 import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { delayRequest } from 'app/services/utils/managedSearchRequest';
 
 export default () => {
   const [search, setSearch] = useState<string>('');
@@ -99,7 +100,12 @@ export default () => {
           value={search}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setSearch(event.target.value);
-            listService.searchAll(event.target.value);
+            event.persist();
+
+            delayRequest('channel_members_list_search', () =>
+              listService.searchAll(event.target.value),
+            );
+
             return setCursor(0);
           }}
           autoFocus

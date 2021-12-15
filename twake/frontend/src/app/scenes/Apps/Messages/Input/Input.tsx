@@ -22,9 +22,10 @@ import RouterService from 'app/services/RouterService';
 import { FileType } from 'app/models/File';
 import { isPendingFileStatusSuccess } from 'app/components/FileUploads/utils/PendingFiles';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
-import { useMessageEditor } from 'app/state/recoil/hooks/useMessageEditor';
+import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import { delayRequest } from 'app/services/utils/managedSearchRequest';
 
 type Props = {
   messageId?: string;
@@ -50,6 +51,7 @@ export default (props: Props) => {
   const {
     editor,
     setValue,
+    setFiles,
     send,
     key: editorId,
   } = useMessageEditor({
@@ -60,8 +62,7 @@ export default (props: Props) => {
     messageId: props.messageId,
   });
 
-  const { uploadFiles, getOnePendingFile } = useUpload();
-  const { currentUploadZoneFilesList, clearZone } = useUploadZones(editorId);
+  const { upload, clear: clearUploads } = useUploadZones(editorId);
   const format = props.format || 'markdown';
   const editorRef = useRef<EditorView>(null);
   const submitRef = useRef<HTMLDivElement>(null);
@@ -111,15 +112,17 @@ export default (props: Props) => {
 
   const onSend = () => {
     const content = getContentOutput(editorState);
+    setValue(content);
 
     if (props.onSend) {
       props.onSend(content);
       return;
     }
 
-    if (content || messageEditorService.hasAttachments(props.threadId)) {
-      sendMessage(content, editorId);
+    if (content || editor.files.length > 0) {
+      send();
       setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
+      clearUploads();
     }
   };
 
@@ -129,42 +132,6 @@ export default (props: Props) => {
     }
     disable_app[app.id] = new Date().getTime();
     MessagesService.triggerApp(props.channelId || '', props.threadId, app, from_icon, evt);
-  };
-
-  const sendMessage = (messageContent: string, editorId: string) => {
-    send();
-    return;
-
-    if (!props.threadId) {
-      messageEditorService.closeEditor();
-    }
-    MessagesService.iamWriting(props.channelId || '', props.threadId, false);
-    MessagesService.sendMessage(
-      messageContent,
-      {
-        channel_id: props.channelId,
-        parent_message_id: props.threadId || '',
-        editor_id: editorId,
-      },
-      props.collectionKey || '',
-      currentUploadZoneFilesList,
-    ).then((message: any) => {
-      clearZone(editorId);
-
-      if (message) {
-        if (
-          messageEditorService.currentEditor ===
-          messageEditorService.getEditorId(props.threadId, props.messageId || '', props.context)
-        ) {
-          focusEditor();
-        }
-        if (!message.parent_message_id) {
-          messageEditorService.openEditor(message.id, props.messageId || '');
-        }
-        messageEditorService.clearAttachments(props.threadId);
-        messageEditorService.clearMessage(props.threadId, props.messageId || '');
-      }
-    });
   };
 
   const focus = () => {
@@ -182,8 +149,7 @@ export default (props: Props) => {
 
   const isEmpty = (): boolean => {
     return (
-      editorState.getCurrentContent().getPlainText().trim().length === 0 &&
-      !messageEditorService.hasAttachments(props.threadId)
+      editorState.getCurrentContent().getPlainText().trim().length === 0 && !editor.files.length
     );
   };
 
@@ -197,7 +163,10 @@ export default (props: Props) => {
   };
 
   const onChange = async (editorState: EditorState) => {
-    setValue(getContentOutput(editorState));
+    //Delay request make the input faster (getContentOutput is a heavy call)
+    delayRequest(`editor-${editorId}`, () => {
+      setValue(getContentOutput(editorState));
+    });
     if (props.onChange) {
       props.onChange(editorState);
       return;
@@ -206,7 +175,7 @@ export default (props: Props) => {
   };
 
   const onFilePaste = (files: Blob[]) => {
-    messageEditorService.getUploadZone(props.threadId).uploadFiles(files);
+    messageEditorService.getUploadZone(props.threadId).upload(files);
   };
 
   const isEditing = (): boolean => {
@@ -231,7 +200,7 @@ export default (props: Props) => {
   };
 
   const onAddFiles = async (files: File[]) => {
-    await uploadFiles(editorId, files);
+    await upload(files);
   };
 
   const disabled = isEmpty() || isTooLong;
@@ -267,7 +236,11 @@ export default (props: Props) => {
           }}
         />
 
-        <PendingAttachments zoneId={editorId} />
+        <PendingAttachments
+          zoneId={editorId}
+          initialValue={editor.files || []}
+          onChange={list => setFiles(list)}
+        />
 
         {!hasEphemeralMessage && (
           <div className="editorview-submit">

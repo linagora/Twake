@@ -49,7 +49,7 @@ class Service implements UserServiceAPI {
   ) {
     this.users = getUserService(platformServices);
     this.external = getExternalService(platformServices.database);
-    this.companies = getCompanyService(platformServices);
+    this.companies = getCompanyService(platformServices, this);
     this.workspaces = getWorkspaceService(
       platformServices,
       this.users,
@@ -135,9 +135,11 @@ class Service implements UserServiceAPI {
   ): CompanyObject {
     const res: CompanyObject = {
       id: companyEntity.id,
-      name: companyEntity.name,
-      logo: companyEntity.logo,
+      name: companyEntity.name || "",
+      logo: companyEntity.logo || "",
       plan: companyEntity.plan,
+      identity_provider: companyEntity.identity_provider,
+      identity_provider_id: companyEntity.identity_provider_id,
     };
 
     if (companyUserObject) {

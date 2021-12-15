@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import { CornerDownRight } from 'react-feather';
 import ThreadSection from '../../Parts/ThreadSection';
 import Languages from 'services/languages/languages';
-import { useMessage } from 'app/state/recoil/hooks/useMessage';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { MessageContext } from '../MessageWithReplies';
-import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/useMessageEditor';
+import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 import Input from '../../Input/Input';
 

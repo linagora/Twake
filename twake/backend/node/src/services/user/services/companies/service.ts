@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import _, { merge } from "lodash";
 
 import {
   CrudExeption,
@@ -11,7 +11,7 @@ import Repository, {
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { UserPrimaryKey } from "../../entities/user";
-import { CompaniesServiceAPI } from "../../api";
+import UserServiceAPI, { CompaniesServiceAPI } from "../../api";
 import Company, {
   CompanyPrimaryKey,
   CompanySearchKey,
@@ -36,7 +36,10 @@ export class CompanyService implements CompaniesServiceAPI {
   externalCompanyRepository: Repository<ExternalGroup>;
   companyUserRepository: Repository<CompanyUser>;
 
-  constructor(private platformServices: PlatformServicesAPI) {}
+  constructor(
+    private platformServices: PlatformServicesAPI,
+    private userServiceAPI: UserServiceAPI,
+  ) {}
 
   async init(): Promise<this> {
     this.companyRepository = await this.platformServices.database.getRepository<Company>(
@@ -76,6 +79,8 @@ export class CompanyService implements CompaniesServiceAPI {
       const extCompany = (await this.getExtCompany(key)) || getExternalGroupInstance(key);
 
       extCompany.company_id = company.id;
+      extCompany.external_id = company.identity_provider_id;
+      extCompany.service_id = company.identity_provider;
 
       await this.externalCompanyRepository.save(extCompany);
     }
@@ -114,7 +119,29 @@ export class CompanyService implements CompaniesServiceAPI {
   }
 
   async getAllForUser(userId: uuid): Promise<CompanyUser[]> {
-    return this.companyUserRepository.find({ user_id: userId }).then(a => a.getEntities());
+    const list = await this.companyUserRepository
+      .find({ user_id: userId })
+      .then(a => a.getEntities());
+
+    // Update user cache with companies
+    const user = await this.userServiceAPI.users.get({ id: userId });
+    if (
+      user.cache?.companies.length === 0 ||
+      _.difference(
+        list.map(c => c.group_id),
+        user.cache?.companies || [],
+      ).length != 0
+    ) {
+      if (!user.cache) user.cache = { companies: [] };
+      user.cache.companies = list.map(c => c.group_id);
+      await this.userServiceAPI.users.save(
+        user,
+        {},
+        { user: { id: user.id, server_request: true } },
+      );
+    }
+
+    return list;
   }
 
   getCompanies(pagination?: Pagination): Promise<ListResult<Company>> {
@@ -128,6 +155,17 @@ export class CompanyService implements CompaniesServiceAPI {
     });
     if (entity) {
       await Promise.all([this.companyUserRepository.remove(entity)]);
+
+      const user = await this.userServiceAPI.users.get(userPk);
+      if ((user.cache?.companies || []).includes(companyPk.id)) {
+        // Update user cache with companies
+        user.cache.companies = user.cache.companies.filter(id => id != companyPk.id);
+        await this.userServiceAPI.users.save(
+          user,
+          {},
+          { user: { id: user.id, server_request: true } },
+        );
+      }
     }
   }
 
@@ -170,6 +208,19 @@ export class CompanyService implements CompaniesServiceAPI {
 
     entity.role = role;
     await this.companyUserRepository.save(entity);
+
+    const user = await this.userServiceAPI.users.get({ id: userId });
+    if (!(user.cache?.companies || []).includes(companyId)) {
+      // Update user cache with companies
+      if (!user.cache) user.cache = { companies: [] };
+      user.cache.companies.push(companyId);
+      await this.userServiceAPI.users.save(
+        user,
+        {},
+        { user: { id: user.id, server_request: true } },
+      );
+    }
+
     return entity;
   }
 

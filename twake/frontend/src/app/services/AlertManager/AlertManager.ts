@@ -19,16 +19,12 @@ class AlertService {
     });
   }
 
-  confirm(
-    onConfirm: () => void,
-    onClose: (() => void) | undefined = undefined,
-    options?: Options,
-  ) {
+  confirm(onConfirm: () => void, onClose: (() => void) | false = () => {}, options?: Options) {
     confirm({
       title: options?.title || Languages.t('components.alert.confirm'),
       content: options?.text || Languages.t('components.alert.confirm_click'),
       onOk: onConfirm,
-      onCancel: onClose,
+      onCancel: onClose || undefined,
       cancelButtonProps: onClose ? {} : { style: { display: 'none' } },
     });
   }

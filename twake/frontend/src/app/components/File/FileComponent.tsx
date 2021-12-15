@@ -21,9 +21,10 @@ type PropsType = {
   type: 'input' | 'message' | 'drive';
   progress?: number;
   status?: PendingFileRecoilType['status'];
+  onRemove?: Function;
 };
 
-export default ({ file, className, type, progress, status }: PropsType) => {
+export default ({ file, className, type, progress, status, onRemove }: PropsType) => {
   const { companyId } = RouterService.getStateFromRoute();
   const classNameArguments: Argument[] = [
     'file-component',
@@ -61,6 +62,7 @@ export default ({ file, className, type, progress, status }: PropsType) => {
           actionMenu={type == 'message'}
           status={status}
           file={file}
+          onRemove={onRemove}
         />
       </div>
       <FileProgress progress={progress} status={status} file={file} />
