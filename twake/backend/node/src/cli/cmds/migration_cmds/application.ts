@@ -126,7 +126,7 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
     //@ts-ignore
     newApplication.publication = newApplication.publication || {};
     newApplication.publication.published = application.depreciated_is_available_to_public;
-    newApplication.publication.pending =
+    newApplication.publication.requested =
       application.depreciated_public && !application.depreciated_twake_team_validation;
   }
 

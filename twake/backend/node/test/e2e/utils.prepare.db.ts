@@ -64,6 +64,7 @@ export class TestDbService {
     this.deviceRepository = await this.database.getRepository<Device>("device", Device);
   }
   public get workspaces() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return [...this.workspacesMap.values()];
   }
@@ -145,8 +146,6 @@ export class TestDbService {
       ...(user.cache.companies || []),
       ...workspacesPk.map(w => w.company_id),
     ];
-    console.log(user.cache);
-
     if (options.email) {
       user.email_canonical = options.email;
     }
@@ -252,6 +251,10 @@ export class TestDbService {
   }
 
   getRepository = (type, entity) => {
-    return this.database.getRepository<entity>(type, entity);
+    return this.database.getRepository<typeof entity>(type, entity);
   };
+
+  defaultWorkspace() {
+    return this.workspaces[0].workspace;
+  }
 }

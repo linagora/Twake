@@ -9,7 +9,15 @@ import {
   ResourceUpdateResponse,
 } from "../../../../utils/types";
 import Application, { PublicApplication } from "../../entities/application";
-import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CrudExeption,
+  ExecutionContext,
+  SaveResult,
+} from "../../../../core/platform/framework/api/crud-service";
+import _ from "lodash";
+import uuid from "node-uuid";
+import { logger as log } from "../../../../core/platform/framework";
+
 export class ApplicationController
   implements
     CrudController<
@@ -25,8 +33,24 @@ export class ApplicationController
     request: FastifyRequest<{ Params: { application_id: string } }>,
   ): Promise<ResourceGetResponse<PublicApplication>> {
     const context = getExecutionContext(request);
+
+    const entity = await this.service.applications.get({
+      id: request.params.application_id,
+    });
+
+    if (!entity.publication.published) {
+      const companyUser = await this.service.companies.getCompanyUser(
+        { id: entity.company_id },
+        { id: context.user.id },
+      );
+
+      if (!companyUser || companyUser.role !== "admin") {
+        throw CrudExeption.notFound("Published application not found");
+      }
+    }
+
     return {
-      resource: null,
+      resource: entity.getPublicObject(),
     };
   }
 
@@ -36,6 +60,10 @@ export class ApplicationController
     }>,
   ): Promise<ResourceListResponse<PublicApplication>> {
     const context = getExecutionContext(request);
+    // TODO: check published;
+
+    // const userInCompany = await this.userInCompany(request);
+
     const entities = await this.service.applications.list(
       request.query,
       { search: request.query.search },
@@ -51,10 +79,64 @@ export class ApplicationController
     request: FastifyRequest<{ Params: { application_id: string }; Body: Application }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<PublicApplication>> {
-    const context = getExecutionContext(request);
+    // const context = getExecutionContext(request);
+
+    const app = request.body;
+    const now = new Date().getTime();
+
+    let entity: Application;
+
+    if (request.params.application_id) {
+      entity = await this.service.applications.get({
+        id: request.params.application_id,
+      });
+
+      if (!entity) {
+        throw CrudExeption.notFound("Application not found");
+      }
+
+      entity.publication.requested = app.publication.requested;
+
+      if (entity.publication.published) {
+        if (
+          !_.isEqual(
+            _.pick(entity, "identity", "api", "access", "display"),
+            _.pick(app, "identity", "api", "access", "display"),
+          )
+        ) {
+          throw CrudExeption.badRequest("You can't update applications details while it published");
+        }
+      }
+
+      entity.identity = app.identity;
+      entity.api = app.api;
+      entity.access = app.access;
+      entity.display = app.display;
+
+      entity.stats.updatedAt = now;
+      entity.stats.version++; // TODO: do we increase it every update?
+
+      const res = await this.service.applications.save(entity);
+      entity = res.entity;
+    } else {
+      // INSERT
+
+      app.is_default = false;
+      app.publication.published = false;
+      app.api.privateKey = uuid.v1(); // TODO: generate proper key
+
+      app.stats = {
+        createdAt: now,
+        updatedAt: now,
+        version: 0,
+      };
+
+      const res = await this.service.applications.save(app);
+      entity = res.entity;
+    }
 
     return {
-      resource: null,
+      resource: entity.getPublicObject(),
     };
   }
 

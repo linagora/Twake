@@ -67,7 +67,7 @@ export function getInstance(message: Application): Application {
   return merge(new Application(), message);
 }
 
-type ApplicationIdentity = {
+export type ApplicationIdentity = {
   code: string;
   name: string;
   icon: string;
@@ -77,18 +77,18 @@ type ApplicationIdentity = {
   compatibility: "twake"[];
 };
 
-type ApplicationPublication = {
+export type ApplicationPublication = {
   published: boolean; //Publication accepted // RO
-  pending: boolean; //Publication requested
+  requested: boolean; //Publication requested
 };
 
-type ApplicationStatistics = {
+export type ApplicationStatistics = {
   createdAt: number; // RO
   updatedAt: number; // RO
   version: number; // RO
 };
 
-type ApplicationApi = {
+export type ApplicationApi = {
   hooksUrl: string;
   allowedIps: string;
   privateKey: string; // RO
@@ -102,14 +102,14 @@ type ApplicationScopes =
   | "messages"
   | "channels";
 
-type ApplicationAccess = {
+export type ApplicationAccess = {
   read: ApplicationScopes[];
   write: ApplicationScopes[];
   delete: ApplicationScopes[];
   hooks: ApplicationScopes[];
 };
 
-type ApplicationDisplay = {
+export type ApplicationDisplay = {
   twake: {
     version: 1;
 

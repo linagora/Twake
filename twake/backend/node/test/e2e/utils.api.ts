@@ -1,6 +1,6 @@
 import { TestPlatform } from "./setup";
 import { InjectPayload, Response } from "light-my-request";
-import { logger } from "../../src/core/platform/framework";
+import { logger as log } from "../../src/core/platform/framework";
 
 declare global {
   interface ApiResponse extends Response {
@@ -33,12 +33,17 @@ export class Api {
     if (!userId) userId = this.platform.currentUser.id;
 
     return this.convertResponse(
-      this.platform.app.inject({
-        method,
-        url,
-        headers: { authorization: `Bearer ${await this.getJwtToken(userId)}` },
-        payload,
-      }),
+      this.platform.app
+        .inject({
+          method,
+          url,
+          headers: { authorization: `Bearer ${await this.getJwtToken(userId)}` },
+          payload,
+        })
+        .then(a => {
+          log.debug(a.json(), `${method} ${url}`);
+          return a;
+        }),
     );
   }
 
