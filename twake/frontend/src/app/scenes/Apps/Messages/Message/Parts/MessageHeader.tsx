@@ -86,7 +86,7 @@ export default (props: Props) => {
   };
 
   const icon = user?.status ? user.status.split(' ')[0] : undefined;
-  const status = user?.status ? user.status.split(' ')[1] : undefined;
+  const status = user?.status ? user.status.split(' ').splice(1).join(" ") : undefined;
   return (
     <div
       className={classNames('message-content-header-container', {
@@ -105,7 +105,7 @@ export default (props: Props) => {
         </span>
         {!message.application_id && !!user && (
           <div className="sender-status">
-            {icon && <Emojione size={12} type={icon} />} {status && status}
+            {!!icon && <Emojione size={12} type={icon} />} {!!status && status}
           </div>
         )}
         {props.linkToThread && (
