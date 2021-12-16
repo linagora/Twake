@@ -208,7 +208,7 @@ export class UsersCrudController
 
     return {
       resource: this.service.formatCompany(company, null, await this.getCompanyStats(company)),
-      websocket: context.user.id
+      websocket: context.user?.id
         ? this.realtime.sign(getCompanyRooms(company), context.user.id)[0]
         : undefined,
     };
