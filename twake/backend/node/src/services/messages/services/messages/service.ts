@@ -4,6 +4,7 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
+  CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
@@ -588,6 +589,17 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       //For internal files, we have a special additional sync
       if (file.metadata?.source == "internal") {
+        //Test external id format
+        if (
+          message.files.length === 0 &&
+          (typeof file.metadata.external_id === "string" ||
+            !file.metadata.external_id?.company_id ||
+            !file.metadata.external_id?.id)
+        ) {
+          console.log("File external_id format is wrong for source internal");
+          continue;
+        }
+
         const original = await this.files.get(file.metadata.external_id?.id as string, {
           user: { id: "", server_request: true },
           company: { id: file.metadata.external_id?.company_id as string },

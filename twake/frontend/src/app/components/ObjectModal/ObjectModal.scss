@@ -10,6 +10,8 @@
   &,
   .modal-layout-footer {
     background: transparent !important;
+    height: auto;
+    min-height: 64px;
   }
 
   .modal-layout-header {
@@ -17,6 +19,8 @@
     border-top-right-radius: var(--border-radius-large);
     padding: 0;
     background: var(--white);
+    height: auto;
+    min-height: 64px;
 
     .square-button {
       vertical-align: top;
