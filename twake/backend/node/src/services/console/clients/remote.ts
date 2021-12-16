@@ -256,10 +256,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     user.email_canonical = coalesce(userDTO.email, user.email_canonical);
     user.phone = "";
-    user.first_name = userDTO.firstName
-      ? userDTO.firstName
-      : coalesce(userDTO.name, user.first_name);
-    user.last_name = coalesce(userDTO.lastName, user.last_name);
+    user.first_name = coalesce(userDTO.name, user.first_name);
+    user.last_name = coalesce(userDTO.surname, user.last_name);
     user.identity_provider = "console";
     user.identity_provider_id = userDTO._id;
     user.mail_verified = coalesce(userDTO.isVerified, user.mail_verified);

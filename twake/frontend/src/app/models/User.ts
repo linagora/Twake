@@ -26,6 +26,7 @@ export type UserType = {
   tutorial_status?: any;
   username: string;
   companies?: { company: CompanyType; role: CompanyRoleType; status: CompanyStatusType }[];
+  preference?: { locale?: string; timezone?: number };
   workspaces?: WorkspaceType[];
   workspaces_id?: string[];
   is_verified?: boolean;
