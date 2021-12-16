@@ -32,7 +32,7 @@ import ExternalGroup, {
 } from "../../entities/external_company";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { RealtimeDeleted, RealtimeSaved } from "../../../../core/platform/framework";
-import { getCompanyRoom } from "../../realtime";
+import { getCompanyRoom, getUserRoom } from "../../realtime";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -161,16 +161,18 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.companyRepository.find({}, { pagination });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @RealtimeDeleted<Company>((company, _context) => {
+  @RealtimeSaved<CompanyUser>((companyUser, _) => {
     return [
       {
-        room: getCompanyRoom(company.id),
-        resource: company,
+        room: getUserRoom(companyUser?.user_id),
+        resource: companyUser,
       },
     ];
   })
-  async removeUserFromCompany(companyPk: CompanyPrimaryKey, userPk: UserPrimaryKey): Promise<void> {
+  async removeUserFromCompany(
+    companyPk: CompanyPrimaryKey,
+    userPk: UserPrimaryKey,
+  ): Promise<DeleteResult<CompanyUser>> {
     const entity = await this.companyUserRepository.findOne({
       group_id: companyPk.id,
       user_id: userPk.id,
@@ -185,6 +187,8 @@ export class CompanyService implements CompaniesServiceAPI {
         await this.service.users.save(user, {}, { user: { id: user.id, server_request: true } });
       }
     }
+
+    return new DeleteResult("company_user", entity, true);
   }
 
   async getUsers(
@@ -209,12 +213,11 @@ export class CompanyService implements CompaniesServiceAPI {
     return new DeleteResult<Company>("company", instance, !!instance);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  @RealtimeSaved<Company>((company, _context) => {
+  @RealtimeSaved<CompanyUser>((companyUser, _) => {
     return [
       {
-        room: getCompanyRoom(company.id),
-        resource: company,
+        room: getUserRoom(companyUser?.user_id),
+        resource: companyUser,
       },
     ];
   })
@@ -222,7 +225,7 @@ export class CompanyService implements CompaniesServiceAPI {
     companyId: uuid,
     userId: uuid,
     role: CompanyUserRole = "member",
-  ): Promise<CompanyUser> {
+  ): Promise<SaveResult<CompanyUser>> {
     const key = {
       group_id: companyId,
       user_id: userId,
@@ -244,7 +247,7 @@ export class CompanyService implements CompaniesServiceAPI {
       await this.service.users.save(user, {}, { user: { id: user.id, server_request: true } });
     }
 
-    return entity;
+    return new SaveResult("company_user", entity, OperationType.UPDATE);
   }
 
   async removeCompany(searchKey: CompanySearchKey): Promise<void> {

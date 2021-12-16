@@ -128,7 +128,10 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    * @param user
    */
-  removeUserFromCompany(companyId: CompanyPrimaryKey, user: UserPrimaryKey): Promise<void>;
+  removeUserFromCompany(
+    companyId: CompanyPrimaryKey,
+    user: UserPrimaryKey,
+  ): Promise<DeleteResult<CompanyUser>>;
 
   /**
    * Get user ids in the given company
@@ -151,7 +154,11 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
 
   delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>>;
 
-  setUserRole(companyId: uuid, userId: uuid, role?: CompanyUserRole): Promise<CompanyUser>;
+  setUserRole(
+    companyId: uuid,
+    userId: uuid,
+    role?: CompanyUserRole,
+  ): Promise<SaveResult<CompanyUser>>;
 
   getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole>;
 

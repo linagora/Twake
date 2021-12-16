@@ -66,7 +66,8 @@ const command: yargs.CommandModule<{}, CLIArgs> = {
       console.log("Creating user", userInCompany);
       const created = await userService.users.create(getUserInstance(userInCompany.user));
 
-      return userService.companies.setUserRole(userInCompany.company.id, created.entity.id);
+      return (await userService.companies.setUserRole(userInCompany.company.id, created.entity.id))
+        ?.entity;
     };
     const createCompany = (company: Company) => {
       console.log("Creating company", company);
