@@ -107,7 +107,7 @@ export default (props: Props) => {
     return RichTextEditorStateService.getDataParser(editorPlugins).toString(editorState, format);
   };
 
-  const onSend = () => {
+  const onSend = async () => {
     const content = getContentOutput(editorState);
     setValue(content);
 
@@ -117,9 +117,9 @@ export default (props: Props) => {
     }
 
     if (content || editor.files.length > 0) {
-      send();
       setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
       clearUploads();
+      await send();
     }
   };
 
@@ -128,7 +128,7 @@ export default (props: Props) => {
       return;
     }
     disable_app[app.id] = new Date().getTime();
-    MessagesService.triggerApp(props.channelId || '', props.threadId, app, from_icon, evt);
+    MessagesService.triggerApp(channel, props.threadId, app, from_icon, evt);
   };
 
   const focus = () => {
