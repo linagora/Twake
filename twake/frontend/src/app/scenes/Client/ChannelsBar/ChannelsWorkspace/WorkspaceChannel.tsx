@@ -27,7 +27,7 @@ type Props = {
 };
 
 export default (props: Props) => {
-  const { workspaceId } = RouterServices.getStateFromRoute();
+  const { workspaceId, companyId } = RouterServices.getStateFromRoute();
 
   const addChannel = () => {
     return ModalManager.open(
@@ -53,7 +53,8 @@ export default (props: Props) => {
         suffix={
           !props.favorite &&
           !props.subgroup &&
-          AccessRightsService.hasLevel(workspaceId, 'member') && (
+          AccessRightsService.hasLevel(workspaceId, 'member') &&
+          AccessRightsService.getCompanyLevel(companyId) !== 'guest' && (
             <Menu
               className="add"
               menu={[

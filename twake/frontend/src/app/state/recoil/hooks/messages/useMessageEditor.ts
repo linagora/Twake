@@ -53,6 +53,8 @@ export const useMessageEditor = (key: EditorKey) => {
       };
     }
 
+    setEditorRef({ value: '', files: [] });
+
     const editedMessage = {
       thread_id: key.threadId || uuidv1(),
       created_at: new Date().getTime(),

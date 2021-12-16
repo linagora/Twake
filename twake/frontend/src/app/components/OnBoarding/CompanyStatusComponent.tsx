@@ -8,8 +8,8 @@ import RouterServices from 'app/services/RouterService';
 import Groups from 'services/workspaces/groups.js';
 import { CompanyType } from 'app/models/Company';
 import BlockedCompany from './popups/BlockedCompany';
-import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
 
 const CompanyStatusComponent = (): JSX.Element => {
   const companyId = useRouterCompany();

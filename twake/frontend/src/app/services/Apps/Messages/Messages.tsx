@@ -16,7 +16,7 @@ import MenusManager from 'app/components/Menus/MenusManager.js';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 import { Message, MessageFileType } from '../../../models/Message';
 import MessageAPIClient from './clients/MessageAPIClient';
@@ -234,7 +234,7 @@ class Messages extends Observable {
     }
   }
 
-  async triggerApp(channelId: string, threadId: string, app: any, from_icon: any, evt: any) {
+  async triggerApp(channel: ChannelType, threadId: string, app: any, from_icon: any, evt: any) {
     if (app?.identity?.code === 'twake_drive') {
       let menu = [];
       let has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
@@ -246,7 +246,7 @@ class Messages extends Observable {
             <FilePicker
               mode="select_file"
               onChoose={(file: any) =>
-                MessageEditorManager.get(channelId).onAddAttachment(threadId, file)
+                MessageEditorManager.get(channel.id || '').onAddAttachment(threadId, file)
               }
             />
           ),
@@ -262,7 +262,7 @@ class Messages extends Observable {
     }
 
     let data = {
-      channel: (await this.findChannel(channelId)).data,
+      channel,
       parent_message: (threadId ? this.collection.find(threadId) : null) || null,
       from_icon: from_icon,
     };

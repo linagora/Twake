@@ -206,7 +206,7 @@ class Workspaces extends Observable {
         //Invite using console
         ConsoleService.addMailsInWorkspace({
           workspace_id: workspace.id || '',
-          company_id: workspace.group.id || '',
+          company_id: workspace?.group?.id || workspace.company_id || '',
           emails: wsMembers,
         }).finally(() => {
           that.loading = false;

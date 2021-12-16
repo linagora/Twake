@@ -111,6 +111,7 @@ export default class Tasks extends Component {
     ) {
       return (
         <UnconfiguredTab
+          saveTab={this.props.saveTab}
           channel={this.props.channel}
           tab={this.props.tab}
           collectionKey={this.boards_collection_key}

@@ -30,7 +30,7 @@ export async function buildDependenciesTree(
           );
         } else {
           console.warn(
-            `The component dependency ${dependencyName} has not been found for component ${name}`,
+            `(warning) The component dependency ${dependencyName} has not been found for component ${name} it will be imported asynchronously`,
           );
 
           try {

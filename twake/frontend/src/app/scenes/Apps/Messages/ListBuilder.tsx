@@ -16,12 +16,12 @@ type Props = {
 
 export default React.memo(({ emptyListComponent, itemId, loadMore, items, itemContent }: Props) => {
   const virtuosoRef = useRef(null);
-  const initiated = useRef(false);
+  const [initiated, setInitiated] = useState(false);
 
   const more = async (direction: 'future' | 'history') => {
     logger.log('Load more ', direction);
     const result = await loadMore(direction);
-    initiated.current = true;
+    setInitiated(true);
     return result;
   };
 
@@ -42,14 +42,12 @@ export default React.memo(({ emptyListComponent, itemId, loadMore, items, itemCo
   }
 
   if (items.length === 0) {
-    return <div style={{ flex: 1 }}>{initiated.current ? emptyListComponent || <></> : <></>}</div>;
+    return <div style={{ flex: 1 }}>{initiated ? emptyListComponent || <></> : <></>}</div>;
   }
-
-  logger.log('firstItemIndex: ', firstItemIndex.current, 'items length: ', items.length);
 
   return (
     <>
-      <Suspense fallback={<div style={{ flex: 1 }}>load list</div>}>
+      <Suspense fallback={<div style={{ flex: 1 }}>loading...</div>}>
         <Virtuoso
           ref={virtuosoRef}
           initialTopMostItemIndex={items.length - 1}

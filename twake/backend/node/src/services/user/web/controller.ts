@@ -206,8 +206,24 @@ export class UsersCrudController
       throw CrudExeption.notFound(`Company ${request.params.id} not found`);
     }
 
+    let companyUserObj: CompanyUserObject | null = null;
+    if (context?.user?.id) {
+      const companyUser = await this.service.companies.getCompanyUser(company, {
+        id: context.user.id,
+      });
+      companyUserObj = {
+        company: company,
+        role: companyUser.role,
+        status: "active",
+      };
+    }
+
     return {
-      resource: this.service.formatCompany(company, null, await this.getCompanyStats(company)),
+      resource: this.service.formatCompany(
+        company,
+        companyUserObj,
+        await this.getCompanyStats(company),
+      ),
       websocket: context.user?.id
         ? this.realtime.sign(getCompanyRooms(company), context.user.id)[0]
         : undefined,

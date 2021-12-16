@@ -1,12 +1,12 @@
 import RouterService from 'app/services/RouterService';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { RouterState } from 'app/state/recoil/atoms/Router';
-import { RouterChannelSelector } from '../selectors/RouterSelector';
+import { RouterTabSelector } from '../../selectors/RouterSelector';
 
-export default function useRouterChannel() {
+export default function useRouterTab() {
   const setClientState = useSetRecoilState(RouterState);
   RouterService.setRecoilState = setClientState;
-  const channelId = useRecoilValue(RouterChannelSelector);
+  const channelId = useRecoilValue(RouterTabSelector);
 
   return channelId;
 }

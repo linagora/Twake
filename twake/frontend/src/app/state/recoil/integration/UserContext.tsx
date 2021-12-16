@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React, { useEffect } from 'react';
 import { useOnlineUsers } from 'app/services/OnlineUser/useOnlineUsers';
-import useRouterCompany from '../hooks/useRouterCompany';
+import useRouterCompany from '../hooks/router/useRouterCompany';
 import UserNotifications from 'app/services/user/UserNotifications';
 
 /**

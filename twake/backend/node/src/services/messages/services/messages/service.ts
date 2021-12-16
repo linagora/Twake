@@ -4,6 +4,7 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
+  CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
@@ -562,7 +563,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     });
 
     const sameFile = (a: MessageFile["metadata"], b: MessageFile["metadata"]) => {
-      return a.external_id == b.external_id && a.source == b.source;
+      return _.isEqual(a.external_id, b.external_id) && a.source === b.source;
     };
 
     //Delete all existing msg files not in the new files object
@@ -573,7 +574,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     ).getEntities();
     for (const entity of existingMsgFiles) {
       if (!files.some(f => sameFile(f.metadata, entity.metadata))) {
-        //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
         await this.msgFilesRepository.remove(entity);
       }
     }
@@ -589,6 +589,17 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       //For internal files, we have a special additional sync
       if (file.metadata?.source == "internal") {
+        //Test external id format
+        if (
+          message.files.length === 0 &&
+          (typeof file.metadata.external_id === "string" ||
+            !file.metadata.external_id?.company_id ||
+            !file.metadata.external_id?.id)
+        ) {
+          console.log("File external_id format is wrong for source internal");
+          continue;
+        }
+
         const original = await this.files.get(file.metadata.external_id?.id as string, {
           user: { id: "", server_request: true },
           company: { id: file.metadata.external_id?.company_id as string },
@@ -604,7 +615,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       entity.metadata = file.metadata;
 
-      //TODO call the MessageFilesService manager instead in the future (to manage message-file-refs too)
       await this.msgFilesRepository.save(entity);
 
       message.files.push(entity);
