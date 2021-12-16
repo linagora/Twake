@@ -77,12 +77,6 @@ export function useCompanyApplications(companyId: string = '') {
 
   const isInstalled = (applicationId: string) => (get(applicationId) ? true : false);
 
-  const room = CompanyApplicationsAPIClient.websockets(company.id || '')[0];
-
-  useRealtimeRoom<Application[]>(room, 'useCompanyApplications', (_action, _resource) => {
-    refresh();
-  });
-
   return {
     applications,
     get,
@@ -90,8 +84,21 @@ export function useCompanyApplications(companyId: string = '') {
     add,
     remove,
     isInstalled,
+    refresh,
   };
 }
+
+export const useCompanyApplicationsRealtime = (companyId: string = '') => {
+  const { company } = useCurrentCompany();
+  companyId = companyId || company?.id || '';
+
+  const { refresh } = useCompanyApplications(companyId);
+
+  const room = CompanyApplicationsAPIClient.websockets(companyId || '')[0];
+  useRealtimeRoom<Application[]>(room, 'useCompanyApplications', (_action, _resource) => {
+    refresh();
+  });
+};
 
 /**
  * Use a single application

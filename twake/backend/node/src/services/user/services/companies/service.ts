@@ -113,7 +113,6 @@ export class CompanyService implements CompaniesServiceAPI {
     });
 
     const result = await this.updateCompany(companyToCreate);
-
     return result.entity;
   }
 

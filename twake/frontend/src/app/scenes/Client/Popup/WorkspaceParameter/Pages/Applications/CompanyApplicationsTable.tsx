@@ -10,7 +10,10 @@ import ModalManager from 'app/components/Modal/ModalManager';
 import AvatarComponent from 'app/components/Avatar/Avatar';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
-import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import {
+  useCompanyApplications,
+  useCompanyApplicationsRealtime,
+} from 'app/state/recoil/hooks/useCompanyApplications';
 import Menu from 'components/Menus/Menu';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
@@ -30,6 +33,8 @@ export default () => {
     loading: isLoadingCompanyApplications,
     remove: deleteOneCompanyApplication,
   } = useCompanyApplications(company?.id);
+  useCompanyApplicationsRealtime();
+
   const [data, _setData] = useState<ColumnObjectType[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -27,11 +27,13 @@ export const useCurrentUser = () => {
     await LoginService.updateUser();
   };
 
-  const room = UserAPIClient.websocket(user?.id || '');
+  return { user, refresh, updateStatus };
+};
 
+export const useCurrentUserRealtime = () => {
+  const { user, refresh } = useCurrentUser();
+  const room = UserAPIClient.websocket(user?.id || '');
   useRealtimeRoom<UserType>(room, 'useCurrentUser', (action, resource) => {
     refresh();
   });
-
-  return { user, refresh, updateStatus };
 };

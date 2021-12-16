@@ -86,13 +86,16 @@ export const useCurrentCompany = () => {
     LocalStorage.setItem('default_company_id', routerCompanyId);
   }
 
-  const room = CompanyAPIClient.websocket(company.id || '');
+  return { company, refresh };
+};
 
+export const useCurrentCompanyRealtime = () => {
+  const { company, refresh } = useCurrentCompany();
+
+  const room = CompanyAPIClient.websocket(company.id || '');
   useRealtimeRoom<CompanyType>(room, 'useCurrentCompany', (_action, _resource) => {
     refresh();
   });
-
-  return { company };
 };
 
 /**

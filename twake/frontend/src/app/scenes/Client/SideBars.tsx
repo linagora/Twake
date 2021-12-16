@@ -9,11 +9,13 @@ import './WorkspacesBar/WorkspacesBar.scss';
 import { useWorkspaceLoader } from 'app/state/recoil/hooks/useWorkspaces';
 import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import { useCurrentCompanyRealtime } from '../../state/recoil/hooks/useCompanies';
 
 export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const { loading } = useWorkspaceLoader(companyId);
+  useCurrentCompanyRealtime();
 
   if (loading) {
     return <LoadingSidebar />;

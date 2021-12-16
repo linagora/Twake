@@ -23,11 +23,12 @@ import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusCompo
 import UserContext from 'app/state/recoil/integration/UserContext';
 
 import './Client.scss';
-import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentUser, useCurrentUserRealtime } from 'app/state/recoil/hooks/useCurrentUser';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const { user } = useCurrentUser();
+  useCurrentUserRealtime();
 
   PopupService.useListener();
   Languages.useListener();
