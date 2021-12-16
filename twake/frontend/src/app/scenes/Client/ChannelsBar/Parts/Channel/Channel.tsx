@@ -11,7 +11,7 @@ import AvatarComponent from 'app/components/Avatar/Avatar';
 import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
-import useRouterChannelSelected from 'app/state/recoil/hooks/useRouterChannelSelected';
+import useRouterChannelSelected from 'app/state/recoil/hooks/router/useRouterChannelSelected';
 
 import './Channel.scss';
 

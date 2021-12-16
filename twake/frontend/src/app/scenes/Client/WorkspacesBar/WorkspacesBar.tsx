@@ -5,7 +5,7 @@ import { Layout, Skeleton } from 'antd';
 import { WorkspaceType } from 'app/models/Workspace';
 import Workspace from './Components/Workspace/Workspace';
 import { useWorkspaces } from 'app/state/recoil/hooks/useWorkspaces';
-import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { LoadingWorkspaceIcon } from './Components/Workspace/WorkspaceIcon';
 import CompanySelector from './Components/CompanySelector';
 

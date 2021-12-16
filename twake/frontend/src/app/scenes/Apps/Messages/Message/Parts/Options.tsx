@@ -19,8 +19,8 @@ import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplicatio
 import Groups from 'services/workspaces/groups.js';
 import { MessageContext } from '../MessageWithReplies';
 import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
-import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
-import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
+import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import useRouterChannel from 'app/state/recoil/hooks/router/useRouterChannel';
 import _ from 'lodash';
 import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';

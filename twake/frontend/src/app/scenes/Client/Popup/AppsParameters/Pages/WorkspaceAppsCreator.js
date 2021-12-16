@@ -63,7 +63,7 @@ export default class WorkspaceAppsCreator extends Component {
   render() {
     var workspace_id = workspaceService.currentWorkspaceId;
     var workspace = Collections.get('workspaces').find(workspace_id);
-    var group = Collections.get('groups').find(workspace.group.id);
+    var group = Collections.get('groups').find(workspace?.group?.id || workspace.company_id);
 
     return (
       <div className="fade_in app_editor">

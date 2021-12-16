@@ -141,7 +141,7 @@ export default class Drive extends Component {
     var group = null;
     if (workspace) {
       // eslint-disable-next-line no-unused-vars
-      group = Collections.get('groups').find(workspace.group?.id || '');
+      group = Collections.get('groups').find(workspace?.group?.id || workspace.company_id || '');
     }
 
     DriveService.addPathForElement(

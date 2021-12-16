@@ -1,5 +1,5 @@
 import { CompaniesState } from '../atoms/Companies';
-import useRouterCompany from './useRouterCompany';
+import useRouterCompany from './router/useRouterCompany';
 import { useRecoilState } from 'recoil';
 import { CurrentUserState } from '../atoms/CurrentUser';
 import { CompanyType } from 'app/models/Company';

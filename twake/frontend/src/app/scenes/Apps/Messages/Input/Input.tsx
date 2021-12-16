@@ -18,7 +18,7 @@ import './Input.scss';
 import { FileType } from 'app/models/File';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
-import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
+import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import { useChannel } from 'app/state/recoil/hooks/useChannels';
 

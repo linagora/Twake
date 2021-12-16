@@ -10,14 +10,19 @@ import Tab from 'app/scenes/Client/MainView/Tabs/Tab';
 import UserService from 'services/user/UserService';
 import useTabs from 'app/state/recoil/hooks/useTabs';
 import AccessRightsService from 'app/services/AccessRightsService';
+import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import useRouterTab from 'app/state/recoil/hooks/router/useRouterTab';
 
 import './Tabs.scss';
 
 export default (): JSX.Element => {
-  const { workspaceId, tabId } = RouterServices.getStateFromRoute();
+  const workspaceId = useRouterWorkspace();
+  const tabId = useRouterTab();
   const { tabs, save } = useTabs();
   const currentUser = UserService.getCurrentUser();
   const tabsList = [...tabs];
+
+  console.log(tabId);
 
   if (tabId && tabs.map(e => e.id).indexOf(tabId || '') < 0) {
     const route: string = RouterServices.generateRouteFromState({

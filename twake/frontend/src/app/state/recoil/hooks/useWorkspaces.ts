@@ -1,20 +1,17 @@
-import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { WorkspaceType } from 'app/models/Workspace';
-import { WorkspaceGetOrFetch, WorkspaceListStateFamily } from '../atoms/WorkspaceList';
+import { WorkspaceListStateFamily } from '../atoms/WorkspaceList';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import Logger from 'app/services/Logger';
-import { useGetHTTP } from 'app/services/hooks/useHTTP';
-import { Maybe } from 'app/types';
-import { RealtimeResources } from 'app/services/Realtime/types';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
-import useRouterWorkspace from './useRouterWorkspace';
+import useRouterWorkspace from './router/useRouterWorkspace';
 import RouterService from 'app/services/RouterService';
 import _ from 'lodash';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import AccessRightsService, { RightsOrNone } from 'app/services/AccessRightsService';
 import LocalStorage from 'app/services/LocalStorage';
-import useRouterCompany from './useRouterCompany';
+import useRouterCompany from './router/useRouterCompany';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import Workspaces from 'services/workspaces/workspaces.js';
 import { LoadingState } from '../atoms/Loading';
