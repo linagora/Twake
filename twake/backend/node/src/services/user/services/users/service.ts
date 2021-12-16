@@ -31,6 +31,7 @@ import { ResourceEventsPayload } from "../../../../utils/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { isNumber } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";
+import { getUserRoom } from "../../realtime";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -93,7 +94,7 @@ export class UserService implements UsersServiceAPI {
   @RealtimeSaved<User>((user, _context) => {
     return [
       {
-        room: `/me/${user.id}`,
+        room: getUserRoom(user.id),
         resource: {}, // FIX ME we should formatUser here
       },
     ];

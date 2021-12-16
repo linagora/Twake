@@ -5,7 +5,9 @@ import {
   DeleteResult,
   ExecutionContext,
   ListResult,
+  OperationType,
   Pagination,
+  SaveResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import Repository, {
   FindOptions,
@@ -29,7 +31,8 @@ import ExternalGroup, {
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
-import { RealtimeSaved } from "../../../../core/platform/framework";
+import { RealtimeDeleted, RealtimeSaved } from "../../../../core/platform/framework";
+import { getCompanyRoom } from "../../realtime";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -65,12 +68,18 @@ export class CompanyService implements CompaniesServiceAPI {
   @RealtimeSaved<Company>((company, _context) => {
     return [
       {
-        room: `/company/${company.id}`,
+        room: getCompanyRoom(company.id),
         resource: company,
       },
     ];
   })
-  async updateCompany(company: Company): Promise<Company> {
+  async updateCompany<SaveOptions>(
+    company: Company,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _options?: SaveOptions,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _context?: ExecutionContext,
+  ): Promise<SaveResult<Company>> {
     if (company.identity_provider_id && !company.identity_provider) {
       company.identity_provider = "console";
     }
@@ -92,7 +101,7 @@ export class CompanyService implements CompaniesServiceAPI {
       await this.externalCompanyRepository.save(extCompany);
     }
 
-    return company;
+    return new SaveResult<Company>("company", company, OperationType.UPDATE);
   }
 
   async createCompany(company: Company): Promise<Company> {
@@ -103,7 +112,9 @@ export class CompanyService implements CompaniesServiceAPI {
       },
     });
 
-    return this.updateCompany(companyToCreate);
+    const result = await this.updateCompany(companyToCreate);
+
+    return result.entity;
   }
 
   async getCompany(companySearchKey: CompanySearchKey): Promise<Company> {
@@ -151,6 +162,15 @@ export class CompanyService implements CompaniesServiceAPI {
     return this.companyRepository.find({}, { pagination });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @RealtimeDeleted<Company>((company, _context) => {
+    return [
+      {
+        room: getCompanyRoom(company.id),
+        resource: company,
+      },
+    ];
+  })
   async removeUserFromCompany(companyPk: CompanyPrimaryKey, userPk: UserPrimaryKey): Promise<void> {
     const entity = await this.companyUserRepository.findOne({
       group_id: companyPk.id,
@@ -190,6 +210,15 @@ export class CompanyService implements CompaniesServiceAPI {
     return new DeleteResult<Company>("company", instance, !!instance);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  @RealtimeSaved<Company>((company, _context) => {
+    return [
+      {
+        room: getCompanyRoom(company.id),
+        resource: company,
+      },
+    ];
+  })
   async setUserRole(
     companyId: uuid,
     userId: uuid,

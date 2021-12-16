@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   ListResult,
   Paginable,
+  SaveResult,
 } from "../../core/platform/framework/api/crud-service";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import User, { UserPrimaryKey } from "./entities/user";
@@ -98,7 +99,7 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    */
   createCompany(company: Company): Promise<Company>;
-  updateCompany(company: Company): Promise<Company>;
+  updateCompany(company: Company): Promise<SaveResult<Company>>;
 
   /**
    * Get a company from its id or identity
