@@ -48,7 +48,7 @@ const useRealtimeRoom = <T>(
   }, [roomConf?.room, roomConf?.token, tagName]);
 
   useEffect(() => {
-    if (room && websocket && !subscribed.current) {
+    if (room && room.room && websocket && !subscribed.current) {
       websocket.join(
         room.room,
         room.token,

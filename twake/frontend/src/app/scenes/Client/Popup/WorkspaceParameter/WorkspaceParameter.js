@@ -43,7 +43,6 @@ export default class WorkspaceParameter extends Component {
     ]);
     LoginService.addListener(this);
     Languages.addListener(this);
-    WorkspaceUserRights.addListener(this);
     currentUserService.addListener(this);
   }
   componentWillMount() {
@@ -52,7 +51,6 @@ export default class WorkspaceParameter extends Component {
   componentWillUnmount() {
     LoginService.removeListener(this);
     Languages.removeListener(this);
-    WorkspaceUserRights.removeListener(this);
     currentUserService.removeListener(this);
     Collections.get('users').removeListener(this);
   }

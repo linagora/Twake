@@ -71,8 +71,6 @@ export const useCurrentCompany = () => {
 
   //Always set the current company in localstorage to open it automatically later
   if (routerCompanyId) {
-    console.log('updateCompanyLevel', company);
-
     //Depreciated retrocompatibility
     Groups.addToUser(company);
     AccessRightsService.updateCompanyLevel(

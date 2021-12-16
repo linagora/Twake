@@ -1,9 +1,7 @@
 import { CompanyType } from 'app/models/Company';
 import { UserType } from 'app/models/User';
-import { WorkspaceUserType } from 'app/models/Workspace';
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
-import RouterService from '../RouterService';
 import { WebsocketRoom } from '../WebSocket/WebSocket';
 import WorkspaceAPIClient from '../workspaces/WorkspaceAPIClient';
 import CurrentUser from './CurrentUser';

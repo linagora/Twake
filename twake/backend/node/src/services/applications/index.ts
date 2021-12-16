@@ -6,7 +6,7 @@ import { PlatformServicesAPI } from "../../core/platform/services/platform-servi
 import { RealtimeServiceAPI } from "../..//core/platform/services/realtime/api";
 
 @Prefix("/internal/services/applications/v1")
-@Consumes(["platform-services"])
+@Consumes(["platform-services", "realtime"])
 export default class ApplicationsService extends TwakeService<ApplicationServiceAPI> {
   version = "1";
   name = "applications";
