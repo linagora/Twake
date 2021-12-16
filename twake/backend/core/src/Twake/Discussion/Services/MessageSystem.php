@@ -99,7 +99,9 @@ class MessageSystem
     public function save($object, $options, $current_user = null, $application = null)
     {
         $channel = $this->getInfosFromChannel($object["channel_id"]);
-        
+        $channel["company_id"] = $channel["company_id"] ?? $object["company_id"];
+        $channel["workspace_id"] = $channel["workspace_id"] ?? $object["workspace_id"];
+
         if(!$channel){
             return;
         }
