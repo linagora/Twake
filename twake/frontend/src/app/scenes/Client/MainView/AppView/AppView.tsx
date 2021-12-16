@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import Messages from 'app/scenes/Apps/Messages';
-import Drive from 'scenes/Apps/Drive/Drive.js';
-import Calendar from 'scenes/Apps/Calendar/Calendar.js';
-import Tasks from 'scenes/Apps/Tasks/Tasks.js';
+import Drive from 'app/scenes/Apps/Drive/Drive';
+import Calendar from 'app/scenes/Apps/Calendar/CalendarContent';
+import Tasks from 'app/scenes/Apps/Tasks/Tasks';
 import NoApp from '../NoApp';
 import AppViewService from 'app/services/AppView/AppViewService';
 

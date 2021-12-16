@@ -70,8 +70,14 @@ class FileUploadAPIClient {
   public getFileThumbnailUrlFromMessageFile(file: MessageFileType): string {
     if (file.metadata?.source !== 'internal') return file.metadata?.thumbnails?.[0]?.url || '';
     return `${this.getRoute({
-      companyId: file.company_id || '',
-      fileId: file.metadata?.external_id || '',
+      companyId:
+        (typeof file.metadata?.external_id === 'string'
+          ? file.company_id
+          : file.metadata?.external_id?.company_id) || '',
+      fileId:
+        (typeof file.metadata?.external_id === 'string'
+          ? file.metadata?.external_id
+          : file.metadata?.external_id?.id) || '',
       fullApiRouteUrl: true,
     })}/thumbnails/${file.metadata?.thumbnails?.[0]?.index}`;
   }

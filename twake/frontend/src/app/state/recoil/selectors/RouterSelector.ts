@@ -16,6 +16,11 @@ export const RouterChannelSelector = selector<string>({
   get: ({ get }) => get(RouterState)?.channelId || '',
 });
 
+export const RouterTabSelector = selector<string>({
+  key: 'RouterTabSelector',
+  get: ({ get }) => get(RouterState)?.tabId || '',
+});
+
 export const RouterChannelSelectedSelector = selectorFamily<boolean, string>({
   key: 'RouterChannelSelectedSelector',
   get:

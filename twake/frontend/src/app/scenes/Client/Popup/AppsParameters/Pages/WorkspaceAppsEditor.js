@@ -127,7 +127,7 @@ export default class WorkspaceAppsEditor extends Component {
     var workspace_id = workspaceService.currentWorkspaceId;
     var workspace = Collections.get('workspaces').find(workspace_id);
     // eslint-disable-next-line no-unused-vars
-    var group = Collections.get('groups').find(workspace.group.id);
+    var group = Collections.get('groups').find(workspace?.group?.id || workspace.company_id);
 
     if (isNew) {
       return (

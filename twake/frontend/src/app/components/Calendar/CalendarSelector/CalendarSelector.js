@@ -112,31 +112,6 @@ export default class CalendarSelector extends React.Component {
               )}
             </div>
           )}
-
-          {nb_known_workspaces === 0 && this.props.value.length > 0 && !external_workspace && (
-            <div className="smalltext right-margin" style={{ lineHeight: '40px' }}>
-              {Languages.t(
-                'components.calendar.calendarselector.external_workspace',
-                [],
-                'Depuis un espace de travail externe.',
-              )}
-            </div>
-          )}
-          {nb_known_workspaces === 0 && this.props.value.length > 0 && external_workspace && (
-            <div className="smalltext right-margin" style={{ lineHeight: '40px' }}>
-              {Languages.t('components.calendar.calendarselector.from', [], 'Depuis')}{' '}
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                href="#"
-                onClick={() => {
-                  this.props.openEventInWorkspace(external_workspace);
-                }}
-              >
-                {external_workspace.group.name + ' • ' + external_workspace.name}
-              </a>
-              .
-            </div>
-          )}
         </div>
 
         {!this.props.readonly && (

@@ -4,18 +4,17 @@ import { TabType } from 'app/models/Tab';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import TabsAPIClients from 'app/services/tabs/TabsAPIClients';
 import { AtomTabKey, TabState } from '../atoms/Tabs';
-import useRouterChannel from './useRouterChannel';
-import useRouterCompany from './useRouterCompany';
-import useRouterWorkspace from './useRouterWorkspace';
+import useRouterChannel from './router/useRouterChannel';
+import useRouterCompany from './router/useRouterCompany';
+import useRouterWorkspace from './router/useRouterWorkspace';
 
-export default function useTabs() {
+export default function useTabsCommons() {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
   const context: AtomTabKey = { companyId, workspaceId, channelId };
 
   const [tabs, setTabs] = useRecoilState(TabState(context));
-  useRealtimeRoom<TabType>(TabsAPIClients.websockets(channelId)[0], 'UseTabs', () => refresh());
 
   const save = async (tab: TabType) => {
     await TabsAPIClients.save({ companyId, workspaceId, channelId }, tab);
@@ -31,6 +30,14 @@ export default function useTabs() {
     const tabsRefreshed = await TabsAPIClients.list({ companyId, workspaceId, channelId });
     if (tabsRefreshed) setTabs(tabsRefreshed);
   };
+
+  return { tabs, save, refresh, remove };
+}
+
+export function useTabs() {
+  const channelId = useRouterChannel();
+  const { tabs, save, refresh, remove } = useTabsCommons();
+  useRealtimeRoom<TabType>(TabsAPIClients.websockets(channelId)[0], 'UseTabs', () => refresh());
 
   return { tabs, save, refresh, remove };
 }

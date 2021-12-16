@@ -121,7 +121,7 @@ class ApplicationApi
 
         $ok = true;
         foreach ($capabilities as $capability) {
-            if (!in_array($capability, $accepted_capabilities)) {
+            if ($accepted_capabilities && !in_array($capability, $accepted_capabilities)) {
                 $ok = false;
             }
         }

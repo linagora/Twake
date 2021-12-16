@@ -13,7 +13,7 @@ export const useUploadZones = (zoneId: string) => {
   useEffect(() => {
     if (currentTask.files.length > 0) {
       const updated = files.map(f => {
-        const upToDate = getOnePendingFile(f.metadata?.external_id || '');
+        const upToDate = getOnePendingFile((f.metadata?.external_id as string) || '');
         if (upToDate) {
           f = pendingFileToMessageFile(f, upToDate);
         }
@@ -55,7 +55,10 @@ const pendingFileToMessageFile = (f: MessageFileType, upToDate: PendingFileType)
     metadata: {
       ...f.metadata,
       source: upToDate.status === 'success' ? 'internal' : 'pending',
-      external_id: upToDate.status === 'success' ? upToDate.backendFile?.id : upToDate.id,
+      external_id:
+        upToDate.status === 'success'
+          ? { id: upToDate.backendFile?.id, company_id: upToDate.backendFile?.company_id }
+          : upToDate.id,
       mime: upToDate.backendFile?.metadata?.mime,
       size: upToDate.backendFile?.upload_data?.size,
       name: upToDate.backendFile?.metadata?.name,

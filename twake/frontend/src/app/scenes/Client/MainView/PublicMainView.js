@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections';
-import Drive from 'scenes/Apps/Drive/Drive';
+import Drive from 'app/scenes/Apps/Drive/DriveContent';
 import Api from 'services/Api';
 import RouterService from 'services/RouterService';
 import MenusBodyLayer from 'components/Menus/MenusBodyLayer';

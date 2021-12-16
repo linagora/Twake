@@ -7,9 +7,14 @@ import AccessRightsService from 'app/services/AccessRightsService';
 import Languages from 'services/languages/languages';
 
 export default (): JSX.Element => {
-  const { workspaceId } = RouterServices.getStateFromRoute();
+  const { workspaceId, companyId } = RouterServices.getStateFromRoute();
 
-  const disable = true || !AccessRightsService.hasLevel(workspaceId, 'member');
+  const disable =
+    true ||
+    !(
+      AccessRightsService.hasLevel(workspaceId, 'member') &&
+      AccessRightsService.getCompanyLevel(companyId) !== 'guest'
+    );
 
   return (
     <>

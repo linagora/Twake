@@ -8,6 +8,8 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import './Calendar.scss';
 
 import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelector.js';
+import AccessRightsService from 'app/services/AccessRightsService';
+import WorkspaceService from 'services/workspaces/workspaces';
 
 export default class UnconfiguredTab extends Component {
   constructor() {
@@ -24,13 +26,7 @@ export default class UnconfiguredTab extends Component {
     Languages.removeListener(this);
   }
   initInCalendars() {
-    ChannelsService.saveTab(
-      this.props.channel.data.company_id,
-      this.props.channel.data.workspace_id,
-      this.props.channel.data.id,
-      this.props.tab.tabId,
-      { calendars: this.state.selected },
-    );
+    if (this.props.saveTab) this.props.saveTab({ calendars: this.state.selected });
     Menu.closeAll();
   }
   render() {
@@ -50,28 +46,32 @@ export default class UnconfiguredTab extends Component {
             )}
           </div>
 
-          <br />
-          <CalendarSelector
-            allowMultiple
-            medium
-            value={this.state.selected}
-            onChange={workspaces_calendars => {
-              this.setState({ selected: workspaces_calendars });
-            }}
-            calendarList={calendar_list || []}
-            className=""
-          />
+          {AccessRightsService.getCompanyLevel(WorkspaceService.currentGroupId) !== 'guest' && (
+            <>
+              <br />
+              <CalendarSelector
+                allowMultiple
+                medium
+                value={this.state.selected}
+                onChange={workspaces_calendars => {
+                  this.setState({ selected: workspaces_calendars });
+                }}
+                calendarList={calendar_list || []}
+                className=""
+              />
 
-          <br />
+              <br />
 
-          {this.state.selected.length > 0 && (
-            <Button
-              className="button medium"
-              onClick={() => this.initInCalendars()}
-              style={{ width: 'auto' }}
-            >
-              {Languages.t('general.continue', [], 'Continuer')}
-            </Button>
+              {this.state.selected.length > 0 && (
+                <Button
+                  className="button medium"
+                  onClick={() => this.initInCalendars()}
+                  style={{ width: 'auto' }}
+                >
+                  {Languages.t('general.continue', [], 'Continuer')}
+                </Button>
+              )}
+            </>
           )}
         </div>
       </div>

@@ -17,8 +17,8 @@ import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/ScrollHiddenComponents/ScrollWithHiddenComponents';
 import HiddenNotificationsButton from 'app/components/ScrollHiddenComponents/HiddenNotificationsButton';
 import AccessRightsService from 'app/services/AccessRightsService';
-import useRouterCompany from 'app/state/recoil/hooks/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
+import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
+import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
 import './ChannelsBar.scss';
 import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 

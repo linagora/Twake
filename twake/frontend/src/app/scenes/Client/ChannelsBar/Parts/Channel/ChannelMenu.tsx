@@ -44,7 +44,7 @@ export default (props: Props): JSX.Element => {
   const isDirectChannel = props.channel.data.visibility === 'direct';
   const { FeatureToggles, Feature, activeFeatureNames, FeatureNames } = useFeatureToggles();
 
-  Languages.useListener(useState);
+  Languages.useListener();
 
   const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
 
@@ -160,12 +160,18 @@ export default (props: Props): JSX.Element => {
       },
     },
     {
-      hide: !AccessRightsService.hasLevel(workspaceId, 'member'),
+      hide: !(
+        AccessRightsService.hasLevel(workspaceId, 'member') &&
+        AccessRightsService.getCompanyLevel(companyId) !== 'guest'
+      ),
       type: 'separator',
     },
     {
       type: 'menu',
-      hide: !AccessRightsService.hasLevel(workspaceId, 'member'),
+      hide: !(
+        AccessRightsService.hasLevel(workspaceId, 'member') &&
+        AccessRightsService.getCompanyLevel(companyId) !== 'guest'
+      ),
       text: Languages.t(
         isDirectChannel
           ? 'scenes.app.channelsbar.hide_discussion_leaving.menu'
@@ -229,7 +235,10 @@ export default (props: Props): JSX.Element => {
       0,
       {
         type: 'menu',
-        hide: !AccessRightsService.hasLevel(workspaceId, 'member'),
+        hide: !(
+          AccessRightsService.hasLevel(workspaceId, 'member') &&
+          AccessRightsService.getCompanyLevel(companyId) !== 'guest'
+        ),
         text: Languages.t('scenes.app.channelsbar.modify_channel_menu'),
         onClick: () => editChannel(),
       },

@@ -193,13 +193,30 @@ export class UsersCrudController
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<CompanyObject>> {
     const company = await this.service.companies.getCompany({ id: request.params.id });
+    const context = getExecutionContext(request);
 
     if (!company) {
       throw CrudExeption.notFound(`User ${request.params.id} not found`);
     }
 
+    let companyUserObj: CompanyUserObject | null = null;
+    if (context?.user?.id) {
+      const companyUser = await this.service.companies.getCompanyUser(company, {
+        id: context.user.id,
+      });
+      companyUserObj = {
+        company: company,
+        role: companyUser.role,
+        status: "active",
+      };
+    }
+
     return {
-      resource: this.service.formatCompany(company, null, await this.getCompanyStats(company)),
+      resource: this.service.formatCompany(
+        company,
+        companyUserObj,
+        await this.getCompanyStats(company),
+      ),
       websocket: undefined, // empty for now
     };
   }

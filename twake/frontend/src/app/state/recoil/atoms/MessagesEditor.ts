@@ -31,7 +31,7 @@ export const MessagesEditorState = atomFamily<MessagesEditorType, string>({
     ({ onSet }) => {
       onSet((editor: MessagesEditorType) => {
         LocalStorage.setItem(`editor:${key}:files`, JSON.stringify(editor.files));
-        LocalStorage.setItem(`editor:${key}:value`, editor.value);
+        LocalStorage.setItem(`editor:${key}:value`, editor.value || '');
       });
     },
   ],

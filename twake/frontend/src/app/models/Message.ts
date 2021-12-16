@@ -22,7 +22,7 @@ export type MessageFileType = {
   metadata?: {
     //File information when attached (it can change if edited)
     source?: MessageFileMetadataSource;
-    external_id: string;
+    external_id: string | { company_id: string; id: string };
     name?: string; //Original name
     size?: number; //Original weight
     mime?: string;
