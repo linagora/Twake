@@ -65,7 +65,7 @@ export default (props: PropsType): JSX.Element => {
             } else {
               editedTab = {
                 name: tabName,
-                order: 'pos_' + new Date().getTime(),
+                order: '' + new Date().getTime(),
                 owner: props.currentUserId,
                 application_id: appId,
                 configuration: {},

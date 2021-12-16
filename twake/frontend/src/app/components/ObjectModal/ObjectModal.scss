@@ -20,7 +20,11 @@
     padding: 0;
     background: var(--white);
     height: auto;
-    min-height: 64px;
+
+    & .modal-layout-row,
+    & {
+      min-height: 64px;
+    }
 
     .square-button {
       vertical-align: top;

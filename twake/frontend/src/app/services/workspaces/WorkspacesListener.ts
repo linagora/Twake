@@ -39,14 +39,6 @@ class WorkspacesListener {
             Workspaces.notify();
           }
         }
-        if (data.type === 'update_group_privileges') {
-          WorkspaceUserRights.currentUserRightsByGroup[data.group_id] = data.privileges;
-          WorkspaceUserRights.notify();
-        }
-        if (data.type === 'update_workspace_level') {
-          WorkspaceUserRights.currentUserRightsByWorkspace[data.workspace_id] = data.level;
-          WorkspaceUserRights.notify();
-        }
       },
       null,
     );

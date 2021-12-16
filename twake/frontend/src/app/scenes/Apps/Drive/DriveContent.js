@@ -265,6 +265,7 @@ export default class Drive extends Component {
         <UnconfiguredTab
           channel={this.props.channel}
           tab={this.props.tab}
+          saveTab={this.props.saveTab}
           onFinish={() => {
             this.componentWillMount();
             this.setState({});

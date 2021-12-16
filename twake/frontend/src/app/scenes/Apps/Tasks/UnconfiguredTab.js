@@ -6,6 +6,8 @@ import BoardPicker from './BoardPicker/BoardPicker.js';
 import Menu from 'components/Menus/Menu.js';
 import ChannelsService from 'services/channels/channels.js';
 import Button from 'components/Buttons/Button.js';
+import AccessRightsService from 'app/services/AccessRightsService';
+import WorkspaceService from 'services/workspaces/workspaces';
 
 export default class UnconfiguredTab extends Component {
   constructor() {
@@ -25,13 +27,7 @@ export default class UnconfiguredTab extends Component {
       Menu.closeAll();
       return;
     }
-    ChannelsService.saveTab(
-      this.props.channel.data.company_id,
-      this.props.channel.data.workspace_id,
-      this.props.channel.data.id,
-      this.props.tab.tabId,
-      { board_id: board.id },
-    );
+    if (this.props.saveTab) this.props.saveTab({ board_id: board.id });
     Menu.closeAll();
   }
   createFromChannel() {
@@ -61,29 +57,33 @@ export default class UnconfiguredTab extends Component {
             )}
           </div>
 
-          <br />
+          {AccessRightsService.getCompanyLevel(WorkspaceService.currentGroupId) !== 'guest' && (
+            <>
+              <br />
 
-          <Button
-            className="button medium right-margin"
-            style={{ width: 'auto' }}
-            onClick={() => this.createFromChannel()}
-          >
-            {Languages.t('scenes.apps.tasks.new_board.title', [], 'Nouveau board')}
-          </Button>
+              <Button
+                className="button medium right-margin"
+                style={{ width: 'auto' }}
+                onClick={() => this.createFromChannel()}
+              >
+                {Languages.t('scenes.apps.tasks.new_board.title', [], 'Nouveau board')}
+              </Button>
 
-          <Menu
-            menu={[
-              {
-                type: 'react-element',
-                reactElement: () => <BoardPicker onChoose={board => this.initInBoard(board)} />,
-              },
-            ]}
-            style={{ display: 'inline-block' }}
-          >
-            <Button className="button medium secondary-light" style={{ width: 'auto' }}>
-              {Languages.t('scenes.apps.tasks.choose_board_button', [], 'Choisir un board')}
-            </Button>
-          </Menu>
+              <Menu
+                menu={[
+                  {
+                    type: 'react-element',
+                    reactElement: () => <BoardPicker onChoose={board => this.initInBoard(board)} />,
+                  },
+                ]}
+                style={{ display: 'inline-block' }}
+              >
+                <Button className="button medium secondary-light" style={{ width: 'auto' }}>
+                  {Languages.t('scenes.apps.tasks.choose_board_button', [], 'Choisir un board')}
+                </Button>
+              </Menu>
+            </>
+          )}
         </div>
       </div>
     );

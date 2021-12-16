@@ -18,7 +18,7 @@ import { LoadingState } from '../atoms/Loading';
 
 const logger = Logger.getLogger('useWorkspaces');
 
-export const useWorkspaces = (companyId: string = '') => {
+export const useWorkspacesCommons = (companyId: string = '') => {
   const [workspaces, setWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));
   const [loading, setLoading] = useRecoilState(LoadingState(`workspaces-${companyId}`));
 
@@ -34,19 +34,6 @@ export const useWorkspaces = (companyId: string = '') => {
     if (updated.length === 0) WorkspacesService.openNoWorkspacesPage();
     setLoading(false);
   };
-
-  //Fixme: use the token got from backend here
-  const { send } = useRealtimeRoom<WorkspaceType>(
-    WorkspaceAPIClient.websockets(companyId)[0],
-    'useWorkspaces',
-    (action, resource) => {
-      if (action === 'saved') {
-        refresh();
-      } else {
-        // not supported for now
-      }
-    },
-  );
 
   if (!routerWorkspaceId && bestCandidate) {
     RouterService.push(
@@ -66,6 +53,22 @@ export const useWorkspaces = (companyId: string = '') => {
   return { workspaces, loading, refresh };
 };
 
+export function useWorkspaces(companyId: string = '') {
+  const { workspaces, loading, refresh } = useWorkspacesCommons(companyId);
+
+  useRealtimeRoom<WorkspaceType>(
+    WorkspaceAPIClient.websockets(companyId)[0],
+    'useWorkspaces',
+    action => {
+      if (action === 'saved') {
+        refresh();
+      }
+    },
+  );
+
+  return { workspaces, loading, refresh };
+}
+
 export function useWorkspaceLoader(companyId: string) {
   const loading = useRecoilValue(LoadingState(`workspaces-${companyId}`));
   return { loading };
@@ -74,7 +77,7 @@ export function useWorkspaceLoader(companyId: string) {
 export function useCurrentWorkspace() {
   const companyId = useRouterCompany();
   const routerWorkspaceId = useRouterWorkspace();
-  const { workspaces, refresh } = useWorkspaces(companyId);
+  const { workspaces, refresh } = useWorkspacesCommons(companyId);
   const workspace = workspaces.find(w => w.id == routerWorkspaceId);
 
   //Retro compatibility
@@ -87,7 +90,7 @@ export function useCurrentWorkspace() {
 
 export function useWorkspace(workspaceId: string) {
   const companyId = useRouterCompany();
-  const { workspaces, refresh } = useWorkspaces(companyId);
+  const { workspaces, refresh } = useWorkspacesCommons(companyId);
   const workspace = workspaces.find(w => w.id == workspaceId);
   return { workspace, refresh };
 }

@@ -34,10 +34,9 @@ export const AdminSwitch = (props: { col: any; adminLevelId: string; onChange: a
 export default () => {
   const [searchValue, setSearchValue] = useState<string>('');
   Collections.get('workspaces').useListener(useState);
-  WorkspaceService.useListener(useState);
-  workspacesUsers.useListener(useState);
-  workspaceUserRightsService.useListener(useState);
-  Languages.useListener(useState);
+  WorkspaceService.useListener();
+  workspacesUsers.useListener();
+  Languages.useListener();
 
   const usersInGroup = [];
   Object.keys(workspacesUsers.users_by_group[groupService.currentGroupId] || {}).map(
