@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
+import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
@@ -6,13 +7,15 @@ import { CompanyApplicationController } from "./controllers/company-applications
 const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
 
-const routes: FastifyPluginCallback<{ service: ApplicationServiceAPI }> = (
-  fastify: FastifyInstance,
-  options,
-  next,
-) => {
+const routes: FastifyPluginCallback<{
+  service: ApplicationServiceAPI;
+  realtime: RealtimeServiceAPI;
+}> = (fastify: FastifyInstance, options, next) => {
   const applicationController = new ApplicationController(options.service);
-  const companyApplicationController = new CompanyApplicationController(options.service);
+  const companyApplicationController = new CompanyApplicationController(
+    options.realtime,
+    options.service,
+  );
 
   /**
    * Applications collection

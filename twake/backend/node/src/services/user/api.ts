@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   ListResult,
   Paginable,
+  SaveResult,
 } from "../../core/platform/framework/api/crud-service";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import User, { UserPrimaryKey } from "./entities/user";
@@ -98,7 +99,7 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    */
   createCompany(company: Company): Promise<Company>;
-  updateCompany(company: Company): Promise<Company>;
+  updateCompany(company: Company): Promise<SaveResult<Company>>;
 
   /**
    * Get a company from its id or identity
@@ -127,7 +128,10 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
    * @param company
    * @param user
    */
-  removeUserFromCompany(companyId: CompanyPrimaryKey, user: UserPrimaryKey): Promise<void>;
+  removeUserFromCompany(
+    companyId: CompanyPrimaryKey,
+    user: UserPrimaryKey,
+  ): Promise<DeleteResult<CompanyUser>>;
 
   /**
    * Get user ids in the given company
@@ -150,7 +154,11 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
 
   delete(pk: CompanyPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Company>>;
 
-  setUserRole(companyId: uuid, userId: uuid, role?: CompanyUserRole): Promise<CompanyUser>;
+  setUserRole(
+    companyId: uuid,
+    userId: uuid,
+    role?: CompanyUserRole,
+  ): Promise<SaveResult<CompanyUser>>;
 
   getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole>;
 

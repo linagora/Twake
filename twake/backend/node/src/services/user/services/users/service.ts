@@ -30,6 +30,8 @@ import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { isNumber } from "lodash";
+import { RealtimeSaved } from "../../../../core/platform/framework";
+import { getUserRoom } from "../../realtime";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -89,6 +91,14 @@ export class UserService implements UsersServiceAPI {
     throw new Error("Method not implemented.");
   }
 
+  @RealtimeSaved<User>((user, _context) => {
+    return [
+      {
+        room: getUserRoom(user.id),
+        resource: {}, // FIX ME we should formatUser here
+      },
+    ];
+  })
   async save<SaveOptions>(
     user: User,
     options?: SaveOptions,
@@ -183,6 +193,7 @@ export class UserService implements UsersServiceAPI {
     const user = await this.repository.findOne(pk);
     if (!user.preferences) user.preferences = {};
     for (const key in preferences) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       user.preferences[key] = preferences[key];
     }

@@ -32,6 +32,7 @@ import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import coalesce from "../../../utils/coalesce";
+import { getCompanyRooms, getUserRooms } from "../realtime";
 
 export class UsersCrudController
   implements
@@ -61,9 +62,15 @@ export class UsersCrudController
       throw CrudExeption.notFound(`User ${id} not found`);
     }
 
+    const userObject = await this.service.formatUser(user, {
+      includeCompanies: context.user.id === id,
+    });
+
     return {
-      resource: await this.service.formatUser(user, { includeCompanies: context.user.id === id }),
-      websocket: undefined, // empty for now
+      resource: userObject,
+      websocket: context.user.id
+        ? this.realtime.sign(getUserRooms(user), context.user.id)[0]
+        : undefined,
     };
   }
 
@@ -196,7 +203,7 @@ export class UsersCrudController
     const context = getExecutionContext(request);
 
     if (!company) {
-      throw CrudExeption.notFound(`User ${request.params.id} not found`);
+      throw CrudExeption.notFound(`Company ${request.params.id} not found`);
     }
 
     let companyUserObj: CompanyUserObject | null = null;
@@ -217,7 +224,9 @@ export class UsersCrudController
         companyUserObj,
         await this.getCompanyStats(company),
       ),
-      websocket: undefined, // empty for now
+      websocket: context.user?.id
+        ? this.realtime.sign(getCompanyRooms(company), context.user.id)[0]
+        : undefined,
     };
   }
 

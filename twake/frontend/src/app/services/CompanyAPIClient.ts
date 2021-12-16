@@ -2,6 +2,7 @@ import { CompanyType } from 'app/models/Company';
 import { WorkspaceType } from 'app/models/Workspace';
 import Api from './Api';
 import { TwakeService } from './Decorators/TwakeService';
+import { WebsocketRoom } from './WebSocket/WebSocket';
 
 const PREFIX = '/internal/services/users/v1';
 
@@ -13,6 +14,12 @@ export type UpdateWorkspaceBody = {
 
 @TwakeService('CompanyAPIClientService')
 class CompanyAPIClient {
+  private realtime: Map<string, WebsocketRoom> = new Map();
+
+  websocket(companyId: string): WebsocketRoom {
+    return this.realtime.get(companyId) || { room: '', token: '' };
+  }
+
   /**
    * Get a list of companies for a user, only common companies with current user are returned.
    
@@ -29,10 +36,16 @@ class CompanyAPIClient {
    *
    * @param companyId
    */
-  async get(companyId: string): Promise<CompanyType> {
-    return Api.get<{ resource: CompanyType }>(`${PREFIX}/companies/${companyId}`).then(
-      a => a.resource,
-    );
+  async get(companyId: string, disableJWTAuthentication: boolean = false): Promise<CompanyType> {
+    return Api.get<{ resource: CompanyType; websocket: WebsocketRoom }>(
+      `${PREFIX}/companies/${companyId}`,
+      undefined,
+      false,
+      { disableJWTAuthentication },
+    ).then(result => {
+      result.resource.id && this.realtime.set(result.resource.id, result.websocket);
+      return result.resource;
+    });
   }
 }
 

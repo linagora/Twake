@@ -10,6 +10,7 @@ import { LoadingWorkspaceIcon } from './Components/Workspace/WorkspaceIcon';
 import CompanySelector from './Components/CompanySelector';
 
 import './WorkspacesBar.scss';
+import { useCurrentCompanyRealtime } from '../../../state/recoil/hooks/useCompanies';
 
 export default () => {
   const companyId = useRouterCompany();

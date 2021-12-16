@@ -3,6 +3,7 @@ import LoginService from 'app/services/login/LoginService';
 import UserAPIClient from 'app/services/user/UserAPIClient';
 import { useRecoilState } from 'recoil';
 import { CurrentUserState } from '../atoms/CurrentUser';
+import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import { UserType } from 'app/models/User';
 
 export const useCurrentUser = () => {
@@ -27,4 +28,12 @@ export const useCurrentUser = () => {
   };
 
   return { user, refresh, updateStatus };
+};
+
+export const useCurrentUserRealtime = () => {
+  const { user, refresh } = useCurrentUser();
+  const room = UserAPIClient.websocket(user?.id || '');
+  useRealtimeRoom<UserType>(room, 'useCurrentUser', (action, resource) => {
+    refresh();
+  });
 };

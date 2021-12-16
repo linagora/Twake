@@ -9,11 +9,12 @@ import { useCurrentUser } from './useCurrentUser';
 import _ from 'lodash';
 import RouterService from 'app/services/RouterService';
 import WorkspacesService from 'services/workspaces/workspaces.js';
-import UserNotifications from 'app/services/user/UserNotifications';
 import AccessRightsService from 'app/services/AccessRightsService';
 import Groups from 'services/workspaces/groups.js';
 import LoginService from 'app/services/login/LoginService';
 import UserAPIClient from 'app/services/user/UserAPIClient';
+import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import CompanyAPIClient from 'app/services/CompanyAPIClient';
 
 /**
  * Will return the companies of the current user
@@ -62,7 +63,11 @@ export const useCurrentCompany = () => {
     RouterService.push(RouterService.generateRouteFromState({ companyId: bestCandidate }));
   }
 
-  const [company] = useRecoilState(CompaniesState(routerCompanyId));
+  const [company, setCompany] = useRecoilState(CompaniesState(routerCompanyId));
+
+  const refresh = async () => {
+    setCompany(await CompanyAPIClient.get(company.id));
+  };
 
   //Always set the current company in localstorage to open it automatically later
   if (routerCompanyId) {
@@ -83,7 +88,16 @@ export const useCurrentCompany = () => {
     LocalStorage.setItem('default_company_id', routerCompanyId);
   }
 
-  return { company };
+  return { company, refresh };
+};
+
+export const useCurrentCompanyRealtime = () => {
+  const { company, refresh } = useCurrentCompany();
+
+  const room = CompanyAPIClient.websocket(company.id || '');
+  useRealtimeRoom<CompanyType>(room, 'useCurrentCompany', (_action, _resource) => {
+    refresh();
+  });
 };
 
 /**
