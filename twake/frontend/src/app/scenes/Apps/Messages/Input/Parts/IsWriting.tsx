@@ -9,14 +9,6 @@ type PropsType = {
 
 export default ({ channelId, threaId }: PropsType): JSX.Element => {
   const { users } = useChannelActivityWriting(channelId, threaId);
-  console.log(
-    'here in isWriting.tsx printing users : ',
-    users,
-    'coucou',
-    channelId,
-    'bye',
-    threaId,
-  );
 
   return (
     <div style={{ height: '40px', backgroundColor: 'pink' }}>

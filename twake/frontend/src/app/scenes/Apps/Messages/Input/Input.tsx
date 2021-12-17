@@ -22,7 +22,10 @@ import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import { useChannel } from 'app/state/recoil/hooks/useChannels';
 import IsWriting from './Parts/IsWriting';
-import useChannelActivityWriting from 'app/state/recoil/hooks/useChannelWritingActivity';
+import useChannelActivityWriting, {
+  useWritingDetector,
+} from 'app/state/recoil/hooks/useChannelWritingActivity';
+import { clearInterval, clearTimeout, setInterval, setTimeout } from 'timers';
 
 type Props = {
   messageId?: string;
@@ -44,6 +47,7 @@ type Props = {
   editorState?: EditorState;
 };
 
+const booleanTestList: boolean[] = [];
 export default (props: Props) => {
   const { channel } = useChannel(props.channelId || '');
 
@@ -75,6 +79,7 @@ export default (props: Props) => {
   const [isTooLong, setTooLong] = useState(false);
 
   const { iAmWriting } = useChannelActivityWriting(props.channelId || '', props.threadId);
+  const { onKeydown: onKeydownRealtimeListener } = useWritingDetector();
 
   useEffect(() => {
     setTooLong(TextCountService.getStats(editorState).isTooLong);
@@ -170,11 +175,13 @@ export default (props: Props) => {
     delayRequest(`editor-${editorId}`, () => {
       setValue(getContentOutput(editorState));
     });
+
+    onKeydownRealtimeListener((state: boolean) => iAmWriting(state));
+
     if (props.onChange) {
       props.onChange(editorState);
       return;
     }
-    iAmWriting();
     setRichTextEditorState(editorState);
   };
 
@@ -250,7 +257,9 @@ export default (props: Props) => {
           <div className="editorview-submit">
             <EditorView
               ref={editorRef}
-              onChange={editorState => onChange(editorState)}
+              onChange={editorState => {
+                onChange(editorState);
+              }}
               clearOnSubmit={true}
               outputFormat={format}
               plugins={editorPlugins}

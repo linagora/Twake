@@ -4,7 +4,6 @@ import CurrentUser from 'app/services/user/CurrentUser';
 import UserAPIClient from 'app/services/user/UserAPIClient';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
-import { setTimeout } from 'timers';
 import {
   ChannelWritingActivityState,
   ChannelWritingActivityType,
@@ -12,6 +11,11 @@ import {
 import { ThreadWritingActivitySelector } from '../selectors/ThreadWritingActivity';
 import UserService from 'services/user/UserService';
 import useRouterCompany from './useRouterCompany';
+import { useCallback, useRef } from 'react';
+
+const MAX_DELAY_BETWEEN_KEYDOWN = 500;
+const MIN_DELAY_BETWEEN_EMIT = 8000;
+const MAX_DELAY_AFTER_LAST_WRITE_EVENT = 10000;
 
 export type WritingEvent = {
   type: 'writing';
@@ -26,8 +30,10 @@ export type WritingEvent = {
 
 export type ChannelActivityWritingType = {
   users: { userId: string; name: string }[];
-  iAmWriting: () => void;
+  iAmWriting: (writing: boolean) => void;
 };
+
+let receivedWritingTimeout = new Map<string, number>();
 
 export default function useChannelActivityWriting(
   channelId: string,
@@ -37,14 +43,11 @@ export default function useChannelActivityWriting(
   const [channelsActivity, setChannelsActivity] = useRecoilState(
     ChannelWritingActivityState(channelId),
   );
-  /*const [threadActivity, setThreadActivity] = useRecoilValue(
-    ThreadWritingActivitySelector(threadId),
-  );*/
 
   const setChannelWritingActivityState = useRecoilCallback(
     ({ set, snapshot }) =>
       async (event: WritingEvent['event']) => {
-        const currentList = await snapshot.getPromise(
+        let currentList: ChannelWritingActivityType[] = await snapshot.getPromise(
           ChannelWritingActivityState(event.channel_id),
         );
         const newEvent: ChannelWritingActivityType = {
@@ -52,15 +55,23 @@ export default function useChannelActivityWriting(
           userId: event.user_id,
           name: event.name,
         };
-        //supprimer de la liste
-        currentList.filter(elem => elem === newEvent);
-
-        if (event.is_writing === true) {
-          const newList = [...currentList, newEvent];
-          set(ChannelWritingActivityState(event.channel_id), newList);
+        currentList = currentList.filter(elem => elem.userId !== newEvent.userId);
+        if (event.is_writing) {
+          currentList = [...currentList, newEvent];
         }
-        //TODO: add timer on receiver side
         set(ChannelWritingActivityState(event.channel_id), currentList);
+
+        //Fallback stop is_writing in case of lost connection
+        if (receivedWritingTimeout.has(event.user_id))
+          clearTimeout(receivedWritingTimeout.get(event.user_id));
+        if (event.is_writing) {
+          receivedWritingTimeout.set(
+            event.user_id,
+            setTimeout(() => {
+              setChannelWritingActivityState({ ...event, is_writing: false });
+            }, MAX_DELAY_AFTER_LAST_WRITE_EVENT) as any,
+          );
+        }
       },
   );
 
@@ -69,31 +80,51 @@ export default function useChannelActivityWriting(
     'useChannelWritingActivity',
     (action, resource) => {
       if (action === 'event' && resource.type === 'writing') {
-        console.log('salut les potes received', resource);
         setChannelWritingActivityState(resource.event);
       }
     },
   );
   (window as any).send = send;
 
-  const iAmWriting = async (writing: boolean = true) => {
-    const currentUser = await UserAPIClient.getCurrent();
-    send({
-      type: 'writing',
-      event: {
-        channel_id: channelId,
-        thread_id: threadId,
-        user_id: currentUser.id,
-        name: UserService.getFullName(currentUser),
-        is_writing: writing,
-      },
-    } as WritingEvent);
-    if (writing) setTimeout(clearWriting, 3000); //TODO: be carfull of something: surprise( gerer l'annulation de timeout) => clear timeout
-  };
-
-  const clearWriting = () => {
-    iAmWriting(false);
-  };
+  const iAmWriting = useCallback(
+    async (writing: boolean) => {
+      const currentUser = await UserAPIClient.getCurrent();
+      send({
+        type: 'writing',
+        event: {
+          channel_id: channelId,
+          thread_id: threadId,
+          user_id: currentUser.id,
+          name: UserService.getFullName(currentUser),
+          is_writing: writing,
+        },
+      } as WritingEvent);
+    },
+    [send],
+  );
 
   return { users: channelsActivity, iAmWriting: iAmWriting };
 }
+
+let writeTimeout = setTimeout(() => {}, 0);
+export const useWritingDetector = () => {
+  let lastEmit = useRef(new Date().getTime());
+
+  const onKeydown = useCallback((emit: Function) => {
+    const now = new Date().getTime();
+    if (now - lastEmit.current > MIN_DELAY_BETWEEN_EMIT) {
+      lastEmit.current = now;
+      emit(true);
+    }
+
+    if (writeTimeout) {
+      clearTimeout(writeTimeout);
+    }
+    writeTimeout = setTimeout(() => {
+      emit(false);
+      lastEmit.current = 0;
+    }, MAX_DELAY_BETWEEN_KEYDOWN) as any;
+  }, []);
+
+  return { onKeydown };
+};
