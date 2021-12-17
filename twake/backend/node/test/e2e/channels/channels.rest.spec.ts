@@ -137,7 +137,7 @@ describe("The /internal/services/channels/v1 API", () => {
       done();
     });
 
-    it.only("should return list of workspace channels", async done => {
+    it("should return list of workspace channels", async done => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
@@ -479,7 +479,7 @@ describe("The /internal/services/channels/v1 API", () => {
       done();
     });
 
-    it.only("channel counters", async done => {
+    it("channel counters", async done => {
       await platform.database.getConnector().drop();
 
       await testDbService.createDefault(platform);
