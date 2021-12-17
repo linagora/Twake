@@ -285,6 +285,15 @@ export class ChannelCrudController
 
     const resources = entities.map(a => ChannelObject.mapTo(a));
 
+    try {
+      await this.membersService.getUsersCount({
+        ..._.pick(resources[0], "id", "company_id", "workspace_id"),
+        counter_type: ChannelUserCounterType.MEMBERS,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+
     const counts = await Promise.all(
       resources.map(a =>
         this.membersService.getUsersCount({
