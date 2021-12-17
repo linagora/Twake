@@ -283,9 +283,24 @@ export class ChannelCrudController
       entities = list.getEntities();
     }
 
+    const resources = entities.map(a => ChannelObject.mapTo(a));
+
+    const counts = await Promise.all(
+      resources.map(a =>
+        this.membersService.getUsersCount({
+          ..._.pick(a, "id", "company_id", "workspace_id"),
+          counter_type: ChannelUserCounterType.MEMBERS,
+        }),
+      ),
+    );
+
+    for (let i = 0; i < resources.length; i++) {
+      resources[i].stats = { members: counts[i], guests: 0, messages: 0 };
+    }
+
     return {
       ...{
-        resources: entities.map(a => ChannelObject.mapTo(a)),
+        resources: resources,
       },
       ...(request.query.websockets && {
         websockets: this.websockets.sign(

@@ -23,18 +23,19 @@ import { ChannelMember } from "../../../src/services/channels/entities";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { TestDbService } from "../utils.prepare.db";
 import { ChannelObject } from "../../../src/services/channels/services/channel/types";
-import { getInstance as getCompanyInstance } from "../../../src/services/user/entities/company";
-import UserServiceAPI from "../../../src/services/user/api";
+import { Api } from "../utils.api";
 
 describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
   let testDbService: TestDbService;
+  let api: Api;
 
   beforeEach(async () => {
     platform = await init();
     testDbService = new TestDbService(platform);
+    api = new Api(platform);
     channelUtils = getChannelUtils(platform);
   });
 
@@ -84,15 +85,9 @@ describe("The /internal/services/channels/v1 API", () => {
   }
 
   async function getChannelREST(channelId: string): Promise<ChannelObject> {
-    const jwtToken = await platform.auth.getJWTToken();
-
-    const response = await platform.app.inject({
-      method: "GET",
-      url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}`,
-      headers: {
-        authorization: `Bearer ${jwtToken}`,
-      },
-    });
+    const response = await api.get(
+      `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}`,
+    );
 
     expect(response.statusCode).toEqual(200);
 
@@ -142,7 +137,7 @@ describe("The /internal/services/channels/v1 API", () => {
       done();
     });
 
-    it("should return list of workspace channels", async done => {
+    it.only("should return list of workspace channels", async done => {
       const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = new Channel();
       channel.name = "Test Channel";
@@ -157,7 +152,7 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      const result: ResourceListResponse<Channel> = deserialize(
+      const result: ResourceListResponse<ChannelObject> = deserialize(
         ResourceListResponse,
         response.body,
       );
@@ -167,6 +162,14 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(result.resources[0]).toMatchObject({
         id: creationResult.entity.id,
         name: channel.name,
+      });
+
+      result.resources.forEach(r => {
+        expect(r.stats).toMatchObject({
+          members: 1,
+          guests: 0,
+          messages: 0,
+        });
       });
 
       done();
@@ -574,7 +577,7 @@ describe("The /internal/services/channels/v1 API", () => {
     });
   });
 
-  describe.skip("The POST /companies/:companyId/workspaces/:workspaceId/channels route", () => {
+  describe("The POST /companies/:companyId/workspaces/:workspaceId/channels route", () => {
     it("should 400 when companyId is not valid", async done => {
       testAccess(
         `${url}/companies/123/workspaces/${platform.workspace.workspace_id}/channels`,
@@ -610,7 +613,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(response.statusCode).toEqual(201);
 
-      const channelCreateResult: ResourceGetResponse<Channel> = deserialize(
+      const channelCreateResult: ResourceGetResponse<ChannelObject> = deserialize(
         ResourceGetResponse,
         response.body,
       );
@@ -618,8 +621,13 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(channelCreateResult.resource).toBeDefined();
       expect(channelCreateResult.websocket).toBeDefined();
 
-      const channelId = channelCreateResult.resource.id;
-      const createdChannel = await channelService.channels.get({ id: channelId });
+      const res = channelCreateResult.resource;
+
+      const createdChannel = await channelService.channels.get({
+        company_id: res.company_id,
+        workspace_id: res.workspace_id,
+        id: res.id,
+      });
 
       expect(channelCreateResult.websocket).toMatchObject({
         room: `/channels/${createdChannel.id}`,
