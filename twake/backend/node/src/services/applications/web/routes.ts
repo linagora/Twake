@@ -65,7 +65,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: `${companyApplicationsUrl}`,
     preValidation: [fastify.authenticate],
-    handler: companyApplicationController.list.bind(applicationController),
+    handler: companyApplicationController.list.bind(companyApplicationController),
   });
 
   //Get one application of a company
@@ -73,7 +73,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: `${companyApplicationsUrl}/:application_id`,
     preValidation: [fastify.authenticate],
-    handler: companyApplicationController.get.bind(applicationController),
+    handler: companyApplicationController.get.bind(companyApplicationController),
   });
 
   //Remove an application from a company
@@ -81,7 +81,7 @@ const routes: FastifyPluginCallback<{
     method: "DELETE",
     url: `${companyApplicationsUrl}/:application_id`,
     preValidation: [fastify.authenticate],
-    handler: companyApplicationController.delete.bind(applicationController),
+    handler: companyApplicationController.delete.bind(companyApplicationController),
   });
 
   //Add an application to the company
@@ -89,7 +89,7 @@ const routes: FastifyPluginCallback<{
     method: "POST",
     url: `${companyApplicationsUrl}/:application_id`,
     preValidation: [fastify.authenticate],
-    handler: companyApplicationController.save.bind(applicationController),
+    handler: companyApplicationController.save.bind(companyApplicationController),
   });
 
   //Application event triggered by a user

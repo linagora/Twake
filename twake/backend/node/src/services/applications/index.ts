@@ -3,7 +3,7 @@ import { ApplicationServiceAPI } from "./api";
 import { getService } from "./services/index";
 import web from "./web/index";
 import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
-import { RealtimeServiceAPI } from "../..//core/platform/services/realtime/api";
+import { RealtimeServiceAPI } from "../../core/platform/services/realtime/api";
 
 @Prefix("/internal/services/applications/v1")
 @Consumes(["platform-services", "realtime"])
