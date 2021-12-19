@@ -4,6 +4,7 @@ import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 import NewThread from './Input/NewThread';
 import MessagesList from './MessagesList';
 import ThreadMessagesList from './ThreadMessagesList';
+import ChannelAPIClient from 'app/services/channels/ChannelAPIClient';
 
 type Props = {
   channel: ChannelResource;
@@ -23,7 +24,14 @@ export default (props: Props) => {
   const threadId = props.options.context?.threadId || '';
 
   return (
-    <div className="messages-view">
+    <div
+      className="messages-view"
+      onClick={() => {
+        if (!threadId) {
+          ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
+        }
+      }}
+    >
       <Suspense fallback="loading...">
         {!threadId ? (
           <MessagesList

@@ -7,6 +7,7 @@ import FirstMessage from './Message/Parts/FirstMessage/FirstMessage';
 import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
 import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import ChannelAPIClient from 'app/services/channels/ChannelAPIClient';
 
 type Props = {
   companyId: string;
@@ -59,6 +60,10 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           );
         }}
         loadMore={loadMore}
+        onSeeBottom={() => {
+          if (window.reachedEnd)
+            ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
+        }}
       />
     </MessagesListContext.Provider>
   );
