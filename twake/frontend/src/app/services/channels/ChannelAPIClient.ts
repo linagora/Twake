@@ -19,10 +19,10 @@ class ChannelAPIClient {
     { status = true, requireFocus = false },
   ): Promise<void> {
     if (requireFocus && !document.hasFocus()) return;
-    return Api.post<{ status: boolean }, void>(
+    return Api.post<{ value: boolean }, void>(
       `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/read`,
       {
-        status,
+        value: status,
       },
     );
   }

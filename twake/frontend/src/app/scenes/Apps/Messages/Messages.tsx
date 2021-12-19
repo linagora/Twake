@@ -24,14 +24,7 @@ export default (props: Props) => {
   const threadId = props.options.context?.threadId || '';
 
   return (
-    <div
-      className="messages-view"
-      onClick={() => {
-        if (!threadId) {
-          ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
-        }
-      }}
-    >
+    <div className="messages-view">
       <Suspense fallback="loading...">
         {!threadId ? (
           <MessagesList

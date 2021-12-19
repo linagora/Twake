@@ -60,8 +60,8 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           );
         }}
         loadMore={loadMore}
-        onSeeBottom={() => {
-          if (window.reachedEnd)
+        atBottomStateChange={(atBottom: boolean) => {
+          if (atBottom && window.reachedEnd)
             ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
         }}
       />

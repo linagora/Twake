@@ -12,16 +12,15 @@ type Props = {
   itemContent: ItemContent<any>;
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
-  onSeeBottom?: Function;
+  atBottomStateChange?: (atBottom: boolean) => void;
 };
 
 export default React.memo(
-  ({ emptyListComponent, itemId, loadMore, items, itemContent, onSeeBottom }: Props) => {
+  ({ emptyListComponent, itemId, loadMore, items, itemContent, atBottomStateChange }: Props) => {
     const virtuosoRef = useRef(null);
     const [initiated, setInitiated] = useState(false);
 
     const more = async (direction: 'future' | 'history') => {
-      logger.log('Load more ', direction);
       const result = await loadMore(direction);
       setInitiated(true);
       return result;
@@ -29,7 +28,11 @@ export default React.memo(
 
     useEffect(() => {
       if (items.length === 0) {
-        more('history');
+        more('history').then(() => {
+          if (atBottomStateChange) atBottomStateChange(true);
+        });
+      } else {
+        more('future');
       }
     }, []);
 
@@ -59,22 +62,14 @@ export default React.memo(
             followOutput={'smooth'}
             alignToBottom
             startReached={async () => {
-              logger.log('startReached: ', items.length);
               await more('history');
-              logger.log('loaded history: ', items.length);
             }}
             endReached={async () => {
-              logger.log('endReached: ', items.length);
               await more('future');
-              if (onSeeBottom) onSeeBottom();
-              logger.log('loaded future: ', items.length);
             }}
-            atBottomStateChange={atBottom => logger.log('position: atBottom', atBottom)}
-            atTopStateChange={atTop => {
-              logger.log('position: atTop', atTop);
-            }}
+            atBottomStateChange={atBottomStateChange}
+            atTopStateChange={atTop => {}}
             computeItemKey={(_index, item) => itemId(item)}
-            //overscan={{ main: 1000, reverse: 1000 }}
           />
         </Suspense>
       </>
