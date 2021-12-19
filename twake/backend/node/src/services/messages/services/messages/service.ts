@@ -535,6 +535,16 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   async completeMessage(message: Message, options: { files?: Message["files"] } = {}) {
     this.fixReactionsFormat(message);
     if (options.files) message = await this.completeMessageFiles(message, options.files || []);
+
+    //Mobile retro compatibility
+    if ((message.blocks?.length || 0) === 0) {
+      message.blocks = message.blocks || [];
+      message.blocks.push({
+        type: "twacode",
+        elements: [message.text],
+      });
+    }
+
     return message;
   }
 
