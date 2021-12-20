@@ -8,7 +8,10 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import Application, { PublicApplicationObject } from "../../entities/application";
+import Application, {
+  ApplicationObject,
+  PublicApplicationObject,
+} from "../../entities/application";
 import {
   CrudExeption,
   ExecutionContext,
@@ -72,7 +75,7 @@ export class ApplicationController
   async save(
     request: FastifyRequest<{ Params: { application_id: string }; Body: Application }>,
     reply: FastifyReply,
-  ): Promise<ResourceGetResponse<PublicApplicationObject>> {
+  ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     // const context = getExecutionContext(request);
 
     const app = request.body;
@@ -112,13 +115,16 @@ export class ApplicationController
 
       const res = await this.service.applications.save(entity);
       entity = res.entity;
+
+      return {
+        resource: entity.getPublicObject(),
+      };
     } else {
       // INSERT
 
       app.is_default = false;
       app.publication.published = false;
-
-      console.log(app.api);
+      app.api.privateKey = randomBytes(32).toString("base64");
 
       app.stats = {
         createdAt: now,
@@ -128,11 +134,11 @@ export class ApplicationController
 
       const res = await this.service.applications.save(app);
       entity = res.entity;
-    }
 
-    return {
-      resource: entity.getPublicObject(),
-    };
+      return {
+        resource: entity.getApplicationObject(),
+      };
+    }
   }
 
   async delete(

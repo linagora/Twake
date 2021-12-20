@@ -72,6 +72,14 @@ describe("Applications", () => {
         version: 0,
       });
 
+      expect(r.api).toMatchObject({
+        hooksUrl: payload.api.hooksUrl,
+        allowedIps: payload.api.allowedIps,
+        privateKey: expect.any(String),
+      });
+
+      expect(r.api.privateKey).not.toBe("");
+
       const dbData = await appRepo.findOne({ id: response.resource.id });
 
       expect(dbData.api).toMatchObject({
@@ -140,6 +148,8 @@ describe("Applications", () => {
           updatedAt: expect.any(Number),
           version: 1,
         });
+
+        expect(r.api).toBeFalsy();
 
         const dbData = await appRepo.findOne({ id: response.resource.id });
 
@@ -261,7 +271,6 @@ const postPayload = {
   api: {
     hooksUrl: "hooksUrl",
     allowedIps: "allowedIps",
-    privateKey: "privateKey", // RO
   },
   access: {
     read: ["messages"],

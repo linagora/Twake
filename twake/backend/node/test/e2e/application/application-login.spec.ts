@@ -12,7 +12,7 @@ describe("Applications", () => {
   let testDbService: TestDbService;
   let api: Api;
   let appId: string;
-  const privateKey = randomBytes(32).toString("base64");
+  let privateKey: string;
   let accessToken: ApplicationLoginResponse["access_token"];
 
   beforeAll(async ends => {
@@ -22,7 +22,6 @@ describe("Applications", () => {
     api = new Api(platform);
 
     postPayload.company_id = platform.workspace.company_id;
-    postPayload.api.privateKey = privateKey;
 
     const createdApplication = await api.post(
       "/internal/services/applications/v1/applications",
@@ -30,6 +29,7 @@ describe("Applications", () => {
     );
 
     appId = createdApplication.resource.id;
+    privateKey = createdApplication.resource.api.privateKey;
 
     ends();
   });
@@ -129,7 +129,6 @@ const postPayload = {
   api: {
     hooksUrl: "hooksUrl",
     allowedIps: "allowedIps",
-    privateKey: "privateKey", // RO
   },
   access: {
     read: ["messages"],

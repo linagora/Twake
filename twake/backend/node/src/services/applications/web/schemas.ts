@@ -64,7 +64,7 @@ const apiObject = {
     allowedIps: { type: "string" },
     privateKey: { type: "string" },
   },
-  required: ["hooksUrl", "allowedIps", "privateKey"],
+  required: ["hooksUrl", "allowedIps"],
 };
 
 const requestApplicationObject = {
@@ -91,6 +91,7 @@ const responseApplicationObject = {
     access: applicationAccess,
     display: {},
     publication: responseApplicationPublication,
+    api: apiObject,
     stats: applicationStats,
   },
   required: [
