@@ -16,7 +16,7 @@ export class ChannelCounterEntity {
   @Column("company_id", "timeuuid")
   company_id: string;
 
-  @Column("workspace_id", "timeuuid")
+  @Column("workspace_id", "string")
   workspace_id: string;
 
   @Column("value", "counter")
