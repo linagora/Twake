@@ -34,7 +34,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     if (window.reachedStart && direction === 'history') return;
 
     const limit = 100;
-    const newMessages = await MessageViewAPIClient.feed(
+    let newMessages = await MessageViewAPIClient.feed(
       key.companyId,
       key.workspaceId,
       key.channelId,

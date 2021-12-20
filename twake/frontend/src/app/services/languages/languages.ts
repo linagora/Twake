@@ -7,7 +7,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 class Languages extends Observable {
   private i18nt: Function | null = null;
-  private language: string = 'en';
+  private language: string = '';
   private default = 'en';
   private available = ['en', 'fr', 'de', 'es', 'ja', 'ru', 'vi', 'it', 'tr', 'si', 'nb_NO'];
 
@@ -35,6 +35,8 @@ class Languages extends Observable {
   }
 
   async setLanguage(language: string) {
+    if (!language) language = this.default;
+
     if (this.language === language) {
       return;
     }

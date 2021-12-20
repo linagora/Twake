@@ -66,6 +66,7 @@ export default (props: Props) => {
   if (message.ephemeral) {
     menu.push({
       type: 'menu',
+      icon: 'trash',
       text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
       className: 'error',
       onClick: () => {
@@ -76,6 +77,7 @@ export default (props: Props) => {
     if (message.thread_id == message.id) {
       menu.push({
         type: 'menu',
+        icon: 'arrow-up-right',
         text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
         onClick: () => {
           MessagesService.showMessage(message.id);
@@ -87,6 +89,7 @@ export default (props: Props) => {
       if (!message.context?.disable_pin) {
         menu.push({
           type: 'menu',
+          icon: 'link',
           text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
           onClick: () => {
             const url = `${document.location.origin}${RouterServices.generateRouteFromState({
@@ -105,6 +108,7 @@ export default (props: Props) => {
 
         menu.push({
           type: 'menu',
+          icon: 'map-pin',
           text: Languages.t(
             !message.pinned_info?.pinned_at
               ? 'scenes.apps.messages.message.pin_button'
@@ -165,6 +169,7 @@ export default (props: Props) => {
       if (!message.application_id) {
         menu.push({
           type: 'menu',
+          icon: 'edit-alt',
           text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Edit'),
           onClick: () => {
             setVisibleEditor({ location, subLocation });
@@ -174,6 +179,7 @@ export default (props: Props) => {
       if (message?.stats?.replies <= 1) {
         menu.push({
           type: 'menu',
+          icon: 'trash-alt',
           text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
           className: 'error',
           onClick: () => {

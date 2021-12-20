@@ -1,5 +1,5 @@
 import React, { ReactNode, Suspense, useEffect, useRef, useState } from 'react';
-import { ItemContent, Virtuoso } from 'react-virtuoso';
+import { ItemContent, LogLevel, Virtuoso } from 'react-virtuoso';
 import Logger from 'app/services/Logger';
 
 const logger = Logger.getLogger(`ListBuilder`);
@@ -45,6 +45,8 @@ export default React.memo(
       }
       firstItemId.current = itemId(items[0]);
     }
+
+    (window as any).globalThis.VIRTUOSO_LOG_LEVEL = LogLevel.DEBUG;
 
     if (items.length === 0) {
       return <div style={{ flex: 1 }}>{initiated ? emptyListComponent || <></> : <></>}</div>;

@@ -120,6 +120,7 @@
       padding: 4px;
       padding-left: 8px;
       display: flex;
+      border-radius: var(--border-radius-base) 0 0 0;
     }
 
     &.small-section {
@@ -147,9 +148,9 @@
 
     &.pinned-section {
       .message {
-        border-left: 4px solid var(--red);
+        border-left: 4px solid var(--primary);
+        box-shadow: -8px 0px 12px -8px var(--primary-background);
         overflow: hidden;
-        border-radius: var(--border-radius-base) 0 0 0;
       }
     }
   }
