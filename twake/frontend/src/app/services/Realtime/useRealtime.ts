@@ -37,6 +37,13 @@ const useRealtimeRoom = <T>(
   // subscribe once
   const subscribed = useRef(false);
 
+  const newEvent = (event: { action: RealtimeEventAction; payload: T }) => {
+    if (event) {
+      setLastEvent(event);
+      onEvent(event.action, event.payload);
+    }
+  };
+
   useEffect(() => {
     if (room !== roomConf) {
       setRoom(roomConf);
@@ -56,12 +63,12 @@ const useRealtimeRoom = <T>(
         (type: string, event: RealtimeResourceEvent<T> | RealtimeSimpleEvent) => {
           logger.debug('Received WebSocket event', type, event);
           if (type === 'realtime:resource') {
-            setLastEvent({
+            newEvent({
               action: (event as RealtimeResourceEvent<T>).action,
               payload: (event as RealtimeResourceEvent<T>).resource,
             });
           } else if (type === 'realtime:event') {
-            setLastEvent({ action: 'event', payload: (event as RealtimeSimpleEvent).data });
+            newEvent({ action: 'event', payload: (event as RealtimeSimpleEvent).data });
           } else if (type === 'realtime:join:success') {
             logger.debug(`Room ${room} has been joined`);
           } else {
@@ -72,12 +79,6 @@ const useRealtimeRoom = <T>(
       subscribed.current = true;
     }
   }, [websocket, tag, room, onEvent]);
-
-  useEffect(() => {
-    if (lastEvent) {
-      onEvent(lastEvent.action, lastEvent.payload);
-    }
-  }, [lastEvent]);
 
   return {
     lastEvent,

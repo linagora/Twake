@@ -35,7 +35,10 @@ class Languages extends Observable {
   }
 
   async setLanguage(language: string) {
-    var oldLanguage = this.language;
+    if (this.language === language) {
+      return;
+    }
+
     this.language = language;
 
     if (!language) {
