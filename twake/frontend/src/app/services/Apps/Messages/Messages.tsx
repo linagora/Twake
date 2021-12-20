@@ -19,11 +19,15 @@ import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 import { Message, MessageFileType } from '../../../models/Message';
-import MessageAPIClient from './clients/MessageAPIClient';
 import { Application } from 'app/models/App';
-import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
+import {
+  getCompanyApplications,
+  getCompanyApplication,
+} from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 import MainViewService from 'app/services/AppView/MainViewService';
+import MessageExternalFilePicker from 'app/scenes/Apps/Messages/Input/Parts/MessageExternalFilePicker';
+import FileUploadAPIClient from 'app/components/FileUploads/FileUploadAPIClient';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };
@@ -237,19 +241,50 @@ class Messages extends Observable {
   async triggerApp(channel: ChannelType, threadId: string, app: any, from_icon: any, evt: any) {
     if (app?.identity?.code === 'twake_drive') {
       let menu = [];
-      let has_drive_app = ChannelsService.getChannelForApp(app.id, Workspaces.currentWorkspaceId);
+      let has_drive_app = getCompanyApplication(app.id);
 
       if (has_drive_app) {
         menu.push({
           type: 'react-element',
-          reactElement: () => (
-            <FilePicker
-              mode="select_file"
-              onChoose={(file: any) =>
-                MessageEditorManager.get(channel.id || '').onAddAttachment(threadId, file)
-              }
-            />
-          ),
+          reactElement: () => {
+            let fileHandler: (file: MessageFileType) => void;
+            return (
+              <MessageExternalFilePicker
+                channel={channel}
+                threadId={threadId}
+                setHandler={handler => (fileHandler = handler)}
+              >
+                <FilePicker
+                  mode="select_file"
+                  onChoose={(file: any) => {
+                    if (fileHandler)
+                      fileHandler({
+                        metadata: {
+                          external_id: {
+                            id: file.id,
+                            workspace_id: file.workspace_id,
+                            parent_id: file.parent_id,
+                            company_id: channel.company_id || '',
+                          },
+                          source: 'drive',
+                          name: file.name,
+                          size: parseInt(file.size),
+                          mime: FileUploadAPIClient.extensionToMime(file.extension),
+                          thumbnails: file.preview_has_been_generated
+                            ? [
+                                {
+                                  mime: 'image/png',
+                                  url: file.preview_link,
+                                },
+                              ]
+                            : [],
+                        },
+                      });
+                  }}
+                />
+              </MessageExternalFilePicker>
+            );
+          },
         });
       }
 

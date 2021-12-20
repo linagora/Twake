@@ -21,6 +21,7 @@ type PropsType = {
   deletable?: boolean;
   actionMenu?: boolean;
   onRemove?: Function;
+  source?: string;
 };
 
 export const FileActions = ({
@@ -29,17 +30,19 @@ export const FileActions = ({
   deletable,
   actionMenu,
   onRemove,
+  source,
 }: PropsType): JSX.Element => {
   const { cancelUpload, deleteOneFile, downloadOneFile, retryUpload } = useUpload();
   const menuRef = useRef<HTMLElement>();
 
-  const onClickDownload = async () =>
+  const onClickDownload = async () => {
     file.company_id &&
-    (await downloadOneFile({
-      companyId: file.company_id,
-      fileId: file.id,
-      fileName: file.name,
-    }));
+      (await downloadOneFile({
+        companyId: file.company_id,
+        fileId: file.id,
+        fileName: file.name,
+      }));
+  };
 
   const buildMenu = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
