@@ -52,6 +52,33 @@ export class ViewsService implements MessageViewsServiceAPI {
     return this;
   }
 
+  async listChannelFiles(
+    pagination: Pagination,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>> {
+    //Not implemented yet
+    return new ListResult("thread", [], null);
+  }
+
+  async listChannelPinned(
+    pagination: Pagination,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>> {
+    //Not implemented yet
+    return new ListResult("thread", [], null);
+  }
+
+  async listChannelThreads(
+    pagination: Pagination,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>> {
+    //Not implemented yet
+    return new ListResult("thread", [], null);
+  }
+
   /**
    * Get last threads in a channel.
    *
