@@ -106,7 +106,8 @@ export class ApplicationController
       }
 
       entity.identity = app.identity;
-      entity.api = app.api;
+      entity.api.hooksUrl = app.api.hooksUrl;
+      entity.api.allowedIps = app.api.allowedIps;
       entity.access = app.access;
       entity.display = app.display;
 
