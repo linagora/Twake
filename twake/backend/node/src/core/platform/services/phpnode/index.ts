@@ -19,7 +19,7 @@ import { RealtimeServiceAPI } from "../realtime/api";
 import { UsersCrudController } from "../../../../services/user/web/controller";
 import UserServiceAPI from "../../../../services/user/api";
 
-@Consumes(["webserver", "websocket"])
+@Consumes(["webserver", "websocket", "user", "channels"])
 export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
   name = "phpnode";
   version = "1";
@@ -73,7 +73,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
 
   async doStart(): Promise<this> {
     this.channels = this.context.getProvider<ChannelServiceAPI>("channels");
-    this.users = this.context.getProvider<UserServiceAPI>("users");
+    this.users = this.context.getProvider<UserServiceAPI>("user");
     return this;
   }
 

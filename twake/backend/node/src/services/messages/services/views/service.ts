@@ -20,12 +20,14 @@ import { SearchUserOptions } from "../../../user/services/users/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import SearchRepository from "../../../../core/platform/services/search/repository";
 import { uuid } from "../../../../utils/types";
+import { MessageFileRef } from "../../entities/message-file-refs";
 
 export class ViewsService implements MessageViewsServiceAPI {
   version: "1";
   repositoryChannelRefs: Repository<MessageChannelRef>;
   repository: Repository<Message>;
   repositoryThreads: Repository<Thread>;
+  repositoryFilesRef: Repository<MessageFileRef>;
   searchRepository: SearchRepository<Message>;
 
   constructor(private platformServices: PlatformServicesAPI, private service: MessageServiceAPI) {}
@@ -48,6 +50,10 @@ export class ViewsService implements MessageViewsServiceAPI {
         "message_channel_refs",
         MessageChannelRef,
       );
+    this.repositoryFilesRef = await this.platformServices.database.getRepository<MessageFileRef>(
+      "message_file_refs",
+      MessageFileRef,
+    );
 
     return this;
   }
@@ -57,8 +63,17 @@ export class ViewsService implements MessageViewsServiceAPI {
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies>> {
-    //Not implemented yet
-    return new ListResult("thread", [], null);
+    const refs = await this.repositoryFilesRef.find(
+      { target_type: "channel", target_id: context.channel.id },
+      buildMessageListPagination(pagination, "id"),
+    );
+
+    let threads: MessageWithReplies[] = [];
+    for (const ref of refs.getEntities()) {
+      //TODO get each time message with thread parent
+    }
+
+    return new ListResult("thread", threads, refs.nextPage);
   }
 
   async listChannelPinned(
@@ -75,8 +90,7 @@ export class ViewsService implements MessageViewsServiceAPI {
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies>> {
-    //Not implemented yet
-    return new ListResult("thread", [], null);
+    return this.listChannel(pagination, { ...options, replies_per_thread: 0 }, context);
   }
 
   /**
@@ -128,25 +142,27 @@ export class ViewsService implements MessageViewsServiceAPI {
 
     //Get first message for each thread and add last replies for each thread
     let threadWithLastMessages: MessageWithReplies[] = [];
-    await Promise.all(
-      threads.map(async (thread: Thread) => {
-        const extendedThread = await this.service.messages.getThread(thread, {
-          replies_per_thread: options.replies_per_thread || 3,
-        });
+    if (options.replies_per_thread !== 0) {
+      await Promise.all(
+        threads.map(async (thread: Thread) => {
+          const extendedThread = await this.service.messages.getThread(thread, {
+            replies_per_thread: options.replies_per_thread || 3,
+          });
 
-        if (
-          extendedThread?.last_replies?.length === 0 &&
-          extendedThread.created_at > new Date().getTime() - 1000 * 60 //This is important to avoid removing thread if people loads a channel at the same time people create a thread
-        ) {
-          await this.service.threads.delete(
-            { id: extendedThread.thread_id },
-            { user: { id: null, server_request: true } },
-          );
-        } else if (extendedThread) {
-          threadWithLastMessages.push(extendedThread);
-        }
-      }),
-    );
+          if (
+            extendedThread?.last_replies?.length === 0 &&
+            extendedThread.created_at > new Date().getTime() - 1000 * 60 //This is important to avoid removing thread if people loads a channel at the same time people create a thread
+          ) {
+            await this.service.threads.delete(
+              { id: extendedThread.thread_id },
+              { user: { id: null, server_request: true } },
+            );
+          } else if (extendedThread) {
+            threadWithLastMessages.push(extendedThread);
+          }
+        }),
+      );
+    }
     threadWithLastMessages = threadWithLastMessages
       .filter(m => m.id)
       .sort((a, b) => a.stats.last_activity - b.stats.last_activity);
