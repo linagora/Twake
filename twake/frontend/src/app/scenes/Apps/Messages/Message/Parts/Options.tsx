@@ -26,6 +26,7 @@ import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/message
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 import SideViewService from 'app/services/AppView/SideViewService';
 import MainViewService from 'app/services/AppView/MainViewService';
+import Emojione from 'app/components/Emojione/Emojione';
 
 type Props = {
   onOpen?: () => void;
@@ -204,14 +205,29 @@ export default (props: Props) => {
 
   return (
     <div>
-      {!props.threadHeader && (
+      {/*!props.threadHeader && (
         <div className="message-options drag" key="drag">
           <div className="option js-drag-handler-message">
             <DragIndicator style={{ width: '18px' }} />
           </div>
         </div>
-      )}
+      )*/}
       <div className="message-options right" key="options">
+        {[':heart:', ':+1:', ':eyes:', ':tada:'].map(emoji => (
+          <>
+            <div
+              key={emoji}
+              className={
+                'option ' + (userReactions.map(m => m.name).includes(emoji) ? 'active' : '')
+              }
+              onClick={() => react([emoji], 'toggle')}
+            >
+              <Emojione type={emoji} />
+            </div>
+            <div className="separator"></div>
+          </>
+        ))}
+
         <Menu
           className="option"
           onOpen={(evt: any) => onOpen(evt)}
@@ -237,34 +253,38 @@ export default (props: Props) => {
         >
           <Smile size={16} />
         </Menu>
+        <div className="separator"></div>
+
         {!props.threadHeader && (
-          <div
-            className="option"
-            onClick={() => {
-              SideViewService.select(channelId, {
-                collection: MainViewService.getViewCollection(),
-                app: { identity: { code: 'messages' } } as Application,
-                context: {
-                  viewType: 'channel_thread',
-                  threadId: message.thread_id || message.id,
-                },
-              });
-            }}
-          >
-            <ArrowUpRight size={16} />
-          </div>
+          <>
+            <div
+              className="option"
+              onClick={() => {
+                SideViewService.select(channelId, {
+                  collection: MainViewService.getViewCollection(),
+                  app: { identity: { code: 'messages' } } as Application,
+                  context: {
+                    viewType: 'channel_thread',
+                    threadId: message.thread_id || message.id,
+                  },
+                });
+              }}
+            >
+              <ArrowUpRight size={16} />
+            </div>
+            <div className="separator"></div>
+          </>
         )}
-        {menu.length > 0 && (
-          <Menu
-            className="option"
-            onOpen={(evt: any) => onOpen(evt)}
-            onClose={() => props.onClose && props.onClose()}
-            menu={menu}
-            position={'left'}
-          >
-            <MoreHorizontal size={16} />
-          </Menu>
-        )}
+
+        <Menu
+          className="option"
+          onOpen={(evt: any) => onOpen(evt)}
+          onClose={() => props.onClose && props.onClose()}
+          menu={menu}
+          position={'left'}
+        >
+          <MoreHorizontal size={16} />
+        </Menu>
       </div>
     </div>
   );
