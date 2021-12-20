@@ -21,6 +21,7 @@ import { PlatformServicesAPI } from "../../../../core/platform/services/platform
 import SearchRepository from "../../../../core/platform/services/search/repository";
 import { uuid } from "../../../../utils/types";
 import { MessageFileRef } from "../../entities/message-file-refs";
+import { MessageChannelMarkedRef } from "../../entities/message-channel-marked-refs";
 
 export class ViewsService implements MessageViewsServiceAPI {
   version: "1";
@@ -28,6 +29,7 @@ export class ViewsService implements MessageViewsServiceAPI {
   repository: Repository<Message>;
   repositoryThreads: Repository<Thread>;
   repositoryFilesRef: Repository<MessageFileRef>;
+  repositoryMarkedRef: Repository<MessageChannelMarkedRef>;
   searchRepository: SearchRepository<Message>;
 
   constructor(private platformServices: PlatformServicesAPI, private service: MessageServiceAPI) {}
@@ -54,6 +56,11 @@ export class ViewsService implements MessageViewsServiceAPI {
       "message_file_refs",
       MessageFileRef,
     );
+    this.repositoryMarkedRef =
+      await this.platformServices.database.getRepository<MessageChannelMarkedRef>(
+        "message_channel_marked_refs",
+        MessageChannelMarkedRef,
+      );
 
     return this;
   }
@@ -70,7 +77,19 @@ export class ViewsService implements MessageViewsServiceAPI {
 
     let threads: MessageWithReplies[] = [];
     for (const ref of refs.getEntities()) {
-      //TODO get each time message with thread parent
+      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
+      const extendedThread = await this.service.messages.getThread(thread, {
+        replies_per_thread: options.replies_per_thread || 1,
+      });
+
+      const message = await this.repository.findOne({
+        thread_id: ref.thread_id,
+        id: ref.message_id,
+      });
+      if (message && extendedThread) {
+        extendedThread.highlighted_replies = [message];
+        threads.push(extendedThread);
+      }
     }
 
     return new ListResult("thread", threads, refs.nextPage);
@@ -81,7 +100,28 @@ export class ViewsService implements MessageViewsServiceAPI {
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies>> {
-    //Not implemented yet
+    const refs = await this.repositoryMarkedRef.find(
+      {
+        company_id: context.channel.company_id,
+        workspace_id: context.channel.workspace_id,
+        type: "pinned",
+        channel_id: context.channel.id,
+      },
+      buildMessageListPagination(pagination, "thread_id"),
+    );
+
+    let threads: MessageWithReplies[] = [];
+    for (const ref of refs.getEntities()) {
+      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
+      const extendedThread = await this.service.messages.getThread(thread, {
+        replies_per_thread: options.replies_per_thread || 1,
+      });
+
+      if (extendedThread) {
+        threads.push(extendedThread);
+      }
+    }
+
     return new ListResult("thread", [], null);
   }
 
