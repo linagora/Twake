@@ -27,6 +27,11 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
   const { company } = useCurrentCompany();
 
+  useEffect(() => {
+    //Use window.setEdge instead ?
+    window.reachedEnd = false;
+  }, []);
+
   return (
     <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
       <ListBuilder
