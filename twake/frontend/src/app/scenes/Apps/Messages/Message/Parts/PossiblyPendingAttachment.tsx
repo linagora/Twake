@@ -58,7 +58,9 @@ export default ({ file, onRemove, type }: PropsType) => {
   return formatedFile ? (
     <FileComponent
       className="small-right-margin small-bottom-margin"
-      type={type}
+      context={type}
+      source={file.metadata?.source || 'internal'}
+      externalId={file.metadata?.external_id}
       file={formatedFile}
       status={status}
       progress={progress}

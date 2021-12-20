@@ -16,6 +16,7 @@ class MessageSystem
         $this->rest = $app->getServices()->get("app.restclient");
         $this->doctrine = $app->getServices()->get("app.twake_doctrine");
         $this->depreciated = $app->getServices()->get("app.messages.depreciated");
+        $this->access_manager = $app->getServices()->get("app.accessmanager");
     }
 
     public function init($route, $data, $current_user = null)
@@ -42,7 +43,7 @@ class MessageSystem
                 "channel_id" => $options["channel_id"],
             ];
         }else{
-            $channel = $this->getInfosFromChannel($options["channel_id"]);   
+            $channel = $this->getInfosFromChannel($options["company_id"], $options["workspace_id"], $options["channel_id"]);   
             if(!$channel){
                 return;
             }
@@ -84,7 +85,7 @@ class MessageSystem
 
     public function remove($object, $options, $current_user = null)
     {
-        $channel = $this->getInfosFromChannel($object["channel_id"]);   
+        $channel = $this->getInfosFromChannel($object["company_id"], $object["workspace_id"], $object["channel_id"]);   
         if(!$channel){
             return;
         }
@@ -98,7 +99,7 @@ class MessageSystem
 
     public function save($object, $options, $current_user = null, $application = null)
     {
-        $channel = $this->getInfosFromChannel($object["channel_id"]);
+        $channel = $this->getInfosFromChannel($object["company_id"], $object["workspace_id"], $object["channel_id"]);
         $channel["company_id"] = $channel["company_id"] ?? $object["company_id"];
         $channel["workspace_id"] = $channel["workspace_id"] ?? $object["workspace_id"];
 
@@ -290,6 +291,9 @@ class MessageSystem
     }
 
     private function getInfosFromChannel($channelId){
+
+        $this->access_manager->getChannelCache($channelId);
+
         $channelDetails = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channelId));
         if($channelDetails){
             return $channelDetails->getData();

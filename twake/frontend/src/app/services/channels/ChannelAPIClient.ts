@@ -11,6 +11,21 @@ class ChannelAPIClient {
       `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,
     ).then(result => result.resource);
   }
+
+  async read(
+    companyId: string,
+    workspaceId: string,
+    channelId: string,
+    { status = true, requireFocus = false },
+  ): Promise<void> {
+    if (requireFocus && !document.hasFocus()) return;
+    return Api.post<{ value: boolean }, void>(
+      `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/read`,
+      {
+        value: status,
+      },
+    );
+  }
 }
 
 export default new ChannelAPIClient();

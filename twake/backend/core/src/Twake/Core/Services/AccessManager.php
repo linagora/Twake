@@ -78,37 +78,7 @@ class AccessManager
                             $hasAccess = $res["has_access"] == true;
 
                             if($getChannelCache){
-
-                                $resChannel = $this->callNode(
-                                    "companies/".$companyId
-                                    ."/workspaces/".$workspaceId."/"
-                                    ."channels/".$channelId
-                                );
-
-                                $name = $resChannel["icon"] . " " . $resChannel["name"];
-                                if($resChannel["workspace_id"] === "direct"){
-                                    $name = "";
-                                }
-
-                                $name = html_entity_decode($this->emojione_client->shortnameToUnicode($name), ENT_NOQUOTES, 'UTF-8');
-
-                                $workspace = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspaceId));
-                                $group = $this->doctrine->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $companyId));
-                                $workspaceName = $workspace ? $workspace->getName() : "";
-                                $companyName = $group ? $group->getDisplayName() : "";
-
-                                $cacheChannel = new CachedFromNode("unused", "channel", $channelId, [
-                                    "company_id" => $companyId,
-                                    "workspace_id" => $workspaceId,
-                                    "channel_id" => $channelId,
-                                    "is_direct" => $workspaceId === "direct",
-                                    "name" => $name,
-                                    "workspace_name" => $workspaceName,
-                                    "company_name" => $companyName,
-                                    "last_update" => date("U")
-                                ]);
-                                $this->doctrine->persist($cacheChannel);
-                                $this->doctrine->flush();
+                                $this->getChannelCache($companyId, $workspaceId, $channelId);
                             }
 
                         }
@@ -252,6 +222,44 @@ class AccessManager
         $res = $res->getContent();
         $res = json_decode($res, 1);
         return $res;
+    }
+
+    public function getChannelCache($companyId, $workspaceId, $channelId){
+        $path = "companies/".$companyId
+            ."/workspaces/".$workspaceId."/"
+            ."channels/".$channelId;
+
+        if(!$workspaceId){
+            $path = "companies/".$companyId
+                ."/channels/".$channelId;
+        }
+
+        $resChannel = $this->callNode($path);
+
+        $name = $resChannel["icon"] . " " . $resChannel["name"];
+        if($resChannel["workspace_id"] === "direct"){
+            $name = "";
+        }
+
+        $name = html_entity_decode($this->emojione_client->shortnameToUnicode($name), ENT_NOQUOTES, 'UTF-8');
+
+        $workspace = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspaceId));
+        $group = $this->doctrine->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $companyId));
+        $workspaceName = $workspace ? $workspace->getName() : "";
+        $companyName = $group ? $group->getDisplayName() : "";
+
+        $cacheChannel = new CachedFromNode("unused", "channel", $resChannel["id"], [
+            "company_id" => $resChannel["company_id"],
+            "workspace_id" => $resChannel["workspace_id"],
+            "channel_id" => $resChannel["id"],
+            "is_direct" => $resChannel["workspace_id"] === "direct",
+            "name" => $name,
+            "workspace_name" => $workspaceName,
+            "company_name" => $companyName,
+            "last_update" => date("U")
+        ]);
+        $this->doctrine->persist($cacheChannel);
+        $this->doctrine->flush();
     }
 
 }

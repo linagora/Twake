@@ -190,7 +190,11 @@ const UserListManager = (props: PropsType) => {
                 Languages.t('scenes.apps.parameters.workspace_sections.members.invite_btn')
               }
               autoFocus
-              onSearch={(text, cb) => filter(text, cb)}
+              onSearch={(text, cb) =>
+                filter(text, list => {
+                  cb(list.map(u => u.user));
+                })
+              }
               render={(user: UserType) => (
                 <React.Suspense fallback={<></>}>
                   <Row align="middle" gutter={[8, 8]}>

@@ -1,6 +1,7 @@
 import Api from 'app/services/Api';
 import { FileType } from 'app/models/File';
 import { MessageFileType } from 'app/models/Message';
+import extensionToMime from './utils/extensionToMime';
 
 type ResponseFileType = { resource: FileType };
 type ResponseDeleteFileType = { status: 'success' | 'error' };
@@ -105,6 +106,10 @@ class FileUploadAPIClient {
     if (mime === 'application/zip' || mime === 'application/vnd.rar') return 'archive';
     //TODO add other types
     return 'other';
+  }
+
+  public extensionToMime(extension: string): string {
+    return extensionToMime[extension] || '';
   }
 }
 

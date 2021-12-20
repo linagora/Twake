@@ -7,13 +7,13 @@ export const TYPE = "channel_counters";
   type: TYPE,
 })
 export class ChannelCounterEntity {
-  @Column("id", "timeuuid")
+  @Column("id", "uuid")
   id: string;
 
   @Column("counter_type", "string")
   counter_type: string;
 
-  @Column("company_id", "timeuuid")
+  @Column("company_id", "uuid")
   company_id: string;
 
   @Column("workspace_id", "string")

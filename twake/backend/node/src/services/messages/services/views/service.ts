@@ -20,12 +20,16 @@ import { SearchUserOptions } from "../../../user/services/users/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import SearchRepository from "../../../../core/platform/services/search/repository";
 import { uuid } from "../../../../utils/types";
+import { MessageFileRef } from "../../entities/message-file-refs";
+import { MessageChannelMarkedRef } from "../../entities/message-channel-marked-refs";
 
 export class ViewsService implements MessageViewsServiceAPI {
   version: "1";
   repositoryChannelRefs: Repository<MessageChannelRef>;
   repository: Repository<Message>;
   repositoryThreads: Repository<Thread>;
+  repositoryFilesRef: Repository<MessageFileRef>;
+  repositoryMarkedRef: Repository<MessageChannelMarkedRef>;
   searchRepository: SearchRepository<Message>;
 
   constructor(private platformServices: PlatformServicesAPI, private service: MessageServiceAPI) {}
@@ -48,8 +52,85 @@ export class ViewsService implements MessageViewsServiceAPI {
         "message_channel_refs",
         MessageChannelRef,
       );
+    this.repositoryFilesRef = await this.platformServices.database.getRepository<MessageFileRef>(
+      "message_file_refs",
+      MessageFileRef,
+    );
+    this.repositoryMarkedRef =
+      await this.platformServices.database.getRepository<MessageChannelMarkedRef>(
+        "message_channel_marked_refs",
+        MessageChannelMarkedRef,
+      );
 
     return this;
+  }
+
+  async listChannelFiles(
+    pagination: Pagination,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>> {
+    const refs = await this.repositoryFilesRef.find(
+      { target_type: "channel", target_id: context.channel.id },
+      buildMessageListPagination(pagination, "id"),
+    );
+
+    let threads: MessageWithReplies[] = [];
+    for (const ref of refs.getEntities()) {
+      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
+      const extendedThread = await this.service.messages.getThread(thread, {
+        replies_per_thread: options.replies_per_thread || 1,
+      });
+
+      const message = await this.repository.findOne({
+        thread_id: ref.thread_id,
+        id: ref.message_id,
+      });
+      if (message && extendedThread) {
+        extendedThread.highlighted_replies = [message];
+        threads.push(extendedThread);
+      }
+    }
+
+    return new ListResult("thread", threads, refs.nextPage);
+  }
+
+  async listChannelPinned(
+    pagination: Pagination,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>> {
+    const refs = await this.repositoryMarkedRef.find(
+      {
+        company_id: context.channel.company_id,
+        workspace_id: context.channel.workspace_id,
+        type: "pinned",
+        channel_id: context.channel.id,
+      },
+      buildMessageListPagination(pagination, "thread_id"),
+    );
+
+    let threads: MessageWithReplies[] = [];
+    for (const ref of refs.getEntities()) {
+      const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
+      const extendedThread = await this.service.messages.getThread(thread, {
+        replies_per_thread: options.replies_per_thread || 1,
+      });
+
+      if (extendedThread) {
+        threads.push(extendedThread);
+      }
+    }
+
+    return new ListResult("thread", [], null);
+  }
+
+  async listChannelThreads(
+    pagination: Pagination,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>> {
+    return this.listChannel(pagination, { ...options, replies_per_thread: 0 }, context);
   }
 
   /**
@@ -101,25 +182,27 @@ export class ViewsService implements MessageViewsServiceAPI {
 
     //Get first message for each thread and add last replies for each thread
     let threadWithLastMessages: MessageWithReplies[] = [];
-    await Promise.all(
-      threads.map(async (thread: Thread) => {
-        const extendedThread = await this.service.messages.getThread(thread, {
-          replies_per_thread: options.replies_per_thread || 3,
-        });
+    if (options.replies_per_thread !== 0) {
+      await Promise.all(
+        threads.map(async (thread: Thread) => {
+          const extendedThread = await this.service.messages.getThread(thread, {
+            replies_per_thread: options.replies_per_thread || 3,
+          });
 
-        if (
-          extendedThread?.last_replies?.length === 0 &&
-          extendedThread.created_at > new Date().getTime() - 1000 * 60 //This is important to avoid removing thread if people loads a channel at the same time people create a thread
-        ) {
-          await this.service.threads.delete(
-            { id: extendedThread.thread_id },
-            { user: { id: null, server_request: true } },
-          );
-        } else if (extendedThread) {
-          threadWithLastMessages.push(extendedThread);
-        }
-      }),
-    );
+          if (
+            extendedThread?.last_replies?.length === 0 &&
+            extendedThread.created_at > new Date().getTime() - 1000 * 60 //This is important to avoid removing thread if people loads a channel at the same time people create a thread
+          ) {
+            await this.service.threads.delete(
+              { id: extendedThread.thread_id },
+              { user: { id: null, server_request: true } },
+            );
+          } else if (extendedThread) {
+            threadWithLastMessages.push(extendedThread);
+          }
+        }),
+      );
+    }
     threadWithLastMessages = threadWithLastMessages
       .filter(m => m.id)
       .sort((a, b) => a.stats.last_activity - b.stats.last_activity);
