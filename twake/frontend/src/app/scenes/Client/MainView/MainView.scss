@@ -15,8 +15,11 @@
 
 .ant-layout .global-view-layout {
   &.collapsed .global-view-header {
-    .channelName {
+    .channel-name {
       margin-left: 26px;
+    }
+    .app-name {
+      margin-left: 40px;
     }
   }
   .global-view-header {
