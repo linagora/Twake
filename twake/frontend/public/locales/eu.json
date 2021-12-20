@@ -843,5 +843,9 @@
     "components.locked_features.locked_drive_popup.title": "Gidatzeko mugara iritsi berri zara",
     "components.locked_features.locked_drive_popup.subtitle": "Doako bertsioan, 6GB bakarrik gorde ditzakezu.",
     "general.resume": "Jarraitu",
-    "general.pause": "Etenaldia"
+    "general.pause": "Etenaldia",
+    "\"": "\"",
+    "login.create_account": "Kontua sortu",
+    "login.login_error": "Errorea saioa hastean",
+    "'": "'"
 }
