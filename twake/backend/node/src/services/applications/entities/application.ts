@@ -41,8 +41,8 @@ export default class Application {
   @Column("stats", "json")
   stats: ApplicationStatistics;
 
-  getPublicObject(): PublicApplication {
-    return _.pick(
+  getPublicObject(): PublicApplicationObject {
+    const i = _.pick(
       this,
       "id",
       "company_id",
@@ -53,12 +53,46 @@ export default class Application {
       "publication",
       "stats",
     );
+
+    i.is_default = !!i.is_default;
+    return i;
+  }
+
+  getApplicationObject(): ApplicationObject {
+    const i = _.pick(
+      this,
+      "id",
+      "company_id",
+      "is_default",
+      "identity",
+      "access",
+      "display",
+      "publication",
+      "stats",
+      "api",
+    );
+
+    i.is_default = !!i.is_default;
+    return i;
   }
 }
 
-export type PublicApplication = Pick<
+export type PublicApplicationObject = Pick<
   Application,
   "id" | "company_id" | "is_default" | "identity" | "access" | "display" | "publication" | "stats"
+>;
+
+export type ApplicationObject = Pick<
+  Application,
+  | "id"
+  | "company_id"
+  | "is_default"
+  | "identity"
+  | "access"
+  | "display"
+  | "publication"
+  | "stats"
+  | "api"
 >;
 
 export type ApplicationPrimaryKey = { id: string };
@@ -111,8 +145,6 @@ export type ApplicationAccess = {
 
 export type ApplicationDisplay = {
   twake: {
-    version: 1;
-
     files?: {
       editor?: {
         preview_url: string; //Open a preview inline (iframe)

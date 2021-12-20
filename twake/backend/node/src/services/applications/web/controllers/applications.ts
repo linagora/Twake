@@ -8,7 +8,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import Application, { PublicApplication } from "../../entities/application";
+import Application, { PublicApplicationObject } from "../../entities/application";
 import {
   CrudExeption,
   ExecutionContext,
@@ -19,9 +19,9 @@ import { randomBytes } from "crypto";
 export class ApplicationController
   implements
     CrudController<
-      ResourceGetResponse<PublicApplication>,
-      ResourceUpdateResponse<PublicApplication>,
-      ResourceListResponse<PublicApplication>,
+      ResourceGetResponse<PublicApplicationObject>,
+      ResourceUpdateResponse<PublicApplicationObject>,
+      ResourceListResponse<PublicApplicationObject>,
       ResourceDeleteResponse
     >
 {
@@ -29,7 +29,7 @@ export class ApplicationController
 
   async get(
     request: FastifyRequest<{ Params: { application_id: string } }>,
-  ): Promise<ResourceGetResponse<PublicApplication>> {
+  ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getExecutionContext(request);
 
     const entity = await this.service.applications.get({
@@ -56,7 +56,7 @@ export class ApplicationController
     request: FastifyRequest<{
       Querystring: PaginationQueryParameters & { search: string };
     }>,
-  ): Promise<ResourceListResponse<PublicApplication>> {
+  ): Promise<ResourceListResponse<PublicApplicationObject>> {
     const context = getExecutionContext(request);
     const entities = await this.service.applications.list(
       request.query,
@@ -72,7 +72,7 @@ export class ApplicationController
   async save(
     request: FastifyRequest<{ Params: { application_id: string }; Body: Application }>,
     reply: FastifyReply,
-  ): Promise<ResourceGetResponse<PublicApplication>> {
+  ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     // const context = getExecutionContext(request);
 
     const app = request.body;
@@ -117,7 +117,8 @@ export class ApplicationController
 
       app.is_default = false;
       app.publication.published = false;
-      app.api.privateKey = randomBytes(32).toString("base64");
+
+      console.log(app.api);
 
       app.stats = {
         createdAt: now,

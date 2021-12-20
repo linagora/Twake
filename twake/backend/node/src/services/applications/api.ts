@@ -8,7 +8,10 @@ import {
 } from "../../core/platform/framework/api/crud-service";
 import { CRUDService } from "../../core/platform/framework/api/crud-service";
 import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
-import Application, { ApplicationPrimaryKey, PublicApplication } from "./entities/application";
+import Application, {
+  ApplicationPrimaryKey,
+  PublicApplicationObject,
+} from "./entities/application";
 import { CompanyExecutionContext } from "./web/types";
 import {
   CompanyApplicationPrimaryKey,
@@ -32,7 +35,7 @@ export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, 
     pagination: Paginable,
     options?: ListOptions,
     context?: ExecutionContext,
-  ): Promise<ListResult<PublicApplication>>;
+  ): Promise<ListResult<PublicApplicationObject>>;
 
   save<SaveOptions>(
     item: Application,
@@ -44,7 +47,7 @@ export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, 
     pagination?: Pagination,
     options?: ListOptions,
     context?: ExecutionContext,
-  ): Promise<ListResult<PublicApplication>>;
+  ): Promise<ListResult<PublicApplicationObject>>;
 
   publish(pk: ApplicationPrimaryKey): Promise<void>;
   unpublish(pk: ApplicationPrimaryKey): Promise<void>;

@@ -1,15 +1,13 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import { beforeAll, describe, expect, it } from "@jest/globals";
-import { init, TestPlatform } from "./setup";
-import { TestDbService, uuid } from "./utils.prepare.db";
-import { Api } from "./utils.api";
+import { init, TestPlatform } from "../setup";
+import { TestDbService } from "../utils.prepare.db";
+import { Api } from "../utils.api";
 import Application, {
-  PublicApplication,
-} from "../../src/services/applications/entities/application";
-import _ from "lodash";
-import assert from "assert";
-import { logger as log } from "../../src/core/platform/framework";
+  PublicApplicationObject,
+} from "../../../src/services/applications/entities/application";
+import { cloneDeep } from "lodash";
+
+import { logger as log } from "../../../src/core/platform/framework";
 import { v1 as uuidv1 } from "uuid";
 
 describe("Applications", () => {
@@ -37,14 +35,14 @@ describe("Applications", () => {
 
   const publishApp = async id => {
     const entity = await appRepo.findOne({ id });
-    assert(entity, `entity ${id} not found`);
+    if (!entity) throw new Error(`entity ${id} not found`);
     entity.publication.published = true;
     await appRepo.save(entity);
   };
 
   describe("Create application", function () {
     it("should 403 if creator is not a company admin", async done => {
-      const payload = _.cloneDeep(postPayload);
+      const payload = cloneDeep(postPayload);
 
       const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
         companyRole: "member",
@@ -56,7 +54,7 @@ describe("Applications", () => {
     });
 
     it("should 200 on application create", async done => {
-      const payload = _.cloneDeep(postPayload);
+      const payload = cloneDeep(postPayload);
       const response = await api.post(`${url}/applications`, payload);
       expect(response.statusCode).toBe(200);
 
@@ -86,10 +84,10 @@ describe("Applications", () => {
     });
   });
   describe("Update application", function () {
-    let createdApp: PublicApplication;
+    let createdApp: PublicApplicationObject;
 
     beforeAll(async done => {
-      const payload = _.cloneDeep(postPayload);
+      const payload = cloneDeep(postPayload);
       const response = await api.post(`${url}/applications`, payload);
       createdApp = response.resource;
 
@@ -97,7 +95,7 @@ describe("Applications", () => {
     });
 
     it("should 403 if editor is not a company admin", async done => {
-      assert(createdApp, "can't find created app");
+      if (!createdApp) throw new Error("can't find created app");
       log.debug(createdApp);
 
       const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
@@ -117,13 +115,12 @@ describe("Applications", () => {
 
     describe("Unpublished application", () => {
       it("should 200 on application update", async done => {
-        const payload = _.cloneDeep(postPayload) as Application;
+        const payload = cloneDeep(postPayload);
 
         payload.is_default = true;
         payload.identity.name = "test2";
         payload.api.hooksUrl = "123123";
         payload.access.read = [];
-        payload.display.twake.version = "999";
         payload.publication.requested = true;
 
         const response = await api.post(`${url}/applications/${createdApp.id}`, payload);
@@ -158,7 +155,7 @@ describe("Applications", () => {
 
     describe.skip("Published application", () => {
       beforeAll(async done => {
-        const payload = _.cloneDeep(postPayload);
+        const payload = cloneDeep(postPayload);
         const response = await api.post(`${url}/applications`, payload);
         createdApp = response.resource;
         await publishApp(createdApp.id);
@@ -166,9 +163,9 @@ describe("Applications", () => {
       });
 
       it("should 200 on update if allowed fields changed", async done => {
-        const payload = _.cloneDeep(createdApp) as Application;
+        const payload = cloneDeep(createdApp) as Application;
         const entity = await appRepo.findOne({ id: createdApp.id });
-        payload.api = _.cloneDeep(entity.api);
+        payload.api = cloneDeep(entity.api);
         payload.publication.requested = true;
         const response = await api.post(`${url}/applications/${createdApp.id}`, payload);
         expect(response.statusCode).toBe(200);
@@ -181,10 +178,9 @@ describe("Applications", () => {
       });
 
       it("should 400 on update if not allowed fields changed", async done => {
-        const payload = _.cloneDeep(createdApp) as Application;
+        const payload = cloneDeep(createdApp) as Application;
         const entity = await appRepo.findOne({ id: createdApp.id });
-        payload.api = _.cloneDeep(entity.api);
-        payload.display.twake.version = 2;
+        payload.api = cloneDeep(entity.api);
         const response = await api.post(`${url}/applications/${createdApp.id}`, payload);
         expect(response.statusCode).toBe(400);
         done();
@@ -192,11 +188,11 @@ describe("Applications", () => {
     });
   });
   describe("Get applications", function () {
-    let firstApp: PublicApplication;
-    let secondApp: PublicApplication;
-    let thirdApp: PublicApplication;
+    let firstApp: PublicApplicationObject;
+    let secondApp: PublicApplicationObject;
+    let thirdApp: PublicApplicationObject;
     beforeAll(async done => {
-      const payload = _.cloneDeep(postPayload);
+      const payload = cloneDeep(postPayload);
       firstApp = (await api.post(`${url}/applications`, payload)).resource;
       secondApp = (await api.post(`${url}/applications`, payload)).resource;
       thirdApp = (await api.post(`${url}/applications`, payload)).resource;
@@ -252,6 +248,7 @@ describe("Applications", () => {
 
 const postPayload = {
   is_default: true,
+  company_id: null,
   identity: {
     code: "code",
     name: "name",
@@ -331,7 +328,6 @@ const postPayload = {
     },
   },
   publication: {
-    published: false, //Publication accepted // RO
     requested: false, //Publication requested
   },
 };

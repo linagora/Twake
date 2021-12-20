@@ -2,7 +2,7 @@ import { MarketplaceApplicationServiceAPI } from "../api";
 import Application, {
   ApplicationPrimaryKey,
   getInstance as getApplicationInstance,
-  PublicApplication,
+  PublicApplicationObject,
   TYPE,
 } from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
@@ -20,7 +20,6 @@ import {
 } from "../../../core/platform/framework/api/crud-service";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import assert from "assert";
-import { uuid } from "../../../utils/types";
 
 export function getService(platformService: PlatformServicesAPI): MarketplaceApplicationServiceAPI {
   return new ApplicationService(platformService);
@@ -58,7 +57,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     pagination: Pagination,
     options?: { search?: string },
     context?: ExecutionContext,
-  ): Promise<ListResult<PublicApplication>> {
+  ): Promise<ListResult<PublicApplicationObject>> {
     let entities: ListResult<Application>;
     if (options.search) {
       entities = await this.searchRepository.search(
@@ -92,7 +91,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     pagination: Pagination,
     options?: ListOptions,
     context?: ExecutionContext,
-  ): Promise<ListResult<PublicApplication>> {
+  ): Promise<ListResult<PublicApplicationObject>> {
     //Fixme: this is not great if we have a lot of applications in the future
 
     const entities = [];

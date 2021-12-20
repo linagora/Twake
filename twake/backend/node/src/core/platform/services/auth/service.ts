@@ -30,7 +30,7 @@ export class AuthService implements AuthServiceAPI {
   generateJWT(
     userId: uuid,
     email: string,
-    options = { track: false, provider_id: "" },
+    options: { track: boolean; provider_id: string; application_id?: string },
   ): AccessToken {
     const now = Math.round(new Date().getTime() / 1000); // Current time in UTC
     assert(this.configuration.expiration, "jwt.expiration is missing");
@@ -49,8 +49,9 @@ export class AuthService implements AuthServiceAPI {
         nbf: now - 60 * 10,
         sub: userId,
         email: email,
-        track: options.track,
-        provider_id: options.provider_id,
+        track: !!options.track,
+        provider_id: options.provider_id || "",
+        application_id: options.application_id,
       } as JwtType),
       refresh: this.sign({
         exp: jwtRefreshExpiration,
@@ -59,8 +60,9 @@ export class AuthService implements AuthServiceAPI {
         nbf: now - 60 * 10,
         sub: userId,
         email: email,
-        track: options.track,
-        provider_id: options.provider_id,
+        track: !!options.track,
+        provider_id: options.provider_id || "",
+        application_id: options.application_id,
       } as JwtType),
       type: "Bearer",
     };

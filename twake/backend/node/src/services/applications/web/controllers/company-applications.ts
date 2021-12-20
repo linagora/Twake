@@ -9,14 +9,14 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import Application, { PublicApplication } from "../../entities/application";
+import Application, { PublicApplicationObject } from "../../entities/application";
 
 export class CompanyApplicationController
   implements
     CrudController<
-      ResourceGetResponse<PublicApplication>,
-      ResourceUpdateResponse<PublicApplication>,
-      ResourceListResponse<PublicApplication>,
+      ResourceGetResponse<PublicApplicationObject>,
+      ResourceUpdateResponse<PublicApplicationObject>,
+      ResourceListResponse<PublicApplicationObject>,
       ResourceDeleteResponse
     >
 {
@@ -24,7 +24,7 @@ export class CompanyApplicationController
 
   async get(
     request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
-  ): Promise<ResourceGetResponse<PublicApplication>> {
+  ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
     const resource = await this.service.companyApplications.get(
       { application_id: request.params.application_id, company_id: context.company.id },
@@ -40,7 +40,7 @@ export class CompanyApplicationController
       Params: { company_id: string };
       Querystring: PaginationQueryParameters & { search: string };
     }>,
-  ): Promise<ResourceListResponse<PublicApplication>> {
+  ): Promise<ResourceListResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
     const resources = await this.service.companyApplications.list(
       request.query,
@@ -56,9 +56,9 @@ export class CompanyApplicationController
   async save(
     request: FastifyRequest<{
       Params: { company_id: string; application_id: string };
-      Body: PublicApplication;
+      Body: PublicApplicationObject;
     }>,
-  ): Promise<ResourceGetResponse<PublicApplication>> {
+  ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
 
     const resource = await this.service.companyApplications.save(
