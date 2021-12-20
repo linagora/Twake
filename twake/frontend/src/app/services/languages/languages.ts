@@ -9,7 +9,7 @@ class Languages extends Observable {
   private i18nt: Function | null = null;
   private language: string = 'en';
   private default = 'en';
-  private available = ['en', 'fr', 'de', 'es', 'ja', 'ru'];
+  private available = ['en', 'fr', 'de', 'es', 'ja', 'ru', 'vi', 'it', 'tr', 'si', 'nb_NO'];
 
   constructor() {
     super();
