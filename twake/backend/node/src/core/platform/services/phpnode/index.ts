@@ -16,6 +16,8 @@ import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "../websocket/provider";
 import PhpNodeAPI from "./provider";
 import { RealtimeServiceAPI } from "../realtime/api";
+import { UsersCrudController } from "../../../../services/user/web/controller";
+import UserServiceAPI from "../../../../services/user/api";
 
 @Consumes(["webserver", "websocket"])
 export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
@@ -24,6 +26,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
   private ws: WebSocketAPI;
   private channels: ChannelServiceAPI;
+  private users: UserServiceAPI;
   private realtime: RealtimeServiceAPI;
 
   api(): PhpNodeAPI {
@@ -70,6 +73,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
 
   async doStart(): Promise<this> {
     this.channels = this.context.getProvider<ChannelServiceAPI>("channels");
+    this.users = this.context.getProvider<UserServiceAPI>("users");
     return this;
   }
 
@@ -130,6 +134,38 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
           this.channels.pendingEmails,
         );
         channelsController.getForPHP(request, reply);
+      },
+    });
+
+    /**
+     * Register private calls from php channels
+     */
+    this.register({
+      method: "GET",
+      url: "/companies/:company_id/channels/:id",
+      handler: async (
+        request: FastifyRequest<{ Params: { company_id: string; id: string } }>,
+        reply,
+      ) => {
+        if (!this.channels) {
+          reply.code(500).send(); //Server is not ready
+          return;
+        }
+        const workspaces = await this.users.workspaces.getAllForCompany(request.params.company_id);
+
+        for (const w of workspaces) {
+          const channel = await this.channels.channels.get({
+            company_id: request.params.company_id,
+            workspace_id: w.id,
+            id: request.params.id,
+          });
+          if (channel) {
+            reply.send(channel);
+            return;
+          }
+        }
+
+        reply.code(404).send();
       },
     });
 
