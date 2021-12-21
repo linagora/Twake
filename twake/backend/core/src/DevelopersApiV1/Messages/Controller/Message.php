@@ -47,6 +47,9 @@ class Message extends BaseController
 
         $capabilities = ["messages_save"];
 
+        $group_id = $request->request->get("group_id", null);
+        $workspace_id = $request->request->get("workspace_id", null);
+
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
             return new Response($application);
@@ -61,6 +64,8 @@ class Message extends BaseController
         }
 
         try {
+            $object["company_id"] = $group_id;
+            $object["worskpace_id"] = $workspace_id;
             $object = $this->get("app.messages")->save($object, Array(), $user, $application);
         } catch (\Exception $e) {
             $object = false;

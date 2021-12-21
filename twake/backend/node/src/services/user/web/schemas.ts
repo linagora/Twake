@@ -1,3 +1,5 @@
+import { webSocketSchema } from "../../../utils/types";
+
 export const userObjectSchema = {
   type: "object",
   properties: {
@@ -85,6 +87,7 @@ export const getUserSchema = {
       type: "object",
       properties: {
         resource: userObjectSchema,
+        websocket: webSocketSchema,
       },
       required: ["resource"],
     },
@@ -144,6 +147,7 @@ export const getCompanySchema = {
       type: "object",
       properties: {
         resource: companyObjectSchema,
+        websocket: webSocketSchema,
       },
       required: ["resource"],
     },

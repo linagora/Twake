@@ -4,6 +4,7 @@ import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 import NewThread from './Input/NewThread';
 import MessagesList from './MessagesList';
 import ThreadMessagesList from './ThreadMessagesList';
+import ChannelAPIClient from 'app/services/channels/ChannelAPIClient';
 
 type Props = {
   channel: ChannelResource;

@@ -1,15 +1,9 @@
 import React, { useEffect } from 'react';
 import { Col, Row } from 'antd';
-import { useUpload } from 'app/state/recoil/hooks/useUpload';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
-import FileComponent from 'app/components/File/FileComponent';
 import '../Input.scss';
-import { DataFileType } from 'app/components/File/types';
-import Globals from 'services/Globals';
-import { PendingFileRecoilType } from 'app/models/File';
 import { MessageFileType } from 'app/models/Message';
 import _ from 'lodash';
-import FileUploadAPIClient from 'app/components/FileUploads/FileUploadAPIClient';
 import PossiblyPendingAttachment from '../../Message/Parts/PossiblyPendingAttachment';
 
 type PropsType = {
@@ -19,7 +13,6 @@ type PropsType = {
 };
 
 export default ({ zoneId, onChange, initialValue }: PropsType) => {
-  const { getOnePendingFile } = useUpload();
   const { files, setFiles } = useUploadZones(zoneId);
 
   useEffect(() => {

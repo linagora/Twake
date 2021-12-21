@@ -51,7 +51,6 @@ export default class UserPicker extends React.Component {
     UsersService.search(text, { scope: this.props.scope || 'all' }, res => {
       cb(res);
     });
-    //cb(Collections.get("users").findBy({}))
   }
   render() {
     return (

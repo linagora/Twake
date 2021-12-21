@@ -1,7 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CompanyExecutionContext } from "../types";
-import { ApplicationServiceAPI } from "../../api";
-import { CrudController } from "../../../../core/platform/services/webserver/types";
+
 import {
   PaginationQueryParameters,
   ResourceDeleteResponse,
@@ -10,6 +8,12 @@ import {
   ResourceUpdateResponse,
 } from "../../../../utils/types";
 import Application, { PublicApplicationObject } from "../../entities/application";
+import { PublicApplication } from "../../entities/application";
+import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import { CompanyExecutionContext } from "../types";
+import { ApplicationServiceAPI } from "../../api";
+import { CrudController } from "../../../../core/platform/services/webserver/types";
+import { getCompanyApplicationRooms } from "../../realtime";
 
 export class CompanyApplicationController
   implements
@@ -20,7 +24,7 @@ export class CompanyApplicationController
       ResourceDeleteResponse
     >
 {
-  constructor(protected service: ApplicationServiceAPI) {}
+  constructor(protected realtime: RealtimeServiceAPI, protected service: ApplicationServiceAPI) {}
 
   async get(
     request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
@@ -47,9 +51,15 @@ export class CompanyApplicationController
       { search: request.query.search },
       context,
     );
+
     return {
       resources: resources.getEntities().map(ca => ca.application),
       next_page_token: resources.nextPage.page_token,
+      websockets:
+        this.realtime.sign(
+          getCompanyApplicationRooms(request.params.company_id),
+          context.user.id,
+        ) || [],
     };
   }
 

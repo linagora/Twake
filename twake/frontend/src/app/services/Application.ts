@@ -40,7 +40,6 @@ class Application {
 
     UserNotifications.start();
     CurrentUser.start();
-    user.language && Languages.setLanguage(user.language);
   }
 
   stop(): void {

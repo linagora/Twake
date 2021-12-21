@@ -192,13 +192,10 @@ export default class Board extends React.Component {
           var workspace = Collections.get('workspaces').find(task.workspace_id);
 
           if (workspace) {
-            var group = workspace.group;
-
             lists.push({
               id:
                 'workspaceusertasks_' + this.props.board.id.split('_')[1] + '_' + task.workspace_id,
-              title:
-                (group.id !== Workspaces.currentGroupId ? group.name + ' • ' : '') + workspace.name,
+              title: workspace.name,
               other_group: true,
             });
           }

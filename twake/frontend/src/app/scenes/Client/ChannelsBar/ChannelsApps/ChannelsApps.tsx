@@ -5,7 +5,10 @@ import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import ChannelUI from 'app/scenes/Client/ChannelsBar/Parts/Channel/Channel';
-import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import {
+  useCompanyApplications,
+  useCompanyApplicationsRealtime,
+} from 'app/state/recoil/hooks/useCompanyApplications';
 import RouterService from 'app/services/RouterService';
 
 // This should be deleted
@@ -96,6 +99,7 @@ type PropsType = {
 
 export const CompanyApplications = ({ companyId }: PropsType) => {
   const { applications: companyApplications } = useCompanyApplications(companyId);
+  useCompanyApplicationsRealtime();
   const { channelId } = RouterService.getStateFromRoute();
   return (
     <div className="applications_channels" style={{ marginTop: 8 }}>

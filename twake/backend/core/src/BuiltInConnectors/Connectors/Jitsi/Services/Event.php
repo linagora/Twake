@@ -48,6 +48,7 @@ class Event
 
           $data_string = Array(
               "group_id" => $group["id"],
+              "workspace_id" => $channel["workspace_id"],
               "message" => $message
           );
           $message = $this->main_service->postApi("messages/save", $data_string);
@@ -58,6 +59,7 @@ class Event
 
             $data_string = Array(
                 "group_id" => $group["id"],
+                "workspace_id" => $channel["workspace_id"],
                 "message" => $data["message"]
             );
 
@@ -89,12 +91,14 @@ class Event
 
             $data_string = Array(
                 "group_id" => $group["id"],
+                "workspace_id" => $channel["workspace_id"],
                 "message" => $data["message"]
             );
             $this->main_service->postApi("messages/remove", $data_string);
 
             $data_string = Array(
                 "group_id" => $group["id"],
+                "workspace_id" => $channel["workspace_id"],
                 "message" => $message
             );
 

@@ -121,6 +121,24 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies>>;
 
+  listChannelFiles(
+    pagination: Paginable,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>>;
+
+  listChannelThreads(
+    pagination: Paginable,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>>;
+
+  listChannelPinned(
+    pagination: Paginable,
+    options?: MessageViewListOptions,
+    context?: ChannelViewExecutionContext,
+  ): Promise<ListResult<MessageWithReplies>>;
+
   search(
     pagination: Pagination,
     options?: SearchUserOptions,

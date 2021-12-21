@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, Suspense } from 'react';
 
 import { Layout } from 'antd';
 import Tabs from './Tabs/Tabs';
@@ -40,7 +40,9 @@ const MainContent: FC<{}> = () => {
             <Layout.Content>
               <Layout className="main-view-layout">
                 <Layout.Content className="main-view-content">
-                  <AppView key={mainId} id={mainId} viewService={MainViewService} />
+                  <Suspense fallback={<></>}>
+                    <AppView key={mainId} id={mainId} viewService={MainViewService} />
+                  </Suspense>
                 </Layout.Content>
               </Layout>
             </Layout.Content>
@@ -65,7 +67,9 @@ const MainContent: FC<{}> = () => {
                       <X onClick={() => SideViewService.select('', { context: {} })} />
                     </Layout.Header>
                     <Layout.Content style={{ flex: 1 }}>
-                      <AppView key={sideId + '-side'} id={sideId} viewService={SideViewService} />
+                      <Suspense fallback={<></>}>
+                        <AppView key={sideId + '-side'} id={sideId} viewService={SideViewService} />
+                      </Suspense>
                     </Layout.Content>
                   </Layout>
                 )}

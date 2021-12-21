@@ -14,17 +14,29 @@ import RouterService from 'app/services/RouterService';
 
 import './File.scss';
 import { PendingFileRecoilType } from 'app/models/File';
+import Api from 'app/services/Api';
 
 type PropsType = {
-  className?: string;
+  source: 'internal' | 'drive' | string;
+  externalId: string | any;
   file: DataFileType;
-  type: 'input' | 'message' | 'drive';
+  context: 'input' | 'message' | 'drive';
   progress?: number;
   status?: PendingFileRecoilType['status'];
   onRemove?: Function;
+  className?: string;
 };
 
-export default ({ file, className, type, progress, status, onRemove }: PropsType) => {
+export default ({
+  source,
+  externalId,
+  file,
+  className,
+  context,
+  progress,
+  status,
+  onRemove,
+}: PropsType) => {
   const { companyId } = RouterService.getStateFromRoute();
   const classNameArguments: Argument[] = [
     'file-component',
@@ -36,18 +48,29 @@ export default ({ file, className, type, progress, status, onRemove }: PropsType
     },
   ];
 
-  const onClickFile = (data: DataFileType, companyId: string) => {
-    //Only if upload has ended
-    if (!status || isPendingFileStatusSuccess(status))
-      DriveService.viewDocument(
-        {
-          id: file.id,
-          name: file.name,
-          url: FileUploadService.getDownloadRoute({ companyId, fileId: file.id }),
-          extension: file.name.split('.').pop(),
+  const onClickFile = async (data: DataFileType, companyId: string) => {
+    if (source === 'internal') {
+      //Only if upload has ended
+      if (!status || isPendingFileStatusSuccess(status))
+        DriveService.viewDocument(
+          {
+            id: file.id,
+            name: file.name,
+            url: FileUploadService.getDownloadRoute({ companyId, fileId: file.id }),
+            extension: file.name.split('.').pop(),
+          },
+          true,
+        );
+    }
+    if (source === 'drive') {
+      const file = (await Api.post('/ajax/drive/v2/find', {
+        options: {
+          element_id: externalId?.id,
+          workspace_id: externalId?.workspace_id,
         },
-        true,
-      );
+      })) as any;
+      DriveService.viewDocument(file?.data, context === 'input');
+    }
   };
   return (
     <div
@@ -56,13 +79,14 @@ export default ({ file, className, type, progress, status, onRemove }: PropsType
     >
       <div className="file-info-container">
         <FileThumbnail file={file} />
-        <FileDetails file={file} />
+        <FileDetails file={file} source={source} />
         <FileActions
-          deletable={type === 'input'}
-          actionMenu={type == 'message'}
+          deletable={context === 'input'}
+          actionMenu={context == 'message' && source === 'internal'}
           status={status}
           file={file}
           onRemove={onRemove}
+          source={source}
         />
       </div>
       <FileProgress progress={progress} status={status} file={file} />

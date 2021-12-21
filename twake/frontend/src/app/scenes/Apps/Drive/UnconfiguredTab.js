@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
 import Menu from 'components/Menus/Menu.js';
-import ChannelsService from 'services/channels/channels.js';
 import Button from 'components/Buttons/Button.js';
 import './Drive.scss';
+import AccessRightsService from 'app/services/AccessRightsService';
+import WorkspaceService from 'services/workspaces/workspaces';
 
 export default class UnconfiguredTab extends Component {
   constructor() {
@@ -25,15 +26,10 @@ export default class UnconfiguredTab extends Component {
       Menu.closeAll();
       return;
     }
-    ChannelsService.saveTab(
-      this.props.channel.data.company_id,
-      this.props.channel.data.workspace_id,
-      this.props.channel.data.id,
-      this.props.tab.tabId,
-      {
+    if (this.props.saveTab)
+      this.props.saveTab({
         directory_id: dir.id,
-      },
-    );
+      });
     this.props.onFinish();
     Menu.closeAll();
   }
@@ -48,13 +44,8 @@ export default class UnconfiguredTab extends Component {
       icon = 'link';
     }
 
-    ChannelsService.saveTab(
-      this.props.channel.data.company_id,
-      this.props.channel.data.workspace_id,
-      this.props.channel.data.id,
-      this.props.tab.tabId,
-      { file_id: file.id, directory_id: file.id, icon: icon },
-    );
+    if (this.props.saveTab)
+      this.props.saveTab({ file_id: file.id, directory_id: file.id, icon: icon });
     this.props.onFinish();
     Menu.closeAll();
   }
@@ -71,42 +62,46 @@ export default class UnconfiguredTab extends Component {
             )}
           </div>
 
-          <br />
-          <Menu
-            menu={[
-              {
-                type: 'react-element',
-                reactElement: () => (
-                  <FilePicker
-                    mode={'select_location'}
-                    onChoose={directory => this.initInDirectory(directory)}
-                  />
-                ),
-              },
-            ]}
-            style={{ display: 'inline-block' }}
-          >
-            <Button className="button medium medium bottom-margin" style={{ width: 'auto' }}>
-              {Languages.t('scenes.apps.drive.choose_folder_button', [], 'Choisir un dossier')}
-            </Button>
-          </Menu>
+          {AccessRightsService.getCompanyLevel(WorkspaceService.currentGroupId) !== 'guest' && (
+            <>
+              <br />
+              <Menu
+                menu={[
+                  {
+                    type: 'react-element',
+                    reactElement: () => (
+                      <FilePicker
+                        mode={'select_location'}
+                        onChoose={directory => this.initInDirectory(directory)}
+                      />
+                    ),
+                  },
+                ]}
+                style={{ display: 'inline-block' }}
+              >
+                <Button className="button medium medium bottom-margin" style={{ width: 'auto' }}>
+                  {Languages.t('scenes.apps.drive.choose_folder_button', [], 'Choisir un dossier')}
+                </Button>
+              </Menu>
 
-          <br />
-          <Menu
-            menu={[
-              {
-                type: 'react-element',
-                reactElement: () => (
-                  <FilePicker mode={'select_file'} onChoose={file => this.initAsFile(file)} />
-                ),
-              },
-            ]}
-            style={{ display: 'inline-block' }}
-          >
-            <Button className="button small secondary-light" style={{ width: 'auto' }}>
-              {Languages.t('scenes.apps.drive.choose_file_button', [], 'Choisir un fichier')}
-            </Button>
-          </Menu>
+              <br />
+              <Menu
+                menu={[
+                  {
+                    type: 'react-element',
+                    reactElement: () => (
+                      <FilePicker mode={'select_file'} onChoose={file => this.initAsFile(file)} />
+                    ),
+                  },
+                ]}
+                style={{ display: 'inline-block' }}
+              >
+                <Button className="button small secondary-light" style={{ width: 'auto' }}>
+                  {Languages.t('scenes.apps.drive.choose_file_button', [], 'Choisir un fichier')}
+                </Button>
+              </Menu>
+            </>
+          )}
         </div>
       </div>
     );

@@ -21,7 +21,7 @@ type PropsType = {
 };
 
 export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
-  const { workspaceId } = RouterServices.getStateFromRoute();
+  const { workspaceId, companyId } = RouterServices.getStateFromRoute();
   const { tab, remove, save } = useTab(tabId || '');
   const isCurrentUserAdmin: boolean = AccessRightsService.useWatcher(() =>
     AccessRightsService.hasLevel(workspaceId, 'moderator'),
@@ -59,34 +59,36 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
     >
       {WorkspacesApps.getAppIconComponent(tab, { size: 14 })}
       <span className="tab-name small-right-margin">{capitalize(tab.name)}</span>
-      {selected && AccessRightsService.hasLevel(workspaceId, 'member') && (
-        <Menu
-          style={{ lineHeight: 0 }}
-          menu={[
-            {
-              type: 'menu',
-              text: Languages.t('scenes.app.mainview.tabs.rename'),
-              hide: false,
-              onClick: () =>
-                ModalManager.open(
-                  <TabsTemplateEditor tab={tab} onChangeTabs={(item: TabType) => save(item)} />,
-                  {
-                    position: 'center',
-                    size: { width: '500px', minHeight: '329px' },
-                  },
-                ),
-            },
-            {
-              type: 'menu',
-              hide: currentUserId !== tab.owner && !isCurrentUserAdmin,
-              text: <div style={{ color: 'var(--red)' }}>{Languages.t('general.delete')}</div>,
-              onClick: () => remove(),
-            },
-          ]}
-        >
-          <MoreHorizontal size={14} />
-        </Menu>
-      )}
+      {selected &&
+        AccessRightsService.hasLevel(workspaceId, 'member') &&
+        AccessRightsService.getCompanyLevel(companyId) !== 'guest' && (
+          <Menu
+            style={{ lineHeight: 0 }}
+            menu={[
+              {
+                type: 'menu',
+                text: Languages.t('scenes.app.mainview.tabs.rename'),
+                hide: false,
+                onClick: () =>
+                  ModalManager.open(
+                    <TabsTemplateEditor tab={tab} onChangeTabs={(item: TabType) => save(item)} />,
+                    {
+                      position: 'center',
+                      size: { width: '500px', minHeight: '329px' },
+                    },
+                  ),
+              },
+              {
+                type: 'menu',
+                hide: currentUserId !== tab.owner && !isCurrentUserAdmin,
+                text: <div style={{ color: 'var(--red)' }}>{Languages.t('general.delete')}</div>,
+                onClick: () => remove(),
+              },
+            ]}
+          >
+            <MoreHorizontal size={14} />
+          </Menu>
+        )}
     </span>
   );
 };

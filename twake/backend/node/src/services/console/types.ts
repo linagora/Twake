@@ -153,9 +153,8 @@ export type ConsoleHookUser = {
   _id: string;
   roles: [{ targetCode: string; roleCode: CompanyUserRole; status: "active" | "deactivated" }];
   email: string;
-  name: string; // backward compatible?
-  firstName: string;
-  lastName: string;
+  name: string;
+  surname: string;
   isVerified: boolean;
   preference: {
     locale: string;

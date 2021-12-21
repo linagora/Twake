@@ -30,12 +30,14 @@ const LockedGuestsPopup = ({ companySubscriptionUrl }: PropsType): JSX.Element =
           <Emojione type=":lock:" s128 />
         </div>
       }
-      style={{ height: 400 }}
+      style={{ padding: 32 }}
       hideFooterDivider
       footerAlign="center"
       footerStyle={{ marginBottom: 16 }}
       footer={
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32 }}
+        >
           <Button type="primary" size="large" onClick={onClickLearnMore}>
             {Languages.t('components.locked_features.locked_guests_popup.learn_more_button')}
           </Button>

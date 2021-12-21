@@ -9,7 +9,7 @@ export default () => {
   const { workspace } = useCurrentWorkspace();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'row', height: 38, alignItems: 'start' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'start' }}>
       <div style={{ width: 32, height: 32, marginRight: 8 }}>
         <CurrentCompanyLogo size={32} withCompanyName={false} />
       </div>

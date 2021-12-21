@@ -14,7 +14,7 @@ export default () => {
 
   useEffect(() => {
     setFiles(message.files || []);
-  }, []);
+  }, [message.files]);
 
   useEffect(() => {
     const uploaded = files.filter(f => f.metadata?.source !== 'pending');

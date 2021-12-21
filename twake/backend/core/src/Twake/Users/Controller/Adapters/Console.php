@@ -50,7 +50,8 @@ class Console extends BaseController
 
         $data = [
             "content" => $request->request->get("content"),
-            "type" => $request->request->get("type")
+            "type" => $request->request->get("type"),
+            "secret_key" => $request->request->get("secret_key")
         ];
 
         error_log("Request to node:");
