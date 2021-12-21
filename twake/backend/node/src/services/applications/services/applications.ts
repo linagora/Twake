@@ -1,12 +1,9 @@
-import { Multipart } from "fastify-multipart";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { MarketplaceApplicationServiceAPI } from "../api";
-import StorageAPI from "../../../core/platform/services/storage/provider";
 import Application, {
   ApplicationPrimaryKey,
+  getInstance as getApplicationInstance,
+  PublicApplicationObject,
   TYPE,
-  PublicApplication,
 } from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { logger } from "../../../core/platform/framework";
@@ -16,11 +13,13 @@ import {
   DeleteResult,
   ExecutionContext,
   ListResult,
+  OperationType,
   Pagination,
   SaveResult,
   UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 import SearchRepository from "../../../core/platform/services/search/repository";
+import assert from "assert";
 
 export function getService(platformService: PlatformServicesAPI): MarketplaceApplicationServiceAPI {
   return new ApplicationService(platformService);
@@ -50,16 +49,15 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     return this;
   }
 
-  async get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<PublicApplication> {
-    const entity = await this.repository.findOne(pk);
-    return entity?.getPublicObject();
+  async get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<Application> {
+    return await this.repository.findOne(pk);
   }
 
   async list<ListOptions>(
     pagination: Pagination,
     options?: { search?: string },
     context?: ExecutionContext,
-  ): Promise<ListResult<PublicApplication>> {
+  ): Promise<ListResult<PublicApplicationObject>> {
     let entities: ListResult<Application>;
     if (options.search) {
       entities = await this.searchRepository.search(
@@ -83,11 +81,17 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     return new ListResult(entities.type, applications, entities.nextPage);
   }
 
+  async listUnpublished(): Promise<Application[]> {
+    const entities = await this.repository.find({}, {});
+    entities.filterEntities(app => !app.publication.published);
+    return entities.getEntities();
+  }
+
   async listDefaults<ListOptions>(
     pagination: Pagination,
     options?: ListOptions,
     context?: ExecutionContext,
-  ): Promise<ListResult<PublicApplication>> {
+  ): Promise<ListResult<PublicApplicationObject>> {
     //Fixme: this is not great if we have a lot of applications in the future
 
     const entities = [];
@@ -106,27 +110,43 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     return new ListResult(TYPE, entities);
   }
 
-  create?(item: Application, context?: ExecutionContext): Promise<CreateResult<Application>> {
-    throw new Error("Method not implemented.");
-  }
-  update?(
-    pk: ApplicationPrimaryKey,
-    item: Application,
-    context?: ExecutionContext,
-  ): Promise<UpdateResult<Application>> {
-    throw new Error("Method not implemented.");
-  }
-  save?<SaveOptions>(
+  async save<SaveOptions>(
     item: Application,
     options?: SaveOptions,
     context?: ExecutionContext,
   ): Promise<SaveResult<Application>> {
-    throw new Error("Method not implemented.");
+    assert(item.company_id, "company_id is not defined");
+
+    try {
+      const entity = getApplicationInstance(item);
+      await this.repository.save(entity);
+      return new SaveResult<Application>("application", entity, OperationType.UPDATE);
+    } catch (e) {
+      throw e;
+    }
   }
   delete(
     pk: ApplicationPrimaryKey,
     context?: ExecutionContext,
   ): Promise<DeleteResult<Application>> {
     throw new Error("Method not implemented.");
+  }
+
+  async publish(pk: ApplicationPrimaryKey): Promise<void> {
+    const entity = await this.get(pk);
+    if (!entity) {
+      throw new Error("Entity not found");
+    }
+    entity.publication.published = true;
+    await this.repository.save(entity);
+  }
+
+  async unpublish(pk: ApplicationPrimaryKey): Promise<void> {
+    const entity = await this.get(pk);
+    if (!entity) {
+      throw new Error("Entity not found");
+    }
+    entity.publication.published = false;
+    await this.repository.save(entity);
   }
 }

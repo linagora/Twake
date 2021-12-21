@@ -41,8 +41,8 @@ export default class Application {
   @Column("stats", "json")
   stats: ApplicationStatistics;
 
-  getPublicObject(): PublicApplication {
-    return _.pick(
+  getPublicObject(): PublicApplicationObject {
+    const i = _.pick(
       this,
       "id",
       "company_id",
@@ -53,12 +53,46 @@ export default class Application {
       "publication",
       "stats",
     );
+
+    i.is_default = !!i.is_default;
+    return i;
+  }
+
+  getApplicationObject(): ApplicationObject {
+    const i = _.pick(
+      this,
+      "id",
+      "company_id",
+      "is_default",
+      "identity",
+      "access",
+      "display",
+      "publication",
+      "stats",
+      "api",
+    );
+
+    i.is_default = !!i.is_default;
+    return i;
   }
 }
 
-export type PublicApplication = Pick<
+export type PublicApplicationObject = Pick<
   Application,
   "id" | "company_id" | "is_default" | "identity" | "access" | "display" | "publication" | "stats"
+>;
+
+export type ApplicationObject = Pick<
+  Application,
+  | "id"
+  | "company_id"
+  | "is_default"
+  | "identity"
+  | "access"
+  | "display"
+  | "publication"
+  | "stats"
+  | "api"
 >;
 
 export type ApplicationPrimaryKey = { id: string };
@@ -67,7 +101,7 @@ export function getInstance(message: Application): Application {
   return merge(new Application(), message);
 }
 
-type ApplicationIdentity = {
+export type ApplicationIdentity = {
   code: string;
   name: string;
   icon: string;
@@ -77,21 +111,21 @@ type ApplicationIdentity = {
   compatibility: "twake"[];
 };
 
-type ApplicationPublication = {
-  published: boolean; //Publication accepted
-  pending: boolean; //Publication requested
+export type ApplicationPublication = {
+  published: boolean; //Publication accepted // RO
+  requested: boolean; //Publication requested
 };
 
-type ApplicationStatistics = {
-  createdAt: number;
-  updatedAt: number;
-  version: number;
+export type ApplicationStatistics = {
+  createdAt: number; // RO
+  updatedAt: number; // RO
+  version: number; // RO
 };
 
-type ApplicationApi = {
+export type ApplicationApi = {
   hooksUrl: string;
   allowedIps: string;
-  privateKey: string;
+  privateKey: string; // RO
 };
 
 type ApplicationScopes =
@@ -102,17 +136,15 @@ type ApplicationScopes =
   | "messages"
   | "channels";
 
-type ApplicationAccess = {
+export type ApplicationAccess = {
   read: ApplicationScopes[];
   write: ApplicationScopes[];
   delete: ApplicationScopes[];
   hooks: ApplicationScopes[];
 };
 
-type ApplicationDisplay = {
+export type ApplicationDisplay = {
   twake: {
-    version: 1;
-
     files?: {
       editor?: {
         preview_url: string; //Open a preview inline (iframe)

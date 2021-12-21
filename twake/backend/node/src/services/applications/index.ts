@@ -3,6 +3,7 @@ import { ApplicationServiceAPI } from "./api";
 import { getService } from "./services/index";
 import web from "./web/index";
 import { PlatformServicesAPI } from "../../core/platform/services/platform-services";
+import UserServiceAPI from "../user/api";
 import { RealtimeServiceAPI } from "../../core/platform/services/realtime/api";
 
 @Prefix("/internal/services/applications/v1")
@@ -19,9 +20,8 @@ export default class ApplicationsService extends TwakeService<ApplicationService
   public async doInit(): Promise<this> {
     const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
     const fastify = platformServices.fastify.getServer();
+    this.service = getService(platformServices, null);
     const realtime = this.context.getProvider<RealtimeServiceAPI>("realtime");
-
-    this.service = getService(platformServices);
     await this.service.init(this.context);
 
     fastify.register((instance, _opts, next) => {

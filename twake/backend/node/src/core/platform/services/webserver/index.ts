@@ -1,4 +1,4 @@
-import { TwakeService } from "../../framework";
+import { logger, TwakeService } from "../../framework";
 import { Server, IncomingMessage, ServerResponse } from "http";
 import { FastifyInstance, fastify } from "fastify";
 import sensible from "fastify-sensible";
@@ -30,9 +30,12 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     // TODO: Get server config from options
     this.server = fastify({
       maxParamLength: 300, //We have big urls with uuids and devices tokens
-      logger: {
-        level: this.configuration.get<string>("logger.level", "debug"),
-      },
+      logger: false,
+    });
+
+    this.server.addHook("onResponse", (req, reply, done) => {
+      logger.info(`${reply.raw.statusCode} ${req.raw.method} ${req.raw.url}`);
+      done();
     });
 
     serverErrorHandler(this.server);

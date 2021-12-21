@@ -1,8 +1,12 @@
-import { FastifyInstance, FastifyPluginCallback } from "fastify";
+import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
+import { WorkspaceBaseRequest } from "../../workspaces/web/types";
+import Application from "../entities/application";
+import assert from "assert";
+import { applicationPostSchema } from "./schemas";
 
 const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
@@ -17,6 +21,27 @@ const routes: FastifyPluginCallback<{
     options.service,
   );
 
+  const adminCheck = async (request: FastifyRequest<{ Body: Application }>) => {
+    const companyId = request.body.company_id;
+    const userId = request.currentUser.id;
+    assert(companyId, "company_id is not defined");
+    const companyUser = await options.service.companies.getCompanyUser(
+      { id: companyId },
+      { id: userId },
+    );
+
+    if (!companyUser) {
+      const company = await options.service.companies.getCompany({ id: companyId });
+      if (!company) {
+        throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
+      }
+      throw fastify.httpErrors.forbidden("User does not belong to this company");
+    }
+    if (companyUser.role !== "admin") {
+      throw fastify.httpErrors.forbidden("You must be an admin of this company");
+    }
+  };
+
   /**
    * Applications collection
    * Marketplace of applications
@@ -27,6 +52,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: `${applicationsUrl}`,
     preValidation: [fastify.authenticate],
+    // schema: applicationGetSchema,
     handler: applicationController.list.bind(applicationController),
   });
 
@@ -35,6 +61,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: `${applicationsUrl}/:application_id`,
     preValidation: [fastify.authenticate],
+    // schema: applicationGetSchema,
     handler: applicationController.get.bind(applicationController),
   });
 
@@ -42,7 +69,9 @@ const routes: FastifyPluginCallback<{
   fastify.route({
     method: "POST",
     url: `${applicationsUrl}`,
+    preHandler: [adminCheck],
     preValidation: [fastify.authenticate],
+    schema: applicationPostSchema,
     handler: applicationController.save.bind(applicationController),
   });
 
@@ -50,7 +79,9 @@ const routes: FastifyPluginCallback<{
   fastify.route({
     method: "POST",
     url: `${applicationsUrl}/:application_id`,
+    preHandler: [adminCheck],
     preValidation: [fastify.authenticate],
+    schema: applicationPostSchema,
     handler: applicationController.save.bind(applicationController),
   });
 

@@ -6,7 +6,7 @@ import { PlatformServicesAPI } from "../../../../core/platform/services/platform
 
 export function getService(
   platformServices: PlatformServicesAPI,
-  service: UserServiceAPI,
+  userServiceAPI: UserServiceAPI,
 ): CompaniesServiceAPI {
-  return new CompanyService(platformServices, service);
+  return new CompanyService(platformServices, userServiceAPI);
 }
