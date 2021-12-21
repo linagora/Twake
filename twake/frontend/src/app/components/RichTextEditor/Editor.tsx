@@ -186,11 +186,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
    * Handle return before a new block is added to the editor state
    */
   handleReturn(e: SyntheticKeyboardEvent, editorState: EditorState): DraftHandleValue {
-    // Shift+Enter adds a soft new line
-    if (this._handleReturnSoftNewline(e, editorState)) {
-      return 'handled';
-    }
-
     // when displaying suggestion, enter will select the current one
     if (this.isDisplayingSuggestions()) {
       const result = this.onSuggestionSelected(
@@ -207,16 +202,25 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       const currentBlock = getCurrentBlock(editorState);
       const blockType = currentBlock.getType();
 
-      // When on a list, pressing Enter 2 times will add a new unstyled block
-      if (currentBlock.getLength() === 0) {
-        if (['unordered-list-item', 'ordered-list-item'].includes(blockType)) {
-          // Update the current block as unstyled one
-          this.onChange(resetBlockWithType(editorState, 'unstyled'));
-          return 'handled';
+      // When on a list,  if the current block length is 0 while pressing Shift+Enter 2 times will
+      // add a new unstyled block otherwise, we split the block with the current style type
+      // Pressing Enter will submit the message
+      if (['unordered-list-item', 'ordered-list-item'].includes(blockType)) {
+        if (e.shiftKey) {
+          this.onChange(
+            currentBlock.getText().length === 0
+              ? resetBlockWithType(editorState, 'unstyled')
+              : splitBlockWithType(editorState, blockType, selection.getStartOffset(), false),
+          );
         } else {
           this.submit(editorState);
-          return 'handled';
         }
+        return 'handled';
+      }
+
+      // Shift+Enter adds a soft new line
+      if (this._handleReturnSoftNewline(e, editorState)) {
+        return 'handled';
       }
 
       if (selection.isCollapsed()) {
