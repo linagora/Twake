@@ -243,6 +243,8 @@ class AccessManager
 
         $name = html_entity_decode($this->emojione_client->shortnameToUnicode($name), ENT_NOQUOTES, 'UTF-8');
 
+        $workspaceId = $workspaceId ?: $resChannel["workspace_id"];
+
         $workspace = $this->doctrine->getRepository("Twake\Workspaces:Workspace")->findOneBy(Array("id" => $workspaceId));
         $group = $this->doctrine->getRepository("Twake\Workspaces:Group")->findOneBy(Array("id" => $companyId));
         $workspaceName = $workspace ? $workspace->getName() : "";

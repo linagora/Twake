@@ -290,9 +290,9 @@ class MessageSystem
         return $array;
     }
 
-    private function getInfosFromChannel($channelId){
+    private function getInfosFromChannel($companyId, $workspaceId, $channelId){
 
-        $this->access_manager->getChannelCache($channelId);
+        $this->access_manager->getChannelCache($companyId, $workspaceId, $channelId);
 
         $channelDetails = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channelId));
         if($channelDetails){

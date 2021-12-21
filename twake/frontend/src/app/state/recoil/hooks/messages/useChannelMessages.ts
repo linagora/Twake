@@ -65,6 +65,14 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     MessageViewAPIClient.feedWebsockets(key.channelId)[0],
     'useChannelMessages',
     async (action: string, event: any) => {
+      if (action === 'created' || action === 'updated') {
+        const message = event as NodeMessage;
+        if (message.ephemeral) {
+          console.log('received ephemeral !');
+          return;
+        }
+      }
+
       //This will make sure the realtime event doesn't arrive before the server response
       if (event?.user_id === LoginService.currentUserId && action === 'created') {
         await new Promise(r => setTimeout(r, 1000));

@@ -1,69 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import Languages from 'services/languages/languages';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import CurrentUser from 'app/services/user/CurrentUser';
-import MessagesService from 'services/Apps/Messages/Messages';
+import { useEphemeralMessages } from 'app/state/recoil/hooks/messages/useEphemeralMessages';
+import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
+import MessageContent from '../../Message/Parts/MessageContent';
+import { MessageContext } from '../../Message/MessageWithReplies';
+import ThreadSection from '../../Parts/ThreadSection';
 
 type Props = {
   channelId: string;
+  workspaceId: string;
   threadId: string;
-  collectionKey: string;
   onHasEphemeralMessage: () => void;
   onNotEphemeralMessage: () => void;
 };
 
 export default (props: Props) => {
-  const getEphemeralMessages = () => {
-    return Collections.get('messages')
-      .findBy({
-        channel_id: props.channelId,
-        parent_message_id: props.threadId,
-        _user_ephemeral: true,
-      })
-      .filter((m: any) => m?.subtype !== 'deleted')
-      .filter((message: any) => {
-        try {
-          if (message.ephemeral_message_recipients) {
-            return (message.ephemeral_message_recipients || []).indexOf(CurrentUser.get().id) >= 0;
-          }
-        } catch (e) {}
-        return true;
-      })
-      .sort((a: any, b: any) => a.creation_date - b.creation_date);
-  };
-
-  Collections.get('messages').useListener(useState);
-
-  let lastEphemeral: any = null;
-  getEphemeralMessages().forEach((item: any) => {
-    if (lastEphemeral) {
-      MessagesService.deleteMessage(lastEphemeral, props.collectionKey);
-    }
-    lastEphemeral = item;
+  const companyId = useRouterCompany();
+  const { lastEphemeral, remove } = useEphemeralMessages({
+    companyId,
+    workspaceId: props.workspaceId || '',
+    channelId: props.channelId,
   });
 
+  const messageKey = {
+    id: lastEphemeral?.id || '',
+    threadId: lastEphemeral?.thread_id || '',
+    companyId,
+  };
+
+  useEffect(() => {
+    if (lastEphemeral) {
+      props.onHasEphemeralMessage();
+    } else {
+      props.onNotEphemeralMessage();
+    }
+  }, [lastEphemeral]);
+
   if (!lastEphemeral) {
-    props.onNotEphemeralMessage();
     return <div />;
   }
-  props.onHasEphemeralMessage();
+
+  console.log(lastEphemeral);
 
   return (
-    <div className="ephemerals" key={lastEphemeral?.front_id + lastEphemeral?.content?.last_change}>
+    <div className="ephemerals" key={lastEphemeral.ephemeral?.id}>
       <div className="ephemerals_text">
         {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
       </div>
-      {
-        lastEphemeral /*&& (
-        <MessageComponent
-          noBlock
-          noReplies
-          key={lastEphemeral.id + lastEphemeral.modification_date}
-          collectionKey={props.collectionKey}
-          messageId={lastEphemeral.id || lastEphemeral.front_id}
-        />
-      )*/
-      }
+
+      <MessageContext.Provider value={messageKey}>
+        <ThreadSection withAvatar head>
+          <MessageContent key={lastEphemeral.ephemeral?.id} />
+        </ThreadSection>
+      </MessageContext.Provider>
     </div>
   );
 };
