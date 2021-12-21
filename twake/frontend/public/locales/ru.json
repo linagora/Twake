@@ -843,5 +843,9 @@
     "components.on_boarding.company_billing_banner.guest_or_member_text": "Возникла проблема с подпиской вашей компании. Обратитесь к владельцу или администратору компании!",
     "scenes.apps.tasks.select_user_button": "Просмотр задач для другого пользователя",
     "scenes.apps.tasks.select_user": "Поиск пользователя",
-    "scenes.app.popup.workspaceparameter.pages.table_title": "Имя"
+    "scenes.app.popup.workspaceparameter.pages.table_title": "Имя",
+    "login.create_account": "Создать учетную запись",
+    "'": "'",
+    "login.login_error": "Ошибка при входе в систему",
+    "\"": "\""
 }
