@@ -20,7 +20,9 @@ import {
   getCaretCoordinates,
   getCurrentBlock,
   getTextToMatch,
+  insertText,
   isMatching,
+  replaceText,
   resetBlockWithType,
   splitBlockWithType,
 } from './EditorUtils';
@@ -29,6 +31,7 @@ import './Editor.scss';
 import { TextCountService } from 'app/components/RichTextEditor/TextCount';
 import useOnScreen from 'app/services/hooks/useOnScreen';
 import Logger from 'app/services/Logger';
+import 'draft-js/dist/Draft.css';
 
 const { isSoftNewlineEvent } = KeyBindingUtil;
 
@@ -466,6 +469,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   onTab(e: SyntheticKeyboardEvent): void {
     e.preventDefault();
 
+    this.changeIndent(e, e.shiftKey ? 'decrease' : 'increase');
+
     if (this.isDisplayingSuggestions()) {
       const result = this.onSuggestionSelected(
         this.state.activeSuggestion?.items[this.state.suggestionIndex],
@@ -478,6 +483,27 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
 
     this.props.onTab && this.props.onTab();
   }
+
+  changeIndent = (e: SyntheticKeyboardEvent, indentDirection: 'increase' | 'decrease') => {
+    const currentBlockType = RichUtils.getCurrentBlockType(this.props.editorState);
+    const tabChar = '\u2003';
+    const isBlockListType =
+      currentBlockType === 'ordered-list-item' || currentBlockType === 'unordered-list-item';
+    const maxDepth = 4;
+
+    if (!isBlockListType) {
+      if (indentDirection === 'increase') {
+        this.onChange(insertText(tabChar, this.props.editorState));
+      }
+
+      if (indentDirection === 'decrease') {
+        // FIX ME find a way to decrease unstyled/code-block block indentation
+        this.onChange(replaceText('', this.props.editorState));
+      }
+    } else {
+      this.onChange(RichUtils.onTab(e, this.props.editorState, maxDepth));
+    }
+  };
 
   handlePastedFiles(files: Blob[]): DraftHandleValue {
     if (this.props.onFilePaste) {
@@ -609,6 +635,11 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     });
   }
 
+  handlePastedText(text: string, _html: string, editorState: EditorState) {
+    this.onChange(replaceText(text, editorState));
+    return text ? 'handled' : 'not-handled';
+  }
+
   render() {
     return (
       <>
@@ -626,6 +657,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
             onChange={this.onChange}
             handleKeyCommand={this.handleKeyCommand}
             handleReturn={this.handleReturn}
+            handlePastedText={this.handlePastedText}
             handleBeforeInput={this.handleBeforeInput}
             onDownArrow={this.onDownArrow}
             onUpArrow={this.onUpArrow}

@@ -1,5 +1,5 @@
-import { ContentBlock, EditorState, Modifier } from "draft-js";
-import { getSelectedBlock, getSelectionEntity, getEntityRange } from "draftjs-utils";
+import { ContentBlock, EditorState, Modifier } from 'draft-js';
+import { getSelectedBlock, getSelectionEntity, getEntityRange } from 'draftjs-utils';
 
 export type SearchMatchType = {
   // the input text we searched in
@@ -16,16 +16,21 @@ export type SearchMatchType = {
 
 export function getCurrentBlock(editorState: EditorState): ContentBlock {
   return editorState.getCurrentContent().getBlockForKey(editorState.getSelection().getStartKey());
-};
+}
 
 /**
  * Add a block after the current one with given type and initial content
  *
  * @param editorState
- * @param newType 
- * @param initialContent 
+ * @param newType
+ * @param initialContent
  */
-export const splitBlockWithType = (editorState: EditorState, type = "unstyled", splitOffset: number, deleteAfter: boolean): EditorState => {
+export const splitBlockWithType = (
+  editorState: EditorState,
+  type = 'unstyled',
+  splitOffset: number,
+  deleteAfter: boolean,
+): EditorState => {
   let contentState = editorState.getCurrentContent();
   const selection = editorState.getSelection();
   let updatedSelection = selection.merge({
@@ -36,8 +41,8 @@ export const splitBlockWithType = (editorState: EditorState, type = "unstyled", 
   let newEditorState = EditorState.acceptSelection(editorState, updatedSelection);
 
   contentState = Modifier.splitBlock(contentState, updatedSelection);
-  newEditorState = EditorState.push(editorState, contentState, "split-block");
-  newEditorState = resetBlockWithType(newEditorState, type, "");
+  newEditorState = EditorState.push(editorState, contentState, 'split-block');
+  newEditorState = resetBlockWithType(newEditorState, type, '');
 
   if (deleteAfter) {
     let contentState = newEditorState.getCurrentContent();
@@ -51,7 +56,7 @@ export const splitBlockWithType = (editorState: EditorState, type = "unstyled", 
     contentState = Modifier.replaceText(
       newEditorState.getCurrentContent(),
       updatedSelection,
-      "",
+      '',
       newEditorState.getCurrentInlineStyle(),
     );
 
@@ -65,12 +70,16 @@ export const splitBlockWithType = (editorState: EditorState, type = "unstyled", 
  * Will reset the current block with the given type and the initial content
  * Note that it will remove all the text already existing
  *
- * @param editorState 
- * @param newType 
- * @param initialContent 
- * @returns 
+ * @param editorState
+ * @param newType
+ * @param initialContent
+ * @returns
  */
-export const resetBlockWithType = (editorState: EditorState, newType = "unstyled", initialContent = ""): EditorState => {
+export const resetBlockWithType = (
+  editorState: EditorState,
+  newType = 'unstyled',
+  initialContent = '',
+): EditorState => {
   let contentState = editorState.getCurrentContent();
   const focusOffset = editorState.getSelection().getFocusOffset();
   const updatedSelection = editorState.getSelection().merge({
@@ -90,9 +99,8 @@ export const resetBlockWithType = (editorState: EditorState, newType = "unstyled
   return EditorState.push(editorState, contentState, 'change-block-type');
 };
 
-
-export function isMatching(trigger: string | RegExp, textToMatch: string | null) {
-  if (typeof trigger === "string") {
+export function isMatching(trigger: string | RegExp, textToMatch: string | null) {
+  if (typeof trigger === 'string') {
     return getTriggerRange(trigger, textToMatch);
   } else if (trigger instanceof RegExp) {
     return getTriggerMatchRange(trigger, textToMatch);
@@ -116,8 +124,7 @@ export function getTriggerMatchRange(regexp: RegExp, text: string | null) {
 }
 
 export function getTriggerRange(term: string, text: string | null) {
-  if (!text || /\s+$/.test(text))
-    return null;
+  if (!text || /\s+$/.test(text)) return null;
 
   const start = text.lastIndexOf(term);
   if (start === -1) {
@@ -129,7 +136,11 @@ export function getTriggerRange(term: string, text: string | null) {
   };
 }
 
-export function getTextToMatch(editorState: EditorState, separator: string = " ", returnFullTextForEntitiesTypes: Array<string> = []): SearchMatchType | undefined {
+export function getTextToMatch(
+  editorState: EditorState,
+  separator: string = ' ',
+  returnFullTextForEntitiesTypes: Array<string> = [],
+): SearchMatchType | undefined {
   const selection = editorState.getSelection();
   const selectedBlock: ContentBlock = getSelectedBlock(editorState);
   const entity = getSelectionEntity(editorState);
@@ -141,7 +152,12 @@ export function getTextToMatch(editorState: EditorState, separator: string = " "
     focusOffset: 0,
   };
 
-  if (entity && returnFullTextForEntitiesTypes.includes(editorState.getCurrentContent().getEntity(entity).getType())) {
+  if (
+    entity &&
+    returnFullTextForEntitiesTypes.includes(
+      editorState.getCurrentContent().getEntity(entity).getType(),
+    )
+  ) {
     result = {
       input: getEntityRange(editorState, entity).text,
       text: getEntityRange(editorState, entity).text,
@@ -155,13 +171,13 @@ export function getTextToMatch(editorState: EditorState, separator: string = " "
 
     // get the index of the previous separator before the focusOffset (ie before the current cursor position)
     let previousSeparator = selectedBlockText.lastIndexOf(separator, focusOffset);
-    let softLineIndex = selectedBlockText.lastIndexOf("\n", focusOffset);
+    let softLineIndex = selectedBlockText.lastIndexOf('\n', focusOffset);
     previousSeparator = softLineIndex >= previousSeparator ? softLineIndex : previousSeparator;
 
     // get the index of the next separator after the focusOffset (ie after the current cirsor position)
     let endOfTextIndex = 0;
     let nextSeparator = selectedBlockText.indexOf(separator, focusOffset);
-    softLineIndex = selectedBlockText.indexOf("\n", focusOffset);
+    softLineIndex = selectedBlockText.indexOf('\n', focusOffset);
 
     if (nextSeparator === -1 && softLineIndex === -1) {
       // can not find separator nor soft line: this is the end of the string
@@ -178,7 +194,10 @@ export function getTextToMatch(editorState: EditorState, separator: string = " "
       endOfTextIndex = softLineIndex >= nextSeparator ? nextSeparator : softLineIndex;
     }
 
-    const text = selectedBlockText.substring(previousSeparator === -1 ? 0 : previousSeparator, endOfTextIndex);
+    const text = selectedBlockText.substring(
+      previousSeparator === -1 ? 0 : previousSeparator,
+      endOfTextIndex,
+    );
 
     result = {
       input: selectedBlockText,
@@ -192,7 +211,10 @@ export function getTextToMatch(editorState: EditorState, separator: string = " "
   return result;
 }
 
-export function getInsertRange(editorState: EditorState, firstCharacter: string): { start: number, end: number } {
+export function getInsertRange(
+  editorState: EditorState,
+  firstCharacter: string,
+): { start: number; end: number } {
   const selection = editorState.getSelection();
   const content = editorState.getCurrentContent();
   const anchorKey = selection.getAnchorKey();
@@ -207,8 +229,8 @@ export function getInsertRange(editorState: EditorState, firstCharacter: string)
   };
 }
 
-export const getSelection = (root: Window = window): Selection | null => {
-  let selection: Selection | null = null;
+export const getSelection = (root: Window = window): Selection | null => {
+  let selection: Selection | null = null;
   if (root.getSelection) {
     selection = root.getSelection();
   } else if (root.document.getSelection) {
@@ -244,11 +266,15 @@ export function getCaretCoordinates(): DOMRect | null {
 export function insertText(text: string, editorState: EditorState): EditorState {
   const selection = editorState.getSelection();
   const cs = Modifier.insertText(editorState.getCurrentContent(), selection, text);
-  const newEditorState = EditorState.push(
-    editorState,
-    cs,
-    'insert-characters'
-  );
+  const newEditorState = EditorState.push(editorState, cs, 'insert-characters');
+
+  return newEditorState;
+}
+
+export function replaceText(text: string, editorState: EditorState): EditorState {
+  const selection = editorState.getSelection();
+  const cs = Modifier.replaceText(editorState.getCurrentContent(), selection, text);
+  const newEditorState = EditorState.push(editorState, cs, 'insert-characters');
 
   return newEditorState;
 }
