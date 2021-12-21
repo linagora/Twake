@@ -32,26 +32,22 @@ export class ApplicationController
 
   async get(
     request: FastifyRequest<{ Params: { application_id: string } }>,
-  ): Promise<ResourceGetResponse<PublicApplicationObject>> {
+  ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     const context = getExecutionContext(request);
 
     const entity = await this.service.applications.get({
       id: request.params.application_id,
     });
 
-    if (!entity.publication.published) {
-      const companyUser = await this.service.companies.getCompanyUser(
-        { id: entity.company_id },
-        { id: context.user.id },
-      );
+    const companyUser = await this.service.companies.getCompanyUser(
+      { id: entity.company_id },
+      { id: context.user.id },
+    );
 
-      if (!companyUser || companyUser.role !== "admin") {
-        throw CrudExeption.notFound("Published application not found");
-      }
-    }
+    const isAdmin = companyUser && companyUser.role == "admin";
 
     return {
-      resource: entity.getPublicObject(),
+      resource: isAdmin ? entity.getApplicationObject() : entity.getPublicObject(),
     };
   }
 

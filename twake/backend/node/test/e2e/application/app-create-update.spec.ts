@@ -197,7 +197,7 @@ describe("Applications", () => {
       });
     });
   });
-  describe("Get applications", function () {
+  describe.only("Get applications", function () {
     let firstApp: PublicApplicationObject;
     let secondApp: PublicApplicationObject;
     let thirdApp: PublicApplicationObject;
@@ -230,27 +230,36 @@ describe("Applications", () => {
       done();
     });
 
-    it("should return published application by id to any user", async done => {
+    it("should return public object for published application to any user", async done => {
       const response = await api.get(`${url}/applications/${firstApp.id}`, uuidv1());
       expect(response.statusCode).toBe(200);
-
       expect(response.resource.id).toEqual(firstApp.id);
+      expect(response.resource.api).toBeFalsy();
+      done();
+    });
+
+    it("should return public object for unpublished application to any user", async done => {
+      const response = await api.get(`${url}/applications/${thirdApp.id}`, uuidv1());
+      expect(response.statusCode).toBe(200);
+      expect(response.resource.id).toEqual(thirdApp.id);
+      expect(response.resource.api).toBeFalsy();
+      done();
+    });
+
+    it("should return whole object for published application to admin", async done => {
+      const response = await api.get(`${url}/applications/${firstApp.id}`);
+      expect(response.statusCode).toBe(200);
+      expect(response.resource.id).toEqual(firstApp.id);
+      expect(response.resource.api).toBeTruthy();
 
       done();
     });
 
-    it("shouldn return unpublished application by id to admin", async done => {
+    it("should return whole object for unpublished application to admin", async done => {
       const response = await api.get(`${url}/applications/${thirdApp.id}`);
       expect(response.statusCode).toBe(200);
       expect(response.resource.id).toEqual(thirdApp.id);
-
-      done();
-    });
-
-    it("shouldn't return unpublished application by id to any user", async done => {
-      const response = await api.get(`${url}/applications/${thirdApp.id}`, uuidv1());
-      expect(response.statusCode).toBe(404);
-
+      expect(response.resource.api).toBeTruthy();
       done();
     });
   });
