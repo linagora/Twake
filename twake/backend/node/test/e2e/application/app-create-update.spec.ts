@@ -149,7 +149,7 @@ describe("Applications", () => {
           version: 1,
         });
 
-        expect(r.api).toBeFalsy();
+        expect(r.api).toBeTruthy();
 
         const dbData = await appRepo.findOne({ id: response.resource.id });
 

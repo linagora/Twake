@@ -18,17 +18,22 @@ export class ApplicationsApiController {
 
   async token(
     request: FastifyRequest<{ Body: ApplicationLoginRequest }>,
-  ): Promise<ApplicationLoginResponse> {
+  ): Promise<ResourceGetResponse<ApplicationLoginResponse>> {
     return {
-      access_token: this.service.authService.generateJWT(request.body.id, null, {
-        track: false,
-        provider_id: "",
-        application_id: request.body.id,
-      }),
+      resource: {
+        access_token: this.service.authService.generateJWT(request.body.id, null, {
+          track: false,
+          provider_id: "",
+          application_id: request.body.id,
+        }),
+      },
     };
   }
 
-  async me(request: FastifyRequest, reply: FastifyReply): Promise<ApplicationObject> {
+  async me(
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ): Promise<ResourceGetResponse<ApplicationObject>> {
     const context = getExecutionContext(request);
 
     const entity = await this.service.applicationService.applications.get({
@@ -38,7 +43,7 @@ export class ApplicationsApiController {
       throw CrudExeption.notFound("Application not found");
     }
 
-    return entity.getApplicationObject();
+    return { resource: entity.getApplicationObject() };
   }
 
   async configure(request: FastifyRequest<{}>, reply: FastifyReply) {

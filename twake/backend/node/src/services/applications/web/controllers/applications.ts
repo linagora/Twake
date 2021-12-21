@@ -116,10 +116,6 @@ export class ApplicationController
 
       const res = await this.service.applications.save(entity);
       entity = res.entity;
-
-      return {
-        resource: entity.getPublicObject(),
-      };
     } else {
       // INSERT
 
@@ -135,11 +131,11 @@ export class ApplicationController
 
       const res = await this.service.applications.save(app);
       entity = res.entity;
-
-      return {
-        resource: entity.getApplicationObject(),
-      };
     }
+
+    return {
+      resource: entity.getApplicationObject(),
+    };
   }
 
   async delete(

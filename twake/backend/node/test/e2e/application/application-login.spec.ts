@@ -48,7 +48,7 @@ describe("Applications", () => {
       });
       expect(response.statusCode).toBe(200);
 
-      const resource = (await response.json()) as ApplicationLoginResponse;
+      const resource = (await response.json()).resource as ApplicationLoginResponse;
 
       expect(resource).toMatchObject({
         access_token: {
@@ -106,7 +106,7 @@ describe("Applications", () => {
       });
 
       expect(response.statusCode).toBe(200);
-      const resource = response.json();
+      const resource = (await response.json()).resource;
       log.debug(resource);
       expect(resource).toMatchObject(postPayload);
       done();
