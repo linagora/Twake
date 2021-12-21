@@ -100,7 +100,7 @@ class WorkspacesUsers extends Observable {
     if (!workspace) {
       return;
     }
-    var group_id = workspace.group.id;
+    var group_id = workspace?.group?.id || workspace.company_id;
 
     if (!this.users_by_group[group_id]) {
       this.users_by_group[group_id] = {};
@@ -183,7 +183,7 @@ class WorkspacesUsers extends Observable {
         }
         that.offset_by_group_id[group_id][0]++;
 
-        Collections.get("users").completeObject(item.user, item.user.front_id);
+        Collections.get('users').completeObject(item.user, item.user.front_id);
 
         that.users_by_group[group_id][item.user.id] = item;
       });

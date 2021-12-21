@@ -15,12 +15,13 @@ export default () => (
     titleCenter
     titleLevel={2}
     title={Languages.t('components.locked_features.locked_only_office_popup.title')}
-    colTitleStyle={{ height: 64 }}
-    titleTypographyStyle={{ height: 64, textAlign: 'center' }}
-    style={{ height: 480 }}
+    titleTypographyStyle={{ textAlign: 'center', marginBottom: 32 }}
+    style={{ padding: 32 }}
     contentStyle={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}
     footer={
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 32 }}
+      >
         <Button
           type="primary"
           size="large"

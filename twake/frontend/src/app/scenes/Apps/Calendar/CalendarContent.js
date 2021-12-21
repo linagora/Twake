@@ -456,7 +456,13 @@ export default class Calendar extends Component {
       this.props.tab != null &&
       (!this.props.tab.configuration || this.props.tab.configuration.calendars === undefined)
     ) {
-      return <UnconfiguredTab channel={this.props.channel} tab={this.props.tab} />;
+      return (
+        <UnconfiguredTab
+          saveTab={this.props.saveTab}
+          channel={this.props.channel}
+          tab={this.props.tab}
+        />
+      );
     }
 
     var calendars = Collections.get('calendars')

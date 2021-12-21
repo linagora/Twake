@@ -1,6 +1,7 @@
 import Api from 'app/services/Api';
 import { FileType } from 'app/models/File';
 import { MessageFileType } from 'app/models/Message';
+import extensionToMime from './utils/extensionToMime';
 
 type ResponseFileType = { resource: FileType };
 type ResponseDeleteFileType = { status: 'success' | 'error' };
@@ -70,8 +71,14 @@ class FileUploadAPIClient {
   public getFileThumbnailUrlFromMessageFile(file: MessageFileType): string {
     if (file.metadata?.source !== 'internal') return file.metadata?.thumbnails?.[0]?.url || '';
     return `${this.getRoute({
-      companyId: file.company_id || '',
-      fileId: file.metadata?.external_id || '',
+      companyId:
+        (typeof file.metadata?.external_id === 'string'
+          ? file.company_id
+          : file.metadata?.external_id?.company_id) || '',
+      fileId:
+        (typeof file.metadata?.external_id === 'string'
+          ? file.metadata?.external_id
+          : file.metadata?.external_id?.id) || '',
       fullApiRouteUrl: true,
     })}/thumbnails/${file.metadata?.thumbnails?.[0]?.index}`;
   }
@@ -99,6 +106,10 @@ class FileUploadAPIClient {
     if (mime === 'application/zip' || mime === 'application/vnd.rar') return 'archive';
     //TODO add other types
     return 'other';
+  }
+
+  public extensionToMime(extension: string): string {
+    return extensionToMime[extension] || '';
   }
 }
 

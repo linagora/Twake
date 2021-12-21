@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip } from 'antd';
-import { Star } from 'react-feather';
+import { Calendar, CheckSquare, Folder, Star } from 'react-feather';
 
 import Icon from 'components/Icon/Icon';
 import { Application } from 'app/models/App';
@@ -11,7 +11,7 @@ import AvatarComponent from 'app/components/Avatar/Avatar';
 import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
-import useRouterChannelSelected from 'app/state/recoil/hooks/useRouterChannelSelected';
+import useRouterChannelSelected from 'app/state/recoil/hooks/router/useRouterChannelSelected';
 
 import './Channel.scss';
 
@@ -60,6 +60,19 @@ export default (props: Props) => {
 
   if (selected && props.id && MainViewService.getId() !== props.id) onChannelChange();
 
+  const getDefaultApplicationIcon = (code: string) => {
+    switch (code) {
+      case 'twake_tasks':
+        return <CheckSquare size={16} color={selected ? 'var(--white)' : 'var(--black)'} />;
+      case 'twake_calendar':
+        return <Calendar size={16} color={selected ? 'var(--white)' : 'var(--black)'} />;
+      case 'twake_drive':
+        return <Folder size={16} color={selected ? 'var(--white)' : 'var(--black)'} />;
+      default:
+        return <></>;
+    }
+  };
+
   return (
     <Tooltip title={props.showTooltip ? props.name : false} placement="right" mouseEnterDelay={3}>
       <div
@@ -84,9 +97,7 @@ export default (props: Props) => {
           <div className="direct-channel-avatars"> {props.icon}</div>
         )}
         {!!props.app && (
-          <div className="icon">
-            <AvatarComponent borderRadius={0} size={16} url={props.icon as string} />
-          </div>
+          <div className="icon">{getDefaultApplicationIcon(props.app.identity.code)}</div>
         )}
         <div className="text" style={{ textTransform: 'capitalize' }}>
           {props.name + ' '}

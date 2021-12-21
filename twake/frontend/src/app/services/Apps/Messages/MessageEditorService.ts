@@ -114,10 +114,7 @@ export class MessageEditorService extends Observable {
 
   openFileSelector(threadId: string) {
     const id = this.getThreadId(threadId);
-
-    if (this.editorsUploadZones[id]) {
-      this.editorsUploadZones[id].open();
-    }
+    if (this.editorsUploadZones[id]) this.editorsUploadZones[id].open();
   }
 
   onAddAttachment(threadId: string, file: FileType) {

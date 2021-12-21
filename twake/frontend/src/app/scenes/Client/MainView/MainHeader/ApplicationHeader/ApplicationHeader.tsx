@@ -38,7 +38,7 @@ export default (): JSX.Element => {
       style={{ lineHeight: '47px', padding: 0, flexWrap: 'nowrap' }}
     >
       <Col flex="auto">
-        <span className="left-margin" style={{ display: 'flex', alignItems: 'center' }}>
+        <span className="left-margin app-name" style={{ display: 'flex', alignItems: 'center' }}>
           <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>
             {icon}
           </div>

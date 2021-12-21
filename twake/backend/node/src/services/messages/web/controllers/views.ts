@@ -41,17 +41,30 @@ export class ViewsController
     }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<MessageWithReplies>> {
+    const pagination = new Pagination(
+      request.query.page_token,
+      request.query.limit,
+      request.query.direction !== "history",
+    );
+    const query = { ...request.query, include_users: request.query.include_users };
     const context = getChannelViewExecutionContext(request);
+
+    let resources: ListResult<MessageWithReplies>;
+
     try {
-      const resources = await this.service.views.listChannel(
-        new Pagination(
-          request.query.page_token,
-          request.query.limit,
-          request.query.direction !== "history",
-        ),
-        { ...request.query, include_users: request.query.include_users },
-        context,
-      );
+      if (request.query.filter === "files") {
+        resources = await this.service.views.listChannelFiles(pagination, query, context);
+      } else if (request.query.filter === "thread") {
+        resources = await this.service.views.listChannelThreads(pagination, query, context);
+      } else if (request.query.filter === "pinned") {
+        resources = await this.service.views.listChannelPinned(pagination, query, context);
+      } else {
+        resources = await this.service.views.listChannel(pagination, query, context);
+      }
+
+      if (!resources) {
+        throw new Error("No list resources created");
+      }
 
       let entities = [];
       if (request.query.include_users) {
@@ -124,6 +137,7 @@ export interface MessageViewListQueryParameters
   extends PaginationQueryParameters,
     MessageViewListOptions {
   include_users: boolean;
+  filter?: "pinned" | "files" | "thread";
 }
 
 export interface MessageViewSearchQueryParameters extends PaginationQueryParameters {

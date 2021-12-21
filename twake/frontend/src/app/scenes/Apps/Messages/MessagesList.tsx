@@ -7,6 +7,7 @@ import FirstMessage from './Message/Parts/FirstMessage/FirstMessage';
 import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
 import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import ChannelAPIClient from 'app/services/channels/ChannelAPIClient';
 
 type Props = {
   companyId: string;
@@ -25,6 +26,11 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   });
 
   const { company } = useCurrentCompany();
+
+  useEffect(() => {
+    //Use window.setEdge instead ?
+    window.reachedEnd = false;
+  }, []);
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
@@ -59,6 +65,10 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           );
         }}
         loadMore={loadMore}
+        atBottomStateChange={(atBottom: boolean) => {
+          if (atBottom && window.reachedEnd)
+            ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
+        }}
       />
     </MessagesListContext.Provider>
   );

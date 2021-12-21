@@ -81,7 +81,14 @@ export default (): JSX.Element => {
       footerStyle={{ marginBottom: 24 }}
       footer={
         <Row justify="space-between" align="middle">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              marginTop: 32,
+            }}
+          >
             <Button type="ghost" size="large" onClick={onClickButton}>
               {Languages.t(
                 'components.on_boarding.popups.blocked_company.company_subscription_plan_button',
@@ -94,7 +101,7 @@ export default (): JSX.Element => {
               placeholder={Languages.t(
                 'components.on_boarding.popups.blocked_company.company_selector',
               )}
-              companiesIds={[...UserService.getCurrentUser()?.groups_id || []]}
+              companiesIds={[...(UserService.getCurrentUser()?.groups_id || [])]}
             />
           </div>
         </Row>

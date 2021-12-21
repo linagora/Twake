@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
+import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
@@ -12,9 +13,13 @@ const companyApplicationsUrl = "/companies/:company_id/applications";
 
 const routes: FastifyPluginCallback<{
   service: ApplicationServiceAPI;
+  realtime: RealtimeServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
   const applicationController = new ApplicationController(options.service);
-  const companyApplicationController = new CompanyApplicationController(options.service);
+  const companyApplicationController = new CompanyApplicationController(
+    options.realtime,
+    options.service,
+  );
 
   const adminCheck = async (request: FastifyRequest<{ Body: Application }>) => {
     const companyId = request.body.company_id;
@@ -91,7 +96,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: `${companyApplicationsUrl}`,
     preValidation: [fastify.authenticate],
-    handler: companyApplicationController.list.bind(applicationController),
+    handler: companyApplicationController.list.bind(companyApplicationController),
   });
 
   //Get one application of a company
@@ -99,7 +104,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: `${companyApplicationsUrl}/:application_id`,
     preValidation: [fastify.authenticate],
-    handler: companyApplicationController.get.bind(applicationController),
+    handler: companyApplicationController.get.bind(companyApplicationController),
   });
 
   //Remove an application from a company
@@ -107,7 +112,7 @@ const routes: FastifyPluginCallback<{
     method: "DELETE",
     url: `${companyApplicationsUrl}/:application_id`,
     preValidation: [fastify.authenticate],
-    handler: companyApplicationController.delete.bind(applicationController),
+    handler: companyApplicationController.delete.bind(companyApplicationController),
   });
 
   //Add an application to the company
@@ -115,7 +120,7 @@ const routes: FastifyPluginCallback<{
     method: "POST",
     url: `${companyApplicationsUrl}/:application_id`,
     preValidation: [fastify.authenticate],
-    handler: companyApplicationController.save.bind(applicationController),
+    handler: companyApplicationController.save.bind(companyApplicationController),
   });
 
   //Application event triggered by a user

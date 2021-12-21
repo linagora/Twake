@@ -5,9 +5,6 @@ import UserService from 'services/user/UserService';
 import './SearchPopup.scss';
 import InputIcon from 'components/Inputs/InputIcon.js';
 import QuickResult from './Parts/QuickResult.js';
-import FilesFilter from './Parts/FilesFilter.js';
-import EventsFilter from './Parts/EventsFilter.js';
-import TasksFilter from './Parts/TasksFilter.js';
 import MessagesFilter from './Parts/MessagesFilter.js';
 import Tabs from 'components/Tabs/Tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
@@ -227,7 +224,7 @@ export default class SearchPopup extends React.Component {
                     var workspace_suffix = '';
                     if (item.workspace && item.workspace.name) {
                       workspace = item.workspace;
-                      group = item.workspace.group;
+                      group = { id: workspace?.group?.id || workspace.company_id || '' };
                     }
 
                     if (item.type === 'channel') {
@@ -393,35 +390,8 @@ export default class SearchPopup extends React.Component {
                   component="div"
                   className="filters"
                 >
-                  {this.state.filterType === 'file' && (
-                    <FilesFilter
-                      options={Search.options}
-                      onSearch={options => {
-                        Search.setOptions(options);
-                        Search.search();
-                      }}
-                    />
-                  )}
-                  {this.state.filterType === 'event' && (
-                    <EventsFilter
-                      options={Search.options}
-                      onSearch={options => {
-                        Search.setOptions(options);
-                        Search.search();
-                      }}
-                    />
-                  )}
                   {this.state.filterType === 'message' && (
                     <MessagesFilter
-                      options={Search.options}
-                      onSearch={options => {
-                        Search.setOptions(options);
-                        Search.search();
-                      }}
-                    />
-                  )}
-                  {this.state.filterType === 'task' && (
-                    <TasksFilter
                       options={Search.options}
                       onSearch={options => {
                         Search.setOptions(options);

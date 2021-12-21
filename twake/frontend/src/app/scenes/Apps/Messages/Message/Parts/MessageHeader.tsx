@@ -18,8 +18,8 @@ import Languages from 'services/languages/languages';
 import Loader from 'components/Loader/Loader.js';
 import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { MessageContext } from '../MessageWithReplies';
-import useRouterWorkspace from 'app/state/recoil/hooks/useRouterWorkspace';
-import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
+import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import useRouterChannel from 'app/state/recoil/hooks/router/useRouterChannel';
 import { useUser } from 'app/state/recoil/hooks/useUser';
 import { UserType } from 'app/models/User';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
@@ -48,7 +48,7 @@ export default (props: Props) => {
   let application = companyApplications.find(a => a.id === message.application_id);
 
   const scrollToMessage = () => {
-    if (message.thread_id != message.id) {
+    if (message.thread_id !== message.id) {
       //TODO messageService.scrollTo({ id: message.thread_id });
     }
   };
@@ -85,6 +85,8 @@ export default (props: Props) => {
     }
   };
 
+  const icon = user?.status ? user.status.split(' ')[0] : undefined;
+  const status = user?.status ? user.status.split(' ').splice(1).join(" ") : undefined;
   return (
     <div
       className={classNames('message-content-header-container', {
@@ -101,19 +103,17 @@ export default (props: Props) => {
             (!!user && User.getFullName(user)) ||
             (message.application_id && application?.identity?.name)}
         </span>
-        {!message.application_id && !!user && user.status_icon && user.status_icon[0] && (
+        {!message.application_id && !!user && (
           <div className="sender-status">
-            <Emojione size={12} type={user.status_icon[0]} /> {user.status_icon[1]}
+            {!!icon && <Emojione size={12} type={icon} />} {!!status && status}
           </div>
         )}
-
         {props.linkToThread && (
           <span className="reply-text">
             {Languages.t('scenes.apps.messages.input.replied_to')}
             <Link onClick={() => scrollToMessage()}>{parentMessage?.text}</Link>
           </span>
         )}
-
         {message.created_at && (
           <a
             className="date"

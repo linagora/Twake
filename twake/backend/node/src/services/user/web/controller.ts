@@ -32,6 +32,7 @@ import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import coalesce from "../../../utils/coalesce";
+import { getCompanyRooms, getUserRooms } from "../realtime";
 
 export class UsersCrudController
   implements
@@ -61,9 +62,15 @@ export class UsersCrudController
       throw CrudExeption.notFound(`User ${id} not found`);
     }
 
+    const userObject = await this.service.formatUser(user, {
+      includeCompanies: context.user.id === id,
+    });
+
     return {
-      resource: await this.service.formatUser(user, { includeCompanies: context.user.id === id }),
-      websocket: undefined, // empty for now
+      resource: userObject,
+      websocket: context.user.id
+        ? this.realtime.sign(getUserRooms(user), context.user.id)[0]
+        : undefined,
     };
   }
 
@@ -193,14 +200,33 @@ export class UsersCrudController
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<CompanyObject>> {
     const company = await this.service.companies.getCompany({ id: request.params.id });
+    const context = getExecutionContext(request);
 
     if (!company) {
-      throw CrudExeption.notFound(`User ${request.params.id} not found`);
+      throw CrudExeption.notFound(`Company ${request.params.id} not found`);
+    }
+
+    let companyUserObj: CompanyUserObject | null = null;
+    if (context?.user?.id) {
+      const companyUser = await this.service.companies.getCompanyUser(company, {
+        id: context.user.id,
+      });
+      companyUserObj = {
+        company: company,
+        role: companyUser.role,
+        status: "active",
+      };
     }
 
     return {
-      resource: this.service.formatCompany(company, null, await this.getCompanyStats(company)),
-      websocket: undefined, // empty for now
+      resource: this.service.formatCompany(
+        company,
+        companyUserObj,
+        await this.getCompanyStats(company),
+      ),
+      websocket: context.user?.id
+        ? this.realtime.sign(getCompanyRooms(company), context.user.id)[0]
+        : undefined,
     };
   }
 

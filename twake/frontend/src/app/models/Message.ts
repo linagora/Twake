@@ -1,12 +1,12 @@
 export type ReactionType = { name: string; count: number; users: string[] };
 
 export type ThumbnailType = {
-  width: number; //Thumbnail width (for images only)
-  height: number; //Thumbnail height (for images only)
-  id: string; //Url to thumbnail (or set it to undefined if no relevant)
-  index: number;
-  size: number;
-  mime: string;
+  width?: number; //Thumbnail width (for images only)
+  height?: number; //Thumbnail height (for images only)
+  id?: string; //Url to thumbnail (or set it to undefined if no relevant)
+  index?: number;
+  size?: number;
+  mime?: string;
   url: string;
 };
 
@@ -22,7 +22,7 @@ export type MessageFileType = {
   metadata?: {
     //File information when attached (it can change if edited)
     source?: MessageFileMetadataSource;
-    external_id: string;
+    external_id: string | { company_id: string; id: string } | any;
     name?: string; //Original name
     size?: number; //Original weight
     mime?: string;
