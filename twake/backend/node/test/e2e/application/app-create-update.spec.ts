@@ -197,7 +197,7 @@ describe("Applications", () => {
       });
     });
   });
-  describe.only("Get applications", function () {
+  describe("Get applications", function () {
     let firstApp: PublicApplicationObject;
     let secondApp: PublicApplicationObject;
     let thirdApp: PublicApplicationObject;
