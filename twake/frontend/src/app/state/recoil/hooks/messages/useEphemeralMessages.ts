@@ -17,13 +17,22 @@ export const useEphemeralMessages = (key: AtomChannelKey) => {
     async (action: string, event: any) => {
       if (action === 'created' || action === 'updated') {
         const message = event as NodeMessage;
-        if (
-          message.ephemeral &&
-          message.ephemeral.recipient === CurrentUser.get().id &&
-          message.ephemeral.recipient_context_id === CurrentUser.unique_connection_id
-        ) {
-          setMessage(message);
-          setLastEphemeral(message);
+        if (message.ephemeral) {
+          if (
+            message.subtype === 'deleted' &&
+            (message.id === lastEphemeral?.id ||
+              (message.ephemeral.id && message.ephemeral.id === lastEphemeral?.ephemeral?.id) ||
+              message.ephemeral.recipient === CurrentUser.get().id)
+          ) {
+            setLastEphemeral(null);
+          } else if (
+            message.ephemeral.recipient === CurrentUser.get().id &&
+            (!message.ephemeral.recipient_context_id ||
+              message.ephemeral.recipient_context_id === CurrentUser.unique_connection_id)
+          ) {
+            setMessage(message);
+            setLastEphemeral(message);
+          }
           return;
         }
       }

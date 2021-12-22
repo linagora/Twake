@@ -18,6 +18,7 @@ import Menu from 'components/Menus/Menu';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
 import './ApplicationsStyles.scss';
+import AlertManager from 'app/services/AlertManager/AlertManager';
 
 type ColumnObjectType = { key: number } & Application;
 
@@ -71,7 +72,7 @@ export default () => {
         text: Languages.t(
           'scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application',
         ),
-        onClick: () => deleteOneCompanyApplication(application.id),
+        onClick: () => AlertManager.confirm(() => deleteOneCompanyApplication(application.id)),
       },
     ];
   };

@@ -94,7 +94,7 @@ export class MessageToNotificationsProcessor {
           sender: messageResource.user_id,
           creation_date: messageResource.created_at,
 
-          mentions: mentions,
+          mentions,
 
           sender_name: senderName,
           channel_name: channel.name,
