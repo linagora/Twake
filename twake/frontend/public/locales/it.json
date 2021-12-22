@@ -846,6 +846,6 @@
     "scenes.join.loading": "Caricamento in corso…",
     "\"": "\"",
     "login.create_account": "Creare un account",
-    "login.login_error": "Errore durante il login",
+    "login.login_error": "Errore durante l'accesso",
     "'": "'"
 }
