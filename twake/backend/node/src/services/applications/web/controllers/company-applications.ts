@@ -8,7 +8,6 @@ import {
   ResourceUpdateResponse,
 } from "../../../../utils/types";
 import Application, { PublicApplicationObject } from "../../entities/application";
-import { PublicApplication } from "../../entities/application";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import { CompanyExecutionContext } from "../types";
 import { ApplicationServiceAPI } from "../../api";

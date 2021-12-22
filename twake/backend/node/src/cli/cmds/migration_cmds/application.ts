@@ -184,8 +184,8 @@ export const importDepreciatedDisplayFields = (
   let display = application.display;
 
   if (!display?.twake) {
-    display = display || { twake: { version: 1 } };
-    display.twake = display.twake || { version: 1 };
+    display = display || { twake: {} };
+    display.twake = display.twake || {};
   }
 
   display.twake.tab = depreciatedDisplay?.channel_tab
