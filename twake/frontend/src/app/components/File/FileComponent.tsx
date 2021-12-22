@@ -78,8 +78,6 @@ export default ({
     }
   }, []);
 
-  console.log(file);
-
   const onClickFile = async (data: DataFileType, companyId: string) => {
     if (source === 'internal') {
       //Only if upload has ended
