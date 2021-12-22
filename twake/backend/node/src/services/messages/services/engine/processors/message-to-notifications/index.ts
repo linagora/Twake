@@ -83,7 +83,9 @@ export class MessageToNotificationsProcessor {
           text = `${senderName}: ${text}`;
         }
 
-        const mentions = getMentions(messageResource);
+        const mentions = await getMentions(messageResource, async (username: string) => {
+          return await this.user.users.getByUsername(username);
+        });
 
         const messageEvent: MessageNotification = {
           company_id: participant.company_id,

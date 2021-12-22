@@ -2,6 +2,7 @@ import { FindOptions } from "../../../core/platform/services/database/services/o
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import { Message } from "../entities/messages";
 import { specialMention } from "../types";
+import User from "../../../services/user/entities/user";
 
 export const buildMessageListPagination = (
   pagination: Pagination,
@@ -16,14 +17,30 @@ export const buildMessageListPagination = (
   };
 };
 
-export const getMentions = (messageResource: Message) => {
+export const getMentions = async (
+  messageResource: Message,
+  findByUsername: (username: string) => Promise<User>,
+) => {
+  let idsFromUsernames = [];
+  const usersNoIdOutput = (messageResource.text || "").match(/( |^)@[a-zA-Z0-9-_.]+/gm);
+  const usernames = (usersNoIdOutput || []).map(u => (u || "").trim().split("@").pop());
+  for (const username of usernames) {
+    if (!"all|here|channel|everyone".split("|").includes(username)) {
+      const user = await findByUsername(username);
+      if (user) idsFromUsernames.push(user.id);
+    }
+  }
+
   const usersOutput = (messageResource.text || "").match(/@[^: ]+:([0-f-]{36})/gm);
   const globalOutput = (messageResource.text || "").match(
     /(^| )@(all|here|channel|everyone)([^a-z]|$)/gm,
   );
 
   return {
-    users: (usersOutput || []).map(u => (u || "").trim().split(":").pop()),
+    users: [
+      ...(usersOutput || []).map(u => (u || "").trim().split(":").pop()),
+      ...idsFromUsernames,
+    ],
     specials: (globalOutput || []).map(g => (g || "").trim().split("@").pop()) as specialMention[],
   };
 };

@@ -72,7 +72,7 @@ export class ConsoleController {
           first_name: request.body.first_name,
           last_name: request.body.last_name,
           email_canonical: email,
-          username_canonical: email.replace("@", "."),
+          username_canonical: (email.replace("@", ".") || "").toLocaleLowerCase(),
         });
         const user = await this.userService.users.create(newUser);
         await this.userService.users.setPassword({ id: user.entity.id }, request.body.password);

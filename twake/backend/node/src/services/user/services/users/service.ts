@@ -77,7 +77,9 @@ export class UserService implements UsersServiceAPI {
     if (user.identity_provider_id && !user.identity_provider) user.identity_provider = "console";
     if (user.email_canonical) user.email_canonical = user.email_canonical.toLocaleLowerCase();
     if (user.username_canonical)
-      user.username_canonical = user.username_canonical.toLocaleLowerCase();
+      user.username_canonical = (user.username_canonical || "")
+        .toLocaleLowerCase()
+        .replace(/[^a-z0-9_-]/, "");
   }
 
   async create(user: User): Promise<CreateResult<User>> {
@@ -204,6 +206,12 @@ export class UserService implements UsersServiceAPI {
     return await this.repository.findOne(pk);
   }
 
+  async getByUsername(username: string): Promise<User> {
+    return await this.repository.findOne({
+      username_canonical: (username || "").toLocaleLowerCase(),
+    });
+  }
+
   async getByConsoleId(id: string, service_id: string = "console"): Promise<User> {
     const extUser = await this.extUserRepository.findOne({ service_id, external_id: id });
     if (!extUser) {
@@ -220,9 +228,9 @@ export class UserService implements UsersServiceAPI {
     return this.repository.findOne({ email_canonical: email }).then(user => Boolean(user));
   }
   async getAvailableUsername(username: string): Promise<string> {
-    const users = await this.repository.find({}).then(a => a.getEntities());
+    const user = await this.getByUsername(username);
 
-    if (!users.find(user => user.username_canonical == username.toLocaleLowerCase())) {
+    if (!user) {
       return username;
     }
 
@@ -230,7 +238,7 @@ export class UserService implements UsersServiceAPI {
 
     for (let i = 1; i < 1000; i++) {
       const dynamicUsername = username + i;
-      if (!users.find(user => user.username_canonical == dynamicUsername.toLocaleLowerCase())) {
+      if (!(await this.getByUsername(dynamicUsername.toLocaleLowerCase()))) {
         suitableUsername = dynamicUsername;
         break;
       }
