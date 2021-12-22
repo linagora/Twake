@@ -4,11 +4,20 @@ import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import CurrentUser from 'app/services/user/CurrentUser';
 import _ from 'lodash';
 import { useState } from 'react';
+import { atomFamily, useRecoilCallback, useRecoilState } from 'recoil';
 import { AtomChannelKey } from '../../atoms/Messages';
 import { useSetMessage } from './useMessage';
 
+const EphemeralMessageState = atomFamily<NodeMessage | null, AtomChannelKey>({
+  key: 'EphemeralMessageState',
+  default: key => null,
+});
+
 export const useEphemeralMessages = (key: AtomChannelKey) => {
-  const [lastEphemeral, setLastEphemeral] = useState<NodeMessage | null>(null);
+  const [lastEphemeral, setLastEphemeral] = useRecoilState(EphemeralMessageState(key));
+  const getLastEphemeral = useRecoilCallback(({ snapshot }) => (key: AtomChannelKey) => {
+    return snapshot.getLoadable(EphemeralMessageState(key)).valueMaybe();
+  });
   const setMessage = useSetMessage(key.companyId);
 
   useRealtimeRoom<MessageWithReplies>(
@@ -17,6 +26,7 @@ export const useEphemeralMessages = (key: AtomChannelKey) => {
     async (action: string, event: any) => {
       if (action === 'created' || action === 'updated') {
         const message = event as NodeMessage;
+        const lastEphemeral = getLastEphemeral(key);
         if (message.ephemeral) {
           if (
             message.subtype === 'deleted' &&

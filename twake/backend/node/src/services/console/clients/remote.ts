@@ -249,7 +249,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       }
 
       user = getInstance({});
-      user.username_canonical = username;
+      user.username_canonical = (username || "").toLocaleLowerCase();
       user.email_canonical = userDTO.email;
       user.deleted = false;
     }

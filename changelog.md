@@ -1,3 +1,26 @@
+# Twake 2021.Q4.860
+
+### Messages
+
+- Improved message top right menu
+- Fixed message sending / edition / reaction / pinned etc, now instant ⚡️
+- User availability indicator 🟢
+- User is writing indicator
+
+### Workspace parameters
+
+- Improved integrations management page 🧹
+- Improved workspace users management page 🧹
+- Improved workspace preferences management page 🧹
+
+### General
+
+- A lot of bug fixed, more to come on the 22 of January 🐞
+- Improved Twake loading time (still in progress) ⏰
+- New state management ( recoiljs.org ) on everything except channels and channels members
+- Everything except Drive Tasks and Calendar was migrated to node backend 🧹
+- Twake is now working with a simplified docker-compose with only node + mongodb. Note that this works only with messages (no Drive, Calendar or Tasks yet) 🚀
+
 # Twake 2021.Q3.640
 
 ### Messages

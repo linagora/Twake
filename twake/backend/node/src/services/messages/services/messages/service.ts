@@ -449,7 +449,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     let ids: string[] = [];
     if (message.user_id) ids.push(message.user_id);
     if (message.pinned_info?.pinned_by) ids.push(message.pinned_info?.pinned_by);
-    const mentions = getMentions(message);
+    const mentions = await getMentions(message, async (username: string) => {
+      return await this.user.users.getByUsername(username);
+    });
     for (const mentionedUser of mentions.users) {
       ids.push(mentionedUser);
     }
