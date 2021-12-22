@@ -28,8 +28,6 @@ export const useEphemeralMessages = (key: AtomChannelKey) => {
         const message = event as NodeMessage;
         const lastEphemeral = getLastEphemeral(key);
         if (message.ephemeral) {
-          console.log('useEphemeralMessages', message, lastEphemeral);
-
           if (
             message.subtype === 'deleted' &&
             (message.id === lastEphemeral?.id ||

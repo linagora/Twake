@@ -48,7 +48,9 @@ export default React.memo((props: Props) => {
             },
           }}
         >
-          {props.fallback}
+          {(props.fallback || '')
+            //Fix markdown simple line break
+            .replace(/\n/g, '&nbsp;  \n')}
         </Markdown>
       </div>
     ) : (
