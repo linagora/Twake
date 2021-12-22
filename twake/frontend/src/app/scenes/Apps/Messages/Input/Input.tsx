@@ -22,7 +22,8 @@ import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import { useChannel } from 'app/state/recoil/hooks/useChannels';
 import IsWriting from './Parts/IsWriting';
-import useChannelActivityWriting, {
+import {
+  useChannelWritingActivityEmit,
   useWritingDetector,
 } from 'app/state/recoil/hooks/useChannelWritingActivity';
 import { clearInterval, clearTimeout, setInterval, setTimeout } from 'timers';
@@ -78,7 +79,8 @@ export default (props: Props) => {
   );
   const [isTooLong, setTooLong] = useState(false);
 
-  const { iAmWriting } = useChannelActivityWriting(props.channelId || '', props.threadId);
+  const { iAmWriting } = useChannelWritingActivityEmit(props.channelId || '', props.threadId);
+
   const { onKeydown: onKeydownRealtimeListener } = useWritingDetector();
 
   useEffect(() => {
@@ -309,7 +311,6 @@ export default (props: Props) => {
             onRichTextChange={editorState => setRichTextEditorState(editorState)}
           />
         )}
-        <IsWriting channelId={props.channelId || ''} threaId={props.threadId} />
       </UploadZone>
     </div>
   );

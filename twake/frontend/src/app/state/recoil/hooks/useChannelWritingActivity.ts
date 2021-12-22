@@ -28,21 +28,24 @@ export type WritingEvent = {
   };
 };
 
-export type ChannelActivityWritingType = {
-  users: { userId: string; name: string }[];
+export type ChannelWritingActivityTypeEmit = {
   iAmWriting: (writing: boolean) => void;
 };
 
+export function useChannelWritingActivityState(
+  channelId: string,
+  threadId?: string | null,
+): ChannelWritingActivityType[] {
+  const threadIdSelector = useRecoilValue(
+    ThreadWritingActivitySelector({ channelId: channelId, threadId: threadId || '' }),
+  );
+  return threadIdSelector;
+}
+
 let receivedWritingTimeout = new Map<string, number>();
 
-export default function useChannelActivityWriting(
-  channelId: string,
-  threadId: string | null,
-): ChannelActivityWritingType {
+export default function useChannelWritingActivity() {
   const companyId = useRouterCompany();
-  const [channelsActivity, setChannelsActivity] = useRecoilState(
-    ChannelWritingActivityState(channelId),
-  );
 
   const setChannelWritingActivityState = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -75,7 +78,7 @@ export default function useChannelActivityWriting(
       },
   );
 
-  const { send } = useRealtimeRoom<WritingEvent>(
+  useRealtimeRoom<WritingEvent>(
     WorkspaceAPIClient.websockets(companyId)[0],
     'useChannelWritingActivity',
     (action, resource) => {
@@ -83,6 +86,19 @@ export default function useChannelActivityWriting(
         setChannelWritingActivityState(resource.event);
       }
     },
+  );
+}
+
+export function useChannelWritingActivityEmit(
+  channelId: string,
+  threadId: string | null,
+): ChannelWritingActivityTypeEmit {
+  const companyId = useRouterCompany();
+
+  const { send } = useRealtimeRoom<WritingEvent>(
+    WorkspaceAPIClient.websockets(companyId)[0],
+    'useChannelWritingActivityEmit',
+    (action, resource) => {},
   );
   (window as any).send = send;
 
@@ -102,10 +118,10 @@ export default function useChannelActivityWriting(
     },
     [send],
   );
-
-  return { users: channelsActivity, iAmWriting: iAmWriting };
+  return { iAmWriting: iAmWriting };
 }
 
+/** Keyboard typeing detection helper */
 let writeTimeout = setTimeout(() => {}, 0);
 export const useWritingDetector = () => {
   let lastEmit = useRef(new Date().getTime());

@@ -7,11 +7,13 @@ import { MessageContext } from '../MessageWithReplies';
 import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 import Input from '../../Input/Input';
+import useRouterChannel from 'app/state/recoil/hooks/useRouterChannel';
 
 type Props = {};
 
 export default (props: Props) => {
   const context = useContext(MessageContext);
+  const channelId = useRouterChannel();
   let { message } = useMessage(context);
 
   const location = `thread-${message.thread_id}`;
@@ -29,7 +31,7 @@ export default (props: Props) => {
     return (
       <ThreadSection small alinea>
         <div className="message-content">
-          <Input threadId={message?.id || ''} />
+          <Input threadId={message?.id || ''} channelId={channelId} />
         </div>
       </ThreadSection>
     );

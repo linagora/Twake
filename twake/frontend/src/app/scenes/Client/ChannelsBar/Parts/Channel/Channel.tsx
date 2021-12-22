@@ -14,6 +14,10 @@ import { Collection } from 'app/services/CollectionsReact/Collections';
 import useRouterChannelSelected from 'app/state/recoil/hooks/router/useRouterChannelSelected';
 
 import './Channel.scss';
+import useChannelWritingActivity, {
+  useChannelWritingActivityState,
+} from 'app/state/recoil/hooks/useChannelWritingActivity';
+import WritingLoader from 'app/components/WritingLoader/WritingLoader';
 
 type Props = {
   collection?: Collection<ChannelResource>;
@@ -31,10 +35,12 @@ type Props = {
   menu?: JSX.Element;
   showTooltip?: boolean;
   active?: boolean;
+  writingActivity?: boolean;
 };
 
 export default (props: Props) => {
   const selected = useRouterChannelSelected(props.id || '');
+  const writingActivity = useChannelWritingActivityState(props.id || '');
 
   const onChannelChange = () => {
     props.id &&
@@ -102,6 +108,9 @@ export default (props: Props) => {
         <div className="text" style={{ textTransform: 'capitalize' }}>
           {props.name + ' '}
           {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
+        </div>
+        <div className="writing_Activity">
+          {/*!selected &&*/ writingActivity.length > 0 && <WritingLoader />}
         </div>
         <div className="more">
           {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}

@@ -65,6 +65,12 @@
   cursor: pointer;
   line-height: normal;
 
+  .writing_Activity {
+    display: inline-block;
+    align-self: center;
+    color: var(--white);
+  }
+
   &.unread {
     font-weight: bold;
     color: var(--black);
@@ -84,6 +90,9 @@
       &:hover {
         color: var(--black);
       }
+    }
+    .writing_Activity {
+      display: none;
     }
   }
 

@@ -13,7 +13,7 @@ export const ThreadWritingActivitySelector = selectorFamily<
     ({ channelId, threadId }) =>
     ({ get }) => {
       return get(ChannelWritingActivityState(channelId) || []).filter(
-        status => status.threadId === threadId,
+        status => !threadId || status.threadId === threadId,
       );
     },
 });
