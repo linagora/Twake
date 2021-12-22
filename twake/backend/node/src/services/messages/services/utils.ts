@@ -22,13 +22,17 @@ export const getMentions = async (
   findByUsername: (username: string) => Promise<User>,
 ) => {
   let idsFromUsernames = [];
-  const usersNoIdOutput = (messageResource.text || "").match(/( |^)@[a-zA-Z0-9-_.]+/gm);
-  const usernames = (usersNoIdOutput || []).map(u => (u || "").trim().split("@").pop());
-  for (const username of usernames) {
-    if (!"all|here|channel|everyone".split("|").includes(username)) {
-      const user = await findByUsername(username);
-      if (user) idsFromUsernames.push(user.id);
+  try {
+    const usersNoIdOutput = (messageResource.text || "").match(/( |^)@[a-zA-Z0-9-_.]+/gm);
+    const usernames = (usersNoIdOutput || []).map(u => (u || "").trim().split("@").pop());
+    for (const username of usernames) {
+      if (!"all|here|channel|everyone".split("|").includes(username)) {
+        const user = await findByUsername(username);
+        if (user) idsFromUsernames.push(user.id);
+      }
     }
+  } catch (err) {
+    console.log(err);
   }
 
   const usersOutput = (messageResource.text || "").match(/@[^: ]+:([0-f-]{36})/gm);

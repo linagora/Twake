@@ -7,7 +7,7 @@ export const TYPE = "user";
 
 @Entity(TYPE, {
   primaryKey: [["id"]],
-  globalIndexes: [["email_canonical", "username_canonical"]],
+  globalIndexes: [["email_canonical"], ["username_canonical"]],
   type: TYPE,
   search,
 })
