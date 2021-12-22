@@ -192,7 +192,7 @@ const UserListManager = (props: PropsType) => {
               autoFocus
               onSearch={(text, cb) =>
                 filter(text, list => {
-                  cb(list.map(u => u.user));
+                  cb(list.map(u => (u?.user || u)));
                 })
               }
               render={(user: UserType) => (
