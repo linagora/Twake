@@ -843,5 +843,9 @@
     "scenes.join.twake_description": "Twake ist ein digitaler quelloffener Arbeitsbereich, der die Produktivität Ihres Teams verbessert",
     "scenes.join.login_first_button": "Melden Sie sich an oder erstellen Sie zunächst ein Konto",
     "scenes.join.join_the_team_button": "Treten Sie dem Team bei",
-    "scenes.join.create_the_company_button": "Das Unternehmen erstellen"
+    "scenes.join.create_the_company_button": "Das Unternehmen erstellen",
+    "\"": "\"",
+    "login.login_error": "Fehler bei der Anmeldung",
+    "'": "'",
+    "login.create_account": "Konto erstellen"
 }
