@@ -43,7 +43,7 @@ class CompanyAPIClient {
       false,
       { disableJWTAuthentication },
     ).then(result => {
-      result.resource.id && this.realtime.set(result.resource.id, result.websocket);
+      result.resource?.id && this.realtime.set(result.resource.id, result.websocket);
       return result.resource;
     });
   }
