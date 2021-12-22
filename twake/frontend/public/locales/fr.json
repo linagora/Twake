@@ -843,5 +843,9 @@
     "scenes.join.wrong_link_description": "Demandez à la personne qui vous a invité(e) de rejoindre cette entreprise par un nouveau lien ou créez votre propre entreprise",
     "scenes.join.join_the_team_button": "Rejoindre l'équipe",
     "scenes.join.create_the_company_button": "Créer l'entreprise",
-    "scenes.join.join_workspace_from_company": "Rejoignez {{$1}} à partir de {{$2}} !"
+    "scenes.join.join_workspace_from_company": "Rejoignez {{$1}} à partir de {{$2}} !",
+    "\"": "\"",
+    "'": "'",
+    "login.create_account": "Créer un compte",
+    "login.login_error": "Erreur lors de la connexion"
 }
