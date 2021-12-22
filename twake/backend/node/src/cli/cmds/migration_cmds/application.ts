@@ -197,9 +197,9 @@ export const importDepreciatedDisplayFields = (
     : undefined;
 
   display.twake.configuration = [];
-  if (depreciatedDisplay.configuration?.can_configure_in_workspace)
+  if (depreciatedDisplay?.configuration?.can_configure_in_workspace)
     display.twake.configuration.push("global");
-  if (depreciatedDisplay.configuration?.can_configure_in_channel)
+  if (depreciatedDisplay?.configuration?.can_configure_in_channel)
     display.twake.configuration.push("channel");
 
   display.twake.direct = depreciatedDisplay?.member_app
