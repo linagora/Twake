@@ -219,8 +219,8 @@ export default (props: Props) => {
       >
         <EphemeralMessages
           channelId={props.channelId || ''}
+          workspaceId={channel.workspace_id || ''}
           threadId={props.threadId}
-          collectionKey={props.collectionKey || ''}
           onHasEphemeralMessage={() => {
             if (!hasEphemeralMessage) {
               setHasEphemeralMessage(true);

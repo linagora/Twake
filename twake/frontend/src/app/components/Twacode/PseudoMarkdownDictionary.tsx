@@ -23,6 +23,8 @@ export const DynamicComponent = ({
   eventContainer?: any;
   textTransform?: any;
 }) => {
+  console.log(type, child);
+
   if (type === 'text_block_parent') {
     return <span style={textTransform || {}}>{child}</span>;
   }
@@ -32,7 +34,8 @@ export const DynamicComponent = ({
   if (type === 'br') {
     return (
       <>
-        <br />,<span>{child}</span>,
+        <br />
+        <span>{child}</span>
       </>
     );
   }
@@ -56,7 +59,8 @@ export const DynamicComponent = ({
     const name = split[0];
     return (
       <>
-        <Chan id={id} name={name} />,<span> </span>,
+        <Chan id={id} name={name} />
+        <span> </span>
       </>
     );
   }

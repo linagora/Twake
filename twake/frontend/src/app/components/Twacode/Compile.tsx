@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import { DynamicComponent } from './PseudoMarkdownDictionary';
@@ -23,6 +24,10 @@ const Compile = (props: Props) => {
   if (content.formatted || content.prepared) content = content.formatted || content.prepared;
   if (typeof content === 'string') content = [content];
   if (content.type || content.start) content = [content];
+
+  if (!_.isArray(content)) {
+    content = [content];
+  }
 
   try {
     return (
@@ -76,7 +81,7 @@ const Compile = (props: Props) => {
                   return (
                     <span key={JSON.stringify(item) + index}>
                       <DynamicComponent
-                        type={type.name}
+                        type={type.name || item.type}
                         child={
                           <Compile
                             content={item.content || ''}

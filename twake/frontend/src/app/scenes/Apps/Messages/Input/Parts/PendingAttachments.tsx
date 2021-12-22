@@ -31,7 +31,13 @@ export default ({ zoneId, onChange, initialValue }: PropsType) => {
             <PossiblyPendingAttachment
               file={file}
               type={'input'}
-              onRemove={() => setFiles(files.filter(f => f.id !== file.id))}
+              onRemove={() =>
+                setFiles(
+                  files.filter(
+                    f => !_.isEqual(f.metadata?.external_id, file.metadata?.external_id),
+                  ),
+                )
+              }
             />
           </Col>
         );

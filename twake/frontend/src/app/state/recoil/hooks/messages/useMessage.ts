@@ -40,6 +40,10 @@ export const useMessage = (partialKey: AtomMessageKey) => {
   };
 
   const remove = async () => {
+    if (message?.ephemeral?.id) {
+      return;
+    }
+
     //Three lines to make it instant on frontend
     const quickUpdated = _.cloneDeep(message);
     quickUpdated.subtype = NodeMessageSubType.DELETED;

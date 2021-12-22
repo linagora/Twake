@@ -287,6 +287,11 @@ class ApplicationApi
             "data" => $data
         );
 
+        if(isset($event["data"]["message"])){
+            $event["data"]["message"]["channel_id"] = $event["data"]["message"]["cache"]["channel_id"];
+            $event["data"]["message"]["workspace_id"] = $event["data"]["message"]["cache"]["workspace_id"];
+        }
+
         if (!$this->curl_rcx) {
             $this->curl_rcx = new RollingCurlX(10);
             $this->curl_rcx->setOptions([

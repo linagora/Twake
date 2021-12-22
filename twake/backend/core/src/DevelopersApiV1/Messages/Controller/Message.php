@@ -21,6 +21,9 @@ class Message extends BaseController
 
         $capabilities = [];
 
+        $group_id = $request->request->get("group_id", null);
+        $workspace_id = $request->request->get("workspace_id", null);
+
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
             return new Response($application);
@@ -33,6 +36,8 @@ class Message extends BaseController
         $object = $request->request->get("message", null);
         $chan_id = $object["channel_id"];
 
+        $object["company_id"] = $group_id;
+        $object["worskpace_id"] = $workspace_id;
         $result = $this->get("app.messages")->remove($object, $options);
         $front_id = $result["front_id"];
 

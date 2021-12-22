@@ -315,6 +315,13 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         ...pk,
       });
 
+      msg.ephemeral = pk.ephemeral || {
+        id: pk.id,
+        version: "",
+        recipient: "",
+        recipient_context_id: "",
+      };
+
       await this.onSaved(msg, { created: false }, context);
 
       return new DeleteResult<Message>("message", msg, true);

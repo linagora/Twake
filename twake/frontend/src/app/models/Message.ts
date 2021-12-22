@@ -13,7 +13,6 @@ export type ThumbnailType = {
 export type MessageFileMetadataSource = 'internal' | 'drive' | string;
 
 export type MessageFileType = {
-  //
   //Primary key
   id?: string;
   company_id?: string; // optional
@@ -185,7 +184,11 @@ export type NodeMessage = {
 
   ephemeral: EphemeralMessage | null; //Used for non-persisted messages (like interractive messages)
 
+  //Used to display loader
   _status?: 'sending' | 'failed' | 'sent' | 'cancelled';
+
+  //Used to display time separator
+  _previous_message?: NodeMessage;
 };
 
 export type MessageWithReplies = NodeMessage & {

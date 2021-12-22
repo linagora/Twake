@@ -123,18 +123,19 @@
   .message-options {
     position: absolute;
     background-color: var(--white);
-    height: 28px;
-    border-radius: 14px;
+    height: 32px;
+    border-radius: 8px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--grey-background);
+    border: 1px solid var(--grey-light);
     display: block;
-    top: 12px;
+    top: -16px;
     margin: auto;
     right: 8px;
     z-index: 1;
     opacity: 0;
     display: flex;
     flex-direction: row;
+    overflow: hidden;
 
     &.drag {
       left: -8px;
@@ -149,18 +150,29 @@
       }
     }
 
+    .separator {
+      height: 100%;
+      border-right: 1px solid var(--grey-light);
+    }
+
     .option {
-      &:not(:last-child) {
-        border-right: 1px solid var(--grey-background);
-      }
-      min-width: 32px;
+      min-width: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--grey-dark);
       cursor: pointer;
+      margin: 4px;
+      border-radius: 4px;
+
       &:hover {
         color: var(--black);
+        background-color: var(--primary-background);
+      }
+
+      &.active {
+        border: 1px solid var(--primary);
+        background-color: var(--primary-background);
       }
     }
   }

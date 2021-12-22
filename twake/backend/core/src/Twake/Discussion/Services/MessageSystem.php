@@ -85,7 +85,10 @@ class MessageSystem
 
     public function remove($object, $options, $current_user = null)
     {
-        $channel = $this->getInfosFromChannel($object["company_id"], $object["workspace_id"], $object["channel_id"]);   
+        $channel = $this->getInfosFromChannel($object["company_id"], $object["workspace_id"], $object["channel_id"]);
+        $channel["company_id"] = $channel["company_id"] ?? $object["company_id"];
+        $channel["workspace_id"] = $channel["workspace_id"] ?? $object["workspace_id"];
+
         if(!$channel){
             return;
         }
@@ -290,9 +293,9 @@ class MessageSystem
         return $array;
     }
 
-    private function getInfosFromChannel($channelId){
+    private function getInfosFromChannel($companyId, $workspaceId, $channelId){
 
-        $this->access_manager->getChannelCache($channelId);
+        $this->access_manager->getChannelCache($companyId, $workspaceId, $channelId);
 
         $channelDetails = $this->doctrine->getRepository("Twake\Core:CachedFromNode")->findOneBy(Array("company_id" => "unused", "type" => "channel", "key"=>$channelId));
         if($channelDetails){

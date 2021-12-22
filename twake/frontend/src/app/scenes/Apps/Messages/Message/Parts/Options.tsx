@@ -26,6 +26,7 @@ import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/message
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 import SideViewService from 'app/services/AppView/SideViewService';
 import MainViewService from 'app/services/AppView/MainViewService';
+import Emojione from 'app/components/Emojione/Emojione';
 
 type Props = {
   onOpen?: () => void;
@@ -65,6 +66,7 @@ export default (props: Props) => {
   if (message.ephemeral) {
     menu.push({
       type: 'menu',
+      icon: 'trash',
       text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
       className: 'error',
       onClick: () => {
@@ -75,6 +77,7 @@ export default (props: Props) => {
     if (message.thread_id == message.id) {
       menu.push({
         type: 'menu',
+        icon: 'arrow-up-right',
         text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
         onClick: () => {
           MessagesService.showMessage(message.id);
@@ -86,6 +89,7 @@ export default (props: Props) => {
       if (!message.context?.disable_pin) {
         menu.push({
           type: 'menu',
+          icon: 'link',
           text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
           onClick: () => {
             const url = `${document.location.origin}${RouterServices.generateRouteFromState({
@@ -104,6 +108,7 @@ export default (props: Props) => {
 
         menu.push({
           type: 'menu',
+          icon: 'map-pin',
           text: Languages.t(
             !message.pinned_info?.pinned_at
               ? 'scenes.apps.messages.message.pin_button'
@@ -164,6 +169,7 @@ export default (props: Props) => {
       if (!message.application_id) {
         menu.push({
           type: 'menu',
+          icon: 'edit-alt',
           text: Languages.t('scenes.apps.messages.message.modify_button', [], 'Edit'),
           onClick: () => {
             setVisibleEditor({ location, subLocation });
@@ -173,6 +179,7 @@ export default (props: Props) => {
       if (message?.stats?.replies <= 1) {
         menu.push({
           type: 'menu',
+          icon: 'trash-alt',
           text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
           className: 'error',
           onClick: () => {
@@ -204,14 +211,29 @@ export default (props: Props) => {
 
   return (
     <div>
-      {!props.threadHeader && (
+      {/*!props.threadHeader && (
         <div className="message-options drag" key="drag">
           <div className="option js-drag-handler-message">
             <DragIndicator style={{ width: '18px' }} />
           </div>
         </div>
-      )}
+      )*/}
       <div className="message-options right" key="options">
+        {[':heart:', ':+1:', ':eyes:', ':tada:'].map(emoji => (
+          <>
+            <div
+              key={emoji}
+              className={
+                'option ' + (userReactions.map(m => m.name).includes(emoji) ? 'active' : '')
+              }
+              onClick={() => react([emoji], 'toggle')}
+            >
+              <Emojione type={emoji} />
+            </div>
+            <div className="separator"></div>
+          </>
+        ))}
+
         <Menu
           className="option"
           onOpen={(evt: any) => onOpen(evt)}
@@ -237,34 +259,38 @@ export default (props: Props) => {
         >
           <Smile size={16} />
         </Menu>
+        <div className="separator"></div>
+
         {!props.threadHeader && (
-          <div
-            className="option"
-            onClick={() => {
-              SideViewService.select(channelId, {
-                collection: MainViewService.getViewCollection(),
-                app: { identity: { code: 'messages' } } as Application,
-                context: {
-                  viewType: 'channel_thread',
-                  threadId: message.thread_id || message.id,
-                },
-              });
-            }}
-          >
-            <ArrowUpRight size={16} />
-          </div>
+          <>
+            <div
+              className="option"
+              onClick={() => {
+                SideViewService.select(channelId, {
+                  collection: MainViewService.getViewCollection(),
+                  app: { identity: { code: 'messages' } } as Application,
+                  context: {
+                    viewType: 'channel_thread',
+                    threadId: message.thread_id || message.id,
+                  },
+                });
+              }}
+            >
+              <ArrowUpRight size={16} />
+            </div>
+            <div className="separator"></div>
+          </>
         )}
-        {menu.length > 0 && (
-          <Menu
-            className="option"
-            onOpen={(evt: any) => onOpen(evt)}
-            onClose={() => props.onClose && props.onClose()}
-            menu={menu}
-            position={'left'}
-          >
-            <MoreHorizontal size={16} />
-          </Menu>
-        )}
+
+        <Menu
+          className="option"
+          onOpen={(evt: any) => onOpen(evt)}
+          onClose={() => props.onClose && props.onClose()}
+          menu={menu}
+          position={'left'}
+        >
+          <MoreHorizontal size={16} />
+        </Menu>
       </div>
     </div>
   );
