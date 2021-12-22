@@ -23,8 +23,6 @@ export const DynamicComponent = ({
   eventContainer?: any;
   textTransform?: any;
 }) => {
-  console.log(type, child);
-
   if (type === 'text_block_parent') {
     return <span style={textTransform || {}}>{child}</span>;
   }

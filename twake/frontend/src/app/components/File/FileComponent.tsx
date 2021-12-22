@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames, { Argument } from 'classnames';
 
 import { FileThumbnail, FileDetails, FileActions, FileProgress } from './parts';
@@ -15,6 +15,7 @@ import RouterService from 'app/services/RouterService';
 import './File.scss';
 import { PendingFileRecoilType } from 'app/models/File';
 import Api from 'app/services/Api';
+import FileUploadAPIClient from '../FileUploads/FileUploadAPIClient';
 
 type PropsType = {
   source: 'internal' | 'drive' | string;
@@ -30,14 +31,15 @@ type PropsType = {
 export default ({
   source,
   externalId,
-  file,
+  file: _file,
   className,
   context,
   progress,
   status,
   onRemove,
 }: PropsType) => {
-  const { companyId } = RouterService.getStateFromRoute();
+  const { companyId, workspaceId } = RouterService.getStateFromRoute();
+  const [file, setFile] = useState<DataFileType>(_file);
   const classNameArguments: Argument[] = [
     'file-component',
     className,
@@ -47,6 +49,36 @@ export default ({
       'file-component-uploading': progress && progress < 1,
     },
   ];
+
+  useEffect(() => {
+    if (source === 'drive') {
+      (async () => {
+        if (typeof externalId === 'string') {
+          externalId = { id: externalId, workspace_id: workspaceId };
+        }
+
+        let driveFile = (await Api.post('/ajax/drive/v2/find', {
+          options: {
+            element_id: externalId?.id,
+            workspace_id: externalId?.workspace_id,
+          },
+        })) as any;
+        driveFile = driveFile?.data || {};
+
+        setFile({
+          ...file,
+          thumbnail: driveFile.preview_link,
+          name: driveFile.name,
+          size: driveFile.size,
+          type: FileUploadAPIClient.mimeToType(
+            FileUploadAPIClient.extensionToMime(driveFile.extension),
+          ),
+        });
+      })();
+    }
+  }, []);
+
+  console.log(file);
 
   const onClickFile = async (data: DataFileType, companyId: string) => {
     if (source === 'internal') {
@@ -63,6 +95,10 @@ export default ({
         );
     }
     if (source === 'drive') {
+      if (typeof externalId === 'string') {
+        externalId = { id: externalId, workspace_id: workspaceId };
+      }
+
       const file = (await Api.post('/ajax/drive/v2/find', {
         options: {
           element_id: externalId?.id,
