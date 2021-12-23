@@ -859,5 +859,9 @@
     "scenes.join.twake_description": "Twake is an open-source digital workspace built to improve your team productivity",
     "scenes.join.login_first_button": "Log in or create an account first",
     "scenes.join.join_the_team_button": "Join the team",
-    "scenes.app.channelsbar.currentuser.reset": "Reset"
+    "scenes.app.channelsbar.currentuser.reset": "Reset",
+    "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Write at least three letters to display users",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found" : "No user found",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found":"No emoji found",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "No command found"
 }

@@ -827,5 +827,9 @@
     "components.emoji_picker.categories.activity": "Actividad",
     "scenes.client.main_view.main_header.search_input": "Buscar",
     "general.pause": "Pausa",
-    "scenes.apps.messages.input.replied_to": "respondió a "
+    "scenes.apps.messages.input.replied_to": "respondió a ",
+    "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Escriba al menos tres letras para mostrar los usuarios",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found" : "No se han encontrado usuarios",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found":"No se han encontrado emojis",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "No se han encontrado comandos"
 }

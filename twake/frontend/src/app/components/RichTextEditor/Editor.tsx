@@ -351,7 +351,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       return false;
     });
 
-    if (triggered && this.state.activeSuggestion?.items.length) {
+    if (triggered) {
       this.setState({ displaySuggestion: true });
     } else {
       this.resetState();
@@ -671,6 +671,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         </div>
         {this.state.isVisible && this.state.displaySuggestion && this.state.suggestionType && (
           <SuggestionList<any>
+            suggestionType={this.state.suggestionType}
             id={this.state.activeSuggestion?.id || ''}
             search={this.state.activeSuggestion?.searchText || ''}
             list={this.state.activeSuggestion?.items}

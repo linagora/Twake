@@ -847,5 +847,9 @@
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Mauvais format, seuls les png, gif et jpg sont autorisés",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Erreur inconnue",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Erreur",
-    "scenes.app.channelsbar.currentuser.reset": "Réinitialiser"
+    "scenes.app.channelsbar.currentuser.reset": "Réinitialiser",
+    "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Écrivez au moins trois lettres pour afficher des utilisateurs",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found" : "Aucun utilisateur trouvé",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found":"Aucun emoji trouvé",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Aucune commande trouvé"
 }
