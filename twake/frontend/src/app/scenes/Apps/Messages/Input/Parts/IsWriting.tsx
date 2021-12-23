@@ -18,7 +18,6 @@ type PropsType = {
 export default ({ channelId, threadId }: PropsType): JSX.Element => {
   const usersTest = useChannelWritingActivityState(channelId, threadId);
 
-  console.log('+++ uersTest in isWriting :) ', usersTest);
   const [writtingInfo, setWritingInfo] = useState('');
 
   useEffect(() => {

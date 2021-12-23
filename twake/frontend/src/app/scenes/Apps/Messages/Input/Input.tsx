@@ -178,13 +178,15 @@ export default (props: Props) => {
       setValue(getContentOutput(editorState));
     });
 
-    onKeydownRealtimeListener((state: boolean) => iAmWriting(state));
-
     if (props.onChange) {
       props.onChange(editorState);
       return;
     }
     setRichTextEditorState(editorState);
+  };
+
+  const onWrintingActivity = () => {
+    onKeydownRealtimeListener((state: boolean) => iAmWriting(state));
   };
 
   const onFilePaste = (files: Blob[]) => {
@@ -270,6 +272,7 @@ export default (props: Props) => {
               onUpArrow={e => onUpArrow(e)}
               onFilePaste={onFilePaste}
               placeholder={Languages.t('scenes.apps.messages.input.placeholder')}
+              onKeydown={onWrintingActivity}
             />
             {!isEditing() && (
               <Tooltip
