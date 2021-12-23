@@ -12,6 +12,7 @@ import { ThreadWritingActivitySelector } from '../selectors/ThreadWritingActivit
 import UserService from 'services/user/UserService';
 import useRouterCompany from './useRouterCompany';
 import { useCallback, useRef } from 'react';
+import { useCurrentUser } from './useCurrentUser';
 
 const MAX_DELAY_BETWEEN_KEYDOWN = 500;
 const MIN_DELAY_BETWEEN_EMIT = 8000;
@@ -46,6 +47,7 @@ let receivedWritingTimeout = new Map<string, number>();
 
 export default function useChannelWritingActivity() {
   const companyId = useRouterCompany();
+  const { user } = useCurrentUser();
 
   const setChannelWritingActivityState = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -62,6 +64,7 @@ export default function useChannelWritingActivity() {
         if (event.is_writing) {
           currentList = [...currentList, newEvent];
         }
+        currentList = currentList.filter(elem => elem.userId !== user?.id);
         set(ChannelWritingActivityState(event.channel_id), currentList);
 
         //Fallback stop is_writing in case of lost connection
