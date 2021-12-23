@@ -59,7 +59,7 @@ RUN cp ../public_build/src/app/environment/environment.ts.dist ../public_build/s
 ENV NODE_ENV=${NODE_ENV}
 RUN cd ../public_build && yarn build
 RUN cd ../public_build && rm -R node_modules
-RUN mv ../public_build/build public; rm -R ../public_build
+RUN mv ../public_build/build/* public/; rm -R ../public_build
 
 EXPOSE 3000
 
