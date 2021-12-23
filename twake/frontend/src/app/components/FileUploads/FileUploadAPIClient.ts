@@ -70,6 +70,9 @@ class FileUploadAPIClient {
 
   public getFileThumbnailUrlFromMessageFile(file: MessageFileType): string {
     if (file.metadata?.source !== 'internal') return file.metadata?.thumbnails?.[0]?.url || '';
+    if (!file.metadata?.thumbnails?.[0]) {
+      return '';
+    }
     return `${this.getRoute({
       companyId:
         (typeof file.metadata?.external_id === 'string'

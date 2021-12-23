@@ -8,7 +8,7 @@ services:
       - ./docker-data/mongo:/data/db
 
   node:
-    image: twaketech/twake-node
+    image: twaketech/twake-node:latest
     ports:
       - 3000:3000
     environment:
@@ -16,10 +16,6 @@ services:
       - SEARCH_DRIVER=mongodb
       - DB_DRIVER=mongodb
       - PUBSUB_TYPE=local
-    build:
-      context: .
-      dockerfile: ./docker/twake-node/Dockerfile
-      target: development
     volumes:
       - ./docker-data/documents/:/storage/
     depends_on:

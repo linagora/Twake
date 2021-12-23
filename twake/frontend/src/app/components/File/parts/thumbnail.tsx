@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { FileText, Film, Headphones, Archive, Link } from 'react-feather';
+import { FileText, Film, Headphones, Archive, Link, Image } from 'react-feather';
 import { DataFileType } from '../types';
 
 type PropsType = {
@@ -12,7 +12,7 @@ export const FileThumbnail = ({ file }: PropsType): JSX.Element => {
 
   return (
     <div className={classNames('file-thumbnail-container', 'small-right-margin')}>
-      {type === 'image' ? (
+      {type === 'image' && file.thumbnail && (
         <div
           className="ant-image file-thumbnail-component"
           style={{
@@ -23,14 +23,13 @@ export const FileThumbnail = ({ file }: PropsType): JSX.Element => {
             backgroundPosition: 'center',
           }}
         />
-      ) : (
-        <></>
       )}
-      {type === 'video' ? <Film size={20} /> : <></>}
-      {type === 'sound' ? <Headphones size={20} /> : <></>}
-      {type === 'archive' ? <Archive size={20} /> : <></>}
-      {type === 'link' ? <Link size={20} /> : <></>}
-      {type === 'other' ? <FileText size={20} /> : <></>}
+      {type === 'image' && !file.thumbnail && <Image size={20} />}
+      {type === 'video' && <Film size={20} />}
+      {type === 'sound' && <Headphones size={20} />}
+      {type === 'archive' && <Archive size={20} />}
+      {type === 'link' && <Link size={20} />}
+      {type === 'other' && <FileText size={20} />}
     </div>
   );
 };
