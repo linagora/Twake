@@ -75,9 +75,17 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     this.server.register(formbody);
     this.server.register(corsPlugin, this.configuration.get<FastifyCorsOptions>("cors", {}));
 
-    const root = this.configuration.get<{ root: string }>("static", { root: "./public" }).root;
+    let root = this.configuration.get<{ root: string }>("static", { root: "./public" }).root;
+    root = root.indexOf("/") === 0 ? root : path.join(__dirname + "/../../../../../", root);
     this.server.register(fastifyStatic, {
-      root: root.indexOf("/") === 0 ? root : path.join(__dirname + "/../../../../../", root),
+      root,
+    });
+    this.server.setNotFoundHandler((request, reply) => {
+      if (request.url.indexOf("/api") !== 0 && request.url.indexOf("/internal") !== 0) {
+        reply.sendFile(root + "/index.html");
+      } else {
+        reply.status(404).send({});
+      }
     });
 
     return this;
