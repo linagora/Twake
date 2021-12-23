@@ -1,14 +1,5 @@
-import { Button } from 'antd';
-import channel from 'app/components/RichTextEditor/plugins/channel';
-import WritingLoader from 'app/components/WritingLoader/WritingLoader';
-import useChannelWritingActivity, {
-  useChannelWritingActivityEmit,
-  useChannelWritingActivityState,
-} from 'app/state/recoil/hooks/useChannelWritingActivity';
-import { ThreadWritingActivitySelector } from 'app/state/recoil/selectors/ThreadWritingActivity';
+import { useChannelWritingActivityState } from 'app/state/recoil/hooks/useChannelWritingActivity';
 import React, { useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { threadId } from 'worker_threads';
 
 type PropsType = {
   channelId: string;
@@ -26,19 +17,19 @@ export default ({ channelId, threadId }: PropsType): JSX.Element => {
         setWritingInfo('');
         break;
       case 1:
-        setWritingInfo(`${usersTest[0].name} is writing`);
+        setWritingInfo(`${usersTest[0].name} is writing...`);
         break;
       case 2:
-        setWritingInfo(`${usersTest[0].name} and ${usersTest[1].name} are writing`);
+        setWritingInfo(`${usersTest[0].name} and ${usersTest[1].name} are writing...`);
         break;
       default:
-        setWritingInfo(`${usersTest[0].name},  ${usersTest[1].name} and more are writing`);
+        setWritingInfo(`${usersTest[0].name},  ${usersTest[1].name} and more are writing...`);
         break;
     }
   }, [usersTest]);
 
   return usersTest.length > 0 ? (
-    <div className="User-Wrting-info-MessageView ">{writtingInfo}</div>
+    <div className="user-writing-info-message-view">{writtingInfo}</div>
   ) : (
     <></>
   );

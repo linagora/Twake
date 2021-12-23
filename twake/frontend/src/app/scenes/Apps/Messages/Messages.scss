@@ -6,6 +6,15 @@
   flex-direction: column;
   flex: 1;
 
+  .user-writing-info-message-view {
+    color: var(--grey-dark);
+    margin: 0 auto;
+    min-width: 0;
+    max-width: 1000px;
+    width: calc(100% - 32px);
+    position: relative;
+  }
+
   .loading-full {
     position: absolute;
     width: 100%;
