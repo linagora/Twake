@@ -47,7 +47,6 @@ type Props = {
   editorState?: EditorState;
 };
 
-const booleanTestList: boolean[] = [];
 export default (props: Props) => {
   const { channel } = useChannel(props.channelId || '');
 
