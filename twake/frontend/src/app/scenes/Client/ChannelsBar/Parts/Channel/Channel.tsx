@@ -110,7 +110,7 @@ export default (props: Props) => {
           {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
         </div>
         <div className="writing_Activity">
-          {/*!selected &&*/ writingActivity.length > 0 && <WritingLoader />}
+          {!selected && writingActivity.length > 0 && <WritingLoader />}
         </div>
         <div className="more">
           {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}

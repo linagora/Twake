@@ -26,7 +26,6 @@ import {
   useChannelWritingActivityEmit,
   useWritingDetector,
 } from 'app/state/recoil/hooks/useChannelWritingActivity';
-import { clearInterval, clearTimeout, setInterval, setTimeout } from 'timers';
 
 type Props = {
   messageId?: string;
