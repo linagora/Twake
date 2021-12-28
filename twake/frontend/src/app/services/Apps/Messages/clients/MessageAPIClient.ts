@@ -29,7 +29,7 @@ class MessageAPIClient {
     }: { limit?: number; pageToken?: string; direction?: 'future' | 'history' } = {},
   ) {
     const response = await Api.get<{ resources: NodeMessage[]; websockets: WebsocketRoom[] }>(
-      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages?limit=${limit}&page_token=${pageToken}&direction=${direction}`,
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages?limit=${limit}&include_users=1&page_token=${pageToken}&direction=${direction}`,
     );
     this.realtime.set(threadId, response.websockets);
     return response.resources;
@@ -37,7 +37,7 @@ class MessageAPIClient {
 
   async get(companyId: string, threadId: string, messageId: string) {
     const response = await Api.get<{ resource: MessageWithReplies }>(
-      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}`,
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}?include_users=1`,
     );
     return response.resource;
   }

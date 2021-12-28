@@ -181,8 +181,7 @@ export default class InputWithIcon extends React.Component<PropsType, StateType>
                 autoFocus
                 ref={obj => {
                   this.input = obj;
-
-                  this.props.inputRef(obj);
+                  if (this.props.inputRef) this.props.inputRef(obj);
                 }}
                 type="text"
                 placeholder={this.props.placeholder}

@@ -48,7 +48,7 @@ export class WorkspacesCrudController
   private getWorkspaceUserRole(workspaceId: string, context: WorkspaceExecutionContext) {
     return this.workspaceService
       .getUser({ workspaceId, userId: context.user.id })
-      .then(a => (a ? a.role : null));
+      .then(a => (a ? a.role || "member" : null));
   }
 
   private getWorkspaceUsersCount(workspaceId: string) {
@@ -137,7 +137,10 @@ export class WorkspacesCrudController
         uws =>
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           new Map<string, any>(
-            uws.map(uw => [uw.workspaceId, hasCompanyAdminLevel(uw.role) ? "moderator" : uw.role]),
+            uws.map(uw => [
+              uw.workspaceId,
+              hasCompanyAdminLevel(uw.role) ? "moderator" : uw.role || "member",
+            ]),
           ),
       );
 

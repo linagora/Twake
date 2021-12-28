@@ -30,7 +30,7 @@ class MessageViewAPIClient {
       resources: MessageWithReplies[];
       websockets: WebsocketRoom[];
     }>(
-      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/feed?replies_per_thread=${repliesPerThread}&limit=${limit}&page_token=${pageToken}&direction=${direction}&websockets=1`,
+      `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/feed?replies_per_thread=${repliesPerThread}&limit=${limit}&include_users=1&page_token=${pageToken}&direction=${direction}&websockets=1`,
     );
     this.realtime.set('feed-' + channelId, response.websockets);
     return response.resources;
