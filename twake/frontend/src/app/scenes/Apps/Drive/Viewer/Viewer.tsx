@@ -156,10 +156,6 @@ export default class Viewer extends Component<PropsType, StateType> {
               </Menu>
             )}
 
-            <div className="close" onClick={() => DriveService.viewDocument(null)}>
-              <CloseIcon className="m-icon-small" />
-            </div>
-
             {!DriveService.previewonly && (
               <div
                 className="download"
@@ -172,6 +168,10 @@ export default class Viewer extends Component<PropsType, StateType> {
                 {!current.url && <DownloadIcon className="m-icon-small" />}
               </div>
             )}
+
+            <div className="close" onClick={() => DriveService.viewDocument(null)}>
+              <CloseIcon className="m-icon-small" />
+            </div>
           </div>
         )}
 
