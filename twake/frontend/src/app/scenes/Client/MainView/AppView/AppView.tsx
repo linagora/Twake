@@ -40,7 +40,7 @@ const AppView: FC<PropsType> = props => {
     case 'twake_calendar':
       return <Calendar options={configuration} />;
     case 'twake_tasks':
-      return <Tasks options={configuration} />;
+      return <Tasks channel={channel} options={configuration} />;
     case 'messages':
       return <Messages channel={channel} options={configuration} />;
     default:
