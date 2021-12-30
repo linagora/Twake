@@ -222,7 +222,7 @@ export default class Calendar extends Component {
       this.setLoadedRange('both', requested_min, requested_max);
 
       var calendar_list = Collections.get('calendars')
-        .findBy({ workspace_id: this.props.channel.data.workspace_id })
+        .findBy({ workspace_id: RouterService.getStateFromRoute().workspaceId })
         .map(cal => {
           return {
             calendar_id: cal.id,
@@ -421,7 +421,7 @@ export default class Calendar extends Component {
 
     if (mode === 'both' || mode === 'workspace') {
       calendar_list = Collections.get('calendars')
-        .findBy({ workspace_id: this.props.channel.data.workspace_id })
+        .findBy({ workspace_id: RouterService.getStateFromRoute().workspaceId })
         .map(cal => {
           return {
             calendar_id: cal.id,

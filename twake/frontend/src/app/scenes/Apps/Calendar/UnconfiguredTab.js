@@ -31,7 +31,7 @@ export default class UnconfiguredTab extends Component {
   }
   render() {
     var calendar_list = Collections.get('calendars').findBy({
-      workspace_id: this.props.channel.data.workspace_id,
+      workspace_id: RouterService.getStateFromRoute().workspaceId,
     });
 
     return (
