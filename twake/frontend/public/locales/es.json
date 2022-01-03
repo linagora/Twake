@@ -847,5 +847,21 @@
     "scenes.join.twake_description": "Twake es un espacio de trabajo digital de código abierto creado para mejorar la productividad de su equipo",
     "scenes.app.channelsbar.currentuser.company_messages_counter_header": "Número de mensajes",
     "scenes.app.channelsbar.currentuser.company_messages_counter_info": "En la versión gratuita de Twake, no puede acceder a más mensajes que {{$1}} más recientes.",
-    "scenes.app.channelsbar.currentuser.company_messages_counter_link": "Mostrar más planes"
+    "scenes.app.channelsbar.currentuser.company_messages_counter_link": "Mostrar más planes",
+    "\"": "\"",
+    "scenes.apps.messages.message.types.no_message_in_thread": "Nadie respondió todavía.",
+    "login.login_error": "Error durante el inicio de sesión",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.label": "Espacio de trabajo predeterminado",
+    "login.create_account": "Crear una cuenta",
+    "'": "'",
+    "scenes.app.workspaces.welcome_page.no_workspace_subtitle": "Nadie te ha invitado a un espacio de trabajo todavía.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Invite automáticamente a todos los usuarios del espacio de trabajo a este canal",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.title": "Estás a punto de eliminar {{$1}}",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.alert_total_members": "Aún tienes {{$1}} miembros en {{$2}}. Debe eliminar todos los miembros para poder eliminar este espacio de trabajo.",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox": "Entiendo que se eliminarán todos los mensajes y archivos de mi espacio de trabajo.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size": "El tamaño máximo del logotipo es de 5 MB",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Formato incorrecto, solo se permiten png gif y jpg",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Error desconocido",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Error",
+    "scenes.app.channelsbar.currentuser.reset": "Reiniciar"
 }
