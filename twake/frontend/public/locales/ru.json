@@ -851,5 +851,17 @@
     "login.create_account": "Создать учетную запись",
     "'": "'",
     "login.login_error": "Ошибка при входе в систему",
-    "\"": "\""
+    "\"": "\"",
+    "scenes.apps.messages.message.types.no_message_in_thread": "Пока никто не ответил.",
+    "scenes.app.workspaces.welcome_page.no_workspace_subtitle": "Еще никто не приглашал вас в рабочее пространство.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.label": "Рабочее пространство по умолчанию",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Автоматически приглашать всех пользователей рабочей области на этот канал",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.title": "Вы собираетесь удалить {{$1}}",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.alert_total_members": "У вас все еще есть {{$1}} участников в {{$2}}. Вы должны удалить всех участников, чтобы иметь возможность удалить это рабочее пространство.",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox": "Я понимаю, что все сообщения и файлы моей рабочей области будут удалены.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size": "Максимальный размер логотипа 5 МБ.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Плохой формат, разрешены только png gif и jpg",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Неизвестная ошибка",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Ошибка",
+    "scenes.app.channelsbar.currentuser.reset": "Перезагрузить"
 }
