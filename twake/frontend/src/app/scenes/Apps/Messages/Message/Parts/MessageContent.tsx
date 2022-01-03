@@ -83,9 +83,7 @@ export default (props: Props) => {
       }}
       onClick={() => setActive(false)}
     >
-      <Suspense fallback={''}>
-        <MessageHeader linkToThread={props.linkToThread} />
-      </Suspense>
+      <MessageHeader linkToThread={props.linkToThread} />
       {!!showEdition && !deleted && (
         <div className="content-parent">
           <MessageEdition />
