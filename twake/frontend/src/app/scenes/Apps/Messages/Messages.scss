@@ -7,6 +7,9 @@
   flex: 1;
 
   .user-writing-info-message-view {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
     color: var(--grey-dark);
     margin: 0 auto;
     min-width: 0;

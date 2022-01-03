@@ -3,8 +3,8 @@ import './WritingLoader.scss';
 
 export default (): JSX.Element => {
   return (
-    <div className="col-3">
-      <div className="snippet" data-title=".dot-typing">
+    <div>
+      <div data-title=".dot-typing" style={{ color: 'var(--primary)' }}>
         <div className="stage">
           <div className="dot-typing"></div>
         </div>

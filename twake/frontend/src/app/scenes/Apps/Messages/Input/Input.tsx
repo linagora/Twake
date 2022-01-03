@@ -21,7 +21,6 @@ import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEdit
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import { useChannel } from 'app/state/recoil/hooks/useChannels';
-import IsWriting from './Parts/IsWriting';
 import {
   useChannelWritingActivityEmit,
   useWritingDetector,
@@ -171,6 +170,8 @@ export default (props: Props) => {
   };
 
   const onChange = async (editorState: EditorState) => {
+    onKeydownRealtimeListener(state => iAmWriting(state));
+
     //Delay request make the input faster (getContentOutput is a heavy call)
     delayRequest(`editor-${editorId}`, () => {
       setValue(getContentOutput(editorState));
@@ -181,10 +182,6 @@ export default (props: Props) => {
       return;
     }
     setRichTextEditorState(editorState);
-  };
-
-  const onWrintingActivity = () => {
-    onKeydownRealtimeListener((state: boolean) => iAmWriting(state));
   };
 
   const onFilePaste = (files: Blob[]) => {
@@ -270,7 +267,6 @@ export default (props: Props) => {
               onUpArrow={e => onUpArrow(e)}
               onFilePaste={onFilePaste}
               placeholder={Languages.t('scenes.apps.messages.input.placeholder')}
-              onKeydown={onWrintingActivity}
             />
             {!isEditing() && (
               <Tooltip

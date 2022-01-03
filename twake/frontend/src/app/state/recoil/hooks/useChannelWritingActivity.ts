@@ -10,7 +10,7 @@ import {
 } from '../atoms/ChannelWritingActivity';
 import { ThreadWritingActivitySelector } from '../selectors/ThreadWritingActivity';
 import UserService from 'services/user/UserService';
-import useRouterCompany from './useRouterCompany';
+import useRouterCompany from './router/useRouterCompany';
 import { useCallback, useRef } from 'react';
 import { useCurrentUser } from './useCurrentUser';
 
@@ -121,7 +121,7 @@ export function useChannelWritingActivityEmit(
     },
     [send],
   );
-  return { iAmWriting: iAmWriting };
+  return { iAmWriting };
 }
 
 /** Keyboard typeing detection helper */
@@ -129,7 +129,7 @@ let writeTimeout = setTimeout(() => {}, 0);
 export const useWritingDetector = () => {
   let lastEmit = useRef(new Date().getTime());
 
-  const onKeydown = useCallback((emit: Function) => {
+  const onKeydown = useCallback((emit: (value: boolean) => unknown) => {
     const now = new Date().getTime();
     if (now - lastEmit.current > MIN_DELAY_BETWEEN_EMIT) {
       lastEmit.current = now;

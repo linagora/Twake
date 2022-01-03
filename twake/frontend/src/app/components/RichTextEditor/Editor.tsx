@@ -70,7 +70,6 @@ type EditorProps = {
   placeholder?: string;
   onUpArrow?: (e: SyntheticKeyboardEvent) => void;
   onSubmitBlocked?: (reason: string, details?: string) => void;
-  onKeydown: Function;
 };
 
 type EditorViewState = {
@@ -303,7 +302,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   }
 
   keyBindingFn(e: any) {
-    this.props.onKeydown();
     return Draft.getDefaultKeyBinding(e);
   }
 
