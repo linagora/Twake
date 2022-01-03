@@ -1,3 +1,5 @@
+import { UserType } from './User';
+
 export type ReactionType = { name: string; count: number; users: string[] };
 
 export type ThumbnailType = {
@@ -183,6 +185,8 @@ export type NodeMessage = {
   files?: MessageFileType[];
 
   ephemeral: EphemeralMessage | null; //Used for non-persisted messages (like interractive messages)
+
+  users?: UserType[];
 
   //Used to display loader
   _status?: 'sending' | 'failed' | 'sent' | 'cancelled';

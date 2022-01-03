@@ -21,6 +21,7 @@ export type UserType = {
   notifications_preferences?: any;
   status?: string;
   status_icon?: string[];
+  picture?: string;
   thumbnail?: string;
   timezone_offset?: string;
   tutorial_status?: any;
