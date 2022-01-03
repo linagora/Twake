@@ -847,5 +847,21 @@
     "\"": "\"",
     "login.create_account": "Creare un account",
     "login.login_error": "Errore durante l'accesso",
-    "'": "'"
+    "'": "'",
+    "scenes.app.workspaces.welcome_page.no_workspace_subtitle": "Nessuno ti ha ancora invitato in uno spazio di lavoro.",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "Nessun utente trovato",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Nessuna emoji trovata",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Nessun comando trovato",
+    "scenes.apps.messages.message.types.no_message_in_thread": "Nessuno ha ancora risposto.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.label": "Area di lavoro predefinita",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Invita automaticamente tutti gli utenti dell'area di lavoro a questo canale",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.title": "Stai per eliminare {{$1}}",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.alert_total_members": "Hai ancora {{$1}} membri in {{$2}}. È necessario rimuovere tutti i membri per poter eliminare questo spazio di lavoro.",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox": "Comprendo che tutti i messaggi e i file del mio spazio di lavoro verranno eliminati.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size": "La dimensione massima del logo è 5mb",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Formato non valido, sono consentiti solo png gif e jpg",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Errore sconosciuto",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Errore",
+    "scenes.app.channelsbar.currentuser.reset": "Ripristina",
+    "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Scrivi almeno tre lettere per visualizzare gli utenti"
 }
