@@ -20,7 +20,9 @@ import {
   getCaretCoordinates,
   getCurrentBlock,
   getTextToMatch,
+  insertText,
   isMatching,
+  replaceText,
   resetBlockWithType,
   splitBlockWithType,
 } from './EditorUtils';
@@ -29,6 +31,7 @@ import './Editor.scss';
 import { TextCountService } from 'app/components/RichTextEditor/TextCount';
 import useOnScreen from 'app/services/hooks/useOnScreen';
 import Logger from 'app/services/Logger';
+import 'draft-js/dist/Draft.css';
 
 const { isSoftNewlineEvent } = KeyBindingUtil;
 
@@ -186,11 +189,6 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
    * Handle return before a new block is added to the editor state
    */
   handleReturn(e: SyntheticKeyboardEvent, editorState: EditorState): DraftHandleValue {
-    // Shift+Enter adds a soft new line
-    if (this._handleReturnSoftNewline(e, editorState)) {
-      return 'handled';
-    }
-
     // when displaying suggestion, enter will select the current one
     if (this.isDisplayingSuggestions()) {
       const result = this.onSuggestionSelected(
@@ -207,16 +205,25 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       const currentBlock = getCurrentBlock(editorState);
       const blockType = currentBlock.getType();
 
-      // When on a list, pressing Enter 2 times will add a new unstyled block
-      if (currentBlock.getLength() === 0) {
-        if (['unordered-list-item', 'ordered-list-item'].includes(blockType)) {
-          // Update the current block as unstyled one
-          this.onChange(resetBlockWithType(editorState, 'unstyled'));
-          return 'handled';
+      // When on a list,  if the current block length is 0 while pressing Shift+Enter 2 times will
+      // add a new unstyled block otherwise, we split the block with the current style type
+      // Pressing Enter will submit the message
+      if (['unordered-list-item', 'ordered-list-item'].includes(blockType)) {
+        if (e.shiftKey) {
+          this.onChange(
+            currentBlock.getText().length === 0
+              ? resetBlockWithType(editorState, 'unstyled')
+              : splitBlockWithType(editorState, blockType, selection.getStartOffset(), false),
+          );
         } else {
           this.submit(editorState);
-          return 'handled';
         }
+        return 'handled';
+      }
+
+      // Shift+Enter adds a soft new line
+      if (this._handleReturnSoftNewline(e, editorState)) {
+        return 'handled';
       }
 
       if (selection.isCollapsed()) {
@@ -344,7 +351,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       return false;
     });
 
-    if (triggered && this.state.activeSuggestion?.items.length) {
+    if (triggered) {
       this.setState({ displaySuggestion: true });
     } else {
       this.resetState();
@@ -462,6 +469,8 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
   onTab(e: SyntheticKeyboardEvent): void {
     e.preventDefault();
 
+    this.changeIndent(e, e.shiftKey ? 'decrease' : 'increase');
+
     if (this.isDisplayingSuggestions()) {
       const result = this.onSuggestionSelected(
         this.state.activeSuggestion?.items[this.state.suggestionIndex],
@@ -474,6 +483,27 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
 
     this.props.onTab && this.props.onTab();
   }
+
+  changeIndent = (e: SyntheticKeyboardEvent, indentDirection: 'increase' | 'decrease') => {
+    const currentBlockType = RichUtils.getCurrentBlockType(this.props.editorState);
+    const tabChar = '\u2003';
+    const isBlockListType =
+      currentBlockType === 'ordered-list-item' || currentBlockType === 'unordered-list-item';
+    const maxDepth = 4;
+
+    if (!isBlockListType) {
+      if (indentDirection === 'increase') {
+        this.onChange(insertText(tabChar, this.props.editorState));
+      }
+
+      if (indentDirection === 'decrease') {
+        // FIX ME find a way to decrease unstyled/code-block block indentation
+        this.onChange(replaceText('', this.props.editorState));
+      }
+    } else {
+      this.onChange(RichUtils.onTab(e, this.props.editorState, maxDepth));
+    }
+  };
 
   handlePastedFiles(files: Blob[]): DraftHandleValue {
     if (this.props.onFilePaste) {
@@ -605,6 +635,11 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     });
   }
 
+  handlePastedText(text: string, _html: string, editorState: EditorState) {
+    this.onChange(replaceText(text, editorState));
+    return text ? 'handled' : 'not-handled';
+  }
+
   render() {
     return (
       <>
@@ -622,6 +657,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
             onChange={this.onChange}
             handleKeyCommand={this.handleKeyCommand}
             handleReturn={this.handleReturn}
+            handlePastedText={this.handlePastedText}
             handleBeforeInput={this.handleBeforeInput}
             onDownArrow={this.onDownArrow}
             onUpArrow={this.onUpArrow}
@@ -635,6 +671,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
         </div>
         {this.state.isVisible && this.state.displaySuggestion && this.state.suggestionType && (
           <SuggestionList<any>
+            suggestionType={this.state.suggestionType}
             id={this.state.activeSuggestion?.id || ''}
             search={this.state.activeSuggestion?.searchText || ''}
             list={this.state.activeSuggestion?.items}

@@ -674,5 +674,9 @@
     "scenes.app.integrations_parameters.company_applications_table.title": "Установлен в вашей компании",
     "app.state.recoil.hooks.use_current_company_applications.toaster_delete" : "Успешно удалил {{$1}} из вашей компании",
     "app.state.recoil.hooks.use_current_company_applications.toaster_add" : "{{$1}} успешно добавлен в вашу компанию",
-    "scenes.apps.messages.input.replied_to" : "ответил "
+    "scenes.apps.messages.input.replied_to" : "ответил ",
+    "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Введите минимум три символа для отображения пользователей",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found" : "Пользователь не найден",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found":"Не найдено ни одного эмодзи",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Команда не найдена"
 }
