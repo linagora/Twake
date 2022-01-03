@@ -42,7 +42,7 @@ export default (props: Props) => {
   let { message } = useMessage(context);
   let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
 
-  let user = useUser(message.user_id);
+  let user = (message.users || []).find(u => u.id === message.user_id);
   const companyApplications =
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   let application = companyApplications.find(a => a.id === message.application_id);
@@ -86,7 +86,7 @@ export default (props: Props) => {
   };
 
   const icon = user?.status ? user.status.split(' ')[0] : undefined;
-  const status = user?.status ? user.status.split(' ').splice(1).join(" ") : undefined;
+  const status = user?.status ? user.status.split(' ').splice(1).join(' ') : undefined;
   return (
     <div
       className={classNames('message-content-header-container', {

@@ -46,8 +46,6 @@ export default React.memo(
       firstItemId.current = itemId(items[0]);
     }
 
-    (window as any).globalThis.VIRTUOSO_LOG_LEVEL = LogLevel.DEBUG;
-
     if (items.length === 0) {
       return <div style={{ flex: 1 }}>{initiated ? emptyListComponent || <></> : <></>}</div>;
     }

@@ -336,7 +336,7 @@ describe("The /workspace/pending users API", () => {
 
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending/${email}`,
+        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending`,
       });
       expect(response.statusCode).toBe(401);
       done();
@@ -351,7 +351,7 @@ describe("The /workspace/pending users API", () => {
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending/${email}`,
+        url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/pending`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
@@ -369,7 +369,7 @@ describe("The /workspace/pending users API", () => {
 
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/pending/${email}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/pending`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
@@ -381,18 +381,18 @@ describe("The /workspace/pending users API", () => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[0].workspace.id;
       const userId = testDbService.workspaces[0].users[0].id;
-      const email = "first@test-user.com";
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
       const response = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/pending/${email}`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/pending`,
         headers: { authorization: `Bearer ${jwtToken}` },
       });
 
       expect(response.statusCode).toBe(200);
 
       const resources = response.json()["resources"];
+      console.log("resources A: ", resources);
       expect(resources.length).toBe(2);
 
       expect(resources[0]).toMatchObject({
@@ -427,6 +427,7 @@ describe("The /workspace/pending users API", () => {
 
       const resources = response.json()["resources"];
 
+      console.log("resources B: ", resources);
       expect(resources.find((a: any) => a.user.email === emailForExistedUser)).toBeDefined();
 
       done();

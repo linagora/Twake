@@ -243,7 +243,7 @@ const routes: FastifyPluginCallback<{
 
   fastify.route({
     method: "GET",
-    url: `${workspacePendingUsersUrl}/:email`,
+    url: `${workspacePendingUsersUrl}`,
     preHandler: [accessControl, companyCheck, checkUserIsWorkspaceAdmin],
     preValidation: [fastify.authenticate],
     schema: getWorkspacePendingUsersSchema,

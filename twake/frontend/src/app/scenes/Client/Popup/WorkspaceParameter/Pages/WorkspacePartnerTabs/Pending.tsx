@@ -42,7 +42,7 @@ export default (props: { filter: string }) => {
   }, [props.filter, data]);
 
   const refreshPendingEmails = async () => {
-    const pendingEmailRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/pending/email`;
+    const pendingEmailRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/pending`;
 
     try {
       setLoading(true);

@@ -65,7 +65,9 @@ class User {
       return thumbnail;
     }
 
-    if (!user || !user.thumbnail || user.thumbnail === '') {
+    if (user && (user.thumbnail || user.picture)) {
+      thumbnail = addApiUrlIfNeeded(user.picture || user.thumbnail || '');
+    } else {
       let output = 0;
       const string = user?.id || '';
       for (let i = 0; i < string.length; i++) {
@@ -73,8 +75,6 @@ class User {
       }
       const i = output % 100;
       thumbnail = getAsFrontUrl(`/public/identicon/${i}.png`);
-    } else {
-      thumbnail = addApiUrlIfNeeded(user.thumbnail);
     }
 
     if (user.deleted) {

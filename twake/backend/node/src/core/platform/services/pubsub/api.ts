@@ -226,13 +226,15 @@ export class PubsubServiceProcessor<In, Out>
           `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Message is invalid`,
         );
 
+        //Validate rabbitmq message, we will not process it again
+        if (this.handler?.options?.ack && message?.ack) message?.ack();
         return;
       }
     }
 
     try {
       const result = await this.process(message);
-      if (this.handler?.options?.ack) {
+      if (this.handler?.options?.ack && message?.ack) {
         logger.debug(
           `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Acknowledging message %o`,
           message,
@@ -245,6 +247,9 @@ export class PubsubServiceProcessor<In, Out>
       }
     } catch (error) {
       this.handleError(message, error);
+
+      //Fixme Validate message because we don't have max retry handler
+      if (this.handler?.options?.ack && message?.ack) message?.ack();
     }
   }
 
