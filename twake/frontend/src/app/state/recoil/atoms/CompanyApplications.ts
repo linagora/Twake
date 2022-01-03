@@ -21,8 +21,10 @@ export const onChangeCompanyApplications = (companyId: string, _applications: Ap
   const applications = _.cloneDeep(_applications);
   companyApplicationsMap.set(companyId, applications);
   (applications || []).forEach(a => {
-    companyApplicationMap.set(a.id, a);
-    Collections.get('applications').updateObject(a);
+    if (!_.isEqual(a, companyApplicationMap.get(a.id))) {
+      companyApplicationMap.set(a.id, a);
+      Collections.get('applications').updateObject(a);
+    }
   });
 };
 //Ends retro compatibility
