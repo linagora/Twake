@@ -7,11 +7,11 @@ const logger = Logger.getLogger('Collections/Transport/HTTP');
 type HTTPMethod = 'post' | 'delete' | 'get' | 'put';
 
 export default class TransportHTTP {
-  private options?: TransportOptions["rest"];
+  private options?: TransportOptions['rest'];
 
   constructor(private readonly transport: Transport) {}
 
-  public configure(options: TransportOptions["rest"]) {
+  public configure(options: TransportOptions['rest']) {
     this.options = options;
   }
 
@@ -24,7 +24,7 @@ export default class TransportHTTP {
     route = `${prefix}${route}`;
 
     const headers = {
-      ...this.options?.headers,
+      ...(this.options?.headers && this.options?.headers()),
       ...this.transport.apiOptions?.headers,
       ...options?.headers,
     };

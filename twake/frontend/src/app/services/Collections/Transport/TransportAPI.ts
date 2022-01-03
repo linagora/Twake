@@ -13,7 +13,7 @@ export interface WebSocketTransport {
 export type TransportOptions = {
   rest?: {
     url?: string; //Rest API prefix, like http://localhost:8000/internal
-    headers?: { [key: string]: string };
+    headers?: () => { [key: string]: string };
   };
   socket: WebSocketTransport;
 };
