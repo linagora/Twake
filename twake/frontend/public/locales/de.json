@@ -835,5 +835,17 @@
     "scenes.app.popup.adduser.magiclinks.copied_to_clipboard": "Erfolgreich in die Zwischenablage kopiert",
     "scenes.app.popup.adduser.magiclinks.genrator_info": "Einladungslink zum Arbeitsbereich",
     "scenes.app.popup.adduser.magiclinks.action_copy": "Kopieren",
-    "scenes.app.popup.adduser.magiclinks.action_generate": "Generieren"
+    "scenes.app.popup.adduser.magiclinks.action_generate": "Generieren",
+    "scenes.join.loading": "Wird geladen …",
+    "scenes.join.wrong_link_title": "Dieser Link ist nicht mehr verfügbar",
+    "scenes.join.wrong_link_description": "Bitten Sie die Person, die Sie eingeladen hat, diesem Unternehmen beizutreten, um einen neuen Link oder gründen Sie Ihr eigenes Unternehmen",
+    "scenes.join.join_workspace_from_company": "Treten Sie {{$1}} von {{$2}} bei!",
+    "scenes.join.twake_description": "Twake ist ein digitaler quelloffener Arbeitsbereich, der die Produktivität Ihres Teams verbessert",
+    "scenes.join.login_first_button": "Melden Sie sich an oder erstellen Sie zunächst ein Konto",
+    "scenes.join.join_the_team_button": "Treten Sie dem Team bei",
+    "scenes.join.create_the_company_button": "Das Unternehmen erstellen",
+    "\"": "\"",
+    "login.login_error": "Fehler bei der Anmeldung",
+    "'": "'",
+    "login.create_account": "Konto erstellen"
 }

@@ -849,7 +849,19 @@
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Erreur",
     "scenes.app.channelsbar.currentuser.reset": "Réinitialiser",
     "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Écrivez au moins trois lettres pour afficher des utilisateurs",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found" : "Aucun utilisateur trouvé",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found":"Aucun emoji trouvé",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Aucune commande trouvé"
+    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "Aucun utilisateur trouvé",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Aucun emoji trouvé",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Aucune commande trouvé",
+    "scenes.join.loading": "Chargement…",
+    "scenes.join.wrong_link_title": "Ce lien n'est plus disponible",
+    "scenes.join.twake_description": "Twake est un espace de travail numérique à code ouvert conçu pour améliorer la productivité de votre équipe",
+    "scenes.join.login_first_button": "Connectez-vous ou créez d'abord un compte",
+    "scenes.join.wrong_link_description": "Demandez à la personne qui vous a invité(e) de rejoindre cette entreprise par un nouveau lien ou créez votre propre entreprise",
+    "scenes.join.join_the_team_button": "Rejoindre l'équipe",
+    "scenes.join.create_the_company_button": "Créer l'entreprise",
+    "scenes.join.join_workspace_from_company": "Rejoignez {{$1}} à partir de {{$2}} !",
+    "\"": "\"",
+    "'": "'",
+    "login.create_account": "Créer un compte",
+    "login.login_error": "Erreur lors de la connexion"
 }
