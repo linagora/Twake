@@ -847,5 +847,21 @@
     "\"": "\"",
     "login.login_error": "Fehler bei der Anmeldung",
     "'": "'",
-    "login.create_account": "Konto erstellen"
+    "login.create_account": "Konto erstellen",
+    "scenes.app.workspaces.welcome_page.no_workspace_subtitle": "Noch hat dich niemand zu einem Workspace eingeladen.",
+    "scenes.apps.messages.message.types.no_message_in_thread": "Es hat noch niemand geantwortet.",
+    "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Schreiben Sie mindestens drei Buchstaben, um Benutzer anzuzeigen",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.label": "Standardarbeitsbereich",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Alle Workspace-Benutzer automatisch zu diesem Kanal einladen",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.title": "Sie sind im Begriff, {{$1}} zu löschen",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.alert_total_members": "Du hast noch {{$1}} Mitglieder in {{$2}}. Sie sollten alle Mitglieder entfernen, um diesen Arbeitsbereich löschen zu können.",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox": "Mir ist bewusst, dass alle Nachrichten und Dateien meines Arbeitsbereichs gelöscht werden.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size": "Die maximale Logogröße beträgt 5 MB",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Schlechtes Format, nur png gif und jpg sind erlaubt",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Unbekannter Fehler",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Fehler",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "Kein Benutzer gefunden",
+    "scenes.app.channelsbar.currentuser.reset": "Zurücksetzen",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Keine Emojis gefunden",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Kein Befehl gefunden"
 }
