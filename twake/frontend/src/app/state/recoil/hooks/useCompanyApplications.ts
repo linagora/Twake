@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import Logger from 'app/services/Logger';
 import Languages from 'services/languages/languages';
@@ -26,7 +26,9 @@ export function useCompanyApplications(companyId: string = '') {
   const [applications, setApplications] = useRecoilState(CompanyApplicationsStateFamily(companyId));
   const [loading, setLoading] = useState(false);
 
-  onChangeCompanyApplications(companyId, applications);
+  useEffect(() => {
+    onChangeCompanyApplications(companyId, applications);
+  }, [applications]);
 
   const refresh = async () => {
     try {

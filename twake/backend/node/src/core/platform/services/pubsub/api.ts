@@ -247,6 +247,9 @@ export class PubsubServiceProcessor<In, Out>
       }
     } catch (error) {
       this.handleError(message, error);
+
+      //Fixme Validate message because we don't have max retry handle
+      message?.ack();
     }
   }
 
