@@ -23,7 +23,12 @@ import useRouterChannel from 'app/state/recoil/hooks/router/useRouterChannel';
 import { useUser } from 'app/state/recoil/hooks/useUser';
 import { UserType } from 'app/models/User';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
-import { useRecoilState, useRecoilStateLoadable } from 'recoil';
+import {
+  useRecoilState,
+  useRecoilStateLoadable,
+  useRecoilValue,
+  useRecoilValueLoadable,
+} from 'recoil';
 import { UsersState } from 'app/state/recoil/atoms/Users';
 import { CompanyApplicationsStateFamily } from 'app/state/recoil/atoms/CompanyApplications';
 
@@ -42,7 +47,9 @@ export default (props: Props) => {
   let { message } = useMessage(context);
   let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
 
-  let user = (message.users || []).find(u => u.id === message.user_id);
+  let user =
+    useRecoilValueLoadable(UsersState(message.user_id)).valueMaybe() ||
+    (message.users || []).find(u => u.id === message.user_id);
   const companyApplications =
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   let application = companyApplications.find(a => a.id === message.application_id);

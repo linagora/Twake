@@ -337,7 +337,7 @@ class PseudoMarkdownCompiler {
 
   transformBackChannelsUsers(str: string) {
     //Users
-    str = str.replace(/\B(@[^\s]*?):.*?(( |$|[^a-zA-Z0-9-]))/g, '$1$2');
+    str = (str || '').replace(/\B(@[^\s]*?):.*?(( |$|[^a-zA-Z0-9-]))/g, '$1$2');
     //Channels
     str = str.replace(/\B(#[^\s]*?):.*?(( |$|[^a-zA-Z0-9-]))/g, '$1$2');
     return str;

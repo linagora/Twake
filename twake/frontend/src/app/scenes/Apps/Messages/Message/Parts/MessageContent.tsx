@@ -18,6 +18,7 @@ import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/message
 import { ViewContext } from 'app/scenes/Client/MainView/MainContent';
 import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import MessageAttachments from './MessageAttachments';
+import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 
 type Props = {
   linkToThread?: boolean;
@@ -109,7 +110,7 @@ export default (props: Props) => {
                   <>
                     <Blocks
                       blocks={message.blocks}
-                      fallback={message.text}
+                      fallback={PseudoMarkdownCompiler.transformBackChannelsUsers(message.text)}
                       onAction={(
                         type: string,
                         id: string,
