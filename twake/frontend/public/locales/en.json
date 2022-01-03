@@ -327,7 +327,7 @@
     "scenes.app.popup.appsparameters.pages.app_modification_right": "All managers of this company will be able to edit this application.",
     "scenes.app.popup.appsparameters.pages.app_privileges_information": "Define what your application can edit and read.",
     "scenes.app.popup.appsparameters.pages.app_privileges_label": "Application privileges",
-    "scenes.app.popup.appsparameters.pages.app_update": "Update the app {{$1}} (the app is used {{$2}} times.)",
+    "scenes.app.popup.appsparameters.pages.app_update": "Update the app {{$1}} (the app is used {{$2}} times)",
     "scenes.app.popup.appsparameters.pages.application_title": "Application",
     "scenes.app.popup.appsparameters.pages.apps_title": "Your applications and connectors",
     "scenes.app.popup.appsparameters.pages.automatique_label": "Automatic",
