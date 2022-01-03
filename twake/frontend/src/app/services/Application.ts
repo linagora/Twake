@@ -57,10 +57,10 @@ class Application {
           socket: WebSocket.get(),
           rest: {
             url: `${Globals.api_root_url}/internal/services`,
-            headers: {
-              // TODO: The token can expire if we do not renew it in the later uses of this header
-              // Instead of doing this, we should have a function which is called when header needs to be used
-              Authorization: JWT.getAutorizationHeader(),
+            headers: () => {
+              return {
+                Authorization: JWT.getAutorizationHeader(),
+              };
             },
           },
         },

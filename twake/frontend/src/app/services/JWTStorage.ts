@@ -33,8 +33,16 @@ class JWTStorage {
   logger: Logger.Logger;
 
   constructor() {
-    this.logger = Logger.getLogger("JWT");
+    this.logger = Logger.getLogger('JWT');
     this.init();
+
+    setInterval(() => {
+      if (this.jwtData.value && this.jwtData.expiration < new Date().getTime() + 1000 * 60 * 10) {
+        this.renew().catch(() => {
+          LoginService.logout();
+        });
+      }
+    }, 60000);
   }
 
   private init() {
@@ -92,9 +100,10 @@ class JWTStorage {
   }
 
   isAccessExpired() {
-     const expired = new Date().getTime() / 1000 - this.jwtData.expiration > 0;
+    const expired = new Date().getTime() / 1000 - this.jwtData.expiration > 0;
 
-    expired && this.logger.debug(`Access token expired, expiration time was ${this.jwtData.expiration}`);
+    expired &&
+      this.logger.debug(`Access token expired, expiration time was ${this.jwtData.expiration}`);
 
     return expired;
   }
@@ -102,7 +111,10 @@ class JWTStorage {
   isRefreshExpired() {
     const expired = new Date().getTime() / 1000 - this.jwtData.refresh_expiration > 0;
 
-    expired && this.logger.debug(`Refresh token expired, expiration time was ${this.jwtData.refresh_expiration}`);
+    expired &&
+      this.logger.debug(
+        `Refresh token expired, expiration time was ${this.jwtData.refresh_expiration}`,
+      );
 
     return expired;
   }
@@ -110,7 +122,13 @@ class JWTStorage {
   authenticateCall(callback?: () => void) {
     if (this.isAccessExpired() && LoginService.currentUserId) {
       this.logger.debug('authenticateCall: Updating user because the access token expired');
-      LoginService.updateUser(callback);
+      this.renew()
+        .then(() => {
+          LoginService.updateUser(callback);
+        })
+        .catch(() => {
+          LoginService.logout();
+        });
       return;
     }
 
