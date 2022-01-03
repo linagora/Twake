@@ -226,6 +226,8 @@ export class PubsubServiceProcessor<In, Out>
           `PubsubServiceProcessor.handler.${this.handler.name}:${message.id} - Message is invalid`,
         );
 
+        //Validate rabbitmq message, we will not process it again
+        message?.ack();
         return;
       }
     }
