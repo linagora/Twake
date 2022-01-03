@@ -21,6 +21,10 @@ import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEdit
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import { useChannel } from 'app/state/recoil/hooks/useChannels';
+import {
+  useChannelWritingActivityEmit,
+  useWritingDetector,
+} from 'app/state/recoil/hooks/useChannelWritingActivity';
 
 type Props = {
   messageId?: string;
@@ -71,6 +75,11 @@ export default (props: Props) => {
     RichTextEditorStateService.get(editorId, { plugins: editorPlugins }),
   );
   const [isTooLong, setTooLong] = useState(false);
+
+  const { iAmWriting } = useChannelWritingActivityEmit(props.channelId || '', props.threadId);
+
+  const { onKeydown: onKeydownRealtimeListener } = useWritingDetector();
+
   useEffect(() => {
     setTooLong(TextCountService.getStats(editorState).isTooLong);
   }, [editorState]);
@@ -100,6 +109,7 @@ export default (props: Props) => {
     if (props.editorState && props.editorState !== editorState) {
       setEditorState(props.editorState);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.editorState]);
 
@@ -160,10 +170,13 @@ export default (props: Props) => {
   };
 
   const onChange = async (editorState: EditorState) => {
+    onKeydownRealtimeListener(state => iAmWriting(state));
+
     //Delay request make the input faster (getContentOutput is a heavy call)
     delayRequest(`editor-${editorId}`, () => {
       setValue(getContentOutput(editorState));
     });
+
     if (props.onChange) {
       props.onChange(editorState);
       return;
@@ -243,7 +256,9 @@ export default (props: Props) => {
           <div className="editorview-submit">
             <EditorView
               ref={editorRef}
-              onChange={editorState => onChange(editorState)}
+              onChange={editorState => {
+                onChange(editorState);
+              }}
               clearOnSubmit={true}
               outputFormat={format}
               plugins={editorPlugins}

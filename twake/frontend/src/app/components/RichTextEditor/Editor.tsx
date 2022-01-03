@@ -1,6 +1,6 @@
 import React, { createRef, KeyboardEvent } from 'react';
 import classNames from 'classnames';
-import {
+import Draft, {
   Editor,
   EditorState,
   Modifier,
@@ -124,6 +124,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       .map(plugin => plugin.resourceType);
     this.editorDataParser = RichTextEditorStateService.getDataParser(this.props.plugins);
     this.onChange = this.onChange.bind(this);
+    this.keyBindingFn = this.keyBindingFn.bind(this);
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
     this.handleReturn = this.handleReturn.bind(this);
     this.handleBeforeInput = this.handleBeforeInput.bind(this);
@@ -298,6 +299,10 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     setTimeout(() => {
       this.updateSuggestionsState();
     });
+  }
+
+  keyBindingFn(e: any) {
+    return Draft.getDefaultKeyBinding(e);
   }
 
   updateSuggestionsState(): void {
@@ -655,6 +660,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
             ref={node => (this.editor = node)}
             editorState={this.props.editorState}
             onChange={this.onChange}
+            keyBindingFn={this.keyBindingFn}
             handleKeyCommand={this.handleKeyCommand}
             handleReturn={this.handleReturn}
             handlePastedText={this.handlePastedText}

@@ -4,7 +4,7 @@ import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 import NewThread from './Input/NewThread';
 import MessagesList from './MessagesList';
 import ThreadMessagesList from './ThreadMessagesList';
-import ChannelAPIClient from 'app/services/channels/ChannelAPIClient';
+import IsWriting from './Input/Parts/IsWriting';
 
 type Props = {
   channel: ChannelResource;
@@ -44,6 +44,7 @@ export default (props: Props) => {
           />
         )}{' '}
       </Suspense>
+      <IsWriting channelId={channelId} threadId={threadId} />
       <NewThread
         collectionKey=""
         useButton={isDirectChannel && !threadId}

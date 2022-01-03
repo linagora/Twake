@@ -21,11 +21,13 @@ import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
 import './ChannelsBar.scss';
 import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
+import useChannelWritingActivity from 'app/state/recoil/hooks/useChannelWritingActivity';
 
 export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const { workspace } = useCurrentWorkspace();
+  useChannelWritingActivity();
 
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
