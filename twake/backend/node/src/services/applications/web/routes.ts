@@ -4,9 +4,10 @@ import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
 import { WorkspaceBaseRequest } from "../../workspaces/web/types";
+
 import Application from "../entities/application";
 import assert from "assert";
-import { applicationPostSchema } from "./schemas";
+import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
 
 const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
@@ -128,6 +129,7 @@ const routes: FastifyPluginCallback<{
     method: "POST",
     url: `${applicationsUrl}/:application_id/event`,
     preValidation: [fastify.authenticate],
+    schema: applicationEventHookSchema,
     handler: applicationController.event.bind(applicationController),
   });
 

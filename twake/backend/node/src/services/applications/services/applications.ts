@@ -10,6 +10,7 @@ import { logger } from "../../../core/platform/framework";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import {
   CreateResult,
+  CrudExeption,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -20,6 +21,10 @@ import {
 } from "../../../core/platform/framework/api/crud-service";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import assert from "assert";
+import { logger as log } from "../../../core/platform/framework";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+import * as crypto from "crypto";
+import { isObject } from "lodash";
 
 export function getService(platformService: PlatformServicesAPI): MarketplaceApplicationServiceAPI {
   return new ApplicationService(platformService);
@@ -148,5 +153,61 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     }
     entity.publication.published = false;
     await this.repository.save(entity);
+  }
+
+  async notifyApp(application_id: string, type: string, name: string, content: any): Promise<void> {
+    log.debug({ application_id, type, name, content });
+
+    const app = await this.get({ id: application_id });
+    if (!app) {
+      throw CrudExeption.notFound("Application not found");
+    }
+
+    if (!app.api.hooksUrl) {
+      throw CrudExeption.badRequest("Application hooksUrl is not defined");
+    }
+
+    const payload = {
+      type,
+      name,
+      content,
+    };
+
+    const signature = crypto
+      .createHmac("sha256", app.api.privateKey)
+      .update(JSON.stringify(payload))
+      .digest("hex");
+
+    return await axios
+      .post(app.api.hooksUrl, payload, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-Twake-Signature": signature,
+        },
+      })
+      .then(({ data }) => data)
+      .catch(e => {
+        log.error(e.message);
+        const r = e.response;
+
+        let msg = r.data;
+
+        if (isObject(msg)) {
+          // parse typical responses
+          if (r.data.message) {
+            msg = r.data.message;
+          } else if (r.data.error) {
+            msg = r.data.error;
+          } else {
+            msg = JSON.stringify(r.data);
+          }
+        }
+
+        if (r.status == 403) {
+          throw CrudExeption.forbidden(msg);
+        } else {
+          throw CrudExeption.badRequest(msg);
+        }
+      });
   }
 }

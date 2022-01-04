@@ -51,6 +51,8 @@ export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, 
 
   publish(pk: ApplicationPrimaryKey): Promise<void>;
   unpublish(pk: ApplicationPrimaryKey): Promise<void>;
+
+  notifyApp(application_id: string, type: string, name: string, content: any): Promise<void>;
 }
 
 export interface CompanyApplicationServiceAPI

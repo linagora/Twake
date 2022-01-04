@@ -3,6 +3,7 @@ import { ApplicationServiceAPI } from "../../api";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   PaginationQueryParameters,
+  ResourceCreateResponse,
   ResourceDeleteResponse,
   ResourceGetResponse,
   ResourceListResponse,
@@ -18,6 +19,8 @@ import {
 } from "../../../../core/platform/framework/api/crud-service";
 import _ from "lodash";
 import { randomBytes } from "crypto";
+import { ApplicationEventRequestBody } from "../types";
+import { logger as log } from "../../../../core/platform/framework";
 
 export class ApplicationController
   implements
@@ -154,8 +157,29 @@ export class ApplicationController
     };
   }
 
-  async event(request: FastifyRequest<{ Params: { application_id: string } }>) {
-    return { error: "Not implemented (yet)" };
+  async event(
+    request: FastifyRequest<{
+      Body: ApplicationEventRequestBody;
+      Params: { application_id: string };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceCreateResponse<any>> {
+    const context = getExecutionContext(request);
+
+    // TODO: check user belongs to workspace
+
+    const content = request.body.content;
+
+    const hookResponse = await this.service.applications.notifyApp(
+      request.params.application_id,
+      request.body.type,
+      request.body.name,
+      content,
+    );
+
+    return {
+      resource: hookResponse,
+    };
   }
 }
 
