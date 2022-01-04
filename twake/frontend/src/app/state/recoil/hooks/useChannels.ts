@@ -7,6 +7,7 @@ import useRouterWorkspace from './router/useRouterWorkspace';
 import useRouterCompany from './router/useRouterCompany';
 import ChannelsMineAPIClient from 'app/services/channels/ChannelsMineAPIClient';
 import ChannelsReachableAPIClient from 'app/services/channels/ChannelsReachableAPIClient';
+import { isDirectChannel, isPrivateChannel, isPublicChannel } from 'app/services/channels/utils';
 
 export function useChannel(channelId: string) {
   const channel = useRecoilValue(ChannelState(channelId));
@@ -24,28 +25,31 @@ export function useSetChannel() {
 export function useChannels(): {
   mine: ChannelType[];
   reachable: ChannelType[];
+  directChannels: ChannelType[];
+  privateChannels: ChannelType[];
+  publicChannels: ChannelType[];
   refresh: (mine?: boolean, reachable?: boolean) => void;
 } {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [mine, setMine] = useRecoilState(ChannelsMineState);
-  const [reachable, setReachable] = useRecoilState(ChannelsReachableState);
+  const [mine, _setMine] = useRecoilState(ChannelsMineState);
+  const [reachable, _setReachable] = useRecoilState(ChannelsReachableState);
 
-  const refreshMine = async () => {
+  const setMine = async () => {
     const res = await ChannelsMineAPIClient.get(companyId, workspaceId);
 
-    if (res) setMine(res);
+    if (res) _setMine(res);
   };
 
-  const refreshReachable = async () => {
+  const setReachable = async () => {
     const res = await ChannelsReachableAPIClient.get(companyId, workspaceId);
 
-    if (res) setReachable(res);
+    if (res) _setReachable(res);
   };
 
   const refresh = (mine: boolean = true, reachable: boolean = true) => {
-    if (mine) refreshMine();
-    if (reachable) refreshReachable();
+    if (mine) setMine();
+    if (reachable) setReachable();
   };
 
   useEffect(() => {
@@ -54,5 +58,12 @@ export function useChannels(): {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { mine, reachable, refresh };
+  return {
+    mine,
+    reachable,
+    refresh,
+    directChannels: mine.filter(c => c.visibility && isDirectChannel(c.visibility)),
+    privateChannels: mine.filter(c => c.visibility && isPrivateChannel(c.visibility)),
+    publicChannels: mine.filter(c => c.visibility && isPublicChannel(c.visibility)),
+  };
 }
