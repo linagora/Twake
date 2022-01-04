@@ -36,9 +36,14 @@ export function useChannels(): {
   const [reachable, _setReachable] = useRecoilState(ChannelsReachableState);
 
   const setMine = async () => {
-    const res = await ChannelsMineAPIClient.get(companyId, workspaceId);
+    const channels = await ChannelsMineAPIClient.get({ companyId, workspaceId });
+    const directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
+    let result: ChannelType[] = [];
 
-    if (res) _setMine(res);
+    if (channels) result.push(...channels);
+    if (directChannels) result.push(...directChannels);
+
+    _setMine(result);
   };
 
   const setReachable = async () => {

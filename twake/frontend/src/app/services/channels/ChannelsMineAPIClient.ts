@@ -13,9 +13,14 @@ class ChannelsMineAPIClient {
    * @param workspaceId
    * @return channels that user is already a member
    */
-  async get(companyId: string, workspaceId: string): Promise<ChannelType[]> {
+  async get(
+    context: { companyId: string; workspaceId?: string },
+    options?: { direct: boolean },
+  ): Promise<ChannelType[]> {
     return Api.get<ChannelsMineGetResponse>(
-      `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels?mine=true`,
+      `${this.prefix}/${context.companyId}/workspaces/${
+        context.workspaceId && !options?.direct ? context.workspaceId : 'direct'
+      }/channels?mine=true`,
     ).then(result => result.resources);
   }
 }
