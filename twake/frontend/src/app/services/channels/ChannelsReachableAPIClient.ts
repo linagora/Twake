@@ -15,7 +15,7 @@ class ChannelsReachableAPIClient {
    */
   async get(companyId: string, workspaceId: string): Promise<ChannelType[]> {
     return Api.get<ChannelsReachableGetResponse>(
-      `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels?include_users=false`,
+      `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels`,
     ).then(result => result.resources);
   }
 }

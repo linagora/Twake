@@ -8,12 +8,17 @@ export const ChannelState = atomFamily<ChannelType, string>({
   default: id => ({ id } as ChannelType),
 });
 
-export const ChannelsMineState = atom<ChannelType[]>({
-  key: 'ChannelsMineState',
+export const MineChannelsState = atom<ChannelType[]>({
+  key: 'MineChannelsState',
   default: [],
 });
 
-export const ChannelsReachableState = atom<ChannelType[]>({
-  key: 'ChannelsReachableState',
+export const ReachableChannelsState = atom<ChannelType[]>({
+  key: 'ReachableChannelsState',
+  default: [],
+});
+
+export const DirectChannelsState = atom<ChannelType[]>({
+  key: 'DirectChannelsState',
   default: [],
 });

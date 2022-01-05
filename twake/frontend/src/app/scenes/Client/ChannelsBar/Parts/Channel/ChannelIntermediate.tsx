@@ -7,7 +7,7 @@ import { Collection } from 'services/CollectionsReact/Collections';
 import { getUserParts } from 'app/components/Member/UserParts';
 import { NotificationResource } from 'app/models/Notification';
 import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
-import { useSetChannel } from 'app/state/recoil/hooks/useChannels';
+import { useSetChannel } from 'app/state/recoil/hooks/channels/useChannel';
 import _ from 'lodash';
 
 type Props = {
