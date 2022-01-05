@@ -843,7 +843,7 @@
     "app.state.recoil.hooks.use_current_company_applications.toaster_add": "Successfully added {{$1}} in your company",
     "scenes.apps.messages.input.replied_to": "replied to ",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.label": "Default workspace",
-    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Automatically invite all workspace users to this channel",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Automatically invite all new company users to this workspace",
     "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.title": "You are about to delete {{$1}}",
     "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.alert_total_members": "You still have {{$1}} members in {{$2}}. You should remove all the members to be able to delete this workspace.",
     "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox": "I understand that all of my workspace's messages and files will be deleted.",

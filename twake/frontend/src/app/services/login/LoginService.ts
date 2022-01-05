@@ -94,6 +94,13 @@ class Login extends Observable {
     }
   }
 
+  async pingServer() {
+    const infos = await InitService.getServer();
+    //We are disconnected
+    if (infos?.status !== 'ready') return false;
+    return true;
+  }
+
   async updateUser(callback?: (err: Error | null, user?: UserType) => void): Promise<void> {
     if (Globals.store_public_access_get_data) {
       this.firstInit = true;
@@ -105,9 +112,7 @@ class Login extends Observable {
     AuthService.updateUser(async user => {
       this.logger.debug('User update result', user);
       if (!user) {
-        //Ping server
-        const infos = await InitService.getServer();
-        if (infos?.status !== 'ready') {
+        if (!this.pingServer()) {
           //We are disconnected
           console.log('We are disconnected, we will get user again in 10 seconds');
           setTimeout(() => {
