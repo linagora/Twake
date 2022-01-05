@@ -13,7 +13,7 @@ import {
 } from './windows';
 
 export const useThreadMessages = (key: AtomThreadKey) => {
-  const { window, isInWindow } = getListWindow(key.threadId);
+  const { window, isInWindow, setLoaded } = getListWindow(key.threadId);
   let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
 
   messages = messages.filter(message => isInWindow(message.id || ''));
@@ -23,7 +23,6 @@ export const useThreadMessages = (key: AtomThreadKey) => {
   const addToThread = useAddMessageToThread(key.companyId);
 
   const loadMore = async (direction: 'future' | 'history' = 'future') => {
-    if (window.reachedEnd && direction === 'future') return;
     if (window.reachedStart && direction === 'history') return;
 
     const limit = 100;
@@ -32,6 +31,8 @@ export const useThreadMessages = (key: AtomThreadKey) => {
       limit,
       pageToken: direction === 'future' ? window.end : window.start,
     });
+    setLoaded();
+
     const nothingNew = newMessages.filter(m => !isInWindow(m.id)).length < limit;
 
     addToThread(newMessages, {
