@@ -39,7 +39,7 @@ export const useCompany = (companyId: string) => {
     if (companyId) setCompany(await UserAPIClient.getCompany(companyId));
   };
 
-  return { company, refresh };
+  return { company: company as CompanyType, refresh };
 };
 
 /**
@@ -86,7 +86,7 @@ export const useCurrentCompany = () => {
     LocalStorage.setItem('default_company_id', routerCompanyId);
   }
 
-  return { company, refresh };
+  return { company: company as CompanyType, refresh };
 };
 
 export const useCurrentCompanyRealtime = () => {
