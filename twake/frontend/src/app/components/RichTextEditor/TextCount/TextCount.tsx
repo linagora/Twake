@@ -29,9 +29,11 @@ export const TextCount = (props: PropsType) => {
 
   return (
     <>
-      { display && (
+      {display && (
         <div className="text-count fade_in">
-          <span className={className({'limit': stats.isTooLong})}>{stats.length}/{stats.maxLength}</span>
+          <span className={className({ limit: stats.isTooLong })}>
+            {stats.length}/{stats.maxLength}
+          </span>
         </div>
       )}
     </>
