@@ -28,9 +28,9 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const { company } = useCurrentCompany();
 
   useEffect(() => {
-    //Use window.setEdge instead ?
-    window.reachedEnd = false;
-  }, []);
+    if (messages.length)
+      ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
+  }, [messages.length > 0]);
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
@@ -38,6 +38,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
         items={messages}
         itemId={m => m.threadId}
         emptyListComponent={<FirstMessage />}
+        loaded={!!window.loaded}
         itemContent={(index, m) => {
           const currentIndex = messages.map(m => m.threadId).indexOf(m.threadId);
           const previous = messages[currentIndex - 1];
@@ -47,7 +48,10 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
             head = <FirstMessage />;
           }
 
-          if (MessageHistoryService.shouldLimitMessages(company, window.start, messages.length)) {
+          if (
+            company &&
+            MessageHistoryService.shouldLimitMessages(company, window.start, messages.length)
+          ) {
             head = <LockedHistoryBanner />;
           }
 

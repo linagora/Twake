@@ -169,19 +169,22 @@ export default (props: Props) => {
     }
   };
 
-  const onChange = async (editorState: EditorState) => {
-    onKeydownRealtimeListener(state => iAmWriting(state));
+  const onChange = async (newEditorState: EditorState) => {
+    const statsAfter = TextCountService.getStats(newEditorState);
+    const statsBefore = TextCountService.getStats(editorState);
+    if (statsAfter.length > statsBefore.length)
+      onKeydownRealtimeListener(state => iAmWriting(state));
 
     //Delay request make the input faster (getContentOutput is a heavy call)
     delayRequest(`editor-${editorId}`, () => {
-      setValue(getContentOutput(editorState));
+      setValue(getContentOutput(newEditorState));
     });
 
     if (props.onChange) {
-      props.onChange(editorState);
+      props.onChange(newEditorState);
       return;
     }
-    setRichTextEditorState(editorState);
+    setRichTextEditorState(newEditorState);
   };
 
   const onFilePaste = (files: Blob[]) => {

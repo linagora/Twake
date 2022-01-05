@@ -36,10 +36,10 @@ export const useCompany = (companyId: string) => {
   const [company, setCompany] = useRecoilState(CompaniesState(companyId));
 
   const refresh = async () => {
-    setCompany(await UserAPIClient.getCompany(companyId));
+    if (companyId) setCompany(await UserAPIClient.getCompany(companyId));
   };
 
-  return { company, refresh };
+  return { company: company as CompanyType, refresh };
 };
 
 /**
@@ -66,11 +66,11 @@ export const useCurrentCompany = () => {
   const [company, setCompany] = useRecoilState(CompaniesState(routerCompanyId));
 
   const refresh = async () => {
-    setCompany(await CompanyAPIClient.get(company.id));
+    if (company) setCompany(await CompanyAPIClient.get(company.id));
   };
 
   //Always set the current company in localstorage to open it automatically later
-  if (routerCompanyId) {
+  if (routerCompanyId && company) {
     //Depreciated retrocompatibility
     Groups.addToUser(company);
     AccessRightsService.updateCompanyLevel(
@@ -86,7 +86,7 @@ export const useCurrentCompany = () => {
     LocalStorage.setItem('default_company_id', routerCompanyId);
   }
 
-  return { company, refresh };
+  return { company: company as CompanyType, refresh };
 };
 
 export const useCurrentCompanyRealtime = () => {

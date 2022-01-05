@@ -21,14 +21,16 @@ import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
 import SideBars, { LoadingSidebar } from './SideBars';
 import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
 import UserContext from 'app/state/recoil/integration/UserContext';
+import { useCurrentUser, useCurrentUserRealtime } from 'app/state/recoil/hooks/useCurrentUser';
+import { useFeatureToggles } from 'app/components/LockedFeaturesComponents/FeatureTogglesHooks';
 
 import './Client.scss';
-import { useCurrentUser, useCurrentUserRealtime } from 'app/state/recoil/hooks/useCurrentUser';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const { user } = useCurrentUser();
   useCurrentUserRealtime();
+  const { FeatureToggles, activeFeatureNames } = useFeatureToggles();
 
   PopupService.useListener();
   Languages.useListener();
@@ -42,26 +44,28 @@ export default React.memo((): JSX.Element => {
         <Layout className="appPage fade_in">
           <NewVersionComponent />
           <CompanyStatusComponent />
-          <Layout hasSider>
-            <Layout.Sider
-              trigger={<Menu size={16} />}
-              breakpoint="lg"
-              collapsedWidth="0"
-              theme="light"
-              width={290}
-              onCollapse={(collapsed, type) => {
-                if (type === 'responsive') return setMenuIsOpen(false);
-                setMenuIsOpen(!collapsed);
-              }}
-            >
-              <Suspense fallback={<LoadingSidebar />}>
-                <SideBars />
+          <FeatureToggles features={activeFeatureNames}>
+            <Layout hasSider>
+              <Layout.Sider
+                trigger={<Menu size={16} />}
+                breakpoint="lg"
+                collapsedWidth="0"
+                theme="light"
+                width={290}
+                onCollapse={(collapsed, type) => {
+                  if (type === 'responsive') return setMenuIsOpen(false);
+                  setMenuIsOpen(!collapsed);
+                }}
+              >
+                <Suspense fallback={<LoadingSidebar />}>
+                  <SideBars />
+                </Suspense>
+              </Layout.Sider>
+              <Suspense fallback={<></>}>
+                <MainView className={classNames({ collapsed: menuIsOpen })} />
               </Suspense>
-            </Layout.Sider>
-            <Suspense fallback={<></>}>
-              <MainView className={classNames({ collapsed: menuIsOpen })} />
-            </Suspense>
-          </Layout>
+            </Layout>
+          </FeatureToggles>
           <UserContext />
         </Layout>
       );

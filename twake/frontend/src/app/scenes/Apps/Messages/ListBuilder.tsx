@@ -13,10 +13,19 @@ type Props = {
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
   atBottomStateChange?: (atBottom: boolean) => void;
+  loaded: boolean;
 };
 
 export default React.memo(
-  ({ emptyListComponent, itemId, loadMore, items, itemContent, atBottomStateChange }: Props) => {
+  ({
+    emptyListComponent,
+    itemId,
+    loadMore,
+    items,
+    itemContent,
+    atBottomStateChange,
+    loaded,
+  }: Props) => {
     const virtuosoRef = useRef(null);
     const [initiated, setInitiated] = useState(false);
 
@@ -27,7 +36,7 @@ export default React.memo(
     };
 
     useEffect(() => {
-      if (items.length === 0) {
+      if (!loaded) {
         more('history').then(() => {
           if (atBottomStateChange) atBottomStateChange(true);
         });

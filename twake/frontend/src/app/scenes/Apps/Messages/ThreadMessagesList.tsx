@@ -25,6 +25,7 @@ export default ({ companyId, threadId }: Props) => {
         key={threadId}
         items={messages}
         itemId={m => m.id}
+        loaded={!!window.loaded}
         emptyListComponent={<FirstThreadMessage noReplies />}
         itemContent={(index, m) => {
           const currentIndex = messages.map(m => m.id).indexOf(m.id);

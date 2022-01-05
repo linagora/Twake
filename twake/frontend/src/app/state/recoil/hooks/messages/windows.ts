@@ -6,12 +6,18 @@ import { RecoilState, useRecoilCallback } from 'recoil';
  * This is the hook to work with feed window (from where to where we are looking the messages)
  * useful mostly in case of jumps
  */
-type WindowType = { start: string; end: string; reachedStart: boolean; reachedEnd: boolean };
+type WindowType = {
+  loaded: boolean;
+  start: string;
+  end: string;
+  reachedStart: boolean;
+  reachedEnd: boolean;
+};
 const windows: Map<string, WindowType> = new Map();
 (window as any).windows = windows;
 export const getListWindow = (key: string) => {
   if (!windows.has(key))
-    windows.set(key, { start: '', end: '', reachedEnd: false, reachedStart: false });
+    windows.set(key, { loaded: false, start: '', end: '', reachedEnd: false, reachedStart: false });
   let window = windows.get(key) as WindowType;
 
   const updateWindowFromIds = (ids: string[]) => {
@@ -45,11 +51,19 @@ export const getListWindow = (key: string) => {
     );
   };
 
+  const setLoaded = (loaded: boolean = true) => {
+    windows.set(key, {
+      ...window,
+      loaded,
+    });
+  };
+
   return {
     window,
     updateWindowFromIds,
     reachEdge,
     isInWindow,
+    setLoaded,
   };
 };
 

@@ -25,7 +25,7 @@ export class NewWorkspaceProcessor implements PubsubHandler<ChannelActivityNotif
   }
 
   async process(message: ChannelActivityNotification): Promise<void> {
-    logger.info(`${this.name} - Processing new activity in channel ${message.channel_id}`);
+    logger.info(`${this.name} - Processing new workspace created ${message.workspace_id}`);
 
     try {
       await this.service.channels.save(

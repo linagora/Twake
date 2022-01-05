@@ -217,6 +217,10 @@ export default class Signin extends Component {
       );
     }
     if (this.state.page == 2 && this.disableEmailVerification) {
+      setTimeout(() => {
+        window.document.location.reload();
+      }, 2000);
+
       return (
         <div className="">
           <div className="subtitle">

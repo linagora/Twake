@@ -19,7 +19,7 @@ import {
 //TODO make this more easy to duplicate for other views
 export const useChannelMessages = (key: AtomChannelKey) => {
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
-  const { window, isInWindow } = getListWindow(key.channelId);
+  const { window, isInWindow, setLoaded } = getListWindow(key.channelId);
   let currentWindowedMessages = messages.filter(message => isInWindow(message.threadId));
   currentWindowedMessages = currentWindowedMessages.sort((a, b) =>
     Numbers.compareTimeuuid(a.sortId, b.sortId),
@@ -30,7 +30,6 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   const addToChannel = useAddMessageToChannel(key);
 
   const loadMore = async (direction: 'future' | 'history' = 'future') => {
-    if (window.reachedEnd && direction === 'future') return;
     if (window.reachedStart && direction === 'history') return;
 
     const limit = 100;
@@ -40,6 +39,8 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       key.channelId,
       { direction, limit, pageToken: direction === 'future' ? window.end : window.start },
     );
+    setLoaded();
+
     const nothingNew = newMessages.filter(m => !isInWindow(m.thread_id)).length < limit;
 
     addToChannel(newMessages, {

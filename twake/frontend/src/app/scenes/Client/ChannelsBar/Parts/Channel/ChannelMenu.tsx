@@ -42,9 +42,9 @@ export default (props: Props): JSX.Element => {
     ChannelResource,
   );
   const isDirectChannel = props.channel.data.visibility === 'direct';
-  const { FeatureToggles, Feature, activeFeatureNames, FeatureNames } = useFeatureToggles();
 
   Languages.useListener();
+  const { Feature, FeatureNames } = useFeatureToggles();
 
   const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
 
@@ -75,20 +75,18 @@ export default (props: Props): JSX.Element => {
 
   const displayGuestManagement = () => {
     return ModalManager.open(
-      <FeatureToggles features={activeFeatureNames}>
-        <Feature
-          name={FeatureNames.GUESTS}
-          inactiveComponent={() => (
-            <LockedGuestsPopup
-              companySubscriptionUrl={
-                InitService.server_infos?.configuration?.accounts?.console
-                  ?.company_subscription_url || ''
-              }
-            />
-          )}
-          activeComponent={() => <GuestManagement channel={props.channel} />}
-        />
-      </FeatureToggles>,
+      <Feature
+        name={FeatureNames.GUESTS}
+        inactiveComponent={() => (
+          <LockedGuestsPopup
+            companySubscriptionUrl={
+              InitService.server_infos?.configuration?.accounts?.console
+                ?.company_subscription_url || ''
+            }
+          />
+        )}
+        activeComponent={() => <GuestManagement channel={props.channel} />}
+      />,
       {
         position: 'center',
         size: { width: '600px', minHeight: '329px' },
@@ -205,7 +203,7 @@ export default (props: Props): JSX.Element => {
           text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.mentions', [
             '@all',
             '@here',
-            `@${currentUser.username}`,
+            `@[you]`,
           ]),
           icon: props.channel.data.user_member?.notification_level === 'mentions' && 'check',
           onClick: () => {
@@ -213,9 +211,7 @@ export default (props: Props): JSX.Element => {
           },
         },
         {
-          text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.me', [
-            `@${currentUser.username}`,
-          ]),
+          text: Languages.t('scenes.apps.messages.left_bar.stream.notifications.me', [`@[you]`]),
           icon: props.channel.data.user_member?.notification_level === 'me' && 'check',
           onClick: () => {
             changeNotificationPreference('me');
