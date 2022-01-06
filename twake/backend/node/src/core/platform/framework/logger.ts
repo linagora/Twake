@@ -9,7 +9,7 @@ export const logger = pino({
   name: "TwakeApp",
   level: config.get("level", "info"),
   prettyPrint:
-    process.env.NODE_ENV.indexOf("test") > -1
+    process.env.NODE_ENV?.indexOf("test") > -1
       ? {
           translateTime: "HH:MM:ss Z",
           ignore: "pid,hostname,name",
