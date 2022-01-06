@@ -38,7 +38,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
         items={messages}
         itemId={m => m.threadId}
         emptyListComponent={<FirstMessage />}
-        loaded={!!window.loaded}
+        window={window}
         itemContent={(index, m) => {
           const currentIndex = messages.map(m => m.threadId).indexOf(m.threadId);
           const previous = messages[currentIndex - 1];
