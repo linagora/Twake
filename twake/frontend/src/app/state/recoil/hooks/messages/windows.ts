@@ -6,7 +6,7 @@ import { RecoilState, useRecoilCallback } from 'recoil';
  * This is the hook to work with feed window (from where to where we are looking the messages)
  * useful mostly in case of jumps
  */
-type WindowType = {
+export type WindowType = {
   loaded: boolean;
   start: string;
   end: string;
