@@ -4,7 +4,6 @@ export const consoleHookSchema = {
     properties: {
       secret_key: { type: "string" },
     },
-    required: [""],
   },
   body: {
     type: "object",
