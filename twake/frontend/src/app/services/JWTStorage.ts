@@ -39,7 +39,7 @@ class JWTStorage {
     setInterval(() => {
       if (this.jwtData.value && this.jwtData.expiration < new Date().getTime() + 1000 * 60 * 10) {
         this.renew().catch(async () => {
-          if (await LoginService.pingServer()) LoginService.logout();
+          if (await LoginService.pingServer()) (window as any).document.location.reload();
         });
       }
     }, 60000);
@@ -127,7 +127,7 @@ class JWTStorage {
           LoginService.updateUser(callback);
         })
         .catch(async () => {
-          if (await LoginService.pingServer()) LoginService.logout();
+          if (await LoginService.pingServer()) (window as any).document.location.reload();
         });
       return;
     }
