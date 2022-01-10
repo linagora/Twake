@@ -74,16 +74,14 @@ export default (props: Props) => {
       },
     });
   } else {
-    if (message.thread_id == message.id) {
-      menu.push({
-        type: 'menu',
-        icon: 'arrow-up-right',
-        text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
-        onClick: () => {
-          MessagesService.showMessage(message.id);
-        },
-      });
-    }
+    menu.push({
+      type: 'menu',
+      icon: 'arrow-up-right',
+      text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
+      onClick: () => {
+        MessagesService.showMessage(message.thread_id);
+      },
+    });
 
     if (message.thread_id == message.id) {
       if (!message.context?.disable_pin) {
