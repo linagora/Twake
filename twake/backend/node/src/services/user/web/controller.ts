@@ -33,6 +33,7 @@ import CompanyUser from "../entities/company_user";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import coalesce from "../../../utils/coalesce";
 import { getCompanyRooms, getUserRooms } from "../realtime";
+import { RealtimeLocalBusEvent } from "src/core/platform/services/realtime/types";
 
 export class UsersCrudController
   implements

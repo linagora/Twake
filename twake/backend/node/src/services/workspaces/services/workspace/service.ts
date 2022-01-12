@@ -56,8 +56,9 @@ import WorkspaceInviteTokens, {
 } from "../../entities/workspace_invite_tokens";
 import AuthServiceAPI from "../../../../core/platform/services/auth/provider";
 import { randomBytes } from "crypto";
-import { ConsoleOptions, ConsoleType } from "../../../console/types";
 import { Readable } from "stream";
+import { reduceUUID4 } from "../../../../utils/uuid-reducer";
+import { expandUUID4 } from "../../../../utils/uuid-reducer";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -556,11 +557,6 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return this.workspaceCounter.get(this.wsCountPk(workspaceId));
   }
 
-  private jwtInviteToken(companyId: string, workspaceId: string, token: string) {
-    const inviteTokenObject: InviteTokenObject = { c: companyId, w: workspaceId, t: token };
-    return this.auth.sign(inviteTokenObject);
-  }
-
   async getInviteToken(
     companyId: string,
     workspaceId: string,
@@ -570,7 +566,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     if (!res) return null;
 
     return {
-      token: this.jwtInviteToken(companyId, workspaceId, res.invite_token),
+      token: this.encodeInviteToken(companyId, workspaceId, res.invite_token),
     };
   }
 
@@ -585,9 +581,10 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       getWorkspaceInviteTokensInstance({ ...pk, invite_token: token }),
     );
     return {
-      token: this.jwtInviteToken(companyId, workspaceId, token),
+      token: this.encodeInviteToken(companyId, workspaceId, token),
     };
   }
+
   async deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean> {
     const pk = { company_id: companyId, workspace_id: workspaceId };
     const currentRecord = await this.workspaceInviteTokensRepository.findOne(pk);
@@ -597,10 +594,10 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return !!currentRecord;
   }
 
-  async getInviteTokenInfo(jwtToken: string): Promise<WorkspaceInviteTokens> {
+  async getInviteTokenInfo(encodedToken: string): Promise<WorkspaceInviteTokens> {
     let tokenInfo: InviteTokenObject;
     try {
-      tokenInfo = await this.auth.verifyTokenObject<InviteTokenObject>(jwtToken);
+      tokenInfo = this.decodeInviteToken(encodedToken);
     } catch (e) {}
 
     if (!tokenInfo) {
@@ -613,5 +610,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       invite_token: tokenInfo.t,
     };
     return this.workspaceInviteTokensRepository.findOne(pk);
+  }
+
+  private encodeInviteToken(companyId: string, workspaceId: string, token: string) {
+    return `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token}}`;
+  }
+
+  private decodeInviteToken(encodedToken: string): InviteTokenObject {
+    try {
+      const [companyId, workspaceId, token] = encodedToken.split("-");
+      return { c: expandUUID4(companyId), w: expandUUID4(workspaceId), t: token };
+    } catch (e) {
+      return { c: "", w: "", t: "" };
+    }
   }
 }
