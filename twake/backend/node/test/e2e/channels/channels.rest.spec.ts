@@ -566,7 +566,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(resource.stats).toMatchObject({
         members: 5,
-        messages: 1,
+        messages: 5,
       });
 
       done();
