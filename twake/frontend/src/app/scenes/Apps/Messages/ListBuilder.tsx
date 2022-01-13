@@ -1,6 +1,7 @@
 import React, { ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 import { ItemContent, LogLevel, Virtuoso } from 'react-virtuoso';
 import Logger from 'app/services/Logger';
+import { WindowType } from 'app/state/recoil/hooks/messages/windows';
 
 const logger = Logger.getLogger(`ListBuilder`);
 const START_INDEX = 1000000;
@@ -13,10 +14,19 @@ type Props = {
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
   atBottomStateChange?: (atBottom: boolean) => void;
+  window: WindowType;
 };
 
 export default React.memo(
-  ({ emptyListComponent, itemId, loadMore, items, itemContent, atBottomStateChange }: Props) => {
+  ({
+    emptyListComponent,
+    itemId,
+    loadMore,
+    items,
+    itemContent,
+    atBottomStateChange,
+    window,
+  }: Props) => {
     const virtuosoRef = useRef(null);
     const [initiated, setInitiated] = useState(false);
 
@@ -27,7 +37,7 @@ export default React.memo(
     };
 
     useEffect(() => {
-      if (items.length === 0) {
+      if (!window.loaded) {
         more('history').then(() => {
           if (atBottomStateChange) atBottomStateChange(true);
         });
@@ -65,7 +75,7 @@ export default React.memo(
               await more('history');
             }}
             endReached={async () => {
-              await more('future');
+              if (!window.reachedEnd) await more('future');
             }}
             atBottomStateChange={atBottomStateChange}
             atTopStateChange={atTop => {}}
