@@ -239,6 +239,7 @@ export class Service implements MemberService {
         await this.userChannelsRepository.save(userChannel);
         await this.channelMembersRepository.save(channelMember);
 
+        await this.usersCounterIncrease(channel, member.user_id);
         this.onCreated(
           channel,
           member,
@@ -451,8 +452,6 @@ export class Service implements MemberService {
 
           const result = await this.save(member, null, context);
 
-          await this.usersCounterIncrease(channel, user.id);
-
           return {
             channel,
             added: true,
@@ -510,8 +509,6 @@ export class Service implements MemberService {
           }
 
           const result = await this.save(member, null, context);
-
-          await this.usersCounterIncrease(channel, member.user_id);
 
           return { channel, member: result.entity, added: true };
         } catch (err) {
