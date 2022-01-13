@@ -550,7 +550,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(resource.stats).toMatchObject({
         members: 6,
-        messages: 1,
+        messages: 6,
       });
 
       await channelService.members.delete(

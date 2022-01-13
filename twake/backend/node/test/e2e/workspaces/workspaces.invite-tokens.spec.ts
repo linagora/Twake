@@ -424,8 +424,6 @@ describe("The /workspaces API (invite tokens)", () => {
     });
 
     it("should 200 when user is not authorized", async done => {
-      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
-
       const response = await platform.app.inject({
         method: "POST",
         url: `${url}/join`,
