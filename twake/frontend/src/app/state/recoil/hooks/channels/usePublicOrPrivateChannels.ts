@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { useEffect, useRef } from 'react';
+import { useRecoilCallback, useRecoilState } from 'recoil';
 
 import { ChannelType } from 'app/models/Channel';
 import { MineChannelsState } from '../../atoms/Channels';
@@ -7,31 +7,54 @@ import useRouterCompany from '../router/useRouterCompany';
 import ChannelsMineAPIClient from 'app/services/channels/ChannelsMineAPIClient';
 import useRouterWorkspace from '../router/useRouterWorkspace';
 import { isPrivateChannel, isPublicChannel } from 'app/services/channels/utils';
+import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { LoadingState } from '../../atoms/Loading';
+import { useGlobalEffect } from 'app/services/utils/useGlobalEffect';
 
 export function usePublicOrPrivateChannels(): {
   privateChannels: ChannelType[];
   publicChannels: ChannelType[];
-  refresh: () => void;
+  refresh: () => Promise<void>;
 } {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [mineChannels, _setMineChannels] = useRecoilState(MineChannelsState);
+  const [mineChannels, _setMineChannels] = useRecoilState(
+    MineChannelsState({ companyId, workspaceId }),
+  );
+
+  const [, setLoading] = useRecoilState(LoadingState(`channels-${companyId}-${workspaceId}`));
 
   const refresh = async () => {
-    const channelsMine = await ChannelsMineAPIClient.get({ companyId, workspaceId });
-
-    if (channelsMine) _setMineChannels(channelsMine);
+    const res = await ChannelsMineAPIClient.get({ companyId, workspaceId });
+    if (res) _setMineChannels(res);
   };
 
-  useEffect(() => {
-    companyId.length > 1 && workspaceId.length > 1 && refresh();
+  useGlobalEffect(
+    'usePublicOrPrivateChannels',
+    async () => {
+      if (!mineChannels) setLoading(true);
+      await refresh();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [companyId, workspaceId]);
+      setLoading(false);
+    },
+    [companyId, workspaceId],
+  );
+
+  useRealtimeRoom<ChannelType[]>(
+    ChannelsMineAPIClient.websockets(companyId, workspaceId)[0],
+    'usePublicOrPrivateChannels',
+    (_action, _resource) => {
+      if (_action === 'saved') refresh();
+    },
+  );
 
   return {
-    refresh,
-    privateChannels: mineChannels.filter(c => c.visibility && isPrivateChannel(c.visibility)),
-    publicChannels: mineChannels.filter(c => c.visibility && isPublicChannel(c.visibility)),
+    refresh: refresh,
+    privateChannels: (mineChannels || [])?.filter(
+      c => c.visibility && isPrivateChannel(c.visibility),
+    ),
+    publicChannels: (mineChannels || [])?.filter(
+      c => c.visibility && isPublicChannel(c.visibility),
+    ),
   };
 }

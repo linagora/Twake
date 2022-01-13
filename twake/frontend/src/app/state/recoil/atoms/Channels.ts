@@ -8,17 +8,19 @@ export const ChannelState = atomFamily<ChannelType, string>({
   default: id => ({ id } as ChannelType),
 });
 
-export const MineChannelsState = atom<ChannelType[]>({
+type ChannelsListContextType = { companyId: string; workspaceId: string };
+
+export const MineChannelsState = atomFamily<ChannelType[] | undefined, ChannelsListContextType>({
   key: 'MineChannelsState',
-  default: [],
+  default: undefined,
 });
 
-export const ReachableChannelsState = atom<ChannelType[]>({
+export const ReachableChannelsState = atomFamily<ChannelType[], ChannelsListContextType>({
   key: 'ReachableChannelsState',
   default: [],
 });
 
-export const DirectChannelsState = atom<ChannelType[]>({
+export const DirectChannelsState = atomFamily<ChannelType[], ChannelsListContextType>({
   key: 'DirectChannelsState',
   default: [],
 });

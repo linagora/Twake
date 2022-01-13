@@ -24,7 +24,7 @@ export default (props: Props): JSX.Element => {
     set(_.cloneDeep(props.channel));
   }, [props.channel]);
 
-  const menu = (channel: ChannelResource) => {
+  const menu = (channel: ChannelType) => {
     if (!channel) return <></>;
     return (
       <ChannelMenu
@@ -35,13 +35,10 @@ export default (props: Props): JSX.Element => {
     );
   };
 
-  const channel = props.collection.useWatcher(
-    { id: props.channel.id },
-    { query: { mine: true } },
-  )[0];
+  const channel = props.channel;
 
   //Fixme: find a better way to reload channels if we have only part of it (maily when invited by other members)
-  if (!channel?.data?.visibility && channel?.data?.user_member?.user_id) {
+  if (!channel?.visibility && channel?.user_member?.user_id) {
     props.collection.reload('ontime');
   }
 
@@ -58,28 +55,28 @@ export default (props: Props): JSX.Element => {
       })
     : { avatar: '', name: '' };
 
-  if (!channel || !channel.data.user_member?.user_id || !channel.state.persisted) return <></>;
+  if (!channel || !channel.user_member?.user_id) return <></>;
 
-  const channelIcon = isDirectChannel ? avatar : channel.data.icon || '';
-  const channeName = isDirectChannel ? name : channel.data.name || '';
+  const channelIcon = isDirectChannel ? avatar : channel.icon || '';
+  const channeName = isDirectChannel ? name : channel.name || '';
 
   const unreadMessages =
-    (channel.data.last_activity || 0) > (channel.data.user_member.last_access || 0) &&
-    channel.data.last_message?.sender !== channel.data.user_member?.user_id;
+    (channel.last_activity || 0) > (channel.user_member.last_access || 0) &&
+    channel.last_message?.sender !== channel.user_member?.user_id;
 
   return (
     <ChannelUI
       collection={props.collection}
       name={channeName}
       icon={channelIcon}
-      muted={channel.data.user_member?.notification_level === 'none'}
-      favorite={channel.data.user_member?.favorite || false}
-      unreadMessages={unreadMessages && channel.data.user_member.notification_level !== 'none'}
-      visibility={channel.data.visibility || 'public'}
+      muted={channel.user_member?.notification_level === 'none'}
+      favorite={channel.user_member?.favorite || false}
+      unreadMessages={unreadMessages && channel.user_member.notification_level !== 'none'}
+      visibility={channel.visibility || 'public'}
       notifications={notifications.length || 0}
       menu={menu(channel)}
       active={isActive}
-      id={channel.data.id}
+      id={channel.id}
     />
   );
 };

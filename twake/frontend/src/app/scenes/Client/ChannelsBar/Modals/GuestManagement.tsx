@@ -5,7 +5,7 @@ import { Input, Row, Typography } from 'antd';
 import ObjectModal from 'app/components/ObjectModal/ObjectModal';
 import RouterService from 'app/services/RouterService';
 import MemberChannelRow from '../Parts/Header/MemberChannelRow';
-import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
+import { ChannelMemberResource, ChannelResource, ChannelType } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
 import { PendingEmailResource } from 'app/models/PendingEmail';
 import GuestManagementService from 'app/services/GuestMember/GuestManagementService';
@@ -13,7 +13,7 @@ import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import Languages from 'services/languages/languages';
 
 type PropsType = {
-  channel: ChannelResource;
+  channel: ChannelType;
 };
 
 export default ({ channel }: PropsType): JSX.Element => {
@@ -22,13 +22,13 @@ export default ({ channel }: PropsType): JSX.Element => {
   const [shouldDisplayAdditionRow, setShouldDisplayAdditionRow] = useState<boolean>(false);
   const { workspaceId, companyId } = RouterService.getStateFromRoute();
 
-  GuestManagementService.bind({ search, channel_id: channel.data.id || '' });
+  GuestManagementService.bind({ search, channel_id: channel.id || '' });
   const { list } = GuestManagementService;
 
-  const memberCollectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/members/`;
+  const memberCollectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.id}/members/`;
   const channelMembersCollection = Collections.get(memberCollectionPath, ChannelMemberResource);
 
-  const pendingEmailsCollectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/pending_emails/`;
+  const pendingEmailsCollectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.id}/pending_emails/`;
   const pendingEmailsCollection = Collections.get(
     pendingEmailsCollectionPath,
     PendingEmailResource,
@@ -53,7 +53,7 @@ export default ({ channel }: PropsType): JSX.Element => {
   return (
     <ObjectModal
       title={Languages.t('scenes.client.channels_bar.modals.guest_management.title', [
-        capitalize(channel.data.name),
+        capitalize(channel.name),
       ])}
       closable
     >
@@ -79,7 +79,7 @@ export default ({ channel }: PropsType): JSX.Element => {
       >
         {shouldDisplayAdditionRow && (
           <MemberChannelRow
-            channelId={channel.data.id || ''}
+            channelId={channel.id || ''}
             collection={pendingEmailsCollection}
             userType="pending-email"
             inPendingEmailAddition

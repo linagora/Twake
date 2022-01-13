@@ -13,7 +13,9 @@ export function useReachableChannels(): {
 } {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [reachableChannels, _setReachableChannels] = useRecoilState(ReachableChannelsState);
+  const [reachableChannels, _setReachableChannels] = useRecoilState(
+    ReachableChannelsState({ companyId, workspaceId }),
+  );
 
   const refresh = async () => {
     const channels = await ChannelsReachableAPIClient.get(companyId, workspaceId);

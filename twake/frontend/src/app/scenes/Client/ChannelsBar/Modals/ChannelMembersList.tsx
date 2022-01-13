@@ -3,7 +3,7 @@ import { Col, Row, Typography, Input } from 'antd';
 import { Search } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
-import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
+import { ChannelMemberResource, ChannelResource, ChannelType } from 'app/models/Channel';
 import { UserType } from 'app/models/User';
 
 import Strings from 'services/utils/strings.js';
@@ -19,16 +19,16 @@ import UserAPIClient from 'app/services/user/UserAPIClient';
 import { WorkspaceUserType } from 'app/models/Workspace';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 
-type Props = {
+type PropsType = {
   closable?: boolean;
-  channel: ChannelResource;
+  channel: ChannelType;
 };
 
 const { Link } = Typography;
 const defaultLimit = 20;
 
-const ChannelMembersList: FC<Props> = props => {
-  const { company_id, workspace_id, id } = props.channel.data;
+const ChannelMembersList: FC<PropsType> = props => {
+  const { company_id, workspace_id, id } = props.channel;
 
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(defaultLimit);
@@ -81,14 +81,12 @@ const ChannelMembersList: FC<Props> = props => {
         companyId: company_id,
         workspaceId: workspace_id || undefined,
       },
-      list => filterSearch(list.map(wsUser => wsUser.user)),
+      list => filterSearch((list || []).map(wsUser => wsUser.user)),
     );
 
   return (
     <ObjectModal
-      title={Languages.t('scenes.client.channelbar.channelmemberslist.title', [
-        props.channel.data.name,
-      ])}
+      title={Languages.t('scenes.client.channelbar.channelmemberslist.title', [props.channel.name])}
       closable={props.closable ? props.closable : false}
     >
       <div className="x-margin">
@@ -118,16 +116,20 @@ const ChannelMembersList: FC<Props> = props => {
           channelMembers.length > 0 &&
           channelMembers
             .sort((a, b) => compareFullname(a, b, true))
-            .map(user => (
-              <div key={user.id} className="x-margin" style={{ marginTop: 8 }}>
-                <MemberChannelRow
-                  key={user.id}
-                  channelId={props.channel.id}
-                  userId={user.data.user_id || ''}
-                  collection={channelMembersCollection}
-                />
-              </div>
-            ))}
+            .map(user =>
+              props.channel.id ? (
+                <div key={user.id} className="x-margin" style={{ marginTop: 8 }}>
+                  <MemberChannelRow
+                    key={user.id}
+                    channelId={props.channel.id}
+                    userId={user.data.user_id || ''}
+                    collection={channelMembersCollection}
+                  />
+                </div>
+              ) : (
+                <></>
+              ),
+            )}
         {!search.length && !channelMembers.length && (
           <Row
             align="middle"
@@ -139,17 +141,21 @@ const ChannelMembersList: FC<Props> = props => {
           </Row>
         )}
         {!!search.length &&
-          searchedUsers.map(userId => (
-            <div key={userId} className="x-margin" style={{ marginTop: 8 }}>
-              <MemberChannelRow
-                key={userId}
-                userId={userId}
-                channelId={props.channel.id}
-                collection={channelMembersCollection}
-                inAddition={!channelMembersUid.includes(userId || '') ? true : false}
-              />
-            </div>
-          ))}
+          searchedUsers.map(userId =>
+            props.channel.id ? (
+              <div key={userId} className="x-margin" style={{ marginTop: 8 }}>
+                <MemberChannelRow
+                  key={userId}
+                  userId={userId}
+                  channelId={props.channel.id}
+                  collection={channelMembersCollection}
+                  inAddition={!channelMembersUid.includes(userId || '') ? true : false}
+                />
+              </div>
+            ) : (
+              <></>
+            ),
+          )}
 
         {!!search.length && searchedUsers.length === 0 && (
           <Row
