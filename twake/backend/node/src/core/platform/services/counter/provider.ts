@@ -36,12 +36,12 @@ export class CounterProvider<T> {
     }
   }
 
-  reviseCounter(
+  setReviseCallback(
     handler: (pk: Partial<T>) => Promise<number>,
     maxCalls: number = 10,
     maxPeriod: number = 24 * 60 * 60 * 1000,
   ): void {
-    logger.debug(`${this.name} Set reviseCounter for ${this.repository.table}`);
+    logger.debug(`${this.name} Set setReviseCallback for ${this.repository.table}`);
     this.reviseHandler = handler;
     this.reviseMaxCalls = maxCalls;
     this.reviseMaxPeriod = maxPeriod;
@@ -59,15 +59,17 @@ export class CounterProvider<T> {
       now > lastRevised.period + this.reviseMaxPeriod
     ) {
       if (!this.reviseHandler) {
-        logger.debug(`${this.name} No reviseCounter handler found for ${this.repository.table}`);
+        logger.debug(
+          `${this.name} No setReviseCallback handler found for ${this.repository.table}`,
+        );
         return currentValue;
       }
 
-      logger.debug(`${this.name} Execute reviseCounter handler for ${this.repository.table}`);
+      logger.debug(`${this.name} Execute setReviseCallback handler for ${this.repository.table}`);
 
       const actual = await this.reviseHandler(pk);
 
-      if (actual != currentValue) {
+      if (actual !== undefined && actual != currentValue) {
         await this.increase(pk, actual - currentValue);
         currentValue = actual;
       }

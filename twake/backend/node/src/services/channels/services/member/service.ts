@@ -114,10 +114,14 @@ export class Service implements MemberService {
       channelCountersRepository,
     );
 
-    this.channelCounter.reviseCounter(async (pk: ChannelCounterPrimaryKey) => {
-      const type = ChannelUserCounterType.MEMBERS
-        ? ChannelMemberType.MEMBER
-        : ChannelMemberType.GUEST;
+    this.channelCounter.setReviseCallback(async (pk: ChannelCounterPrimaryKey) => {
+      if (pk.counter_type === ChannelUserCounterType.MESSAGES) {
+        return;
+      }
+      const type =
+        ChannelUserCounterType.MEMBERS === pk.counter_type
+          ? ChannelMemberType.MEMBER
+          : ChannelMemberType.GUEST;
       return countRepositoryItems(
         this.channelMembersRepository,
         { channel_id: pk.id, company_id: pk.company_id, workspace_id: pk.workspace_id },

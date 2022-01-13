@@ -45,7 +45,6 @@ const channelSchema = {
       type: "object",
       properties: {
         members: { type: "number" },
-        guests: { type: "number" },
         messages: { type: "number" },
       },
     },

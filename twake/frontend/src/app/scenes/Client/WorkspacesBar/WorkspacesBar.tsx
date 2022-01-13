@@ -27,7 +27,7 @@ const WorkspaceListComponent = ({ companyId }: { companyId: string }) => {
   const { workspaces, refresh } = useWorkspaces(companyId);
 
   useEffect(() => {
-    refresh();
+    companyId && refresh();
   }, [companyId]);
 
   return (

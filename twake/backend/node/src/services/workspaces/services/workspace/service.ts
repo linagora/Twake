@@ -104,7 +104,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       workspaceCountersRepository,
     );
 
-    this.workspaceCounter.reviseCounter(async (pk: WorkspaceCounterPrimaryKey) => {
+    this.workspaceCounter.setReviseCallback(async (pk: WorkspaceCounterPrimaryKey) => {
       if (pk.counter_type == "members") {
         return countRepositoryItems(this.workspaceUserRepository, { workspace_id: pk.id });
       }
