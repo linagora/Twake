@@ -64,7 +64,7 @@ describe("The /workspaces API (invite tokens)", () => {
   };
 
   const decodeToken = (token: string): InviteTokenObject => {
-    return authServiceApi.verifyTokenObject<InviteTokenObject>(token);
+    return workspaceServicesAPI.workspaces.decodeInviteToken(token);
   };
 
   describe("The GET /tokens/ route", () => {

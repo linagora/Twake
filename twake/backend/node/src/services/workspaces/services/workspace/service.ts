@@ -612,11 +612,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return this.workspaceInviteTokensRepository.findOne(pk);
   }
 
-  private encodeInviteToken(companyId: string, workspaceId: string, token: string) {
+  public encodeInviteToken(companyId: string, workspaceId: string, token: string) {
     return `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token}}`;
   }
 
-  private decodeInviteToken(encodedToken: string): InviteTokenObject {
+  public decodeInviteToken(encodedToken: string): InviteTokenObject {
     try {
       const [companyId, workspaceId, token] = encodedToken.split("-");
       return { c: expandUUID4(companyId), w: expandUUID4(workspaceId), t: token };
