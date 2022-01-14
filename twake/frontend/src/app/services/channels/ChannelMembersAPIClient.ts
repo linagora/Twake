@@ -9,6 +9,12 @@ type ChannelMembersSaveResponse = { resource: ChannelMemberType };
 class ChannelMembersAPIClient {
   private readonly prefix = '/internal/services/channels/v1/companies';
 
+  async get(companyId: string, workspaceId: string, channelId: string) {
+    return Api.get<{ resources: ChannelMemberType[] }>(
+      `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members`,
+    ).then(result => result.resources);
+  }
+
   async save(
     channelMember: ChannelMemberType,
     partialsToUpdate: Partial<ChannelMemberType>,
@@ -19,7 +25,7 @@ class ChannelMembersAPIClient {
       {
         resource: { ...channelMember, ...partialsToUpdate },
       },
-    );
+    ).then(result => result.resource);
   }
 }
 

@@ -1,8 +1,14 @@
 import Api from '../Api';
-import { ChannelType } from 'app/models/Channel';
+import { ChannelMemberType, ChannelType } from 'app/models/Channel';
 import { TwakeService } from '../Decorators/TwakeService';
 
 type ChannelsReachableGetResponse = { resources: ChannelType[] };
+type ChannelsReachableInviteUserResponse = { resource: ChannelMemberType };
+type ChannelsReachableInviteUserRequest = {
+  resource: {
+    user_id: string;
+  };
+};
 
 @TwakeService('ChannelsReachableAPIClientService')
 class ChannelsReachableAPIClient {
@@ -17,6 +23,31 @@ class ChannelsReachableAPIClient {
     return Api.get<ChannelsReachableGetResponse>(
       `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels`,
     ).then(result => result.resources);
+  }
+
+  /**
+   * Add or remove user to/from a channel.
+   * Every user in the channel (except guests) can invite or remove someone.
+   * A system message will be sent on invitations.
+   * @param _companyId string
+   * @param _workspaceId string
+   * @param _userId string
+   *
+   */
+  async inviteUser(
+    companyId: string,
+    workspaceId: string,
+    channelId: string,
+    userId: string,
+  ): Promise<ChannelMemberType> {
+    return Api.post<ChannelsReachableInviteUserRequest, ChannelsReachableInviteUserResponse>(
+      `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/${userId}`,
+      {
+        resource: {
+          user_id: userId,
+        },
+      },
+    ).then(result => result.resource);
   }
 }
 

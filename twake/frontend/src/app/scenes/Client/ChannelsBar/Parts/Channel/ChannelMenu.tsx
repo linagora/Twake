@@ -124,6 +124,7 @@ export default (props: PropsType): JSX.Element => {
         Toaster.error(`${res.error} - ${res.message}`);
       } else {
         redirectToWorkspace();
+        refreshFavoriteChannels();
       }
     }
   };

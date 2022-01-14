@@ -61,23 +61,6 @@ class ChannelsMineAPIClient {
   }
 
   /**
-   * Add or remove user to/from a channel.
-   * Every user in the channel (except guests) can invite or remove someone.
-   * A system message will be sent on invitations.
-   * @param _companyId string
-   * @param _workspaceId string
-   * @param _userId string
-   *
-   */
-  async inviteUser(
-    _companyId: string,
-    _workspaceId: string,
-    _userId: string,
-  ): Promise<ChannelMemberType> {
-    throw new Error('Not implemented yet');
-  }
-
-  /**
    * Remove user from a channel.
    * Every user in the channel (except guests) can remove an user.
    * A system message will be sent.
