@@ -624,6 +624,9 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   public decodeInviteToken(encodedToken: string): InviteTokenObject | null {
     try {
       const [companyId, workspaceId, token] = encodedToken.split("-");
+      if (!token) {
+        return;
+      }
       return { c: expandUUID4(companyId), w: expandUUID4(workspaceId), t: token };
     } catch (e) {
       return null;
