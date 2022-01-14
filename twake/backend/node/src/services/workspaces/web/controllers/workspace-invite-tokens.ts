@@ -83,7 +83,6 @@ export class WorkspaceInviteTokensCrudController
     const deleted = await this.services.workspaces.deleteInviteToken(
       context.company_id,
       context.workspace_id,
-      tokenInfo.t,
     );
 
     if (!deleted) {

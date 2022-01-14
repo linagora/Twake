@@ -124,7 +124,7 @@ export interface WorkspaceServiceAPI
 
   getInviteToken(companyId: string, workspaceId: string): Promise<WorkspaceInviteTokenObject>;
   createInviteToken(companyId: string, workspaceId: string): Promise<WorkspaceInviteTokenObject>;
-  deleteInviteToken(companyId: string, workspaceId: string, token: string): Promise<boolean>;
+  deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean>;
   getInviteTokenInfo(jwtToken: string): Promise<WorkspaceInviteTokens>;
 
   encodeInviteToken(companyId: string, workspaceId: string, token: string): string;
