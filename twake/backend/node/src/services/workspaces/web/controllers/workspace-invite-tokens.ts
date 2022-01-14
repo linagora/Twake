@@ -74,9 +74,16 @@ export class WorkspaceInviteTokensCrudController
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
+    const tokenInfo = this.services.workspaces.decodeInviteToken(request.params.token);
+
+    if (!tokenInfo) {
+      throw CrudExeption.notFound("Invite token malformed");
+    }
+
     const deleted = await this.services.workspaces.deleteInviteToken(
       context.company_id,
       context.workspace_id,
+      tokenInfo.t,
     );
 
     if (!deleted) {

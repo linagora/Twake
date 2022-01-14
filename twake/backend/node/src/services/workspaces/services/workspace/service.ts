@@ -585,13 +585,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     };
   }
 
-  async deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean> {
+  async deleteInviteToken(
+    companyId: string,
+    workspaceId: string,
+    token?: string,
+  ): Promise<boolean> {
     const pk = { company_id: companyId, workspace_id: workspaceId };
     const currentRecord = await this.workspaceInviteTokensRepository.findOne(pk);
-    if (currentRecord) {
-      await this.workspaceInviteTokensRepository.remove(currentRecord);
+    if (!currentRecord || (token && currentRecord.invite_token !== token)) {
+      return false;
     }
-    return !!currentRecord;
+    await this.workspaceInviteTokensRepository.remove(currentRecord);
+    return true;
   }
 
   async getInviteTokenInfo(encodedToken: string): Promise<WorkspaceInviteTokens> {
