@@ -94,11 +94,6 @@ export class WorkspaceInviteTokensCrudController
     request: FastifyRequest<{ Body: WorkspaceJoinByTokenRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceJoinByTokenResponse>> {
-    const consoleUrl = this.services.console.consoleOptions.url;
-    // if (!consoleUrl) {
-    //   throw CrudExeption.badRequest("Console url is not defined");
-    // }
-
     const entity = await this.services.workspaces.getInviteTokenInfo(request.body.token);
 
     if (!entity) {
