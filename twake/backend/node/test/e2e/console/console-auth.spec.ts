@@ -73,6 +73,8 @@ describe("The console API auth", () => {
     consoleOptions = console.consoleOptions;
     consoleType = console.consoleType;
 
+    await new Promise(r => setTimeout(r, 1000));
+
     ends();
   });
 

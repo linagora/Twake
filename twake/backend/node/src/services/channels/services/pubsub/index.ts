@@ -7,9 +7,11 @@ import { NewUserInWorkspaceJoinDefaultChannelsProcessor } from "./new-user-in-wo
 import { NewPendingEmailsInWorkspaceJoinChannelsProcessor } from "./new-pending-emails-in-workspace-join-channels";
 import UserServiceAPI from "../../../user/api";
 import { NewWorkspaceProcessor } from "./new-workspace";
+import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 
 export class PubsubListener implements Initializable {
   constructor(
+    private platformServices: PlatformServicesAPI,
     private service: ChannelServiceAPI,
     private pubsub: PubsubServiceAPI,
     private user: UserServiceAPI,
@@ -17,7 +19,7 @@ export class PubsubListener implements Initializable {
 
   async init(): Promise<this> {
     this.pubsub.processor.addHandler(
-      new NewChannelActivityProcessor(this.service.channels, this.user),
+      new NewChannelActivityProcessor(this.platformServices, this.service.channels, this.user),
     );
     this.pubsub.processor.addHandler(new NewDirectChannelMessageProcessor(this.service));
     this.pubsub.processor.addHandler(

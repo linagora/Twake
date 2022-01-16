@@ -52,9 +52,7 @@ export default class OnlineService
       event.socket.on(
         "online:get",
         async (request: OnlineGetRequest, ack: (response: OnlineGetResponse) => void) => {
-          this.logger.debug(
-            `Got an online:get request for users "[${(request.data || []).join(",")}]"`,
-          );
+          this.logger.debug(`Got an online:get request for ${(request.data || []).length} users`);
 
           ack({ data: await this.getOnlineStatuses(request.data) });
         },

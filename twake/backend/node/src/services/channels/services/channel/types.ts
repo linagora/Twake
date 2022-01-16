@@ -11,7 +11,6 @@ export type NewUserInWorkspaceNotification = {
 
 export type ChannelStats = {
   members: number;
-  guests: number;
   messages: number;
 };
 

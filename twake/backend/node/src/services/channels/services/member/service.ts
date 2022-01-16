@@ -114,10 +114,14 @@ export class Service implements MemberService {
       channelCountersRepository,
     );
 
-    this.channelCounter.reviseCounter(async (pk: ChannelCounterPrimaryKey) => {
-      const type = ChannelUserCounterType.MEMBERS
-        ? ChannelMemberType.MEMBER
-        : ChannelMemberType.GUEST;
+    this.channelCounter.setReviseCallback(async (pk: ChannelCounterPrimaryKey) => {
+      if (pk.counter_type === ChannelUserCounterType.MESSAGES) {
+        return;
+      }
+      const type =
+        ChannelUserCounterType.MEMBERS === pk.counter_type
+          ? ChannelMemberType.MEMBER
+          : ChannelMemberType.GUEST;
       return countRepositoryItems(
         this.channelMembersRepository,
         { channel_id: pk.id, company_id: pk.company_id, workspace_id: pk.workspace_id },
@@ -235,6 +239,7 @@ export class Service implements MemberService {
         await this.userChannelsRepository.save(userChannel);
         await this.channelMembersRepository.save(channelMember);
 
+        await this.usersCounterIncrease(channel, member.user_id);
         this.onCreated(
           channel,
           member,
@@ -447,8 +452,6 @@ export class Service implements MemberService {
 
           const result = await this.save(member, null, context);
 
-          await this.usersCounterIncrease(channel, user.id);
-
           return {
             channel,
             added: true,
@@ -506,8 +509,6 @@ export class Service implements MemberService {
           }
 
           const result = await this.save(member, null, context);
-
-          await this.usersCounterIncrease(channel, member.user_id);
 
           return { channel, member: result.entity, added: true };
         } catch (err) {

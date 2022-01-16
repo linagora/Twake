@@ -10,6 +10,7 @@ import EnvironmentService from '../../../EnvironmentService';
 import { AuthProvider, InitParameters } from '../AuthProvider';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import { JWTDataType } from 'app/services/JWTStorage';
+import LocalStorage from 'app/services/LocalStorage';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';
@@ -25,6 +26,7 @@ export default class OIDCAuthProviderService
   private userManager: Oidc.UserManager | null = null;
   private initialized: boolean = false;
   private user!: Oidc.User;
+  private params?: InitParameters;
 
   constructor(private configuration?: ConsoleConfiguration) {
     super();
@@ -33,6 +35,8 @@ export default class OIDCAuthProviderService
   }
 
   init(params: InitParameters): this {
+    this.params = params;
+
     if (this.initialized) {
       this.logger.warn('Already initialized');
       return this;
@@ -81,7 +85,7 @@ export default class OIDCAuthProviderService
 
           if (!this.initialized) {
             // FIXME: Do we need to send back the user?
-            params.onInitialized();
+            this.onInitialized();
             this.initialized = true;
           } else {
             jwt && params.onNewToken(jwt);
@@ -172,13 +176,13 @@ export default class OIDCAuthProviderService
         } else {
           //If no user defined,  we try a redirect signin
           this.logger.debug('silentLogin, user not defined, launching a signin redirect');
-          this.userManager.signinRedirect();
+          this.signinRedirect();
         }
       } catch (e) {
         this.logger.debug('silentLogin error, launching a signin redirect', e);
         // FIXME: We should also be able to show a message to the user with the onSessionExpired listener
         // In any case if it doesn't work we do a redirect signin
-        this.userManager.signinRedirect();
+        this.signinRedirect();
       }
     }
   }
@@ -233,6 +237,28 @@ export default class OIDCAuthProviderService
     }
 
     ConsoleService.getNewAccessToken({ access_token: user.access_token }, callback);
+  }
+
+  signinRedirect() {
+    //Save requested URL for after redirect / sign-in
+    LocalStorage.setItem('requested_url', {
+      url: document.location.href,
+      time: new Date().getTime(),
+    });
+
+    if (this.userManager) this.userManager.signinRedirect();
+  }
+
+  onInitialized() {
+    //If user requested an url in the last 10 minutes, we open it
+    const ref = LocalStorage.getItem('requested_url') as { url: string; time: number };
+    if (ref && new Date().getTime() - ref.time < 1000 * 60 * 10) {
+      document.location.replace(ref.url);
+    }
+    LocalStorage.setItem('requested_url', null);
+    //End of post-login redirection
+
+    this.params?.onInitialized();
   }
 }
 
