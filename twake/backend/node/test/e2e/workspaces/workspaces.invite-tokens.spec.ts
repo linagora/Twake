@@ -311,7 +311,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens/123`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens/fake1-${new Date().getTime()}`,
       });
       expect(response.statusCode).toBe(401);
       done();
@@ -326,7 +326,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens/123`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens/fake2-${new Date().getTime()}`,
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {},
       });
@@ -382,7 +382,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
       const response = await platform.app.inject({
         method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens/123456`,
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/tokens/fake3-${new Date().getTime()}`,
         headers: { authorization: `Bearer ${jwtToken}` },
         payload: {},
       });
