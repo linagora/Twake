@@ -41,7 +41,7 @@ class Service implements ChannelServiceAPI {
     this.channels = getChannelService(platformServices, this, user);
     this.tabs = getTabService(platformServices.database);
     this.activities = getActivitiesService(platformServices.pubsub);
-    this.pubsubListener = new PubsubListener(this, platformServices.pubsub, user);
+    this.pubsubListener = new PubsubListener(platformServices, this, platformServices.pubsub, user);
     this.pendingEmails = new ChannelPendingEmailsService(platformServices.database, user, this);
   }
 

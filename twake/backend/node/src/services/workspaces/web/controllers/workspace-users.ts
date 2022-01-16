@@ -36,6 +36,7 @@ import {
 import WorkspacePendingUser from "../../entities/workspace_pending_users";
 import { ConsoleServiceAPI } from "../../../console/api";
 import { ConsoleCompany, CreateConsoleUser } from "../../../console/types";
+import { hasCompanyAdminLevel } from "../../../../utils/company";
 
 export class WorkspaceUsersCrudController
   implements
@@ -60,6 +61,15 @@ export class WorkspaceUsersCrudController
     userCompanies: CompanyUser[],
     companiesMap: Map<string, Company>,
   ): WorkspaceUserObject {
+    //Company admins should be workspace moderators automatically
+    if (
+      currentCompanyId &&
+      userCompanies &&
+      hasCompanyAdminLevel(userCompanies.find(uc => uc.group_id === currentCompanyId)?.role)
+    ) {
+      workspaceUser.role = "moderator";
+    }
+
     const res: WorkspaceUserObject = {
       id: workspaceUser.id,
       company_id: currentCompanyId,

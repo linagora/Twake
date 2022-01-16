@@ -19,7 +19,7 @@ import WorkspacePendingUser, {
 import { CompanyUserRole } from "../user/web/types";
 import { uuid } from "../../utils/types";
 import { ConsoleServiceAPI } from "../console/api";
-import { WorkspaceInviteTokenObject } from "./web/types";
+import { InviteTokenObject, WorkspaceInviteTokenObject } from "./web/types";
 import WorkspaceInviteTokens from "./entities/workspace_invite_tokens";
 import { Readable } from "stream";
 
@@ -126,4 +126,7 @@ export interface WorkspaceServiceAPI
   createInviteToken(companyId: string, workspaceId: string): Promise<WorkspaceInviteTokenObject>;
   deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean>;
   getInviteTokenInfo(jwtToken: string): Promise<WorkspaceInviteTokens>;
+
+  encodeInviteToken(companyId: string, workspaceId: string, token: string): string;
+  decodeInviteToken(encodedToken: string): InviteTokenObject;
 }
