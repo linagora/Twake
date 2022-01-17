@@ -393,23 +393,6 @@ describe("The /workspace users API", () => {
       done();
     });
 
-    it("should 403 user is not workspace moderator", async done => {
-      const companyId = testDbService.company.id;
-      const workspaceId = testDbService.workspaces[2].workspace.id;
-      const userId = testDbService.workspaces[2].users[3].id;
-      const anotherUserId = testDbService.workspaces[2].users[1].id;
-
-      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
-
-      const response = await platform.app.inject({
-        method: "DELETE",
-        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/${anotherUserId}`,
-        headers: { authorization: `Bearer ${jwtToken}` },
-      });
-      expect(response.statusCode).toBe(403);
-      done();
-    });
-
     it("should 404 when user not found in workspace", async done => {
       const companyId = testDbService.company.id;
       const workspaceId = testDbService.workspaces[2].workspace.id;
