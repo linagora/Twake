@@ -72,6 +72,7 @@ const routes: FastifyPluginCallback<{
     if (!companyUser) {
       const company = await options.service.companies.getCompany({ id: companyId });
       if (!company) {
+        console.log(`Company ${companyId} not found`);
         throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
       }
       throw fastify.httpErrors.forbidden("User does not belong to this company");
@@ -84,6 +85,7 @@ const routes: FastifyPluginCallback<{
       id: request.params.workspace_id,
     });
     if (!workspace) {
+      console.log(`Workspace ${request.params.workspace_id} not found 2`);
       throw fastify.httpErrors.notFound(`Workspace ${request.params.workspace_id} not found`);
     }
   };
@@ -102,6 +104,7 @@ const routes: FastifyPluginCallback<{
         id: workspaceId,
       });
       if (!workspace) {
+        console.log(`Workspace ${workspaceId} not found`);
         throw fastify.httpErrors.notFound(`Workspace ${workspaceId} not found`);
       } else {
         throw fastify.httpErrors.forbidden("Not member of the workspace");
