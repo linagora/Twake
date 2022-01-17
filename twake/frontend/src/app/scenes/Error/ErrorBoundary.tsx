@@ -1,6 +1,7 @@
 import React from 'react';
 import RouterServices from 'app/services/RouterService';
-import 'app/ui.scss';
+
+import 'app/styles/ui.less';
 
 export default class ErrorBoundary extends React.Component<{}, { hasError: boolean }> {
   static lastError: any = null;

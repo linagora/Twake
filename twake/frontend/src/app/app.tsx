@@ -11,8 +11,7 @@ import InitService from './services/InitService';
 import useTimeout from './services/hooks/useTimeout';
 import ApplicationLoader from './components/Loader/ApplicationLoader';
 
-import 'app/ui.scss';
-import 'app/theme.less';
+import 'app/styles/index.less';
 
 const delayMessage = 5000;
 
