@@ -47,7 +47,7 @@ const useRealtimeRoom = <T>(
   useEffect(() => {
     if (room !== roomConf) {
       setRoom(roomConf);
-      if (subscribed.current && websocket) {
+      if (room && subscribed.current && websocket) {
         websocket.leave(room.room, tag);
         subscribed.current = false;
       }

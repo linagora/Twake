@@ -4,23 +4,25 @@ import { Col, Row, Tag, Typography } from 'antd';
 import { capitalize } from 'lodash';
 import Languages from 'services/languages/languages';
 import Icon from 'components/Icon/Icon';
-import RouterServices, { ClientStateType } from 'app/services/RouterService';
-import { Collection } from 'services/CollectionsReact/Collections';
-import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
+import RouterServices from 'app/services/RouterService';
+import { ChannelType } from 'app/models/Channel';
 import Emojione from 'app/components/Emojione/Emojione';
 import UsersService from 'services/user/UserService';
 import ModalManager from 'app/components/Modal/ModalManager';
+import ChannelsReachableAPIClient from 'app/services/channels/ChannelsReachableAPIClient';
+import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';
+import ChannelMembersAPIClient from 'app/services/channels/ChannelMembersAPIClient';
+
 import './ChannelRow.scss';
 
 type PropsType = {
-  channel: ChannelResource;
+  channel: ChannelType;
   joined: boolean;
   active: boolean;
 };
 
 export default ({ channel, joined, active }: PropsType) => {
-  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
-
+  const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
   const userId: string = UsersService.getCurrentUserId();
 
   const ref = createRef<HTMLDivElement>();
@@ -31,34 +33,39 @@ export default ({ channel, joined, active }: PropsType) => {
     }
   });
 
-  const joinChannel = () => {
-    const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.data.id}/members/`;
-    const channelMembersCollection = Collection.get(collectionPath, ChannelMemberResource);
-    const findMember = channelMembersCollection.find({ user_id: userId });
-
-    if (!findMember.length) {
-      channelMembersCollection.insert(
-        new ChannelMemberResource({
-          channel_id: channel.data.id,
-          user_id: userId,
-          type: 'member',
-        }),
+  const joinChannel = async () => {
+    if (channel.company_id && channel.workspace_id && channel.id) {
+      const channelMembers = await ChannelMembersAPIClient.get(
+        channel.company_id,
+        channel.workspace_id,
+        channel.id,
       );
+
+      const alreadyMemberInChannel = channelMembers.map(m => m.user_id)?.includes(userId);
+
+      if (!alreadyMemberInChannel) {
+        await ChannelsReachableAPIClient.inviteUser(
+          channel.company_id,
+          channel.workspace_id,
+          channel.id,
+          userId,
+        ).finally(refreshFavoriteChannels);
+      }
     }
 
     ModalManager.closeAll();
-    return RouterServices.push(
+    RouterServices.push(
       RouterServices.generateRouteFromState({
-        companyId,
-        workspaceId,
-        channelId: channel.data.id,
+        companyId: channel.company_id,
+        workspaceId: channel.workspace_id || '',
+        channelId: channel.id,
       }),
     );
   };
 
   return (
     <Row
-      key={channel.key}
+      key={channel.id}
       ref={ref}
       justify="space-between"
       align="middle"
@@ -67,17 +74,17 @@ export default ({ channel, joined, active }: PropsType) => {
     >
       <Col style={{ display: 'flex', alignItems: 'center' }}>
         <div style={{ lineHeight: 0 }}>
-          <Emojione type={channel.data.icon || ''} />
+          <Emojione type={channel.icon || ''} />
         </div>
         <span className="small-x-margin">
           <Typography.Text strong style={{ color: active ? 'var(--white)' : '' }}>
-            {capitalize(channel.data.name)}
+            {capitalize(channel.name)}
           </Typography.Text>
         </span>
-        {channel.data.visibility === 'private' && <Icon type="lock" />}
+        {channel.visibility === 'private' && <Icon type="lock" />}
       </Col>
 
-      {!joined && channel.data.visibility === 'public' && (
+      {!joined && channel.visibility === 'public' && (
         <Col>
           <Tag color="transparent">
             <Typography.Text>

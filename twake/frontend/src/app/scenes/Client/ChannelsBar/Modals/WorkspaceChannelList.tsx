@@ -10,10 +10,13 @@ import RouterServices from 'app/services/RouterService';
 import ModalManager from 'app/components/Modal/ModalManager';
 import { UserType } from 'app/models/User';
 import UsersService from 'services/user/UserService';
-import { ChannelMemberResource, ChannelResource } from 'app/models/Channel';
+import { ChannelType } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
+import ChannelMembersAPIClient from 'app/services/channels/ChannelMembersAPIClient';
+import ChannelsReachableAPIClient from 'app/services/channels/ChannelsReachableAPIClient';
+import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';
 
 export default () => {
   const [search, setSearch] = useState<string>('');
@@ -23,6 +26,7 @@ export default () => {
   const list = listService.useWatcher(() => listService.list);
   const currentUserId: string = UsersService.getCurrentUserId();
   const inputRef = useRef<Input>(null);
+  const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
 
   useEffect(() => {
     listService.searchAll('');
@@ -48,9 +52,9 @@ export default () => {
       case 'user':
         return upsertDirectMessage([(element.resource as UserType).id || '', currentUserId]);
       case 'workspace':
-        return joinChannel(element.resource as ChannelResource);
+        return joinChannel(element.resource as ChannelType);
       case 'direct':
-        return upsertDirectMessage((element.resource as ChannelResource).data.members || []);
+        return upsertDirectMessage((element.resource as ChannelType).members || []);
     }
   };
 
@@ -59,27 +63,32 @@ export default () => {
     return ModalManager.closeAll();
   };
 
-  const joinChannel = (channel: ChannelResource) => {
-    const collectionPath: string = `/channels/v1/companies/${channel.data.company_id}/workspaces/${channel.data.workspace_id}/channels/${channel.data.id}/members/`;
-    const channelMembersCollection = Collection.get(collectionPath, ChannelMemberResource);
-    const findMember = channelMembersCollection.find({ user_id: currentUserId });
-
-    if (!findMember.length) {
-      channelMembersCollection.insert(
-        new ChannelMemberResource({
-          channel_id: channel.data.id,
-          user_id: currentUserId,
-          type: 'member',
-        }),
+  const joinChannel = async (channel: ChannelType) => {
+    if (channel.company_id && channel.workspace_id && channel.id) {
+      const channelMembers = await ChannelMembersAPIClient.get(
+        channel.company_id,
+        channel.workspace_id,
+        channel.id,
       );
+
+      const alreadyMemberInChannel = channelMembers.map(m => m.user_id)?.includes(currentUserId);
+
+      if (!alreadyMemberInChannel) {
+        await ChannelsReachableAPIClient.inviteUser(
+          channel.company_id,
+          channel.workspace_id,
+          channel.id,
+          currentUserId,
+        ).finally(refreshFavoriteChannels);
+      }
     }
 
     ModalManager.closeAll();
-    return RouterServices.push(
+    RouterServices.push(
       RouterServices.generateRouteFromState({
-        companyId: channel.data.company_id,
-        workspaceId: channel.data.workspace_id || '',
-        channelId: channel.data.id,
+        companyId: channel.company_id,
+        workspaceId: channel.workspace_id || '',
+        channelId: channel.id,
       }),
     );
   };

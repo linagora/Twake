@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/models/Channel';
 
 import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/Modal/ModalManager';
@@ -21,7 +21,7 @@ type Props = {
   collection: Collection<ChannelResource>;
   directCollection: Collection<ChannelResource>;
   sectionTitle: string;
-  channels: ChannelResource[];
+  channels: ChannelType[];
   favorite?: boolean;
   subgroup?: boolean;
 };
@@ -81,7 +81,7 @@ export default (props: Props) => {
         </div>
       )}
       {props.channels.length > 0 &&
-        props.channels.map(({ data, key }) => {
+        props.channels.map((data, key) => {
           return (
             <ChannelIntermediate
               key={key}

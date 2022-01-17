@@ -1,18 +1,20 @@
 import React from 'react';
 
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import WorkspaceChannels from './WorkspaceChannel';
 import Languages from 'services/languages/languages';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
 import { getDirectChannels, getMine } from 'app/services/channels/ChannelCollectionPath';
+import { useDirectChannels } from 'app/state/recoil/hooks/channels/useDirectChannels';
+import { usePublicOrPrivateChannels } from 'app/state/recoil/hooks/channels/usePublicOrPrivateChannels';
 
 type channelCategoryType = {
-  favorite: ChannelResource[];
-  workspace: ChannelResource[];
-  inGroup: ChannelResource[];
-  direct: ChannelResource[];
+  favorite: ChannelType[];
+  workspace: ChannelType[];
+  inGroup: ChannelType[];
+  direct: ChannelType[];
 };
 
 export default () => {
@@ -31,30 +33,25 @@ export default () => {
     getDirectChannels(companyId),
     ChannelResource,
   ).setOptions({ reloadStrategy: 'delayed' });
-  const channels = channelsCollection.useWatcher(
-    {},
-    { observedFields: ['id', 'channel_group', 'user_member.favorite'], query: { mine: true } },
-  );
-  const directChannels = directChannelsCollection.useWatcher(
-    {},
-    { observedFields: ['id', 'user_member.favorite'] },
-  );
+  const { privateChannels, publicChannels } = usePublicOrPrivateChannels();
+  const { directChannels } = useDirectChannels();
 
+  const channels: ChannelType[] = [...privateChannels, ...publicChannels];
   ChannelsBarService.wait(companyId, workspaceId, channelsCollection);
 
   channels
     .concat(directChannels)
-    .filter(a => a.data.user_member?.user_id)
-    .sort((a, b) => (a.data.name || '').localeCompare(b.data.name || ''))
+    .filter(a => a.user_member?.user_id)
+    .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
     .forEach(channel => {
       switch (true) {
-        case channel.data.user_member?.favorite:
+        case channel.user_member?.favorite:
           channelCategory.favorite.push(channel);
           break;
-        case channel.data.visibility === 'direct':
+        case channel.visibility === 'direct':
           channelCategory.direct.push(channel);
           break;
-        case channel.data.channel_group && channel.data.channel_group.length > 1:
+        case channel.channel_group && channel.channel_group.length > 1:
           channelCategory.inGroup.push(channel);
           break;
         default:
@@ -63,27 +60,27 @@ export default () => {
     });
 
   const groupsName: string[] = [];
-  const groups: { name: string; channels: ChannelResource[] }[] = [];
+  const groups: { name: string; channels: ChannelType[] }[] = [];
   const hasNonGroupWorkspaceChannels = !(
     channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0
   );
 
   channelCategory.inGroup.forEach(channel => {
-    if (channel.data.channel_group && channel.data.channel_group.length > 1) {
+    if (channel.channel_group && channel.channel_group.length > 1) {
       if (groups.length === 0) {
-        groupsName.push(channel.data.channel_group);
+        groupsName.push(channel.channel_group);
         groups.push({
-          name: channel.data.channel_group,
+          name: channel.channel_group,
           channels: [channel],
         });
       } else {
-        if (groupsName.includes(channel.data.channel_group)) {
-          const groupIndex = groups.findIndex(group => group.name === channel.data.channel_group);
+        if (groupsName.includes(channel.channel_group)) {
+          const groupIndex = groups.findIndex(group => group.name === channel.channel_group);
           groups[groupIndex].channels.push(channel);
         } else {
-          groupsName.push(channel.data.channel_group);
+          groupsName.push(channel.channel_group);
           groups.push({
-            name: channel.data.channel_group,
+            name: channel.channel_group,
             channels: [channel],
           });
         }
