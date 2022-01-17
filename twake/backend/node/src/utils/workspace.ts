@@ -31,12 +31,12 @@ export async function isWorkspaceAdmin(
   return workspaceUser.role === "moderator";
 }
 
-export function hasWorkspaceAdminLevel(role: string): boolean {
-  return role === "moderator";
+export function hasWorkspaceAdminLevel(role: string, companyRole: string): boolean {
+  return role === "moderator" || hasCompanyAdminLevel(companyRole);
 }
 
-export function hasWorkspaceMemberLevel(role: string): boolean {
-  return role === "member" || hasWorkspaceAdminLevel(role);
+export function hasWorkspaceMemberLevel(role: string, companyRole: string): boolean {
+  return role === "member" || hasWorkspaceAdminLevel(role, companyRole);
 }
 
 export async function getWorkspaceUser(
