@@ -307,6 +307,7 @@ export class WorkspaceUsersCrudController
       resource: resource,
     };
   }
+
   async delete(
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
     reply: FastifyReply,
@@ -319,7 +320,7 @@ export class WorkspaceUsersCrudController
     });
 
     if (!workspaceUser) {
-      throw CrudExeption.notFound("Default channel has not been found");
+      throw CrudExeption.notFound("Workspace has not been found");
     }
 
     await this.workspaceService.removeUser({
