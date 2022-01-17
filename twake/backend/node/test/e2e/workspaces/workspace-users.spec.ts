@@ -395,9 +395,9 @@ describe("The /workspace users API", () => {
 
     it("should 403 user is not workspace moderator", async done => {
       const companyId = testDbService.company.id;
-      const anotherUserId = testDbService.workspaces[2].users[2].id;
-      const workspaceId = testDbService.workspaces[0].workspace.id;
-      const userId = testDbService.workspaces[2].users[1].id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[2].id;
+      const anotherUserId = testDbService.workspaces[2].users[1].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
