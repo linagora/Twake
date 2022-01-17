@@ -7,8 +7,9 @@ import InputWithSelect from 'app/components/Inputs/InputWithSelect';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import AccessRightsService from 'app/services/AccessRightsService';
+import { usePublicOrPrivateChannels } from 'app/state/recoil/hooks/channels/usePublicOrPrivateChannels';
 
-type Props = {
+type PropsType = {
   channel: ChannelType | undefined;
   onChange: (channelEntries: Partial<ChannelType>) => void;
   currentUserId?: string;
@@ -18,12 +19,12 @@ type Props = {
 const { TextArea } = Input;
 const { Option } = Select;
 const { Title } = Typography;
-const ChannelTemplateEditor: FC<Props> = ({
+const ChannelTemplateEditor = ({
   channel,
   onChange,
   currentUserId,
   defaultVisibility,
-}) => {
+}: PropsType) => {
   const [icon, setIcon] = useState<string>(channel?.icon || '');
   const [name, setName] = useState<string>(channel?.name || '');
   const [description, setDescription] = useState<string>(channel?.description || '');
@@ -33,7 +34,7 @@ const ChannelTemplateEditor: FC<Props> = ({
   const [defaultChannel, setDefaultChannel] = useState<boolean>(channel?.is_default || false);
   const [group, setGroup] = useState<string>(channel?.channel_group || '');
   const { companyId, workspaceId } = RouterServices.getStateFromRoute();
-
+  const { privateChannels, publicChannels } = usePublicOrPrivateChannels();
   useEffect(() => {
     onChange({
       icon,
@@ -46,16 +47,12 @@ const ChannelTemplateEditor: FC<Props> = ({
   });
 
   const getGroups = () => {
-    const url: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-    const channelsCollection = Collection.get(url, ChannelResource);
-    const channels = channelsCollection.find({}, { withoutBackend: true });
-
     const groupsNames: string[] = [];
-    channels
-      .sort((a, b) => (a.data.channel_group || '').localeCompare(b.data.channel_group || ''))
-      .forEach((channel: ChannelResource) => {
-        if (channel.data.channel_group && !groupsNames.includes(channel.data.channel_group))
-          groupsNames.push(channel.data.channel_group);
+    [...privateChannels, ...publicChannels]
+      .sort((a, b) => (a.channel_group || '').localeCompare(b.channel_group || ''))
+      .forEach(channel => {
+        if (channel.channel_group && !groupsNames.includes(channel.channel_group))
+          groupsNames.push(channel.channel_group);
       });
     return groupsNames;
   };

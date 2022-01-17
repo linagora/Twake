@@ -1,4 +1,4 @@
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelType } from 'app/models/Channel';
 import { UserType } from 'app/models/User';
 import Strings from 'app/services/utils/strings';
 import UsersService from 'services/user/UserService';
@@ -7,15 +7,16 @@ import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterService';
 import { getUserParts } from 'app/components/Member/UserParts';
 import Observable from 'services/Observable/Observable';
-import Api from '../Api';
 import UserAPIClient from '../user/UserAPIClient';
+import ChannelsReachableAPIClient from '../channels/ChannelsReachableAPIClient';
+import ChannelsMineAPIClient from '../channels/ChannelsMineAPIClient';
 
 export type GenericChannel = {
   type: 'user' | 'direct' | 'workspace';
   sortString: string;
   filterString: string;
   lastActivity?: number;
-  resource: UserType | ChannelResource;
+  resource: UserType | ChannelType;
 };
 
 class SearchListManager extends Observable {
@@ -39,35 +40,34 @@ class SearchListManager extends Observable {
     },
   ): Promise<void> {
     const { workspaceId, companyId } = RouterServices.getStateFromRoute();
-    // Path
-    const workspaceChannelsPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/`;
-    const directChannelsPath = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
-    const mineWorkspaceChannelsPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
 
-    // Resources
-    let workspaceChannelsResources = (await this.find({
-      collectionPath: workspaceChannelsPath,
-    })) as ChannelResource[];
+    // Reachable
+    let channels: ChannelType[] = [];
 
-    const directChannelsResources = (await this.find({
-      collectionPath: directChannelsPath,
-    })) as ChannelResource[];
+    // Direct Channels
+    let directChannels: ChannelType[] = [];
 
-    const mineWorkspaceChannelsResources = (await this.find({
-      collectionPath: mineWorkspaceChannelsPath,
-    })) as ChannelResource[];
+    // Mine
+    let mineWorkspaceChannels: ChannelType[] = [];
 
-    const usersSearched = (await this.find({ search })) as UserType[];
+    let usersSearched: UserType[] = [];
+
+    if (companyId && workspaceId) {
+      channels = await ChannelsReachableAPIClient.get(companyId, workspaceId);
+      directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
+      mineWorkspaceChannels = await ChannelsMineAPIClient.get({ companyId, workspaceId });
+      usersSearched = await this.searchUsers(search);
+    }
 
     // Filters
     this.workspaceChannels = this.filterWorkspaceChannels({
-      channels: workspaceChannelsResources,
-      mineWorkspaceChannels: mineWorkspaceChannelsResources,
+      channels,
+      mineWorkspaceChannels,
     });
 
     this.directChannels = opt?.onlyChannel
       ? []
-      : this.filterDirectChannels({ channels: directChannelsResources });
+      : this.filterDirectChannels({ channels: directChannels });
     this.users = this.filterUsers({ users: usersSearched });
     // Concat list
     this.list = [...this.workspaceChannels, ...this.directChannels, ...this.users];
@@ -82,24 +82,6 @@ class SearchListManager extends Observable {
     this.notify();
   }
 
-  private async find({
-    collectionPath,
-    search,
-  }: {
-    collectionPath?: string;
-    search?: string;
-  }): Promise<(UserType | ChannelResource)[]> {
-    if (collectionPath?.length) {
-      return this.workspaceChannels.length === 0
-        ? await Collection.get(collectionPath, ChannelResource).findSync({})
-        : Collection.get(collectionPath, ChannelResource).find({});
-    } else {
-      let users: UserType[] = [];
-      users.push(...(await this.searchUsers(search || '')).filter(u => !!u));
-      return users;
-    }
-  }
-
   private async searchUsers(text: string) {
     return UserAPIClient.search<UserType>(Strings.removeAccents(text), {
       scope: 'company',
@@ -111,42 +93,42 @@ class SearchListManager extends Observable {
     channels,
     mineWorkspaceChannels,
   }: {
-    channels: ChannelResource[];
-    mineWorkspaceChannels: ChannelResource[];
+    channels: ChannelType[];
+    mineWorkspaceChannels: ChannelType[];
   }) {
-    const workspaceChannels: GenericChannel[] = channels.map((channel: ChannelResource) => {
+    const workspaceChannels: GenericChannel[] = channels.map(channel => {
       return {
-        sortString: channel.data.name || '',
-        filterString: channel.data.name || '',
+        sortString: channel.name || '',
+        filterString: channel.name || '',
         type: 'workspace',
-        lastActivity: channel.data.last_activity || 0,
+        lastActivity: channel.last_activity || 0,
         resource: channel,
       };
     });
 
     return workspaceChannels.filter(channel => {
       if (channel.type === 'workspace') {
-        const resource = channel.resource as ChannelResource;
+        const resource = channel.resource as ChannelType;
         const isNotAbleToSeeChannel =
           !this.isChannelMember(mineWorkspaceChannels, resource) &&
-          resource.data.visibility === 'private';
+          resource.visibility === 'private';
         return !isNotAbleToSeeChannel;
       }
       return undefined;
     });
   }
 
-  private filterDirectChannels({ channels }: { channels: ChannelResource[] }) {
-    const directChannels: GenericChannel[] = channels.map((channel: ChannelResource) => {
+  private filterDirectChannels({ channels }: { channels: ChannelType[] }) {
+    const directChannels: GenericChannel[] = channels.map((channel: ChannelType) => {
       const { name } = getUserParts({
-        usersIds: channel.data.members || [],
+        usersIds: channel.members || [],
       });
 
       return {
         sortString: name,
         filterString: name,
         type: 'direct',
-        lastActivity: channel.data.last_activity || 0,
+        lastActivity: channel.last_activity || 0,
         resource: channel,
       };
     });
@@ -181,15 +163,15 @@ class SearchListManager extends Observable {
       .filter(
         userOrChannel =>
           userOrChannel.type === 'direct' &&
-          ((userOrChannel.resource as ChannelResource).data.members?.length || 0) <= 2,
+          ((userOrChannel.resource as ChannelType).members?.length || 0) <= 2,
       )
       .map(userOrChannel => {
-        const channel = userOrChannel.resource as ChannelResource;
-        if (channel.data.members?.length === 1) {
-          return channel.data.members[0];
+        const channel = userOrChannel.resource as ChannelType;
+        if (channel.members?.length === 1) {
+          return channel.members[0];
         }
-        if (channel.data.members?.length === 2) {
-          const otherUserId = channel.data.members.filter(
+        if (channel.members?.length === 2) {
+          const otherUserId = channel.members.filter(
             id => id !== UsersService.getCurrentUserId(),
           )[0];
           return otherUserId;
@@ -206,8 +188,8 @@ class SearchListManager extends Observable {
     });
   }
 
-  private isChannelMember(mine: ChannelResource[], resource: ChannelResource) {
-    return mine.some(channel => resource.id === channel.id && channel.data.user_member?.user_id);
+  private isChannelMember(mine: ChannelType[], resource: ChannelType) {
+    return mine.some(channel => resource.id === channel.id && channel.user_member?.user_id);
   }
 }
 

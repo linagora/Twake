@@ -6,7 +6,7 @@ import Observable from 'app/services/Observable/Observable';
 import ElectronService from 'services/electron/electron';
 import windowState from 'services/utils/window';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/models/Channel';
 import { Collection } from '../CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
 import WorkspacesService from 'services/workspaces/workspaces';
@@ -16,6 +16,7 @@ import ChannelsService from 'services/channels/channels';
 import NotificationParameters from 'services/user/notification_parameters';
 import UserService from 'services/user/UserService';
 import NotificationPreferences from './NotificationPreferences';
+import ChannelAPIClient from '../channels/ChannelAPIClient';
 
 type DesktopNotification = {
   channel_id: string;
@@ -289,17 +290,18 @@ class Notifications extends Observable {
     }
   }
 
-  read(channel: ChannelResource) {
-    channel.action('read', { value: true });
-    const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/',
-      NotificationResource,
-    );
-    notificationsCollection.remove({ channel_id: channel.id }, { withoutBackend: true });
+  read(channel: ChannelType) {
+    if (channel?.company_id && channel?.workspace_id && channel?.id) {
+      ChannelAPIClient.read(channel.company_id, channel.workspace_id, channel.id, { status: true });
+    }
   }
 
-  unread(channel: ChannelResource) {
-    channel.action('read', { value: false });
+  unread(channel: ChannelType) {
+    if (channel?.company_id && channel?.workspace_id && channel?.id) {
+      ChannelAPIClient.read(channel.company_id, channel.workspace_id, channel.id, {
+        status: false,
+      });
+    }
   }
 }
 

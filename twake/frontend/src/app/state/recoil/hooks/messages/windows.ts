@@ -96,14 +96,14 @@ export const useAddToWindowedList = (companyId: string) => {
         if (options.reachedEnd || (options.atBottom && !window.end))
           options = { ...options, reachedEnd: true };
         if (options.reachedEnd || options.reachedStart) window = reachEdge(options);
-        if (((options.atBottom && window.reachedEnd) || options.inWindow) && items.length > 0)
+        if (((options.atBottom && window.reachedEnd) || options.inWindow) && items?.length > 0)
           updateWindowFromIds([window.start, window.end, ...items.map(m => getId(m))]);
 
-        if (items.length === 0) return;
+        if (items?.length === 0) return;
 
         const atom = options.atom;
         const newList = _.uniqBy(
-          [...(snapshot.getLoadable(atom).valueMaybe() || []), ...items],
+          [...(snapshot.getLoadable(atom).valueMaybe() || []), ...(items || [])],
           m => getId(m),
         );
 
