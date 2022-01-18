@@ -22,12 +22,21 @@ import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace
 import './ChannelsBar.scss';
 import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 import useChannelWritingActivity from 'app/state/recoil/hooks/useChannelWritingActivity';
+import { useChannelsBarLoader } from 'app/state/recoil/hooks/channels/useChannelsBarLoader';
+import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';
+import { usePublicOrPrivateChannels } from 'app/state/recoil/hooks/channels/usePublicOrPrivateChannels';
+import { useDirectChannels } from 'app/state/recoil/hooks/channels/useDirectChannels';
 
 export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const { workspace } = useCurrentWorkspace();
   useChannelWritingActivity();
+  const { loading } = useChannelsBarLoader({ companyId, workspaceId });
+
+  usePublicOrPrivateChannels();
+  useDirectChannels();
+  useFavoriteChannels();
 
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
@@ -53,8 +62,8 @@ export default () => {
     };
   }, []);
 
-  if (!companyId || !workspaceId || !workspace) {
-    return <></>;
+  if (loading || !companyId || !workspaceId || !workspace) {
+    return <LoadingChannelBar />;
   }
 
   return (

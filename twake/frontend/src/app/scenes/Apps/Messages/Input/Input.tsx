@@ -20,7 +20,7 @@ import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
-import { useChannel } from 'app/state/recoil/hooks/useChannels';
+import { useChannel } from 'app/state/recoil/hooks/channels/useChannel';
 import {
   useChannelWritingActivityEmit,
   useWritingDetector,

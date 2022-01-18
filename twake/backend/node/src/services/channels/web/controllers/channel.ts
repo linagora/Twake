@@ -108,27 +108,15 @@ export class ChannelCrudController
       getChannelExecutionContext(request, channel),
     );
 
+    const channelObject = ChannelObject.mapTo(channel, {
+      user_member: ChannelMemberObject.mapTo(member),
+    });
+
+    await this.completeWithStatistics([channelObject]);
+
     return {
       websocket: this.websockets.sign([getWebsocketInformation(channel)], context.user.id)[0],
-      resource: ChannelObject.mapTo(channel, {
-        user_member: ChannelMemberObject.mapTo(member),
-        stats: {
-          members: await this.membersService.getUsersCount({
-            id: channel.id,
-            company_id: channel.company_id,
-            workspace_id: channel.workspace_id,
-            counter_type: ChannelUserCounterType.MEMBERS,
-          }),
-          guests: 0, // Since actually all users are now added to the channel as members, we are removing the guest counter for now.
-          // guests: await this.membersService.getUsersCount({
-          //   id: channel.id,
-          //   company_id: channel.company_id,
-          //   workspace_id: channel.workspace_id,
-          //   counter_type: ChannelUserCounterType.GUESTS,
-          // }),
-          messages: 0,
-        },
-      }),
+      resource: channelObject,
     };
   }
 
@@ -285,27 +273,7 @@ export class ChannelCrudController
 
     const resources = entities.map(a => ChannelObject.mapTo(a));
 
-    try {
-      await this.membersService.getUsersCount({
-        ..._.pick(resources[0], "id", "company_id", "workspace_id"),
-        counter_type: ChannelUserCounterType.MEMBERS,
-      });
-    } catch (e) {
-      console.log(e);
-    }
-
-    const counts = await Promise.all(
-      resources.map(a =>
-        this.membersService.getUsersCount({
-          ..._.pick(a, "id", "company_id", "workspace_id"),
-          counter_type: ChannelUserCounterType.MEMBERS,
-        }),
-      ),
-    );
-
-    for (let i = 0; i < resources.length; i++) {
-      resources[i].stats = { members: counts[i], guests: 0, messages: 0 };
-    }
+    await this.completeWithStatistics(resources);
 
     return {
       ...{
@@ -436,6 +404,22 @@ export class ChannelCrudController
     );
 
     return { status: pendingEmail.deleted ? "success" : "error" };
+  }
+
+  async completeWithStatistics(channels: ChannelObject[]) {
+    await Promise.all(
+      channels.map(async a => {
+        const members = await this.membersService.getUsersCount({
+          ..._.pick(a, "id", "company_id", "workspace_id"),
+          counter_type: ChannelUserCounterType.MEMBERS,
+        });
+        const messages = await this.membersService.getUsersCount({
+          ..._.pick(a, "id", "company_id", "workspace_id"),
+          counter_type: ChannelUserCounterType.MEMBERS,
+        });
+        a.stats = { members, messages };
+      }),
+    );
   }
 }
 

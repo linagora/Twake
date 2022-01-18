@@ -55,11 +55,9 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
     try {
       const out = await exec("jest", args.split(" "));
       if (out.code !== 0) {
-        //To get all the logs
-        await exec("jest", args.split(" "), true);
+        //To get all the logs, we run it again
         console.log(`FAIL ${testName}`);
-        console.log(`-- Data\n ${out.data}`);
-        console.log(`-- Error\n ${out.error || "(no error)"}`);
+        await exec("jest", args.split(" "), true);
         failed++;
       } else {
         passed++;

@@ -8,12 +8,12 @@ import { CounterAPI } from "../../src/core/platform/services/counter/types";
 import {
   WorkspaceCounterEntity,
   WorkspaceCounterPrimaryKey,
-  WorkspaceCounterType
+  WorkspaceCounterType,
 } from "../../src/services/workspaces/entities/workspace_counters";
 import { CounterProvider } from "../../src/core/platform/services/counter/provider";
 import WorkspaceUser, {
   getInstance as getWorkspaceUserInstance,
-  TYPE as WorkspaceUserEntityType
+  TYPE as WorkspaceUserEntityType,
 } from "../../src/services/workspaces/entities/workspace_user";
 
 import { countRepositoryItems } from "../../src/utils/counters";
@@ -21,7 +21,7 @@ import { TestDbService } from "./utils.prepare.db";
 import {
   ChannelCounterEntity,
   ChannelCounterPrimaryKey,
-  ChannelUserCounterType
+  ChannelUserCounterType,
 } from "../../src/services/channels/entities/channel_counters";
 import { ChannelMemberType } from "../../src/services/channels/types";
 import { getMemberOfChannelInstance, MemberOfChannel } from "../../src/services/channels/entities";
@@ -66,7 +66,7 @@ describe("Counters implementation", () => {
         WorkspaceUser,
       );
 
-      counter.reviseCounter(async (pk: WorkspaceCounterPrimaryKey) => {
+      counter.setReviseCallback(async (pk: WorkspaceCounterPrimaryKey) => {
         if (pk.counter_type == "members") {
           return countRepositoryItems(workspaceUserRepository, { workspace_id: pk.id });
         }
@@ -154,7 +154,7 @@ describe("Counters implementation", () => {
         MemberOfChannel,
       );
 
-      counter.reviseCounter(async (pk: ChannelCounterPrimaryKey) => {
+      counter.setReviseCallback(async (pk: ChannelCounterPrimaryKey) => {
         if (pk.counter_type == ChannelUserCounterType.MEMBERS) {
           return countRepositoryItems(
             memberOfChannelRepository,
@@ -178,7 +178,7 @@ describe("Counters implementation", () => {
       //   ChannelMember,
       // );
       //
-      // counter.reviseCounter(async (pk: ChannelCounterPrimaryKey) => {
+      // counter.setReviseCallback(async (pk: ChannelCounterPrimaryKey) => {
       //   if (pk.counter_type == ChannelUserCounterType.MEMBERS) {
       //     return countRepositoryItems(
       //       channelMemberRepository,

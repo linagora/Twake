@@ -41,7 +41,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     );
     setLoaded();
 
-    const nothingNew = newMessages.filter(m => !isInWindow(m.thread_id)).length < limit;
+    const nothingNew = newMessages?.filter(m => !isInWindow(m.thread_id)).length < limit;
 
     addToChannel(newMessages, {
       inWindow: true,
@@ -49,7 +49,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       ...(nothingNew && direction !== 'future' ? { reachedStart: true } : {}),
     });
 
-    newMessages.forEach(m => {
+    newMessages?.forEach(m => {
       setMessage(m);
       addToThread(m.last_replies, {
         threadId: m.thread_id,
@@ -110,7 +110,7 @@ export const useAddMessageToChannel = (key: AtomChannelKey) => {
     const windowKey = key.channelId;
     const atom = ChannelMessagesState(key);
     updater<AtomMessageKey>(
-      messages.map(m => {
+      messages?.map(m => {
         const lastReplies = (m as MessageWithReplies).last_replies || [];
         return {
           id: m.id,

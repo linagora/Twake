@@ -12,6 +12,20 @@ class ChannelAPIClient {
     ).then(result => result.resource);
   }
 
+  async save(
+    channel: ChannelType,
+    context: { companyId: string; workspaceId: string; channelId?: string },
+  ) {
+    return Api.post<{ resource: ChannelType }, { resource: ChannelType }>(
+      `${PREFIX}/${context.companyId}/workspaces/${context.workspaceId}/channels${
+        context?.channelId ? `/${context.channelId}` : ''
+      }`,
+      {
+        resource: channel,
+      },
+    ).then(result => result.resource);
+  }
+
   async read(
     companyId: string,
     workspaceId: string,

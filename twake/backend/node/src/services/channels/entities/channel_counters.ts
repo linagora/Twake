@@ -30,5 +30,6 @@ export type ChannelCounterPrimaryKey = Pick<
 
 export enum ChannelUserCounterType {
   MEMBERS = "members",
+  MESSAGES = "messages",
   GUESTS = "guests",
 }

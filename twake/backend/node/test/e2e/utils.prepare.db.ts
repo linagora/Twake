@@ -149,7 +149,7 @@ export class TestDbService {
     if (options.email) {
       user.email_canonical = options.email;
     }
-    const createdUser = await this.userService.users.create(user).then(a => a.entity);
+    const createdUser = (await this.userService.users.create(user)).entity;
 
     if (options.password) {
       await this.userService.users.setPassword({ id: createdUser.id }, options.password);
