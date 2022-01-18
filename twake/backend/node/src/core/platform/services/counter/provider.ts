@@ -60,7 +60,8 @@ export class CounterProvider<T> {
 
     if (
       lastRevised.calls >= this.reviseMaxCalls ||
-      now > lastRevised.period + this.reviseMaxPeriod
+      now > lastRevised.period + this.reviseMaxPeriod ||
+      Math.random() < 1 / Math.max(1, currentValue) //The slowest the number is, the more we update it
     ) {
       if (!this.reviseHandler) {
         logger.debug(
