@@ -73,6 +73,7 @@ describe("The /workspace users API", () => {
     await testDbService.createUser([ws2pk], { companyRole: "admin" });
     await testDbService.createUser([ws2pk], { workspaceRole: "moderator" });
     await testDbService.createUser([ws2pk], { workspaceRole: "member" });
+    await testDbService.createUser([ws2pk], { workspaceRole: "member" });
     await testDbService.createUser([], { companyRole: "member" });
     await testDbService.createUser([ws3pk], { companyRole: "guest", workspaceRole: "member" });
     ends();
@@ -264,7 +265,11 @@ describe("The /workspace users API", () => {
 
       let workspaceUsersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
       let companyUsersCount = await testDbService.getCompanyUsersCountFromDb(companyId);
-      expect(workspaceUsersCount).toBe(3);
+
+      console.log(testDbService.workspaces[2].users);
+      console.log(workspaceUsersCount);
+
+      expect(workspaceUsersCount).toBe(4);
       // expect(companyUsersCount).toBe(6);
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
@@ -390,6 +395,26 @@ describe("The /workspace users API", () => {
         url: `${url}/companies/${companyId}/workspaces/${nonExistentId}/users/${anotherUserId}`,
       });
       expect(response.statusCode).toBe(401);
+      done();
+    });
+
+    it("should 403 user is not workspace moderator", async done => {
+      const companyId = testDbService.company.id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[3].id;
+      const anotherUserId = testDbService.workspaces[2].users[1].id;
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: userId });
+
+      const response = await platform.app.inject({
+        method: "DELETE",
+        url: `${url}/companies/${companyId}/workspaces/${workspaceId}/users/${anotherUserId}`,
+        headers: { authorization: `Bearer ${jwtToken}` },
+      });
+
+      console.log(response.body);
+
+      expect(response.statusCode).toBe(403);
       done();
     });
 

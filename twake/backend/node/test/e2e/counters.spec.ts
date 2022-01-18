@@ -66,12 +66,6 @@ describe("Counters implementation", () => {
         WorkspaceUser,
       );
 
-      counter.setReviseCallback(async (pk: WorkspaceCounterPrimaryKey) => {
-        if (pk.counter_type == "members") {
-          return countRepositoryItems(workspaceUserRepository, { workspace_id: pk.id });
-        }
-      }, 4);
-
       await workspaceUserRepository.save(
         getWorkspaceUserInstance({
           workspaceId: counterPk.id,
@@ -127,6 +121,17 @@ describe("Counters implementation", () => {
     it("Revising counter", async done => {
       // Subtracting 2
 
+      const workspaceUserRepository = await testDbService.getRepository(
+        WorkspaceUserEntityType,
+        WorkspaceUser,
+      );
+
+      counter.setReviseCallback(async (pk: WorkspaceCounterPrimaryKey) => {
+        if (pk.counter_type == "members") {
+          return countRepositoryItems(workspaceUserRepository, { workspace_id: pk.id });
+        }
+      }, 4);
+
       await counter.increase(counterPk, 1);
       const val = await counter.get(counterPk);
       expect(val).toEqual(1);
@@ -154,16 +159,6 @@ describe("Counters implementation", () => {
         MemberOfChannel,
       );
 
-      counter.setReviseCallback(async (pk: ChannelCounterPrimaryKey) => {
-        if (pk.counter_type == ChannelUserCounterType.MEMBERS) {
-          return countRepositoryItems(
-            memberOfChannelRepository,
-            { channel_id: pk.id, company_id: pk.company_id, workspace_id: pk.workspace_id },
-            { type: ChannelMemberType.MEMBER },
-          );
-        }
-      }, 4);
-
       await memberOfChannelRepository.save(
         getMemberOfChannelInstance({
           company_id: counterPk.company_id,
@@ -172,30 +167,6 @@ describe("Counters implementation", () => {
           user_id: uuidv1(),
         }),
       );
-
-      // const channelMemberRepository = await testDbService.getRepository(
-      //   "user_channels",
-      //   ChannelMember,
-      // );
-      //
-      // counter.setReviseCallback(async (pk: ChannelCounterPrimaryKey) => {
-      //   if (pk.counter_type == ChannelUserCounterType.MEMBERS) {
-      //     return countRepositoryItems(
-      //       channelMemberRepository,
-      //       { channel_id: pk.id },
-      //       { type: ChannelMemberType.MEMBER },
-      //     );
-      //   }
-      // }, 4);
-      //
-      // await channelMemberRepository.save(
-      //   getChannelMemberInstance({
-      //     company_id: uuidv1(),
-      //     workspace_id: uuidv1(),
-      //     channel_id: counterPk.id,
-      //     user_id: uuidv1(),
-      //   }),
-      // );
 
       expect(counter).toBeTruthy();
 
@@ -243,6 +214,21 @@ describe("Counters implementation", () => {
 
     it("Revising counter", async done => {
       // Subtracting 2
+
+      const memberOfChannelRepository = await testDbService.getRepository(
+        "channel_members",
+        MemberOfChannel,
+      );
+
+      counter.setReviseCallback(async (pk: ChannelCounterPrimaryKey) => {
+        if (pk.counter_type == ChannelUserCounterType.MEMBERS) {
+          return countRepositoryItems(
+            memberOfChannelRepository,
+            { channel_id: pk.id, company_id: pk.company_id, workspace_id: pk.workspace_id },
+            { type: ChannelMemberType.MEMBER },
+          );
+        }
+      }, 4);
 
       await counter.increase(counterPk, 1);
       const val = await counter.get(counterPk);
