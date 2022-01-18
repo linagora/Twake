@@ -3,7 +3,7 @@ import Icon from 'components/Icon/Icon.js';
 import Languages from 'services/languages/languages';
 import './AddUserButton.scss';
 import popupManager from 'services/popupManager/popupManager.js';
-import AddUserByEmail from 'app/scenes/Client/Popup/AddUser/AddUserByEmail';
+import AddUserByEmail from 'app/views/client/popup/AddUser/AddUserByEmail';
 
 export default (props: any) => {
   return (

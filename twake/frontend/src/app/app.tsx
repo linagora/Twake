@@ -4,9 +4,9 @@ import { Router } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
-import Integration from 'app/scenes/Integration/Integration';
+import Integration from 'app/views/integration';
 import RouterServices, { RouteType } from './services/RouterService';
-import ErrorBoundary from 'app/scenes/Error/ErrorBoundary';
+import ErrorBoundary from 'app/views/error/error-boundary';
 import InitService from './services/InitService';
 import useTimeout from './services/hooks/useTimeout';
 import ApplicationLoader from './components/Loader/ApplicationLoader';

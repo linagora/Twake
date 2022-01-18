@@ -2,17 +2,17 @@ import { createBrowserHistory, History } from 'history';
 import { matchPath, match } from 'react-router';
 import short, { Translator } from 'short-uuid';
 
-import App from 'app/scenes/App';
-import Login from 'app/scenes/Login/Login';
-import Logout from 'app/scenes/Login/Logout';
-import Error from 'app/scenes/Error/Error';
-import Join from 'app/scenes/Join/Join';
+import App from 'app/views/client/app';
+import Login from 'app/views/login/login';
+import Logout from 'app/views/login/logout';
+import Error from 'app/views/error';
+import Join from 'app/views/join';
 import Collections from 'services/Depreciated/Collections/Collections';
 
 import Workspaces from 'services/workspaces/workspaces';
 import Groups from 'services/workspaces/groups';
 import Channels from 'services/channels/channels';
-import PublicMainView from 'scenes/Client/MainView/PublicMainView';
+import PublicMainView from 'app/views/client/main-view/PublicMainView';
 import Observable from './Observable/Observable';
 
 export type RouteType = {

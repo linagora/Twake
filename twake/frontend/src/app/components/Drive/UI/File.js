@@ -42,7 +42,7 @@ export default class File extends React.Component {
         }
         style={
           this.props.data.has_preview
-            ? { backgroundImage: addApiUrlIfNeeded((this.props.data.preview_link), true) }
+            ? { backgroundImage: addApiUrlIfNeeded(this.props.data.preview_link, true) }
             : {}
         }
       >

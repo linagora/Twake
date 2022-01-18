@@ -26,7 +26,7 @@ import {
 } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';
 import MainViewService from 'app/services/AppView/MainViewService';
-import MessageExternalFilePicker from 'app/scenes/Apps/Messages/Input/Parts/MessageExternalFilePicker';
+import MessageExternalFilePicker from 'app/views/applications/messages/input/parts/MessageExternalFilePicker';
 import FileUploadAPIClient from 'app/components/FileUploads/FileUploadAPIClient';
 
 class Messages extends Observable {
