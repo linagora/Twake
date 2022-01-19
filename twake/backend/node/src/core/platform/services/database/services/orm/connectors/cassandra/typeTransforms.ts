@@ -141,8 +141,8 @@ export const transformValueFromDbString = (
     return decryptedValue;
   }
 
-  if (type === "twake_boolean") {
-    return Boolean(v);
+  if (type === "twake_boolean" || type === "boolean") {
+    return Boolean(v).valueOf();
   }
 
   if (type === "json") {
@@ -154,7 +154,7 @@ export const transformValueFromDbString = (
   }
 
   if (type === "uuid" || type === "timeuuid") {
-    return v ? String(v) : null;
+    return v ? String(v).valueOf() : null;
   }
 
   if (type === "number") {

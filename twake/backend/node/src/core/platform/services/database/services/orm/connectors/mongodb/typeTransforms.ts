@@ -91,8 +91,11 @@ export const transformValueFromDbString = (v: any, type: string, options: any = 
       return null;
     }
   }
-  if (type === "twake_boolean") {
-    return Boolean(v);
+  if (type === "twake_boolean" || type === "boolean") {
+    return Boolean(v).valueOf();
+  }
+  if (type === "number") {
+    return Number(v).valueOf();
   }
 
   if (type === "counter") {
