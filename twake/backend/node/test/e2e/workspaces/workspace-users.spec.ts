@@ -291,7 +291,7 @@ describe("The /workspace users API", () => {
 
       workspaceUsersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
       companyUsersCount = await testDbService.getCompanyUsersCountFromDb(companyId);
-      expect(workspaceUsersCount).toBe(4);
+      expect(workspaceUsersCount).toBe(5);
       // expect(companyUsersCount).toBe(6);
 
       done();
@@ -379,7 +379,7 @@ describe("The /workspace users API", () => {
       expect(resource["role"]).toBe("moderator");
 
       const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
-      expect(usersCount).toBe(4);
+      expect(usersCount).toBe(5);
 
       done();
     });
@@ -461,7 +461,7 @@ describe("The /workspace users API", () => {
       expect(resources.find((a: { user_id: uuid }) => a.user_id === anotherUserId)).toBeUndefined();
 
       const usersCount = await testDbService.getWorkspaceUsersCountFromDb(workspaceId);
-      expect(usersCount).toBe(3);
+      expect(usersCount).toBe(4);
 
       done();
     });
