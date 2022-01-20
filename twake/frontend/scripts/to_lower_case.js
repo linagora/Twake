@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Path = require('path');
 const _ = require('lodash');
 
 const appUrl = '../src/app';
@@ -7,75 +8,162 @@ const modelsUrl = `${appUrl}/models`;
 const scenesUrl = `${appUrl}/scenes`;
 const servicesUrl = `${appUrl}/services`;
 
-const isUpperCase = str => !/[a-z]/.test(str) && /[A-Z]/.test(str);
+const routes = new Map();
 
-const processFilter = (fileOrFolderPath, rootUrl) => {
-  const oldNameArr = fileOrFolderPath.split('');
-  const isFile = /\.[0-9a-z]+$/i.test(fileOrFolderPath);
-  let extension = undefined;
+const isDirectory = path => fs.lstatSync(path).isDirectory();
+
+// pwd must start with 'src/...'
+const getAbsolutePath = (path, pwd = appUrl) => {
+  if (path[0] === '.') {
+    console.log({ pwd, path, resolve: Path.resolve(pwd + '/' + path) });
+    return Path.resolve(pwd + '/' + path);
+  }
+
+  path = path.replace(/^app\//, appUrl + '/');
+  path = path.replace(/^environment\//, appUrl + '/environment/');
+  path = path.replace(/^common\//, appUrl + '/common/');
+  path = path.replace(/^components\//, appUrl + '/components/');
+  path = path.replace(/^services\//, appUrl + '/services/');
+  path = path.replace(/^scenes\//, appUrl + '/scenes/');
+  path = path.replace(/^apps\//, appUrl + '/apps/');
+  return Path.resolve(path);
+};
+
+const renameItem = item => {
+  const oldNameArr = item.split('');
 
   oldNameArr.forEach((letter, index) => {
     if (index === 0 && isUpperCase(letter)) {
       oldNameArr[index] = letter.toLowerCase();
     }
 
-    if (fileOrFolderPath.match(/\.[0-9a-z]+$/i)) {
-      extension = fileOrFolderPath.match(/\.[0-9a-z]+$/i)[0];
-    }
-
     if (index !== 0 && isUpperCase(letter)) {
       const separator = '-';
 
-      oldNameArr[index] = letter.toLowerCase();
-      oldNameArr.splice(index, 0, separator);
+      // TODO FIX rename
+      if (['UI', 'APIClient', 'README'].includes(item) === false) {
+        oldNameArr[index] = letter.toLowerCase();
+        oldNameArr.splice(index, 0, separator);
+      }
     }
   });
 
-  const newName = oldNameArr.join('');
+  return oldNameArr.join('');
+};
 
-  try {
-    if (!isFile) {
-      fs.renameSync(`${rootUrl}/${fileOrFolderPath}`, `${rootUrl}/${newName}`);
+const isUpperCase = str => !/[a-z]/.test(str) && /[A-Z]/.test(str);
 
-      console.log(`Updated ${rootUrl}/${fileOrFolderPath} to ${rootUrl}/${newName}`);
-    }
-  } catch (err) {
-    console.log(err);
+const updateMap = (rootUrl, fileOrFolderPath = false) => {
+  let newFileOrFolderPath = rootUrl;
+  if (fileOrFolderPath) {
+    const oldFileOrFolderPath = `${rootUrl}/${fileOrFolderPath}`;
+    newFileOrFolderPath = `${rootUrl}/${fileOrFolderPath}`;
+    routes.set(getAbsolutePath(oldFileOrFolderPath, '.'), true);
+  }
+
+  if (isDirectory(newFileOrFolderPath)) {
+    const files = fs.readdirSync(newFileOrFolderPath);
+    files.forEach(fileOrFolderPath => {
+      updateMap(newFileOrFolderPath, fileOrFolderPath);
+    });
   }
 };
 
-// Components Process
-fs.readdir(componentsUrl, (err, files) => {
-  if (err) {
-    throw new Error(err);
+const processRename = (rootUrl, fileOrFolderPath = false) => {
+  let newFileOrFolderPath = rootUrl;
+
+  if (fileOrFolderPath) {
+    const newFileOrFolderName = renameItem(fileOrFolderPath);
+    const oldFileOrFolderPath = `${rootUrl}/${fileOrFolderPath}`;
+    newFileOrFolderPath = `${rootUrl}/${newFileOrFolderName}`;
+
+    fs.renameSync(oldFileOrFolderPath, newFileOrFolderPath);
+    //fs.rmdir(componentsUrl);
   }
 
-  files.forEach(fileOrFolderPath => processFilter(fileOrFolderPath, componentsUrl));
-});
+  if (isDirectory(newFileOrFolderPath)) {
+    const files = fs.readdirSync(newFileOrFolderPath);
+    files.forEach(fileOrFolderPath => {
+      processRename(newFileOrFolderPath, fileOrFolderPath);
+    });
+  }
+};
 
-// Models Process
-// fs.readdir(modelsUrl, (err, files) => {
-//   if (err) {
-//     throw new Error(err);
-//   }
+const recursiveWatchingImports = (rootPath, fileOrFolderPath = false) => {
+  const nextPath = fileOrFolderPath ? `${rootPath}/${fileOrFolderPath}` : rootPath;
+  if (!isDirectory(nextPath)) {
+    let content = fs.readFileSync(nextPath, { encoding: 'utf-8' });
 
-//   files.forEach(fileOrFolderPath => processFilter(fileOrFolderPath, modelsUrl));
-// });
+    if (nextPath.includes('/environment/')) {
+      return;
+    }
 
-// Services Process
-// fs.readdir(servicesUrl, (err, files) => {
-//   if (err) {
-//     throw new Error(err);
-//   }
+    const importedPaths = Array.from(content.matchAll(/^import .*? ('|")(.*?)('|").*?$/gm)).map(
+      s => s[2],
+    );
 
-//   files.forEach(fileOrFolderPath => processFilter(fileOrFolderPath, servicesUrl));
-// });
+    importedPaths.forEach(path => {
+      const absolutePath = getAbsolutePath(path, rootPath);
 
-// Scenes Process
-// fs.readdir(scenesUrl, (err, files) => {
-//   if (err) {
-//     throw new Error(err);
-//   }
+      //Test if absolutePath is in map
+      if (
+        routes.has(absolutePath) ||
+        routes.has(absolutePath + '.js') ||
+        routes.has(absolutePath + '.ts') ||
+        routes.has(absolutePath + '.tsx') ||
+        routes.has(absolutePath + '.jsx')
+      ) {
+        //console.log('recursiveWatchingImports', { routes, absolutePath });
+        const newPath = path.split('/').map(renameItem).join('/');
+        //TODO: update import
+        content = content.replace(path, newPath);
+      }
+    });
 
-//   files.forEach(fileOrFolderPath => processFilter(fileOrFolderPath, scenesUrl));
-// });
+    //console.log({ nextPath });
+    fs.writeFileSync(nextPath, content);
+
+    // const keys = [...routes.keys()];
+
+    // keys.forEach(k => {
+    //   const value = routes.get(k);
+
+    //   const reg1 = new RegExp("import s*([^}]+) from 's*([^}]+)" + `/${value.split('.tsx')[0]}`);
+    //   const reg2 = new RegExp("import {s*([^}]+)} from 's*([^}]+)" + `/${value.split('.tsx')[0]}`);
+    //   const reg3 = new RegExp("import 's*([^}]+)" + `/${value}`);
+
+    //   /**
+    //    * import { Azazaeza } from 'blahh'
+    //    * import Azazaeza from 'blahh'
+    //    * import "blah.scss"
+    //    */
+
+    //   console.log('/////////////////////////////////');
+    //   console.log('current file =>', nextPath);
+    //   console.log(reg1, ' => ', reg1.test(content));
+    //   console.log(reg2, ' => ', reg2.test(content));
+    //   console.log(reg3, ' => ', reg3.test(content));
+    // });
+  } else {
+    const files = fs.readdirSync(nextPath);
+    files.forEach(fileOrFolderPath => {
+      recursiveWatchingImports(nextPath, fileOrFolderPath);
+    });
+  }
+};
+
+const cleanFiles = async () => {
+  //Fill up map with all the files we gonna rename
+  updateMap(componentsUrl);
+
+  //Rename files and folders recursivelly
+  processRename(componentsUrl);
+
+  // Now we should look at each files to see if there is a match with the previous changes and modify the related imports
+  recursiveWatchingImports(appUrl);
+
+  //console.log('filesOrFoldersInComponents', filesOrFoldersInComponents);
+  //console.log('filesOrFoldersInApp', filesOrFoldersInApp);
+};
+
+cleanFiles();
