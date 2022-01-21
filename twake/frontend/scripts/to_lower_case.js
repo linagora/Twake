@@ -12,11 +12,21 @@ const routes = new Map();
 
 const isDirectory = path => fs.lstatSync(path).isDirectory();
 
+/**
+ * 1. style import replace doesn't work
+ * 2. "/some-path" and "./some-file" doesn't worked
+ * /some-path
+ *
+ * ./
+ */
+
 // pwd must start with 'src/...'
 const getAbsolutePath = (path, pwd = appUrl) => {
   if (path[0] === '.') {
-    console.log({ pwd, path, resolve: Path.resolve(pwd + '/' + path) });
-    return Path.resolve(pwd + '/' + path);
+    const mergePath = Path.resolve(pwd, path);
+
+    console.log({ pwd, path, resolve: mergePath });
+    return mergePath;
   }
 
   path = path.replace(/^app\//, appUrl + '/');
@@ -26,32 +36,20 @@ const getAbsolutePath = (path, pwd = appUrl) => {
   path = path.replace(/^services\//, appUrl + '/services/');
   path = path.replace(/^scenes\//, appUrl + '/scenes/');
   path = path.replace(/^apps\//, appUrl + '/apps/');
+
   return Path.resolve(path);
 };
-
 const renameItem = item => {
-  const oldNameArr = item.split('');
+  // Keywords that should be skipped
+  const toSkip = ['README.md', '.', '..'];
 
-  oldNameArr.forEach((letter, index) => {
-    if (index === 0 && isUpperCase(letter)) {
-      oldNameArr[index] = letter.toLowerCase();
-    }
+  const name = item.split('.')[0];
+  const extension = item.split('.')[1] ? `.${item.split('.')[1]}` : undefined;
 
-    if (index !== 0 && isUpperCase(letter)) {
-      const separator = '-';
-
-      // TODO FIX rename
-      if (['UI', 'APIClient', 'README'].includes(item) === false) {
-        oldNameArr[index] = letter.toLowerCase();
-        oldNameArr.splice(index, 0, separator);
-      }
-    }
-  });
-
-  return oldNameArr.join('');
+  return toSkip.includes(item)
+    ? item
+    : `${_.lowerCase(name).replace(/ /g, '-')}${extension ? extension : ''}`;
 };
-
-const isUpperCase = str => !/[a-z]/.test(str) && /[A-Z]/.test(str);
 
 const updateMap = (rootUrl, fileOrFolderPath = false) => {
   let newFileOrFolderPath = rootUrl;
@@ -78,7 +76,6 @@ const processRename = (rootUrl, fileOrFolderPath = false) => {
     newFileOrFolderPath = `${rootUrl}/${newFileOrFolderName}`;
 
     fs.renameSync(oldFileOrFolderPath, newFileOrFolderPath);
-    //fs.rmdir(componentsUrl);
   }
 
   if (isDirectory(newFileOrFolderPath)) {
@@ -98,9 +95,9 @@ const recursiveWatchingImports = (rootPath, fileOrFolderPath = false) => {
       return;
     }
 
-    const importedPaths = Array.from(content.matchAll(/^import .*? ('|")(.*?)('|").*?$/gm)).map(
-      s => s[2],
-    );
+    const importedPaths = Array.from(
+      content.matchAll(/^(import|export .*?from) .*?('|")(.*?)('|").*?$/gm),
+    ).map(s => s[3]);
 
     importedPaths.forEach(path => {
       const absolutePath = getAbsolutePath(path, rootPath);
@@ -109,41 +106,18 @@ const recursiveWatchingImports = (rootPath, fileOrFolderPath = false) => {
       if (
         routes.has(absolutePath) ||
         routes.has(absolutePath + '.js') ||
+        routes.has(absolutePath + '.jsx') ||
         routes.has(absolutePath + '.ts') ||
         routes.has(absolutePath + '.tsx') ||
-        routes.has(absolutePath + '.jsx')
+        routes.has(absolutePath + '.scss') ||
+        routes.has(absolutePath + '.less')
       ) {
-        //console.log('recursiveWatchingImports', { routes, absolutePath });
         const newPath = path.split('/').map(renameItem).join('/');
-        //TODO: update import
         content = content.replace(path, newPath);
       }
     });
 
-    //console.log({ nextPath });
     fs.writeFileSync(nextPath, content);
-
-    // const keys = [...routes.keys()];
-
-    // keys.forEach(k => {
-    //   const value = routes.get(k);
-
-    //   const reg1 = new RegExp("import s*([^}]+) from 's*([^}]+)" + `/${value.split('.tsx')[0]}`);
-    //   const reg2 = new RegExp("import {s*([^}]+)} from 's*([^}]+)" + `/${value.split('.tsx')[0]}`);
-    //   const reg3 = new RegExp("import 's*([^}]+)" + `/${value}`);
-
-    //   /**
-    //    * import { Azazaeza } from 'blahh'
-    //    * import Azazaeza from 'blahh'
-    //    * import "blah.scss"
-    //    */
-
-    //   console.log('/////////////////////////////////');
-    //   console.log('current file =>', nextPath);
-    //   console.log(reg1, ' => ', reg1.test(content));
-    //   console.log(reg2, ' => ', reg2.test(content));
-    //   console.log(reg3, ' => ', reg3.test(content));
-    // });
   } else {
     const files = fs.readdirSync(nextPath);
     files.forEach(fileOrFolderPath => {
@@ -156,14 +130,11 @@ const cleanFiles = async () => {
   //Fill up map with all the files we gonna rename
   updateMap(componentsUrl);
 
-  //Rename files and folders recursivelly
-  processRename(componentsUrl);
-
   // Now we should look at each files to see if there is a match with the previous changes and modify the related imports
   recursiveWatchingImports(appUrl);
 
-  //console.log('filesOrFoldersInComponents', filesOrFoldersInComponents);
-  //console.log('filesOrFoldersInApp', filesOrFoldersInApp);
+  //Rename files and folders recursivelly
+  processRename(componentsUrl);
 };
 
 cleanFiles();
