@@ -127,7 +127,7 @@
     "mongodb": "^4.1.0",
     "multistream": "^4.1.0",
     "node-cron": "^3.0.0",
-    "node-fetch": "^2.6.5",
+    "node-fetch": "^3.1.1",
     "node-uuid": "^1.4.8",
     "ora": "^5.4.0",
     "pdf2pic": "^2.1.4",
