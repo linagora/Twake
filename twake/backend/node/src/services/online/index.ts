@@ -97,9 +97,17 @@ export default class OnlineService
   }
 
   private async areOnline(ids: Array<string> = []): Promise<Array<[string, boolean]>> {
-    const users = await this.onlineRepository.find({}, { $in: [["user_id", ids]] });
+    let users = [];
+    //This foreach is needed for $in operators https://github.com/linagora/Twake/issues/1246
+    for (let i = 0; i < ids.length; i += 100) {
+      users.push(
+        ...(
+          await this.onlineRepository.find({}, { $in: [["user_id", ids.slice(i, i + 100)]] })
+        ).getEntities(),
+      );
+    }
 
-    return users.getEntities().map(user => [user.user_id, this.isStillConnected(user.last_seen)]);
+    return users.map(user => [user.user_id, this.isStillConnected(user.last_seen)]);
   }
 
   /**
