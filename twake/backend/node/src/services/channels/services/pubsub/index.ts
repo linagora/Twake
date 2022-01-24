@@ -18,9 +18,12 @@ export class PubsubListener implements Initializable {
   ) {}
 
   async init(): Promise<this> {
-    this.pubsub.processor.addHandler(
-      new NewChannelActivityProcessor(this.platformServices, this.service.channels, this.user),
-    );
+    const channelActivityProcessor = await new NewChannelActivityProcessor(
+      this.platformServices,
+      this.service.channels,
+      this.user,
+    ).init();
+    this.pubsub.processor.addHandler(channelActivityProcessor);
     this.pubsub.processor.addHandler(new NewDirectChannelMessageProcessor(this.service));
     this.pubsub.processor.addHandler(
       new NewUserInWorkspaceJoinDefaultChannelsProcessor(this.service),

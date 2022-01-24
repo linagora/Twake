@@ -54,9 +54,14 @@ export class CounterProvider<T> {
       period: now,
     };
 
+    logger.debug(
+      `${this.name} revision status for ${JSON.stringify(pk)} is ${JSON.stringify(lastRevised)}`,
+    );
+
     if (
       lastRevised.calls >= this.reviseMaxCalls ||
-      now > lastRevised.period + this.reviseMaxPeriod
+      now > lastRevised.period + this.reviseMaxPeriod ||
+      Math.random() < 1 / Math.max(1, currentValue) //The slowest the number is, the more we update it
     ) {
       if (!this.reviseHandler) {
         logger.debug(
