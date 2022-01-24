@@ -12,14 +12,6 @@ const routes = new Map();
 
 const isDirectory = path => fs.lstatSync(path).isDirectory();
 
-/**
- * 1. style import replace doesn't work
- * 2. "/some-path" and "./some-file" doesn't worked
- * /some-path
- *
- * ./
- */
-
 // pwd must start with 'src/...'
 const getAbsolutePath = (path, pwd = appUrl) => {
   if (path[0] === '.') {
@@ -41,7 +33,18 @@ const getAbsolutePath = (path, pwd = appUrl) => {
 };
 const renameItem = item => {
   // Keywords that should be skipped
-  const toSkip = ['README.md', '.', '..'];
+  const toSkip = [
+    '.',
+    '..',
+    'feather',
+    'README.md',
+    'react-feather',
+    'unicons.eot',
+    'unicons.svg',
+    'unicons.ttf',
+    'unicons.woff',
+    'unicons.woff2',
+  ];
 
   const name = item.split('.')[0];
   const extension = item.split('.')[1] ? `.${item.split('.')[1]}` : undefined;
