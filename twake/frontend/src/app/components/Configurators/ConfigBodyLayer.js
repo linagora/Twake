@@ -85,9 +85,17 @@ export default class ConfigBodyLayer extends React.Component {
               <div className="header">
                 <div
                   className="app_logo"
-                  style={{ backgroundImage: 'url(' + this.configurator.app.identity?.icon + ')' }}
+                  style={{
+                    backgroundImage:
+                      'url(' +
+                      (this.configurator.application.icon_url ||
+                        this.configurator.app.identity?.icon) +
+                      ')',
+                  }}
                 />
-                <div className="app_name">{this.configurator.app.identity?.name}</div>
+                <div className="app_name">
+                  {this.configurator.application.name || this.configurator.app.identity?.name}
+                </div>
 
                 <CloseIcon
                   className="m-icon-medium close"

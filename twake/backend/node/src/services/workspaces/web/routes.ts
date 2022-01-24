@@ -113,8 +113,15 @@ const routes: FastifyPluginCallback<{
   const checkUserIsWorkspaceAdmin = async (
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
   ) => {
+    if (!request.currentUser.id) {
+      throw fastify.httpErrors.forbidden("Only workspace moderator can perform this action");
+    }
     const workspaceUser = await checkUserWorkspace(request);
-    if (!hasWorkspaceAdminLevel(workspaceUser.role)) {
+    const companyUser = await options.service.companies.getCompanyUser(
+      { id: request.params.company_id },
+      { id: request.currentUser.id },
+    );
+    if (!hasWorkspaceAdminLevel(workspaceUser?.role, companyUser?.role)) {
       throw fastify.httpErrors.forbidden("Only workspace moderator can perform this action");
     }
   };
@@ -122,8 +129,15 @@ const routes: FastifyPluginCallback<{
   const checkUserIsWorkspaceMember = async (
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
   ) => {
+    if (!request.currentUser.id) {
+      throw fastify.httpErrors.forbidden("Only workspace moderator can perform this action");
+    }
     const workspaceUser = await checkUserWorkspace(request);
-    if (!hasWorkspaceMemberLevel(workspaceUser.role)) {
+    const companyUser = await options.service.companies.getCompanyUser(
+      { id: request.params.company_id },
+      { id: request.currentUser.id },
+    );
+    if (!hasWorkspaceMemberLevel(workspaceUser?.role, companyUser?.role)) {
       throw fastify.httpErrors.forbidden("Only workspace members can perform this action");
     }
   };

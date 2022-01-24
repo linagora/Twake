@@ -38,6 +38,25 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
       done();
     });
 
+    this.server.addHook("onError", (request, reply, error, done) => {
+      logger.error(error);
+      done();
+    });
+
+    this.server.addHook("preValidation", (request, reply, done) => {
+      if (reply.statusCode === 500) {
+        logger.error("An error occured with the preValidation of ", request.routerPath);
+      }
+      done();
+    });
+
+    this.server.addHook("preHandler", (request, reply, done) => {
+      if (reply.statusCode === 500) {
+        logger.error("An error occured with the preHandler of ", request.routerPath);
+      }
+      done();
+    });
+
     serverErrorHandler(this.server);
     // DIRTY HACK: THis needs to be registered here to avoid circular dep between auth and user.
     // will have to create a core service for this, or another service which must be started first...

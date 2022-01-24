@@ -34,6 +34,9 @@ export class ChannelMemberObject extends ChannelMember {
     }
 
     return merge(new ChannelMemberObject(), {
+      favorite: false,
+      last_increment: 0,
+      last_access: 0,
       ...channelMember,
       ...channelMemberLikeObject,
     });
