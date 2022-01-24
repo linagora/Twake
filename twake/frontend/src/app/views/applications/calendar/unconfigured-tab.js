@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import Menu from 'components/Menus/Menu.js';
+import Menu from 'components/menus/menu.js';
 import ChannelsService from 'services/channels/channels.js';
-import Button from 'components/Buttons/Button.js';
+import Button from 'components/buttons/button.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import RouterService from 'app/services/RouterService';
-import CalendarSelector from 'components/Calendar/CalendarSelector/CalendarSelector.js';
+import CalendarSelector from 'components/calendar/calendar-selector/calendar-selector.js';
 import AccessRightsService from 'app/services/AccessRightsService';
 import WorkspaceService from 'services/workspaces/workspaces';
 

@@ -1,12 +1,12 @@
 import React, { FC, useState } from 'react';
 
 import Languages from 'services/languages/languages';
-import MediumPopupComponent from 'app/components/Modal/ModalManager';
-import ObjectModal from 'components/ObjectModal/ObjectModal';
-import UserListManager from 'components/UserListManager/UserListManager';
+import MediumPopupComponent from 'app/components/modal/modal-manager';
+import ObjectModal from 'components/object-modal/object-modal';
+import UserListManager from 'components/user-list-manager/user-list-manager';
 import RouterServices from 'app/services/RouterService';
 import ChannelsService from 'services/channels/channels.js';
-import ModalManager from 'app/components/Modal/ModalManager';
+import ModalManager from 'app/components/modal/modal-manager';
 import { Button, Typography } from 'antd';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import { Trans } from 'react-i18next';

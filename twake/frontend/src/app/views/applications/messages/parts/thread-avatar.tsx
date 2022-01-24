@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import 'moment-timezone';
 import User from 'services/user/UserService';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import Icon from 'components/Icon/Icon.js';
+import Icon from 'components/icon/icon.js';
 import './threads.scss';
 import { MessageContext } from '../message/message-with-replies';
 import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';

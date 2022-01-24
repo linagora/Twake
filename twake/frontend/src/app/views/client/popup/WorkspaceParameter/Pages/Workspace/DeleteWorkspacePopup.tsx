@@ -8,10 +8,10 @@ import { Alert, Button, Checkbox, Input, Row, Typography } from 'antd';
 import Logger from 'app/services/Logger';
 import { WorkspaceType, WorkspaceUserType } from 'app/models/Workspace';
 import Languages from 'app/services/languages/languages';
-import ObjectModal from 'app/components/ObjectModal/ObjectModal';
+import ObjectModal from 'app/components/object-modal/object-modal';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import RouterService from 'app/services/RouterService';
-import ModalManager from 'app/components/Modal/ModalManager';
+import ModalManager from 'app/components/modal/modal-manager';
 import WorkspaceUserAPIClient from 'app/services/workspaces/WorkspaceUserAPIClient';
 
 import './styles.scss';

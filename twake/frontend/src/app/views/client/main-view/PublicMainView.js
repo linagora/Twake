@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections';
 import Drive from 'app/views/applications/drive/drive-content';
 import Api from 'services/Api';
 import RouterService from 'services/RouterService';
-import MenusBodyLayer from 'components/Menus/MenusBodyLayer';
+import MenusBodyLayer from 'components/menus/menus-body-layer';
 import Viewer from 'app/views/applications/drive/viewer/viewer';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 

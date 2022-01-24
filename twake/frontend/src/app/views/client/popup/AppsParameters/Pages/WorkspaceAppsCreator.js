@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
+import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Api from 'services/Api';
-import Input from 'components/Inputs/Input.js';
+import Input from 'components/inputs/input.js';
 
 import './Pages.scss';
 

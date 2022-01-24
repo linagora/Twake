@@ -3,7 +3,7 @@ import React from 'react';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 
 import Languages from 'services/languages/languages';
-import ModalManager from 'app/components/Modal/ModalManager';
+import ModalManager from 'app/components/modal/modal-manager';
 import { Collection } from 'services/CollectionsReact/Collections';
 
 import ChannelCategory from '../Parts/Channel/ChannelCategory';
@@ -12,8 +12,8 @@ import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import WorkspaceChannelList from 'app/views/client/channels-bar/Modals/WorkspaceChannelList';
 
-import Menu from 'components/Menus/Menu.js';
-import Icon from 'components/Icon/Icon';
+import Menu from 'components/menus/menu.js';
+import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/services/AccessRightsService';
 import RouterServices from 'services/RouterService';
 

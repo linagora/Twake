@@ -1,4 +1,4 @@
-import FileUploadService from 'app/components/FileUploads/FileUploadService';
+import FileUploadService from 'app/components/file-uploads/file-upload-service';
 import { selector } from 'recoil';
 import { PendingFilesListState } from '../atoms/PendingFilesList';
 

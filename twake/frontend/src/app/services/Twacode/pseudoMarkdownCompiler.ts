@@ -1,6 +1,6 @@
 import UserService from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import PseudoMarkdownDictionary from 'components/Twacode/PseudoMarkdownDictionary';
+import PseudoMarkdownDictionary from 'components/twacode/pseudo-markdown-dictionary';
 import anchorme from 'anchorme';
 import emojis_original_service from 'emojione';
 import Globals from 'services/Globals';

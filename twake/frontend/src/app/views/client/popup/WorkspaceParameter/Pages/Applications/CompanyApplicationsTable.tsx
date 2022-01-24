@@ -6,15 +6,15 @@ import { Divider, Table, Typography, Row, Col, Button, Grid } from 'antd';
 
 import { Application } from 'app/models/App';
 import Languages from 'services/languages/languages';
-import ModalManager from 'app/components/Modal/ModalManager';
-import AvatarComponent from 'app/components/Avatar/Avatar';
+import ModalManager from 'app/components/modal/modal-manager';
+import AvatarComponent from 'app/components/avatar/avatar';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import {
   useCompanyApplications,
   useCompanyApplicationsRealtime,
 } from 'app/state/recoil/hooks/useCompanyApplications';
-import Menu from 'components/Menus/Menu';
+import Menu from 'components/menus/menu';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
 import './ApplicationsStyles.scss';

@@ -15,7 +15,7 @@ import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
 import MessageListServiceFactory from 'app/services/Apps/Messages/MessageListServiceFactory';
 import { MessageListService } from 'app/services/Apps/Messages/MessageListService';
 import { ChannelResource } from 'app/models/Channel';
-import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
+import LockedHistoryBanner from 'app/components/locked-features-components/locked-history-banner/locked-history-banner';
 import InitService from 'app/services/InitService';
 import _ from 'lodash';
 import FirstMessage from './__old/_Message/Parts/FirstMessage/FirstMessage';

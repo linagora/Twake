@@ -1,10 +1,10 @@
 import React from 'react';
 import { useUpload } from 'app/state/recoil/hooks/useUpload';
-import FileComponent from 'app/components/File/FileComponent';
-import { DataFileType } from 'app/components/File/types';
+import FileComponent from 'app/components/file/file-component';
+import { DataFileType } from 'app/components/file/types';
 import { PendingFileRecoilType } from 'app/models/File';
 import _ from 'lodash';
-import FileUploadAPIClient from 'app/components/FileUploads/FileUploadAPIClient';
+import FileUploadAPIClient from 'app/components/file-uploads/file-upload-api-client';
 import { MessageFileType } from 'app/models/Message';
 
 type PropsType = {

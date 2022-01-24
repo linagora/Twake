@@ -1,9 +1,9 @@
 /* eslint-disable react/no-direct-mutation-state */
 import React, { Component } from 'react';
-import DateSelectorInput from 'components/Calendar/DatePicker.js';
-import TimeSelector from 'components/Calendar/TimeSelector.js';
-import Checkbox from 'components/Inputs/Checkbox.js';
-import Icon from 'components/Icon/Icon.js';
+import DateSelectorInput from 'components/calendar/date-picker.js';
+import TimeSelector from 'components/calendar/time-selector.js';
+import Checkbox from 'components/inputs/checkbox.js';
+import Icon from 'components/icon/icon.js';
 import './DateSelector.scss';
 import Languages from 'services/languages/languages';
 

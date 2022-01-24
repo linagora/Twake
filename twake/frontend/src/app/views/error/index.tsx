@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Languages from 'services/languages/languages';
-import Emojione from 'components/Emojione/Emojione';
+import Emojione from 'components/emojione/emojione';
 import RouterServices from 'app/services/RouterService';
 import InitService from 'services/InitService';
 import ErrorBoundary from './error-boundary';

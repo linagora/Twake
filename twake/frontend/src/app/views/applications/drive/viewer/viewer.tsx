@@ -4,15 +4,15 @@ import CloseIcon from '@material-ui/icons/CloseOutlined';
 import DownloadIcon from '@material-ui/icons/CloudDownloadOutlined';
 import OpenInNewIcon from '@material-ui/icons/OpenInNewOutlined';
 
-import Menu from 'components/Menus/Menu.js';
+import Menu from 'components/menus/menu.js';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
-import Button from 'components/Buttons/Button.js';
+import Button from 'components/buttons/button.js';
 import ElectronService from 'services/electron/electron.js';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
-import ModalManager from 'app/components/Modal/ModalManager';
-import LockedOnlyOfficePopup from 'app/components/LockedFeaturesComponents/LockedOnlyOfficePopup/LockedOnlyOfficePopup';
+import ModalManager from 'app/components/modal/modal-manager';
+import LockedOnlyOfficePopup from 'app/components/locked-features-components/locked-only-office-popup/locked-only-office-popup';
 
 import './viewer.scss';
 

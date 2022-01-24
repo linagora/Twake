@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { useChannelWritingActivityState } from 'app/state/recoil/hooks/useChannelWritingActivity';
 import Languages from 'services/languages/languages';
-import WritingLoader from 'app/components/WritingLoader/WritingLoader';
+import WritingLoader from 'app/components/writing-loader/writing-loader';
 import { ChannelWritingActivityType } from 'app/state/recoil/atoms/ChannelWritingActivity';
 
 type PropsType = {

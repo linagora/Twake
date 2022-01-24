@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import groupService from 'services/workspaces/groups';
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout';
-import Attribute from 'components/Parameters/Attribute';
+import ButtonWithTimeout from 'components/buttons/button-with-timeout';
+import Attribute from 'components/parameters/attribute';
 import uploadService from 'services/uploadManager/uploadManager';
-import Input from 'components/Inputs/Input';
+import Input from 'components/inputs/input';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 
 import './Pages.scss';

@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 import './Tutorial.scss';
 
-import Icon from 'components/Icon/Icon.js';
-import Emojione from 'components/Emojione/Emojione';
+import Icon from 'app/components/icon/icon.js';
+import Emojione from 'components/emojione/emojione';
 
 export default class Tutorial extends React.Component {
   constructor(props) {

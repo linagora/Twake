@@ -4,8 +4,8 @@ import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
 import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
-import MenusManager from 'app/components/Menus/MenusManager';
-import InputWithIcon from 'app/components/Inputs/InputWithIcon';
+import MenusManager from 'app/components/menus/menus-manager';
+import InputWithIcon from 'app/components/inputs/input-with-icon';
 
 import './SaveNewStatus.scss';
 

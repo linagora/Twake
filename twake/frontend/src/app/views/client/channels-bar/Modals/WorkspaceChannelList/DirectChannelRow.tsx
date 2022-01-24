@@ -1,10 +1,10 @@
 import React, { createRef, useEffect } from 'react';
 import { Col, Row, Typography } from 'antd';
-import { getUserParts } from 'app/components/Member/UserParts';
+import { getUserParts } from 'app/components/member/user-parts';
 import './ChannelRow.scss';
 import ChannelsService from 'services/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
-import ModalManager from 'app/components/Modal/ModalManager';
+import ModalManager from 'app/components/modal/modal-manager';
 import UserServices from 'services/user/UserService';
 
 type PropsType = {

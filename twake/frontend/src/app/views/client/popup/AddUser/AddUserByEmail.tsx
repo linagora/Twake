@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Typography } from 'antd';
 import Languages from 'services/languages/languages';
 import popupManager from 'services/popupManager/popupManager.js';
-import AutoHeight from 'app/components/AutoHeight/AutoHeight';
+import AutoHeight from 'app/components/auto-height/auto-height';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import RouterServices from 'services/RouterService';
 import WorkspacesUsers from 'services/workspaces/workspaces_users';

@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import User from 'services/user/UserService';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
-import Emojione from 'components/Emojione/Emojione';
+import Emojione from 'components/emojione/emojione';
 import { ReactionType } from 'app/models/Message';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';

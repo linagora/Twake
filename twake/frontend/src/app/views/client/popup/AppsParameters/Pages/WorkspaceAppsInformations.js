@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
+import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import userService from 'services/user/UserService';
 import './Pages.scss';

@@ -9,7 +9,7 @@ import currentUserService from 'app/services/user/CurrentUser';
 import WorkspaceApps from './Pages/WorkspaceApps.js.js.js.js';
 import WorkspaceAppsInformations from './Pages/WorkspaceAppsInformations.js';
 import TwacodeTester from './Pages/TwacodeTester.js';
-import MenuList from 'components/Menus/MenuComponent.js';
+import MenuList from 'components/menus/menu-component.js';
 import './AppsParameters.scss';
 
 export default class AppsParameters extends Component {

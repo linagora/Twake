@@ -9,7 +9,7 @@ import RouterServices, { RouteType } from './services/RouterService';
 import ErrorBoundary from 'app/views/error/error-boundary';
 import InitService from './services/InitService';
 import useTimeout from './services/hooks/useTimeout';
-import ApplicationLoader from './components/Loader/ApplicationLoader';
+import ApplicationLoader from './components/loader/application-loader';
 
 import 'app/styles/index.less';
 

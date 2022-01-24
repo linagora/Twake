@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 
 import './Footer.scss';
 
-import Icon from 'components/Icon/Icon.js';
+import Icon from 'app/components/icon/icon.js';
 import InitService from 'services/InitService';
 import Languages from 'services/languages/languages';
 import Globals from 'services/Globals';
-import Menu from 'components/Menus/Menu.js';
+import Menu from 'components/menus/menu.js';
 
 export default class Footer extends React.Component {
   constructor(props) {

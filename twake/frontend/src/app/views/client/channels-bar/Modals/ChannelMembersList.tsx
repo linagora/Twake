@@ -12,7 +12,7 @@ import UsersService from 'services/user/UserService';
 import Collections from 'services/CollectionsReact/Collections';
 import MemberChannelRow from 'app/views/client/channels-bar/Parts/Header/MemberChannelRow';
 
-import ObjectModal from 'components/ObjectModal/ObjectModal';
+import ObjectModal from 'components/object-modal/object-modal';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
 import UserAPIClient from 'app/services/user/UserAPIClient';

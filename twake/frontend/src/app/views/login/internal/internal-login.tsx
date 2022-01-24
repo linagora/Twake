@@ -5,7 +5,7 @@ import Globals from 'services/Globals';
 import Languages from 'services/languages/languages';
 import InitService from 'services/InitService';
 import LoginService from 'app/services/login/LoginService';
-import Icon from 'components/Icon/Icon.js';
+import Icon from 'app/components/icon/icon.js';
 
 import LoginView from './login-view/login-view.js';
 import Signin from './signin/signin.js';

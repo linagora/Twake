@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Input, Row, Typography } from 'antd';
 import Languages from 'services/languages/languages';
-import Icon from 'components/Icon/Icon';
-import ObjectModal from 'components/ObjectModal/ObjectModal';
+import Icon from 'app/components/icon/icon';
+import ObjectModal from 'components/object-modal/object-modal';
 import listService, { GenericChannel } from 'services/search/searchListManager';
 import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
 import ChannelsService from 'services/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
-import ModalManager from 'app/components/Modal/ModalManager';
+import ModalManager from 'app/components/modal/modal-manager';
 import { UserType } from 'app/models/User';
 import UsersService from 'services/user/UserService';
 import { ChannelType } from 'app/models/Channel';

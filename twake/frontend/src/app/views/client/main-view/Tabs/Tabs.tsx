@@ -3,7 +3,7 @@ import { Plus } from 'react-feather';
 import { TabType } from 'app/models/Tab';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
-import ModalManager from 'app/components/Modal/ModalManager';
+import ModalManager from 'app/components/modal/modal-manager';
 import RouterServices from 'app/services/RouterService';
 import DefaultChannelTab from 'app/views/client/main-view/Tabs/DefaultChannelTab';
 import Tab from 'app/views/client/main-view/Tabs/Tab';

@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import RouterServices from 'app/services/RouterService';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import Menu from 'components/Menus/Menu.js';
+import Menu from 'components/menus/menu.js';
 import { MoreHorizontal, MessageCircle } from 'react-feather';
 import Languages from 'services/languages/languages';
 import popupManager from 'services/popupManager/popupManager.js';
@@ -10,7 +10,7 @@ import WorkspaceParameter from '../../popup/WorkspaceParameter/WorkspaceParamete
 import { Application } from 'app/models/App';
 import { ChannelResource } from 'app/models/Channel';
 import Collections from 'services/CollectionsReact/Collections';
-import ConnectorsListManager from 'app/components/ConnectorsListManager/ConnectorsListManager';
+import ConnectorsListManager from 'app/components/connectors-list-manager/connectors-list-manager';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';

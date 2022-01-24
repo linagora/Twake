@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, Input, Row, Typography } from 'antd';
-import Icon from 'app/components/Icon/Icon';
+import Icon from 'app/components/icon/icon';
 import { capitalize } from 'lodash';
 import { ChannelResource } from 'app/models/Channel';
 import RouterServices from 'app/services/RouterService';

@@ -7,7 +7,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Groups from './groups.js';
 import Workspaces from './workspaces.js';
 import Globals from 'services/Globals';
-import Icon from 'app/components/Icon/Icon';
+import Icon from 'app/components/icon/icon';
 import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
 import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
 

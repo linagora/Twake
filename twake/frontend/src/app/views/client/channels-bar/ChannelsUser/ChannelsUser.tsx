@@ -5,7 +5,7 @@ import RouterServices from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { ChannelResource } from 'app/models/Channel';
 
-import MediumPopupComponent from 'app/components/Modal/ModalManager';
+import MediumPopupComponent from 'app/components/modal/modal-manager';
 import NewDirectMessagesPopup from 'app/views/client/channels-bar/Modals/NewDirectMessagesPopup';
 import ChannelCategory from 'app/views/client/channels-bar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';

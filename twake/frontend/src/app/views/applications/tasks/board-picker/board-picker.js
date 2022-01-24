@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import Emojione from 'components/Emojione/Emojione';
-import Loader from 'components/Loader/Loader.js';
+import Emojione from 'components/emojione/emojione';
+import Loader from 'components/loader/loader.js';
 
 export default class BoardPicker extends React.Component {
   constructor() {

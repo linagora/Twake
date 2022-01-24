@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import MenuManager from 'app/components/Menus/MenusManager.js';
+import MenuManager from 'app/components/menus/menus-manager.js';
 
-import InputWithColor from 'components/Inputs/InputWithColor.js';
-import Button from 'components/Buttons/Button.js';
+import InputWithColor from 'components/inputs/input-with-color.js';
+import Button from 'components/buttons/button.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 
 export default class ListEditor extends React.Component {

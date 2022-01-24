@@ -1,8 +1,8 @@
 import React from 'react';
-import Icon from 'components/Icon/Icon.js';
-import Checkbox from 'components/Inputs/Checkbox.js';
-import InputEnter from 'components/Inputs/InputEnter.js';
-import Button from 'components/Buttons/Button.js';
+import Icon from 'components/icon/icon.js';
+import Checkbox from 'components/inputs/checkbox.js';
+import InputEnter from 'components/inputs/input-enter.js';
+import Button from 'components/buttons/button.js';
 import Languages from 'services/languages/languages';
 
 export default class Checklist extends React.Component {

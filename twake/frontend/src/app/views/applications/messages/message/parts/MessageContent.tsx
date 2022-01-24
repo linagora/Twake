@@ -8,7 +8,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import MessageEdition from './MessageEdition';
 import DeletedContent from './DeletedContent';
 import RetryButtons from './RetryButtons';
-import FileComponent from 'app/components/File/FileComponent';
+import FileComponent from 'app/components/file/file-component';
 import { Row } from 'antd';
 import Globals from 'services/Globals';
 import { MessageContext } from '../message-with-replies';

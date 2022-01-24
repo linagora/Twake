@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Icon from 'components/Icon/Icon.js';
-import Loader from 'components/Loader/Loader.js';
-import UploadZone from 'components/Uploads/UploadZone';
+import Icon from 'components/icon/icon.js';
+import Loader from 'components/loader/loader.js';
+import UploadZone from 'components/uploads/upload-zone';
 
 import Numbers from 'services/utils/Numbers';
-import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
-import DriveMultiSelector from 'components/Drive/DriveMultiSelector.js';
-import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
+import FilePicker from 'components/drive/file-picker/file-picker.js';
+import DriveMultiSelector from 'components/drive/drive-multi-selector.js';
+import Menu from 'components/menus/menu.js';
+import MenusManager from 'app/components/menus/menus-manager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 
@@ -26,7 +26,7 @@ import AlertManager from 'services/AlertManager/AlertManager';
 import UnconfiguredTab from './unconfigured-tab.js';
 import Viewer from './viewer/viewer';
 
-import MainPlus from 'components/MainPlus/MainPlus.js';
+import MainPlus from 'components/main-plus/main-plus.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 
 import DriveList from './lists/list.js';

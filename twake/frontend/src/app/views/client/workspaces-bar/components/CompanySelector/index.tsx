@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import { capitalize } from 'lodash';
 
-import Menu from 'components/Menus/Menu';
+import Menu from 'components/menus/menu';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import RouterService from 'app/services/RouterService';

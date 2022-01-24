@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages';
 import { Table, Row, Col, Typography, Divider } from 'antd';
 import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
-import Menu from 'components/Menus/Menu.js';
+import Menu from 'components/menus/menu.js';
 import { ColumnsType } from 'antd/lib/table';
 import UserService from 'services/user/UserService';
 import workspacesUsers from 'services/workspaces/workspaces_users';

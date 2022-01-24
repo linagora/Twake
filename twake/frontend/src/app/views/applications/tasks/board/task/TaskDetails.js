@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserListManager from 'components/UserListManager/UserListManager';
-import Button from 'components/Buttons/Button.js';
-import Menu from 'components/Menus/Menu.js';
-import TagPicker from 'components/TagPicker/TagPicker.js';
+import UserListManager from 'components/user-list-manager/user-list-manager';
+import Button from 'components/buttons/button.js';
+import Menu from 'components/menus/menu.js';
+import TagPicker from 'components/tag-picker/tag-picker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import TaskEditor from './TaskEditor.js';
-import MediumPopupManager from 'app/components/Modal/ModalManager';
+import MediumPopupManager from 'app/components/modal/modal-manager';
 import Checklist from './parts/Checklist.js';
 import {
   ObjectModal,
   ObjectModalFormTitle,
   ObjectModalTitle,
-} from 'components/ObjectModal/DeprecatedObjectModal.js';
-import Twacode from 'components/Twacode/Twacode';
-import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
+} from 'components/object-modal/deprecated-object-modal.js';
+import Twacode from 'components/twacode/twacode';
+import AttachmentPicker from 'components/attachment-picker/attachment-picker.js';
 import moment from 'moment';
 import './Modal.scss';
 

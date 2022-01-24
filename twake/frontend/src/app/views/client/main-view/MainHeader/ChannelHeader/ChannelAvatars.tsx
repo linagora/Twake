@@ -1,5 +1,5 @@
 import RouterServices from 'app/services/RouterService';
-import { getUserParts } from 'app/components/Member/UserParts';
+import { getUserParts } from 'app/components/member/user-parts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
 import { useUsersListener } from 'app/services/user/hooks/useUsersListener';

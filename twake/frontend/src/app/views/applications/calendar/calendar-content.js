@@ -6,9 +6,9 @@ import UserService from 'services/user/UserService';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import LocalStorage from 'app/services/LocalStorage';
 
-import ModalManager from 'app/components/Modal/ModalManager';
+import ModalManager from 'app/components/modal/modal-manager';
 
-import Icon from 'components/Icon/Icon.js';
+import Icon from 'components/icon/icon.js';
 import moment from 'moment';
 import Groups from 'services/workspaces/groups.js';
 import FullCalendar from './full-calendar/full-calendar.js';
@@ -16,21 +16,21 @@ import EventDetails from './modals/EventDetails.js';
 import EventCreation from './modals/EventCreation.js';
 import EventModification from './modals/EventModification.js';
 import CalendarEditor from './modals/CalendarEditor.js';
-import Menu from 'components/Menus/Menu.js';
-import DayPicker from 'components/Calendar/DayPicker/DayPicker.js';
+import Menu from 'components/menus/menu.js';
+import DayPicker from 'components/calendar/day-picker/day-picker.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
-import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
+import ConnectorsListManager from 'components/connectors-list-manager/connectors-list-manager.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
-import Checkbox from 'components/Inputs/Checkbox.js';
-import InputWithClipBoard from 'components/InputWithClipBoard/InputWithClipBoard.js';
-import Select from 'components/Select/Select.js';
+import Checkbox from 'components/inputs/checkbox.js';
+import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
+import Select from 'components/select/select.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
 import UnconfiguredTab from './unconfigured-tab.js';
 import RouterService from 'app/services/RouterService';
-import MainPlus from 'components/MainPlus/MainPlus.js';
+import MainPlus from 'components/main-plus/main-plus.js';
 import {
   getCompanyApplication as getApplication,
   getCompanyApplications,

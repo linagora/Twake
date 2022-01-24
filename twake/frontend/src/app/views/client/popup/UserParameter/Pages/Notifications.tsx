@@ -7,10 +7,10 @@ import NotificationParameters from 'services/user/notification_parameters.js';
 import { Collection } from 'services/CollectionsReact/Collections';
 import NotificationPreferences from 'app/services/user/NotificationPreferences';
 
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Attribute from 'components/Parameters/Attribute.js';
-import Switch from 'components/Inputs/Switch';
-import Radio from 'components/Inputs/Radio.js';
+import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
+import Attribute from 'components/parameters/attribute.js';
+import Switch from 'components/inputs/switch';
+import Radio from 'components/inputs/radio.js';
 
 import {
   preferencesType,

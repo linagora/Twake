@@ -2,8 +2,8 @@ import React from 'react';
 import { Lock } from 'react-feather';
 import { Button, Col, Row, Typography } from 'antd';
 
-import Emojione from 'app/components/Emojione/Emojione';
-import ModalManager from 'app/components/Modal/ModalManager';
+import Emojione from 'app/components/emojione/emojione';
+import ModalManager from 'app/components/modal/modal-manager';
 import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import SearchInput from '../Search';

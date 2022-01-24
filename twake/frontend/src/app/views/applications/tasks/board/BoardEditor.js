@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import MenuManager from 'app/components/Menus/MenusManager.js';
+import MenuManager from 'app/components/menus/menus-manager.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 
-import InputWithIcon from 'components/Inputs/InputWithIcon';
-import Button from 'components/Buttons/Button.js';
+import InputWithIcon from 'components/inputs/input-with-icon';
+import Button from 'components/buttons/button.js';
 
 export default class BoardEditor extends React.Component {
   constructor() {

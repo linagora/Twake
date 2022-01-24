@@ -5,18 +5,18 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import List from './list/list.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import Loader from 'components/Loader/Loader.js';
+import Loader from 'components/loader/loader.js';
 import './Board.scss';
-import Emojione from 'components/Emojione/Emojione';
-import Rounded from 'components/Inputs/Rounded.js';
-import Menu from 'components/Menus/Menu.js';
+import Emojione from 'components/emojione/emojione';
+import Rounded from 'components/inputs/rounded.js';
+import Menu from 'components/menus/menu.js';
 import ListEditor from './list/list-editor.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import Tabs from 'components/Tabs/Tabs.js';
+import Tabs from 'components/tabs/tabs.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
-import User from 'components/User/User.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
+import User from 'components/user/user.js';
+import MenusManager from 'app/components/menus/menus-manager.js';
 import RouterService from 'app/services/RouterService';
 
 export default class Board extends React.Component {

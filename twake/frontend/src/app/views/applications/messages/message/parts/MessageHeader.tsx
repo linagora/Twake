@@ -9,13 +9,13 @@ import { AlertTriangle } from 'react-feather';
 
 import User from 'services/user/UserService';
 import ChannelsService from 'services/channels/channels.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
-import UserCard from 'app/components/UserCard/UserCard';
-import Emojione from 'components/Emojione/Emojione';
+import MenusManager from 'app/components/menus/menus-manager.js';
+import UserCard from 'app/components/user-card/user-card';
+import Emojione from 'components/emojione/emojione';
 import RouterServices from 'app/services/RouterService';
 import { NodeMessage } from 'app/models/Message';
 import Languages from 'services/languages/languages';
-import Loader from 'components/Loader/Loader.js';
+import Loader from 'components/loader/loader.js';
 import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { MessageContext } from '../message-with-replies';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';

@@ -4,7 +4,7 @@ import ChannelUI from './Channel';
 import ChannelMenu from './ChannelMenu';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
 import { Collection } from 'services/CollectionsReact/Collections';
-import { getUserParts } from 'app/components/Member/UserParts';
+import { getUserParts } from 'app/components/member/user-parts';
 import { NotificationResource } from 'app/models/Notification';
 import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
 import { useSetChannel } from 'app/state/recoil/hooks/channels/useChannel';

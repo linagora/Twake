@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import groupService from 'services/workspaces/groups.js';
 import workspacesUsers from 'services/workspaces/workspaces_users';
-import Switch from 'components/Inputs/Switch';
+import Switch from 'components/inputs/switch';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import popupManager from 'services/popupManager/popupManager.js';
 import './Pages.scss';

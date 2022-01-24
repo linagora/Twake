@@ -3,15 +3,15 @@ import React from 'react';
 import Languages from 'services/languages/languages';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Task from '../task/Task.js';
-import Icon from 'components/Icon/Icon.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
+import Icon from 'components/icon/icon.js';
+import MenusManager from 'app/components/menus/menus-manager.js';
 import ListEditor from './list-editor.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import AddTask from './add-task.js';
-import UserListManager from 'components/UserListManager/UserListManager';
+import UserListManager from 'components/user-list-manager/user-list-manager';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import './list.scss';

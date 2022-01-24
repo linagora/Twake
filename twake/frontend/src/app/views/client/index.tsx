@@ -6,23 +6,23 @@ import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
 import PopupService from 'services/popupManager/popupManager.js';
-import PopupComponent from 'components/PopupComponent/PopupComponent.js';
+import PopupComponent from 'components/popup-component/popup-component.js';
 import MainView from './main-view/MainView';
-import DraggableBodyLayer from 'components/Draggable/DraggableBodyLayer.js';
-import MenusBodyLayer from 'components/Menus/MenusBodyLayer.js';
-import DriveUploadViewer from 'components/Uploads/UploadViewer.js';
-import ChatUploadsViewer from 'app/components/FileUploads/UploadsViewer';
-import ConfigBodyLayer from 'components/Configurators/ConfigBodyLayer.js';
+import DraggableBodyLayer from 'components/draggable/draggable-body-layer.js';
+import MenusBodyLayer from 'components/menus/menus-body-layer.js';
+import DriveUploadViewer from 'components/uploads/upload-viewer.js';
+import ChatUploadsViewer from 'app/components/file-uploads/uploads-viewer';
+import ConfigBodyLayer from 'components/configurators/config-body-layer.js';
 import Viewer from 'app/views/applications/drive/viewer/viewer';
-import ModalComponent from 'app/components/Modal/ModalComponent';
-import ConnectionIndicator from 'components/ConnectionIndicator/ConnectionIndicator';
-import SearchPopup from 'components/SearchPopup/SearchPopup.js';
-import NewVersionComponent from 'components/NewVersion/NewVersionComponent';
+import ModalComponent from 'app/components/modal/modal-component';
+import ConnectionIndicator from 'components/connection-indicator/connection-indicator';
+import SearchPopup from 'components/search-popup/search-popup.js';
+import NewVersionComponent from 'components/new-version/new-version-component';
 import SideBars, { LoadingSidebar } from './side-bars';
-import CompanyStatusComponent from 'app/components/OnBoarding/CompanyStatusComponent';
+import CompanyStatusComponent from 'app/components/on-boarding/company-status-component';
 import UserContext from 'app/state/recoil/integration/UserContext';
 import { useCurrentUser, useCurrentUserRealtime } from 'app/state/recoil/hooks/useCurrentUser';
-import { useFeatureToggles } from 'app/components/LockedFeaturesComponents/FeatureTogglesHooks';
+import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 
 import './styles.scss';
 

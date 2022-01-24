@@ -1,7 +1,7 @@
-import Twacode from 'app/components/Twacode/Twacode';
+import Twacode from 'app/components/twacode/twacode';
 import React, { ReactNode, Suspense } from 'react';
 import Markdown from 'markdown-to-jsx';
-import HighlightedCode from 'app/components/HighlightedCode/HighlightedCode';
+import HighlightedCode from 'app/components/highlighted-code/highlighted-code';
 
 type Props = {
   blocks: any;

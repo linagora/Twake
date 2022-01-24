@@ -12,7 +12,7 @@ import WorkspacePartner from './Pages/WorkspacePartner';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import WorkspaceService from 'services/workspaces/workspaces.js';
-import MenuList from 'components/Menus/MenuComponent.js';
+import MenuList from 'components/menus/menu-component.js';
 import InitService from 'app/services/InitService';
 import ConsoleService from 'app/services/Console/ConsoleService';
 

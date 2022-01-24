@@ -7,8 +7,8 @@ import userService from 'services/user/UserService';
 import loginService from 'app/services/login/LoginService';
 import AccountService from 'services/login/account';
 import popupManager from 'services/popupManager/popupManager.js';
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Input from 'components/Inputs/Input.js';
+import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
+import Input from 'components/inputs/input.js';
 import './SecondMail.scss';
 
 export default class SecondMail extends Component {

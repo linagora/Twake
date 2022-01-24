@@ -10,7 +10,7 @@ import { useApplications } from 'app/state/recoil/hooks/useApplications';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
-import AvatarComponent from 'app/components/Avatar/Avatar';
+import AvatarComponent from 'app/components/avatar/avatar';
 
 import './ApplicationsStyles.scss';
 

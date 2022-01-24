@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import AlertManager from 'services/AlertManager/AlertManager';
-import Input from 'components/Inputs/Input.js';
-import Button from 'components/Buttons/Button.js';
-import MediumPopupManager from 'app/components/Modal/ModalManager';
+import Input from 'components/inputs/input.js';
+import Button from 'components/buttons/button.js';
+import MediumPopupManager from 'app/components/modal/modal-manager';
 import {
   ObjectModal,
   ObjectModalFormTitle,
   ObjectModalTitle,
-} from 'components/ObjectModal/DeprecatedObjectModal.js';
+} from 'components/object-modal/deprecated-object-modal.js';
 import Api from 'services/Api';
 import Workspaces from 'services/workspaces/workspaces.js';
 import './Pages.scss';

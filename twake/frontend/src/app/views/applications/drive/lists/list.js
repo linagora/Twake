@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Languages from 'services/languages/languages';
 
-import Directory from 'components/Drive/Directory.js';
-import File from 'components/Drive/File';
-import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
+import Directory from 'components/drive/directory.js';
+import File from 'components/drive/file';
+import AttachmentPicker from 'components/attachment-picker/attachment-picker.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 
 class DelayedElement extends Component {

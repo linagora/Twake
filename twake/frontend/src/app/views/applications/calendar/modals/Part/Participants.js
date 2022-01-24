@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import UserListManager from 'components/UserListManager/UserListManager';
-import Menu from 'components/Menus/Menu.js';
+import UserListManager from 'components/user-list-manager/user-list-manager';
+import Menu from 'components/menus/menu.js';
 
 export default class Participants extends Component {
   constructor(props) {

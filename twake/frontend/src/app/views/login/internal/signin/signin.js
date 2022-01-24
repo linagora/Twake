@@ -3,11 +3,11 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import LoginService from 'app/services/login/LoginService';
 import AccountService from 'services/login/account';
-import Emojione from 'components/Emojione/Emojione';
-import StepCounter from 'components/StepCounter/StepCounter.js';
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Input from 'components/Inputs/Input.js';
-import Checkbox from 'components/Inputs/Checkbox.js';
+import Emojione from 'components/emojione/emojione';
+import StepCounter from 'components/step-counter/step-counter.js';
+import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
+import Input from 'components/inputs/input.js';
+import Checkbox from 'components/inputs/checkbox.js';
 import InitService from 'services/InitService';
 export default class Signin extends Component {
   constructor() {

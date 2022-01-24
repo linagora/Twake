@@ -1,12 +1,12 @@
 import React from 'react';
-import DriveElement from 'components/Drive/DriveElement.js';
-import DroppableZone from 'components/Draggable/DroppableZone.js';
-import Icon from 'components/Icon/Icon.js';
-import Menu from 'components/Menus/Menu.js';
+import DriveElement from 'components/drive/drive-element.js';
+import DroppableZone from 'components/draggable/droppable-zone.js';
+import Icon from 'components/icon/icon.js';
+import Menu from 'components/menus/menu.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Emojione from 'components/Emojione/Emojione';
+import Emojione from 'components/emojione/emojione';
 import Languages from 'services/languages/languages';
 import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
 

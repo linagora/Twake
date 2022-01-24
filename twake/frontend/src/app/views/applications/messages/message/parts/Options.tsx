@@ -3,9 +3,9 @@ import 'moment-timezone';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 
 import MessagesService from 'services/Apps/Messages/Messages';
-import EmojiPicker from 'components/EmojiPicker/EmojiPicker.js';
-import Menu from 'components/Menus/Menu.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
+import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
+import Menu from 'components/menus/menu.js';
+import MenusManager from 'app/components/menus/menus-manager.js';
 import Languages from 'services/languages/languages';
 import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
@@ -26,7 +26,7 @@ import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/message
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import SideViewService from 'app/services/AppView/SideViewService';
 import MainViewService from 'app/services/AppView/MainViewService';
-import Emojione from 'app/components/Emojione/Emojione';
+import Emojione from 'app/components/emojione/emojione';
 
 type Props = {
   onOpen?: () => void;

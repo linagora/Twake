@@ -1,6 +1,6 @@
 import React from 'react';
 import Languages from 'services/languages/languages';
-import Emojione from 'components/Emojione/Emojione';
+import Emojione from 'components/emojione/emojione';
 import './styles.scss';
 import { Button } from 'antd';
 import LoginService from 'app/services/login/LoginService';

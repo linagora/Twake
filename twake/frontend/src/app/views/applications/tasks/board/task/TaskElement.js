@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Icon from 'components/Icon/Icon.js';
+import Icon from 'components/icon/icon.js';
 import './Task.scss';
 
 export default class TaskElement extends React.Component {

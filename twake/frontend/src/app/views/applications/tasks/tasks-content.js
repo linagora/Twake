@@ -3,19 +3,19 @@ import React, { Component } from 'react';
 import UnconfiguredTab from './unconfigured-tab.js';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Emojione from 'components/Emojione/Emojione';
-import Loader from 'components/Loader/Loader.js';
+import Emojione from 'components/emojione/emojione';
+import Loader from 'components/loader/loader.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.ts';
 import Workspaces from 'services/workspaces/workspaces.js';
 import UserService from 'services/user/UserService';
-import Rounded from 'components/Inputs/Rounded.js';
-import Menu from 'components/Menus/Menu.js';
+import Rounded from 'components/inputs/rounded.js';
+import Menu from 'components/menus/menu.js';
 import BoardEditor from './board/BoardEditor.js';
 import MoreIcon from '@material-ui/icons/MoreHorizOutlined';
 import AlertManager from 'services/AlertManager/AlertManager';
 import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
-import ConnectorsListManager from 'components/ConnectorsListManager/ConnectorsListManager.js';
+import ConnectorsListManager from 'components/connectors-list-manager/connectors-list-manager.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
@@ -26,7 +26,7 @@ import Groups from 'services/workspaces/groups.js';
 import Board from './board/Board.js';
 
 import './tasks.scss';
-import UserListManager from 'app/components/UserListManager/UserListManager';
+import UserListManager from 'app/components/user-list-manager/user-list-manager';
 import RouterService from 'app/services/RouterService';
 
 export default class Tasks extends Component {

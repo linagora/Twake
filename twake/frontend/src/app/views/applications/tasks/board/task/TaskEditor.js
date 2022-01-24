@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Button from 'components/Buttons/Button.js';
-import ReminderSelector from 'components/ReminderSelector/ReminderSelector.js';
-import UserListManager from 'components/UserListManager/UserListManager';
-import Menu from 'components/Menus/Menu.js';
-import Input from 'components/Inputs/Input.js';
-import DateSelectorInput from 'components/Calendar/DatePicker.js';
-import TimeSelector from 'components/Calendar/TimeSelector.js';
-import Checkbox from 'components/Inputs/Checkbox.js';
-import MediumPopupManager from 'app/components/Modal/ModalManager';
+import Button from 'components/buttons/button.js';
+import ReminderSelector from 'components/reminder-selector/reminder-selector.js';
+import UserListManager from 'components/user-list-manager/user-list-manager';
+import Menu from 'components/menus/menu.js';
+import Input from 'components/inputs/input.js';
+import DateSelectorInput from 'components/calendar/date-picker.js';
+import TimeSelector from 'components/calendar/time-selector.js';
+import Checkbox from 'components/inputs/checkbox.js';
+import MediumPopupManager from 'app/components/modal/modal-manager';
 import Checklist from './parts/Checklist.js';
-import TagPicker from 'components/TagPicker/TagPicker.js';
+import TagPicker from 'components/tag-picker/tag-picker.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import { ObjectModal, ObjectModalFormTitle } from 'components/ObjectModal/DeprecatedObjectModal.js';
+import { ObjectModal, ObjectModalFormTitle } from 'components/object-modal/deprecated-object-modal.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
-import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
+import AttachmentPicker from 'components/attachment-picker/attachment-picker.js';
 
 import './Modal.scss';
 

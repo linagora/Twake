@@ -7,9 +7,9 @@ import { Tabs, Button, Typography, Col, Tag, Descriptions, Row, Divider } from '
 
 import { Application, ApplicationAccess } from 'app/models/App';
 import Languages from 'services/languages/languages';
-import AvatarComponent from 'app/components/Avatar/Avatar';
-import ObjectModal from 'app/components/ObjectModal/ObjectModal';
-import ModalManager from 'app/components/Modal/ModalManager';
+import AvatarComponent from 'app/components/avatar/avatar';
+import ObjectModal from 'app/components/object-modal/object-modal';
+import ModalManager from 'app/components/modal/modal-manager';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 
 import './ApplicationsStyles.scss';

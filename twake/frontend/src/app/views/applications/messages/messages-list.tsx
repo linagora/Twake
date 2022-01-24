@@ -4,7 +4,7 @@ import ListBuilder from './list-builder';
 import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
 import FirstMessage from './message/parts/FirstMessage/FirstMessage';
-import LockedHistoryBanner from 'app/components/LockedFeaturesComponents/LockedHistoryBanner/LockedHistoryBanner';
+import LockedHistoryBanner from 'app/components/locked-features-components/locked-history-banner/locked-history-banner';
 import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import ChannelAPIClient from 'app/services/channels/ChannelAPIClient';

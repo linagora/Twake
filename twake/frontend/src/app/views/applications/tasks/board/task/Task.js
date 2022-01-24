@@ -8,11 +8,11 @@ import './Task.scss';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import TaskDetails from './TaskDetails.js';
-import MediumPopupManager from 'app/components/Modal/ModalManager';
-import Icon from 'components/Icon/Icon.js';
-import UserListManager from 'components/UserListManager/UserListManager';
-import TagPicker from 'components/TagPicker/TagPicker.js';
-import AttachmentPicker from 'components/AttachmentPicker/AttachmentPicker.js';
+import MediumPopupManager from 'app/components/modal/modal-manager';
+import Icon from 'components/icon/icon.js';
+import UserListManager from 'components/user-list-manager/user-list-manager';
+import TagPicker from 'components/tag-picker/tag-picker.js';
+import AttachmentPicker from 'components/attachment-picker/attachment-picker.js';
 
 export default class Task extends React.Component {
   constructor(props) {

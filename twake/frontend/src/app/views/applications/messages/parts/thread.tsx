@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import './threads.scss';
-import Draggable from 'components/Draggable/Draggable';
+import Draggable from 'components/draggable/draggable';
 import classNames from 'classnames';
 
 export const LoadingThread = (

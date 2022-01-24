@@ -7,12 +7,12 @@ import popupManager from 'services/popupManager/popupManager.js';
 import userService from 'services/user/UserService';
 import currentUserService from 'app/services/user/CurrentUser';
 import uploadService from 'services/uploadManager/uploadManager.js';
-import ButtonWithTimeout from 'components/Buttons/ButtonWithTimeout.js';
-import Attribute from 'components/Parameters/Attribute.js';
+import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
+import Attribute from 'components/parameters/attribute.js';
 import Notifications from './Pages/Notifications';
-import MenuList from 'components/Menus/MenuComponent.js';
+import MenuList from 'components/menus/menu-component.js';
 import './UserParameter.scss';
-import Input from 'components/Inputs/Input.js';
+import Input from 'components/inputs/input.js';
 
 export default class UserParameter extends Component {
   constructor(props) {

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import AutoHeight from 'components/AutoHeight/AutoHeight.js';
-import Twacode from 'components/Twacode/Twacode';
+import AutoHeight from 'components/auto-height/auto-height.js';
+import Twacode from 'components/twacode/twacode';
 
 import './Pages.scss';
 

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import Input from 'components/Inputs/Input.js';
-import Button from 'components/Buttons/Button.js';
+import Input from 'components/inputs/input.js';
+import Button from 'components/buttons/button.js';
 import OutsideClickHandler from 'react-outside-click-handler';
 
 export default class AddTask extends React.Component {

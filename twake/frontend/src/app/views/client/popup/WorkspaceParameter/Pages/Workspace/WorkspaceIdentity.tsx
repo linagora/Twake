@@ -5,8 +5,8 @@ import { Avatar, Button, Col, Descriptions, Divider, Input, Row, Switch, Typogra
 
 import Languages from 'services/languages/languages';
 import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
-import AvatarComponent from 'app/components/Avatar/Avatar';
-import ModalManager from 'app/components/Modal/ModalManager';
+import AvatarComponent from 'app/components/avatar/avatar';
+import ModalManager from 'app/components/modal/modal-manager';
 import DeleteWorkspacePopup from './DeleteWorkspacePopup';
 import WorkspaceAPIClient, {
   WorkspaceUpdateResource,

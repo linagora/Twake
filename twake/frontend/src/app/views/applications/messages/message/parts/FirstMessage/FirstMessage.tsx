@@ -1,7 +1,7 @@
 import React from 'react';
 import Languages from 'services/languages/languages';
 
-import Emojione from 'components/Emojione/Emojione';
+import Emojione from 'components/emojione/emojione';
 import './FirstMessage.scss';
 
 export default () => {

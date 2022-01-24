@@ -2,13 +2,13 @@ import React from 'react';
 import { Tooltip } from 'antd';
 import { Calendar, CheckSquare, Folder, Star } from 'react-feather';
 
-import Icon from 'components/Icon/Icon';
+import Icon from 'app/components/icon/icon';
 import { Application } from 'app/models/App';
 import WindowState from 'services/utils/window';
-import Emojione from 'components/Emojione/Emojione';
+import Emojione from 'components/emojione/emojione';
 import { ChannelResource } from 'app/models/Channel';
-import AvatarComponent from 'app/components/Avatar/Avatar';
-import Beacon from 'app/components/ScrollHiddenComponents/Beacon';
+import AvatarComponent from 'app/components/avatar/avatar';
+import Beacon from 'app/components/scroll-hidden-components/beacon';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import useRouterChannelSelected from 'app/state/recoil/hooks/router/useRouterChannelSelected';
@@ -17,7 +17,7 @@ import './Channel.scss';
 import useChannelWritingActivity, {
   useChannelWritingActivityState,
 } from 'app/state/recoil/hooks/useChannelWritingActivity';
-import WritingLoader from 'app/components/WritingLoader/WritingLoader';
+import WritingLoader from 'app/components/writing-loader/writing-loader';
 
 type Props = {
   collection?: Collection<ChannelResource>;

@@ -17,7 +17,7 @@ import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/timegrid/main.css';
 import '@fullcalendar/list/main.css';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
-import EventUI from 'components/Calendar/Event/Event.js';
+import EventUI from 'components/calendar/event/event.js';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import Languages from 'services/languages/languages';
 

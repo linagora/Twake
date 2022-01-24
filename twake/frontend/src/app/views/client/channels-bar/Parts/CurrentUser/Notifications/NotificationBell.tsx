@@ -1,8 +1,8 @@
 import React from 'react';
 import moment from 'moment';
 
-import Menu from 'components/Menus/Menu';
-import Icon from 'components/Icon/Icon.js';
+import Menu from 'components/menus/menu';
+import Icon from 'app/components/icon/icon.js';
 
 import Languages from 'services/languages/languages';
 import NotificationPreferences from 'app/services/user/NotificationPreferences';

@@ -12,8 +12,8 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import ChannelsService from 'services/channels/channels.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
-import FilePicker from 'components/Drive/FilePicker/FilePicker.js';
+import MenusManager from 'app/components/menus/menus-manager.js';
+import FilePicker from 'components/drive/file-picker/file-picker.js';
 import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import MessagesListServerUtilsManager from './MessageLoaderFactory';
 import { ChannelResource, ChannelType } from 'app/models/Channel';
@@ -27,7 +27,7 @@ import {
 import Groups from 'services/workspaces/groups.js';
 import MainViewService from 'app/services/AppView/MainViewService';
 import MessageExternalFilePicker from 'app/views/applications/messages/input/parts/MessageExternalFilePicker';
-import FileUploadAPIClient from 'app/components/FileUploads/FileUploadAPIClient';
+import FileUploadAPIClient from 'app/components/file-uploads/file-upload-api-client';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };

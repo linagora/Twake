@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import LoginService from 'app/services/login/LoginService';
 import AccountService from 'services/login/account';
-import Emojione from 'components/Emojione/Emojione';
+import Emojione from 'components/emojione/emojione';
 import WindowState from 'services/utils/window';
 
 export default class VerifyMail extends Component {

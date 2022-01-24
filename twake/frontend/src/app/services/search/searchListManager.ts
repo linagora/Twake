@@ -5,7 +5,7 @@ import UsersService from 'services/user/UserService';
 import Workspaces from 'services/workspaces/workspaces.js';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterService';
-import { getUserParts } from 'app/components/Member/UserParts';
+import { getUserParts } from 'app/components/member/user-parts';
 import Observable from 'services/Observable/Observable';
 import UserAPIClient from '../user/UserAPIClient';
 import ChannelsReachableAPIClient from '../channels/ChannelsReachableAPIClient';

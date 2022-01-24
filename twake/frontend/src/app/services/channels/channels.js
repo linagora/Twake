@@ -4,7 +4,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Collections from 'app/services/CollectionsReact/Collections';
 import LocalStorage from 'app/services/LocalStorage';
 import WindowService from 'services/utils/window';
-import MenusManager from 'app/components/Menus/MenusManager.js';
+import MenusManager from 'app/components/menus/menus-manager.js';
 import Globals from 'services/Globals';
 import { TabResource } from 'app/models/Tab';
 import { ChannelResource } from 'app/models/Channel';

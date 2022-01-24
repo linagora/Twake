@@ -1,5 +1,5 @@
 import Observable from 'app/services/Depreciated/observable.js';
-import MenusManager from 'app/components/Menus/MenusManager.js';
+import MenusManager from 'app/components/menus/menus-manager.js';
 import WindowService from 'services/utils/window';
 
 import Globals from 'services/Globals';

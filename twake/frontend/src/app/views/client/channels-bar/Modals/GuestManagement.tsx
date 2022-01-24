@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { capitalize } from 'lodash';
 import { Input, Row, Typography } from 'antd';
-import ObjectModal from 'app/components/ObjectModal/ObjectModal';
+import ObjectModal from 'app/components/object-modal/object-modal';
 import RouterService from 'app/services/RouterService';
 import MemberChannelRow from '../Parts/Header/MemberChannelRow';
 import { ChannelMemberResource, ChannelResource, ChannelType } from 'app/models/Channel';

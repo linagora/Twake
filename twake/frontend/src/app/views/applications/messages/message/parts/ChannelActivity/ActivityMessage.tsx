@@ -1,8 +1,8 @@
 import React from 'react';
 import { Row, Typography } from 'antd';
 import Languages from 'services/languages/languages';
-import Emojione from 'app/components/Emojione/Emojione';
-import User from 'app/components/Twacode/blocks/User';
+import Emojione from 'app/components/emojione/emojione';
+import User from 'app/components/twacode/blocks/user';
 import { ChannelMemberType, ChannelType } from 'app/models/Channel';
 import { TabType } from 'app/models/Tab';
 import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Languages from 'services/languages/languages';
 import { Divider, Table, Typography } from 'antd';
-import Menu from 'components/Menus/Menu.js';
+import Menu from 'components/menus/menu.js';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import { ColumnsType } from 'antd/lib/table';
