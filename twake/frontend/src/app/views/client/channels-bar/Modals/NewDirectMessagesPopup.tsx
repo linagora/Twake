@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages';
 import MediumPopupComponent from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
 import UserListManager from 'components/user-list-manager/user-list-manager';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import ChannelsService from 'app/deprecated/channels/channels.js';
 import ModalManager from 'app/components/modal/modal-manager';
 import { Button, Typography } from 'antd';

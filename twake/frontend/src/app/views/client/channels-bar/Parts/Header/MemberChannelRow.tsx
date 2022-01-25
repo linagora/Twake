@@ -10,7 +10,7 @@ import './MemberChannelRow.scss';
 import Menu from 'app/components/menus/menu';
 import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/services/AccessRightsService';
-import RouterServices from 'services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import Collection from 'app/services/Collections/Collection';
 import UsersService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';

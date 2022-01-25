@@ -1,7 +1,7 @@
 import { PendingEmail, PendingEmailResource } from 'app/models/PendingEmail';
 import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import Collections, { Collection } from 'services/CollectionsReact/Collections';
-import RouterServices from 'services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import UserServices from 'app/features/users/services/current-user-service';
 import ConsoleService from '../Console/ConsoleService';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';

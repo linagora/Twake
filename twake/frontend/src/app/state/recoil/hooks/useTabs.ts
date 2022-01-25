@@ -4,9 +4,9 @@ import { TabType } from 'app/models/Tab';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import TabsAPIClients from 'app/services/tabs/TabsAPIClients';
 import { AtomTabKey, TabState } from '../atoms/Tabs';
-import useRouterChannel from './router/useRouterChannel';
-import useRouterCompany from './router/useRouterCompany';
-import useRouterWorkspace from './router/useRouterWorkspace';
+import useRouterChannel from '../../../features/router/hooks/use-router-channel';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 export default function useTabsCommons() {
   const companyId = useRouterCompany();

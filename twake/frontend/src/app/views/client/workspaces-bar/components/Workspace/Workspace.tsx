@@ -4,7 +4,7 @@ import React from 'react';
 import WorkspacesService from 'services/workspaces/workspaces';
 import WorkspaceIcon from './WorkspaceIcon';
 import { WorkspaceType } from 'app/models/Workspace';
-import useRouterWorkspaceSelected from 'app/state/recoil/hooks/router/useRouterWorkspaceSelected';
+import useRouterWorkspaceSelected from 'app/features/router/hooks/use-router-workspace-selected';
 
 import './Workspace.scss';
 

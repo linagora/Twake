@@ -5,7 +5,7 @@ import { Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
 import Integration from 'app/views/integration';
-import RouterServices, { RouteType } from './services/RouterService';
+import RouterServices, { RouteType } from './features/router/services/router-service';
 import ErrorBoundary from 'app/views/error/error-boundary';
 import InitService from './services/InitService';
 import useTimeout from './services/hooks/useTimeout';

@@ -7,7 +7,7 @@ import { MessageContext } from '../message-with-replies';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import Input from '../../input/input';
-import useRouterChannel from 'app/state/recoil/hooks/router/useRouterChannel';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 
 type Props = {};
 

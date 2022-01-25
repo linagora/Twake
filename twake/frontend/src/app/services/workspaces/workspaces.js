@@ -11,7 +11,7 @@ import LocalStorage from 'app/services/LocalStorage';
 import workspacesUsers from './workspaces_users.ts';
 import WindowService from 'services/utils/window';
 import workspacesApps from 'services/workspaces/workspaces_apps.js';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import NoWorkspaces from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoWorkspaces';
 import NoCompanies from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoCompanies';
 import loginService from 'app/services/login/LoginService';

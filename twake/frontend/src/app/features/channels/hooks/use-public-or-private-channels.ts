@@ -3,9 +3,9 @@ import { useRecoilCallback, useRecoilState } from 'recoil';
 
 import { ChannelType } from 'app/features/channels/types/channel';
 import { MineChannelsState } from '../state/channels';
-import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
-import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { isPrivateChannel, isPublicChannel } from 'app/features/channels/utils/utils';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import { LoadingState } from 'app/state/recoil/atoms/Loading';

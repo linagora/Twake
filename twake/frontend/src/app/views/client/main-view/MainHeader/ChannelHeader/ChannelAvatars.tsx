@@ -1,4 +1,4 @@
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import { getUserParts } from 'app/components/member/user-parts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/features/channels/types/channel';

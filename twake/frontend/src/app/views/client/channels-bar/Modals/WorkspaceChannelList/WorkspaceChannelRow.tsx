@@ -4,7 +4,7 @@ import { Col, Row, Tag, Typography } from 'antd';
 import { capitalize } from 'lodash';
 import Languages from 'services/languages/languages';
 import Icon from 'app/components/icon/icon';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import { ChannelType } from 'app/features/channels/types/channel';
 import Emojione from 'app/components/emojione/emojione';
 import UsersService from 'app/features/users/services/current-user-service';

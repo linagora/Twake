@@ -3,7 +3,7 @@ import { Avatar, Badge, Tag } from 'antd';
 import { DashOutlined } from '@ant-design/icons';
 import { User } from 'react-feather';
 import Languages from 'services/languages/languages';
-import RouterServices from 'services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import { UserType } from 'app/features/users/types/user';
 import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'services/Depreciated/Collections/Collections';

@@ -29,7 +29,7 @@ import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip
 import Select from 'components/select/select.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
 import UnconfiguredTab from './unconfigured-tab.js';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import MainPlus from 'components/main-plus/main-plus.js';
 import {
   getCompanyApplication as getApplication,

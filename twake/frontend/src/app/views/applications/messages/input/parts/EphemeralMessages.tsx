@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import Languages from 'services/languages/languages';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
-import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import MessageContent from '../../message/parts/MessageContent';
 import { MessageContext } from '../../message/message-with-replies';
 import ThreadSection from '../../parts/thread-section';

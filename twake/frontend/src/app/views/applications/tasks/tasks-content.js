@@ -27,7 +27,7 @@ import Board from './board/Board.js';
 
 import './tasks.scss';
 import UserListManager from 'app/components/user-list-manager/user-list-manager';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 
 export default class Tasks extends Component {
   constructor(props) {

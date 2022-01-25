@@ -1,5 +1,5 @@
 import React from 'react';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 
 import 'app/styles/ui.less';
 

@@ -5,7 +5,7 @@ import Menu from 'components/menus/menu.js';
 import ChannelsService from 'app/deprecated/channels/channels.js';
 import Button from 'components/buttons/button.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import CalendarSelector from 'components/calendar/calendar-selector/calendar-selector.js';
 import AccessRightsService from 'app/services/AccessRightsService';
 import WorkspaceService from 'services/workspaces/workspaces';

@@ -1,4 +1,4 @@
-import RouterService from '../RouterService';
+import RouterService from '../../features/router/services/router-service';
 import AppViewService, { ViewConfiguration } from './AppViewService';
 
 class MainViewService extends AppViewService {

@@ -18,7 +18,7 @@ import Workspaces from 'services/workspaces/workspaces';
 import { FileType } from 'app/models/File';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import { useMessageEditor } from 'app/features/messages/hooks/use-message-editor';
-import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import {

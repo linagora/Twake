@@ -16,7 +16,7 @@ import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import Languages from 'services/languages/languages';
 import TagPicker from 'components/tag-picker/tag-picker.js';
-import RouterServices from 'services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import { getAsFrontUrl } from 'app/services/utils/URLUtils';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 import ModalManager from 'app/components/modal/modal-manager';

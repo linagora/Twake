@@ -16,8 +16,8 @@ import Api from 'app/services/Api';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import WorkspaceService from 'services/workspaces/workspaces.js';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
-import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 type ColumnObjectType = { [key: string]: any };
 

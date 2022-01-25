@@ -4,15 +4,15 @@ import { TabType } from 'app/models/Tab';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/modal/modal-manager';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import DefaultChannelTab from 'app/views/client/main-view/Tabs/DefaultChannelTab';
 import Tab from 'app/views/client/main-view/Tabs/Tab';
 import UserService from 'app/features/users/services/current-user-service';
 import useTabs from 'app/state/recoil/hooks/useTabs';
 import AccessRightsService from 'app/services/AccessRightsService';
-import useRouterCompany from '../../../../state/recoil/hooks/router/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
-import useRouterTab from 'app/state/recoil/hooks/router/useRouterTab';
+import useRouterCompany from '../../../../features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import useRouterTab from 'app/features/router/hooks/use-router-tab';
 
 import './Tabs.scss';
 

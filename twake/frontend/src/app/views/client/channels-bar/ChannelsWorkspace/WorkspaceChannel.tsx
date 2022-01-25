@@ -15,7 +15,7 @@ import WorkspaceChannelList from 'app/views/client/channels-bar/Modals/Workspace
 import Menu from 'components/menus/menu.js';
 import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/services/AccessRightsService';
-import RouterServices from 'services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 
 type Props = {
   collection: Collection<ChannelResource>;

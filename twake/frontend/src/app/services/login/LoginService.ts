@@ -2,7 +2,7 @@ import Logger from 'app/services/Logger';
 import Observable from 'app/services/Depreciated/observable.js';
 import WindowState from 'services/utils/window';
 import Globals from 'services/Globals';
-import RouterServices from '../RouterService';
+import RouterServices from '../../features/router/services/router-service';
 import LocalStorage from 'services/LocalStorage';
 import AuthService from 'services/Auth/AuthService';
 import Application from '../../features/applications/services/application-service';

@@ -9,11 +9,9 @@ import Error from 'app/views/error';
 import Join from 'app/views/join';
 import Collections from 'services/Depreciated/Collections/Collections';
 
-import Workspaces from 'services/workspaces/workspaces';
-import Groups from 'services/workspaces/groups';
 import Channels from 'app/deprecated/channels/channels';
 import PublicMainView from 'app/views/client/main-view/PublicMainView';
-import Observable from './Observable/Observable';
+import Observable from '../../../services/Observable/Observable';
 
 export type RouteType = {
   path: string;

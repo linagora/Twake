@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from 'services/CollectionsReact/Collections';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import WorkspaceChannels from './WorkspaceChannel';
 import Languages from 'services/languages/languages';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';

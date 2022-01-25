@@ -10,9 +10,9 @@ import { useWatcher } from 'app/services/Observable/Observable';
 import AccountStatusComponent from 'app/components/on-boarding/account-status-component';
 import CompanyBillingBanner from 'app/components/on-boarding/company-billing-banner';
 import './MainView.scss';
-import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
-import useRouterChannel from 'app/state/recoil/hooks/router/useRouterChannel';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 
 type PropsType = {
   className?: string;

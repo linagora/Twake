@@ -1,5 +1,5 @@
 import { selector, selectorFamily } from 'recoil';
-import { RouterState } from '../atoms/Router';
+import { RouterState } from '../atoms/router';
 
 export const RouterCompanySelector = selector<string>({
   key: 'RouterCompanySelector',

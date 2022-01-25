@@ -5,7 +5,7 @@ import { Button, Col, Row, Typography } from 'antd';
 import Emojione from 'app/components/emojione/emojione';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import SearchInput from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';

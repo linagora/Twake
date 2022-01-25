@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Menu from 'components/menus/menu.js';
 import { MoreHorizontal, MessageCircle } from 'react-feather';

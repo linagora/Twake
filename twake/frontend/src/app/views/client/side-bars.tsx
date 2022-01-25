@@ -6,8 +6,8 @@ import ChannelsBar, { LoadingChannelBar } from './channels-bar/ChannelsBar';
 import WorkspacesBar, { LoadingWorkspaceBar } from './workspaces-bar';
 
 import { useWorkspaceLoader } from 'app/state/recoil/hooks/useWorkspaces';
-import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useCurrentCompanyRealtime } from '../../features/companies/hooks/use-companies';
 
 import './workspaces-bar/styles.scss';

@@ -6,7 +6,7 @@ import ObjectModal from 'components/object-modal/object-modal';
 import listService, { GenericChannel } from 'services/search/searchListManager';
 import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
 import ChannelsService from 'app/deprecated/channels/channels.js';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import { UserType } from 'app/features/users/types/user';
 import UsersService from 'app/features/users/services/current-user-service';

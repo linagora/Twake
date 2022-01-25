@@ -3,7 +3,7 @@ import { Col, Row, Typography } from 'antd';
 import { getUserParts } from 'app/components/member/user-parts';
 import './ChannelRow.scss';
 import ChannelsService from 'app/deprecated/channels/channels.js';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import UserServices from 'app/features/users/services/current-user-service';
 

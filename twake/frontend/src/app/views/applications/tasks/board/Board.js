@@ -17,7 +17,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
 import User from 'components/user/user.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 
 export default class Board extends React.Component {
   constructor(props) {

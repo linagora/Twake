@@ -10,7 +10,7 @@ import { WorkspaceType, WorkspaceUserType } from 'app/models/Workspace';
 import Languages from 'app/services/languages/languages';
 import ObjectModal from 'app/components/object-modal/object-modal';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import WorkspaceUserAPIClient from 'app/services/workspaces/WorkspaceUserAPIClient';
 

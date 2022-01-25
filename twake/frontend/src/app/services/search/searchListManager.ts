@@ -4,7 +4,7 @@ import Strings from 'app/services/utils/strings';
 import UsersService from 'app/features/users/services/current-user-service';
 import Workspaces from 'services/workspaces/workspaces.js';
 import { Collection } from 'services/CollectionsReact/Collections';
-import RouterServices from 'services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import { getUserParts } from 'app/components/member/user-parts';
 import Observable from 'services/Observable/Observable';
 import UserAPIClient from '../../features/users/api/user-api-client';

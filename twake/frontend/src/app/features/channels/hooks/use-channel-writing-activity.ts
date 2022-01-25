@@ -11,7 +11,7 @@ import {
 
 import { ThreadWritingActivitySelector } from '../../messages/state/selectors/thread-writing-activity';
 import UserService from 'app/features/users/services/current-user-service';
-import useRouterCompany from '../../../state/recoil/hooks/router/useRouterCompany';
+import useRouterCompany from '../../router/hooks/use-router-company';
 import { useCallback, useRef } from 'react';
 import { useCurrentUser } from '../../users/hooks/use-current-user';
 

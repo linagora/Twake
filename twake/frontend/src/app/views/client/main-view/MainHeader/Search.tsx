@@ -2,7 +2,7 @@ import { Button, Col, Input, Row } from 'antd';
 import React from 'react';
 import { Search } from 'react-feather';
 import SearchService from 'services/search/search.js';
-import RouterServices from 'services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import AccessRightsService from 'app/services/AccessRightsService';
 import Languages from 'services/languages/languages';
 

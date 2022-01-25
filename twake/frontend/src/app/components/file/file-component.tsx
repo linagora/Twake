@@ -10,7 +10,7 @@ import {
 import { DataFileType } from './types';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import FileUploadService from '../file-uploads/file-upload-service';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 
 import './file.scss';
 import { PendingFileRecoilType } from 'app/models/File';

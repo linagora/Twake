@@ -8,7 +8,7 @@ import ChannelsService from 'app/deprecated/channels/channels.js';
 import Button from 'components/buttons/button.js';
 import AccessRightsService from 'app/services/AccessRightsService';
 import WorkspaceService from 'services/workspaces/workspaces';
-import RouterService from 'services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 
 export default class UnconfiguredTab extends Component {
   constructor() {

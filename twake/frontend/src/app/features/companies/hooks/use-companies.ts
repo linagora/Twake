@@ -1,5 +1,5 @@
 import { CompaniesState } from '../state/companies';
-import useRouterCompany from '../../../state/recoil/hooks/router/useRouterCompany';
+import useRouterCompany from '../../router/hooks/use-router-company';
 import { useRecoilState } from 'recoil';
 import { CurrentUserState } from '../../users/state/atoms/current-user';
 import { CompanyType } from 'app/features/companies/types/company';
@@ -7,7 +7,7 @@ import LocalStorage from 'app/services/LocalStorage';
 import { UserType } from 'app/features/users/types/user';
 import { useCurrentUser } from '../../users/hooks/use-current-user';
 import _ from 'lodash';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import AccessRightsService from 'app/services/AccessRightsService';
 import Groups from 'services/workspaces/groups.js';

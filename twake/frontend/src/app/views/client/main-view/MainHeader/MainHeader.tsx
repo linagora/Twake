@@ -3,7 +3,7 @@ import { Layout, Divider } from 'antd';
 import ChannelBar from './ChannelHeader/ChannelHeader';
 import MainViewService from 'app/services/AppView/MainViewService';
 import ApplicationBar from './ApplicationHeader/ApplicationHeader';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 
 const MainHeader: FC<{}> = () => {
   const { channelId } = RouterServices.getStateFromRoute();

@@ -3,8 +3,8 @@ import { useRecoilState } from 'recoil';
 
 import { ChannelType } from 'app/features/channels/types/channel';
 import { ReachableChannelsState } from '../state/channels';
-import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
 
 export function useReachableChannels(): {

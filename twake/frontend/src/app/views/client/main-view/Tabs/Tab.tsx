@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { TabType } from 'app/models/Tab';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/modal/modal-manager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';

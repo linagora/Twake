@@ -12,7 +12,7 @@ import { getChannelMembers } from 'app/deprecated/channels/ChannelCollectionPath
 import { UserType } from 'app/features/users/types/user';
 import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import UserService from 'app/features/users/services/current-user-service';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/models/Workspace';
 import Strings from 'app/services/utils/strings';

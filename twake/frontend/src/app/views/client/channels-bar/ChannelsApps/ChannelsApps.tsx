@@ -9,7 +9,7 @@ import {
   useCompanyApplications,
   useCompanyApplicationsRealtime,
 } from 'app/features/applications/hooks/use-company-applications';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 
 // This should be deleted
 export default class ChannelsApps extends Component {

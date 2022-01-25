@@ -3,7 +3,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import { capitalize } from 'lodash';
 import { Input, Row, Typography } from 'antd';
 import ObjectModal from 'app/components/object-modal/object-modal';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import MemberChannelRow from '../Parts/Header/MemberChannelRow';
 import {
   ChannelMemberResource,

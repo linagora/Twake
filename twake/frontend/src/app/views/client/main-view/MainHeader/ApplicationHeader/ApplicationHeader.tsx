@@ -3,7 +3,7 @@ import { Col, Input, Row, Typography } from 'antd';
 import Icon from 'app/components/icon/icon';
 import { capitalize } from 'lodash';
 import { ChannelResource } from 'app/features/channels/types/channel';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';

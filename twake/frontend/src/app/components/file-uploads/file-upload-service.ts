@@ -3,7 +3,7 @@ import EventEmitter from 'events';
 
 import { FileType, PendingFileType } from 'app/models/File';
 import JWTStorage from 'app/services/JWTStorage';
-import RouterServices from 'services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import Resumable from 'services/uploadManager/resumable';
 import FileUploadAPIClient from './file-upload-api-client';
 import { isPendingFileStatusPending } from './utils/pending-files';

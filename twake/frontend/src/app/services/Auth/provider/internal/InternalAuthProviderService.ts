@@ -4,7 +4,7 @@ import Observable from '../../../Observable/Observable';
 import { TwakeService } from '../../../Decorators/TwakeService';
 import { AuthProvider, InitParameters } from '../AuthProvider';
 import Globals from 'app/services/Globals';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import ConsoleAPIClient from 'app/services/Console/ConsoleAPIClient';
 
 export type SignInParameters = {

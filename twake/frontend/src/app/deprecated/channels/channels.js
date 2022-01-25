@@ -9,7 +9,7 @@ import Globals from 'services/Globals';
 import { TabResource } from 'app/models/Tab';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import UsersService from 'app/features/users/services/current-user-service';
-import RouterService from 'app/services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import _ from 'lodash';
 
 class Channels extends Observable {

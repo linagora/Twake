@@ -4,12 +4,12 @@ import UserService from 'app/features/users/services/current-user-service';
 import WelcomeOnTwake from './popups/welcome-on-twake';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'app/services/InitService';
-import RouterServices from 'app/services/RouterService';
+import RouterServices from 'app/features/router/services/router-service';
 import Groups from 'services/workspaces/groups.js';
 import { CompanyType } from 'app/features/companies/types/company';
 import BlockedCompany from './popups/blocked-company';
-import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
-import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 const CompanyStatusComponent = (): JSX.Element => {
   const companyId = useRouterCompany();

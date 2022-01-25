@@ -6,7 +6,7 @@ import { Button, Col, Divider, Layout, Row, Space, Typography } from 'antd';
 
 import { MagicLinksJoinResponse, MagicLinksJoinService } from 'services/MagicLinks/MagicLinks';
 import Languages from 'services/languages/languages';
-import RouterService from 'services/RouterService';
+import RouterService from 'app/features/router/services/router-service';
 import InitService from 'services/InitService';
 
 import './styles.scss';
