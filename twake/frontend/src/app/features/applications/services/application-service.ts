@@ -9,7 +9,7 @@ import Globals from 'app/features/global/services/globals-twake-app-service';
 import UserNotifications from 'app/features/users/services/user-notifications-service';
 import WorkspacesListener from '../../workspaces/services/workspaces-listener-service';
 import LocalStorage from '../../global/services/local-storage-service';
-import WebSocket from '../../../services/WebSocket/WebSocket';
+import WebSocket from '../../websocket/types/websocket';
 
 class Application {
   private logger: Logger.Logger;

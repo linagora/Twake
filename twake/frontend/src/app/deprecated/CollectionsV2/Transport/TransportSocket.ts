@@ -1,4 +1,4 @@
-import { WebsocketEvents } from 'app/services/WebSocket/WebSocket';
+import { WebsocketEvents } from 'app/features/websocket/types/websocket';
 import Logger from 'app/features/global/services/logger-service';
 import { WebSocketTransport } from './TransportAPI';
 

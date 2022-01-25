@@ -1,7 +1,7 @@
-import Globals from '../../features/global/services/globals-twake-app-service';
-import Logger from '../../features/global/services/logger-service';
-import JWT from '../../features/global/services/jwt-storage-service';
-import WebSocketService, { WebSocketOptions } from './WebSocketService';
+import Globals from '../../global/services/globals-twake-app-service';
+import Logger from '../../global/services/logger-service';
+import JWT from '../../global/services/jwt-storage-service';
+import WebSocketService, { WebSocketOptions } from './websocket-service';
 
 class WebSocketFactory {
   private logger: Logger.Logger;

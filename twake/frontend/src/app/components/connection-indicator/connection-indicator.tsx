@@ -6,7 +6,7 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import Languages from 'app/features/global/services/languages-service';
 import { ConnectedState } from 'app/features/users/state/atoms/connected';
 import { useRecoilState } from 'recoil';
-import WebSocket, { WebsocketEvents } from 'services/WebSocket/WebSocket';
+import WebSocket, { WebsocketEvents } from 'app/features/websocket/types/websocket';
 
 export default () => {
   const [{ connected, reconnecting }, setState] = useRecoilState(ConnectedState);

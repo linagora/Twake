@@ -2,7 +2,7 @@ import { CompanyType } from 'app/features/companies/types/company';
 import { UserType } from 'app/features/users/types/user';
 import Api from '../../global/services/api-service';
 import { TwakeService } from '../../global/services/twake-service';
-import { WebsocketRoom } from '../../../services/WebSocket/WebSocket';
+import { WebsocketRoom } from '../../websocket/types/websocket';
 import WorkspaceAPIClient from '../../workspaces/api/workspace-api-client';
 import CurrentUser from '../../../deprecated/user/CurrentUser';
 

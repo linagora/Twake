@@ -2,7 +2,7 @@ import Api from '../../global/services/api-service';
 import { CompanyType } from 'app/features/companies/types/company';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { TwakeService } from '../../global/services/twake-service';
-import { WebsocketRoom } from '../../../services/WebSocket/WebSocket';
+import { WebsocketRoom } from '../../websocket/types/websocket';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
 

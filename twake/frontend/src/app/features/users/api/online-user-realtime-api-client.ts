@@ -1,4 +1,4 @@
-import WebSocketService from '../../../services/WebSocket/WebSocketService';
+import WebSocketService from '../../websocket/services/websocket-service';
 import Logger from '../../global/services/logger-service';
 import { RealtimeEventAction } from '../../global/types/realtime-types';
 

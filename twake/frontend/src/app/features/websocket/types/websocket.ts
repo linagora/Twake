@@ -1,4 +1,4 @@
-import WebSocketFactory from './WebSocketFactory';
+import WebSocketFactory from '../services/websocket-factory-service';
 
 export type WebsocketRoom = {
   room: string;
