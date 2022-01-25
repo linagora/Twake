@@ -25,6 +25,10 @@ import {
   useChannelWritingActivityEmit,
   useWritingDetector,
 } from 'app/state/recoil/hooks/useChannelWritingActivity';
+import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
+import AlertManager from 'app/services/AlertManager/AlertManager';
+import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 
 type Props = {
   messageId?: string;
@@ -48,6 +52,7 @@ type Props = {
 
 export default (props: Props) => {
   const { channel } = useChannel(props.channelId || '');
+  const companyId = useRouterCompany();
 
   const {
     editor,
@@ -56,11 +61,17 @@ export default (props: Props) => {
     send,
     key: editorId,
   } = useMessageEditor({
-    companyId: useRouterCompany(),
+    companyId,
     workspaceId: channel.workspace_id || '',
     channelId: props.channelId,
     threadId: props.threadId,
     messageId: props.messageId,
+  });
+
+  const { message: parentMessage } = useMessage({
+    companyId,
+    threadId: props.threadId,
+    id: props.threadId,
   });
 
   const { upload, clear: clearUploads } = useUploadZones(editorId);
@@ -123,6 +134,35 @@ export default (props: Props) => {
 
     if (props.onSend) {
       props.onSend(content);
+      return;
+    }
+
+    //Sending commands
+    if (content.indexOf('/') === 0 && !props.messageId) {
+      let app: any = null;
+      let app_name = content.split(' ')[0].slice(1);
+      // eslint-disable-next-line array-callback-return
+      getCompanyApplications(companyId).map((_app: any) => {
+        if (_app?.identity?.code === app_name) {
+          app = _app;
+        }
+      });
+
+      if (!app) {
+        AlertManager.alert(() => {}, {
+          text: Languages.t('services.apps.messages.no_command_possible', [content, app_name]),
+          title: Languages.t('services.apps.messages.no_app'),
+        });
+        return;
+      }
+      let data = {
+        command: content.split(' ').slice(1).join(' '),
+        channel: channel,
+        parent_message: parentMessage || null,
+      };
+
+      WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
+
       return;
     }
 

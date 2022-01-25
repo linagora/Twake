@@ -26,6 +26,7 @@ import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';
+import FeatureTogglesService from 'app/services/FeatureTogglesService';
 
 type PropsType = {
   channel: ChannelType;
@@ -93,18 +94,16 @@ export default (props: PropsType): JSX.Element => {
 
   const displayGuestManagement = () => {
     return ModalManager.open(
-      <Feature
-        name={FeatureNames.GUESTS}
-        inactiveComponent={() => (
-          <LockedGuestsPopup
-            companySubscriptionUrl={
-              InitService.server_infos?.configuration?.accounts?.console
-                ?.company_subscription_url || ''
-            }
-          />
-        )}
-        activeComponent={() => <GuestManagement channel={props.channel} />}
-      />,
+      FeatureTogglesService.getFeatureValue(FeatureNames.GUESTS) ? (
+        <GuestManagement channel={props.channel} />
+      ) : (
+        <LockedGuestsPopup
+          companySubscriptionUrl={
+            InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url ||
+            ''
+          }
+        />
+      ),
       {
         position: 'center',
         size: { width: '600px', minHeight: '329px' },

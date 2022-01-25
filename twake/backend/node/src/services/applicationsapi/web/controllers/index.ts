@@ -9,9 +9,14 @@ import {
 import { ResourceGetResponse } from "../../../../utils/types";
 import { logger as log } from "../../../../core/platform/framework";
 import {
-  CrudExeption,
+  CrudException,
   ExecutionContext,
 } from "../../../../core/platform/framework/api/crud-service";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import {
+  RealtimeApplicationEvent,
+  RealtimeBaseBusEvent,
+} from "../../../../core/platform/services/realtime/types";
 
 export class ApplicationsApiController {
   constructor(readonly service: ApplicationsApiServiceAPI) {}
@@ -40,21 +45,69 @@ export class ApplicationsApiController {
       id: context.application_id,
     });
     if (!entity) {
-      throw CrudExeption.notFound("Application not found");
+      throw CrudException.notFound("Application not found");
     }
 
     return { resource: entity.getApplicationObject() };
   }
 
   async configure(request: FastifyRequest<{}>, reply: FastifyReply) {
-    return { error: "Not implemented (yet)" };
+    try {
+      const body = request.body as any;
+
+      const data = {
+        action: "configure",
+        application: {
+          id: "22d149c0-7918-11ec-88d7-db651e6e2244",
+          identity: {
+            name: "superapp",
+            icon: "http://localhost:3000/public/emoji-datasource/apple/sheets-256/16.png",
+          },
+        },
+        form: body.form,
+        hidden_data: {},
+      };
+
+      const room = "/me/" + body.user_id;
+
+      localEventBus.publish("realtime:event", {
+        room: room,
+        type: "application",
+        data,
+      } as RealtimeBaseBusEvent<RealtimeApplicationEvent>);
+
+      return { status: "ok" };
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
   }
 
   async closeConfigure(
     request: FastifyRequest<{ Params: { configuration_id: string } }>,
     reply: FastifyReply,
   ) {
-    return { error: "Not implemented (yet)" };
+    const data = {
+      action: "configure",
+      application: {
+        id: "22d149c0-7918-11ec-88d7-db651e6e2244",
+        identity: {
+          name: "superapp",
+          icon: "http://localhost:3000/public/emoji-datasource/apple/sheets-256/16.png",
+        },
+      },
+      hidden_data: {},
+    };
+
+    const room = "/me/" + ""; // TODO:
+
+    localEventBus.publish("realtime:event", {
+      room: room,
+      type: "application",
+      data,
+    } as RealtimeBaseBusEvent<RealtimeApplicationEvent>);
+
+    return { status: "ok" };
   }
 
   async proxy(request: FastifyRequest<{}>, reply: FastifyReply, fastify: FastifyInstance) {

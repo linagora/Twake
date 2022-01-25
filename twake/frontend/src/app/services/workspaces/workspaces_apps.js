@@ -37,19 +37,32 @@ class WorkspacesApps extends Observable {
     workspace_id = workspace_id || Workspaces.currentWorkspaceId;
     group_id = group_id || Workspaces.currentGroupId;
 
-    data.connection_id = CurrentUser.unique_connection_id;
+    const connection_id = CurrentUser.unique_connection_id;
 
     // eslint-disable-next-line no-redeclare
-    var data = {
+    // var data = {
+    //   workspace_id: workspace_id,
+    //   group_id: group_id,
+    //   app_id: app_id,
+    //   type: type,
+    //   event: event,
+    //   data: data,
+    // };
+    // Api.post('/ajax/market/app/api/event', data, res => {});
+
+    data = {
       workspace_id: workspace_id,
-      group_id: group_id,
+      company_id: group_id,
       app_id: app_id,
       type: type,
       event: event,
       data: data,
+      content: { },
+      connection_id: connection_id,
+      name: '/me/' + CurrentUser.updates_connection.route.split('/')[1]
     };
 
-    Api.post('/ajax/market/app/api/event', data, res => {});
+    Api.post(`/internal/services/applications/v1/applications/${app_id}/event`, data, res => {}).then()
   }
 
   unload(workspace_id) {

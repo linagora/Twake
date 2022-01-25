@@ -614,7 +614,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   }
 
   public encodeInviteToken(companyId: string, workspaceId: string, token: string) {
-    return `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token}`;
+    return `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token.replace("/", "_")}`;
   }
 
   public decodeInviteToken(encodedToken: string): InviteTokenObject | null {
@@ -623,7 +623,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       if (!token) {
         return;
       }
-      return { c: expandUUID4(companyId), w: expandUUID4(workspaceId), t: token };
+      return { c: expandUUID4(companyId), w: expandUUID4(workspaceId), t: token.replace("_", "/") };
     } catch (e) {
       return null;
     }

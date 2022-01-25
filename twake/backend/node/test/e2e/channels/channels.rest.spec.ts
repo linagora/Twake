@@ -167,7 +167,7 @@ describe("The /internal/services/channels/v1 API", () => {
       result.resources.forEach(r => {
         expect(r.stats).toMatchObject({
           members: 1,
-          messages: 1,
+          messages: 0,
         });
       });
 
@@ -521,7 +521,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(resource.stats).toMatchObject({
         members: 1,
-        messages: 1,
+        messages: 0,
       });
 
       expect(resource.user_member).toMatchObject({
@@ -550,7 +550,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(resource.stats).toMatchObject({
         members: 6,
-        messages: 6,
+        messages: 0,
       });
 
       await channelService.members.delete(
@@ -566,7 +566,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(resource.stats).toMatchObject({
         members: 5,
-        messages: 5,
+        messages: 0,
       });
 
       done();

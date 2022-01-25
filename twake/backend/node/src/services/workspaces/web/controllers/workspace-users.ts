@@ -307,6 +307,7 @@ export class WorkspaceUsersCrudController
       resource: resource,
     };
   }
+
   async delete(
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
     reply: FastifyReply,

@@ -18,7 +18,7 @@ import Application, {
   PublicApplicationObject,
 } from "../../../src/services/applications/entities/application";
 import { ResourceGetResponse } from "../../../src/utils/types";
-import { CrudExeption } from "../../../src/core/platform/framework/api/crud-service";
+import { CrudException } from "../../../src/core/platform/framework/api/crud-service";
 import * as crypto from "crypto";
 
 let signingSecret = "";

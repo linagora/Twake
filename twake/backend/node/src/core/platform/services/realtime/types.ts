@@ -37,6 +37,20 @@ export class RealtimeEntityEvent<Entity> {
   // the action result which fired this event
   result: EntityOperationResult<Entity> | null;
 }
+
+export class RealtimeApplicationEvent {
+  action: "configure" | "close_configure";
+  application: unknown;
+  form: unknown;
+  hidden_data: unknown;
+}
+
+export class RealtimeBaseBusEvent<T> {
+  room: string;
+  type: string;
+  data: T;
+}
+
 export class RealtimeLocalBusEvent<Entity> {
   event: RealtimeEntityEvent<Entity>;
   topic: string;

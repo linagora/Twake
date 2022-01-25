@@ -10,8 +10,9 @@ import { logger } from "../../../core/platform/framework";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import {
   CreateResult,
-  CrudExeption,
+  CrudException,
   DeleteResult,
+  EntityOperationResult,
   ExecutionContext,
   ListResult,
   OperationType,
@@ -25,6 +26,21 @@ import { logger as log } from "../../../core/platform/framework";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import * as crypto from "crypto";
 import { isObject } from "lodash";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
+import {
+  RealtimeApplicationEvent,
+  RealtimeBaseBusEvent,
+  RealtimeEntityActionType,
+  RealtimeEntityEvent,
+  RealtimeLocalBusEvent,
+  ResourcePath,
+} from "../../../core/platform/services/realtime/types";
+import { getThreadMessagePath } from "../../messages/web/realtime";
+import { ThreadExecutionContext } from "../../messages/types";
+import { Message } from "../../messages/entities/messages";
+import { eventBus } from "../../../core/platform/services/realtime/bus";
+import { getNotificationRoomName } from "../../notifications/services/realtime";
+import { v1 as uuid } from "uuid";
 
 export function getService(platformService: PlatformServicesAPI): MarketplaceApplicationServiceAPI {
   return new ApplicationService(platformService);
@@ -156,21 +172,23 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
   }
 
   async notifyApp(application_id: string, type: string, name: string, content: any): Promise<void> {
-    log.debug({ application_id, type, name, content });
+    log.info({ application_id, type, name, content });
 
     const app = await this.get({ id: application_id });
     if (!app) {
-      throw CrudExeption.notFound("Application not found");
+      throw CrudException.notFound("Application not found");
     }
 
     if (!app.api.hooksUrl) {
-      throw CrudExeption.badRequest("Application hooksUrl is not defined");
+      throw CrudException.badRequest("Application hooksUrl is not defined");
     }
 
     const payload = {
       type,
       name,
       content,
+      connection_id: "123",
+      user_id: "e5207cd0-786e-11ec-a485-a111926a997e",
     };
 
     const signature = crypto
@@ -178,17 +196,22 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
       .update(JSON.stringify(payload))
       .digest("hex");
 
-    return await axios
+    const remoteData = await axios
       .post(app.api.hooksUrl, payload, {
         headers: {
           "Content-Type": "application/json",
           "X-Twake-Signature": signature,
         },
       })
+
       .then(({ data }) => data)
       .catch(e => {
         log.error(e.message);
         const r = e.response;
+
+        if (!r) {
+          throw CrudException.badGateway("Can't connect remote application");
+        }
 
         let msg = r.data;
 
@@ -204,9 +227,9 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
         }
 
         if (r.status == 403) {
-          throw CrudExeption.forbidden(msg);
+          throw CrudException.forbidden(msg);
         } else {
-          throw CrudExeption.badRequest(msg);
+          throw CrudException.badRequest(msg);
         }
       });
   }

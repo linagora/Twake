@@ -175,8 +175,9 @@ export class WorkspacesCrudController
 
     if (!hasCompanyAdminLevel(companyUserRole) && request.params.id) {
       const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
+      const companyUserRole = await this.getCompanyUserRole(context);
 
-      if (!hasWorkspaceAdminLevel(workspaceUserRole)) {
+      if (!hasWorkspaceAdminLevel(workspaceUserRole, companyUserRole)) {
         throw CrudException.forbidden("You are not a admin of workspace or company");
       }
     }
@@ -219,8 +220,9 @@ export class WorkspacesCrudController
     const context = getExecutionContext(request);
 
     const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
+    const companyUserRole = await this.getCompanyUserRole(context);
 
-    if (!hasWorkspaceAdminLevel(workspaceUserRole)) {
+    if (!hasWorkspaceAdminLevel(workspaceUserRole, companyUserRole)) {
       const companyUserRole = await this.getCompanyUserRole(context);
       if (companyUserRole !== "admin") {
         throw CrudException.forbidden("You are not a admin of workspace or company");

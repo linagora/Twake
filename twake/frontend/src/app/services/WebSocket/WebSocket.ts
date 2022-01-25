@@ -18,6 +18,7 @@ export enum WebsocketEvents {
   JoinError = 'realtime:join:error',
   Resource = 'realtime:resource',
   Event = 'realtime:event',
+  Application = 'realtime:application'
 }
 
 export type WebSocketListener = {

@@ -413,9 +413,10 @@ export class ChannelCrudController
           ..._.pick(a, "id", "company_id", "workspace_id"),
           counter_type: ChannelUserCounterType.MEMBERS,
         });
+        //Fixme: even if it works strange to use "getUsersCount" to get messages count
         const messages = await this.membersService.getUsersCount({
           ..._.pick(a, "id", "company_id", "workspace_id"),
-          counter_type: ChannelUserCounterType.MEMBERS,
+          counter_type: ChannelUserCounterType.MESSAGES,
         });
         a.stats = { members, messages };
       }),
