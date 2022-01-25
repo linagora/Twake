@@ -5,8 +5,8 @@ import 'moment-timezone';
 import Languages from 'services/languages/languages';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import './message.scss';
-import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
-import { AtomMessageKey } from 'app/state/recoil/atoms/Messages';
+import { useMessage } from 'app/features/messages/hooks/use-message';
+import { AtomMessageKey } from 'app/features/messages/state/atoms/messages';
 
 type Props = {
   messageId: AtomMessageKey;

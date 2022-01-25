@@ -1,9 +1,9 @@
 import { refinePluginDefs } from '@fullcalendar/core/options';
-import { MessageWithReplies, NodeMessage } from 'app/models/Message';
+import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import _ from 'lodash';
-import { useAddMessageToChannel, useRemoveMessageFromChannel } from './useChannelMessages';
-import { useSetMessage } from './useMessage';
-import { useAddMessageToThread, useRemoveMessageFromThread } from './useThreadMessages';
+import { useAddMessageToChannel, useRemoveMessageFromChannel } from '../hooks/use-channel-messages';
+import { useSetMessage } from '../hooks/use-message';
+import { useAddMessageToThread, useRemoveMessageFromThread } from '../hooks/use-thread-messages';
 
 /**
  * This convert a NodeMessage to a MessageWithReply type to make things easier

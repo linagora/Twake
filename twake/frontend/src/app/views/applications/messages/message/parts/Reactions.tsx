@@ -3,11 +3,11 @@ import User from 'app/features/users/services/current-user-service';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import 'moment-timezone';
 import Emojione from 'components/emojione/emojione';
-import { ReactionType } from 'app/models/Message';
+import { ReactionType } from 'app/features/messages/types/message';
 import { Tooltip } from 'antd';
 import classNames from 'classnames';
 import { MessageContext } from '../message-with-replies';
-import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
+import { useMessage } from 'app/features/messages/hooks/use-message';
 import _ from 'lodash';
 
 export default () => {

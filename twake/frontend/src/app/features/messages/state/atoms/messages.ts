@@ -1,5 +1,5 @@
-import { MessageWithReplies } from 'app/models/Message';
-import MessageAPIClient from 'app/services/Apps/Messages/clients/MessageAPIClient';
+import { MessageWithReplies } from 'app/features/messages/types/message';
+import MessageAPIClient from 'app/features/messages/api/message-api-client';
 import { atomFamily } from 'recoil';
 
 export type AtomMessageKey = {

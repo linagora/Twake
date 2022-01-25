@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import UserService from 'app/features/users/services/current-user-service';
-import MessagesService from 'services/Apps/Messages/Messages';
+import MessagesService from 'app/features/messages/services/messages-service';
 
 type Props = {
   channelId: string;

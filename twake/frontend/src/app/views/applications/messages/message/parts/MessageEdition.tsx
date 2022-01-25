@@ -1,24 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react';
 import 'moment-timezone';
-import MessagesService from 'services/Apps/Messages/Messages';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
+import MessagesService from 'app/features/messages/services/messages-service';
+import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
 import MessageInput from '../../input/input';
 import Button from 'components/buttons/button.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import AlertManager from 'app/services/AlertManager/AlertManager';
 import Languages from 'services/languages/languages';
-import { Message } from 'app/models/Message';
+import { Message } from 'app/features/messages/types/message';
 import EditorToolbar from 'app/components/rich-text-editor/editor-toolbar';
 import RichTextEditorStateService from 'app/components/rich-text-editor/editor-state-service';
 import './MessageEdition.scss';
 import { EditorState } from 'draft-js';
-import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
+import { useMessage } from 'app/features/messages/hooks/use-message';
 import { MessageContext } from '../message-with-replies';
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import {
   useMessageEditor,
   useVisibleMessagesEditorLocation,
-} from 'app/state/recoil/hooks/messages/useMessageEditor';
+} from 'app/features/messages/hooks/use-message-editor';
 
 type Props = {
   /**

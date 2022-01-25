@@ -6,7 +6,7 @@ import LoadMoreReplies from './parts/LoadMoreReplies';
 import { MessagesListContext } from '../messages-list';
 import ThreadSection from '../parts/thread-section';
 import Thread from '../parts/thread';
-import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
+import { useMessage } from 'app/features/messages/hooks/use-message';
 import ActivityMessage, { ActivityType } from './parts/ChannelActivity/ActivityMessage';
 
 export const MessageContext = React.createContext({ companyId: '', threadId: '', id: '' });

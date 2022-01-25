@@ -5,7 +5,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Icon from 'components/icon/icon.js';
 import './threads.scss';
 import { MessageContext } from '../message/message-with-replies';
-import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
+import { useMessage } from 'app/features/messages/hooks/use-message';
 import {
   useRecoilState,
   useRecoilStateLoadable,

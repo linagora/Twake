@@ -14,11 +14,11 @@ import ChannelsService from 'app/deprecated/channels/channels.js';
 import Workspaces from 'services/workspaces/workspaces.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import FilePicker from 'components/drive/file-picker/file-picker.js';
-import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
-import MessagesListServerUtilsManager from './MessageLoaderFactory';
+import MessageEditorManager from './message-editor-service-factory';
+import MessagesListServerUtilsManager from './message-loader-factory';
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import SideViewService from 'app/services/AppView/SideViewService';
-import { Message, MessageFileType } from '../../../models/Message';
+import { Message, MessageFileType } from '../types/message';
 import { Application } from 'app/models/App';
 import {
   getCompanyApplications,

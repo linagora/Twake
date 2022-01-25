@@ -1,10 +1,10 @@
-import MessageAPIClient from 'app/services/Apps/Messages/clients/MessageAPIClient';
+import MessageAPIClient from 'app/features/messages/api/message-api-client';
 import _ from 'lodash';
 import User from 'app/features/users/services/current-user-service';
 import { useRecoilCallback, useRecoilState } from 'recoil';
-import { AtomMessageKey, MessageState } from '../../atoms/Messages';
-import { NodeMessage, NodeMessageSubType, ReactionType } from 'app/models/Message';
-import { messageToMessageWithReplies } from './utils';
+import { AtomMessageKey, MessageState } from '../state/atoms/messages';
+import { NodeMessage, NodeMessageSubType, ReactionType } from 'app/features/messages/types/message';
+import { messageToMessageWithReplies } from '../utils/message-with-replies';
 
 export const useMessage = (partialKey: AtomMessageKey) => {
   const key = {

@@ -9,7 +9,7 @@ import {
   ChannelWritingActivityType,
 } from '../state/channel-writing-activity';
 
-import { ThreadWritingActivitySelector } from '../../../state/recoil/selectors/ThreadWritingActivity';
+import { ThreadWritingActivitySelector } from '../../messages/state/selectors/thread-writing-activity';
 import UserService from 'app/features/users/services/current-user-service';
 import useRouterCompany from '../../../state/recoil/hooks/router/useRouterCompany';
 import { useCallback, useRef } from 'react';

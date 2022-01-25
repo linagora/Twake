@@ -6,7 +6,7 @@ import ThreadSection from '../parts/thread-section';
 import Input from './input';
 import Languages from 'services/languages/languages';
 import { ViewContext } from 'app/views/client/main-view/MainContent';
-import { useVisibleMessagesEditorLocation } from 'app/state/recoil/hooks/messages/useMessageEditor';
+import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 
 import './input.scss';
 

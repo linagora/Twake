@@ -1,6 +1,11 @@
-import { NodeMessage, Thread, Participant, MessageWithReplies } from 'app/models/Message';
+import {
+  NodeMessage,
+  Thread,
+  Participant,
+  MessageWithReplies,
+} from 'app/features/messages/types/message';
 import Api from 'app/services/Api';
-import { TwakeService } from '../../../Decorators/TwakeService';
+import { TwakeService } from 'app/services/Decorators/TwakeService';
 
 /**
  * This service is to create and update a thread

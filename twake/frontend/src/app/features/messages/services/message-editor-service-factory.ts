@@ -1,4 +1,4 @@
-import { MessageEditorService } from "./MessageEditorService";
+import { MessageEditorService } from './message-editor-service';
 
 class MessageEditorServiceFactory {
   private services = new Map<string, MessageEditorService>();
@@ -9,7 +9,7 @@ class MessageEditorServiceFactory {
     if (service) {
       return service;
     }
-    
+
     service = new MessageEditorService(channelId);
     this.services.set(channelId, service);
 

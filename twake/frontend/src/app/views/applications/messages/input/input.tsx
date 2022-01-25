@@ -6,8 +6,8 @@ import { Tooltip } from 'antd';
 
 import InputOptions from './parts/InputOptions';
 import EphemeralMessages from './parts/EphemeralMessages';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
-import MessagesService from 'services/Apps/Messages/Messages';
+import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
+import MessagesService from 'app/features/messages/services/messages-service';
 import PendingAttachments from './parts/PendingAttachments';
 import RichTextEditorStateService from 'app/components/rich-text-editor/editor-state-service';
 import { EditorView } from 'app/components/rich-text-editor';
@@ -17,7 +17,7 @@ import UploadZone from 'app/components/uploads/upload-zone';
 import Workspaces from 'services/workspaces/workspaces';
 import { FileType } from 'app/models/File';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
-import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
+import { useMessageEditor } from 'app/features/messages/hooks/use-message-editor';
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
@@ -28,7 +28,7 @@ import {
 import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import AlertManager from 'app/services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
+import { useMessage } from 'app/features/messages/hooks/use-message';
 
 import './input.scss';
 

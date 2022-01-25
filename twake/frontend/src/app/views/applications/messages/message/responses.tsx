@@ -1,5 +1,5 @@
 import React from 'react';
-import { useThreadMessages } from 'app/state/recoil/hooks/messages/useThreadMessages';
+import { useThreadMessages } from 'app/features/messages/hooks/use-thread-messages';
 import Message from './message';
 import { MessageContext } from './message-with-replies';
 import ThreadSection from '../parts/thread-section';

@@ -1,5 +1,5 @@
 import { ChannelResource } from 'app/features/channels/types/channel';
-import { MessageLoader } from './MessageLoader';
+import { MessageLoader } from './message-loader-service';
 
 class MessageLoaderFactory {
   private loaders: Map<string, MessageLoader> = new Map<string, MessageLoader>();

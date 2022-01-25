@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react';
 import 'moment-timezone';
 import { Row } from 'antd';
 import { MessageContext } from '../message-with-replies';
-import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
+import { useMessage } from 'app/features/messages/hooks/use-message';
 import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 

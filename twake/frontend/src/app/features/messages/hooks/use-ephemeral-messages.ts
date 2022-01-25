@@ -1,12 +1,12 @@
-import { MessageWithReplies, NodeMessage } from 'app/models/Message';
-import MessageViewAPIClient from 'app/services/Apps/Messages/clients/MessageViewAPIClient';
+import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+import MessageViewAPIClient from 'app/features/messages/api/message-view-api-client';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import _ from 'lodash';
 import { useState } from 'react';
 import { atomFamily, useRecoilCallback, useRecoilState } from 'recoil';
-import { AtomChannelKey } from '../../atoms/Messages';
-import { useSetMessage } from './useMessage';
+import { AtomChannelKey } from '../state/atoms/messages';
+import { useSetMessage } from './use-message';
 
 const EphemeralMessageState = atomFamily<NodeMessage | null, AtomChannelKey>({
   key: 'EphemeralMessageState',

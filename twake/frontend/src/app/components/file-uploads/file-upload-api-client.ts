@@ -1,6 +1,6 @@
 import Api from 'app/services/Api';
 import { FileType } from 'app/models/File';
-import { MessageFileType } from 'app/models/Message';
+import { MessageFileType } from 'app/features/messages/types/message';
 import extensionToMime from './utils/extension-to-mime';
 
 type ResponseFileType = { resource: FileType };

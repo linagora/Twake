@@ -11,7 +11,7 @@ import Strings from 'services/utils/strings.js';
 import DriveService from 'services/Apps/Drive/Drive.js';
 import CalendarService from 'services/Apps/Calendar/Calendar.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import MessagesService from 'services/Apps/Messages/Messages';
+import MessagesService from 'app/features/messages/services/messages-service';
 
 import Globals from 'services/Globals';
 

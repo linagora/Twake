@@ -1,5 +1,5 @@
-import { Message } from '../../../models/Message';
-import Numbers from '../../utils/Numbers';
+import { Message } from '../types/message';
+import Numbers from 'app/services/utils/Numbers';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import RouterServices from 'services/RouterService';

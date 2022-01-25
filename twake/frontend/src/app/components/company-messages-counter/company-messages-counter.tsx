@@ -7,7 +7,7 @@ import Languages from 'services/languages/languages';
 import InitService from 'services/InitService';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
-import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
+import MessageHistoryService from 'app/features/messages/services/message-history-service';
 
 const { Text, Title, Link } = Typography;
 const CompanyMessagesCounter = () => {

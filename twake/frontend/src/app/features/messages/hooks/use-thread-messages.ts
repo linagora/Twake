@@ -1,16 +1,16 @@
-import { NodeMessage } from 'app/models/Message';
-import MessageAPIClient from 'app/services/Apps/Messages/clients/MessageAPIClient';
+import { NodeMessage } from 'app/features/messages/types/message';
+import MessageAPIClient from 'app/features/messages/api/message-api-client';
 import Numbers from 'app/services/utils/Numbers';
 import _ from 'lodash';
 import { useRecoilState } from 'recoil';
-import { AtomMessageKey, AtomThreadKey, ThreadMessagesState } from '../../atoms/Messages';
-import { useSetMessage } from './useMessage';
+import { AtomMessageKey, AtomThreadKey, ThreadMessagesState } from '../state/atoms/messages';
+import { useSetMessage } from './use-message';
 import {
   AddToWindowOptions,
   getListWindow,
   useAddToWindowedList,
   useRemoveFromWindowedList,
-} from './windows';
+} from './use-add-to-windowed-list';
 
 export const useThreadMessages = (key: AtomThreadKey) => {
   const { window, isInWindow, setLoaded } = getListWindow(key.threadId);

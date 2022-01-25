@@ -1,7 +1,7 @@
-import { TwakeService } from '../../../Decorators/TwakeService';
-import { MessageWithReplies, NodeMessage } from 'app/models/Message';
-import MessageViewAPIClient from './MessageViewAPIClient';
-import MessageThreadAPIClient from './MessageThreadAPIClient';
+import { TwakeService } from '../../../services/Decorators/TwakeService';
+import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+import MessageViewAPIClient from './message-view-api-client';
+import MessageThreadAPIClient from './message-thread-api-client';
 import Api from 'app/services/Api';
 import { WebsocketRoom } from 'app/services/WebSocket/WebSocket';
 

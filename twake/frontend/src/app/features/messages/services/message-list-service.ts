@@ -1,10 +1,10 @@
-import { Message } from '../../../models/Message';
-import { MessageLoader } from './MessageLoader';
+import { Message } from '../types/message';
+import { MessageLoader } from './message-loader-service';
 import UserNotifications from 'app/features/users/services/user-notifications-service';
 import Collections from 'app/services/CollectionsReact/Collections';
 import logger from 'app/services/Logger';
 import { ChannelResource } from 'app/features/channels/types/channel';
-import MessageLoaderFactory from './MessageLoaderFactory';
+import MessageLoaderFactory from './message-loader-factory';
 
 type Scroller = (align: 'start' | 'center' | 'end', message?: Message) => boolean;
 

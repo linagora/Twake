@@ -1,6 +1,6 @@
-import { Message, ReactionType } from 'app/models/Message';
+import { Message, ReactionType } from 'app/features/messages/types/message';
 import UserService from 'app/features/users/services/current-user-service';
-import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
+import MessageEditorManager from './message-editor-service-factory';
 import DepreciatedCollections, {
   Collection,
 } from 'app/services/Depreciated/Collections/Collections.js';

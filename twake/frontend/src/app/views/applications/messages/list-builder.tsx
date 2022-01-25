@@ -1,7 +1,7 @@
 import React, { ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 import { ItemContent, LogLevel, Virtuoso } from 'react-virtuoso';
 import Logger from 'app/services/Logger';
-import { WindowType } from 'app/state/recoil/hooks/messages/windows';
+import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
 
 const logger = Logger.getLogger(`ListBuilder`);
 const START_INDEX = 1000000;

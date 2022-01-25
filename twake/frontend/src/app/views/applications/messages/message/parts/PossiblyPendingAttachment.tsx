@@ -5,7 +5,7 @@ import { DataFileType } from 'app/components/file/types';
 import { PendingFileRecoilType } from 'app/models/File';
 import _ from 'lodash';
 import FileUploadAPIClient from 'app/components/file-uploads/file-upload-api-client';
-import { MessageFileType } from 'app/models/Message';
+import { MessageFileType } from 'app/features/messages/types/message';
 
 type PropsType = {
   file: MessageFileType;

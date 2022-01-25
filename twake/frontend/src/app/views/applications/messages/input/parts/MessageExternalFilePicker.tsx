@@ -1,8 +1,8 @@
 import React, { ReactNode, useEffect } from 'react';
-import { MessageFileType } from 'app/models/Message';
+import { MessageFileType } from 'app/features/messages/types/message';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import { ChannelType } from 'app/features/channels/types/channel';
-import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
+import { useMessageEditor } from 'app/features/messages/hooks/use-message-editor';
 
 export default (props: {
   children: ReactNode;

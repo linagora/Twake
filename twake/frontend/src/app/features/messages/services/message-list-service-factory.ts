@@ -1,5 +1,5 @@
 import { ChannelResource } from 'app/features/channels/types/channel';
-import { MessageListService } from './MessageListService';
+import { MessageListService } from './message-list-service';
 
 class MessageListServiceFactory {
   services: Map<string, MessageListService> = new Map<string, MessageListService>();

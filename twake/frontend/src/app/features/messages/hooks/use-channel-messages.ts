@@ -1,20 +1,20 @@
-import { MessageWithReplies, NodeMessage } from 'app/models/Message';
-import MessageViewAPIClient from 'app/services/Apps/Messages/clients/MessageViewAPIClient';
+import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+import MessageViewAPIClient from 'app/features/messages/api/message-view-api-client';
 import LoginService from 'app/services/login/LoginService';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import Numbers from 'app/services/utils/Numbers';
 import _ from 'lodash';
 import { useRecoilState } from 'recoil';
-import { AtomChannelKey, AtomMessageKey, ChannelMessagesState } from '../../atoms/Messages';
-import { useSetMessage } from './useMessage';
-import { useAddMessageToThread } from './useThreadMessages';
-import { messageToMessageWithReplies } from './utils';
+import { AtomChannelKey, AtomMessageKey, ChannelMessagesState } from '../state/atoms/messages';
+import { useSetMessage } from './use-message';
+import { useAddMessageToThread } from './use-thread-messages';
+import { messageToMessageWithReplies } from '../utils/message-with-replies';
 import {
   getListWindow,
   AddToWindowOptions,
   useAddToWindowedList,
   useRemoveFromWindowedList,
-} from './windows';
+} from './use-add-to-windowed-list';
 
 //TODO make this more easy to duplicate for other views
 export const useChannelMessages = (key: AtomChannelKey) => {

@@ -1,5 +1,5 @@
-import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
-import { useThreadMessages } from 'app/state/recoil/hooks/messages/useThreadMessages';
+import { useMessage } from 'app/features/messages/hooks/use-message';
+import { useThreadMessages } from 'app/features/messages/hooks/use-thread-messages';
 import React, { useContext } from 'react';
 import Languages from 'services/languages/languages';
 import ThreadSection from '../../parts/thread-section';

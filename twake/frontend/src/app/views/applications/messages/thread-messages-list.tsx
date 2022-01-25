@@ -4,7 +4,7 @@ import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
 import FirstThreadMessage from './message/parts/FirstMessage/FirstThreadMessage';
 import { MessagesListContext } from './messages-list';
-import { useThreadMessages } from 'app/state/recoil/hooks/messages/useThreadMessages';
+import { useThreadMessages } from 'app/features/messages/hooks/use-thread-messages';
 
 type Props = {
   companyId: string;

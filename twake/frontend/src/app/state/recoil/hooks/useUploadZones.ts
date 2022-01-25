@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import FileUploadService from 'app/components/file-uploads/file-upload-service';
-import { MessageFileType } from 'app/models/Message';
+import { MessageFileType } from 'app/features/messages/types/message';
 import { useRecoilState } from 'recoil';
 import { PendingUploadZonesListState } from '../atoms/PendingUploadZonesList';
 import { useUpload } from './useUpload';

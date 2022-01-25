@@ -7,7 +7,7 @@ import Menu from 'components/menus/menu';
 import MenusManager from 'app/components/menus/menus-manager';
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'services/workspaces/workspaces_apps';
-import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
+import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
 import EditorToolbar from 'app/components/rich-text-editor/editor-toolbar';
 import { Application } from 'app/models/App';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';

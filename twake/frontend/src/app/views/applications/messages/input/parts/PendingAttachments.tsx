@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Col, Row } from 'antd';
 import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import '../input.scss';
-import { MessageFileType } from 'app/models/Message';
+import { MessageFileType } from 'app/features/messages/types/message';
 import _ from 'lodash';
 import PossiblyPendingAttachment from '../../message/parts/PossiblyPendingAttachment';
 

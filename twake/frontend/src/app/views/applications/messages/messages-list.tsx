@@ -1,11 +1,11 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { useChannelMessages } from 'app/state/recoil/hooks/messages/useChannelMessages';
+import { useChannelMessages } from 'app/features/messages/hooks/use-channel-messages';
 import ListBuilder from './list-builder';
 import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
 import FirstMessage from './message/parts/FirstMessage/FirstMessage';
 import LockedHistoryBanner from 'app/components/locked-features-components/locked-history-banner/locked-history-banner';
-import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
+import MessageHistoryService from 'app/features/messages/services/message-history-service';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 

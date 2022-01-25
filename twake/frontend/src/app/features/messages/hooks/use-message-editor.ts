@@ -1,5 +1,5 @@
-import { MessageWithReplies, NodeMessage } from 'app/models/Message';
-import MessageAPIClient from 'app/services/Apps/Messages/clients/MessageAPIClient';
+import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+import MessageAPIClient from 'app/features/messages/api/message-api-client';
 import {} from 'app/services/Realtime/useRealtime';
 import _ from 'lodash';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -7,14 +7,14 @@ import {
   MessagesEditorState,
   VisibleMessagesEditorLocationActiveSelector,
   VisibleMessagesEditorLocationState,
-} from '../../atoms/MessagesEditor';
-import { useMessage, useSetMessage } from './useMessage';
+} from '../state/atoms/messages-editor';
+import { useMessage, useSetMessage } from './use-message';
 import { v1 as uuidv1 } from 'uuid';
-import MessageThreadAPIClient from 'app/services/Apps/Messages/clients/MessageThreadAPIClient';
+import MessageThreadAPIClient from 'app/features/messages/api/message-thread-api-client';
 import Login from 'app/services/login/LoginService';
-import { messageToMessageWithReplies } from './utils';
-import { useAddMessageToChannel, useRemoveMessageFromChannel } from './useChannelMessages';
-import { useAddMessageToThread, useRemoveMessageFromThread } from './useThreadMessages';
+import { messageToMessageWithReplies } from '../utils/message-with-replies';
+import { useAddMessageToChannel, useRemoveMessageFromChannel } from './use-channel-messages';
+import { useAddMessageToThread, useRemoveMessageFromThread } from './use-thread-messages';
 import { useRef } from 'react';
 
 export type EditorKey = {

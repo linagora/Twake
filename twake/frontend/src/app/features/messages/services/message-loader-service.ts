@@ -3,16 +3,16 @@ import Collection from 'app/services/Depreciated/Collections/Collection';
 import Numbers from 'services/utils/Numbers';
 import Observable from 'app/services/Depreciated/observable';
 import Logger from 'app/services/Logger';
-import { Message } from '../../../models/Message';
+import { Message } from '../types/message';
 import {
   FeedLoader,
   NextParameters,
   FeedResponse,
   InitParameters,
   Completion,
-} from '../Feed/FeedLoader';
+} from 'app/services/Apps/Feed/FeedLoader';
 import { ChannelResource } from 'app/features/channels/types/channel';
-import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
+import MessageHistoryService from 'app/features/messages/services/message-history-service';
 
 const DEFAULT_PAGE_SIZE = 25;
 
