@@ -847,5 +847,21 @@
     "\"": "\"",
     "login.create_account": "Kontua sortu",
     "login.login_error": "Errorea saioa hastean",
-    "'": "'"
+    "'": "'",
+    "scenes.app.workspaces.welcome_page.no_workspace_subtitle": "Inork ez zaitu laneko gune batera gonbidatu oraindik.",
+    "scenes.apps.messages.message.types.no_message_in_thread": "Oraindik inork ez zuen erantzun.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.label": "Lan-eremu lehenetsia",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.default_workspace.description": "Gonbidatu automatikoki laneko erabiltzaile guztiak kanal honetara",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.title": "{{$1}} ezabatzera zoaz",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.alert_total_members": "Oraindik {{$1}} kideak dituzu {{$2}}-n. Kide guztiak kendu behar dituzu lan-eremu hau ezabatu ahal izateko.",
+    "scenes.app.popup.workspaceparameter.pages.delete_workspace_popup.checkbox": "Ulertzen dut nire lan-eremuko mezu eta fitxategi guztiak ezabatuko direla.",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.max_size": "Gehienezko logotipoaren tamaina 5 MB da",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Formatu txarra, png gif eta jpg bakarrik onartzen dira",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Errore ezezaguna",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Errorea",
+    "scenes.app.channelsbar.currentuser.reset": "Berrezarri",
+    "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Idatzi gutxienez hiru letra erabiltzaileak erakusteko",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "Ez da erabiltzailerik aurkitu",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Ez da emojirik aurkitu",
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Ez da komandorik aurkitu"
 }
