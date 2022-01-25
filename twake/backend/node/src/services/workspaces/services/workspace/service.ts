@@ -2,7 +2,7 @@ import { concat, EMPTY, from, Observable } from "rxjs";
 import { mergeMap } from "rxjs/operators";
 import {
   CreateResult,
-  CrudExeption,
+  CrudException,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -345,7 +345,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   ): Promise<void> {
     const workspaceUser = await this.getUser(workspaceUserPk);
     if (!workspaceUser) {
-      throw CrudExeption.notFound("WorkspaceUser entity not found");
+      throw CrudException.notFound("WorkspaceUser entity not found");
     }
     await this.workspaceUserRepository.save(merge(workspaceUser, { role }));
   }
@@ -362,11 +362,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const entity = await this.getUser(workspaceUserPk);
 
     if (!entity) {
-      throw CrudExeption.notFound("WorkspaceUser entity not found");
+      throw CrudException.notFound("WorkspaceUser entity not found");
     }
 
     if (!(await this.checkWorkspaceHasOtherAdmin(workspaceUserPk))) {
-      throw CrudExeption.notFound("No other admin found in workspace");
+      throw CrudException.notFound("No other admin found in workspace");
     }
 
     await this.workspaceUserRepository.remove(entity);
@@ -492,7 +492,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     companyRole: CompanyUserRole,
   ): Promise<void> {
     if (await this.getPendingUser(primaryKey)) {
-      throw CrudExeption.badRequest("User is pending already");
+      throw CrudException.badRequest("User is pending already");
     }
     const workspacePendingUser = merge(new WorkspacePendingUser(), {
       workspace_id: primaryKey.workspace_id,
@@ -518,7 +518,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   ): Promise<DeleteResult<WorkspacePendingUserPrimaryKey>> {
     const pendingUser = await this.getPendingUser(primaryKey);
     if (!pendingUser) {
-      throw CrudExeption.notFound("Pending user not found");
+      throw CrudException.notFound("Pending user not found");
     }
     await this.workspacePendingUserRepository.remove(pendingUser);
     return new DeleteResult(WorkspacePendingUserType, primaryKey, true);

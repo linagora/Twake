@@ -4,7 +4,6 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
-  CrudExeption,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";

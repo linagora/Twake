@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   CreateResult,
-  CrudExeption,
+  CrudException,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -249,7 +249,7 @@ export class UserService implements UsersServiceAPI {
   async getUserDevices(userPrimaryKey: UserPrimaryKey): Promise<Device[]> {
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey} not found`);
     }
     if (!user.devices || user.devices.length == 0) {
       return [];
@@ -269,7 +269,7 @@ export class UserService implements UsersServiceAPI {
 
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey} not found`);
     }
     user.devices = user.devices || [];
     user.devices.push(id);
@@ -296,7 +296,7 @@ export class UserService implements UsersServiceAPI {
     const passwordEncoder = new PasswordEncoder();
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey.id} not found`);
     }
     user.password = await passwordEncoder.encodePassword(password);
     user.salt = null;
@@ -306,7 +306,7 @@ export class UserService implements UsersServiceAPI {
   async getHashedPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey.id} not found`);
     }
 
     if (user.salt) {

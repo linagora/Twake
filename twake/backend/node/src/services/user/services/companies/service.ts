@@ -1,7 +1,7 @@
 import _, { merge } from "lodash";
 
 import {
-  CrudExeption,
+  CrudException,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -272,7 +272,7 @@ export class CompanyService implements CompaniesServiceAPI {
         external_id: searchKey.identity_provider_id,
       });
       if (!extCompany) {
-        throw CrudExeption.notFound(`Company ${searchKey.identity_provider_id} not found`);
+        throw CrudException.notFound(`Company ${searchKey.identity_provider_id} not found`);
       }
       await this.externalCompanyRepository.remove(extCompany);
       searchKey.id = extCompany.company_id;
@@ -280,7 +280,7 @@ export class CompanyService implements CompaniesServiceAPI {
 
     const company = await this.getCompany({ id: searchKey.id });
     if (!company) {
-      throw CrudExeption.notFound(`Company ${searchKey.id} not found`);
+      throw CrudException.notFound(`Company ${searchKey.id} not found`);
     }
 
     await this.companyRepository.remove(company);

@@ -19,6 +19,13 @@ type CLIArgs = {
 };
 
 const services = [
+  "storage",
+  "counter",
+  "applications",
+  "statistics",
+  "auth",
+  "realtime",
+  "push",
   "platform-services",
   "user",
   "search",

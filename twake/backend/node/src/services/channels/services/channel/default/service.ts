@@ -11,7 +11,7 @@ import {
   DeleteResult,
   Paginable,
   ListResult,
-  CrudExeption,
+  CrudException,
 } from "../../../../../core/platform/framework/api/crud-service";
 import { ChannelExecutionContext } from "../../../types";
 import DefaultChannelListener from "./listener";
@@ -84,7 +84,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
     const defaultChannel = await this.get(pk);
 
     if (!defaultChannel) {
-      throw CrudExeption.notFound("Default channel has not been found");
+      throw CrudException.notFound("Default channel has not been found");
     }
 
     await this.repository.remove(defaultChannel);
