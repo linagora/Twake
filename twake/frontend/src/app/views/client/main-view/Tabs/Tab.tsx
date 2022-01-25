@@ -9,7 +9,7 @@ import Menu from 'components/menus/menu.js';
 import { MoreHorizontal } from 'react-feather';
 import Languages from 'services/languages/languages';
 import { capitalize } from 'lodash';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import MainViewService from 'app/features/router/services/main-view-service';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 import { useTab } from 'app/features/tabs/hooks/use-tabs';

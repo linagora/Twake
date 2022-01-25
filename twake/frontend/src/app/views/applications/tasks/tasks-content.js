@@ -6,7 +6,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import Emojione from 'components/emojione/emojione';
 import Loader from 'components/loader/loader.js';
 import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
-import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
+import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import UserService from 'app/features/users/services/current-user-service';
 import Rounded from 'components/inputs/rounded.js';

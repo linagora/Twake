@@ -8,7 +8,7 @@ import ws from 'services/websocket.js';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import LocalStorage from 'app/services/LocalStorage';
-import workspacesUsers from 'app/services/workspaces-user/workspaces_users';
+import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import WindowService from 'services/utils/window';
 import workspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import RouterServices from 'app/features/router/services/router-service';

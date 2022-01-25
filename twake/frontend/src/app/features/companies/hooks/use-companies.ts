@@ -9,7 +9,7 @@ import { useCurrentUser } from '../../users/hooks/use-current-user';
 import _ from 'lodash';
 import RouterService from 'app/features/router/services/router-service';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import LoginService from 'app/services/login/LoginService';
 import UserAPIClient from 'app/features/users/api/user-api-client';

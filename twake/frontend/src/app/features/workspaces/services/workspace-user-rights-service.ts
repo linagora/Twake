@@ -1,5 +1,7 @@
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import AccessRightsService, { RightsOrNone } from 'services/AccessRightsService';
+import AccessRightsService, {
+  RightsOrNone,
+} from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
 class WorkspaceUserRights {
   isNotConnected(): boolean {

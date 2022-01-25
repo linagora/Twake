@@ -3,7 +3,7 @@ import { getSelectedBlock } from 'draftjs-utils';
 import { Mention } from './mention';
 import MentionSuggestion from './mention-suggestion';
 import { EditorSuggestionPlugin, SelectOrInsertOptions } from '../';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces';
 import Collections from 'app/deprecated/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';

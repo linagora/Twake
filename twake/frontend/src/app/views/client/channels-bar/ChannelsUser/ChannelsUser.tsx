@@ -11,7 +11,7 @@ import ChannelCategory from 'app/views/client/channels-bar/Parts/Channel/Channel
 import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
 export default () => {
   const { companyId } = RouterServices.getStateFromRoute();

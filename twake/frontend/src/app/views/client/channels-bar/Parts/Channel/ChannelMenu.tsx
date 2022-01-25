@@ -12,7 +12,7 @@ import UserService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import Notifications from 'app/features/users/services/user-notifications-service';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import { NotificationResource } from 'app/features/users/types/notification-types';
 import RouterServices from 'app/features/router/services/router-service';
 import GuestManagement from 'app/views/client/channels-bar/Modals/GuestManagement';

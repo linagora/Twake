@@ -9,7 +9,7 @@ import Languages from 'services/languages/languages';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import UserOrMail from '../ui/user-or-mail';
 import Icon from '../icon/icon';
-import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
+import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import AutoCompleteExtended from 'components/auto-complete-extended/auto-complete-extended';
 import { UserType } from 'app/features/users/types/user';
 import UserAPIClient from 'app/features/users/api/user-api-client';

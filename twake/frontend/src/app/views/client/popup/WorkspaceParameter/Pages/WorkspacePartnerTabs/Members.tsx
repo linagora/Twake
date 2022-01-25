@@ -7,7 +7,7 @@ import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Menu from 'components/menus/menu.js';
 import { ColumnsType } from 'antd/lib/table';
 import UserService from 'app/features/users/services/current-user-service';
-import workspacesUsers from 'app/services/workspaces-user/workspaces_users';
+import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
 import InitService from 'app/services/InitService';
 import { ChevronUp, ChevronsUp } from 'react-feather';

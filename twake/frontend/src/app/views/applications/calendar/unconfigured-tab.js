@@ -7,7 +7,7 @@ import Button from 'components/buttons/button.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import RouterService from 'app/features/router/services/router-service';
 import CalendarSelector from 'components/calendar/calendar-selector/calendar-selector.js';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces';
 
 import './calendar.scss';

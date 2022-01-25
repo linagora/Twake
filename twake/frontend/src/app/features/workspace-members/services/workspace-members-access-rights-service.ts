@@ -1,4 +1,4 @@
-import Observable from '../deprecated/Observable/Observable';
+import Observable from '../../../deprecated/Observable/Observable';
 
 type Rights = 'guest' | 'member' | 'moderator' | 'admin';
 export type RightsOrNone = Rights | 'none';

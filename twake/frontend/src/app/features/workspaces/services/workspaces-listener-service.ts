@@ -3,7 +3,7 @@ import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import User from 'app/features/users/services/current-user-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import LoginService from 'app/services/login/LoginService';
-import { RightsOrNone } from '../../../services/AccessRightsService';
+import { RightsOrNone } from '../../workspace-members/services/workspace-members-access-rights-service';
 import Logger from 'app/features/global/services/logger-service';
 
 type WebsocketWorkspace = {

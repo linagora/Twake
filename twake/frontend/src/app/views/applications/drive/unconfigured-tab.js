@@ -5,7 +5,7 @@ import FilePicker from 'components/drive/file-picker/file-picker.js';
 import Menu from 'components/menus/menu.js';
 import Button from 'components/buttons/button.js';
 import './drive.scss';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces';
 
 export default class UnconfiguredTab extends Component {

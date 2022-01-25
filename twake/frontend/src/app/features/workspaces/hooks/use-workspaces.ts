@@ -9,7 +9,9 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import RouterService from 'app/features/router/services/router-service';
 import _ from 'lodash';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
-import AccessRightsService, { RightsOrNone } from 'app/services/AccessRightsService';
+import AccessRightsService, {
+  RightsOrNone,
+} from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import LocalStorage from 'app/services/LocalStorage';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';

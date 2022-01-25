@@ -16,7 +16,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import WorkspaceChannelList from './Modals/WorkspaceChannelList';
 import ScrollWithHiddenComponents from 'app/components/scroll-hidden-components/scroll-with-hidden-components';
 import HiddenNotificationsButton from 'app/components/scroll-hidden-components/hidden-notifications-button';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import './ChannelsBar.scss';

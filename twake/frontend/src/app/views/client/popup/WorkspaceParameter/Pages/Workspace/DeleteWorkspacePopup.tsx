@@ -12,7 +12,7 @@ import ObjectModal from 'app/components/object-modal/object-modal';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
 import RouterService from 'app/features/router/services/router-service';
 import ModalManager from 'app/components/modal/modal-manager';
-import WorkspaceUserAPIClient from 'app/services/workspaces-user/WorkspaceUserAPIClient';
+import WorkspaceUserAPIClient from 'app/features/workspace-members/api/workspace-members-api-client';
 
 import './styles.scss';
 

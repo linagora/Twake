@@ -8,7 +8,7 @@ import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import LoginService from 'app/services/login/LoginService';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
-import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
+import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import ListenUsers from 'app/features/users/services/listen-users-service';
 import UserParameter from 'app/views/client/popup/UserParameter/UserParameter.js';
 import InputWithIcon from 'components/inputs/input-with-icon';
@@ -19,7 +19,7 @@ import CreateWorkspacePage from 'app/views/client/popup/CreateWorkspacePage/Crea
 import CompanyHeaderUI from 'app/views/client/channels-bar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
 import ModalManagerDepreciated from 'app/deprecated/popupManager/popupManager';
 import InitService from 'app/services/InitService';
-import AccessRightsService from 'services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 import LockedWorkspacePopup from 'app/components/locked-features-components/locked-workspace-popup/locked-workspace-popup';

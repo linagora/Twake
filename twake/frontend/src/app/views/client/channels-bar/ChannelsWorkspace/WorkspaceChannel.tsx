@@ -14,7 +14,7 @@ import WorkspaceChannelList from 'app/views/client/channels-bar/Modals/Workspace
 
 import Menu from 'components/menus/menu.js';
 import Icon from 'app/components/icon/icon';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import RouterServices from 'app/features/router/services/router-service';
 
 type Props = {

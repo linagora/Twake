@@ -9,7 +9,7 @@ import DefaultChannelTab from 'app/views/client/main-view/Tabs/DefaultChannelTab
 import Tab from 'app/views/client/main-view/Tabs/Tab';
 import UserService from 'app/features/users/services/current-user-service';
 import useTabs from 'app/features/tabs/hooks/use-tabs';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import useRouterCompany from '../../../../features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterTab from 'app/features/router/hooks/use-router-tab';

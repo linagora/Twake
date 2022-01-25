@@ -9,7 +9,7 @@ import Languages from 'services/languages/languages';
 import './MemberChannelRow.scss';
 import Menu from 'app/components/menus/menu';
 import Icon from 'app/components/icon/icon';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import RouterServices from 'app/features/router/services/router-service';
 import Collection from 'app/deprecated/CollectionsV2/Collection';
 import UsersService from 'app/features/users/services/current-user-service';

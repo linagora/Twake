@@ -13,7 +13,7 @@ import Collections from 'app/deprecated/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/connectors-list-manager/connectors-list-manager';
 import MainViewService from 'app/features/router/services/main-view-service';
 import { isArray } from 'lodash';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';

@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import groupService from 'app/deprecated/workspaces/groups.js';
-import workspacesUsers from 'app/services/workspaces-user/workspaces_users';
+import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Switch from 'components/inputs/switch';
 import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';

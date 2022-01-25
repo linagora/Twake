@@ -1,6 +1,6 @@
 import { UserType } from 'app/features/users/types/user';
 import Logger from 'app/features/global/services/logger-service';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import Languages from 'app/services/languages/languages';
 import JWT from 'app/services/JWTStorage';

@@ -6,7 +6,7 @@ import { Select, Typography, Checkbox, Input } from 'antd';
 import InputWithSelect from 'app/components/inputs/input-with-select';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
-import AccessRightsService from 'app/services/AccessRightsService';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type PropsType = {
