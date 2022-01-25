@@ -17,7 +17,7 @@ import FilePicker from 'components/drive/file-picker/file-picker.js';
 import MessageEditorManager from './message-editor-service-factory';
 import MessagesListServerUtilsManager from './message-loader-factory';
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
-import SideViewService from 'app/services/AppView/SideViewService';
+import SideViewService from 'app/features/router/services/side-view-service';
 import { Message, MessageFileType } from '../types/message';
 import { Application } from 'app/features/applications/types/application';
 import {
@@ -25,7 +25,7 @@ import {
   getCompanyApplication,
 } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';
-import MainViewService from 'app/services/AppView/MainViewService';
+import MainViewService from 'app/features/router/services/main-view-service';
 import MessageExternalFilePicker from 'app/views/applications/messages/input/parts/MessageExternalFilePicker';
 import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 

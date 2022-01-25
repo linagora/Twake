@@ -8,7 +8,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';
-import MainViewService from 'app/services/AppView/MainViewService';
+import MainViewService from 'app/features/router/services/main-view-service';
 
 export default (): JSX.Element => {
   const application = MainViewService.getConfiguration().app;

@@ -4,7 +4,7 @@ import Drive from 'app/views/applications/drive/drive';
 import Calendar from 'app/views/applications/calendar/calendar-content';
 import Tasks from 'app/views/applications/tasks/tasks';
 import NoApp from '../NoApp';
-import AppViewService from 'app/services/AppView/AppViewService';
+import AppViewService from 'app/features/router/services/app-view-service';
 
 type PropsType = {
   viewService: AppViewService;

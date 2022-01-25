@@ -1,5 +1,5 @@
-import RouterService from '../../features/router/services/router-service';
-import AppViewService, { ViewConfiguration } from './AppViewService';
+import RouterService from './router-service';
+import AppViewService, { ViewConfiguration } from './app-view-service';
 
 class MainViewService extends AppViewService {
   public getViewType(): 'application' | 'channel' | '' {

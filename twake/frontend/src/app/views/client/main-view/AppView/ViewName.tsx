@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import AppViewService from 'app/services/AppView/AppViewService';
+import AppViewService from 'app/features/router/services/app-view-service';
 import Languages from 'services/languages/languages';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import { useWorkspace } from 'app/features/workspaces/hooks/use-workspaces';

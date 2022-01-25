@@ -1,5 +1,5 @@
 import React from 'react';
-import { ViewConfiguration } from '../../../services/AppView/AppViewService';
+import { ViewConfiguration } from '../../../features/router/services/app-view-service';
 import { useTab } from '../../../state/recoil/hooks/useTabs';
 import CalendarContent from './calendar-content';
 

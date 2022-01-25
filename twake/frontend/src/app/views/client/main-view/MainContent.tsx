@@ -3,8 +3,8 @@ import React, { FC, Suspense } from 'react';
 import { Layout } from 'antd';
 import Tabs from './Tabs/Tabs';
 import AppView from './AppView/AppView';
-import SideViewService from 'app/services/AppView/SideViewService';
-import MainViewService from 'app/services/AppView/MainViewService';
+import SideViewService from 'app/features/router/services/side-view-service';
+import MainViewService from 'app/features/router/services/main-view-service';
 import { X } from 'react-feather';
 import ViewName from './AppView/ViewName';
 

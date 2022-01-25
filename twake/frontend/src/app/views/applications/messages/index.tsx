@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ChannelResource } from 'app/features/channels/types/channel';
 import Messages from './messages';
-import { ViewConfiguration } from 'app/services/AppView/AppViewService';
+import { ViewConfiguration } from 'app/features/router/services/app-view-service';
 
 import './messages.scss';
 

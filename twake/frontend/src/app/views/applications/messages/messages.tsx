@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 import { ChannelResource } from 'app/features/channels/types/channel';
-import { ViewConfiguration } from 'app/services/AppView/AppViewService';
+import { ViewConfiguration } from 'app/features/router/services/app-view-service';
 import NewThread from './input/new-thread';
 import MessagesList from './messages-list';
 import ThreadMessagesList from './thread-messages-list';

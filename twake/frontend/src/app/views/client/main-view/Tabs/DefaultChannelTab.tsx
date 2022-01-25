@@ -11,7 +11,7 @@ import { Application } from 'app/features/applications/types/application';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import Collections from 'services/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/connectors-list-manager/connectors-list-manager';
-import MainViewService from 'app/services/AppView/MainViewService';
+import MainViewService from 'app/features/router/services/main-view-service';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';

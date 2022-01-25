@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Layout, Divider } from 'antd';
 import ChannelBar from './ChannelHeader/ChannelHeader';
-import MainViewService from 'app/services/AppView/MainViewService';
+import MainViewService from 'app/features/router/services/main-view-service';
 import ApplicationBar from './ApplicationHeader/ApplicationHeader';
 import RouterServices from 'app/features/router/services/router-service';
 

@@ -24,8 +24,8 @@ import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import _ from 'lodash';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 import { ViewContext } from 'app/views/client/main-view/MainContent';
-import SideViewService from 'app/services/AppView/SideViewService';
-import MainViewService from 'app/services/AppView/MainViewService';
+import SideViewService from 'app/features/router/services/side-view-service';
+import MainViewService from 'app/features/router/services/main-view-service';
 import Emojione from 'app/components/emojione/emojione';
 
 type Props = {

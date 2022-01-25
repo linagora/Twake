@@ -9,7 +9,7 @@ import { Button } from 'antd';
 import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/features/router/services/router-service';
 import _ from 'lodash';
-import MainViewService from 'app/services/AppView/MainViewService';
+import MainViewService from 'app/features/router/services/main-view-service';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';

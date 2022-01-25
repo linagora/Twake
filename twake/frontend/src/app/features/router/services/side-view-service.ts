@@ -1,4 +1,4 @@
-import AppViewService, { ViewConfiguration } from './AppViewService';
+import AppViewService, { ViewConfiguration } from './app-view-service';
 
 class _SideViewService extends AppViewService {
   public getViewType(): 'channel_thread' | '' {
