@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages';
 import ChannelTemplateEditor from 'app/views/client/channels-bar/Modals/ChannelTemplateEditor';
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
-import Collections from 'app/services/CollectionsReact/Collections';
+import Collections from 'app/deprecated/CollectionsReact/Collections';
 import { ChannelType, ChannelResource } from 'app/features/channels/types/channel';
 import { Button } from 'antd';
 import ChannelMembersList from './ChannelMembersList';

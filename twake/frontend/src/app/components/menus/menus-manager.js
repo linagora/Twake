@@ -1,4 +1,4 @@
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Number from 'services/utils/Numbers';
 import Globals from 'services/Globals';
 

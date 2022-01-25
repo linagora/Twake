@@ -10,7 +10,7 @@ import {
   ChannelResource,
   ChannelType,
 } from 'app/features/channels/types/channel';
-import Collections from 'services/CollectionsReact/Collections';
+import Collections from 'app/deprecated/CollectionsReact/Collections';
 import { PendingEmailResource } from 'app/models/PendingEmail';
 import GuestManagementService from 'app/services/GuestMember/GuestManagementService';
 import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';

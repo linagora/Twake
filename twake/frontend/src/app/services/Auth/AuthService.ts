@@ -12,7 +12,7 @@ import UserAPIClient from '../../features/users/api/user-api-client';
 import WindowState from 'services/utils/window';
 import Application from 'app/features/applications/services/application-service';
 import LocalStorage from 'services/LocalStorage';
-import Collections from 'services/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV2/Collections';
 import Globals from '../Globals';
 
 type AccountType = 'console' | 'internal';

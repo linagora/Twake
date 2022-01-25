@@ -1,5 +1,5 @@
 import Api from '../Api';
-import DepreciatedCollections from '../Depreciated/Collections/Collections';
+import DepreciatedCollections from '../../deprecated/CollectionsV1/Collections/Collections';
 import InitService from '../InitService';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from '../Toaster';

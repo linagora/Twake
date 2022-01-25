@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import Languages from 'services/languages/languages';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import groupService from 'app/deprecated/workspaces/groups.js';
 import workspacesUsers from 'app/services/workspaces-user/workspaces_users';

@@ -1,5 +1,5 @@
 import ws from 'services/websocket';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import UserService from './current-user-service';
 import Globals from 'services/Globals';
 import userAsyncGet from 'app/features/users/utils/async-get';

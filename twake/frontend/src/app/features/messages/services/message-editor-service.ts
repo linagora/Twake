@@ -1,5 +1,5 @@
 import FileUploadService from 'app/features/files/services/file-upload-service';
-import Observable from 'app/services/Depreciated/observable';
+import Observable from 'app/deprecated/CollectionsV1/observable';
 import LocalStorage from 'app/services/LocalStorage';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import Languages from 'services/languages/languages';

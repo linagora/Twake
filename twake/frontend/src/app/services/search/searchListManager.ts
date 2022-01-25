@@ -3,7 +3,7 @@ import { UserType } from 'app/features/users/types/user';
 import Strings from 'app/services/utils/strings';
 import UsersService from 'app/features/users/services/current-user-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import { Collection } from 'services/CollectionsReact/Collections';
+import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
 import { getUserParts } from 'app/components/member/user-parts';
 import Observable from 'services/Observable/Observable';

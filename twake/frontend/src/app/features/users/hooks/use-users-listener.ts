@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { isArray } from 'lodash';
 import UserListenerService from 'app/features/users/services/listen-users-service';
-import Collections from 'services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import UsersService from 'app/features/users/services/current-user-service';
 import userAsyncGet from 'app/features/users/utils/async-get';
 

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import User from 'app/features/users/services/current-user-service';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import 'moment-timezone';
 import Emojione from 'components/emojione/emojione';
 import { ReactionType } from 'app/features/messages/types/message';

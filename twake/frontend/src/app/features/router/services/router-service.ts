@@ -7,7 +7,7 @@ import Login from 'app/views/login/login';
 import Logout from 'app/views/login/logout';
 import Error from 'app/views/error';
 import Join from 'app/views/join';
-import Collections from 'services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 import Channels from 'app/deprecated/channels/channels';
 import PublicMainView from 'app/views/client/main-view/PublicMainView';

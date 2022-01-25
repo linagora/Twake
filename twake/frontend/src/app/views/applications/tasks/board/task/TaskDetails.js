@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import UserListManager from 'components/user-list-manager/user-list-manager';
 import Button from 'components/buttons/button.js';
 import Menu from 'components/menus/menu.js';

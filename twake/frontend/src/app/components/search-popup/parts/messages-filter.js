@@ -9,7 +9,7 @@ import Button from 'components/buttons/button.js';
 import DateSelectorInput from 'components/calendar/date-picker.js';
 import Checkbox from 'components/inputs/checkbox.js';
 import Select from 'components/select/select.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Languages from 'services/languages/languages';
 import ChannelsService from 'app/deprecated/channels/channels.js';
 

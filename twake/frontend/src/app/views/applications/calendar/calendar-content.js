@@ -1,6 +1,6 @@
 import React, { Component, useState } from 'react';
 
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Languages from 'services/languages/languages';
 import UserService from 'app/features/users/services/current-user-service';
 import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';

@@ -1,7 +1,7 @@
 import React from 'react';
 import Login from 'app/services/login/LoginService';
 import { Resource, Collection } from '../Collections';
-import OriginalCollections from '../../Collections/Collections';
+import OriginalCollections from '../../CollectionsV2/Collections';
 import { shallow } from 'enzyme';
 
 Login.userIsSet = Promise.resolve('1');

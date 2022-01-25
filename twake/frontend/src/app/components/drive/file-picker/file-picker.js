@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Languages from 'services/languages/languages';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import UIFile from '../ui/file.js';
 import UIDirectory from '../ui/directory.js';
 import LeftIcon from '@material-ui/icons/KeyboardArrowLeftOutlined';

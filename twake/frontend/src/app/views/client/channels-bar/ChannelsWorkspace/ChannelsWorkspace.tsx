@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
-import { Collection } from 'services/CollectionsReact/Collections';
+import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
 import WorkspaceChannels from './WorkspaceChannel';
 import Languages from 'services/languages/languages';

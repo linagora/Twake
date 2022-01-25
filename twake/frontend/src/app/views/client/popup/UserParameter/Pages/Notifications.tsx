@@ -4,7 +4,7 @@ import { isEqual } from 'lodash';
 
 import Languages from 'services/languages/languages';
 import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
-import { Collection } from 'services/CollectionsReact/Collections';
+import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import NotificationPreferences from 'app/deprecated/user/NotificationPreferences';
 
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';

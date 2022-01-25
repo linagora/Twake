@@ -9,7 +9,7 @@ import ElectronService from 'services/electron/electron.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
 import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
 import UserParameter from 'app/views/client/popup/UserParameter/UserParameter.js';

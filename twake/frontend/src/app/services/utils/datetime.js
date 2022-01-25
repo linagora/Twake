@@ -4,7 +4,7 @@ import 'moment/locale/fr';
 import 'moment/locale/de';
 import 'moment/locale/ja';
 import 'moment/locale/es';
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import UserService from 'app/features/users/services/current-user-service';
 
 import Globals from 'services/Globals';

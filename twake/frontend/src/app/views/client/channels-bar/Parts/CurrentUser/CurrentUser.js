@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import UserService from 'app/features/users/services/current-user-service';
 import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import MenusManager from 'app/components/menus/menus-manager.js';

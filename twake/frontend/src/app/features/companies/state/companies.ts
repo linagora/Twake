@@ -1,5 +1,5 @@
 import { atomFamily } from 'recoil';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 import { CompanyType } from 'app/features/companies/types/company';
 import CompanyAPIClient from 'app/features/companies/api/company-api-client';

@@ -1,9 +1,9 @@
 import Languages from 'services/languages/languages';
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import ws from 'services/websocket.js';
 import Api from 'services/Api';
 import Login from 'app/services/login/LoginService';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 
 import Globals from 'services/Globals';

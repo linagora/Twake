@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import MenuManager from 'app/components/menus/menus-manager.js';
 
 import InputWithColor from 'components/inputs/input-with-color.js';

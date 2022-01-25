@@ -6,7 +6,7 @@ import Languages from 'services/languages/languages';
 import RouterServices from 'app/features/router/services/router-service';
 import { UserType } from 'app/features/users/types/user';
 import UserService from 'app/features/users/services/current-user-service';
-import Collections from 'services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import UsersService from 'app/features/users/services/current-user-service';
 import UserIcon from 'components/user/user';
 

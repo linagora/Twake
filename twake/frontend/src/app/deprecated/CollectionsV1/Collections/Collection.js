@@ -1,5 +1,5 @@
 import Api from 'services/Api';
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Number from 'services/utils/Numbers';
 import MultipleSecuredConnections from './MultipleSecuredConnections.js';
 import LocalStorage from 'app/services/LocalStorage';

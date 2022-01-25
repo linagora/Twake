@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/deprecated/CollectionsV1/observable.js';
 
 /*
   Menus manager service, choose where to generate menu

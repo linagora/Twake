@@ -5,7 +5,7 @@ import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import MenuManager from 'app/components/menus/menus-manager.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import FilePicker from 'components/drive/file-picker/file-picker.js';
 import Button from 'components/buttons/button.js';
 import Input from 'components/inputs/input.js';

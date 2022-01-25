@@ -2,7 +2,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { WorkspaceListStateFamily } from '../state/workspace-list';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Logger from 'app/services/Logger';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';

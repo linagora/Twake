@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import moment from 'moment';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import EventModification from './EventModification.js';

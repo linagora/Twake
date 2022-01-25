@@ -9,7 +9,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from '../../popup/WorkspaceParameter/WorkspaceParameter';
 import { Application } from 'app/features/applications/types/application';
 import { ChannelResource } from 'app/features/channels/types/channel';
-import Collections from 'services/CollectionsReact/Collections';
+import Collections from 'app/deprecated/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/connectors-list-manager/connectors-list-manager';
 import MainViewService from 'app/features/router/services/main-view-service';
 import { isArray } from 'lodash';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Languages from 'services/languages/languages';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';

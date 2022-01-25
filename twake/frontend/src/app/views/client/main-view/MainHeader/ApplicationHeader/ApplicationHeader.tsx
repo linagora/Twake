@@ -4,7 +4,7 @@ import Icon from 'app/components/icon/icon';
 import { capitalize } from 'lodash';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import RouterServices from 'app/features/router/services/router-service';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
+import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Languages from 'services/languages/languages';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';

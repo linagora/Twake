@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import ModalManager from 'app/components/modal/modal-manager';
 import UserService from 'app/features/users/services/current-user-service';
 import WelcomeOnTwake from './popups/welcome-on-twake';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import InitService from 'app/services/InitService';
 import RouterServices from 'app/features/router/services/router-service';
 import Groups from 'app/deprecated/workspaces/groups.js';

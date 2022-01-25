@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar, Col, Typography } from 'antd';
 import UsersService from 'app/features/users/services/current-user-service';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import './elements.scss';
 import { UserType } from 'app/features/users/types/user';
 import UserAPIClient from 'app/features/users/api/user-api-client';

@@ -1,5 +1,5 @@
 import React from 'react';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Emojione from 'components/emojione/emojione';
 import ChannelsService from 'app/deprecated/channels/channels';
 

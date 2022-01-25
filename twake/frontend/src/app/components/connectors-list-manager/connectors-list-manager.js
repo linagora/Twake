@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import AddIcon from '@material-ui/icons/AddOutlined';
 import GearIcon from '@material-ui/icons/BuildOutlined';

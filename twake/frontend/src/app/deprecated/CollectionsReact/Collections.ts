@@ -1,13 +1,13 @@
 import _ from 'lodash';
-import { CollectionOptions } from '../Collections/Collection';
+import { CollectionOptions } from '../CollectionsV2/Collection';
 import OriginalCollections, {
   Collection as OriginalCollection,
   Resource as OriginalResource,
   EventEmitter as CollectionsEventEmitter,
-} from '../Collections/Collections';
-import Observable from '../Observable/Observable';
+} from '../CollectionsV2/Collections';
+import Observable from '../../services/Observable/Observable';
 
-export { Resource } from '../Collections/Collections';
+export { Resource } from '../CollectionsV2/Collections';
 
 class ObservableAdapter extends Observable {
   static observables = new Map<string, ObservableAdapter>();

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './event.scss';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Icon from 'components/icon/icon.js';
 import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import Languages from 'services/languages/languages';

@@ -4,7 +4,7 @@ import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
 import Logger from 'app/services/Logger';
 import _ from 'lodash';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 const logger = Logger.getLogger('WorkspaceListState');
 

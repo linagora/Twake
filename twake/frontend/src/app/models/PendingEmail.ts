@@ -1,4 +1,4 @@
-import { Resource } from 'services/CollectionsReact/Collections';
+import { Resource } from 'app/deprecated/CollectionsReact/Collections';
 
 export type PendingEmail = {
   workspace_id: string;

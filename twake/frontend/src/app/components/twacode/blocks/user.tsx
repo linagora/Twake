@@ -6,7 +6,7 @@ import MenusManager from 'app/components/menus/menus-manager.js';
 import UserCard from 'app/components/user-card/user-card';
 import { UserType } from 'app/features/users/types/user';
 import { useUser } from 'app/features/users/hooks/use-user';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 const channelMentions = ['channel', 'everyone', 'all', 'here'];
 

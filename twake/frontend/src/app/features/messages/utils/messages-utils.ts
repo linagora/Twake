@@ -1,4 +1,4 @@
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import { Message } from '../types/message';
 import userAsyncGet from 'app/features/users/utils/async-get';

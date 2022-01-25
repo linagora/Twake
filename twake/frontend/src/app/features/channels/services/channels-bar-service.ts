@@ -1,6 +1,6 @@
 import { ChannelResource } from 'app/features/channels/types/channel';
 import Observable from 'app/services/Observable/Observable';
-import { Collection } from '../../../services/CollectionsReact/Collections';
+import { Collection } from '../../../deprecated/CollectionsReact/Collections';
 import RouterService from '../../router/services/router-service';
 import { getMine } from '../../../deprecated/channels/ChannelCollectionPath';
 import LocalStorage from 'app/services/LocalStorage';

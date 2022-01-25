@@ -1,5 +1,5 @@
 import Logger from 'app/services/Logger';
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import WindowState from 'services/utils/window';
 import Globals from 'services/Globals';
 import RouterServices from '../../features/router/services/router-service';

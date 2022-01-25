@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import minimongo, { MinimongoDb } from 'minimongo';
-import Logger from '../Logger';
+import Logger from '../../services/Logger';
 import { v4 as uuidv4 } from 'uuid';
 
 export type MongoItemType = {

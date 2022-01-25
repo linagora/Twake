@@ -3,7 +3,7 @@ import { AtomEffect, atomFamily, selectorFamily } from 'recoil';
 import { Application } from 'app/features/applications/types/application';
 import Logger from 'app/services/Logger';
 import CompanyApplicationsAPIClient from 'app/features/applications/api/company-applications-api-client';
-import Collections from 'app/services/Depreciated/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import _ from 'lodash';
 
 const logger = Logger.getLogger('CurrentCompanyApplicationsState');

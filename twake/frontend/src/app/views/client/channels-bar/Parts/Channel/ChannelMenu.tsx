@@ -5,7 +5,7 @@ import { ChannelMemberType, ChannelType } from 'app/features/channels/types/chan
 import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
 import Icon from 'app/components/icon/icon';
 import Menu from 'components/menus/menu';
-import { Collection } from 'services/CollectionsReact/Collections';
+import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import Languages from 'services/languages/languages';
 import AlertManager from 'services/AlertManager/AlertManager';
 import UserService from 'app/features/users/services/current-user-service';

@@ -6,7 +6,7 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNewOutlined';
 
 import Menu from 'components/menus/menu.js';
 import Languages from 'services/languages/languages';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Button from 'components/buttons/button.js';
 import ElectronService from 'services/electron/electron.js';

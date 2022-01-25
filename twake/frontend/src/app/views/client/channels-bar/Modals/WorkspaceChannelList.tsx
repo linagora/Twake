@@ -11,7 +11,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import { UserType } from 'app/features/users/types/user';
 import UsersService from 'app/features/users/services/current-user-service';
 import { ChannelType } from 'app/features/channels/types/channel';
-import { Collection } from 'services/CollectionsReact/Collections';
+import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import ChannelMembersAPIClient from 'app/services/channels-user/ChannelMembersAPIClient';

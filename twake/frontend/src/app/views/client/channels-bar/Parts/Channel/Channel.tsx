@@ -10,7 +10,7 @@ import { ChannelResource } from 'app/features/channels/types/channel';
 import AvatarComponent from 'app/components/avatar/avatar';
 import Beacon from 'app/components/scroll-hidden-components/beacon';
 import MainViewService from 'app/features/router/services/main-view-service';
-import { Collection } from 'app/services/CollectionsReact/Collections';
+import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import useRouterChannelSelected from 'app/features/router/hooks/use-router-channel-selected';
 
 import './Channel.scss';

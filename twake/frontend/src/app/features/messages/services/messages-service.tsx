@@ -1,12 +1,12 @@
 import React from 'react';
 import Languages from 'services/languages/languages';
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import UserService from 'app/features/users/services/current-user-service';
 import DepreciatedCollections, {
   Collection,
-} from 'app/services/Depreciated/Collections/Collections.js';
-import Collections from 'app/services/CollectionsReact/Collections';
+} from 'app/deprecated/CollectionsV1/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager';

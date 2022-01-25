@@ -4,7 +4,7 @@ import Observable from 'services/Observable/Observable';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from 'services/Toaster';
 import Login from 'app/services/login/LoginService';
-import { Collection } from '../../services/CollectionsReact/Collections';
+import { Collection } from '../CollectionsReact/Collections';
 import {
   preferencesType,
   NotificationPreferencesResource,

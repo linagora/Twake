@@ -5,7 +5,7 @@ import Icon from 'components/icon/icon.js';
 import Menu from 'components/menus/menu.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Emojione from 'components/emojione/emojione';
 import Languages from 'services/languages/languages';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';

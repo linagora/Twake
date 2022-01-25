@@ -4,7 +4,7 @@ import AccessRightsService from 'app/services/AccessRightsService';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import Languages from 'app/services/languages/languages';
 import JWT from 'app/services/JWTStorage';
-import Collections from 'app/services/Collections/Collections';
+import Collections from 'app/deprecated/CollectionsV2/Collections';
 import Globals from 'app/services/Globals';
 import UserNotifications from 'app/features/users/services/user-notifications-service';
 import WorkspacesListener from '../../workspaces/services/workspaces-listener-service';

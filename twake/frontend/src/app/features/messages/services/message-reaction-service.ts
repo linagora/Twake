@@ -3,7 +3,7 @@ import UserService from 'app/features/users/services/current-user-service';
 import MessageEditorManager from './message-editor-service-factory';
 import DepreciatedCollections, {
   Collection,
-} from 'app/services/Depreciated/Collections/Collections.js';
+} from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 
 /**
  * Service that allow you to manage message reactions

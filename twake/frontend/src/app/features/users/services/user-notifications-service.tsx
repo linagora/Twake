@@ -7,7 +7,7 @@ import ElectronService from 'services/electron/electron';
 import windowState from 'services/utils/window';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
-import { Collection } from '../../../services/CollectionsReact/Collections';
+import { Collection } from '../../../deprecated/CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces';
 import popupManager from 'services/popupManager/popupManager';

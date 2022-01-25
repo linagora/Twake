@@ -1,5 +1,5 @@
 import ws from 'services/websocket.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 
 class ListenWorkspace {
   constructor() {

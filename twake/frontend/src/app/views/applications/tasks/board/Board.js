@@ -1,7 +1,7 @@
 import React from 'react';
 import Languages from 'services/languages/languages';
 
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import List from './list/list.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';

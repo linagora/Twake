@@ -1,7 +1,7 @@
-import Observable from 'app/services/Depreciated/observable.js';
+import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Api from 'services/Api';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import Collections from 'app/services/Depreciated/Collections/Collections.js';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import LocalStorage from 'app/services/LocalStorage';
 import AceModeList from './utils/ace_modelist.js';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';

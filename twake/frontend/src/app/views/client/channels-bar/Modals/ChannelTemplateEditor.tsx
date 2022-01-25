@@ -4,7 +4,7 @@ import InputWithIcon from 'components/inputs/input-with-icon';
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import { Select, Typography, Checkbox, Input } from 'antd';
 import InputWithSelect from 'app/components/inputs/input-with-select';
-import { Collection } from 'services/CollectionsReact/Collections';
+import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';

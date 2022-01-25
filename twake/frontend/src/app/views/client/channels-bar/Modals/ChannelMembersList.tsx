@@ -13,11 +13,11 @@ import { UserType } from 'app/features/users/types/user';
 import Strings from 'services/utils/strings.js';
 import Languages from 'services/languages/languages';
 import UsersService from 'app/features/users/services/current-user-service';
-import Collections from 'services/CollectionsReact/Collections';
+import Collections from 'app/deprecated/CollectionsReact/Collections';
 import MemberChannelRow from 'app/views/client/channels-bar/Parts/Header/MemberChannelRow';
 
 import ObjectModal from 'components/object-modal/object-modal';
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';

@@ -1,7 +1,7 @@
-import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
-import Collection from 'app/services/Depreciated/Collections/Collection';
+import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
+import Collection from 'app/deprecated/CollectionsV1/Collections/Collection';
 import Numbers from 'services/utils/Numbers';
-import Observable from 'app/services/Depreciated/observable';
+import Observable from 'app/deprecated/CollectionsV1/observable';
 import Logger from 'app/services/Logger';
 import { Message } from '../types/message';
 import {

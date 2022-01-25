@@ -1,4 +1,4 @@
-import { Resource } from 'services/CollectionsReact/Collections';
+import { Resource } from 'app/deprecated/CollectionsReact/Collections';
 
 export type ChannelMemberTypeType = 'member' | 'guest' | 'bot';
 export type ChannelMemberNotificationLevel = 'all' | 'none' | 'mentions' | 'me';
