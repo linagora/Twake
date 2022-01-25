@@ -1,6 +1,6 @@
 import Logger from 'app/services/Logger';
 import { InternalConfiguration } from '../../../InitService';
-import Observable from '../../../Observable/Observable';
+import Observable from '../../../../deprecated/Observable/Observable';
 import { TwakeService } from '../../../Decorators/TwakeService';
 import { AuthProvider, InitParameters } from '../AuthProvider';
 import Globals from 'app/services/Globals';

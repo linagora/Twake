@@ -1,5 +1,5 @@
 import { Application } from 'app/features/applications/types/application';
-import Observable from 'app/services/Observable/Observable';
+import Observable from 'app/deprecated/Observable/Observable';
 import _ from 'lodash';
 
 export type ViewTypes =

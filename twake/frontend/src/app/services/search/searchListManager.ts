@@ -6,7 +6,7 @@ import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
 import { getUserParts } from 'app/components/member/user-parts';
-import Observable from 'services/Observable/Observable';
+import Observable from 'app/deprecated/Observable/Observable';
 import UserAPIClient from '../../features/users/api/user-api-client';
 import ChannelsReachableAPIClient from '../../features/channels/api/channels-reachable-api-client';
 import ChannelsMineAPIClient from '../../features/channels/api/channels-mine-api-client';

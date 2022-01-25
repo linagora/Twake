@@ -2,7 +2,7 @@ import React from 'react';
 import { notification as antNotification } from 'antd';
 import { X } from 'react-feather';
 import emojione from 'emojione';
-import Observable from 'app/services/Observable/Observable';
+import Observable from 'app/deprecated/Observable/Observable';
 import ElectronService from 'services/electron/electron';
 import windowState from 'services/utils/window';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';

@@ -1,4 +1,4 @@
-import Observable from 'app/services/Observable/Observable';
+import Observable from 'app/deprecated/Observable/Observable';
 
 type NodeType = React.RefObject<HTMLDivElement | ChildNode> | React.MutableRefObject<any> | any;
 

@@ -5,7 +5,7 @@ import OriginalCollections, {
   Resource as OriginalResource,
   EventEmitter as CollectionsEventEmitter,
 } from '../CollectionsV2/Collections';
-import Observable from '../../services/Observable/Observable';
+import Observable from '../Observable/Observable';
 
 export { Resource } from '../CollectionsV2/Collections';
 

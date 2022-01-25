@@ -1,5 +1,5 @@
 import { ChannelResource } from 'app/features/channels/types/channel';
-import Observable from 'app/services/Observable/Observable';
+import Observable from 'app/deprecated/Observable/Observable';
 import { Collection } from '../../../deprecated/CollectionsReact/Collections';
 import RouterService from '../../router/services/router-service';
 import { getMine } from '../../../deprecated/channels/ChannelCollectionPath';

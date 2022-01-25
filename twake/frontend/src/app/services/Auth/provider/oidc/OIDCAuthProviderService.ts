@@ -2,7 +2,7 @@ import Oidc from 'oidc-client';
 
 import environment from '../../../../environment/environment';
 import { ConsoleConfiguration } from '../../../InitService';
-import Observable from '../../../Observable/Observable';
+import Observable from '../../../../deprecated/Observable/Observable';
 import Logger from 'app/services/Logger';
 import { getAsFrontUrl } from '../../../utils/URLUtils';
 import { TwakeService } from '../../../Decorators/TwakeService';

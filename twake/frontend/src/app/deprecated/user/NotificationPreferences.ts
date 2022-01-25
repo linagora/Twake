@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-import Observable from 'services/Observable/Observable';
+import Observable from 'app/deprecated/Observable/Observable';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from 'services/Toaster';
 import Login from 'app/services/login/LoginService';

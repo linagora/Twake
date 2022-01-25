@@ -11,7 +11,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 import Channels from 'app/deprecated/channels/channels';
 import PublicMainView from 'app/views/client/main-view/PublicMainView';
-import Observable from '../../../services/Observable/Observable';
+import Observable from '../../../deprecated/Observable/Observable';
 
 export type RouteType = {
   path: string;

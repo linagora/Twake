@@ -1,5 +1,5 @@
 import Logger from 'services/Logger';
-import Observable from 'services/Observable/Observable';
+import Observable from 'app/deprecated/Observable/Observable';
 import Api from 'services/Api';
 
 export type ConsoleConfiguration = {

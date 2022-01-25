@@ -1,4 +1,4 @@
-import Observable from 'app/services/Observable/Observable';
+import Observable from 'app/deprecated/Observable/Observable';
 import MenusManager from 'app/components/menus/menus-manager.js';
 
 class ModalManager extends Observable {
