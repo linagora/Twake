@@ -7,7 +7,7 @@ import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import RouterService from 'app/features/router/services/router-service';
 import Languages from 'services/languages/languages';
-import PopupService from 'services/popupManager/popupManager.js';
+import PopupService from 'app/deprecated/popupManager/popupManager.js';
 
 import './styles.scss';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';

@@ -16,7 +16,7 @@ import MoreIcon from '@material-ui/icons/MoreHorizOutlined';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import ConnectorsListManager from 'components/connectors-list-manager/connectors-list-manager.js';
-import popupManager from 'services/popupManager/popupManager.js';
+import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';

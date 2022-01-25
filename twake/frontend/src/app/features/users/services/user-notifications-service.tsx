@@ -10,7 +10,7 @@ import { ChannelResource, ChannelType } from 'app/features/channels/types/channe
 import { Collection } from '../../../deprecated/CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces';
-import popupManager from 'services/popupManager/popupManager';
+import popupManager from 'app/deprecated/popupManager/popupManager';
 import RouterService from '../../router/services/router-service';
 import ChannelsService from 'app/deprecated/channels/channels';
 import NotificationParameters from 'app/deprecated/user/notification_parameters';

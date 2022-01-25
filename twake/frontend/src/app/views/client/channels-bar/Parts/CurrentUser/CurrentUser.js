@@ -17,7 +17,7 @@ import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user
 import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
 import CreateWorkspacePage from 'app/views/client/popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import CompanyHeaderUI from 'app/views/client/channels-bar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
-import ModalManagerDepreciated from 'services/popupManager/popupManager';
+import ModalManagerDepreciated from 'app/deprecated/popupManager/popupManager';
 import InitService from 'app/services/InitService';
 import AccessRightsService from 'services/AccessRightsService';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';

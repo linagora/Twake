@@ -5,7 +5,7 @@ import { Layout } from 'antd';
 import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
-import PopupService from 'services/popupManager/popupManager.js';
+import PopupService from 'app/deprecated/popupManager/popupManager.js';
 import PopupComponent from 'components/popup-component/popup-component.js';
 import MainView from './main-view/MainView';
 import DraggableBodyLayer from 'components/draggable/draggable-body-layer.js';

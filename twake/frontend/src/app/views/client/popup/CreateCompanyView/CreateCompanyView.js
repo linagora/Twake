@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import LoginService from 'app/services/login/LoginService';
-import popupManager from 'services/popupManager/popupManager.js';
+import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import Emojione from 'components/emojione/emojione';
 import StepCounter from 'components/step-counter/step-counter.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';

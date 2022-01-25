@@ -7,7 +7,7 @@ import LoginService from 'app/services/login/LoginService';
 import Languages from 'services/languages/languages';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import popupManager from 'services/popupManager/popupManager.js';
+import popupManager from 'app/deprecated/popupManager/popupManager.js';
 
 import CreateCompanyView from '../../../popup/CreateCompanyView/CreateCompanyView.js';
 import SecondMail from '../../../popup/SecondMail/SecondMail.js';

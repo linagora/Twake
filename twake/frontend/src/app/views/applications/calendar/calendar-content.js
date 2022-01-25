@@ -21,7 +21,7 @@ import DayPicker from 'components/calendar/day-picker/day-picker.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
-import popupManager from 'services/popupManager/popupManager.js';
+import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import ConnectorsListManager from 'components/connectors-list-manager/connectors-list-manager.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import Checkbox from 'components/inputs/checkbox.js';

@@ -6,7 +6,7 @@ import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import userService from 'app/features/users/services/current-user-service';
 import loginService from 'app/services/login/LoginService';
 import AccountService from 'services/login/account';
-import popupManager from 'services/popupManager/popupManager.js';
+import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Input from 'components/inputs/input.js';
 import './SecondMail.scss';
