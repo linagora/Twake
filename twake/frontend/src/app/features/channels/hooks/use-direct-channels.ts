@@ -8,7 +8,7 @@ import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-c
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
-import { useGlobalEffect } from 'app/services/utils/useGlobalEffect';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 
 export function useDirectChannels(): {
   directChannels: ChannelType[];

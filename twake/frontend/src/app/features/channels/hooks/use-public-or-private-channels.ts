@@ -9,7 +9,7 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { isPrivateChannel, isPublicChannel } from 'app/features/channels/utils/utils';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
-import { useGlobalEffect } from 'app/services/utils/useGlobalEffect';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 
 export function usePublicOrPrivateChannels(): {
   privateChannels: ChannelType[];
