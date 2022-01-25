@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import './drive-multi-selector.scss';
-import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
+import SelectionsManager from 'app/deprecated/SelectionsManager/SelectionsManager.js';
 import './drive.scss';
 
 export default class DriveMultiSelector extends React.Component {

@@ -4,7 +4,7 @@ import DroppableZone from 'components/draggable/droppable-zone.js';
 import Icon from 'components/icon/icon.js';
 import Menu from 'components/menus/menu.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
-import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
+import SelectionsManager from 'app/deprecated/SelectionsManager/SelectionsManager.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Emojione from 'components/emojione/emojione';
 import Languages from 'services/languages/languages';

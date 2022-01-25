@@ -18,7 +18,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRightOutlined';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
 
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
-import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
+import SelectionsManager from 'app/deprecated/SelectionsManager/SelectionsManager.js';
 
 import PathElement from './path-element.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
