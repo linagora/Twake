@@ -13,7 +13,7 @@ import InitService from 'app/services/InitService';
 import { ChevronUp, ChevronsUp } from 'react-feather';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import Api from 'app/services/Api';
-import ConsoleService from 'app/services/Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';

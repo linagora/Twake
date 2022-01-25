@@ -1,6 +1,6 @@
-import Api from '../Api';
-import { TwakeService } from '../../features/global/services/twake-service';
-import { JWTDataType } from '../JWTStorage';
+import Api from 'app/services/Api';
+import { TwakeService } from 'app/features/global/services/twake-service';
+import { JWTDataType } from 'app/services/JWTStorage';
 
 type LoginParams = {
   email: string;

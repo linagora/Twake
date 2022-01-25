@@ -1,11 +1,11 @@
-import Api from '../Api';
-import DepreciatedCollections from '../../deprecated/CollectionsV1/Collections/Collections';
-import InitService from '../InitService';
+import Api from 'app/services/Api';
+import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
+import InitService from 'app/services/InitService';
 import Languages from 'services/languages/languages';
-import { ToasterService as Toaster } from '../Toaster';
-import { ConsoleMemberRole } from './types';
+import { ToasterService as Toaster } from 'app/services/Toaster';
+import { ConsoleMemberRole } from 'app/features/console/types/types';
 import Logger from 'app/features/global/services/logger-service';
-import { JWTDataType } from '../JWTStorage';
+import { JWTDataType } from 'app/services/JWTStorage';
 
 class ConsoleService {
   logger: Logger.Logger;

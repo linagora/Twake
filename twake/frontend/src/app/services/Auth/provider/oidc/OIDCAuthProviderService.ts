@@ -8,7 +8,7 @@ import { getAsFrontUrl } from '../../../utils/URLUtils';
 import { TwakeService } from '../../../../features/global/services/twake-service';
 import EnvironmentService from '../../../EnvironmentService';
 import { AuthProvider, InitParameters } from '../AuthProvider';
-import ConsoleService from 'app/services/Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 import { JWTDataType } from 'app/services/JWTStorage';
 import LocalStorage from 'app/services/LocalStorage';
 

@@ -5,7 +5,7 @@ import { TwakeService } from '../../../../features/global/services/twake-service
 import { AuthProvider, InitParameters } from '../AuthProvider';
 import Globals from 'app/services/Globals';
 import RouterService from 'app/features/router/services/router-service';
-import ConsoleAPIClient from 'app/services/Console/ConsoleAPIClient';
+import ConsoleAPIClient from 'app/features/console/api/console-api-client';
 
 export type SignInParameters = {
   username: string;

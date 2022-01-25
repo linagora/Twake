@@ -5,7 +5,7 @@ import ObjectModal from '../../object-modal/object-modal';
 import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/modal/modal-manager';
 import AddMailsInWorkspace from './add-mails-in-workspace';
-import ConsoleService from 'app/services/Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 
 type PropsType = {
   email: string;

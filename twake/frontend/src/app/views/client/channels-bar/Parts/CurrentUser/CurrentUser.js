@@ -25,7 +25,7 @@ import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureToggles
 import LockedWorkspacePopup from 'app/components/locked-features-components/locked-workspace-popup/locked-workspace-popup';
 import ModalManager from 'app/components/modal/modal-manager';
 import CompanyMessagesCounter from 'components/company-messages-counter/company-messages-counter';
-import ConsoleService from 'app/services/Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 import MenuCompanyHeader from './MenuCompanyHeader';
 import SaveNewStatus from './SaveNewStatus';
 

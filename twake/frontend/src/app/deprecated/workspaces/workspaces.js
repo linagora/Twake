@@ -17,7 +17,7 @@ import NoCompanies from 'app/views/client/workspaces-bar/components/NoWorkspaces
 import loginService from 'app/services/login/LoginService';
 import Globals from 'services/Globals';
 import JWTStorage from 'services/JWTStorage';
-import ConsoleService from 'services/Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 import WorkspaceAPIClient from '../../features/workspaces/api/workspace-api-client';
 import Logger from 'app/features/global/services/logger-service';
 

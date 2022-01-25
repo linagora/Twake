@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button, Row, Typography } from 'antd';
 import ObjectModal from '../../object-modal/object-modal';
 import Languages from 'services/languages/languages';
-import ConsoleService from 'app/services/Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 import LoginService from 'app/services/login/LoginService';
 
 type PropsType = {

@@ -14,7 +14,7 @@ import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import MenuList from 'components/menus/menu-component.js';
 import InitService from 'app/services/InitService';
-import ConsoleService from 'app/services/Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 
 import './WorkspaceParameter.scss';
 

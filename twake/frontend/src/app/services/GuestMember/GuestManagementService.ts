@@ -3,7 +3,7 @@ import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import Collections, { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
 import UserServices from 'app/features/users/services/current-user-service';
-import ConsoleService from '../Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import { GenericMember } from './types';
 

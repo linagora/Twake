@@ -3,7 +3,7 @@ import { Button, Typography } from 'antd';
 import Languages from 'services/languages/languages';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import AutoHeight from 'app/components/auto-height/auto-height';
-import ConsoleService from 'app/services/Console/ConsoleService';
+import ConsoleService from 'app/features/console/services/console-service';
 import RouterServices from 'app/features/router/services/router-service';
 import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
 import './AddUser.scss';
