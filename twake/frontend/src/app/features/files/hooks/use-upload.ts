@@ -1,7 +1,7 @@
-import FileUploadService from 'app/components/file-uploads/file-upload-service';
+import FileUploadService from 'app/features/files/services/file-upload-service';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { PendingFilesListState } from '../atoms/PendingFilesList';
-import { CurrentTaskSelector } from '../selectors/CurrentTask';
+import { PendingFilesListState } from '../state/atoms/pending-files-list';
+import { CurrentTaskSelector } from '../state/selectors/current-task';
 import RouterServices from 'app/features/router/services/router-service';
 
 export const useUpload = () => {

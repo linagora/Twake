@@ -1,6 +1,6 @@
-import FileUploadService from 'app/components/file-uploads/file-upload-service';
+import FileUploadService from 'app/features/files/services/file-upload-service';
 import { selector } from 'recoil';
-import { PendingFilesListState } from '../atoms/PendingFilesList';
+import { PendingFilesListState } from '../atoms/pending-files-list';
 
 export const CurrentTaskSelector = selector({
   key: 'CurrentTaskFilesSelector',

@@ -1,4 +1,4 @@
-import FileUploadService from 'app/components/file-uploads/file-upload-service';
+import FileUploadService from 'app/features/files/services/file-upload-service';
 import Observable from 'app/services/Depreciated/observable';
 import LocalStorage from 'app/services/LocalStorage';
 import { ToasterService as Toaster } from 'app/services/Toaster';

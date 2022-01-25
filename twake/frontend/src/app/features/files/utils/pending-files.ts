@@ -1,4 +1,4 @@
-import { PendingFileRecoilType } from 'app/models/File';
+import { PendingFileRecoilType } from 'app/features/files/types/file';
 
 export const isPendingFileStatusPause = (status: PendingFileRecoilType['status']): boolean => {
   return status === 'pause' ? true : false;

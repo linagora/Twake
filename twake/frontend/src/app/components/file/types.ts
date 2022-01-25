@@ -1,4 +1,4 @@
-import { PendingFileRecoilType } from 'app/models/File';
+import { PendingFileRecoilType } from 'app/features/files/types/file';
 
 export type DataFileType = {
   id: string;

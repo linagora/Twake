@@ -8,12 +8,12 @@ import {
   isPendingFileStatusSuccess,
   isPendingFileStatusError,
   isPendingFileStatusCancel,
-} from 'app/components/file-uploads/utils/pending-files';
+} from 'app/features/files/utils/pending-files';
 import Languages from 'services/languages/languages';
-import { useUpload } from 'app/state/recoil/hooks/useUpload';
+import { useUpload } from 'app/features/files/hooks/use-upload';
 import { DataFileType } from '../types';
 import MenuManager from 'app/components/menus/menus-manager';
-import { PendingFileRecoilType } from 'app/models/File';
+import { PendingFileRecoilType } from 'app/features/files/types/file';
 
 type PropsType = {
   file: DataFileType;

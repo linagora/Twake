@@ -6,16 +6,16 @@ import {
   isPendingFileStatusCancel,
   isPendingFileStatusError,
   isPendingFileStatusSuccess,
-} from 'app/components/file-uploads/utils/pending-files';
+} from 'app/features/files/utils/pending-files';
 import { DataFileType } from './types';
 import DriveService from 'services/Apps/Drive/Drive.js';
-import FileUploadService from '../file-uploads/file-upload-service';
+import FileUploadService from '../../features/files/services/file-upload-service';
 import RouterService from 'app/features/router/services/router-service';
 
 import './file.scss';
-import { PendingFileRecoilType } from 'app/models/File';
+import { PendingFileRecoilType } from 'app/features/files/types/file';
 import Api from 'app/services/Api';
-import FileUploadAPIClient from '../file-uploads/file-upload-api-client';
+import FileUploadAPIClient from '../../features/files/api/file-upload-api-client';
 
 type PropsType = {
   source: 'internal' | 'drive' | string;

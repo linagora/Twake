@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import FileUploadService from 'app/components/file-uploads/file-upload-service';
+import FileUploadService from 'app/features/files/services/file-upload-service';
 import { MessageFileType } from 'app/features/messages/types/message';
 import { useRecoilState } from 'recoil';
-import { PendingUploadZonesListState } from '../atoms/PendingUploadZonesList';
-import { useUpload } from './useUpload';
-import { PendingFileType } from 'app/models/File';
+import { PendingUploadZonesListState } from '../state/atoms/pending-upload-zones-list';
+import { useUpload } from './use-upload';
+import { PendingFileType } from 'app/features/files/types/file';
 
 export const useUploadZones = (zoneId: string) => {
   const { pendingFilesListState, currentTask, getOnePendingFile } = useUpload();

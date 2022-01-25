@@ -1,5 +1,5 @@
 import { Card, Col, Row, Tooltip, Typography } from 'antd';
-import { FileType } from 'app/models/File';
+import { FileType } from 'app/features/files/types/file';
 import '../input.scss';
 import React from 'react';
 

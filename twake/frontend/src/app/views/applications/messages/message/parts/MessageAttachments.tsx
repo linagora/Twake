@@ -4,7 +4,7 @@ import { Row } from 'antd';
 import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import PossiblyPendingAttachment from './PossiblyPendingAttachment';
-import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
+import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 
 export default () => {
   const context = useContext(MessageContext);

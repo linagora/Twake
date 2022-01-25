@@ -1,5 +1,5 @@
 import React from 'react';
-import { useUpload } from 'app/state/recoil/hooks/useUpload';
+import { useUpload } from 'app/features/files/hooks/use-upload';
 import PendingFilesList from './pending-file-components/pending-files-list';
 
 const ChatUploadsViewer = (): JSX.Element => {

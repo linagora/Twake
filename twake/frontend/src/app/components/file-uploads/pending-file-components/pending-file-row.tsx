@@ -9,10 +9,10 @@ import {
   isPendingFileStatusPause,
   isPendingFileStatusPending,
   isPendingFileStatusSuccess,
-} from '../utils/pending-files';
+} from '../../../features/files/utils/pending-files';
 import Languages from 'services/languages/languages';
-import { useUpload } from 'app/state/recoil/hooks/useUpload';
-import { PendingFileRecoilType, PendingFileType } from 'app/models/File';
+import { useUpload } from 'app/features/files/hooks/use-upload';
+import { PendingFileRecoilType, PendingFileType } from 'app/features/files/types/file';
 
 import '../../file/file.scss';
 

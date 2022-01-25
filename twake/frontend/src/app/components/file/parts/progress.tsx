@@ -2,14 +2,14 @@ import React from 'react';
 import { Progress } from 'antd';
 
 import { DataFileType } from '../types';
-import { PendingFileRecoilType } from 'app/models/File';
+import { PendingFileRecoilType } from 'app/features/files/types/file';
 import {
   isPendingFileStatusPending,
   isPendingFileStatusPause,
   isPendingFileStatusSuccess,
   isPendingFileStatusError,
   isPendingFileStatusCancel,
-} from 'app/components/file-uploads/utils/pending-files';
+} from 'app/features/files/utils/pending-files';
 
 type PropsType = {
   file: DataFileType;

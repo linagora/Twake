@@ -1,7 +1,7 @@
 import Api from 'app/services/Api';
-import { FileType } from 'app/models/File';
+import { FileType } from 'app/features/files/types/file';
 import { MessageFileType } from 'app/features/messages/types/message';
-import extensionToMime from './utils/extension-to-mime';
+import extensionToMime from '../utils/extension-to-mime';
 
 type ResponseFileType = { resource: FileType };
 type ResponseDeleteFileType = { status: 'success' | 'error' };

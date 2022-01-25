@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect } from 'react';
 import { MessageFileType } from 'app/features/messages/types/message';
-import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
+import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { useMessageEditor } from 'app/features/messages/hooks/use-message-editor';
 

@@ -27,7 +27,7 @@ import {
 import Groups from 'services/workspaces/groups.js';
 import MainViewService from 'app/services/AppView/MainViewService';
 import MessageExternalFilePicker from 'app/views/applications/messages/input/parts/MessageExternalFilePicker';
-import FileUploadAPIClient from 'app/components/file-uploads/file-upload-api-client';
+import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 
 class Messages extends Observable {
   editedMessage: { [key: string]: any };

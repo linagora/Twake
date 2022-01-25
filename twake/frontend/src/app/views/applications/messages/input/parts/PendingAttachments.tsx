@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Col, Row } from 'antd';
-import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
+import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 import '../input.scss';
 import { MessageFileType } from 'app/features/messages/types/message';
 import _ from 'lodash';

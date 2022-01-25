@@ -1,5 +1,5 @@
 import Resumable from 'services/uploadManager/resumable';
-import { ThumbnailType } from '../features/messages/types/message';
+import { ThumbnailType } from '../../messages/types/message';
 
 export type MetaDataType = {
   name: string;

@@ -7,8 +7,8 @@ import moment from 'moment';
 
 import PendingFileRow from './pending-file-row';
 import Languages from 'services/languages/languages';
-import { PendingFileRecoilType } from 'app/models/File';
-import { useUpload } from 'app/state/recoil/hooks/useUpload';
+import { PendingFileRecoilType } from 'app/features/files/types/file';
+import { useUpload } from 'app/features/files/hooks/use-upload';
 
 import './styles.scss';
 
