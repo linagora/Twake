@@ -8,7 +8,7 @@ import { Collection } from '../CollectionsReact/Collections';
 import {
   preferencesType,
   NotificationPreferencesResource,
-} from 'app/models/NotificationPreferences';
+} from 'app/features/users/types/notification-preferences-type';
 
 type Keys = keyof preferencesType;
 type Values = preferencesType[Keys];

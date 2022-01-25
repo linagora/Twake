@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import NotificationBell from './NotificationBell';
 
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
-import { NotificationPreferencesResource } from 'app/models/NotificationPreferences';
+import { NotificationPreferencesResource } from 'app/features/users/types/notification-preferences-type';
 
 export default () => {
   const url = '/notifications/v1/preferences/';

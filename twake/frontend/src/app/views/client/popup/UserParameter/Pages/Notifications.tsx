@@ -15,7 +15,7 @@ import Radio from 'components/inputs/radio.js';
 import {
   preferencesType,
   NotificationPreferencesResource,
-} from 'app/models/NotificationPreferences';
+} from 'app/features/users/types/notification-preferences-type';
 
 export default () => {
   const loading = useRef(true);

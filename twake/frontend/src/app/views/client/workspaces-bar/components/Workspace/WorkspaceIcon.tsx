@@ -3,7 +3,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { Skeleton } from 'antd';
 
-import { NotificationResource } from 'app/models/Notification';
+import { NotificationResource } from 'app/features/users/types/notification-types';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';

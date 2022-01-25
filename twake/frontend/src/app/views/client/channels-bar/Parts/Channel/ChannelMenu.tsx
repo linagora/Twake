@@ -13,7 +13,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import Notifications from 'app/features/users/services/user-notifications-service';
 import AccessRightsService from 'app/services/AccessRightsService';
-import { NotificationResource } from 'app/models/Notification';
+import { NotificationResource } from 'app/features/users/types/notification-types';
 import RouterServices from 'app/features/router/services/router-service';
 import GuestManagement from 'app/views/client/channels-bar/Modals/GuestManagement';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
