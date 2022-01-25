@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import MenuManager from 'app/components/menus/menus-manager.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';

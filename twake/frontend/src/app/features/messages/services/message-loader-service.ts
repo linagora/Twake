@@ -10,7 +10,7 @@ import {
   FeedResponse,
   InitParameters,
   Completion,
-} from 'app/services/Apps/Feed/FeedLoader';
+} from 'app/deprecated/Apps/Feed/FeedLoader';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import MessageHistoryService from 'app/features/messages/services/message-history-service';
 

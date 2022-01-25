@@ -8,9 +8,9 @@ import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Api from 'services/Api';
 import Strings from 'services/utils/strings.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
-import CalendarService from 'services/Apps/Calendar/Calendar.js';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
+import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import MessagesService from 'app/features/messages/services/messages-service';
 
 import Globals from 'services/Globals';

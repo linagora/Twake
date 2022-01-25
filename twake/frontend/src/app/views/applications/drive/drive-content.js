@@ -17,7 +17,7 @@ import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import ChevronRightIcon from '@material-ui/icons/ChevronRightOutlined';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
 
-import DriveService from 'services/Apps/Drive/Drive.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 
 import PathElement from './path-element.js';

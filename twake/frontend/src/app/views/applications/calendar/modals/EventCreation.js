@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import EventModification from './EventModification.js';
-import CalendarService from 'services/Apps/Calendar/Calendar.js';
+import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import Input from 'components/inputs/input.js';
 import InputIcon from 'components/inputs/input-icon.js';
 import Participants from './Part/Participants.js';

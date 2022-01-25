@@ -5,7 +5,7 @@ import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/emojione/emojione';
 import Loader from 'components/loader/loader.js';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import LeftIcon from '@material-ui/icons/KeyboardArrowLeftOutlined';
 
 import './task-picker.scss';

@@ -3,7 +3,7 @@ import React, { Component, useState } from 'react';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages';
 import UserService from 'app/features/users/services/current-user-service';
-import CalendarService from 'services/Apps/Calendar/Calendar.js';
+import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import LocalStorage from 'app/services/LocalStorage';
 
 import ModalManager from 'app/components/modal/modal-manager';

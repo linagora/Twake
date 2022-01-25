@@ -4,7 +4,7 @@ import 'moment-timezone';
 
 import Icon from 'components/icon/icon';
 import Menu from 'components/menus/menu';
-import DriveService from 'services/Apps/Drive/Drive';
+import DriveService from 'app/deprecated/Apps/Drive/Drive';
 import Numbers from 'services/utils/Numbers';
 import FileType from './file-type';
 import TagPicker from 'components/tag-picker/tag-picker';

@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import moment from 'moment';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import EventModification from './EventModification.js';
-import CalendarService from 'services/Apps/Calendar/Calendar.js';
+import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import Participants from './Part/Participants.js';
 import CalendarSelector from 'components/calendar/calendar-selector/calendar-selector.js';
 import AlertManager from 'services/AlertManager/AlertManager';

@@ -3,7 +3,7 @@ import DriveElement from 'components/drive/drive-element.js';
 import DroppableZone from 'components/draggable/droppable-zone.js';
 import Icon from 'components/icon/icon.js';
 import Menu from 'components/menus/menu.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import SelectionsManager from 'services/SelectionsManager/SelectionsManager.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/emojione/emojione';

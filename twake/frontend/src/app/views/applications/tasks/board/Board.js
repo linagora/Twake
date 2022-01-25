@@ -11,7 +11,7 @@ import Emojione from 'components/emojione/emojione';
 import Rounded from 'components/inputs/rounded.js';
 import Menu from 'components/menus/menu.js';
 import ListEditor from './list/list-editor.js';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import Tabs from 'components/tabs/tabs.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';

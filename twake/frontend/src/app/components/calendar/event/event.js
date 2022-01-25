@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './event.scss';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/icon/icon.js';
-import CalendarService from 'services/Apps/Calendar/Calendar.js';
+import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import Languages from 'services/languages/languages';
 import UserListManager from 'components/user-list-manager/user-list-manager';
 

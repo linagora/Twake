@@ -5,7 +5,7 @@ import Languages from 'services/languages/languages';
 import { Draggable } from 'react-beautiful-dnd';
 
 import './Task.scss';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import TaskDetails from './TaskDetails.js';
 import MediumPopupManager from 'app/components/modal/modal-manager';

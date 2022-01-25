@@ -8,7 +8,7 @@ import {
   isPendingFileStatusSuccess,
 } from 'app/features/files/utils/pending-files';
 import { DataFileType } from './types';
-import DriveService from 'services/Apps/Drive/Drive.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import FileUploadService from '../../features/files/services/file-upload-service';
 import RouterService from 'app/features/router/services/router-service';
 

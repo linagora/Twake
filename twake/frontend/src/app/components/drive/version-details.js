@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages';
 import Icon from 'components/icon/icon.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import UploadZone from 'components/uploads/upload-zone';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import MediumPopupManager from 'app/components/modal/modal-manager';

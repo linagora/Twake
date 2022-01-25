@@ -5,7 +5,7 @@ import MenuManager from 'app/components/menus/menus-manager.js';
 
 import InputWithColor from 'components/inputs/input-with-color.js';
 import Button from 'components/buttons/button.js';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 
 export default class ListEditor extends React.Component {
   constructor() {

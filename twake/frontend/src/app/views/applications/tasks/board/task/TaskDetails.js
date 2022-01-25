@@ -5,7 +5,7 @@ import UserListManager from 'components/user-list-manager/user-list-manager';
 import Button from 'components/buttons/button.js';
 import Menu from 'components/menus/menu.js';
 import TagPicker from 'components/tag-picker/tag-picker.js';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import TaskEditor from './TaskEditor.js';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import Checklist from './parts/Checklist.js';

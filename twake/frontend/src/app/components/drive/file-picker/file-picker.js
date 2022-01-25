@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import DriveService from 'services/Apps/Drive/Drive.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';

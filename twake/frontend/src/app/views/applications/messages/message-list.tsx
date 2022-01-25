@@ -11,7 +11,7 @@ import GoToBottom from './parts/go-to-bottom';
 import { Message as MessageModel } from 'app/features/messages/types/message';
 import { MessageLoader } from 'app/features/messages/services/message-loader-service';
 import MessageComponent from './__old/_Message/Message';
-import { FeedResponse } from 'app/services/Apps/Feed/FeedLoader';
+import { FeedResponse } from 'app/deprecated/Apps/Feed/FeedLoader';
 import MessageListServiceFactory from 'app/features/messages/services/message-list-service-factory';
 import { MessageListService } from 'app/features/messages/services/message-list-service';
 import { ChannelResource } from 'app/features/channels/types/channel';

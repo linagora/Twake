@@ -12,8 +12,11 @@ import Checkbox from 'components/inputs/checkbox.js';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import Checklist from './parts/Checklist.js';
 import TagPicker from 'components/tag-picker/tag-picker.js';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
-import { ObjectModal, ObjectModalFormTitle } from 'components/object-modal/deprecated-object-modal.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
+import {
+  ObjectModal,
+  ObjectModalFormTitle,
+} from 'components/object-modal/deprecated-object-modal.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import AttachmentPicker from 'components/attachment-picker/attachment-picker.js';
 

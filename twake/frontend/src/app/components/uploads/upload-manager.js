@@ -1,6 +1,6 @@
 import Observable from 'app/services/Depreciated/observable.js';
 import Number from 'services/utils/Numbers';
-import DriveService from 'services/Apps/Drive/Drive.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Resumable from 'services/uploadManager/resumable.js';
 import Globals from 'services/Globals';

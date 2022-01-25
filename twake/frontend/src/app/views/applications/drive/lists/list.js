@@ -5,7 +5,7 @@ import Languages from 'services/languages/languages';
 import Directory from 'components/drive/directory.js';
 import File from 'components/drive/file';
 import AttachmentPicker from 'components/attachment-picker/attachment-picker.js';
-import DriveService from 'services/Apps/Drive/Drive.js';
+import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 
 class DelayedElement extends Component {
   render() {

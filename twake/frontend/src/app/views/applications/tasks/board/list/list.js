@@ -6,7 +6,7 @@ import Task from '../task/Task.js';
 import Icon from 'components/icon/icon.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import ListEditor from './list-editor.js';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';

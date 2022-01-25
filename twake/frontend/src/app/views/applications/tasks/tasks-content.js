@@ -5,7 +5,7 @@ import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/emojione/emojione';
 import Loader from 'components/loader/loader.js';
-import TasksService from 'services/Apps/Tasks/Tasks.js';
+import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import UserService from 'app/features/users/services/current-user-service';
