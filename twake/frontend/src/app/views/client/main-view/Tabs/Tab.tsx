@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { TabType } from 'app/models/Tab';
+import { TabType } from 'app/features/tabs/types/tab';
 import RouterServices from 'app/features/router/services/router-service';
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/modal/modal-manager';
@@ -12,7 +12,7 @@ import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import MainViewService from 'app/features/router/services/main-view-service';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
-import { useTab } from 'app/state/recoil/hooks/useTabs';
+import { useTab } from 'app/features/tabs/hooks/use-tabs';
 
 type PropsType = {
   tabId: string;

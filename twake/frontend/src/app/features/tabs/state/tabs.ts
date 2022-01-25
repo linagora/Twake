@@ -1,7 +1,7 @@
 import { atomFamily } from 'recoil';
 
-import { TabType } from 'app/models/Tab';
-import TabsAPIClients from 'app/services/tabs/TabsAPIClients';
+import { TabType } from 'app/features/tabs/types/tab';
+import TabsAPIClients from 'app/features/tabs/api/tabs-api-client';
 
 export type AtomTabKey = { companyId: string; workspaceId: string; channelId: string };
 

@@ -3,7 +3,7 @@ import { Button, Row, Input, Select } from 'antd';
 
 import { Application, AppType } from 'app/features/applications/types/application';
 import Groups from 'app/deprecated/workspaces/groups.js';
-import { TabType } from 'app/models/Tab';
+import { TabType } from 'app/features/tabs/types/tab';
 import Icon from 'app/components/icon/icon';
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';

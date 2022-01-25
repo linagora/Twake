@@ -1,5 +1,5 @@
 import { useRecoilValue } from 'recoil';
-import { LoadingState } from 'app/state/recoil/atoms/Loading';
+import { LoadingState } from 'app/features/global/state/atoms/Loading';
 
 export const useChannelsBarLoader = ({
   companyId,

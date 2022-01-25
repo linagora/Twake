@@ -1,7 +1,7 @@
-import { TabType } from 'app/models/Tab';
-import Api from '../Api';
-import { TwakeService } from '../../features/global/services/twake-service';
-import { WebsocketRoom } from '../WebSocket/WebSocket';
+import { TabType } from 'app/features/tabs/types/tab';
+import Api from '../../../services/Api';
+import { TwakeService } from '../../global/services/twake-service';
+import { WebsocketRoom } from '../../../services/WebSocket/WebSocket';
 
 type TabKey = {
   companyId: string;

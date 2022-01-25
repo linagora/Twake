@@ -1,7 +1,7 @@
 import { ChannelResource } from 'app/features/channels/types/channel';
 import React from 'react';
 import { ViewConfiguration } from '../../../features/router/services/app-view-service';
-import { useTab } from '../../../state/recoil/hooks/useTabs';
+import { useTab } from '../../../features/tabs/hooks/use-tabs';
 import TasksContent from './tasks-content';
 
 type Props = {

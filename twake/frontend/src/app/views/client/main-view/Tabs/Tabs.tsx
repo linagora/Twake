@@ -1,6 +1,6 @@
 import React from 'react';
 import { Plus } from 'react-feather';
-import { TabType } from 'app/models/Tab';
+import { TabType } from 'app/features/tabs/types/tab';
 
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/modal/modal-manager';
@@ -8,7 +8,7 @@ import RouterServices from 'app/features/router/services/router-service';
 import DefaultChannelTab from 'app/views/client/main-view/Tabs/DefaultChannelTab';
 import Tab from 'app/views/client/main-view/Tabs/Tab';
 import UserService from 'app/features/users/services/current-user-service';
-import useTabs from 'app/state/recoil/hooks/useTabs';
+import useTabs from 'app/features/tabs/hooks/use-tabs';
 import AccessRightsService from 'app/services/AccessRightsService';
 import useRouterCompany from '../../../../features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';

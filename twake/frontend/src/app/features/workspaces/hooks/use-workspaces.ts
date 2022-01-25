@@ -14,7 +14,7 @@ import LocalStorage from 'app/services/LocalStorage';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import { LoadingState } from '../../../state/recoil/atoms/Loading';
+import { LoadingState } from '../../global/state/atoms/Loading';
 
 const logger = Logger.getLogger('useWorkspaces');
 

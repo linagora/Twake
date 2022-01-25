@@ -6,7 +6,7 @@ import LocalStorage from 'app/services/LocalStorage';
 import WindowService from 'services/utils/window';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import Globals from 'services/Globals';
-import { TabResource } from 'app/models/Tab';
+import { TabResource } from 'app/features/tabs/types/tab';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import UsersService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/features/router/services/router-service';

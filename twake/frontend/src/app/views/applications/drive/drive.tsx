@@ -1,6 +1,6 @@
 import React from 'react';
 import { ViewConfiguration } from '../../../features/router/services/app-view-service';
-import { useTab } from '../../../state/recoil/hooks/useTabs';
+import { useTab } from '../../../features/tabs/hooks/use-tabs';
 import DriveContent from './drive-content';
 
 type Props = {
