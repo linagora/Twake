@@ -8,7 +8,7 @@ import {
   onChangeCompanyApplications,
 } from '../state/company-applications';
 import CompanyApplicationsAPIClient from 'app/features/applications/api/company-applications-api-client';
-import { useCurrentCompany } from '../../../state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from '../../companies/hooks/use-companies';
 import _ from 'lodash';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import { Application } from 'app/features/applications/types/application';

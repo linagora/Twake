@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Typography } from 'antd';
 import Banner from '../banner/banner';
-import { CompanyType } from 'app/models/Company';
+import { CompanyType } from 'app/features/companies/types/company';
 import Groups from 'services/workspaces/groups.js';
 import InitService from 'app/services/InitService';
 import Languages from 'services/languages/languages';

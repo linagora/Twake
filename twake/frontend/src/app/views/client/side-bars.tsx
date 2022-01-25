@@ -8,7 +8,7 @@ import WorkspacesBar, { LoadingWorkspaceBar } from './workspaces-bar';
 import { useWorkspaceLoader } from 'app/state/recoil/hooks/useWorkspaces';
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
-import { useCurrentCompanyRealtime } from '../../state/recoil/hooks/useCompanies';
+import { useCurrentCompanyRealtime } from '../../features/companies/hooks/use-companies';
 
 import './workspaces-bar/styles.scss';
 

@@ -3,7 +3,7 @@ import { Button, Row, Typography, Select } from 'antd';
 import ObjectModal from '../../object-modal/object-modal';
 import Languages from 'services/languages/languages';
 import LoginService from 'app/services/login/LoginService';
-import { CompanyType } from 'app/models/Company';
+import { CompanyType } from 'app/features/companies/types/company';
 import { capitalize } from 'lodash';
 import ModalManager from 'app/components/modal/modal-manager';
 import UserService from 'app/features/users/services/current-user-service';

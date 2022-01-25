@@ -6,7 +6,7 @@ import DepreciatedCollections from 'app/services/Depreciated/Collections/Collect
 import InitService from 'app/services/InitService';
 import RouterServices from 'app/services/RouterService';
 import Groups from 'services/workspaces/groups.js';
-import { CompanyType } from 'app/models/Company';
+import { CompanyType } from 'app/features/companies/types/company';
 import BlockedCompany from './popups/blocked-company';
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';

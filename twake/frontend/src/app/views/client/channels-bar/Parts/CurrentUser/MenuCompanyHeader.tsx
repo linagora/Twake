@@ -1,6 +1,6 @@
 import environment from 'app/environment/environment';
 import { CurrentCompanyLogo } from 'app/views/client/workspaces-bar/components/CompanySelector';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 import React from 'react';
 

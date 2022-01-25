@@ -6,7 +6,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import ListenGroups from './listen_groups.js';
 import $ from 'jquery';
 import JWTStorage from 'services/JWTStorage';
-import CompanyAPIClient from '../CompanyAPIClient';
+import CompanyAPIClient from '../../features/companies/api/company-api-client';
 import UserService from 'app/features/users/services/current-user-service';
 import Globals from 'services/Globals';
 

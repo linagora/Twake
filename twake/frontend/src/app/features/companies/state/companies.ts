@@ -1,8 +1,8 @@
 import { atomFamily } from 'recoil';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 
-import { CompanyType } from 'app/models/Company';
-import CompanyAPIClient from 'app/services/CompanyAPIClient';
+import { CompanyType } from 'app/features/companies/types/company';
+import CompanyAPIClient from 'app/features/companies/api/company-api-client';
 import _ from 'lodash';
 
 export const CompaniesState = atomFamily<CompanyType | null, string>({

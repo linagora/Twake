@@ -6,7 +6,7 @@ import MessageWithReplies from './message/message-with-replies';
 import FirstMessage from './message/parts/FirstMessage/FirstMessage';
 import LockedHistoryBanner from 'app/components/locked-features-components/locked-history-banner/locked-history-banner';
 import MessageHistoryService from 'app/features/messages/services/message-history-service';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 
 type Props = {

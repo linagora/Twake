@@ -11,7 +11,7 @@ import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Languages from 'services/languages/languages';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 const { Option } = Select;
 

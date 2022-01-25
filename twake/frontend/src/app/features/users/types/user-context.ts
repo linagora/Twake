@@ -1,4 +1,4 @@
-import { CompanyType } from '../../../models/Company';
+import { CompanyType } from '../../companies/types/company';
 import { PendingFileRecoilType } from '../../../models/File';
 
 import { UserType } from 'app/features/users/types/user';

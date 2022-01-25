@@ -1,8 +1,8 @@
-import { CompanyType } from 'app/models/Company';
+import { CompanyType } from 'app/features/companies/types/company';
 import { WorkspaceType } from 'app/models/Workspace';
-import Api from './Api';
-import { TwakeService } from './Decorators/TwakeService';
-import { WebsocketRoom } from './WebSocket/WebSocket';
+import Api from '../../../services/Api';
+import { TwakeService } from '../../../services/Decorators/TwakeService';
+import { WebsocketRoom } from '../../../services/WebSocket/WebSocket';
 
 const PREFIX = '/internal/services/users/v1';
 

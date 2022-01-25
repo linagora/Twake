@@ -1,5 +1,9 @@
 import { Resource } from 'services/CollectionsReact/Collections';
-import { CompanyRoleType, CompanyStatusType, CompanyType } from 'app/models/Company';
+import {
+  CompanyRoleType,
+  CompanyStatusType,
+  CompanyType,
+} from 'app/features/companies/types/company';
 import { WorkspaceType } from 'app/models/Workspace';
 
 export type UserType = {

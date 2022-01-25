@@ -9,7 +9,7 @@ import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/modal/modal-manager';
 import AvatarComponent from 'app/components/avatar/avatar';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import {
   useCompanyApplications,
   useCompanyApplicationsRealtime,

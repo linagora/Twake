@@ -11,7 +11,7 @@ import MessageEditorsManager from 'app/features/messages/services/message-editor
 import EditorToolbar from 'app/components/rich-text-editor/editor-toolbar';
 import { Application } from 'app/features/applications/types/application';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 type Props = {
   channelId: string;

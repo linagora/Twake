@@ -1,4 +1,4 @@
-import { CompanyType } from 'app/models/Company';
+import { CompanyType } from 'app/features/companies/types/company';
 import { UserType } from 'app/features/users/types/user';
 import { UserContext } from 'app/features/users/types/user-context';
 import { WorkspaceType } from 'app/models/Workspace';

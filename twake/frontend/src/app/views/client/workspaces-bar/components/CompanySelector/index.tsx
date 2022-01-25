@@ -4,7 +4,7 @@ import { capitalize } from 'lodash';
 
 import Menu from 'components/menus/menu';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import RouterService from 'app/services/RouterService';
 import Languages from 'services/languages/languages';
 import PopupService from 'services/popupManager/popupManager.js';

@@ -3,7 +3,7 @@ import Numbers from 'app/services/utils/Numbers';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import RouterServices from 'services/RouterService';
-import { CompanyType } from 'app/models/Company';
+import { CompanyType } from 'app/features/companies/types/company';
 
 class MessageHistoryService {
   shouldLimitMessages(

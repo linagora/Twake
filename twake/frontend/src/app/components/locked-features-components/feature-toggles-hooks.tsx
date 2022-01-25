@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 import { FeatureToggles, Feature, withFeatures } from '@paralleldrive/react-feature-toggles';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 export const useFeatureToggles = () => {
   const { activeFeatureNames } = FeatureTogglesService;

@@ -1,4 +1,4 @@
-import { CompanyType } from 'app/models/Company';
+import { CompanyType } from 'app/features/companies/types/company';
 import { UserType } from 'app/features/users/types/user';
 import Api from '../../../services/Api';
 import { TwakeService } from '../../../services/Decorators/TwakeService';

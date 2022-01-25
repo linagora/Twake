@@ -1,5 +1,5 @@
 import Api from '../Api';
-import { CompanyType } from 'app/models/Company';
+import { CompanyType } from 'app/features/companies/types/company';
 import { WorkspaceType } from 'app/models/Workspace';
 import { TwakeService } from '../Decorators/TwakeService';
 import { WebsocketRoom } from '../WebSocket/WebSocket';

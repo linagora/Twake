@@ -5,7 +5,7 @@ import i18n from 'i18next';
 
 import Languages from 'services/languages/languages';
 import InitService from 'services/InitService';
-import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
 import MessageHistoryService from 'app/features/messages/services/message-history-service';
 
