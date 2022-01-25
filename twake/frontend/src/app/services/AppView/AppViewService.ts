@@ -1,4 +1,4 @@
-import { Application } from 'app/models/App';
+import { Application } from 'app/features/applications/types/application';
 import Observable from 'app/services/Observable/Observable';
 import _ from 'lodash';
 

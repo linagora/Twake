@@ -7,15 +7,15 @@ import { MoreHorizontal, MessageCircle } from 'react-feather';
 import Languages from 'services/languages/languages';
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from '../../popup/WorkspaceParameter/WorkspaceParameter';
-import { Application } from 'app/models/App';
+import { Application } from 'app/features/applications/types/application';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import Collections from 'services/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/connectors-list-manager/connectors-list-manager';
 import MainViewService from 'app/services/AppView/MainViewService';
 import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
-import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
-import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
+import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'services/workspaces/groups.js';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {

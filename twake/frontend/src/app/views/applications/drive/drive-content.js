@@ -33,7 +33,7 @@ import DriveList from './lists/list.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { NewFolderInput, NewLinkInput, NewFileInput } from './drive-editors';
-import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'services/workspaces/groups.js';
 
 import './drive.scss';

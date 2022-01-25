@@ -25,7 +25,7 @@ import {
   useChannelWritingActivityEmit,
   useWritingDetector,
 } from 'app/features/channels/hooks/use-channel-writing-activity';
-import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import AlertManager from 'app/services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import { useMessage } from 'app/features/messages/hooks/use-message';

@@ -11,7 +11,7 @@ import Languages from 'services/languages/languages';
 import { capitalize } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import MainViewService from 'app/services/AppView/MainViewService';
-import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 import { useTab } from 'app/state/recoil/hooks/useTabs';
 
 type PropsType = {

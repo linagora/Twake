@@ -1,7 +1,7 @@
-import Api from '../Api';
-import { TwakeService } from '../Decorators/TwakeService';
-import { Application } from 'app/models/App';
-import { WebsocketRoom } from '../WebSocket/WebSocket';
+import Api from '../../../services/Api';
+import { TwakeService } from '../../../services/Decorators/TwakeService';
+import { Application } from 'app/features/applications/types/application';
+import { WebsocketRoom } from '../../../services/WebSocket/WebSocket';
 
 const PREFIX = '/internal/services/applications/v1/companies';
 

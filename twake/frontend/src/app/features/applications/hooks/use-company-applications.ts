@@ -6,12 +6,12 @@ import { ToasterService as Toaster } from 'app/services/Toaster';
 import {
   CompanyApplicationsStateFamily,
   onChangeCompanyApplications,
-} from '../atoms/CompanyApplications';
-import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
-import { useCurrentCompany } from './useCompanies';
+} from '../state/company-applications';
+import CompanyApplicationsAPIClient from 'app/features/applications/api/company-applications-api-client';
+import { useCurrentCompany } from '../../../state/recoil/hooks/useCompanies';
 import _ from 'lodash';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
-import { Application } from 'app/models/App';
+import { Application } from 'app/features/applications/types/application';
 
 const logger = Logger.getLogger('useApplications');
 /**

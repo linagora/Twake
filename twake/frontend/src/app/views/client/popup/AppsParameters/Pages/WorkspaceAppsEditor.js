@@ -16,7 +16,7 @@ import Icon from 'app/components/icon/icon.js';
 import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
 import Input from 'components/inputs/input.js';
 import InlineTagPicker from 'app/components/inline-tag-picker/inline-tag-picker';
-import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 
 import './Pages.scss';
 import WorkspacesApp from 'services/workspaces/workspaces_apps.js';

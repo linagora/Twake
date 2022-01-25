@@ -34,7 +34,7 @@ import MainPlus from 'components/main-plus/main-plus.js';
 import {
   getCompanyApplication as getApplication,
   getCompanyApplications,
-} from 'app/state/recoil/atoms/CompanyApplications';
+} from 'app/features/applications/state/company-applications';
 
 import './calendar.scss';
 

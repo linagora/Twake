@@ -12,7 +12,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
 } from 'recoil';
-import { CompanyApplicationsStateFamily } from 'app/state/recoil/atoms/CompanyApplications';
+import { CompanyApplicationsStateFamily } from 'app/features/applications/state/company-applications';
 import { UsersState } from 'app/features/users/state/atoms/users';
 
 type Props = {

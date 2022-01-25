@@ -6,7 +6,7 @@ import Menu from 'components/menus/menu.js';
 import Numbers from 'services/utils/Numbers';
 import '../drive.scss';
 import 'moment-timezone';
-import { getCompanyApplication as getApplication } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 
 export default class Directory extends React.Component {
   constructor(props) {

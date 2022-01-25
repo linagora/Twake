@@ -1,6 +1,6 @@
-import Api from '../Api';
-import { TwakeService } from '../Decorators/TwakeService';
-import { Application } from 'app/models/App';
+import Api from '../../../services/Api';
+import { TwakeService } from '../../../services/Decorators/TwakeService';
+import { Application } from 'app/features/applications/types/application';
 
 const PREFIX = '/internal/services/applications/v1/applications';
 

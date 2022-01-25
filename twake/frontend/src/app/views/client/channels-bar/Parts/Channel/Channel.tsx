@@ -3,7 +3,7 @@ import { Tooltip } from 'antd';
 import { Calendar, CheckSquare, Folder, Star } from 'react-feather';
 
 import Icon from 'app/components/icon/icon';
-import { Application } from 'app/models/App';
+import { Application } from 'app/features/applications/types/application';
 import WindowState from 'services/utils/window';
 import Emojione from 'components/emojione/emojione';
 import { ChannelResource } from 'app/features/channels/types/channel';

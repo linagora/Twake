@@ -1,8 +1,8 @@
 import { AtomEffect, atomFamily, selectorFamily } from 'recoil';
 
-import { Application } from 'app/models/App';
+import { Application } from 'app/features/applications/types/application';
 import Logger from 'app/services/Logger';
-import CompanyApplicationsAPIClient from 'app/services/Apps/CompanyApplicationsAPIClient';
+import CompanyApplicationsAPIClient from 'app/features/applications/api/company-applications-api-client';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import _ from 'lodash';
 

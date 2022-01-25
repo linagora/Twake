@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Application } from 'app/models/App';
-import ApplicationsAPIClient from '../../../services/Apps/ApplicationsAPIClient';
+import { Application } from 'app/features/applications/types/application';
+import ApplicationsAPIClient from '../api/applications-api-client';
 
 export function useApplications() {
   const [loading, setLoading] = useState<boolean>(true);

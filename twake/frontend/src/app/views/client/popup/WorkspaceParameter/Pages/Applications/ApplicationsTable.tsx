@@ -4,10 +4,10 @@ import { ColumnsType } from 'antd/lib/table';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { Divider, Table, Typography, Row, Input, Col, Button } from 'antd';
 
-import { Application } from 'app/models/App';
+import { Application } from 'app/features/applications/types/application';
 import Languages from 'services/languages/languages';
-import { useApplications } from 'app/state/recoil/hooks/useApplications';
-import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { useApplications } from 'app/features/applications/hooks/use-applications';
+import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import AvatarComponent from 'app/components/avatar/avatar';

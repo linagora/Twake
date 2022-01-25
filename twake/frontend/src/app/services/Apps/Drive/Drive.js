@@ -4,7 +4,7 @@ import Workspaces from 'services/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LocalStorage from 'app/services/LocalStorage';
 import AceModeList from './utils/ace_modelist.js';
-import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
+import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'services/workspaces/groups.js';
 
 import Globals from 'services/Globals';

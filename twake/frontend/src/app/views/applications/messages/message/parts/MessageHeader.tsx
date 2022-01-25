@@ -22,7 +22,7 @@ import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace
 import useRouterChannel from 'app/state/recoil/hooks/router/useRouterChannel';
 import { useUser } from 'app/features/users/hooks/use-user';
 import { UserType } from 'app/features/users/types/user';
-import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
+import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import {
   useRecoilState,
   useRecoilStateLoadable,
@@ -30,7 +30,7 @@ import {
   useRecoilValueLoadable,
 } from 'recoil';
 import { UsersState } from 'app/features/users/state/atoms/users';
-import { CompanyApplicationsStateFamily } from 'app/state/recoil/atoms/CompanyApplications';
+import { CompanyApplicationsStateFamily } from 'app/features/applications/state/company-applications';
 
 type Props = {
   linkToThread?: boolean;

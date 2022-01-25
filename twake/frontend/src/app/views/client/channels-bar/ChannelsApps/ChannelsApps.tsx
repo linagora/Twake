@@ -8,7 +8,7 @@ import ChannelUI from 'app/views/client/channels-bar/Parts/Channel/Channel';
 import {
   useCompanyApplications,
   useCompanyApplicationsRealtime,
-} from 'app/state/recoil/hooks/useCompanyApplications';
+} from 'app/features/applications/hooks/use-company-applications';
 import RouterService from 'app/services/RouterService';
 
 // This should be deleted

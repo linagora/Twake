@@ -4,7 +4,7 @@ import { ColumnsType } from 'antd/lib/table';
 import { MoreHorizontal } from 'react-feather';
 import { Divider, Table, Typography, Row, Col, Button, Grid } from 'antd';
 
-import { Application } from 'app/models/App';
+import { Application } from 'app/features/applications/types/application';
 import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/modal/modal-manager';
 import AvatarComponent from 'app/components/avatar/avatar';
@@ -13,7 +13,7 @@ import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import {
   useCompanyApplications,
   useCompanyApplicationsRealtime,
-} from 'app/state/recoil/hooks/useCompanyApplications';
+} from 'app/features/applications/hooks/use-company-applications';
 import Menu from 'components/menus/menu';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 

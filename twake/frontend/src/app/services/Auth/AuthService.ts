@@ -10,7 +10,7 @@ import { UserType } from 'app/features/users/types/user';
 import JWT, { JWTDataType } from 'services/JWTStorage';
 import UserAPIClient from '../../features/users/api/user-api-client';
 import WindowState from 'services/utils/window';
-import Application from 'services/Application';
+import Application from 'app/features/applications/services/application-service';
 import LocalStorage from 'services/LocalStorage';
 import Collections from 'services/Collections/Collections';
 import Globals from '../Globals';

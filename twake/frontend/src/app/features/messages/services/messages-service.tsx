@@ -19,11 +19,11 @@ import MessagesListServerUtilsManager from './message-loader-factory';
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import SideViewService from 'app/services/AppView/SideViewService';
 import { Message, MessageFileType } from '../types/message';
-import { Application } from 'app/models/App';
+import { Application } from 'app/features/applications/types/application';
 import {
   getCompanyApplications,
   getCompanyApplication,
-} from 'app/state/recoil/atoms/CompanyApplications';
+} from 'app/features/applications/state/company-applications';
 import Groups from 'services/workspaces/groups.js';
 import MainViewService from 'app/services/AppView/MainViewService';
 import MessageExternalFilePicker from 'app/views/applications/messages/input/parts/MessageExternalFilePicker';
