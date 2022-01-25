@@ -2,8 +2,9 @@ import Observable from 'app/services/Depreciated/observable.js';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import ListenGroups from './listen_groups.js';
+
 import $ from 'jquery';
 import JWTStorage from 'services/JWTStorage';
 import CompanyAPIClient from '../../features/companies/api/company-api-client';

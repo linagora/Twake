@@ -2,7 +2,7 @@ import { CompanyType } from '../../companies/types/company';
 import { PendingFileRecoilType } from '../../files/types/file';
 
 import { UserType } from 'app/features/users/types/user';
-import { WorkspaceType } from '../../../models/Workspace';
+import { WorkspaceType } from '../../workspaces/types/workspace';
 
 export type UserContext = {
   company?: CompanyType;

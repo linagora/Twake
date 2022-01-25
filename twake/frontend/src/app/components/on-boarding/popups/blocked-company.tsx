@@ -7,7 +7,7 @@ import { CompanyType } from 'app/features/companies/types/company';
 import { capitalize } from 'lodash';
 import ModalManager from 'app/components/modal/modal-manager';
 import UserService from 'app/features/users/services/current-user-service';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 import { AlertTriangle } from 'react-feather';
 import InitService from 'app/services/InitService';
 

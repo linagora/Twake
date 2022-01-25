@@ -1,5 +1,5 @@
 import { ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 import { Command } from './command';
 import { getInsertRange } from '../../editor-utils';
 import CommandSuggestion from './command-suggestion';

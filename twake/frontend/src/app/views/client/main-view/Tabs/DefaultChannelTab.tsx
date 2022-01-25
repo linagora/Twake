@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import RouterServices from 'app/features/router/services/router-service';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import Menu from 'components/menus/menu.js';
 import { MoreHorizontal, MessageCircle } from 'react-feather';
 import Languages from 'services/languages/languages';
@@ -16,7 +16,7 @@ import { isArray } from 'lodash';
 import AccessRightsService from 'app/services/AccessRightsService';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();

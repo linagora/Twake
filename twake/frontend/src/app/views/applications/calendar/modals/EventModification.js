@@ -13,7 +13,7 @@ import AttachmentPicker from 'components/attachment-picker/attachment-picker.js'
 import CalendarSelector from 'components/calendar/calendar-selector/calendar-selector.js';
 import Button from 'components/buttons/button.js';
 import Select from 'components/select/select.js';
-import WorkspaceService from 'services/workspaces/workspaces.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import Icon from 'components/icon/icon.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';

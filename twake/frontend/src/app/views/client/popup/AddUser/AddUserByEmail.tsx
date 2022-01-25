@@ -5,7 +5,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import AutoHeight from 'app/components/auto-height/auto-height';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import RouterServices from 'app/features/router/services/router-service';
-import WorkspacesUsers from 'services/workspaces/workspaces_users';
+import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
 import './AddUser.scss';
 import MagicLinks from './MagicLinks';
 

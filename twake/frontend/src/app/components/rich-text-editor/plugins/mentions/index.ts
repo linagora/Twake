@@ -1,11 +1,10 @@
 import { CharacterMetadata, ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
 import { getSelectedBlock } from 'draftjs-utils';
-import WorkspacesUser from 'services/workspaces/workspaces_users';
 import { Mention } from './mention';
 import MentionSuggestion from './mention-suggestion';
 import { EditorSuggestionPlugin, SelectOrInsertOptions } from '../';
 import AccessRightsService from 'app/services/AccessRightsService';
-import WorkspaceService from 'services/workspaces/workspaces';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces';
 import Collections from 'services/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import { getChannelMembers } from 'app/deprecated/channels/ChannelCollectionPath';
@@ -14,7 +13,7 @@ import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import UserService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/features/router/services/router-service';
 import UserAPIClient from 'app/features/users/api/user-api-client';
-import { WorkspaceUserType } from 'app/models/Workspace';
+import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import Strings from 'app/services/utils/strings';
 
 import './style.scss';

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Button, Row, Input, Select } from 'antd';
 
 import { Application, AppType } from 'app/features/applications/types/application';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 import { TabType } from 'app/models/Tab';
 import Icon from 'app/components/icon/icon';
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import Languages from 'services/languages/languages';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';

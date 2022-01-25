@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Picker from 'components/picker/picker.js';
 import Button from 'components/buttons/button.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Icon from 'components/icon/icon.js';
 import ColorPicker from 'components/color-picker/color-picker.js';

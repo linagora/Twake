@@ -9,7 +9,7 @@ import NotificationDelay from '../Notifications/NotificationDelay';
 
 import './CompanyHeader.scss';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
-import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 type PropsType = {
   onClickUser?: (event: any) => void;

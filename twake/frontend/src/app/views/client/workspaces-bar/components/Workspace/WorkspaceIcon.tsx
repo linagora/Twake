@@ -6,7 +6,7 @@ import { Skeleton } from 'antd';
 import { NotificationResource } from 'app/models/Notification';
 import { Collection } from 'app/services/CollectionsReact/Collections';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
-import { WorkspaceType } from 'app/models/Workspace';
+import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 
 type Props = {
   workspace: WorkspaceType;

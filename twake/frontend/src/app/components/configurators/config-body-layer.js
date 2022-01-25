@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import ConfiguratorsManager from 'services/Configurators/ConfiguratorsManager.js';
 import Twacode from 'components/twacode/twacode';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import './configurators.scss';
 

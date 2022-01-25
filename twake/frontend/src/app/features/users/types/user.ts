@@ -4,7 +4,7 @@ import {
   CompanyStatusType,
   CompanyType,
 } from 'app/features/companies/types/company';
-import { WorkspaceType } from 'app/models/Workspace';
+import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 
 export type UserType = {
   connected?: boolean;

@@ -20,7 +20,7 @@ import ObjectModal from 'components/object-modal/object-modal';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import UserAPIClient from 'app/features/users/api/user-api-client';
-import { WorkspaceUserType } from 'app/models/Workspace';
+import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 
 type PropsType = {

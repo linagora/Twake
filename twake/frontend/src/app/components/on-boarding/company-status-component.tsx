@@ -5,7 +5,7 @@ import WelcomeOnTwake from './popups/welcome-on-twake';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'app/services/InitService';
 import RouterServices from 'app/features/router/services/router-service';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 import { CompanyType } from 'app/features/companies/types/company';
 import BlockedCompany from './popups/blocked-company';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';

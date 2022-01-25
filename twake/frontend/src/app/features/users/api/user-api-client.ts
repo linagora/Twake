@@ -3,7 +3,7 @@ import { UserType } from 'app/features/users/types/user';
 import Api from '../../../services/Api';
 import { TwakeService } from '../../../services/Decorators/TwakeService';
 import { WebsocketRoom } from '../../../services/WebSocket/WebSocket';
-import WorkspaceAPIClient from '../../../services/workspaces/WorkspaceAPIClient';
+import WorkspaceAPIClient from '../../workspaces/api/workspace-api-client';
 import CurrentUser from '../../../deprecated/user/CurrentUser';
 
 type SearchContextType = {

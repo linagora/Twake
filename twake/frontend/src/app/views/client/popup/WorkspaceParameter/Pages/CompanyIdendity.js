@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections';
-import groupService from 'services/workspaces/groups';
+import groupService from 'app/deprecated/workspaces/groups';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout';
 import Attribute from 'components/parameters/attribute';
 import uploadService from 'services/uploadManager/uploadManager';

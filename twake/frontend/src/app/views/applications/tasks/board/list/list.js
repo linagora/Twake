@@ -9,7 +9,7 @@ import ListEditor from './list-editor.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import AddTask from './add-task.js';
 import UserListManager from 'components/user-list-manager/user-list-manager';
 import PerfectScrollbar from 'react-perfect-scrollbar';

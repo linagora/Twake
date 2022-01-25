@@ -8,7 +8,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import RouterService from 'app/features/router/services/router-service';
 import CalendarSelector from 'components/calendar/calendar-selector/calendar-selector.js';
 import AccessRightsService from 'app/services/AccessRightsService';
-import WorkspaceService from 'services/workspaces/workspaces';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces';
 
 import './calendar.scss';
 

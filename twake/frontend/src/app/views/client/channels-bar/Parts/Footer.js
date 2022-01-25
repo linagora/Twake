@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'services/InitService';
 import UserService from 'app/features/users/services/current-user-service';

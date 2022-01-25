@@ -1,20 +1,20 @@
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { WorkspaceType } from 'app/models/Workspace';
-import { WorkspaceListStateFamily } from '../atoms/WorkspaceList';
+import { WorkspaceType } from 'app/features/workspaces/types/workspace';
+import { WorkspaceListStateFamily } from '../state/workspace-list';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 import Logger from 'app/services/Logger';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import RouterService from 'app/features/router/services/router-service';
 import _ from 'lodash';
-import WorkspacesService from 'services/workspaces/workspaces.js';
+import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
 import AccessRightsService, { RightsOrNone } from 'app/services/AccessRightsService';
 import LocalStorage from 'app/services/LocalStorage';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
-import Workspaces from 'services/workspaces/workspaces.js';
-import { LoadingState } from '../atoms/Loading';
+import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import { LoadingState } from '../../../state/recoil/atoms/Loading';
 
 const logger = Logger.getLogger('useWorkspaces');
 

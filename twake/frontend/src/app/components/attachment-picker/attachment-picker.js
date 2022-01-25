@@ -8,7 +8,7 @@ import Icon from 'components/icon/icon.js';
 import Button from 'components/buttons/button.js';
 import UploadZone from 'components/uploads/upload-zone';
 import MenusManager from 'app/components/menus/menus-manager.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Languages from 'services/languages/languages';
 import './attachment-picker.scss';
 

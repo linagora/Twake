@@ -11,7 +11,7 @@ import {
   ObjectModalTitle,
 } from 'components/object-modal/deprecated-object-modal.js';
 import Api from 'services/Api';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import './Pages.scss';
 
 export default class CreateCompanyAccount extends Component {

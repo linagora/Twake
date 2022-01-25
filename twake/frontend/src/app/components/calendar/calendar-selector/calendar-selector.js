@@ -3,7 +3,7 @@ import './calendar-selector.scss';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Select from 'components/select/select.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
-import WorkspacesService from 'services/workspaces/workspaces.js';
+import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
 import Languages from 'services/languages/languages';
 
 export default class CalendarSelector extends React.Component {

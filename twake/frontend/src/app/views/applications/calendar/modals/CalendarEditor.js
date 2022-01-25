@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import InputWithColor from 'components/inputs/input-with-color.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import WorkspaceService from 'services/workspaces/workspaces.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import Button from 'components/buttons/button.js';
 import Menu from 'components/menus/menu.js';
 import Languages from 'services/languages/languages';

@@ -5,7 +5,7 @@ import { Layout } from 'antd';
 import ChannelsBar, { LoadingChannelBar } from './channels-bar/ChannelsBar';
 import WorkspacesBar, { LoadingWorkspaceBar } from './workspaces-bar';
 
-import { useWorkspaceLoader } from 'app/state/recoil/hooks/useWorkspaces';
+import { useWorkspaceLoader } from 'app/features/workspaces/hooks/use-workspaces';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useCurrentCompanyRealtime } from '../../features/companies/hooks/use-companies';

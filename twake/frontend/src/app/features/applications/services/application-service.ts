@@ -7,7 +7,7 @@ import JWT from 'app/services/JWTStorage';
 import Collections from 'app/services/Collections/Collections';
 import Globals from 'app/services/Globals';
 import UserNotifications from 'app/features/users/services/user-notifications-service';
-import WorkspacesListener from '../../../services/workspaces/WorkspacesListener';
+import WorkspacesListener from '../../workspaces/services/workspaces-listener-service';
 import LocalStorage from '../../../services/LocalStorage';
 import WebSocket from '../../../services/WebSocket/WebSocket';
 

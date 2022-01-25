@@ -4,13 +4,13 @@ import { isEqual } from 'lodash';
 import { Avatar, Button, Col, Descriptions, Divider, Input, Row, Switch, Typography } from 'antd';
 
 import Languages from 'services/languages/languages';
-import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
+import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 import AvatarComponent from 'app/components/avatar/avatar';
 import ModalManager from 'app/components/modal/modal-manager';
 import DeleteWorkspacePopup from './DeleteWorkspacePopup';
 import WorkspaceAPIClient, {
   WorkspaceUpdateResource,
-} from 'app/services/workspaces/WorkspaceAPIClient';
+} from 'app/features/workspaces/api/workspace-api-client';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 

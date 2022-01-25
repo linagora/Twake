@@ -6,11 +6,11 @@ import PopupManager from 'services/popupManager/popupManager.js';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 import LocalStorage from 'app/services/LocalStorage';
-import workspacesUsers from './workspaces_users.ts';
+import workspacesUsers from 'app/services/workspaces-user/workspaces_users';
 import WindowService from 'services/utils/window';
-import workspacesApps from 'services/workspaces/workspaces_apps.js';
+import workspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import RouterServices from 'app/features/router/services/router-service';
 import NoWorkspaces from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoWorkspaces';
 import NoCompanies from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoCompanies';
@@ -18,7 +18,7 @@ import loginService from 'app/services/login/LoginService';
 import Globals from 'services/Globals';
 import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
-import WorkspaceAPIClient from './WorkspaceAPIClient';
+import WorkspaceAPIClient from '../../features/workspaces/api/workspace-api-client';
 import Logger from 'services/Logger';
 
 class Workspaces extends Observable {

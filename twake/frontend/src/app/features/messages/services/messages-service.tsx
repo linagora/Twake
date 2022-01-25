@@ -8,10 +8,10 @@ import DepreciatedCollections, {
 } from 'app/services/Depreciated/Collections/Collections.js';
 import Collections from 'app/services/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import ChannelsService from 'app/deprecated/channels/channels.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import FilePicker from 'components/drive/file-picker/file-picker.js';
 import MessageEditorManager from './message-editor-service-factory';
@@ -24,7 +24,7 @@ import {
   getCompanyApplications,
   getCompanyApplication,
 } from 'app/features/applications/state/company-applications';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 import MainViewService from 'app/services/AppView/MainViewService';
 import MessageExternalFilePicker from 'app/views/applications/messages/input/parts/MessageExternalFilePicker';
 import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';

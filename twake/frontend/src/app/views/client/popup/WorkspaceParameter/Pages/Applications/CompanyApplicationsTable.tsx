@@ -15,7 +15,7 @@ import {
   useCompanyApplicationsRealtime,
 } from 'app/features/applications/hooks/use-company-applications';
 import Menu from 'components/menus/menu';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 
 import './ApplicationsStyles.scss';
 import AlertManager from 'app/services/AlertManager/AlertManager';

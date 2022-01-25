@@ -3,7 +3,7 @@ import DriveElement from './drive-element.js';
 import UIDirectory from './ui/directory.js';
 import Loader from 'components/loader/loader.js';
 
-import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import Draggable from 'components/draggable/draggable';
 import DroppableZone from 'components/draggable/droppable-zone.js';
 import Languages from 'services/languages/languages';

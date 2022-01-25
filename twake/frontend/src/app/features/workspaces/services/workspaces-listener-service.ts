@@ -1,9 +1,9 @@
 import ws from 'services/websocket.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import User from 'app/features/users/services/current-user-service';
-import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import LoginService from 'app/services/login/LoginService';
-import { RightsOrNone } from '../AccessRightsService';
+import { RightsOrNone } from '../../../services/AccessRightsService';
 import Logger from 'services/Logger';
 
 type WebsocketWorkspace = {

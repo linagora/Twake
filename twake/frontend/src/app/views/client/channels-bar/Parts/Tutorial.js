@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import Emojione from 'components/emojione/emojione';
 import UserService from 'app/features/users/services/current-user-service';
 import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import ElectronService from 'services/electron/electron.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
-import WorkspacesUsers from 'services/workspaces/workspaces_users';
+import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
 import UserParameter from 'app/views/client/popup/UserParameter/UserParameter.js';
 import popupManager from 'services/popupManager/popupManager.js';
 

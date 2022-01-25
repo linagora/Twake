@@ -13,7 +13,7 @@ import Menu from 'components/menus/menu.js';
 import ListEditor from './list/list-editor.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import Tabs from 'components/tabs/tabs.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
 import User from 'components/user/user.js';
 import MenusManager from 'app/components/menus/menus-manager.js';

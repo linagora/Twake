@@ -14,7 +14,7 @@ import { ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
-import ChannelMembersAPIClient from 'app/services/channels/ChannelMembersAPIClient';
+import ChannelMembersAPIClient from 'app/services/channels-user/ChannelMembersAPIClient';
 import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 

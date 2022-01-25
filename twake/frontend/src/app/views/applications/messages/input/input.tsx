@@ -14,7 +14,7 @@ import { EditorView } from 'app/components/rich-text-editor';
 import Languages from 'app/services/languages/languages';
 import { TextCount, TextCountService } from 'app/components/rich-text-editor/text-count/';
 import UploadZone from 'app/components/uploads/upload-zone';
-import Workspaces from 'services/workspaces/workspaces';
+import Workspaces from 'app/deprecated/workspaces/workspaces';
 import { FileType } from 'app/features/files/types/file';
 import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 import { useMessageEditor } from 'app/features/messages/hooks/use-message-editor';
@@ -27,7 +27,7 @@ import {
 } from 'app/features/channels/hooks/use-channel-writing-activity';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import AlertManager from 'app/services/AlertManager/AlertManager';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 
 import './input.scss';

@@ -6,8 +6,8 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Emojione from 'components/emojione/emojione';
 import Loader from 'components/loader/loader.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
-import WorkspacesUsers from 'services/workspaces/workspaces_users.ts';
-import Workspaces from 'services/workspaces/workspaces.js';
+import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import UserService from 'app/features/users/services/current-user-service';
 import Rounded from 'components/inputs/rounded.js';
 import Menu from 'components/menus/menu.js';
@@ -19,9 +19,9 @@ import ConnectorsListManager from 'components/connectors-list-manager/connectors
 import popupManager from 'services/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
 import Globals from 'services/Globals';
-import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 
 import Board from './board/Board.js';
 

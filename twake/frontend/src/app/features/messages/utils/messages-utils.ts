@@ -1,5 +1,5 @@
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import { Message } from '../types/message';
 import userAsyncGet from 'app/features/users/utils/async-get';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';

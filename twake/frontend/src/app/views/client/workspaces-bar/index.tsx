@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { Layout, Skeleton } from 'antd';
 
-import { WorkspaceType } from 'app/models/Workspace';
+import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import Workspace from './components/Workspace/Workspace';
-import { useWorkspaces } from 'app/state/recoil/hooks/useWorkspaces';
+import { useWorkspaces } from 'app/features/workspaces/hooks/use-workspaces';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { LoadingWorkspaceIcon } from './components/Workspace/WorkspaceIcon';
 import CompanySelector from './components/CompanySelector';

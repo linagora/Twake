@@ -6,7 +6,7 @@ import User from 'app/components/twacode/blocks/user';
 import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
 import { TabType } from 'app/models/Tab';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 
 enum ChannelActivityEnum {
   CHANNEL_MEMBER_CREATED = 'channel:activity:member:created',

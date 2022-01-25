@@ -6,7 +6,7 @@ import { ChannelResource } from 'app/features/channels/types/channel';
 import RouterServices from 'app/features/router/services/router-service';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import Languages from 'services/languages/languages';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';
 import MainViewService from 'app/services/AppView/MainViewService';
 

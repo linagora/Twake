@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import Reactions from './Reactions';
 import Options from './Options';
 import MessageHeader from './MessageHeader';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import MessageEdition from './MessageEdition';
 import DeletedContent from './DeletedContent';
 import RetryButtons from './RetryButtons';

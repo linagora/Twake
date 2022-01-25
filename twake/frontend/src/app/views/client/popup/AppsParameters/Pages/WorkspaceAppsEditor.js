@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import workspaceService from 'services/workspaces/workspaces.js';
+import workspaceService from 'app/deprecated/workspaces/workspaces.js';
 import Emojione from 'components/emojione/emojione';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Attribute from 'components/parameters/attribute.js';
@@ -19,7 +19,7 @@ import InlineTagPicker from 'app/components/inline-tag-picker/inline-tag-picker'
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 
 import './Pages.scss';
-import WorkspacesApp from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApp from 'app/deprecated/workspaces/workspaces_apps.js';
 
 export default class WorkspaceAppsEditor extends Component {
   constructor(props) {

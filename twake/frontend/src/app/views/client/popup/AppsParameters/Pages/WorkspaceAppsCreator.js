@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import workspaceService from 'services/workspaces/workspaces.js';
+import workspaceService from 'app/deprecated/workspaces/workspaces.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Api from 'services/Api';

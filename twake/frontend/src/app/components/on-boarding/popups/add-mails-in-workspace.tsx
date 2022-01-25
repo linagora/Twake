@@ -6,7 +6,7 @@ import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/modal/modal-manager';
 import ConsoleService from 'app/services/Console/ConsoleService';
 import RouterServices from 'app/features/router/services/router-service';
-import WorkspacesUsers from 'services/workspaces/workspaces_users';
+import WorkspacesUsers from 'app/services/workspaces-user/workspaces_users';
 
 type PropsType = {};
 

@@ -12,7 +12,7 @@ import CalendarSelector from 'components/calendar/calendar-selector/calendar-sel
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Button from 'components/buttons/button.js';
 import Select from 'components/select/select.js';
-import WorkspaceService from 'services/workspaces/workspaces.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import Icon from 'components/icon/icon.js';
 
 export default class EventCreation extends Component {

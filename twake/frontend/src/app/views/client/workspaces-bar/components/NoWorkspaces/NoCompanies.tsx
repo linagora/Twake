@@ -5,8 +5,8 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import LoginService from 'app/services/login/LoginService';
 
 import Languages from 'services/languages/languages';
-import Groups from 'services/workspaces/groups.js';
-import Workspaces from 'services/workspaces/workspaces.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';
 
 import CreateCompanyView from '../../../popup/CreateCompanyView/CreateCompanyView.js';

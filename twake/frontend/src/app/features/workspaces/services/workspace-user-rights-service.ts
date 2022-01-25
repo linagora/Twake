@@ -1,4 +1,4 @@
-import Workspaces from 'services/workspaces/workspaces.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import AccessRightsService, { RightsOrNone } from 'services/AccessRightsService';
 
 class WorkspaceUserRights {

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import WorkspaceService from 'services/workspaces/workspaces.js';
-import GroupService from 'services/workspaces/groups.js';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
+import GroupService from 'app/deprecated/workspaces/groups.js';
 import popupManager from 'services/popupManager/popupManager.js';
 import Emojione from 'components/emojione/emojione';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';

@@ -4,7 +4,7 @@ import { TabType } from 'app/models/Tab';
 import RouterServices from 'app/features/router/services/router-service';
 import TabsTemplateEditor from './TabsTemplateEditor';
 import ModalManager from 'app/components/modal/modal-manager';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import Menu from 'components/menus/menu.js';
 import { MoreHorizontal } from 'react-feather';
 import Languages from 'services/languages/languages';

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 
 import Languages from 'services/languages/languages';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import WorkspaceService from 'services/workspaces/workspaces.js';
-import groupService from 'services/workspaces/groups.js';
-import workspacesUsers from 'services/workspaces/workspaces_users';
+import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
+import groupService from 'app/deprecated/workspaces/groups.js';
+import workspacesUsers from 'app/services/workspaces-user/workspaces_users';
 import Switch from 'components/inputs/switch';
-import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
+import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
 import popupManager from 'services/popupManager/popupManager.js';
 import './Pages.scss';
 import Pending from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending';

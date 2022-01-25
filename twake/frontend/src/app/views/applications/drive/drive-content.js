@@ -11,8 +11,8 @@ import FilePicker from 'components/drive/file-picker/file-picker.js';
 import DriveMultiSelector from 'components/drive/drive-multi-selector.js';
 import Menu from 'components/menus/menu.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
-import Workspaces from 'services/workspaces/workspaces.js';
-import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
+import Workspaces from 'app/deprecated/workspaces/workspaces.js';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 
 import ChevronRightIcon from '@material-ui/icons/ChevronRightOutlined';
 import ChevronDownIcon from '@material-ui/icons/KeyboardArrowDownOutlined';
@@ -27,14 +27,14 @@ import UnconfiguredTab from './unconfigured-tab.js';
 import Viewer from './viewer/viewer';
 
 import MainPlus from 'components/main-plus/main-plus.js';
-import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
+import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 
 import DriveList from './lists/list.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { NewFolderInput, NewLinkInput, NewFileInput } from './drive-editors';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
-import Groups from 'services/workspaces/groups.js';
+import Groups from 'app/deprecated/workspaces/groups.js';
 
 import './drive.scss';
 

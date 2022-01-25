@@ -1,9 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
-import WorkspacesService from 'services/workspaces/workspaces';
+import WorkspacesService from 'app/deprecated/workspaces/workspaces';
 import WorkspaceIcon from './WorkspaceIcon';
-import { WorkspaceType } from 'app/models/Workspace';
+import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import useRouterWorkspaceSelected from 'app/features/router/hooks/use-router-workspace-selected';
 
 import './Workspace.scss';
