@@ -8,7 +8,7 @@ import classNames from 'classnames';
 import { AlertTriangle } from 'react-feather';
 
 import User from 'app/features/users/services/current-user-service';
-import ChannelsService from 'services/channels/channels.js';
+import ChannelsService from 'app/deprecated/channels/channels.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import UserCard from 'app/components/user-card/user-card';
 import Emojione from 'components/emojione/emojione';

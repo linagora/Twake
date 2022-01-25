@@ -1,6 +1,6 @@
-import Api from '../Api';
-import { ChannelType } from 'app/models/Channel';
-import { TwakeService } from '../Decorators/TwakeService';
+import Api from '../../../services/Api';
+import { ChannelType } from 'app/features/channels/types/channel';
+import { TwakeService } from '../../../services/Decorators/TwakeService';
 
 const PREFIX = '/internal/services/channels/v1/companies';
 

@@ -1,14 +1,14 @@
 import React from 'react';
 
-import { ChannelResource, ChannelType } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import WorkspaceChannels from './WorkspaceChannel';
 import Languages from 'services/languages/languages';
-import ChannelsBarService from 'app/services/channels/ChannelsBarService';
-import { getDirectChannels, getMine } from 'app/services/channels/ChannelCollectionPath';
-import { useDirectChannels } from 'app/state/recoil/hooks/channels/useDirectChannels';
-import { usePublicOrPrivateChannels } from 'app/state/recoil/hooks/channels/usePublicOrPrivateChannels';
+import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
+import { getDirectChannels, getMine } from 'app/deprecated/channels/ChannelCollectionPath';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type channelCategoryType = {
   favorite: ChannelType[];

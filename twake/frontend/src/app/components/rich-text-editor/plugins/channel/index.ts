@@ -1,44 +1,59 @@
-import { ContentBlock, ContentState, EditorState, Modifier } from "draft-js";
-import { getSelectedBlock } from "draftjs-utils";
-import { Channel } from "./channel";
-import ChannelsService from 'services/channels/channels';
-import { ChannelType, ChannelResource } from 'app/models/Channel';
-import ChannelSuggestion from "./channel-suggestion";
-import { EditorSuggestionPlugin, SelectOrInsertOptions } from "../";
+import { ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
+import { getSelectedBlock } from 'draftjs-utils';
+import { Channel } from './channel';
+import ChannelsService from 'app/deprecated/channels/channels';
+import { ChannelType, ChannelResource } from 'app/features/channels/types/channel';
+import ChannelSuggestion from './channel-suggestion';
+import { EditorSuggestionPlugin, SelectOrInsertOptions } from '../';
 
 export type ChannelSuggestionType = ChannelType & { autocomplete_id: number };
 
-export const ChannelResourceType = "CHANNEL";
-const CHANNEL_CHAR = "#";
+export const ChannelResourceType = 'CHANNEL';
+const CHANNEL_CHAR = '#';
 
-const findChannelEntities = (contentBlock: ContentBlock, callback: any, contentState: ContentState) => {
-  contentBlock.findEntityRanges(
-    (character: any) => {
-      const entityKey = character.getEntity();
-      return (
-        entityKey !== null &&
-        contentState.getEntity(entityKey).getType() === ChannelResourceType
-      );
-    },
-    callback
-  );
+const findChannelEntities = (
+  contentBlock: ContentBlock,
+  callback: any,
+  contentState: ContentState,
+) => {
+  contentBlock.findEntityRanges((character: any) => {
+    const entityKey = character.getEntity();
+    return (
+      entityKey !== null && contentState.getEntity(entityKey).getType() === ChannelResourceType
+    );
+  }, callback);
 };
 
-const resolver = (text: string, max: number, callback: (channels: ChannelSuggestionType[]) => void) => {
+const resolver = (
+  text: string,
+  max: number,
+  callback: (channels: ChannelSuggestionType[]) => void,
+) => {
   ChannelsService.search(text, (channels: ChannelResource[]) => {
-    if (!channels || !channels.length) {
+    if (!channels || !channels.length) {
       callback([]);
       return;
     }
 
-    return callback(channels.map((channel, index) => ({ ...channel.data, ...{ autocomplete_id: index }})));
+    return callback(
+      channels.map((channel, index) => ({ ...channel.data, ...{ autocomplete_id: index } })),
+    );
   });
 };
 
-const addChannel = (channel: ChannelSuggestionType, editorState: EditorState, options: SelectOrInsertOptions): EditorState => {
+const addChannel = (
+  channel: ChannelSuggestionType,
+  editorState: EditorState,
+  options: SelectOrInsertOptions,
+): EditorState => {
   let spaceAlreadyPresent = false;
-  const channelAsString = `${CHANNEL_CHAR}${(channel.name || "").toLocaleLowerCase().replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '')}`;
-  const entityKey = editorState.getCurrentContent().createEntity(ChannelResourceType, 'IMMUTABLE', channel).getLastCreatedEntityKey();
+  const channelAsString = `${CHANNEL_CHAR}${(channel.name || '')
+    .toLocaleLowerCase()
+    .replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '')}`;
+  const entityKey = editorState
+    .getCurrentContent()
+    .createEntity(ChannelResourceType, 'IMMUTABLE', channel)
+    .getLastCreatedEntityKey();
   const selectedBlock = getSelectedBlock(editorState);
   const selectedBlockText = selectedBlock.getText();
   let focusOffset = editorState.getSelection().getFocusOffset();
@@ -86,14 +101,20 @@ const addChannel = (channel: ChannelSuggestionType, editorState: EditorState, op
   return EditorState.push(newEditorState, contentState, 'insert-characters');
 };
 
-export default (options: { maxSuggestions: number } = { maxSuggestions: 10 }): EditorSuggestionPlugin<ChannelSuggestionType> => ({
+export default (
+  options: { maxSuggestions: number } = { maxSuggestions: 10 },
+): EditorSuggestionPlugin<ChannelSuggestionType> => ({
   resolver: (text, callback) => resolver(text, options.maxSuggestions, callback),
   decorator: {
-    strategy:  findChannelEntities,
+    strategy: findChannelEntities,
     component: Channel,
   },
   trigger: /\B#([a-zA-Z\u00C0-\u017F]+)$/,
   resourceType: ChannelResourceType,
-  onSelected: (channel: ChannelSuggestionType, editorState: EditorState, options: SelectOrInsertOptions = { addSpaceAfter: true }) => addChannel(channel, editorState, options),
+  onSelected: (
+    channel: ChannelSuggestionType,
+    editorState: EditorState,
+    options: SelectOrInsertOptions = { addSpaceAfter: true },
+  ) => addChannel(channel, editorState, options),
   renderSuggestion: (channel: ChannelSuggestionType) => ChannelSuggestion(channel),
 });

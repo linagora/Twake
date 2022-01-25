@@ -1,7 +1,7 @@
 import { atom, atomFamily } from 'recoil';
 import _ from 'lodash';
 
-import { ChannelType } from 'app/models/Channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 
 export const ChannelState = atomFamily<ChannelType, string>({
   key: 'ChannelState',

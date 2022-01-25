@@ -6,17 +6,17 @@ import Observable from 'app/services/Observable/Observable';
 import ElectronService from 'services/electron/electron';
 import windowState from 'services/utils/window';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
-import { ChannelResource, ChannelType } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from '../../../services/CollectionsReact/Collections';
 import { NotificationResource } from 'app/models/Notification';
 import WorkspacesService from 'services/workspaces/workspaces';
 import popupManager from 'services/popupManager/popupManager';
 import RouterService from '../../../services/RouterService';
-import ChannelsService from 'services/channels/channels';
+import ChannelsService from 'app/deprecated/channels/channels';
 import NotificationParameters from 'app/deprecated/user/notification_parameters';
 import UserService from 'app/features/users/services/current-user-service';
 import NotificationPreferences from '../../../deprecated/user/NotificationPreferences';
-import ChannelAPIClient from '../../../services/channels/ChannelAPIClient';
+import ChannelAPIClient from '../../channels/api/channel-api-client';
 
 type DesktopNotification = {
   channel_id: string;

@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import AppViewService from 'app/services/AppView/AppViewService';
 import Languages from 'services/languages/languages';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import { useWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 
 type PropsType = {

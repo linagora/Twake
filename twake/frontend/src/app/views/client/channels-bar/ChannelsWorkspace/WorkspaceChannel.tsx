@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ChannelResource, ChannelType } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 
 import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/modal/modal-manager';

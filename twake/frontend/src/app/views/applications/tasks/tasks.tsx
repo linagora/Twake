@@ -1,4 +1,4 @@
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import React from 'react';
 import { ViewConfiguration } from '../../../services/AppView/AppViewService';
 import { useTab } from '../../../state/recoil/hooks/useTabs';

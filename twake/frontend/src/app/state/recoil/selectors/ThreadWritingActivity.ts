@@ -2,7 +2,7 @@ import { selectorFamily } from 'recoil';
 import {
   ChannelWritingActivityType,
   ChannelWritingActivityState,
-} from '../atoms/ChannelWritingActivity';
+} from 'app/features/channels/state/channel-writing-activity';
 
 export const ThreadWritingActivitySelector = selectorFamily<
   ChannelWritingActivityType[],

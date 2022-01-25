@@ -2,7 +2,7 @@ import React, { createRef, useEffect } from 'react';
 import { Col, Row, Typography } from 'antd';
 import { getUserParts } from 'app/components/member/user-parts';
 import './ChannelRow.scss';
-import ChannelsService from 'services/channels/channels.js';
+import ChannelsService from 'app/deprecated/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
 import ModalManager from 'app/components/modal/modal-manager';
 import UserServices from 'app/features/users/services/current-user-service';

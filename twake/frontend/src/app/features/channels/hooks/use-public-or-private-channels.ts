@@ -1,14 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { useRecoilCallback, useRecoilState } from 'recoil';
 
-import { ChannelType } from 'app/models/Channel';
-import { MineChannelsState } from '../../atoms/Channels';
-import useRouterCompany from '../router/useRouterCompany';
-import ChannelsMineAPIClient from 'app/services/channels/ChannelsMineAPIClient';
-import useRouterWorkspace from '../router/useRouterWorkspace';
-import { isPrivateChannel, isPublicChannel } from 'app/services/channels/utils';
+import { ChannelType } from 'app/features/channels/types/channel';
+import { MineChannelsState } from '../state/channels';
+import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
+import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
+import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import { isPrivateChannel, isPublicChannel } from 'app/features/channels/utils/utils';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
-import { LoadingState } from '../../atoms/Loading';
+import { LoadingState } from 'app/state/recoil/atoms/Loading';
 import { useGlobalEffect } from 'app/services/utils/useGlobalEffect';
 
 export function usePublicOrPrivateChannels(): {

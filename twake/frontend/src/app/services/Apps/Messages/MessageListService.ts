@@ -3,7 +3,7 @@ import { MessageLoader } from './MessageLoader';
 import UserNotifications from 'app/features/users/services/user-notifications-service';
 import Collections from 'app/services/CollectionsReact/Collections';
 import logger from 'app/services/Logger';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import MessageLoaderFactory from './MessageLoaderFactory';
 
 type Scroller = (align: 'start' | 'center' | 'end', message?: Message) => boolean;

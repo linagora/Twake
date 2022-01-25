@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
 import Menu from 'components/menus/menu.js';
-import ChannelsService from 'services/channels/channels.js';
+import ChannelsService from 'app/deprecated/channels/channels.js';
 import Button from 'components/buttons/button.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import RouterService from 'app/services/RouterService';

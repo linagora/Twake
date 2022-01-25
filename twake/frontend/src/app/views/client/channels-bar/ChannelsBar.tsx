@@ -21,11 +21,11 @@ import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
 import './ChannelsBar.scss';
 import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
-import useChannelWritingActivity from 'app/state/recoil/hooks/useChannelWritingActivity';
-import { useChannelsBarLoader } from 'app/state/recoil/hooks/channels/useChannelsBarLoader';
-import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';
-import { usePublicOrPrivateChannels } from 'app/state/recoil/hooks/channels/usePublicOrPrivateChannels';
-import { useDirectChannels } from 'app/state/recoil/hooks/channels/useDirectChannels';
+import useChannelWritingActivity from 'app/features/channels/hooks/use-channel-writing-activity';
+import { useChannelsBarLoader } from 'app/features/channels/hooks/use-channels-bar-loader';
+import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
+import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
 export default () => {
   const companyId = useRouterCompany();

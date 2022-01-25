@@ -5,7 +5,7 @@ import MediumPopupComponent from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
 import UserListManager from 'components/user-list-manager/user-list-manager';
 import RouterServices from 'app/services/RouterService';
-import ChannelsService from 'services/channels/channels.js';
+import ChannelsService from 'app/deprecated/channels/channels.js';
 import ModalManager from 'app/components/modal/modal-manager';
 import { Button, Typography } from 'antd';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';

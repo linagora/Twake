@@ -5,7 +5,7 @@ import { Layout } from 'antd';
 import MainHeader from './MainHeader/MainHeader';
 import MainContent from './MainContent';
 import NoApp from './NoApp';
-import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { useWatcher } from 'app/services/Observable/Observable';
 import AccountStatusComponent from 'app/components/on-boarding/account-status-component';
 import CompanyBillingBanner from 'app/components/on-boarding/company-billing-banner';

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Button, Col, Row, Tag, Typography } from 'antd';
 import { Mail, PlusCircle, Trash } from 'react-feather';
 
-import { ChannelMemberResource } from 'app/models/Channel';
+import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import { getUserParts } from 'app/components/member/user-parts';
 import Languages from 'services/languages/languages';
 import './MemberChannelRow.scss';

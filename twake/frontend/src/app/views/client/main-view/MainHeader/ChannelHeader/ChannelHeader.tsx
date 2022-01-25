@@ -11,9 +11,9 @@ import ChannelUsersHeader from './ChannelUsersHeader';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import ChannelAvatars from './ChannelAvatars';
 import Languages from 'services/languages/languages';
-import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
-import { useChannel } from 'app/state/recoil/hooks/channels/useChannel';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();

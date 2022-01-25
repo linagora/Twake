@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 
-import { ChannelType } from 'app/models/Channel';
-import { DirectChannelsState } from '../../atoms/Channels';
-import useRouterCompany from '../router/useRouterCompany';
-import ChannelsMineAPIClient from 'app/services/channels/ChannelsMineAPIClient';
+import { ChannelType } from 'app/features/channels/types/channel';
+import { DirectChannelsState } from '../state/channels';
+import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
+import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
-import useRouterWorkspace from '../router/useRouterWorkspace';
-import { LoadingState } from '../../atoms/Loading';
+import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
+import { LoadingState } from 'app/state/recoil/atoms/Loading';
 import { useGlobalEffect } from 'app/services/utils/useGlobalEffect';
 
 export function useDirectChannels(): {

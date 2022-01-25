@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import { useChannelWritingActivityState } from 'app/state/recoil/hooks/useChannelWritingActivity';
+import { useChannelWritingActivityState } from 'app/features/channels/hooks/use-channel-writing-activity';
 import Languages from 'services/languages/languages';
 import WritingLoader from 'app/components/writing-loader/writing-loader';
-import { ChannelWritingActivityType } from 'app/state/recoil/atoms/ChannelWritingActivity';
+import { ChannelWritingActivityType } from 'app/features/channels/state/channel-writing-activity';
 
 type PropsType = {
   channelId: string;

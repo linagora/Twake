@@ -11,7 +11,7 @@ import Checkbox from 'components/inputs/checkbox.js';
 import Select from 'components/select/select.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Languages from 'services/languages/languages';
-import ChannelsService from 'services/channels/channels.js';
+import ChannelsService from 'app/deprecated/channels/channels.js';
 
 export default class EventsFilter extends React.Component {
   constructor(props) {

@@ -11,7 +11,7 @@ import NewFolderIcon from '@material-ui/icons/CreateNewFolderOutlined';
 import Menu from 'components/menus/menu.js';
 import Button from 'components/buttons/button.js';
 import Input from 'components/inputs/input.js';
-import ChannelsService from 'services/channels/channels.js';
+import ChannelsService from 'app/deprecated/channels/channels.js';
 import './file-picker.scss';
 
 export default class FilePicker extends React.Component {

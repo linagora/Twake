@@ -3,7 +3,7 @@ import UsersService from 'app/features/users/services/current-user-service';
 import userAsyncGet from 'app/features/users/utils/async-get';
 import MenuManager from 'app/components/menus/menus-manager';
 import UserCard from 'app/components/user-card/user-card';
-import ChannelsService from 'services/channels/channels';
+import ChannelsService from 'app/deprecated/channels/channels';
 import Languages from 'services/languages/languages';
 
 import '../message.scss';

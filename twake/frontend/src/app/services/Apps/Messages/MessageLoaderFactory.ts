@@ -1,9 +1,11 @@
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import { MessageLoader } from './MessageLoader';
 
 class MessageLoaderFactory {
   private loaders: Map<string, MessageLoader> = new Map<string, MessageLoader>();
-  channelsContextById: { [channelId: string]: { companyId?: string; workspaceId?: string | null | undefined } } = {};
+  channelsContextById: {
+    [channelId: string]: { companyId?: string; workspaceId?: string | null | undefined };
+  } = {};
 
   get(collectionKey: string, channel: ChannelResource, threadId?: string): MessageLoader {
     const key = MessageLoader.getKey(channel, collectionKey, threadId);

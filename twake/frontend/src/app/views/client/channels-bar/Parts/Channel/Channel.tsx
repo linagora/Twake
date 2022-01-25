@@ -6,7 +6,7 @@ import Icon from 'app/components/icon/icon';
 import { Application } from 'app/models/App';
 import WindowState from 'services/utils/window';
 import Emojione from 'components/emojione/emojione';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import AvatarComponent from 'app/components/avatar/avatar';
 import Beacon from 'app/components/scroll-hidden-components/beacon';
 import MainViewService from 'app/services/AppView/MainViewService';
@@ -16,7 +16,7 @@ import useRouterChannelSelected from 'app/state/recoil/hooks/router/useRouterCha
 import './Channel.scss';
 import useChannelWritingActivity, {
   useChannelWritingActivityState,
-} from 'app/state/recoil/hooks/useChannelWritingActivity';
+} from 'app/features/channels/hooks/use-channel-writing-activity';
 import WritingLoader from 'app/components/writing-loader/writing-loader';
 
 type Props = {

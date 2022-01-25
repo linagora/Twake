@@ -1,7 +1,7 @@
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 
-import { ChannelType } from 'app/models/Channel';
-import { ChannelState } from '../../atoms/Channels';
+import { ChannelType } from 'app/features/channels/types/channel';
+import { ChannelState } from '../state/channels';
 
 export function useChannel(channelId: string) {
   const channel = useRecoilValue(ChannelState(channelId));

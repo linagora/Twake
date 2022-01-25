@@ -5,18 +5,18 @@ import Icon from 'app/components/icon/icon';
 import ObjectModal from 'components/object-modal/object-modal';
 import listService, { GenericChannel } from 'services/search/searchListManager';
 import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
-import ChannelsService from 'services/channels/channels.js';
+import ChannelsService from 'app/deprecated/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
 import ModalManager from 'app/components/modal/modal-manager';
 import { UserType } from 'app/features/users/types/user';
 import UsersService from 'app/features/users/services/current-user-service';
-import { ChannelType } from 'app/models/Channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 import ChannelMembersAPIClient from 'app/services/channels/ChannelMembersAPIClient';
-import ChannelsReachableAPIClient from 'app/services/channels/ChannelsReachableAPIClient';
-import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';
+import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
+import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 
 export default () => {
   const [search, setSearch] = useState<string>('');

@@ -3,7 +3,7 @@ import { Row, Typography } from 'antd';
 import Languages from 'services/languages/languages';
 import Emojione from 'app/components/emojione/emojione';
 import User from 'app/components/twacode/blocks/user';
-import { ChannelMemberType, ChannelType } from 'app/models/Channel';
+import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
 import { TabType } from 'app/models/Tab';
 import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import Groups from 'services/workspaces/groups.js';

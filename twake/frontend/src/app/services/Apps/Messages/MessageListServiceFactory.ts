@@ -1,4 +1,4 @@
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import { MessageListService } from './MessageListService';
 
 class MessageListServiceFactory {
@@ -11,7 +11,7 @@ class MessageListServiceFactory {
    *
    * @param collectionKey Unique key linked to the service.
    * @param channel optional channel resource to create service for.
-   * @returns 
+   * @returns
    */
   get(collectionKey: string, channel?: ChannelResource): MessageListService {
     let service = this.services.get(collectionKey);

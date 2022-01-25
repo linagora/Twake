@@ -11,7 +11,7 @@ import Collections from 'services/Depreciated/Collections/Collections';
 
 import Workspaces from 'services/workspaces/workspaces';
 import Groups from 'services/workspaces/groups';
-import Channels from 'services/channels/channels';
+import Channels from 'app/deprecated/channels/channels';
 import PublicMainView from 'app/views/client/main-view/PublicMainView';
 import Observable from './Observable/Observable';
 

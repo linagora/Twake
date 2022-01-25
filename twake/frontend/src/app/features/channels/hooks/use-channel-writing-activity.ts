@@ -7,12 +7,13 @@ import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import {
   ChannelWritingActivityState,
   ChannelWritingActivityType,
-} from '../atoms/ChannelWritingActivity';
-import { ThreadWritingActivitySelector } from '../selectors/ThreadWritingActivity';
+} from '../state/channel-writing-activity';
+
+import { ThreadWritingActivitySelector } from '../../../state/recoil/selectors/ThreadWritingActivity';
 import UserService from 'app/features/users/services/current-user-service';
-import useRouterCompany from './router/useRouterCompany';
+import useRouterCompany from '../../../state/recoil/hooks/router/useRouterCompany';
 import { useCallback, useRef } from 'react';
-import { useCurrentUser } from '../../../features/users/hooks/use-current-user';
+import { useCurrentUser } from '../../users/hooks/use-current-user';
 
 const MAX_DELAY_BETWEEN_KEYDOWN = 500;
 const MIN_DELAY_BETWEEN_EMIT = 8000;

@@ -1,5 +1,5 @@
 import { Divider } from 'antd';
-import { ChannelResource, ChannelType } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import { UserType } from 'app/features/users/types/user';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterService';
@@ -7,7 +7,7 @@ import React from 'react';
 import DirectChannelRow from './DirectChannelRow';
 import WorkspaceChannelRow from './WorkspaceChannelRow';
 import { GenericChannel } from 'services/search/searchListManager';
-import { usePublicOrPrivateChannels } from 'app/state/recoil/hooks/channels/usePublicOrPrivateChannels';
+import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type PropsType = {
   list: GenericChannel[];

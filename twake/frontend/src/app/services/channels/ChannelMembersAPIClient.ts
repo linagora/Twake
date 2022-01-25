@@ -1,4 +1,4 @@
-import { ChannelMemberType } from 'app/models/Channel';
+import { ChannelMemberType } from 'app/features/channels/types/channel';
 import Api from '../Api';
 import { TwakeService } from '../Decorators/TwakeService';
 

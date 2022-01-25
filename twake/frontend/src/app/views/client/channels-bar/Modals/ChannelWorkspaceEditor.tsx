@@ -4,13 +4,13 @@ import ChannelTemplateEditor from 'app/views/client/channels-bar/Modals/ChannelT
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
 import Collections from 'app/services/CollectionsReact/Collections';
-import { ChannelType, ChannelResource } from 'app/models/Channel';
+import { ChannelType, ChannelResource } from 'app/features/channels/types/channel';
 import { Button } from 'antd';
 import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/services/RouterService';
 import _ from 'lodash';
 import MainViewService from 'app/services/AppView/MainViewService';
-import ChannelAPIClient from 'app/services/channels/ChannelAPIClient';
+import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
 

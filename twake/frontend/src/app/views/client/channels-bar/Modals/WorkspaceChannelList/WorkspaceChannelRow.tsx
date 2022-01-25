@@ -5,12 +5,12 @@ import { capitalize } from 'lodash';
 import Languages from 'services/languages/languages';
 import Icon from 'app/components/icon/icon';
 import RouterServices from 'app/services/RouterService';
-import { ChannelType } from 'app/models/Channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import Emojione from 'app/components/emojione/emojione';
 import UsersService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
-import ChannelsReachableAPIClient from 'app/services/channels/ChannelsReachableAPIClient';
-import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';
+import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
+import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import ChannelMembersAPIClient from 'app/services/channels/ChannelMembersAPIClient';
 
 import './ChannelRow.scss';

@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Input, Row, Typography } from 'antd';
 import Icon from 'app/components/icon/icon';
 import { capitalize } from 'lodash';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import RouterServices from 'app/services/RouterService';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import Languages from 'services/languages/languages';

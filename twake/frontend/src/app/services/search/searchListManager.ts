@@ -1,4 +1,4 @@
-import { ChannelType } from 'app/models/Channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { UserType } from 'app/features/users/types/user';
 import Strings from 'app/services/utils/strings';
 import UsersService from 'app/features/users/services/current-user-service';
@@ -8,8 +8,8 @@ import RouterServices from 'services/RouterService';
 import { getUserParts } from 'app/components/member/user-parts';
 import Observable from 'services/Observable/Observable';
 import UserAPIClient from '../../features/users/api/user-api-client';
-import ChannelsReachableAPIClient from '../channels/ChannelsReachableAPIClient';
-import ChannelsMineAPIClient from '../channels/ChannelsMineAPIClient';
+import ChannelsReachableAPIClient from '../../features/channels/api/channels-reachable-api-client';
+import ChannelsMineAPIClient from '../../features/channels/api/channels-mine-api-client';
 
 export type GenericChannel = {
   type: 'user' | 'direct' | 'workspace';

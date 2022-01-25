@@ -20,11 +20,11 @@ import { useUploadZones } from 'app/state/recoil/hooks/useUploadZones';
 import { useMessageEditor } from 'app/state/recoil/hooks/messages/useMessageEditor';
 import useRouterCompany from 'app/state/recoil/hooks/router/useRouterCompany';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
-import { useChannel } from 'app/state/recoil/hooks/channels/useChannel';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 import {
   useChannelWritingActivityEmit,
   useWritingDetector,
-} from 'app/state/recoil/hooks/useChannelWritingActivity';
+} from 'app/features/channels/hooks/use-channel-writing-activity';
 import { getCompanyApplications } from 'app/state/recoil/atoms/CompanyApplications';
 import AlertManager from 'app/services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';

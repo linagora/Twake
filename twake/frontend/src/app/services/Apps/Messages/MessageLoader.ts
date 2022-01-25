@@ -11,7 +11,7 @@ import {
   InitParameters,
   Completion,
 } from '../Feed/FeedLoader';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import MessageHistoryService from 'app/services/Apps/Messages/MessageHistoryService';
 
 const DEFAULT_PAGE_SIZE = 25;

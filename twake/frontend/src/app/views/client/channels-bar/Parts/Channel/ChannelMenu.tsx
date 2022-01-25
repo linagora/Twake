@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
-import { ChannelMemberType, ChannelType } from 'app/models/Channel';
+import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
 import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
 import Icon from 'app/components/icon/icon';
 import Menu from 'components/menus/menu';
@@ -19,13 +19,13 @@ import GuestManagement from 'app/views/client/channels-bar/Modals/GuestManagemen
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 import LockedGuestsPopup from 'app/components/locked-features-components/locked-guests-popup/locked-guests-popup';
 import InitService from 'app/services/InitService';
-import ChannelsMineAPIClient from 'app/services/channels/ChannelsMineAPIClient';
+import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
 import ChannelMembersAPIClient from 'app/services/channels/ChannelMembersAPIClient';
-import { isDirectChannel, isPrivateChannel } from 'app/services/channels/utils';
+import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/utils';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
 import { ToasterService as Toaster } from 'app/services/Toaster';
-import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';
+import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import FeatureTogglesService from 'app/services/FeatureTogglesService';
 
 type PropsType = {

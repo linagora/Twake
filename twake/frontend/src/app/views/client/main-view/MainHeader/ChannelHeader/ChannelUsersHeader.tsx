@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Col } from 'antd';
 
-import { ChannelType } from 'app/models/Channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { getUserParts } from 'app/components/member/user-parts';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 

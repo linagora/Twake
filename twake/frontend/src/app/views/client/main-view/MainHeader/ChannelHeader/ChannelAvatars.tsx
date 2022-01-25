@@ -1,7 +1,7 @@
 import RouterServices from 'app/services/RouterService';
 import { getUserParts } from 'app/components/member/user-parts';
 import Collections from 'app/services/CollectionsReact/Collections';
-import { ChannelMemberResource } from 'app/models/Channel';
+import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 
 export default (props: { workspaceId: string }): JSX.Element => {

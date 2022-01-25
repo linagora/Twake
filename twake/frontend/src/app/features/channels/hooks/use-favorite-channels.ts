@@ -1,6 +1,6 @@
-import { ChannelType } from 'app/models/Channel';
-import { useDirectChannels } from './useDirectChannels';
-import { usePublicOrPrivateChannels } from './usePublicOrPrivateChannels';
+import { ChannelType } from 'app/features/channels/types/channel';
+import { useDirectChannels } from './use-direct-channels';
+import { usePublicOrPrivateChannels } from './use-public-or-private-channels';
 
 export function useFavoriteChannels(): {
   favoriteChannels: ChannelType[];

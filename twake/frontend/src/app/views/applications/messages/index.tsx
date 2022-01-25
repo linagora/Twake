@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import Messages from './messages';
 import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 

@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 import { ViewConfiguration } from 'app/services/AppView/AppViewService';
 import NewThread from './input/new-thread';
 import MessagesList from './messages-list';

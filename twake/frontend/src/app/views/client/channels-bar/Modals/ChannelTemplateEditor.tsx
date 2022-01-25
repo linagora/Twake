@@ -1,13 +1,13 @@
 import React, { FC, useState, useEffect } from 'react';
 import Languages from 'services/languages/languages';
 import InputWithIcon from 'components/inputs/input-with-icon';
-import { ChannelResource, ChannelType } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import { Select, Typography, Checkbox, Input } from 'antd';
 import InputWithSelect from 'app/components/inputs/input-with-select';
 import { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'app/services/RouterService';
 import AccessRightsService from 'app/services/AccessRightsService';
-import { usePublicOrPrivateChannels } from 'app/state/recoil/hooks/channels/usePublicOrPrivateChannels';
+import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type PropsType = {
   channel: ChannelType | undefined;

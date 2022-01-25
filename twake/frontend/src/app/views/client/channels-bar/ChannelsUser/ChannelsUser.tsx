@@ -3,14 +3,14 @@ import React, { useState } from 'react';
 import Languages from 'services/languages/languages';
 import RouterServices from 'app/services/RouterService';
 import { Collection } from 'services/CollectionsReact/Collections';
-import { ChannelResource } from 'app/models/Channel';
+import { ChannelResource } from 'app/features/channels/types/channel';
 
 import MediumPopupComponent from 'app/components/modal/modal-manager';
 import NewDirectMessagesPopup from 'app/views/client/channels-bar/Modals/NewDirectMessagesPopup';
 import ChannelCategory from 'app/views/client/channels-bar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
-import ChannelsBarService from 'app/services/channels/ChannelsBarService';
+import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import AccessRightsService from 'app/services/AccessRightsService';
 
 export default () => {

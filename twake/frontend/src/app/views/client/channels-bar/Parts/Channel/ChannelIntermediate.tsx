@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 
 import ChannelUI from './Channel';
 import ChannelMenu from './ChannelMenu';
-import { ChannelResource, ChannelType } from 'app/models/Channel';
+import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from 'services/CollectionsReact/Collections';
 import { getUserParts } from 'app/components/member/user-parts';
 import { NotificationResource } from 'app/models/Notification';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
-import { useSetChannel } from 'app/state/recoil/hooks/channels/useChannel';
+import { useSetChannel } from 'app/features/channels/hooks/use-channel';
 import _ from 'lodash';
 
 type Props = {

@@ -5,7 +5,11 @@ import { Input, Row, Typography } from 'antd';
 import ObjectModal from 'app/components/object-modal/object-modal';
 import RouterService from 'app/services/RouterService';
 import MemberChannelRow from '../Parts/Header/MemberChannelRow';
-import { ChannelMemberResource, ChannelResource, ChannelType } from 'app/models/Channel';
+import {
+  ChannelMemberResource,
+  ChannelResource,
+  ChannelType,
+} from 'app/features/channels/types/channel';
 import Collections from 'services/CollectionsReact/Collections';
 import { PendingEmailResource } from 'app/models/PendingEmail';
 import GuestManagementService from 'app/services/GuestMember/GuestManagementService';

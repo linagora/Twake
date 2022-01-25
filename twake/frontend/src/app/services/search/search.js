@@ -3,7 +3,7 @@ import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
 import Workspace from 'services/workspaces/workspaces.js';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
-import ChannelsService from 'services/channels/channels.js';
+import ChannelsService from 'app/deprecated/channels/channels.js';
 import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import Api from 'services/Api';

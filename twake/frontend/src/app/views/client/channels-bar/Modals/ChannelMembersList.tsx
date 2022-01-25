@@ -3,7 +3,11 @@ import { Col, Row, Typography, Input } from 'antd';
 import { Search } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
-import { ChannelMemberResource, ChannelResource, ChannelType } from 'app/models/Channel';
+import {
+  ChannelMemberResource,
+  ChannelResource,
+  ChannelType,
+} from 'app/features/channels/types/channel';
 import { UserType } from 'app/features/users/types/user';
 
 import Strings from 'services/utils/strings.js';
