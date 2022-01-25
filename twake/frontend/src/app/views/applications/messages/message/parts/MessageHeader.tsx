@@ -7,7 +7,7 @@ import { Typography } from 'antd';
 import classNames from 'classnames';
 import { AlertTriangle } from 'react-feather';
 
-import User from 'services/user/UserService';
+import User from 'app/features/users/services/current-user-service';
 import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import UserCard from 'app/components/user-card/user-card';
@@ -20,8 +20,8 @@ import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { MessageContext } from '../message-with-replies';
 import useRouterWorkspace from 'app/state/recoil/hooks/router/useRouterWorkspace';
 import useRouterChannel from 'app/state/recoil/hooks/router/useRouterChannel';
-import { useUser } from 'app/state/recoil/hooks/useUser';
-import { UserType } from 'app/models/User';
+import { useUser } from 'app/features/users/hooks/use-user';
+import { UserType } from 'app/features/users/types/user';
 import { useCompanyApplications } from 'app/state/recoil/hooks/useCompanyApplications';
 import {
   useRecoilState,
@@ -29,7 +29,7 @@ import {
   useRecoilValue,
   useRecoilValueLoadable,
 } from 'recoil';
-import { UsersState } from 'app/state/recoil/atoms/Users';
+import { UsersState } from 'app/features/users/state/atoms/users';
 import { CompanyApplicationsStateFamily } from 'app/state/recoil/atoms/CompanyApplications';
 
 type Props = {

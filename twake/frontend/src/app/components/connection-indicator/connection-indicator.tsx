@@ -4,7 +4,7 @@ import ErrorOutlinedIcon from '@material-ui/icons/ErrorOutlined';
 import HourglassEmpty from '@material-ui/icons/HourglassEmpty';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import Languages from 'services/languages/languages';
-import { ConnectedState } from '../../state/recoil/atoms/Connected';
+import { ConnectedState } from 'app/features/users/state/atoms/connected';
 import { useRecoilState } from 'recoil';
 import WebSocket, { WebsocketEvents } from 'services/WebSocket/WebSocket';
 

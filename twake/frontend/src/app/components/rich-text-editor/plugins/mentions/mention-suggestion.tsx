@@ -1,6 +1,6 @@
 import React from 'react';
 import { MentionSuggestionType } from './index';
-import UsersService from 'services/user/UserService';
+import UsersService from 'app/features/users/services/current-user-service';
 import User from 'components/user/user';
 
 export default (props: MentionSuggestionType): JSX.Element => {

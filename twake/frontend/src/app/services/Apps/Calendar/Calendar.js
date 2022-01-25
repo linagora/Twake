@@ -5,7 +5,7 @@ import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import Workspaces from 'services/workspaces/workspaces.js';
 import Api from 'services/Api';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 
 class Calendar extends Observable {
   constructor() {

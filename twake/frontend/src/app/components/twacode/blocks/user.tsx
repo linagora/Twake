@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import ChannelsService from 'services/channels/channels.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import UserCard from 'app/components/user-card/user-card';
-import { UserType } from 'app/models/User';
-import { useUser } from 'app/state/recoil/hooks/useUser';
+import { UserType } from 'app/features/users/types/user';
+import { useUser } from 'app/features/users/hooks/use-user';
 import Collections from 'app/services/Depreciated/Collections/Collections';
 
 const channelMentions = ['channel', 'everyone', 'all', 'here'];

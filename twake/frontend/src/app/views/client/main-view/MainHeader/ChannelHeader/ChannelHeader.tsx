@@ -12,7 +12,7 @@ import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import ChannelAvatars from './ChannelAvatars';
 import Languages from 'services/languages/languages';
 import ChannelsBarService from 'app/services/channels/ChannelsBarService';
-import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
+import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import { useChannel } from 'app/state/recoil/hooks/channels/useChannel';
 
 export default (): JSX.Element => {

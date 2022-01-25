@@ -12,7 +12,7 @@ import popupManager from 'services/popupManager/popupManager.js';
 import CreateCompanyView from '../../../popup/CreateCompanyView/CreateCompanyView.js';
 import SecondMail from '../../../popup/SecondMail/SecondMail.js';
 import InitService from 'services/InitService';
-import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import CompanySelector from '../CompanySelector/index';
 
 import './styles.scss';

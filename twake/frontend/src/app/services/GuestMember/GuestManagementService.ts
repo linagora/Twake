@@ -2,7 +2,7 @@ import { PendingEmail, PendingEmailResource } from 'app/models/PendingEmail';
 import { ChannelMemberResource } from 'app/models/Channel';
 import Collections, { Collection } from 'services/CollectionsReact/Collections';
 import RouterServices from 'services/RouterService';
-import UserServices from 'services/user/UserService';
+import UserServices from 'app/features/users/services/current-user-service';
 import ConsoleService from '../Console/ConsoleService';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import { GenericMember } from './types';

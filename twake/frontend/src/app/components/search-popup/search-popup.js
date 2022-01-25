@@ -1,7 +1,7 @@
 import React from 'react';
 import Search from 'services/search/search.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import './search-popup.scss';
 import InputIcon from 'components/inputs/input-icon.js';
 import QuickResult from './parts/quick-result.js';
@@ -11,7 +11,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import moment from 'moment';
 import Languages from 'services/languages/languages';
-import userAsyncGet from 'services/user/AsyncGet';
+import userAsyncGet from 'app/features/users/utils/async-get';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {

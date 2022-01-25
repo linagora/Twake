@@ -7,7 +7,7 @@ import Icon from 'app/components/icon/icon';
 import RouterServices from 'app/services/RouterService';
 import { ChannelType } from 'app/models/Channel';
 import Emojione from 'app/components/emojione/emojione';
-import UsersService from 'services/user/UserService';
+import UsersService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelsReachableAPIClient from 'app/services/channels/ChannelsReachableAPIClient';
 import { useFavoriteChannels } from 'app/state/recoil/hooks/channels/useFavoriteChannels';

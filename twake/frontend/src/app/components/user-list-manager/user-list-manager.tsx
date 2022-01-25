@@ -4,15 +4,15 @@ import classNames from 'classnames';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
 
 import Strings from 'app/services/utils/strings';
-import UsersService from 'services/user/UserService';
+import UsersService from 'app/features/users/services/current-user-service';
 import Languages from 'services/languages/languages';
 import Workspaces from 'services/workspaces/workspaces.js';
 import UserOrMail from '../ui/user-or-mail';
 import Icon from '../icon/icon';
 import WorkspacesUsers from 'services/workspaces/workspaces_users';
 import AutoCompleteExtended from 'components/auto-complete-extended/auto-complete-extended';
-import { UserType } from 'app/models/User';
-import UserAPIClient from 'app/services/user/UserAPIClient';
+import { UserType } from 'app/features/users/types/user';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 
 import './user-list-manager.scss';
 
@@ -192,7 +192,7 @@ const UserListManager = (props: PropsType) => {
               autoFocus
               onSearch={(text, cb) =>
                 filter(text, list => {
-                  cb(list.map(u => (u?.user || u)));
+                  cb(list.map(u => u?.user || u));
                 })
               }
               render={(user: UserType) => (

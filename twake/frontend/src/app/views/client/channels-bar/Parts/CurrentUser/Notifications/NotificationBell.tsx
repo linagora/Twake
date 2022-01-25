@@ -5,7 +5,7 @@ import Menu from 'components/menus/menu';
 import Icon from 'app/components/icon/icon.js';
 
 import Languages from 'services/languages/languages';
-import NotificationPreferences from 'app/services/user/NotificationPreferences';
+import NotificationPreferences from 'app/deprecated/user/NotificationPreferences';
 
 type PropsType = {
   preferences: any;

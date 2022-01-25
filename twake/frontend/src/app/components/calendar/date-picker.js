@@ -2,7 +2,7 @@ import React from 'react';
 import Tooltip from 'components/tooltip/tooltip.js';
 import moment from 'moment';
 import DateTimeUtils from 'services/utils/datetime.js';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import Globals from 'services/Globals';
 import DayPicker from './day-picker/day-picker.js';
 import MenusManager from 'app/components/menus/menus-manager.js';

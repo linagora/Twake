@@ -7,7 +7,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import RouterServices from 'app/services/RouterService';
 import DefaultChannelTab from 'app/views/client/main-view/Tabs/DefaultChannelTab';
 import Tab from 'app/views/client/main-view/Tabs/Tab';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import useTabs from 'app/state/recoil/hooks/useTabs';
 import AccessRightsService from 'app/services/AccessRightsService';
 import useRouterCompany from '../../../../state/recoil/hooks/router/useRouterCompany';

@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages';
 import Groups from 'services/workspaces/groups.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import InitService from 'services/InitService';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 
 import FooterUI from 'app/views/client/channels-bar/Parts/Footer/Footer.js';
 

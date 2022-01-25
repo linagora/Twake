@@ -1,7 +1,9 @@
 import { Message, ReactionType } from 'app/models/Message';
-import UserService from 'app/services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import MessageEditorManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
-import DepreciatedCollections, { Collection } from 'app/services/Depreciated/Collections/Collections.js';
+import DepreciatedCollections, {
+  Collection,
+} from 'app/services/Depreciated/Collections/Collections.js';
 
 /**
  * Service that allow you to manage message reactions

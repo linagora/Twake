@@ -3,8 +3,8 @@ import Emojione from 'components/emojione/emojione';
 import Button from 'components/buttons/button';
 import Languages from 'services/languages/languages';
 import User from 'components/user/user';
-import UserService from 'services/user/UserService';
-import { UserType } from 'app/models/User';
+import UserService from 'app/features/users/services/current-user-service';
+import { UserType } from 'app/features/users/types/user';
 import './user-card.scss';
 
 type PropsType = {

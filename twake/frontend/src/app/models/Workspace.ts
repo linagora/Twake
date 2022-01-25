@@ -1,4 +1,4 @@
-import { UserType } from './User';
+import { UserType } from 'app/features/users/types/user';
 
 export type WorkspaceType = {
   id: string;

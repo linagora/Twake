@@ -5,7 +5,7 @@ import './ChannelRow.scss';
 import ChannelsService from 'services/channels/channels.js';
 import RouterServices from 'app/services/RouterService';
 import ModalManager from 'app/components/modal/modal-manager';
-import UserServices from 'services/user/UserService';
+import UserServices from 'app/features/users/services/current-user-service';
 
 type PropsType = {
   userIds: string[];

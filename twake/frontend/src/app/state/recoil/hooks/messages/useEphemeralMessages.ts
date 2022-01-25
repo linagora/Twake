@@ -1,7 +1,7 @@
 import { MessageWithReplies, NodeMessage } from 'app/models/Message';
 import MessageViewAPIClient from 'app/services/Apps/Messages/clients/MessageViewAPIClient';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
-import CurrentUser from 'app/services/user/CurrentUser';
+import CurrentUser from 'app/deprecated/user/CurrentUser';
 import _ from 'lodash';
 import { useState } from 'react';
 import { atomFamily, useRecoilCallback, useRecoilState } from 'recoil';

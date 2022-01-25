@@ -6,7 +6,7 @@ import AlertManager from 'services/AlertManager/AlertManager';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Menu from 'components/menus/menu.js';
 import { ColumnsType } from 'antd/lib/table';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import workspacesUsers from 'services/workspaces/workspaces_users';
 import workspaceUserRightsService from 'services/workspaces/WorkspaceUserRights';
 import InitService from 'app/services/InitService';

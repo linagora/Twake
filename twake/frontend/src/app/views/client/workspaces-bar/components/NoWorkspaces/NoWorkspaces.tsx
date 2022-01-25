@@ -3,7 +3,7 @@ import LoginService from 'app/services/login/LoginService';
 import Languages from 'services/languages/languages';
 import CompanySelector, { CurrentCompanyLogo } from '../CompanySelector/index';
 import { Button } from 'antd';
-import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useCurrentCompany } from 'app/state/recoil/hooks/useCompanies';
 import InitService from 'app/services/InitService';
 

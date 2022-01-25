@@ -6,7 +6,7 @@ import LoginService from 'app/services/login/LoginService';
 import { CompanyType } from 'app/models/Company';
 import { capitalize } from 'lodash';
 import ModalManager from 'app/components/modal/modal-manager';
-import UserService from 'app/services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import Groups from 'services/workspaces/groups.js';
 import { AlertTriangle } from 'react-feather';
 import InitService from 'app/services/InitService';

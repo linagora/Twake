@@ -1,7 +1,7 @@
 import { WorkspaceType } from 'app/models/Workspace';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
-import CurrentUser from 'app/services/user/CurrentUser';
-import UserAPIClient from 'app/services/user/UserAPIClient';
+import CurrentUser from 'app/deprecated/user/CurrentUser';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 import WorkspaceAPIClient from 'app/services/workspaces/WorkspaceAPIClient';
 import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import {
@@ -9,10 +9,10 @@ import {
   ChannelWritingActivityType,
 } from '../atoms/ChannelWritingActivity';
 import { ThreadWritingActivitySelector } from '../selectors/ThreadWritingActivity';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import useRouterCompany from './router/useRouterCompany';
 import { useCallback, useRef } from 'react';
-import { useCurrentUser } from './useCurrentUser';
+import { useCurrentUser } from '../../../features/users/hooks/use-current-user';
 
 const MAX_DELAY_BETWEEN_KEYDOWN = 500;
 const MIN_DELAY_BETWEEN_EMIT = 8000;

@@ -1,12 +1,12 @@
-import { UserType } from 'app/models/User';
+import { UserType } from 'app/features/users/types/user';
 import Logger from 'app/services/Logger';
 import AccessRightsService from 'app/services/AccessRightsService';
-import CurrentUser from 'app/services/user/CurrentUser';
+import CurrentUser from 'app/deprecated/user/CurrentUser';
 import Languages from 'app/services/languages/languages';
 import JWT from 'app/services/JWTStorage';
 import Collections from 'app/services/Collections/Collections';
 import Globals from 'app/services/Globals';
-import UserNotifications from 'app/services/user/UserNotifications';
+import UserNotifications from 'app/features/users/services/user-notifications-service';
 import WorkspacesListener from './workspaces/WorkspacesListener';
 import LocalStorage from './LocalStorage';
 import WebSocket from './WebSocket/WebSocket';

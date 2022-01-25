@@ -2,13 +2,13 @@
 import React from 'react';
 import { Avatar, Badge, Skeleton } from 'antd';
 
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import Icon from 'app/components/icon/icon.js';
 import Emojione from 'components/emojione/emojione';
 import NotificationDelay from '../Notifications/NotificationDelay';
 
 import './CompanyHeader.scss';
-import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useCurrentWorkspace } from 'app/state/recoil/hooks/useWorkspaces';
 
 type PropsType = {

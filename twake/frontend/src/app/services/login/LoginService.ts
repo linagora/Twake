@@ -6,9 +6,9 @@ import RouterServices from '../RouterService';
 import LocalStorage from 'services/LocalStorage';
 import AuthService from 'services/Auth/AuthService';
 import Application from '../Application';
-import { UserType } from 'app/models/User';
+import { UserType } from 'app/features/users/types/user';
 import { Cookies } from 'react-cookie';
-import UserAPIClient from '../user/UserAPIClient';
+import UserAPIClient from '../../features/users/api/user-api-client';
 import InitService from '../InitService';
 
 class Login extends Observable {

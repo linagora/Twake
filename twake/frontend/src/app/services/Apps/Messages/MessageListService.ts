@@ -1,6 +1,6 @@
 import { Message } from '../../../models/Message';
 import { MessageLoader } from './MessageLoader';
-import UserNotifications from 'app/services/user/UserNotifications';
+import UserNotifications from 'app/features/users/services/user-notifications-service';
 import Collections from 'app/services/CollectionsReact/Collections';
 import logger from 'app/services/Logger';
 import { ChannelResource } from 'app/models/Channel';

@@ -10,7 +10,7 @@ import Languages from 'services/languages/languages';
 import AlertManager from 'services/AlertManager/AlertManager';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
-import User from 'services/user/UserService';
+import User from 'app/features/users/services/current-user-service';
 import DragIndicator from '@material-ui/icons/DragIndicator';
 import MessageEditorsManager from 'app/services/Apps/Messages/MessageEditorServiceFactory';
 import RouterServices from 'app/services/RouterService';

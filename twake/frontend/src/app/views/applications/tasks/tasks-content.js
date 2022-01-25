@@ -8,7 +8,7 @@ import Loader from 'components/loader/loader.js';
 import TasksService from 'services/Apps/Tasks/Tasks.js';
 import WorkspacesUsers from 'services/workspaces/workspaces_users.ts';
 import Workspaces from 'services/workspaces/workspaces.js';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import Rounded from 'components/inputs/rounded.js';
 import Menu from 'components/menus/menu.js';
 import BoardEditor from './board/BoardEditor.js';

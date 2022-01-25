@@ -3,7 +3,7 @@ import { Button, Input } from 'antd';
 import classNames from 'classnames';
 
 import Languages from 'services/languages/languages';
-import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import MenusManager from 'app/components/menus/menus-manager';
 import InputWithIcon from 'app/components/inputs/input-with-icon';
 

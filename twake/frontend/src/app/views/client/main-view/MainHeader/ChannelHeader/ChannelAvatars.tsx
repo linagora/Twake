@@ -2,7 +2,7 @@ import RouterServices from 'app/services/RouterService';
 import { getUserParts } from 'app/components/member/user-parts';
 import Collections from 'app/services/CollectionsReact/Collections';
 import { ChannelMemberResource } from 'app/models/Channel';
-import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
+import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 
 export default (props: { workspaceId: string }): JSX.Element => {
   const { companyId, channelId } = RouterServices.getStateFromRoute();

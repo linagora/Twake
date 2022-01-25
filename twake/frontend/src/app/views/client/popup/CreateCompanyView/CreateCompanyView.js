@@ -9,7 +9,7 @@ import StepCounter from 'components/step-counter/step-counter.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import './CreateCompanyView.scss';
 import Input from 'components/inputs/input.js';
-import CurrentUser from 'app/services/user/CurrentUser';
+import CurrentUser from 'app/deprecated/user/CurrentUser';
 import InitService from 'services/InitService';
 import AddUserByEmail from 'app/views/client/popup/AddUser/AddUserByEmail';
 

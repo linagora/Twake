@@ -1,4 +1,4 @@
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import PseudoMarkdownDictionary from 'components/twacode/pseudo-markdown-dictionary';
 import anchorme from 'anchorme';

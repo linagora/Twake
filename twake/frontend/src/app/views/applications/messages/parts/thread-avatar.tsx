@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import 'moment-timezone';
-import User from 'services/user/UserService';
+import User from 'app/features/users/services/current-user-service';
 import WorkspacesApps from 'services/workspaces/workspaces_apps.js';
 import Icon from 'components/icon/icon.js';
 import './threads.scss';
@@ -13,7 +13,7 @@ import {
   useRecoilValueLoadable,
 } from 'recoil';
 import { CompanyApplicationsStateFamily } from 'app/state/recoil/atoms/CompanyApplications';
-import { UsersState } from 'app/state/recoil/atoms/Users';
+import { UsersState } from 'app/features/users/state/atoms/users';
 
 type Props = {
   small?: boolean;

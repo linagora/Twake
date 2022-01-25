@@ -3,7 +3,7 @@ import Moment from 'react-moment';
 import 'moment-timezone';
 
 import Languages from 'services/languages/languages';
-import CurrentUser from 'app/services/user/CurrentUser';
+import CurrentUser from 'app/deprecated/user/CurrentUser';
 import './message.scss';
 import { useMessage } from 'app/state/recoil/hooks/messages/useMessage';
 import { AtomMessageKey } from 'app/state/recoil/atoms/Messages';

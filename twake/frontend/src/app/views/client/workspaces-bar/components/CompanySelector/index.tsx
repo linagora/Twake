@@ -10,7 +10,7 @@ import Languages from 'services/languages/languages';
 import PopupService from 'services/popupManager/popupManager.js';
 
 import './styles.scss';
-import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 
 type MenuObjectType = { [key: string]: any };
 

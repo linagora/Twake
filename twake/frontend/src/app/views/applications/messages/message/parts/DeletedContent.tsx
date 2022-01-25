@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import UsersService from 'services/user/UserService';
-import userAsyncGet from 'services/user/AsyncGet';
+import UsersService from 'app/features/users/services/current-user-service';
+import userAsyncGet from 'app/features/users/utils/async-get';
 import MenuManager from 'app/components/menus/menus-manager';
 import UserCard from 'app/components/user-card/user-card';
 import ChannelsService from 'services/channels/channels';

@@ -8,7 +8,7 @@ import MenusManager from 'app/components/menus/menus-manager.js';
 import Globals from 'services/Globals';
 import { TabResource } from 'app/models/Tab';
 import { ChannelResource } from 'app/models/Channel';
-import UsersService from 'services/user/UserService';
+import UsersService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/services/RouterService';
 import _ from 'lodash';
 

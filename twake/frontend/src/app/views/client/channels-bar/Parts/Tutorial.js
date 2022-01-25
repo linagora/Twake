@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import Emojione from 'components/emojione/emojione';
-import UserService from 'services/user/UserService';
-import CurrentUserService from 'app/services/user/CurrentUser';
+import UserService from 'app/features/users/services/current-user-service';
+import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import ElectronService from 'services/electron/electron.js';
 import AlertManager from 'services/AlertManager/AlertManager';
 

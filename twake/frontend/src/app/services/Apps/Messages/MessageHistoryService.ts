@@ -1,7 +1,7 @@
 import { Message } from '../../../models/Message';
 import Numbers from '../../utils/Numbers';
 import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
-import UserAPIClient from 'services/user/UserAPIClient';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 import RouterServices from 'services/RouterService';
 import { CompanyType } from 'app/models/Company';
 

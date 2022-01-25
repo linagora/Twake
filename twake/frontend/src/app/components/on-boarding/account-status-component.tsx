@@ -6,9 +6,9 @@ import Languages from 'services/languages/languages';
 import ModalManager from 'app/components/modal/modal-manager';
 import UnverifiedAccount from './popups/unverified-account';
 import BlockedAccount from './popups/blocked-account';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import InitService from 'app/services/InitService';
-import { useCurrentUser } from 'app/state/recoil/hooks/useCurrentUser';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 
 const AccountStatusComponent = (): JSX.Element => {
   const { user } = useCurrentUser();

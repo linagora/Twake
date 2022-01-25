@@ -4,10 +4,10 @@ import { DashOutlined } from '@ant-design/icons';
 import { User } from 'react-feather';
 import Languages from 'services/languages/languages';
 import RouterServices from 'services/RouterService';
-import { UserType } from 'app/models/User';
-import UserService from 'services/user/UserService';
+import { UserType } from 'app/features/users/types/user';
+import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'services/Depreciated/Collections/Collections';
-import UsersService from 'services/user/UserService';
+import UsersService from 'app/features/users/services/current-user-service';
 import UserIcon from 'components/user/user';
 
 type UserPartsType = {
@@ -47,10 +47,14 @@ export const getUserParts = (props: PropsType): UserPartsType => {
   channelMembers?.map(userId => users.push(Collections.get('users').find(userId)));
 
   if (channelMembers?.length === 1) {
-    const avatarSrc = users[0]?.id ? <UserIcon user={users[0]} withStatus={props.displayOnline} size={avatarSize}/> : UserService.getThumbnail(users[0]);
+    const avatarSrc = users[0]?.id ? (
+      <UserIcon user={users[0]} withStatus={props.displayOnline} size={avatarSize} />
+    ) : (
+      UserService.getThumbnail(users[0])
+    );
     avatar = (
       <Badge count={0} size="default" dot offset={[-4, 16]}>
-        <Avatar style={{overflow: 'visible'}} size={avatarSize} src={avatarSrc} />
+        <Avatar style={{ overflow: 'visible' }} size={avatarSize} src={avatarSrc} />
       </Badge>
     );
     channelName = [UserService.getFullName(users[0])];
@@ -73,11 +77,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
             channelName.push(UserService.getFullName(member));
             return (
               member && (
-                <Avatar
-                  key={member.id}
-                  size={avatarSize}
-                  src={UserService.getThumbnail(member)}
-                />
+                <Avatar key={member.id} size={avatarSize} src={UserService.getThumbnail(member)} />
               )
             );
           })}

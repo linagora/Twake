@@ -7,7 +7,7 @@ import ListenGroups from './listen_groups.js';
 import $ from 'jquery';
 import JWTStorage from 'services/JWTStorage';
 import CompanyAPIClient from '../CompanyAPIClient';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import Globals from 'services/Globals';
 
 class Groups extends Observable {

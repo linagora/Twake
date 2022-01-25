@@ -1,6 +1,6 @@
 import ws from 'services/websocket.js';
 import Workspaces from 'services/workspaces/workspaces.js';
-import User from 'services/user/UserService';
+import User from 'app/features/users/services/current-user-service';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
 import LoginService from 'app/services/login/LoginService';
 import { RightsOrNone } from '../AccessRightsService';

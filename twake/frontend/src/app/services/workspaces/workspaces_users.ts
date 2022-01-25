@@ -1,13 +1,13 @@
 import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
-import User from 'services/user/UserService';
+import User from 'app/features/users/services/current-user-service';
 import Api from 'services/Api';
 import ws from 'services/websocket.js';
 import Collections from 'app/services/Depreciated/Collections/Collections.js';
 import workspaceService from 'services/workspaces/workspaces.js';
 import Numbers from 'services/utils/Numbers';
 import WorkspaceUserRights from 'services/workspaces/WorkspaceUserRights';
-import CurrentUser from 'app/services/user/CurrentUser';
+import CurrentUser from 'app/deprecated/user/CurrentUser';
 import AlertManager from 'services/AlertManager/AlertManager';
 import Globals from 'services/Globals';
 

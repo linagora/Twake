@@ -1,8 +1,8 @@
 import React from 'react';
 import Languages from 'services/languages/languages';
 import Observable from 'app/services/Depreciated/observable.js';
-import CurrentUser from 'app/services/user/CurrentUser';
-import UserService from 'services/user/UserService';
+import CurrentUser from 'app/deprecated/user/CurrentUser';
+import UserService from 'app/features/users/services/current-user-service';
 import DepreciatedCollections, {
   Collection,
 } from 'app/services/Depreciated/Collections/Collections.js';

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
 import workspaceService from 'services/workspaces/workspaces.js';
-import userService from 'services/user/UserService';
+import userService from 'app/features/users/services/current-user-service';
 import './Pages.scss';
 
 export default class WorkspaceAppsInformations extends Component {

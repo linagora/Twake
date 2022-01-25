@@ -3,9 +3,9 @@ import { Input } from 'antd';
 import { isEqual } from 'lodash';
 
 import Languages from 'services/languages/languages';
-import NotificationParameters from 'services/user/notification_parameters.js';
+import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
 import { Collection } from 'services/CollectionsReact/Collections';
-import NotificationPreferences from 'app/services/user/NotificationPreferences';
+import NotificationPreferences from 'app/deprecated/user/NotificationPreferences';
 
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Attribute from 'components/parameters/attribute.js';

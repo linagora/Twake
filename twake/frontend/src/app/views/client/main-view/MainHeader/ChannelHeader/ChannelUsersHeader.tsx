@@ -3,7 +3,7 @@ import { Typography, Col } from 'antd';
 
 import { ChannelType } from 'app/models/Channel';
 import { getUserParts } from 'app/components/member/user-parts';
-import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
+import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 
 type Props = {
   channel: ChannelType;

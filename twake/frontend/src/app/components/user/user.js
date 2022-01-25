@@ -1,9 +1,9 @@
 // eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
 
-import UserService from 'services/user/UserService';
-import NotificationParameters from 'services/user/notification_parameters.js';
-import ListenUsers from 'services/user/ListenUsers';
+import UserService from 'app/features/users/services/current-user-service';
+import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
+import ListenUsers from 'app/features/users/services/listen-users-service';
 import UserOnlineStatus from '../online-user-status/online-user-status';
 
 import './user.scss';
@@ -40,7 +40,16 @@ export default class User extends Component {
         }}
       >
         {this.props.withStatus && (
-          <UserOnlineStatus user={user} notifications_disabled={notifications_disabled} size={(this.props.small ? 'small' : undefined) || (this.props.medium ? 'medium' : undefined) || (this.props.big ? 'big' : undefined) || 'medium'}/>
+          <UserOnlineStatus
+            user={user}
+            notifications_disabled={notifications_disabled}
+            size={
+              (this.props.small ? 'small' : undefined) ||
+              (this.props.medium ? 'medium' : undefined) ||
+              (this.props.big ? 'big' : undefined) ||
+              'medium'
+            }
+          />
         )}
       </div>
     );

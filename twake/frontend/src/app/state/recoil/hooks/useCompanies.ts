@@ -1,18 +1,18 @@
 import { CompaniesState } from '../atoms/Companies';
 import useRouterCompany from './router/useRouterCompany';
 import { useRecoilState } from 'recoil';
-import { CurrentUserState } from '../atoms/CurrentUser';
+import { CurrentUserState } from '../../../features/users/state/atoms/current-user';
 import { CompanyType } from 'app/models/Company';
 import LocalStorage from 'app/services/LocalStorage';
-import { UserType } from 'app/models/User';
-import { useCurrentUser } from './useCurrentUser';
+import { UserType } from 'app/features/users/types/user';
+import { useCurrentUser } from '../../../features/users/hooks/use-current-user';
 import _ from 'lodash';
 import RouterService from 'app/services/RouterService';
 import WorkspacesService from 'services/workspaces/workspaces.js';
 import AccessRightsService from 'app/services/AccessRightsService';
 import Groups from 'services/workspaces/groups.js';
 import LoginService from 'app/services/login/LoginService';
-import UserAPIClient from 'app/services/user/UserAPIClient';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
 import CompanyAPIClient from 'app/services/CompanyAPIClient';
 

@@ -6,9 +6,9 @@ import InternalAuthProviderService from './provider/internal/InternalAuthProvide
 import Logger from 'services/Logger';
 import AlertManager from '../AlertManager/AlertManager';
 import Languages from '../languages/languages';
-import { UserType } from 'app/models/User';
+import { UserType } from 'app/features/users/types/user';
 import JWT, { JWTDataType } from 'services/JWTStorage';
-import UserAPIClient from '../user/UserAPIClient';
+import UserAPIClient from '../../features/users/api/user-api-client';
 import WindowState from 'services/utils/window';
 import Application from 'services/Application';
 import LocalStorage from 'services/LocalStorage';

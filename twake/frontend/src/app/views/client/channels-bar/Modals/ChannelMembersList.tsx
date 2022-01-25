@@ -4,18 +4,18 @@ import { Search } from 'react-feather';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { ChannelMemberResource, ChannelResource, ChannelType } from 'app/models/Channel';
-import { UserType } from 'app/models/User';
+import { UserType } from 'app/features/users/types/user';
 
 import Strings from 'services/utils/strings.js';
 import Languages from 'services/languages/languages';
-import UsersService from 'services/user/UserService';
+import UsersService from 'app/features/users/services/current-user-service';
 import Collections from 'services/CollectionsReact/Collections';
 import MemberChannelRow from 'app/views/client/channels-bar/Parts/Header/MemberChannelRow';
 
 import ObjectModal from 'components/object-modal/object-modal';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections.js';
-import { useUsersListener } from 'app/services/user/hooks/useUsersListener';
-import UserAPIClient from 'app/services/user/UserAPIClient';
+import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/models/Workspace';
 import { delayRequest } from 'app/services/utils/managedSearchRequest';
 

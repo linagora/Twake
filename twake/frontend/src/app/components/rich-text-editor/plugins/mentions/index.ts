@@ -9,11 +9,11 @@ import WorkspaceService from 'services/workspaces/workspaces';
 import Collections from 'services/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/services/Depreciated/Collections/Collections';
 import { getChannelMembers } from 'app/services/channels/ChannelCollectionPath';
-import { UserType } from 'app/models/User';
+import { UserType } from 'app/features/users/types/user';
 import { ChannelMemberResource } from 'app/models/Channel';
-import UserService from 'services/user/UserService';
+import UserService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/services/RouterService';
-import UserAPIClient from 'app/services/user/UserAPIClient';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/models/Workspace';
 import Strings from 'app/services/utils/strings';
 

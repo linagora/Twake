@@ -20,8 +20,8 @@ import SearchPopup from 'components/search-popup/search-popup.js';
 import NewVersionComponent from 'components/new-version/new-version-component';
 import SideBars, { LoadingSidebar } from './side-bars';
 import CompanyStatusComponent from 'app/components/on-boarding/company-status-component';
-import UserContext from 'app/state/recoil/integration/UserContext';
-import { useCurrentUser, useCurrentUserRealtime } from 'app/state/recoil/hooks/useCurrentUser';
+import UserContext from 'app/features/users/state/integration/user-context';
+import { useCurrentUser, useCurrentUserRealtime } from 'app/features/users/hooks/use-current-user';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 
 import './styles.scss';
