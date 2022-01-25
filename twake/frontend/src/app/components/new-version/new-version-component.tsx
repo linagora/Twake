@@ -4,7 +4,6 @@ import { Col, Row, Typography } from 'antd';
 import Api from 'services/Api';
 import Banner from 'app/components/banner/banner';
 import Emojione from 'app/components/emojione/emojione';
-import { ConfigurationResource } from 'app/models/Configuration';
 import Languages from 'services/languages/languages';
 import Globals from 'services/Globals';
 import ModalManager from 'app/components/modal/modal-manager';
@@ -24,10 +23,7 @@ const NewVersionComponent = (): JSX.Element => {
     return toNumber(v1) - toNumber(v2);
   };
 
-
-
   useMemo(() => {
-
     const getConfiguration = async () => {
       if (new Date().getTime() - lastScrape < 15 * 60 * 1000) {
         return;
