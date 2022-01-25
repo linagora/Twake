@@ -18,7 +18,7 @@ import Menu from 'components/menus/menu';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 
 import './ApplicationsStyles.scss';
-import AlertManager from 'app/services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 
 type ColumnObjectType = { key: number } & Application;
 

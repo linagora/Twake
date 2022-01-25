@@ -7,7 +7,7 @@ import InputIcon from 'components/inputs/input-icon.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import ReminderSelector from 'components/reminder-selector/reminder-selector.js';
 import Participants from './Part/Participants.js';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import DateSelector from './Part/DateSelector.js';
 import AttachmentPicker from 'components/attachment-picker/attachment-picker.js';
 import CalendarSelector from 'components/calendar/calendar-selector/calendar-selector.js';

@@ -5,7 +5,7 @@ import MessageEditorsManager from 'app/features/messages/services/message-editor
 import MessageInput from '../../input/input';
 import Button from 'components/buttons/button.js';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
-import AlertManager from 'app/services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import Languages from 'services/languages/languages';
 import { Message } from 'app/features/messages/types/message';
 import EditorToolbar from 'app/components/rich-text-editor/editor-toolbar';

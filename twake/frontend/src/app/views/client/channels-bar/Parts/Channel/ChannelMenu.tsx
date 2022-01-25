@@ -7,7 +7,7 @@ import Icon from 'app/components/icon/icon';
 import Menu from 'components/menus/menu';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import Languages from 'services/languages/languages';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import UserService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';

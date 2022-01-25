@@ -18,7 +18,7 @@ import EventModification from './modals/EventModification.js';
 import CalendarEditor from './modals/CalendarEditor.js';
 import Menu from 'components/menus/menu.js';
 import DayPicker from 'components/calendar/day-picker/day-picker.js';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
 import popupManager from 'services/popupManager/popupManager.js';

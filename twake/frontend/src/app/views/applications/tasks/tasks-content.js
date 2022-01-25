@@ -13,7 +13,7 @@ import Rounded from 'components/inputs/rounded.js';
 import Menu from 'components/menus/menu.js';
 import BoardEditor from './board/BoardEditor.js';
 import MoreIcon from '@material-ui/icons/MoreHorizOutlined';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import ConnectorsListManager from 'components/connectors-list-manager/connectors-list-manager.js';
 import popupManager from 'services/popupManager/popupManager.js';

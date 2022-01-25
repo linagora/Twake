@@ -7,7 +7,7 @@ import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
 import Menu from 'components/menus/menu.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import Languages from 'services/languages/languages';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import User from 'app/features/users/services/current-user-service';

@@ -4,7 +4,7 @@ import ws from 'services/websocket.js';
 import Api from 'services/Api';
 import Login from 'app/services/login/LoginService';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 
 import Globals from 'services/Globals';
 

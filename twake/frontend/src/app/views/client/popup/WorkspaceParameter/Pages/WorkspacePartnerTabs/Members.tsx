@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import Languages from 'services/languages/languages';
 import { Table, Row, Col, Typography, Divider } from 'antd';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import Menu from 'components/menus/menu.js';
 import { ColumnsType } from 'antd/lib/table';

@@ -9,7 +9,7 @@ import DepreciatedCollections, {
 import Collections from 'app/deprecated/CollectionsReact/Collections';
 import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import ChannelsService from 'app/deprecated/channels/channels.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import MenusManager from 'app/components/menus/menus-manager.js';

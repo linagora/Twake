@@ -6,7 +6,7 @@ import Emojione from 'components/emojione/emojione';
 import UserService from 'app/features/users/services/current-user-service';
 import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import ElectronService from 'services/electron/electron.js';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';

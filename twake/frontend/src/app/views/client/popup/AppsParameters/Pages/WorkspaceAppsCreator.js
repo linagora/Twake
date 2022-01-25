@@ -4,7 +4,7 @@ import Languages from 'services/languages/languages';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import workspaceService from 'app/deprecated/workspaces/workspaces.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import Api from 'services/Api';
 import Input from 'components/inputs/input.js';
 

@@ -4,7 +4,7 @@ import { AuthProvider } from './provider/AuthProvider';
 import OIDCAuthProviderService from './provider/oidc/OIDCAuthProviderService';
 import InternalAuthProviderService from './provider/internal/InternalAuthProviderService';
 import Logger from 'app/features/global/services/logger-service';
-import AlertManager from '../AlertManager/AlertManager';
+import AlertManager from '../../features/global/services/alert-manager-service';
 import Languages from '../languages/languages';
 import { UserType } from 'app/features/users/types/user';
 import JWT, { JWTDataType } from 'services/JWTStorage';

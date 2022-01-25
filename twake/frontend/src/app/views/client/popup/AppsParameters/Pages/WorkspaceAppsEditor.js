@@ -6,7 +6,7 @@ import workspaceService from 'app/deprecated/workspaces/workspaces.js';
 import Emojione from 'components/emojione/emojione';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Attribute from 'components/parameters/attribute.js';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import Api from 'services/Api';
 import WorkspaceAppsCreator from './WorkspaceAppsCreator.js';
 import Switch from 'components/inputs/switch';

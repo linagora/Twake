@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'services/languages/languages';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import Input from 'components/inputs/input.js';
 import Button from 'components/buttons/button.js';
 import MediumPopupManager from 'app/components/modal/modal-manager';

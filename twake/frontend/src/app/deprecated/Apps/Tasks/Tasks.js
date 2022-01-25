@@ -4,7 +4,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Api from 'services/Api';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 
 class Tasks extends Observable {
   constructor() {

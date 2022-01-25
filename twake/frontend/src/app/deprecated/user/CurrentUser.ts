@@ -7,7 +7,7 @@ import Observable from 'app/deprecated/CollectionsV1/observable';
 import SecuredConnection from 'app/deprecated/CollectionsV1/Collections/SecuredConnection';
 import Number from 'services/utils/Numbers';
 import ConfiguratorsManager from 'services/Configurators/ConfiguratorsManager';
-import AlertManager from 'services/AlertManager/AlertManager';
+import AlertManager from 'app/features/global/services/alert-manager-service';
 import Languages from 'services/languages/languages';
 import JWTStorage from 'services/JWTStorage';
 import Globals from 'services/Globals';
