@@ -1,12 +1,9 @@
-import { RefObject, useEffect, useState } from "react";
-
+import { RefObject, useEffect, useState } from 'react';
 
 export default function useOnScreen(ref: RefObject<Element>) {
   const [isIntersecting, setIntersecting] = useState(false);
 
-  const observer = new IntersectionObserver(
-    ([entry]) => setIntersecting(entry.isIntersecting)
-  );
+  const observer = new IntersectionObserver(([entry]) => setIntersecting(entry.isIntersecting));
 
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {

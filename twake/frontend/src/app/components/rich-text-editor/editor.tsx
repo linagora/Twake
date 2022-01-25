@@ -29,7 +29,7 @@ import {
 import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from './plugins';
 import './editor.scss';
 import { TextCountService } from 'app/components/rich-text-editor/text-count';
-import useOnScreen from 'app/services/hooks/useOnScreen';
+import useOnScreen from 'app/features/global/hooks/useOnScreen';
 import Logger from 'app/services/Logger';
 import 'draft-js/dist/Draft.css';
 

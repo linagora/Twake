@@ -1,8 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
-import Logger from '../Logger';
+import Logger from 'app/services/Logger';
 
 const logger = Logger.getLogger('useInterval');
-
 
 const useInterval = (callback: () => void, delay: number | null) => {
   const savedCallback = useRef(callback);

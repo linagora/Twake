@@ -1,4 +1,4 @@
-import RouterService, { ClientStateType } from '../../features/router/services/router-service';
+import RouterService, { ClientStateType } from '../../router/services/router-service';
 
 /**
  * observedScope function which returns data to be observed by the hook
