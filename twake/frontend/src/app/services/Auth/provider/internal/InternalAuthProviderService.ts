@@ -1,4 +1,4 @@
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import { InternalConfiguration } from '../../../InitService';
 import Observable from '../../../../deprecated/Observable/Observable';
 import { TwakeService } from '../../../Decorators/TwakeService';

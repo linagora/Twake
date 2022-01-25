@@ -1,5 +1,5 @@
 import Globals from '../Globals';
-import Logger from '../Logger';
+import Logger from '../../features/global/services/logger-service';
 import JWT from '../JWTStorage';
 import WebSocketService, { WebSocketOptions } from './WebSocketService';
 
@@ -28,7 +28,7 @@ class WebSocketFactory {
         if (JWT.isAccessExpired()) {
           try {
             token = (await JWT.renew()).value;
-          } catch(err) {
+          } catch (err) {
             this.logger.error('Can not get a new JWT token for WS collection', err);
           }
         }

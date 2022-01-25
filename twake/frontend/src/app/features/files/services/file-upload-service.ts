@@ -6,7 +6,7 @@ import RouterServices from 'app/features/router/services/router-service';
 import Resumable from 'services/uploadManager/resumable';
 import FileUploadAPIClient from '../api/file-upload-api-client';
 import { isPendingFileStatusPending } from '../utils/pending-files';
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import _ from 'lodash';
 
 export enum Events {

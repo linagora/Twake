@@ -1,5 +1,5 @@
 import { assign } from 'lodash';
-import Logger from 'services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import Collection, { CollectionOptions } from './Collection';
 import Resource from './Resource';
 import Transport from './Transport/Transport';

@@ -4,7 +4,7 @@ import User from 'app/features/users/services/current-user-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import LoginService from 'app/services/login/LoginService';
 import { RightsOrNone } from '../../../services/AccessRightsService';
-import Logger from 'services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 
 type WebsocketWorkspace = {
   type: 'remove' | 'add' | 'update_group_privileges' | 'update_workspace_level';

@@ -1,4 +1,4 @@
-import Logger from 'services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import Observable from 'app/deprecated/Observable/Observable';
 import Api from 'services/Api';
 

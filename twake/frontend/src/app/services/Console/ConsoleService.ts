@@ -4,7 +4,7 @@ import InitService from '../InitService';
 import Languages from 'services/languages/languages';
 import { ToasterService as Toaster } from '../Toaster';
 import { ConsoleMemberRole } from './types';
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import { JWTDataType } from '../JWTStorage';
 
 class ConsoleService {

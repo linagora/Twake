@@ -3,7 +3,7 @@ import InitService, { ConsoleConfiguration, InternalConfiguration } from 'app/se
 import { AuthProvider } from './provider/AuthProvider';
 import OIDCAuthProviderService from './provider/oidc/OIDCAuthProviderService';
 import InternalAuthProviderService from './provider/internal/InternalAuthProviderService';
-import Logger from 'services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import AlertManager from '../AlertManager/AlertManager';
 import Languages from '../languages/languages';
 import { UserType } from 'app/features/users/types/user';

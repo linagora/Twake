@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { AlertTriangle } from 'react-feather';
 import { Alert, Button, Checkbox, Input, Row, Typography } from 'antd';
 
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import { WorkspaceType, WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import Languages from 'app/services/languages/languages';
 import ObjectModal from 'app/components/object-modal/object-modal';

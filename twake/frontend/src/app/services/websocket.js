@@ -1,7 +1,7 @@
 import Number from 'services/utils/Numbers';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import LoginService from 'app/services/login/LoginService';
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import Globals from 'services/Globals';
 import WebSocket from './WebSocket/WebSocket';
 

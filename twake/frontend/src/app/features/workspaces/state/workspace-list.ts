@@ -2,7 +2,7 @@ import { atomFamily, selectorFamily, useSetRecoilState } from 'recoil';
 
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import _ from 'lodash';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 

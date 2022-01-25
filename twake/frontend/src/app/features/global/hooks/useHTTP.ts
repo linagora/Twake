@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Maybe } from 'app/types';
 import Globals from '../../../services/Globals';
 import JWTStorage from '../../../services/JWTStorage';
-import Logger from '../../../services/Logger';
+import Logger from '../services/logger-service';
 
 const logger = Logger.getLogger('useHTTP');
 

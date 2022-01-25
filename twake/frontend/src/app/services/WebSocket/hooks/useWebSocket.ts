@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import WebSocketFactory, { WebsocketEvents } from 'app/services/WebSocket/WebSocket';
 import WebSocketService from 'app/services/WebSocket/WebSocketService';
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 
 const logger = Logger.getLogger('useWebSocket');
 

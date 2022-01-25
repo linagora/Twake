@@ -1,6 +1,6 @@
-import log from "loglevel";
-import prefix from "loglevel-plugin-prefix";
-import EnvironmentService from "../EnvironmentService";
+import log from 'loglevel';
+import prefix from 'loglevel-plugin-prefix';
+import EnvironmentService from '../../../services/EnvironmentService';
 
 const isProduction = EnvironmentService.isProduction();
 
@@ -8,12 +8,12 @@ isProduction ? log.setDefaultLevel(log.levels.WARN) : log.setDefaultLevel(log.le
 
 prefix.reg(log);
 prefix.apply(log, {
-  template: `${isProduction ? "" : "[%t] "}%l - %n -`,
+  template: `${isProduction ? '' : '[%t] '}%l - %n -`,
   levelFormatter(level) {
     return level.toUpperCase();
   },
   nameFormatter(name) {
-    return name || "Twake";
+    return name || 'Twake';
   },
   timestampFormatter(date) {
     return date.toISOString();

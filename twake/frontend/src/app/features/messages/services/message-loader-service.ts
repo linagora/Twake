@@ -2,7 +2,7 @@ import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Col
 import Collection from 'app/deprecated/CollectionsV1/Collections/Collection';
 import Numbers from 'services/utils/Numbers';
 import Observable from 'app/deprecated/CollectionsV1/observable';
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import { Message } from '../types/message';
 import {
   FeedLoader,

@@ -1,5 +1,5 @@
 import { WebsocketEvents } from 'app/services/WebSocket/WebSocket';
-import Logger from 'services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import { WebSocketTransport } from './TransportAPI';
 
 export default class TransportSocket implements WebSocketTransport {

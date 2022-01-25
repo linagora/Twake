@@ -1,5 +1,5 @@
 import { UserType } from 'app/features/users/types/user';
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import AccessRightsService from 'app/services/AccessRightsService';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import Languages from 'app/services/languages/languages';

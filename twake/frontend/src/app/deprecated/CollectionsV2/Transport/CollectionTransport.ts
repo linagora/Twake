@@ -1,4 +1,4 @@
-import Logger from 'app/services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 import { ActionOptions } from '../Collection';
 import Collections, { Collection, Resource } from '../Collections';
 import CollectionTransportSockets from './CollectionTransportSockets';

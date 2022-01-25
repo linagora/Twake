@@ -19,7 +19,7 @@ import Globals from 'services/Globals';
 import JWTStorage from 'services/JWTStorage';
 import ConsoleService from 'services/Console/ConsoleService';
 import WorkspaceAPIClient from '../../features/workspaces/api/workspace-api-client';
-import Logger from 'services/Logger';
+import Logger from 'app/features/global/services/logger-service';
 
 class Workspaces extends Observable {
   constructor() {

@@ -3,7 +3,7 @@ import LoginService from 'app/services/login/LoginService';
 import WindowService from 'services/utils/window';
 import ConsoleAPIClient from './Console/ConsoleAPIClient';
 import { TwakeService } from './Decorators/TwakeService';
-import Logger from './Logger';
+import Logger from '../features/global/services/logger-service';
 
 export type JWTDataType = {
   time: 0;

@@ -2,7 +2,7 @@ import { Message } from '../types/message';
 import { MessageLoader } from './message-loader-service';
 import UserNotifications from 'app/features/users/services/user-notifications-service';
 import Collections from 'app/deprecated/CollectionsReact/Collections';
-import logger from 'app/services/Logger';
+import logger from 'app/features/global/services/logger-service';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import MessageLoaderFactory from './message-loader-factory';
 
