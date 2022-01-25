@@ -1,6 +1,6 @@
 import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageAPIClient from 'app/features/messages/api/message-api-client';
-import {} from 'app/services/Realtime/useRealtime';
+import {} from 'app/features/global/hooks/use-realtime';
 import _ from 'lodash';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import {

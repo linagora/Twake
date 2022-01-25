@@ -3,7 +3,7 @@ import LoginService from 'app/services/login/LoginService';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { useRecoilState } from 'recoil';
 import { CurrentUserState } from '../state/atoms/current-user';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { UserType } from 'app/features/users/types/user';
 import Languages from 'services/languages/languages';
 

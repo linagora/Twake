@@ -10,7 +10,7 @@ import {
 import CompanyApplicationsAPIClient from 'app/features/applications/api/company-applications-api-client';
 import { useCurrentCompany } from '../../companies/hooks/use-companies';
 import _ from 'lodash';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { Application } from 'app/features/applications/types/application';
 
 const logger = Logger.getLogger('useApplications');

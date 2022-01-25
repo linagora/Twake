@@ -13,7 +13,7 @@ import AccessRightsService from 'app/services/AccessRightsService';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import LoginService from 'app/services/login/LoginService';
 import UserAPIClient from 'app/features/users/api/user-api-client';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import CompanyAPIClient from 'app/features/companies/api/company-api-client';
 
 /**

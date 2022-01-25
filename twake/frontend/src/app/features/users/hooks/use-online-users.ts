@@ -2,7 +2,7 @@ import { useCallback, useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 
 import Logger from 'app/features/global/services/logger-service';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { OnlineUsersState, OnlineUserType } from '../state/atoms/online-users';
 import useWebSocket from '../../../services/WebSocket/hooks/useWebSocket';
 import {

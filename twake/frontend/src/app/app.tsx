@@ -8,7 +8,7 @@ import Integration from 'app/views/integration';
 import RouterServices, { RouteType } from './features/router/services/router-service';
 import ErrorBoundary from 'app/views/error/error-boundary';
 import InitService from './services/InitService';
-import useTimeout from 'app/features/global/hooks/useTimeout';
+import useTimeout from 'app/features/global/hooks/use-timeout';
 import ApplicationLoader from './components/loader/application-loader';
 
 import 'app/styles/index.less';

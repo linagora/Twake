@@ -1,5 +1,5 @@
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';

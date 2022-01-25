@@ -7,7 +7,7 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { isPrivateChannel, isPublicChannel } from 'app/features/channels/utils/utils';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { LoadingState } from 'app/state/recoil/atoms/Loading';
 import { useGlobalEffect } from 'app/services/utils/useGlobalEffect';
 

@@ -1,7 +1,7 @@
 import { useRecoilState } from 'recoil';
 
 import { TabType } from 'app/models/Tab';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import TabsAPIClients from 'app/services/tabs/TabsAPIClients';
 import { AtomTabKey, TabState } from '../atoms/Tabs';
 import useRouterChannel from '../../../features/router/hooks/use-router-channel';

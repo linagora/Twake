@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import useWebSocket from 'app/services/WebSocket/hooks/useWebSocket';
 import Logger from 'app/features/global/services/logger-service';
-import { RealtimeEventAction } from './types';
-import { WebsocketRoom } from '../WebSocket/WebSocket';
+import { RealtimeEventAction } from '../types/realtime-types';
+import { WebsocketRoom } from 'app/services/WebSocket/WebSocket';
 
 const logger = Logger.getLogger('useRealtimeRoom');
 

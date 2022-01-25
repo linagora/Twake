@@ -4,7 +4,7 @@ import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { WorkspaceListStateFamily } from '../state/workspace-list';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Logger from 'app/features/global/services/logger-service';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import RouterService from 'app/features/router/services/router-service';
 import _ from 'lodash';

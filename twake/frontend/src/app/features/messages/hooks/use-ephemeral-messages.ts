@@ -1,6 +1,6 @@
 import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageViewAPIClient from 'app/features/messages/api/message-view-api-client';
-import { useRealtimeRoom } from 'app/services/Realtime/useRealtime';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import _ from 'lodash';
 import { useState } from 'react';
