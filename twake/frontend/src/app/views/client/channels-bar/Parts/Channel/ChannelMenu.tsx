@@ -20,7 +20,7 @@ import { useFeatureToggles } from 'app/components/locked-features-components/fea
 import LockedGuestsPopup from 'app/components/locked-features-components/locked-guests-popup/locked-guests-popup';
 import InitService from 'app/services/InitService';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
-import ChannelMembersAPIClient from 'app/services/channels-user/ChannelMembersAPIClient';
+import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/utils';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';

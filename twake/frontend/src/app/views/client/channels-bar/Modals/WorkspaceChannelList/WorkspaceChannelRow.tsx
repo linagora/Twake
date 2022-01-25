@@ -11,7 +11,7 @@ import UsersService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
-import ChannelMembersAPIClient from 'app/services/channels-user/ChannelMembersAPIClient';
+import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 
 import './ChannelRow.scss';
 

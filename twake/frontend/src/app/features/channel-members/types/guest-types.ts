@@ -1,4 +1,4 @@
-import { PendingEmailResource } from 'app/models/PendingEmail';
+import { PendingEmailResource } from 'app/features/channel-members/types/pending-email';
 import { ChannelMemberResource } from 'app/features/channels/types/channel';
 
 export type GenericMemberType = 'pending-email' | 'guest';
