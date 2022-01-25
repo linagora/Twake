@@ -5,7 +5,7 @@ import Menu from 'components/menus/menu.js';
 import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import { ColumnsType } from 'antd/lib/table';
-import Api from 'app/services/Api';
+import Api from 'app/features/global/services/api-service';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';

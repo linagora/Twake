@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Col, Row, Typography } from 'antd';
 
-import Api from 'services/Api';
+import Api from 'app/features/global/services/api-service';
 import Banner from 'app/components/banner/banner';
 import Emojione from 'app/components/emojione/emojione';
 import Languages from 'services/languages/languages';

@@ -1,19 +1,19 @@
 import { TwakeService } from 'app/features/global/services/twake-service';
 import InitService, { ConsoleConfiguration, InternalConfiguration } from 'app/services/InitService';
-import { AuthProvider } from './provider/AuthProvider';
-import OIDCAuthProviderService from './provider/oidc/OIDCAuthProviderService';
-import InternalAuthProviderService from './provider/internal/InternalAuthProviderService';
+import { AuthProvider } from './provider/auth-provider';
+import OIDCAuthProviderService from './provider/oidc/oidc-auth-provider-service';
+import InternalAuthProviderService from './provider/internal/internal-auth-provider-service';
 import Logger from 'app/features/global/services/logger-service';
+
 import AlertManager from '../../features/global/services/alert-manager-service';
-import Languages from '../languages/languages';
+import Languages from 'app/services/languages/languages';
 import { UserType } from 'app/features/users/types/user';
 import JWT, { JWTDataType } from 'services/JWTStorage';
 import UserAPIClient from '../../features/users/api/user-api-client';
-import WindowState from 'services/utils/window';
 import Application from 'app/features/applications/services/application-service';
 import LocalStorage from 'services/LocalStorage';
 import Collections from 'app/deprecated/CollectionsV2/Collections';
-import Globals from '../Globals';
+import Globals from 'app/services/Globals';
 
 type AccountType = 'console' | 'internal';
 export type LoginState =

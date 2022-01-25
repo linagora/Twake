@@ -4,7 +4,7 @@ import {
   Participant,
   MessageWithReplies,
 } from 'app/features/messages/types/message';
-import Api from 'app/services/Api';
+import Api from 'app/features/global/services/api-service';
 import { TwakeService } from 'app/features/global/services/twake-service';
 
 /**

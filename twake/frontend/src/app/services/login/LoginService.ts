@@ -4,7 +4,7 @@ import WindowState from 'services/utils/window';
 import Globals from 'services/Globals';
 import RouterServices from '../../features/router/services/router-service';
 import LocalStorage from 'services/LocalStorage';
-import AuthService from 'services/Auth/AuthService';
+import AuthService from 'app/features/auth/auth-service';
 import Application from '../../features/applications/services/application-service';
 import { UserType } from 'app/features/users/types/user';
 import { Cookies } from 'react-cookie';

@@ -1,4 +1,4 @@
-import Api from 'services/Api';
+import Api from 'app/features/global/services/api-service';
 import Languages from 'services/languages/languages';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Login from './LoginService';

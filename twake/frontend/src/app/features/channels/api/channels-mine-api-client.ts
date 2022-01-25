@@ -1,4 +1,4 @@
-import Api from '../../../services/Api';
+import Api from '../../global/services/api-service';
 import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
 import { TwakeService } from '../../global/services/twake-service';
 import { WebsocketRoom } from '../../../services/WebSocket/WebSocket';

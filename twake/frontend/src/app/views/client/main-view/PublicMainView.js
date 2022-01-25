@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Languages from 'services/languages/languages';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Drive from 'app/views/applications/drive/drive-content';
-import Api from 'services/Api';
+import Api from 'app/features/global/services/api-service';
 import RouterService from 'app/features/router/services/router-service';
 import MenusBodyLayer from 'components/menus/menus-body-layer';
 import Viewer from 'app/views/applications/drive/viewer/viewer';

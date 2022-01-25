@@ -1,6 +1,6 @@
 import Logger from 'app/features/global/services/logger-service';
 import Observable from 'app/deprecated/Observable/Observable';
-import Api from 'services/Api';
+import Api from 'app/features/global/services/api-service';
 
 export type ConsoleConfiguration = {
   authority: string;

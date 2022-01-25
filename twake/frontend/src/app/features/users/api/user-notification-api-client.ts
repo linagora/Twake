@@ -1,4 +1,4 @@
-import Api from '../../../services/Api';
+import Api from '../../global/services/api-service';
 import { NotificationType } from 'app/features/users/types/notification-types';
 import { TwakeService } from '../../global/services/twake-service';
 

@@ -2,7 +2,7 @@ import { TwakeService } from '../../global/services/twake-service';
 import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageViewAPIClient from './message-view-api-client';
 import MessageThreadAPIClient from './message-thread-api-client';
-import Api from 'app/services/Api';
+import Api from 'app/features/global/services/api-service';
 import { WebsocketRoom } from 'app/services/WebSocket/WebSocket';
 
 /**

@@ -14,7 +14,7 @@ import RouterService from 'app/features/router/services/router-service';
 
 import './file.scss';
 import { PendingFileRecoilType } from 'app/features/files/types/file';
-import Api from 'app/services/Api';
+import Api from 'app/features/global/services/api-service';
 import FileUploadAPIClient from '../../features/files/api/file-upload-api-client';
 
 type PropsType = {

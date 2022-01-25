@@ -1,6 +1,6 @@
 import Login from 'app/services/login/LoginService';
 import Collections, { Collection } from 'app/deprecated/CollectionsV1/Collections/Collections';
-import Api from 'services/Api';
+import Api from 'app/features/global/services/api-service';
 import Languages from 'services/languages/languages';
 import { UserType } from 'app/features/users/types/user';
 import { TwakeService } from 'app/features/global/services/twake-service';

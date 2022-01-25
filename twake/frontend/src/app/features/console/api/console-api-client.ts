@@ -1,4 +1,4 @@
-import Api from 'app/services/Api';
+import Api from 'app/features/global/services/api-service';
 import { TwakeService } from 'app/features/global/services/twake-service';
 import { JWTDataType } from 'app/services/JWTStorage';
 

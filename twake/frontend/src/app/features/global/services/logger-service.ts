@@ -1,6 +1,6 @@
 import log from 'loglevel';
 import prefix from 'loglevel-plugin-prefix';
-import EnvironmentService from '../../../services/EnvironmentService';
+import EnvironmentService from './environment-service';
 
 const isProduction = EnvironmentService.isProduction();
 

@@ -1,6 +1,6 @@
 import { CompanyType } from 'app/features/companies/types/company';
 import { UserType } from 'app/features/users/types/user';
-import Api from '../../../services/Api';
+import Api from '../../global/services/api-service';
 import { TwakeService } from '../../global/services/twake-service';
 import { WebsocketRoom } from '../../../services/WebSocket/WebSocket';
 import WorkspaceAPIClient from '../../workspaces/api/workspace-api-client';

@@ -1,4 +1,4 @@
-import Api from 'app/services/Api';
+import Api from 'app/features/global/services/api-service';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import InitService from 'app/services/InitService';
 import Languages from 'services/languages/languages';

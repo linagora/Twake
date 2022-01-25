@@ -4,7 +4,7 @@ import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Resumable from 'services/uploadManager/resumable.js';
 import Globals from 'services/Globals';
-import Api from 'services/Api';
+import Api from 'app/features/global/services/api-service';
 import JWTStorage from 'app/services/JWTStorage';
 
 class UploadManager extends Observable {

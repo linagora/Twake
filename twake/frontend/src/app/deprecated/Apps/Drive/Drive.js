@@ -1,5 +1,5 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import Api from 'services/Api';
+import Api from 'app/features/global/services/api-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import LocalStorage from 'app/services/LocalStorage';

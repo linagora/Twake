@@ -1,8 +1,8 @@
 import Logger from 'app/features/global/services/logger-service';
-import { InternalConfiguration } from '../../../InitService';
+import { InternalConfiguration } from '../../../../services/InitService';
 import Observable from '../../../../deprecated/Observable/Observable';
-import { TwakeService } from '../../../../features/global/services/twake-service';
-import { AuthProvider, InitParameters } from '../AuthProvider';
+import { TwakeService } from '../../../global/services/twake-service';
+import { AuthProvider, InitParameters } from '../auth-provider';
 import Globals from 'app/services/Globals';
 import RouterService from 'app/features/router/services/router-service';
 import ConsoleAPIClient from 'app/features/console/api/console-api-client';

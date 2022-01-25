@@ -3,7 +3,7 @@ import $ from 'jquery';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import PopupManager from 'app/deprecated/popupManager/popupManager.js';
-import Api from 'services/Api';
+import Api from 'app/features/global/services/api-service';
 import ws from 'services/websocket.js';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Groups from 'app/deprecated/workspaces/groups.js';

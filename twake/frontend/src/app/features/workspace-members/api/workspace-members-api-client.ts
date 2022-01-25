@@ -1,4 +1,4 @@
-import Api from '../../../services/Api';
+import Api from '../../global/services/api-service';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import { TwakeService } from '../../global/services/twake-service';
 
