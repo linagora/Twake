@@ -6,7 +6,7 @@ import RouterServices from 'app/features/router/services/router-service';
 import React from 'react';
 import DirectChannelRow from './DirectChannelRow';
 import WorkspaceChannelRow from './WorkspaceChannelRow';
-import { GenericChannel } from 'services/search/searchListManager';
+import { GenericChannel } from 'app/features/global/services/search-list-manager-service';
 import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
 type PropsType = {

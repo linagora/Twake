@@ -7,7 +7,7 @@ import ButtonWithTimeout from 'components/buttons/button-with-timeout';
 import Attribute from 'components/parameters/attribute';
 import uploadService from 'app/deprecated/uploadManager/upload-manager';
 import Input from 'components/inputs/input';
-import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
+import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 
 import './Pages.scss';
 

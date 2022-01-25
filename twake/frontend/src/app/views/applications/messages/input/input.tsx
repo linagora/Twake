@@ -19,7 +19,7 @@ import { FileType } from 'app/features/files/types/file';
 import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
 import { useMessageEditor } from 'app/features/messages/hooks/use-message-editor';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import { delayRequest } from 'app/services/utils/managedSearchRequest';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import {
   useChannelWritingActivityEmit,

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { capitalize } from 'lodash';
 
 import Menu from 'components/menus/menu';
-import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
+import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import RouterService from 'app/features/router/services/router-service';
 import Languages from 'app/features/global/services/languages-service';

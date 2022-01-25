@@ -2,8 +2,8 @@ import moment from 'moment';
 
 import Observable from 'app/deprecated/Observable/Observable';
 import Languages from 'app/features/global/services/languages-service';
-import { ToasterService as Toaster } from 'services/Toaster';
-import Login from 'app/services/login/LoginService';
+import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
+import Login from 'app/features/global/services/login-service';
 import { Collection } from '../CollectionsReact/Collections';
 import {
   preferencesType,

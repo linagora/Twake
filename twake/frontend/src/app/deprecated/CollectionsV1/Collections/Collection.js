@@ -1,6 +1,6 @@
 import Api from 'app/features/global/services/api-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import Number from 'services/utils/Numbers';
+import Number from 'app/features/global/utils/Numbers';
 import MultipleSecuredConnections from './MultipleSecuredConnections.js';
 import LocalStorage from 'app/features/global/services/local-storage-service';
 /** Collection

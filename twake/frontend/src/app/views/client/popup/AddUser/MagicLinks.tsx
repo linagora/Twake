@@ -4,7 +4,7 @@ import { DeleteOutlined, RetweetOutlined } from '@ant-design/icons';
 import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
 import './MagicLinks.scss';
-import { MagicLinksGeneratorService } from 'services/MagicLinks/MagicLinks';
+import { MagicLinksGeneratorService } from 'app/features/workspaces/services/magic-links-service';
 
 type PropsType = {
   [key: string]: any;

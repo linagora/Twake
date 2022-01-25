@@ -7,7 +7,7 @@ import ChannelsService from 'app/deprecated/channels/channels.js';
 import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Api from 'app/features/global/services/api-service';
-import Strings from 'services/utils/strings.js';
+import Strings from 'app/features/global/utils/strings.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';

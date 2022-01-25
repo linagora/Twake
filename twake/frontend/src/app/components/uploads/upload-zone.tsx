@@ -7,7 +7,7 @@ import { Upload } from 'react-feather';
 import classNames from 'classnames';
 import './uploads.scss';
 import { Typography } from 'antd';
-import { ToasterService as Toaster } from 'app/services/Toaster';
+import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
 
 type PropsType = { [key: string]: any };
 

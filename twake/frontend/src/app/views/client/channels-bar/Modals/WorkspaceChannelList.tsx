@@ -3,7 +3,9 @@ import { Input, Row, Typography } from 'antd';
 import Languages from 'app/features/global/services/languages-service';
 import Icon from 'app/components/icon/icon';
 import ObjectModal from 'components/object-modal/object-modal';
-import listService, { GenericChannel } from 'services/search/searchListManager';
+import listService, {
+  GenericChannel,
+} from 'app/features/global/services/search-list-manager-service';
 import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
 import ChannelsService from 'app/deprecated/channels/channels.js';
 import RouterServices from 'app/features/router/services/router-service';
@@ -13,7 +15,7 @@ import UsersService from 'app/features/users/services/current-user-service';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { delayRequest } from 'app/services/utils/managedSearchRequest';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';

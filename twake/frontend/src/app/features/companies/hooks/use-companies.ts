@@ -11,7 +11,7 @@ import RouterService from 'app/features/router/services/router-service';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
-import LoginService from 'app/services/login/LoginService';
+import LoginService from 'app/features/global/services/login-service';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import CompanyAPIClient from 'app/features/companies/api/company-api-client';

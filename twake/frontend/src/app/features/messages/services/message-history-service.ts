@@ -1,5 +1,5 @@
 import { Message } from '../types/message';
-import Numbers from 'app/services/utils/Numbers';
+import Numbers from 'app/features/global/utils/Numbers';
 import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';

@@ -4,7 +4,7 @@ import { X } from 'react-feather';
 import emojione from 'emojione';
 import Observable from 'app/deprecated/Observable/Observable';
 import ElectronService from 'app/features/global/services/electron-service';
-import windowState from 'services/utils/window';
+import windowState from 'app/features/global/utils/window';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from '../../../deprecated/CollectionsReact/Collections';

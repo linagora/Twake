@@ -5,10 +5,10 @@ import 'moment-timezone';
 import Icon from 'components/icon/icon';
 import Menu from 'components/menus/menu';
 import DriveService from 'app/deprecated/Apps/Drive/Drive';
-import Numbers from 'services/utils/Numbers';
+import Numbers from 'app/features/global/utils/Numbers';
 import FileType from './file-type';
 import TagPicker from 'components/tag-picker/tag-picker';
-import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
+import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import '../drive.scss';
 
 export default class File extends React.Component {

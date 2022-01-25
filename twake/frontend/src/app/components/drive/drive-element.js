@@ -17,7 +17,7 @@ import MediumPopupManager from 'app/components/modal/modal-manager';
 import Languages from 'app/features/global/services/languages-service';
 import TagPicker from 'components/tag-picker/tag-picker.js';
 import RouterServices from 'app/features/router/services/router-service';
-import { getAsFrontUrl } from 'app/services/utils/URLUtils';
+import { getAsFrontUrl } from 'app/features/global/utils/URLUtils';
 import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';

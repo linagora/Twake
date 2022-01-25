@@ -24,7 +24,7 @@ import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-me
 import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/utils';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import { ToasterService as Toaster } from 'app/services/Toaster';
+import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
 

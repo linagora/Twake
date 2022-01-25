@@ -7,7 +7,7 @@ import Api from 'app/features/global/services/api-service';
 import RouterService from 'app/features/router/services/router-service';
 import MenusBodyLayer from 'components/menus/menus-body-layer';
 import Viewer from 'app/views/applications/drive/viewer/viewer';
-import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
+import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 
 import './MainView.scss';
 

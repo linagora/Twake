@@ -9,11 +9,11 @@ import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import Participants from './Part/Participants.js';
 import CalendarSelector from 'components/calendar/calendar-selector/calendar-selector.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
-import DateTimeUtils from 'services/utils/datetime.js';
+import DateTimeUtils from 'app/features/global/utils/datetime.js';
 import Button from 'components/buttons/button.js';
 import Icon from 'components/icon/icon.js';
 import Tabs from 'components/tabs/tabs.js';
-import SearchService from 'services/search/search.js';
+import SearchService from 'app/deprecated/search/search.js';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
 import UserService from 'app/features/users/services/current-user-service';
 

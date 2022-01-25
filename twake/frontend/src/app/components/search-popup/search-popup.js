@@ -1,5 +1,5 @@
 import React from 'react';
-import Search from 'services/search/search.js';
+import Search from 'app/deprecated/search/search.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import UserService from 'app/features/users/services/current-user-service';
 import './search-popup.scss';

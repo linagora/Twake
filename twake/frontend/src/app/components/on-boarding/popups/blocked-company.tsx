@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Row, Typography, Select } from 'antd';
 import ObjectModal from '../../object-modal/object-modal';
 import Languages from 'app/features/global/services/languages-service';
-import LoginService from 'app/services/login/LoginService';
+import LoginService from 'app/features/global/services/login-service';
 import { CompanyType } from 'app/features/companies/types/company';
 import { capitalize } from 'lodash';
 import ModalManager from 'app/components/modal/modal-manager';

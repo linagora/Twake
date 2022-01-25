@@ -1,5 +1,5 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import Number from 'services/utils/Numbers';
+import Number from 'app/features/global/utils/Numbers';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 
 /**

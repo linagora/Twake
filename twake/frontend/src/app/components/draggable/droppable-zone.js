@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import DraggableManager from './draggable-manager.js';
-import Number from 'services/utils/Numbers';
+import Number from 'app/features/global/utils/Numbers';
 import './draggable.scss';
 
 export default class DroppableZone extends React.Component {

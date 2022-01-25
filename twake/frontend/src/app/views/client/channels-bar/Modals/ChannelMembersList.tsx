@@ -10,7 +10,7 @@ import {
 } from 'app/features/channels/types/channel';
 import { UserType } from 'app/features/users/types/user';
 
-import Strings from 'services/utils/strings.js';
+import Strings from 'app/features/global/utils/strings.js';
 import Languages from 'app/features/global/services/languages-service';
 import UsersService from 'app/features/users/services/current-user-service';
 import Collections from 'app/deprecated/CollectionsReact/Collections';
@@ -21,7 +21,7 @@ import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Col
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
-import { delayRequest } from 'app/services/utils/managedSearchRequest';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 
 type PropsType = {
   closable?: boolean;

@@ -1,6 +1,6 @@
 import { ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
 import { Emoji } from './emoji';
-import EmojiService from 'services/emojis/emojis';
+import EmojiService from 'app/components/rich-text-editor/emojis-service';
 import { getInsertRange } from '../../editor-utils';
 import EmojiSuggestion from './emoji-suggestion';
 import { EditorSuggestionPlugin } from '../';

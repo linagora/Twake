@@ -15,7 +15,7 @@ import Rounded from 'components/inputs/rounded.js';
 
 import DraggableBodyLayer from 'components/draggable/draggable-body-layer.js';
 
-import emojiService from 'services/emojis/emojis.js';
+import emojiService from 'app/components/rich-text-editor/emojis-service.js';
 import User from 'components/ui/user.js';
 
 import AutoHeight from 'components/auto-height/auto-height.js';

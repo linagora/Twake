@@ -1,6 +1,6 @@
 import LocalStorage from 'app/features/global/services/local-storage-service';
-import LoginService from 'app/services/login/LoginService';
-import WindowService from 'services/utils/window';
+import LoginService from 'app/features/global/services/login-service';
+import WindowService from 'app/features/global/utils/window';
 import ConsoleAPIClient from 'app/features/console/api/console-api-client';
 import { TwakeService } from './twake-service';
 import Logger from './logger-service';

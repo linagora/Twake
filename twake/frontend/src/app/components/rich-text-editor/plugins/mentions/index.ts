@@ -14,7 +14,7 @@ import UserService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/features/router/services/router-service';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
-import Strings from 'app/services/utils/strings';
+import Strings from 'app/features/global/utils/strings';
 
 import './style.scss';
 

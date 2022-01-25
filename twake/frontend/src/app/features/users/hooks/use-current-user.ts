@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import LoginService from 'app/services/login/LoginService';
+import LoginService from 'app/features/global/services/login-service';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { useRecoilState } from 'recoil';
 import { CurrentUserState } from '../state/atoms/current-user';

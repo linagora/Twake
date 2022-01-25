@@ -9,12 +9,12 @@ import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Col
 import Groups from 'app/deprecated/workspaces/groups.js';
 import LocalStorage from 'app/features/global/services/local-storage-service';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
-import WindowService from 'services/utils/window';
+import WindowService from 'app/features/global/utils/window';
 import workspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import RouterServices from 'app/features/router/services/router-service';
 import NoWorkspaces from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoWorkspaces';
 import NoCompanies from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoCompanies';
-import loginService from 'app/services/login/LoginService';
+import loginService from 'app/features/global/services/login-service';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import JWTStorage from 'app/features/global/services/jwt-storage-service';
 import ConsoleService from 'app/features/console/services/console-service';

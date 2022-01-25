@@ -1,5 +1,5 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import Number from 'services/utils/Numbers';
+import Number from 'app/features/global/utils/Numbers';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Resumable from 'app/features/files/utils/resumable.js';

@@ -4,7 +4,7 @@ import environment from '../../../../environment/environment';
 import { ConsoleConfiguration } from '../../../global/services/init-service';
 import Observable from '../../../../deprecated/Observable/Observable';
 import Logger from 'app/features/global/services/logger-service';
-import { getAsFrontUrl } from '../../../../services/utils/URLUtils';
+import { getAsFrontUrl } from 'app/features/global/utils/URLUtils';
 import { TwakeService } from '../../../global/services/twake-service';
 import EnvironmentService from '../../../global/services/environment-service';
 import { AuthProvider, InitParameters } from '../auth-provider';

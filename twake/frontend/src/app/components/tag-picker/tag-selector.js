@@ -5,7 +5,7 @@ import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Icon from 'components/icon/icon.js';
 import ColorPicker from 'components/color-picker/color-picker.js';
-import Strings from 'services/utils/strings.js';
+import Strings from 'app/features/global/utils/strings.js';
 import InputWithColor from 'components/inputs/input-with-color.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import Languages from 'app/features/global/services/languages-service';

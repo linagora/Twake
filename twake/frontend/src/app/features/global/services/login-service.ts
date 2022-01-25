@@ -1,15 +1,15 @@
 import Logger from 'app/features/global/services/logger-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import WindowState from 'services/utils/window';
+import WindowState from 'app/features/global/utils/window';
 import Globals from 'app/features/global/services/globals-twake-app-service';
-import RouterServices from '../../features/router/services/router-service';
+import RouterServices from '../../router/services/router-service';
 import LocalStorage from 'app/features/global/services/local-storage-service';
 import AuthService from 'app/features/auth/auth-service';
-import Application from '../../features/applications/services/application-service';
+import Application from '../../applications/services/application-service';
 import { UserType } from 'app/features/users/types/user';
 import { Cookies } from 'react-cookie';
-import UserAPIClient from '../../features/users/api/user-api-client';
-import InitService from '../../features/global/services/init-service';
+import UserAPIClient from '../../users/api/user-api-client';
+import InitService from './init-service';
 
 class Login extends Observable {
   // Promise resolved when user is defined

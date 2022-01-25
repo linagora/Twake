@@ -1,7 +1,7 @@
 import Api from 'app/features/global/services/api-service';
 import Languages from 'app/features/global/services/languages-service';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import Login from '../../services/login/LoginService';
+import Login from '../../features/global/services/login-service';
 
 /**
  * This service is depreciated as Twake will exclusively use Console in the future

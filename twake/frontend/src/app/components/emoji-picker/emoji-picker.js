@@ -1,7 +1,7 @@
 import React from 'react';
 import { Picker } from 'emoji-mart';
 import Emojione from 'components/emojione/emojione';
-import { getAsFrontUrl } from 'app/services/utils/URLUtils';
+import { getAsFrontUrl } from 'app/features/global/utils/URLUtils';
 import './emoji-picker.scss';
 import 'emoji-mart/css/emoji-mart.css';
 import Languages from 'app/features/global/services/languages-service';

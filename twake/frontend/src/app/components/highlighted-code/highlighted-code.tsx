@@ -3,7 +3,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/railscasts.css'; //monokai-sublime
 import { Copy } from 'react-feather';
 import { Tooltip } from 'antd';
-import { ToasterService } from 'app/services/Toaster';
+import { ToasterService } from 'app/features/global/services/toaster-service';
 
 export default ({ code, className }: { code: string; className?: string }) => {
   let renderedCode = code.replace(/\t/g, '  ');

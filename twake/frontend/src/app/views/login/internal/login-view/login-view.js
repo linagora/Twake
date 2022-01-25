@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
-import LoginService from 'app/services/login/LoginService';
+import LoginService from 'app/features/global/services/login-service';
 import Emojione from 'components/emojione/emojione';
 import Button from 'components/buttons/button.js';
 import Input from 'components/inputs/input.js';

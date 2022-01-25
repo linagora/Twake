@@ -1,4 +1,4 @@
-import Numbers from 'app/services/utils/Numbers';
+import Numbers from 'app/features/global/utils/Numbers';
 import _ from 'lodash';
 import { RecoilState, useRecoilCallback } from 'recoil';
 

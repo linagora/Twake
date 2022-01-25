@@ -11,8 +11,8 @@ import DeleteWorkspacePopup from './DeleteWorkspacePopup';
 import WorkspaceAPIClient, {
   WorkspaceUpdateResource,
 } from 'app/features/workspaces/api/workspace-api-client';
-import { ToasterService as Toaster } from 'app/services/Toaster';
-import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
+import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
+import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 
 const { Item } = Descriptions;
 const { Text, Title, Link } = Typography;

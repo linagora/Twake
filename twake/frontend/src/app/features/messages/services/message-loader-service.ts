@@ -1,6 +1,6 @@
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Collection from 'app/deprecated/CollectionsV1/Collections/Collection';
-import Numbers from 'services/utils/Numbers';
+import Numbers from 'app/features/global/utils/Numbers';
 import Observable from 'app/deprecated/CollectionsV1/observable';
 import Logger from 'app/features/global/services/logger-service';
 import { Message } from '../types/message';

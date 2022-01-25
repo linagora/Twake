@@ -4,7 +4,10 @@ import { useParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { Button, Col, Divider, Layout, Row, Space, Typography } from 'antd';
 
-import { MagicLinksJoinResponse, MagicLinksJoinService } from 'services/MagicLinks/MagicLinks';
+import {
+  MagicLinksJoinResponse,
+  MagicLinksJoinService,
+} from 'app/features/workspaces/services/magic-links-service';
 import Languages from 'app/features/global/services/languages-service';
 import RouterService from 'app/features/router/services/router-service';
 import InitService from 'app/features/global/services/init-service';

@@ -15,7 +15,7 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import Api from 'app/features/global/services/api-service';
 import ConsoleService from 'app/features/console/services/console-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
-import { delayRequest } from 'app/services/utils/managedSearchRequest';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 

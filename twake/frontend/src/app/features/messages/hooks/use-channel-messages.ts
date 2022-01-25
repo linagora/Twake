@@ -1,8 +1,8 @@
 import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageViewAPIClient from 'app/features/messages/api/message-view-api-client';
-import LoginService from 'app/services/login/LoginService';
+import LoginService from 'app/features/global/services/login-service';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
-import Numbers from 'app/services/utils/Numbers';
+import Numbers from 'app/features/global/utils/Numbers';
 import _ from 'lodash';
 import { useRecoilState } from 'recoil';
 import { AtomChannelKey, AtomMessageKey, ChannelMessagesState } from '../state/atoms/messages';

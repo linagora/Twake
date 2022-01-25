@@ -1,6 +1,6 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
-import WindowService from 'services/utils/window';
+import WindowService from 'app/features/global/utils/window';
 
 import Globals from 'app/features/global/services/globals-twake-app-service';
 

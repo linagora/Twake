@@ -6,7 +6,7 @@ import Icon from 'components/icon/icon.js';
 import Loader from 'components/loader/loader.js';
 import UploadZone from 'components/uploads/upload-zone';
 
-import Numbers from 'services/utils/Numbers';
+import Numbers from 'app/features/global/utils/Numbers';
 import FilePicker from 'components/drive/file-picker/file-picker.js';
 import DriveMultiSelector from 'components/drive/drive-multi-selector.js';
 import Menu from 'components/menus/menu.js';

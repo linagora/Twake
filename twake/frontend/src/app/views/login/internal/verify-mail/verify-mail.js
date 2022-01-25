@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
-import LoginService from 'app/services/login/LoginService';
+import LoginService from 'app/features/global/services/login-service';
 import AccountService from 'app/deprecated/login/account';
 import Emojione from 'components/emojione/emojione';
-import WindowState from 'services/utils/window';
+import WindowState from 'app/features/global/utils/window';
 
 export default class VerifyMail extends Component {
   constructor() {

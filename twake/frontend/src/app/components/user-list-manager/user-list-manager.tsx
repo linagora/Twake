@@ -3,7 +3,7 @@ import { Button, Col, Row, Typography } from 'antd';
 import classNames from 'classnames';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
 
-import Strings from 'app/services/utils/strings';
+import Strings from 'app/features/global/utils/strings';
 import UsersService from 'app/features/users/services/current-user-service';
 import Languages from 'app/features/global/services/languages-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';

@@ -2,7 +2,7 @@ import React from 'react';
 import { Tag, Typography } from 'antd';
 import { capitalize } from 'lodash';
 
-import Numbers from 'app/services/utils/Numbers';
+import Numbers from 'app/features/global/utils/Numbers';
 import { DataFileType } from '../types';
 
 type PropsType = {

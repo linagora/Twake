@@ -6,7 +6,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import UserService from 'app/features/users/services/current-user-service';
 import CurrentUserService from 'app/deprecated/user/CurrentUser';
 import MenusManager from 'app/components/menus/menus-manager.js';
-import LoginService from 'app/services/login/LoginService';
+import LoginService from 'app/features/global/services/login-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import ListenUsers from 'app/features/users/services/listen-users-service';
