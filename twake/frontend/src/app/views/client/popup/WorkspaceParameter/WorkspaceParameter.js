@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import LoginService from 'app/services/login/LoginService';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
@@ -13,7 +13,7 @@ import CompanyIdendity from './Pages/CompanyIdendity.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import MenuList from 'components/menus/menu-component.js';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import ConsoleService from 'app/features/console/services/console-service';
 
 import './WorkspaceParameter.scss';

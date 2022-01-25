@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import './Footer.scss';
 
 import Icon from 'app/components/icon/icon.js';
-import InitService from 'services/InitService';
-import Languages from 'services/languages/languages';
-import Globals from 'services/Globals';
+import InitService from 'app/features/global/services/init-service';
+import Languages from 'app/features/global/services/languages-service';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 import Menu from 'components/menus/menu.js';
 
 export default class Footer extends React.Component {

@@ -6,7 +6,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import moment from 'moment';
 
 import PendingFileRow from './pending-file-row';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { PendingFileRecoilType } from 'app/features/files/types/file';
 import { useUpload } from 'app/features/files/hooks/use-upload';
 

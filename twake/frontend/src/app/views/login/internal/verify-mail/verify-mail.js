@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import LoginService from 'app/services/login/LoginService';
-import AccountService from 'services/login/account';
+import AccountService from 'app/deprecated/login/account';
 import Emojione from 'components/emojione/emojione';
 import WindowState from 'services/utils/window';
 

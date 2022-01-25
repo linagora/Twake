@@ -5,7 +5,7 @@ import AddIcon from '@material-ui/icons/AddOutlined';
 import GearIcon from '@material-ui/icons/BuildOutlined';
 import Input from 'components/inputs/input.js';
 import './connectors-list-manager.scss';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 

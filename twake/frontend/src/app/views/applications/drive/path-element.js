@@ -7,7 +7,7 @@ import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import SelectionsManager from 'app/deprecated/SelectionsManager/SelectionsManager.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Emojione from 'components/emojione/emojione';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 
 export default class PathElement extends DriveElement {

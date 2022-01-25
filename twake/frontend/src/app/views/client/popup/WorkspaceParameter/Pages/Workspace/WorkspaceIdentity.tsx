@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { isEqual } from 'lodash';
 import { Avatar, Button, Col, Descriptions, Divider, Input, Row, Switch, Typography } from 'antd';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 import AvatarComponent from 'app/components/avatar/avatar';
 import ModalManager from 'app/components/modal/modal-manager';

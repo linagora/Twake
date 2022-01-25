@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import userService from 'app/features/users/services/current-user-service';
 import loginService from 'app/services/login/LoginService';
-import AccountService from 'services/login/account';
+import AccountService from 'app/deprecated/login/account';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Input from 'components/inputs/input.js';

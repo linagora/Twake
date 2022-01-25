@@ -3,7 +3,7 @@ import './connection-indicator.scss';
 import ErrorOutlinedIcon from '@material-ui/icons/ErrorOutlined';
 import HourglassEmpty from '@material-ui/icons/HourglassEmpty';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { ConnectedState } from 'app/features/users/state/atoms/connected';
 import { useRecoilState } from 'recoil';
 import WebSocket, { WebsocketEvents } from 'services/WebSocket/WebSocket';

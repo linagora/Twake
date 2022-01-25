@@ -6,7 +6,7 @@ import { Check } from 'react-feather';
 import { Tabs, Button, Typography, Col, Tag, Descriptions, Row, Divider } from 'antd';
 
 import { Application, ApplicationAccess } from 'app/features/applications/types/application';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import AvatarComponent from 'app/components/avatar/avatar';
 import ObjectModal from 'app/components/object-modal/object-modal';
 import ModalManager from 'app/components/modal/modal-manager';

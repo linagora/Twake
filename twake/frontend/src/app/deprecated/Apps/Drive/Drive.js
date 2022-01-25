@@ -2,12 +2,12 @@ import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Api from 'app/features/global/services/api-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import LocalStorage from 'app/services/LocalStorage';
+import LocalStorage from 'app/features/global/services/local-storage-service';
 import AceModeList from './utils/ace_modelist.js';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';
 
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 
 class Drive extends Observable {
   constructor() {

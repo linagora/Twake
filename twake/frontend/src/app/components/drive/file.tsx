@@ -5,7 +5,7 @@ import './drive.scss';
 import UIFile from './ui/file.js';
 import Loader from 'components/loader/loader.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 type PropsType = { [key: string]: any };
 

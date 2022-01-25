@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import Compile from './compile';
 import './twacode.scss';
 

@@ -1,4 +1,4 @@
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 
 export function addApiUrlIfNeeded(url: string, asCssUrl?: boolean): string {
   function _wrap(url: string): string {

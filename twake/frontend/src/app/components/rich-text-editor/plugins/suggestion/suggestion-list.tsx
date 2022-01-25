@@ -4,7 +4,7 @@ import { Row, Typography } from 'antd';
 import { Frown, Terminal, Search, X } from 'react-feather';
 
 import { isCommandType, isEmojiType, isMentionType } from './utils';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 import './suggestion-list.scss';
 

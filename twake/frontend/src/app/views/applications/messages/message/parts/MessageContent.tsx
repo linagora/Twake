@@ -10,7 +10,7 @@ import DeletedContent from './DeletedContent';
 import RetryButtons from './RetryButtons';
 import FileComponent from 'app/components/file/file-component';
 import { Row } from 'antd';
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import Blocks from './Blocks';
@@ -18,7 +18,7 @@ import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/us
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import MessageAttachments from './MessageAttachments';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 
 type Props = {
   linkToThread?: boolean;

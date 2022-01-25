@@ -1,4 +1,4 @@
-import ws from 'services/websocket.js';
+import ws from 'app/deprecated/websocket/websocket.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import User from 'app/features/users/services/current-user-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';

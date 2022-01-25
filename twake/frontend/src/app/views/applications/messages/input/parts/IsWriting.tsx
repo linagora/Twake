@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { useChannelWritingActivityState } from 'app/features/channels/hooks/use-channel-writing-activity';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import WritingLoader from 'app/components/writing-loader/writing-loader';
 import { ChannelWritingActivityType } from 'app/features/channels/state/channel-writing-activity';
 

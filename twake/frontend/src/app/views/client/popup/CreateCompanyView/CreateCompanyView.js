@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import LoginService from 'app/services/login/LoginService';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
@@ -10,7 +10,7 @@ import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import './CreateCompanyView.scss';
 import Input from 'components/inputs/input.js';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
-import InitService from 'services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import AddUserByEmail from 'app/views/client/popup/AddUser/AddUserByEmail';
 
 export default class CreateCompanyView extends Component {

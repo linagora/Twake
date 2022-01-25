@@ -19,7 +19,7 @@ import '@fullcalendar/list/main.css';
 import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import EventUI from 'components/calendar/event/event.js';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 import moment from 'moment';
 

@@ -2,8 +2,8 @@ import React from 'react';
 import ObjectModal from 'app/components/object-modal/object-modal';
 import { Button, Row, Typography } from 'antd';
 import ModalManager from 'app/components/modal/modal-manager';
-import Languages from 'services/languages/languages';
-import InitService from 'app/services/InitService';
+import Languages from 'app/features/global/services/languages-service';
+import InitService from 'app/features/global/services/init-service';
 
 const { Title, Text } = Typography;
 export default () => (

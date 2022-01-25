@@ -2,10 +2,10 @@ import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Number from 'services/utils/Numbers';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import Resumable from 'services/uploadManager/resumable.js';
-import Globals from 'services/Globals';
+import Resumable from 'app/features/files/utils/resumable.js';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 import Api from 'app/features/global/services/api-service';
-import JWTStorage from 'app/services/JWTStorage';
+import JWTStorage from 'app/features/global/services/jwt-storage-service';
 
 class UploadManager extends Observable {
   constructor() {

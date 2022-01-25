@@ -7,7 +7,7 @@ import { Alert, Button, Checkbox, Input, Row, Typography } from 'antd';
 
 import Logger from 'app/features/global/services/logger-service';
 import { WorkspaceType, WorkspaceUserType } from 'app/features/workspaces/types/workspace';
-import Languages from 'app/services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ObjectModal from 'app/components/object-modal/object-modal';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
 import RouterService from 'app/features/router/services/router-service';

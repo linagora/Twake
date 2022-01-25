@@ -1,11 +1,11 @@
 import Api from 'app/features/global/services/api-service';
-import ws from 'services/websocket.js';
+import ws from 'app/deprecated/websocket/websocket.js';
 import CryptoJS from 'crypto-js';
 import sha256 from 'crypto-js/sha256';
 /** SecuredConnection
  * Create websockets encrypted connection
  */
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 
 export default class SecuredConnection {
   constructor(route, options, callback, http_options, collectionId) {

@@ -1,5 +1,5 @@
-import JWTStorage from 'services/JWTStorage';
-import Logger from '../features/global/services/logger-service';
+import JWTStorage from 'app/features/global/services/jwt-storage-service';
+import Logger from './logger-service';
 
 class Requests {
   logger: Logger.Logger;

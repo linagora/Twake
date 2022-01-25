@@ -3,7 +3,7 @@ import MenusManager from 'app/components/menus/menus-manager.js';
 import Button from 'components/buttons/button.js';
 import Input from 'components/inputs/input.js';
 import Menu from 'components/menus/menu.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 export const NewFolderInput = (props: { value: string; createFolder: (name: string) => void }) => {
   const [value, setValue] = useState(props.value);

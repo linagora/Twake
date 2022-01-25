@@ -9,7 +9,10 @@ import { CompanyApplications } from './ChannelsApps/ChannelsApps';
 import ChannelsWorkspace from './ChannelsWorkspace/ChannelsWorkspace';
 import ChannelsUser from './ChannelsUser/ChannelsUser';
 import Footer from './Parts/Footer.js';
-import Shortcuts, { defaultShortcutsMap, ShortcutType } from 'app/services/ShortcutService';
+import Shortcuts, {
+  defaultShortcutsMap,
+  ShortcutType,
+} from 'app/features/global/services/shortcut-service';
 import AddUserButton from 'components/add-user-button/add-user-button';
 import Workspaces from 'app/deprecated/workspaces/workspaces';
 import ModalManager from 'app/components/modal/modal-manager';

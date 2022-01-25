@@ -4,7 +4,7 @@ import Emojione from 'components/emojione/emojione';
 import { getAsFrontUrl } from 'app/services/utils/URLUtils';
 import './emoji-picker.scss';
 import 'emoji-mart/css/emoji-mart.css';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { isArray } from 'lodash';
 
 Picker.defaultProps.backgroundImageFn = function backgroundImageFn(set, sheetSize) {

@@ -16,7 +16,7 @@ import MessageListServiceFactory from 'app/features/messages/services/message-li
 import { MessageListService } from 'app/features/messages/services/message-list-service';
 import { ChannelResource } from 'app/features/channels/types/channel';
 import LockedHistoryBanner from 'app/components/locked-features-components/locked-history-banner/locked-history-banner';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import _ from 'lodash';
 import FirstMessage from './__old/_Message/Parts/FirstMessage/FirstMessage';
 

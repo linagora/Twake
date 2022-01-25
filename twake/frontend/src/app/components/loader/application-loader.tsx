@@ -1,14 +1,14 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 type PropsType = {
   message?: string;
-}
+};
 
-export default (props: PropsType) =>
+export default (props: PropsType) => (
   <div
-    id='application_loader'
+    id="application_loader"
     style={{
       display: 'flex',
       justifyContent: 'center',
@@ -21,13 +21,12 @@ export default (props: PropsType) =>
     }}
   >
     <div>
-      {
-        props.message ||
+      {props.message ||
         Languages.t(
           'application.load.longer',
           [],
           'Server takes longer than expected to reply, please wait or reload the page...',
-        )
-      }
+        )}
     </div>
-  </div>;
+  </div>
+);

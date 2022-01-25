@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Col, Row, Typography } from 'antd';
 import AutoHeight from '../../auto-height/auto-height';
 import ObjectModal from '../../object-modal/object-modal';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ConsoleService from 'app/features/console/services/console-service';
 import RouterServices from 'app/features/router/services/router-service';

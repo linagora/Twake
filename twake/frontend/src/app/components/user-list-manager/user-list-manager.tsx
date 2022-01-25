@@ -5,7 +5,7 @@ import TrashIcon from '@material-ui/icons/DeleteOutlined';
 
 import Strings from 'app/services/utils/strings';
 import UsersService from 'app/features/users/services/current-user-service';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import UserOrMail from '../ui/user-or-mail';
 import Icon from '../icon/icon';

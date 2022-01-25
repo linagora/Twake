@@ -2,7 +2,7 @@ import React, { useCallback, useState, useRef, useEffect } from 'react';
 import { Button, Input } from 'antd';
 import classNames from 'classnames';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import MenusManager from 'app/components/menus/menus-manager';
 import InputWithIcon from 'app/components/inputs/input-with-icon';

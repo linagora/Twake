@@ -1,4 +1,4 @@
-import LocalStorage from 'app/services/LocalStorage';
+import LocalStorage from 'app/features/global/services/local-storage-service';
 import { atom, selectorFamily, atomFamily } from 'recoil';
 
 type MessagesEditorType = {

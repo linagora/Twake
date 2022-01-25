@@ -11,7 +11,7 @@ import {
 import { UserType } from 'app/features/users/types/user';
 
 import Strings from 'services/utils/strings.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import UsersService from 'app/features/users/services/current-user-service';
 import Collections from 'app/deprecated/CollectionsReact/Collections';
 import MemberChannelRow from 'app/views/client/channels-bar/Parts/Header/MemberChannelRow';

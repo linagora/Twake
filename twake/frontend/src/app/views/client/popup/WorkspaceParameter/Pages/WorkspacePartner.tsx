@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import groupService from 'app/deprecated/workspaces/groups.js';

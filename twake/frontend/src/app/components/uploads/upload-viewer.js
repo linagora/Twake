@@ -4,7 +4,7 @@ import UploadManager from './upload-manager.js';
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import './uploads.scss';
 import moment from 'moment';
-import Languages from 'app/services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 export default class UploadViewer extends React.Component {
   constructor(props) {

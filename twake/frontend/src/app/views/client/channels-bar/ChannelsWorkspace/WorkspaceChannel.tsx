@@ -2,7 +2,7 @@ import React from 'react';
 
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 

@@ -4,7 +4,7 @@ import { Menu } from 'react-feather';
 import { Layout } from 'antd';
 import classNames from 'classnames';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import PopupService from 'app/deprecated/popupManager/popupManager.js';
 import PopupComponent from 'components/popup-component/popup-component.js';
 import MainView from './main-view/MainView';

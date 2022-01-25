@@ -1,6 +1,6 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Number from 'services/utils/Numbers';
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 
 /**
  *  Menus manager service, choose where to generate menu

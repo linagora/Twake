@@ -11,7 +11,7 @@ import MessagesService from 'app/features/messages/services/messages-service';
 import PendingAttachments from './parts/PendingAttachments';
 import RichTextEditorStateService from 'app/components/rich-text-editor/editor-state-service';
 import { EditorView } from 'app/components/rich-text-editor';
-import Languages from 'app/services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { TextCount, TextCountService } from 'app/components/rich-text-editor/text-count/';
 import UploadZone from 'app/components/uploads/upload-zone';
 import Workspaces from 'app/deprecated/workspaces/workspaces';

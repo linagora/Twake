@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import UnconfiguredTab from './unconfigured-tab.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Emojione from 'components/emojione/emojione';
 import Loader from 'components/loader/loader.js';
@@ -18,7 +18,7 @@ import { getCompanyApplications } from 'app/features/applications/state/company-
 import ConnectorsListManager from 'components/connectors-list-manager/connectors-list-manager.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import WorkspaceParameter from 'app/views/client/popup/WorkspaceParameter/WorkspaceParameter.js';
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';

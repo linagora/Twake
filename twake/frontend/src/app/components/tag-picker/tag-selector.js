@@ -8,7 +8,7 @@ import ColorPicker from 'components/color-picker/color-picker.js';
 import Strings from 'services/utils/strings.js';
 import InputWithColor from 'components/inputs/input-with-color.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import MenusManager from 'app/components/menus/menus-manager.js';
 
 class TagEditor extends React.Component {

@@ -4,7 +4,7 @@ import moment from 'moment';
 import Menu from 'components/menus/menu';
 import Icon from 'app/components/icon/icon.js';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import NotificationPreferences from 'app/deprecated/user/NotificationPreferences';
 
 type PropsType = {

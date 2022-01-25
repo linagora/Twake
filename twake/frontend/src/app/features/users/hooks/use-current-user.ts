@@ -5,7 +5,7 @@ import { useRecoilState } from 'recoil';
 import { CurrentUserState } from '../state/atoms/current-user';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { UserType } from 'app/features/users/types/user';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 export const useCurrentUser = () => {
   const [user, setUser] = useRecoilState(CurrentUserState);

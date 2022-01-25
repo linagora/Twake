@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { TwakeService } from './twake-service';
 
 const { confirm, info } = Modal;

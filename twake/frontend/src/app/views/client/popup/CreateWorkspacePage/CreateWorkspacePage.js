@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import GroupService from 'app/deprecated/workspaces/groups.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
@@ -8,7 +8,7 @@ import Emojione from 'components/emojione/emojione';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Input from 'components/inputs/input.js';
 import AddUserByEmail from 'app/views/client/popup/AddUser/AddUserByEmail';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import './CreateWorkspacePage.scss';
 
 export default class CreateWorkspacePage extends Component {

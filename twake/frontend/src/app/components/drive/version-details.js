@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Icon from 'components/icon/icon.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 import Directory from 'components/drive/directory.js';
 import File from 'components/drive/file';

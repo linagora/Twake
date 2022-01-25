@@ -1,11 +1,11 @@
 import React, { Suspense } from 'react';
 import LoginService from 'app/services/login/LoginService';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import CompanySelector, { CurrentCompanyLogo } from '../CompanySelector/index';
 import { Button } from 'antd';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 
 import './styles.scss';
 

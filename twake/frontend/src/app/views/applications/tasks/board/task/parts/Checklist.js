@@ -3,7 +3,7 @@ import Icon from 'components/icon/icon.js';
 import Checkbox from 'components/inputs/checkbox.js';
 import InputEnter from 'components/inputs/input-enter.js';
 import Button from 'components/buttons/button.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 export default class Checklist extends React.Component {
   constructor() {

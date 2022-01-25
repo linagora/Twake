@@ -2,9 +2,9 @@ import React from 'react';
 import { Typography, Button } from 'antd';
 import Banner from 'app/components/banner/banner';
 import Emojione from 'app/components/emojione/emojione';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import './locked-history-banner.scss';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 
 const { Title, Text } = Typography;
 const LockedHistoryBanner = (): JSX.Element => {

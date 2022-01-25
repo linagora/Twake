@@ -6,7 +6,7 @@ import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMemb
 import Icon from 'app/components/icon/icon';
 import Menu from 'components/menus/menu';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import UserService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
@@ -18,7 +18,7 @@ import RouterServices from 'app/features/router/services/router-service';
 import GuestManagement from 'app/views/client/channels-bar/Modals/GuestManagement';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 import LockedGuestsPopup from 'app/components/locked-features-components/locked-guests-popup/locked-guests-popup';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/utils';
@@ -26,7 +26,7 @@ import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
-import FeatureTogglesService from 'app/services/FeatureTogglesService';
+import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
 
 type PropsType = {
   channel: ChannelType;

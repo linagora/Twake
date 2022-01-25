@@ -8,7 +8,7 @@ import Icon from 'app/components/icon/icon';
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';

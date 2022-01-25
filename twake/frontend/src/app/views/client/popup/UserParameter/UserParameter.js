@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import LoginService from 'app/services/login/LoginService';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import userService from 'app/features/users/services/current-user-service';
 import currentUserService from 'app/deprecated/user/CurrentUser';
-import uploadService from 'services/uploadManager/uploadManager.js';
+import uploadService from 'app/deprecated/uploadManager/upload-manager.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Attribute from 'components/parameters/attribute.js';
 import Notifications from './Pages/Notifications';

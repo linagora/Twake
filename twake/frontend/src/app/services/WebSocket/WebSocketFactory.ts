@@ -1,6 +1,6 @@
-import Globals from '../Globals';
+import Globals from '../../features/global/services/globals-twake-app-service';
 import Logger from '../../features/global/services/logger-service';
-import JWT from '../JWTStorage';
+import JWT from '../../features/global/services/jwt-storage-service';
 import WebSocketService, { WebSocketOptions } from './WebSocketService';
 
 class WebSocketFactory {

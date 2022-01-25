@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import Emojione from 'components/emojione/emojione';
 import UserService from 'app/features/users/services/current-user-service';
 import CurrentUserService from 'app/deprecated/user/CurrentUser';
-import ElectronService from 'services/electron/electron.js';
+import ElectronService from 'app/features/global/services/electron-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
@@ -17,7 +17,7 @@ import popupManager from 'app/deprecated/popupManager/popupManager.js';
 
 import TutorialUI from 'app/views/client/channels-bar/Parts/Tutorial/Tutorial.js';
 
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 
 export default class Tutorial extends Component {
   constructor() {

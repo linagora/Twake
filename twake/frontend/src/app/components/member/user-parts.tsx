@@ -2,7 +2,7 @@ import React from 'react';
 import { Avatar, Badge, Tag } from 'antd';
 import { DashOutlined } from '@ant-design/icons';
 import { User } from 'react-feather';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
 import { UserType } from 'app/features/users/types/user';
 import UserService from 'app/features/users/services/current-user-service';

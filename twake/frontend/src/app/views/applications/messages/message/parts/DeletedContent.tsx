@@ -4,7 +4,7 @@ import userAsyncGet from 'app/features/users/utils/async-get';
 import MenuManager from 'app/components/menus/menus-manager';
 import UserCard from 'app/components/user-card/user-card';
 import ChannelsService from 'app/deprecated/channels/channels';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 import '../message.scss';
 import { Typography } from 'antd';

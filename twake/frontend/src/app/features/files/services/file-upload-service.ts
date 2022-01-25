@@ -1,9 +1,9 @@
 import { v1 as uuid } from 'uuid';
 
 import { FileType, PendingFileType } from 'app/features/files/types/file';
-import JWTStorage from 'app/services/JWTStorage';
+import JWTStorage from 'app/features/global/services/jwt-storage-service';
 import RouterServices from 'app/features/router/services/router-service';
-import Resumable from 'services/uploadManager/resumable';
+import Resumable from 'app/features/files/utils/resumable';
 import FileUploadAPIClient from '../api/file-upload-api-client';
 import { isPendingFileStatusPending } from '../utils/pending-files';
 import Logger from 'app/features/global/services/logger-service';

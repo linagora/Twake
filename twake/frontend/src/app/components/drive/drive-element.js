@@ -14,13 +14,15 @@ import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import MediumPopupManager from 'app/components/modal/modal-manager';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import TagPicker from 'components/tag-picker/tag-picker.js';
 import RouterServices from 'app/features/router/services/router-service';
 import { getAsFrontUrl } from 'app/services/utils/URLUtils';
-import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
+import FeatureTogglesService, {
+  FeatureNames,
+} from 'app/features/global/services/feature-toggles-service';
 import ModalManager from 'app/components/modal/modal-manager';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import LockedOnlyOfficePopup from 'app/components/locked-features-components/locked-only-office-popup/locked-only-office-popup';
 
 const RenameInput = props => {

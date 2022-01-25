@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Number from 'services/utils/Numbers';
 import AttributesManager from './attributes-manager.js';
 import './parameters.scss';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 export default class Attribute extends React.Component {
   constructor(props) {

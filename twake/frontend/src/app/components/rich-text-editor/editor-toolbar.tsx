@@ -10,8 +10,12 @@ import {
   MenuUnfoldOutlined,
   CodeOutlined,
 } from '@ant-design/icons';
-import Languages from 'services/languages/languages';
-import DefaultToolbarConfig, { GroupName, StyleConfig, ToolbarConfig } from './editor-toolbar-config';
+import Languages from 'app/features/global/services/languages-service';
+import DefaultToolbarConfig, {
+  GroupName,
+  StyleConfig,
+  ToolbarConfig,
+} from './editor-toolbar-config';
 import './editor-toolbar.scss';
 
 // Todo: Check this https://github.com/sstur/react-rte/blob/master/src/lib/EditorToolbar.js

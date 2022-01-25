@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { Typography } from 'antd';
 
-import Globals from 'services/Globals';
-import Languages from 'services/languages/languages';
-import InitService from 'services/InitService';
+import Globals from 'app/features/global/services/globals-twake-app-service';
+import Languages from 'app/features/global/services/languages-service';
+import InitService from 'app/features/global/services/init-service';
 import LoginService from 'app/services/login/LoginService';
 import Icon from 'app/components/icon/icon.js';
 

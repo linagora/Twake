@@ -9,7 +9,7 @@ import {
   isPendingFileStatusError,
   isPendingFileStatusCancel,
 } from 'app/features/files/utils/pending-files';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { useUpload } from 'app/features/files/hooks/use-upload';
 import { DataFileType } from '../types';
 import MenuManager from 'app/components/menus/menus-manager';

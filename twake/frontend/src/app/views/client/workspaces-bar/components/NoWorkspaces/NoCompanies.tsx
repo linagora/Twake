@@ -4,14 +4,14 @@ import Emojione from 'components/emojione/emojione';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import LoginService from 'app/services/login/LoginService';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 
 import CreateCompanyView from '../../../popup/CreateCompanyView/CreateCompanyView.js';
 import SecondMail from '../../../popup/SecondMail/SecondMail.js';
-import InitService from 'services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import CompanySelector from '../CompanySelector/index';
 

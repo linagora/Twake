@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import ChannelUI from 'app/views/client/channels-bar/Parts/Channel/Channel';

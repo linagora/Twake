@@ -4,7 +4,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import Select from 'components/select/select.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 export default class CalendarSelector extends React.Component {
   constructor(props) {

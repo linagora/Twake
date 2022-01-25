@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Workspace from 'app/deprecated/workspaces/workspaces.js';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
@@ -13,7 +13,7 @@ import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
 import MessagesService from 'app/features/messages/services/messages-service';
 
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 
 class SearchService extends Observable {
   constructor() {

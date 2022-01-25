@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import LoginService from 'app/services/login/LoginService';
-import AccountService from 'services/login/account.js';
+import AccountService from 'app/deprecated/login/account.js';
 import Emojione from 'components/emojione/emojione';
 import StepCounter from 'components/step-counter/step-counter.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';

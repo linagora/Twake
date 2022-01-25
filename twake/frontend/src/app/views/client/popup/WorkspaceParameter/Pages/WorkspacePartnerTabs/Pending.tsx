@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { Divider, Table, Typography } from 'antd';
 import Menu from 'components/menus/menu.js';
 import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';

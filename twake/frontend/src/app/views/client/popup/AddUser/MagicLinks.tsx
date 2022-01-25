@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Input, Space, message } from 'antd';
 import { DeleteOutlined, RetweetOutlined } from '@ant-design/icons';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
 import './MagicLinks.scss';
 import { MagicLinksGeneratorService } from 'services/MagicLinks/MagicLinks';

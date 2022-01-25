@@ -1,4 +1,4 @@
-import ws from 'services/websocket.js';
+import ws from 'app/deprecated/websocket/websocket.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 
 class ListenGroups {

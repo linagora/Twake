@@ -9,7 +9,7 @@ import Button from 'components/buttons/button.js';
 import UploadZone from 'components/uploads/upload-zone';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import './attachment-picker.scss';
 
 export default class AttachmentPicker extends Component {

@@ -4,7 +4,7 @@ import RouterServices from 'app/features/router/services/router-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import Menu from 'components/menus/menu.js';
 import { MoreHorizontal, MessageCircle } from 'react-feather';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import WorkspaceParameter from '../../popup/WorkspaceParameter/WorkspaceParameter';
 import { Application } from 'app/features/applications/types/application';

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import Logger from 'app/features/global/services/logger-service';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { ToasterService as Toaster } from 'app/services/Toaster';
 import {
   CompanyApplicationsStateFamily,

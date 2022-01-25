@@ -4,7 +4,7 @@ import { Search } from 'react-feather';
 import SearchService from 'services/search/search.js';
 import RouterServices from 'app/features/router/services/router-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 export default (): JSX.Element => {
   const { workspaceId, companyId } = RouterServices.getStateFromRoute();

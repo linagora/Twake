@@ -10,7 +10,7 @@ import {
   isPendingFileStatusPending,
   isPendingFileStatusSuccess,
 } from '../../../features/files/utils/pending-files';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { useUpload } from 'app/features/files/hooks/use-upload';
 import { PendingFileRecoilType, PendingFileType } from 'app/features/files/types/file';
 

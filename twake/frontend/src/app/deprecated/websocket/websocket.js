@@ -2,8 +2,8 @@ import Number from 'services/utils/Numbers';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import LoginService from 'app/services/login/LoginService';
 import Logger from 'app/features/global/services/logger-service';
-import Globals from 'services/Globals';
-import WebSocket from './WebSocket/WebSocket';
+import Globals from 'app/features/global/services/globals-twake-app-service';
+import WebSocket from '../../services/WebSocket/WebSocket';
 
 /**
  * @deprecated Keeps old PHP websocket working doing the bridge with the new implementation

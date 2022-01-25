@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import LoginService from 'app/services/login/LoginService';
-import AccountService from 'services/login/account';
+import AccountService from 'app/deprecated/login/account';
 import Emojione from 'components/emojione/emojione';
 import StepCounter from 'components/step-counter/step-counter.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Input from 'components/inputs/input.js';
 import Checkbox from 'components/inputs/checkbox.js';
-import InitService from 'services/InitService';
+import InitService from 'app/features/global/services/init-service';
 export default class Signin extends Component {
   constructor() {
     super();

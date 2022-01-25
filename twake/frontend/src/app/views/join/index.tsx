@@ -5,9 +5,9 @@ import { useCookies } from 'react-cookie';
 import { Button, Col, Divider, Layout, Row, Space, Typography } from 'antd';
 
 import { MagicLinksJoinResponse, MagicLinksJoinService } from 'services/MagicLinks/MagicLinks';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import RouterService from 'app/features/router/services/router-service';
-import InitService from 'services/InitService';
+import InitService from 'app/features/global/services/init-service';
 
 import './styles.scss';
 

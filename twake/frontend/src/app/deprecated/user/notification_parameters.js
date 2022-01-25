@@ -1,12 +1,12 @@
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import ws from 'services/websocket.js';
+import ws from 'app/deprecated/websocket/websocket.js';
 import Api from 'app/features/global/services/api-service';
 import Login from 'app/services/login/LoginService';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 
 /**
  * FIXME: This service seems still used by some components but we now have ./NotificationPreferences one which seems to overlap...

@@ -6,7 +6,7 @@ import MenusManager from 'app/components/menus/menus-manager.js';
 import TagSelector from './tag-selector.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 export default class TagPicker extends React.Component {
   constructor(props) {

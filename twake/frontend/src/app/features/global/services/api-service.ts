@@ -1,5 +1,5 @@
-import Globals from 'services/Globals';
-import Requests from 'services/Requests';
+import Globals from 'app/features/global/services/globals-twake-app-service';
+import Requests from 'app/features/global/services/requests-api-service';
 
 class GroupedQueryApi {
   private groupedQueryBuffer: any;

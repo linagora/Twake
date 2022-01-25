@@ -3,7 +3,7 @@ import Observable from 'app/deprecated/Observable/Observable';
 import { Collection } from '../../../deprecated/CollectionsReact/Collections';
 import RouterService from '../../router/services/router-service';
 import { getMine } from '../../../deprecated/channels/ChannelCollectionPath';
-import LocalStorage from 'app/services/LocalStorage';
+import LocalStorage from 'app/features/global/services/local-storage-service';
 
 class ChannelsBarService extends Observable {
   private callbacks = new Map<string, (state: boolean) => void>();

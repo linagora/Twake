@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Button from 'components/buttons/button.js';
 import ReminderSelector from 'components/reminder-selector/reminder-selector.js';
@@ -17,7 +17,7 @@ import {
   ObjectModal,
   ObjectModalFormTitle,
 } from 'components/object-modal/deprecated-object-modal.js';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import AttachmentPicker from 'components/attachment-picker/attachment-picker.js';
 
 import './Modal.scss';

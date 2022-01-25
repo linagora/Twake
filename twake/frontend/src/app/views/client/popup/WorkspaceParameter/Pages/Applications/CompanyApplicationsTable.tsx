@@ -5,7 +5,7 @@ import { MoreHorizontal } from 'react-feather';
 import { Divider, Table, Typography, Row, Col, Button, Grid } from 'antd';
 
 import { Application } from 'app/features/applications/types/application';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import AvatarComponent from 'app/components/avatar/avatar';
 import CompanyApplicationPopup from './CompanyApplicationPopup';

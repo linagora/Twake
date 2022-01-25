@@ -1,7 +1,7 @@
 import Oidc from 'oidc-client';
 
 import environment from '../../../../environment/environment';
-import { ConsoleConfiguration } from '../../../../services/InitService';
+import { ConsoleConfiguration } from '../../../global/services/init-service';
 import Observable from '../../../../deprecated/Observable/Observable';
 import Logger from 'app/features/global/services/logger-service';
 import { getAsFrontUrl } from '../../../../services/utils/URLUtils';
@@ -9,8 +9,8 @@ import { TwakeService } from '../../../global/services/twake-service';
 import EnvironmentService from '../../../global/services/environment-service';
 import { AuthProvider, InitParameters } from '../auth-provider';
 import ConsoleService from 'app/features/console/services/console-service';
-import { JWTDataType } from 'app/services/JWTStorage';
-import LocalStorage from 'app/services/LocalStorage';
+import { JWTDataType } from 'app/features/global/services/jwt-storage-service';
+import LocalStorage from 'app/features/global/services/local-storage-service';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
 const OIDC_SIGNOUT_URL = '/signout';

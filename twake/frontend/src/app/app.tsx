@@ -7,7 +7,7 @@ import { RecoilRoot } from 'recoil';
 import Integration from 'app/views/integration';
 import RouterServices, { RouteType } from './features/router/services/router-service';
 import ErrorBoundary from 'app/views/error/error-boundary';
-import InitService from './services/InitService';
+import InitService from './features/global/services/init-service';
 import useTimeout from 'app/features/global/hooks/use-timeout';
 import ApplicationLoader from './components/loader/application-loader';
 

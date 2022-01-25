@@ -8,9 +8,9 @@ import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMemb
 import RouterServices from 'app/features/router/services/router-service';
 import SearchInput from '../Search';
 import ChannelUsersHeader from './ChannelUsersHeader';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import ChannelAvatars from './ChannelAvatars';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import { useChannel } from 'app/features/channels/hooks/use-channel';

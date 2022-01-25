@@ -4,7 +4,7 @@ import { PlusCircle } from 'react-feather';
 import Thread from '../parts/thread';
 import ThreadSection from '../parts/thread-section';
 import Input from './input';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { ViewContext } from 'app/views/client/main-view/MainContent';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';
 

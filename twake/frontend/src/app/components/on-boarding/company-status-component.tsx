@@ -3,7 +3,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import UserService from 'app/features/users/services/current-user-service';
 import WelcomeOnTwake from './popups/welcome-on-twake';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import RouterServices from 'app/features/router/services/router-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import { CompanyType } from 'app/features/companies/types/company';

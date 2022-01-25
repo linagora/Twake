@@ -14,7 +14,7 @@ import UserCard from 'app/components/user-card/user-card';
 import Emojione from 'components/emojione/emojione';
 import RouterServices from 'app/features/router/services/router-service';
 import { NodeMessage } from 'app/features/messages/types/message';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Loader from 'components/loader/loader.js';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import { MessageContext } from '../message-with-replies';

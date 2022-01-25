@@ -1,5 +1,5 @@
 import { capitalize } from 'lodash';
-import Globals from 'services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 
 class WindowState {
   public readonly app_name: string = 'Twake';

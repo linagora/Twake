@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { CornerDownRight } from 'react-feather';
 import ThreadSection from '../../parts/thread-section';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import { MessageContext } from '../message-with-replies';
 import { useVisibleMessagesEditorLocation } from 'app/features/messages/hooks/use-message-editor';

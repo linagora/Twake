@@ -10,7 +10,7 @@ import {
   ONLINE_ROOM,
   RealtimeUpdateMessageType,
 } from '../../../features/users/api/online-user-realtime-api-client';
-import JWTStorage from '../../../services/JWTStorage';
+import JWTStorage from '../../global/services/jwt-storage-service';
 
 const logger = Logger.getLogger('useOnlineUsers');
 

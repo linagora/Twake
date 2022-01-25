@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Task from '../task/Task.js';
 import Icon from 'components/icon/icon.js';

@@ -1,5 +1,5 @@
 import React from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Emojione from 'components/emojione/emojione';
 import './styles.scss';
 import { Button } from 'antd';

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import { DynamicComponent } from './pseudo-markdown-dictionary';
 
 type Props = {

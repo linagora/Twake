@@ -4,7 +4,7 @@ import { ChannelResource, ChannelType } from 'app/features/channels/types/channe
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
 import WorkspaceChannels from './WorkspaceChannel';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { getDirectChannels, getMine } from 'app/deprecated/channels/ChannelCollectionPath';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';

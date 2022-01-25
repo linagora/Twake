@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import groupService from 'app/deprecated/workspaces/groups';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout';
 import Attribute from 'components/parameters/attribute';
-import uploadService from 'services/uploadManager/uploadManager';
+import uploadService from 'app/deprecated/uploadManager/upload-manager';
 import Input from 'components/inputs/input';
 import { addApiUrlIfNeeded } from 'app/services/utils/URLUtils';
 

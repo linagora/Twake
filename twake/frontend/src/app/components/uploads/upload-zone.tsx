@@ -2,7 +2,7 @@
 import React from 'react';
 
 import UploadManager from './upload-manager';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { Upload } from 'react-feather';
 import classNames from 'classnames';
 import './uploads.scss';

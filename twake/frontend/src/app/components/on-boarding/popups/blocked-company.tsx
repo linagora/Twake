@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Row, Typography, Select } from 'antd';
 import ObjectModal from '../../object-modal/object-modal';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import LoginService from 'app/services/login/LoginService';
 import { CompanyType } from 'app/features/companies/types/company';
 import { capitalize } from 'lodash';
@@ -9,7 +9,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import UserService from 'app/features/users/services/current-user-service';
 import Groups from 'app/deprecated/workspaces/groups.js';
 import { AlertTriangle } from 'react-feather';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 
 type SwitchCompanyPropsType = {
   placeholder?: string;

@@ -1,10 +1,10 @@
 import React, { Component, useState } from 'react';
 
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import UserService from 'app/features/users/services/current-user-service';
 import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
-import LocalStorage from 'app/services/LocalStorage';
+import LocalStorage from 'app/features/global/services/local-storage-service';
 
 import ModalManager from 'app/components/modal/modal-manager';
 

@@ -7,7 +7,7 @@ import ModalManager from 'app/components/modal/modal-manager';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import Menu from 'components/menus/menu.js';
 import { MoreHorizontal } from 'react-feather';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { capitalize } from 'lodash';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import MainViewService from 'app/features/router/services/main-view-service';

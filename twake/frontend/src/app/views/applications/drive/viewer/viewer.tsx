@@ -5,12 +5,14 @@ import DownloadIcon from '@material-ui/icons/CloudDownloadOutlined';
 import OpenInNewIcon from '@material-ui/icons/OpenInNewOutlined';
 
 import Menu from 'components/menus/menu.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Button from 'components/buttons/button.js';
-import ElectronService from 'services/electron/electron.js';
-import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
+import ElectronService from 'app/features/global/services/electron-service';
+import FeatureTogglesService, {
+  FeatureNames,
+} from 'app/features/global/services/feature-toggles-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import LockedOnlyOfficePopup from 'app/components/locked-features-components/locked-only-office-popup/locked-only-office-popup';
 

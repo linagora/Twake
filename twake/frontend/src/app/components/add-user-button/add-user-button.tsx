@@ -1,6 +1,6 @@
 import React from 'react';
 import Icon from 'components/icon/icon.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import './add-user-button.scss';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import AddUserByEmail from 'app/views/client/popup/AddUser/AddUserByEmail';

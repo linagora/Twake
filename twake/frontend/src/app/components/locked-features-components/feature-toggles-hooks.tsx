@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
-import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
+import FeatureTogglesService, {
+  FeatureNames,
+} from 'app/features/global/services/feature-toggles-service';
 import { FeatureToggles, Feature, withFeatures } from '@paralleldrive/react-feature-toggles';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 

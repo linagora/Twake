@@ -1,4 +1,4 @@
-import Resumable from 'services/uploadManager/resumable';
+import Resumable from 'app/features/files/utils/resumable';
 import { ThumbnailType } from '../../messages/types/message';
 
 export type MetaDataType = {

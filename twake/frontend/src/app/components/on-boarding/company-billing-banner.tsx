@@ -3,8 +3,8 @@ import { Row, Typography } from 'antd';
 import Banner from '../banner/banner';
 import { CompanyType } from 'app/features/companies/types/company';
 import Groups from 'app/deprecated/workspaces/groups.js';
-import InitService from 'app/services/InitService';
-import Languages from 'services/languages/languages';
+import InitService from 'app/features/global/services/init-service';
+import Languages from 'app/features/global/services/languages-service';
 import { AlertTriangle } from 'react-feather';
 
 type PropsType = {

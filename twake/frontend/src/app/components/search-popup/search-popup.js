@@ -8,9 +8,9 @@ import QuickResult from './parts/quick-result.js';
 import MessagesFilter from './parts/messages-filter.js';
 import Tabs from 'components/tabs/tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import PseudoMarkdownCompiler from 'services/Twacode/pseudoMarkdownCompiler';
+import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import moment from 'moment';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import userAsyncGet from 'app/features/users/utils/async-get';
 
 export default class SearchPopup extends React.Component {

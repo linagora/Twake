@@ -2,13 +2,13 @@ import { UserType } from 'app/features/users/types/user';
 import Logger from 'app/features/global/services/logger-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
-import Languages from 'app/services/languages/languages';
-import JWT from 'app/services/JWTStorage';
+import Languages from 'app/features/global/services/languages-service';
+import JWT from 'app/features/global/services/jwt-storage-service';
 import Collections from 'app/deprecated/CollectionsV2/Collections';
-import Globals from 'app/services/Globals';
+import Globals from 'app/features/global/services/globals-twake-app-service';
 import UserNotifications from 'app/features/users/services/user-notifications-service';
 import WorkspacesListener from '../../workspaces/services/workspaces-listener-service';
-import LocalStorage from '../../../services/LocalStorage';
+import LocalStorage from '../../global/services/local-storage-service';
 import WebSocket from '../../../services/WebSocket/WebSocket';
 
 class Application {

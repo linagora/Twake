@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 import { Typography } from 'antd';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ApplicationsTable from './Applications/ApplicationsTable';
 import CompanyApplicationsTable from './Applications/CompanyApplicationsTable';
 import './Pages.scss';

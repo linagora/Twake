@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Typography } from 'antd';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Emojione from 'app/components/emojione/emojione';
 import User from 'app/components/twacode/blocks/user';
 import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';

@@ -1,7 +1,7 @@
 import React from 'react';
 import Emojione from 'components/emojione/emojione';
 import Button from 'components/buttons/button';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import User from 'components/user/user';
 import UserService from 'app/features/users/services/current-user-service';
 import { UserType } from 'app/features/users/types/user';

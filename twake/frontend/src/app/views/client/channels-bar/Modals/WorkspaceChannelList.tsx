@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Input, Row, Typography } from 'antd';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Icon from 'app/components/icon/icon';
 import ObjectModal from 'components/object-modal/object-modal';
 import listService, { GenericChannel } from 'services/search/searchListManager';

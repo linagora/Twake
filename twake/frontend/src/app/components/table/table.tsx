@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Button from 'components/buttons/button.js';
 import InputIcon from 'components/inputs/input-icon.js';
 import './table.scss';

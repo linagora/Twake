@@ -1,6 +1,6 @@
 import React from 'react';
 
-import InitService from 'services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import Apps from './components/apps.js';
 
 import './styles.scss';

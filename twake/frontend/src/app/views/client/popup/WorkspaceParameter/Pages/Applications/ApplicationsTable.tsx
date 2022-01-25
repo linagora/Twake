@@ -5,7 +5,7 @@ import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import { Divider, Table, Typography, Row, Input, Col, Button } from 'antd';
 
 import { Application } from 'app/features/applications/types/application';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { useApplications } from 'app/features/applications/hooks/use-applications';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';

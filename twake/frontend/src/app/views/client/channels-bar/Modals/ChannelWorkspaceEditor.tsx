@@ -1,5 +1,5 @@
 import React, { FC, useState } from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ChannelTemplateEditor from 'app/views/client/channels-bar/Modals/ChannelTemplateEditor';
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';

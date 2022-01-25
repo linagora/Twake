@@ -1,9 +1,9 @@
 import environment from 'environment/environment';
 import version from 'environment/version';
 import * as Sentry from '@sentry/browser';
-import LocalStorage from './LocalStorage';
+import LocalStorage from './local-storage-service';
 import { EnvironmentType, EnvironmentVersionType } from 'app/environment/types';
-import ServiceRegistry from './ServiceRegistry';
+import ServiceRegistry from './registry-service';
 
 if (process.env.NODE_ENV === 'production' && (window as any).sentry_dsn) {
   Sentry.init({

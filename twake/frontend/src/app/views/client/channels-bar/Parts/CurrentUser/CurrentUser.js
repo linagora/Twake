@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-use-before-define
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import UserService from 'app/features/users/services/current-user-service';
 import CurrentUserService from 'app/deprecated/user/CurrentUser';
@@ -18,10 +18,12 @@ import NotificationParameters from 'app/deprecated/user/notification_parameters.
 import CreateWorkspacePage from 'app/views/client/popup/CreateWorkspacePage/CreateWorkspacePage.js';
 import CompanyHeaderUI from 'app/views/client/channels-bar/Parts/CurrentUser/CompanyHeader/CompanyHeader';
 import ModalManagerDepreciated from 'app/deprecated/popupManager/popupManager';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import FeatureTogglesService, { FeatureNames } from 'app/services/FeatureTogglesService';
+import FeatureTogglesService, {
+  FeatureNames,
+} from 'app/features/global/services/feature-toggles-service';
 import LockedWorkspacePopup from 'app/components/locked-features-components/locked-workspace-popup/locked-workspace-popup';
 import ModalManager from 'app/components/modal/modal-manager';
 import CompanyMessagesCounter from 'components/company-messages-counter/company-messages-counter';

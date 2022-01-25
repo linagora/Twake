@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import MessageContent from '../../message/parts/MessageContent';

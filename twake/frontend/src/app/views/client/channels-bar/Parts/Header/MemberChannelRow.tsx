@@ -5,7 +5,7 @@ import { Mail, PlusCircle, Trash } from 'react-feather';
 
 import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import { getUserParts } from 'app/components/member/user-parts';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import './MemberChannelRow.scss';
 import Menu from 'app/components/menus/menu';
 import Icon from 'app/components/icon/icon';

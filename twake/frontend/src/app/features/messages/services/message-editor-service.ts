@@ -1,8 +1,8 @@
 import FileUploadService from 'app/features/files/services/file-upload-service';
 import Observable from 'app/deprecated/CollectionsV1/observable';
-import LocalStorage from 'app/services/LocalStorage';
+import LocalStorage from 'app/features/global/services/local-storage-service';
 import { ToasterService as Toaster } from 'app/services/Toaster';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 
 // FIX ME use real File type instead
 type FileType = { [key: string]: any };

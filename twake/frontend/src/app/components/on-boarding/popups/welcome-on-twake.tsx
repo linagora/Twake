@@ -2,7 +2,7 @@ import { Button, Row, Typography } from 'antd';
 import React, { useState } from 'react';
 import Emojione from '../../emojione/emojione';
 import ObjectModal from '../../object-modal/object-modal';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import AddMailsInWorkspace from './add-mails-in-workspace';
 import ConsoleService from 'app/features/console/services/console-service';

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Menu from 'components/menus/menu.js';
 import ChannelsService from 'app/deprecated/channels/channels.js';
 import Button from 'components/buttons/button.js';

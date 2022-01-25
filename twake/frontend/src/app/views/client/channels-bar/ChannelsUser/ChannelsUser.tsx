@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import { ChannelResource } from 'app/features/channels/types/channel';

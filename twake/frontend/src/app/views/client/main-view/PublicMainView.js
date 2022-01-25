@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Drive from 'app/views/applications/drive/drive-content';
 import Api from 'app/features/global/services/api-service';

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { Table, Row, Col, Typography, Divider } from 'antd';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
@@ -9,7 +9,7 @@ import { ColumnsType } from 'antd/lib/table';
 import UserService from 'app/features/users/services/current-user-service';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
-import InitService from 'app/services/InitService';
+import InitService from 'app/features/global/services/init-service';
 import { ChevronUp, ChevronsUp } from 'react-feather';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import Api from 'app/features/global/services/api-service';

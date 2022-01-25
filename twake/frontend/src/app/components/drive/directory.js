@@ -6,7 +6,7 @@ import Loader from 'components/loader/loader.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import Draggable from 'components/draggable/draggable';
 import DroppableZone from 'components/draggable/droppable-zone.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import './drive.scss';
 
 export default class Directory extends DriveElement {

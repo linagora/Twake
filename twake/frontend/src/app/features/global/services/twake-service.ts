@@ -1,4 +1,4 @@
-import ServiceRegistry from 'app/services/ServiceRegistry';
+import ServiceRegistry from 'app/features/global/services/registry-service';
 
 const SERVICE_SUFFIX = 'Service';
 

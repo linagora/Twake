@@ -1,7 +1,7 @@
 import Login from 'app/services/login/LoginService';
 import Collections, { Collection } from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Api from 'app/features/global/services/api-service';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import { UserType } from 'app/features/users/types/user';
 import { TwakeService } from 'app/features/global/services/twake-service';
 import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/services/utils/URLUtils';

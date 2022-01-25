@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Select from 'components/select/select.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import moment from 'moment';
 import MediumPopupManager from 'app/components/modal/modal-manager';
 import Repetitionpopup from 'components/calendar/repetition-selector/repetition-popup.js';

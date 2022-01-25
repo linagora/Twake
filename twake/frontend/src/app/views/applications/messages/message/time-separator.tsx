@@ -2,7 +2,7 @@ import React from 'react';
 import Moment from 'react-moment';
 import 'moment-timezone';
 
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import './message.scss';
 import { useMessage } from 'app/features/messages/hooks/use-message';

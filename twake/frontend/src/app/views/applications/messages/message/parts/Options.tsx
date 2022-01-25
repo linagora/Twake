@@ -6,7 +6,7 @@ import MessagesService from 'app/features/messages/services/messages-service';
 import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
 import Menu from 'components/menus/menu.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
-import Languages from 'services/languages/languages';
+import Languages from 'app/features/global/services/languages-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
