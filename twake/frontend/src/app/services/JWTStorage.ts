@@ -2,7 +2,7 @@ import LocalStorage from 'services/LocalStorage';
 import LoginService from 'app/services/login/LoginService';
 import WindowService from 'services/utils/window';
 import ConsoleAPIClient from './Console/ConsoleAPIClient';
-import { TwakeService } from './Decorators/TwakeService';
+import { TwakeService } from '../features/global/services/twake-service';
 import Logger from '../features/global/services/logger-service';
 
 export type JWTDataType = {

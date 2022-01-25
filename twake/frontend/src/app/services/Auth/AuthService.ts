@@ -1,4 +1,4 @@
-import { TwakeService } from 'app/services/Decorators/TwakeService';
+import { TwakeService } from 'app/features/global/services/twake-service';
 import InitService, { ConsoleConfiguration, InternalConfiguration } from 'app/services/InitService';
 import { AuthProvider } from './provider/AuthProvider';
 import OIDCAuthProviderService from './provider/oidc/OIDCAuthProviderService';

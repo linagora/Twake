@@ -3,7 +3,7 @@ import Collections, { Collection } from 'app/deprecated/CollectionsV1/Collection
 import Api from 'services/Api';
 import Languages from 'services/languages/languages';
 import { UserType } from 'app/features/users/types/user';
-import { TwakeService } from 'services/Decorators/TwakeService';
+import { TwakeService } from 'app/features/global/services/twake-service';
 import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/services/utils/URLUtils';
 
 type SearchQueryType = {

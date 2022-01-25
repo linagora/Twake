@@ -1,7 +1,7 @@
 import Logger from 'app/features/global/services/logger-service';
 import { InternalConfiguration } from '../../../InitService';
 import Observable from '../../../../deprecated/Observable/Observable';
-import { TwakeService } from '../../../Decorators/TwakeService';
+import { TwakeService } from '../../../../features/global/services/twake-service';
 import { AuthProvider, InitParameters } from '../AuthProvider';
 import Globals from 'app/services/Globals';
 import RouterService from 'app/features/router/services/router-service';

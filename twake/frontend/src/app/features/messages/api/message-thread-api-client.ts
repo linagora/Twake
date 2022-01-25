@@ -5,7 +5,7 @@ import {
   MessageWithReplies,
 } from 'app/features/messages/types/message';
 import Api from 'app/services/Api';
-import { TwakeService } from 'app/services/Decorators/TwakeService';
+import { TwakeService } from 'app/features/global/services/twake-service';
 
 /**
  * This service is to create and update a thread

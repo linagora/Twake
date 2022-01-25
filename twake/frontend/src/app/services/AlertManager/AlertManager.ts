@@ -1,7 +1,7 @@
 import { Modal } from 'antd';
 
 import Languages from 'services/languages/languages';
-import { TwakeService } from '../Decorators/TwakeService';
+import { TwakeService } from '../../features/global/services/twake-service';
 
 const { confirm, info } = Modal;
 

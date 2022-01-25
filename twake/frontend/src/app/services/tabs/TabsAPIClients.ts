@@ -1,6 +1,6 @@
 import { TabType } from 'app/models/Tab';
 import Api from '../Api';
-import { TwakeService } from '../Decorators/TwakeService';
+import { TwakeService } from '../../features/global/services/twake-service';
 import { WebsocketRoom } from '../WebSocket/WebSocket';
 
 type TabKey = {

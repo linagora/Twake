@@ -1,5 +1,5 @@
 import { MessageWithReplies } from 'app/features/messages/types/message';
-import { TwakeService } from 'app/services/Decorators/TwakeService';
+import { TwakeService } from 'app/features/global/services/twake-service';
 import Api from 'app/services/Api';
 import { WebsocketRoom } from 'app/services/WebSocket/WebSocket';
 

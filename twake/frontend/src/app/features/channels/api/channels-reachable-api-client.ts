@@ -1,6 +1,6 @@
 import Api from '../../../services/Api';
 import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
-import { TwakeService } from '../../../services/Decorators/TwakeService';
+import { TwakeService } from '../../global/services/twake-service';
 
 type ChannelsReachableGetResponse = { resources: ChannelType[] };
 type ChannelsReachableInviteUserResponse = { resource: ChannelMemberType };

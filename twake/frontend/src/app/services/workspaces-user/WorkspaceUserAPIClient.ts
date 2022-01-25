@@ -1,6 +1,6 @@
 import Api from '../Api';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
-import { TwakeService } from '../Decorators/TwakeService';
+import { TwakeService } from '../../features/global/services/twake-service';
 
 const PREFIX = '/internal/services/workspaces/v1/companies';
 

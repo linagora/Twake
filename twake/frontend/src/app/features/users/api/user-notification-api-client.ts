@@ -1,6 +1,6 @@
 import Api from '../../../services/Api';
 import { NotificationType } from 'app/models/Notification';
-import { TwakeService } from '../../../services/Decorators/TwakeService';
+import { TwakeService } from '../../global/services/twake-service';
 
 @TwakeService('UserNotificationAPIClientService')
 class UserNotificationAPIClient {

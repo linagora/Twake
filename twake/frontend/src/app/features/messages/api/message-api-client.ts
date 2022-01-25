@@ -1,4 +1,4 @@
-import { TwakeService } from '../../../services/Decorators/TwakeService';
+import { TwakeService } from '../../global/services/twake-service';
 import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageViewAPIClient from './message-view-api-client';
 import MessageThreadAPIClient from './message-thread-api-client';
