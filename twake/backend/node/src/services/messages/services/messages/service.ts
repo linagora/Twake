@@ -572,6 +572,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       return message;
     }
 
+    let didChange = false;
+
     files = files.map(f => {
       f.message_id = message.id;
       return f;
@@ -596,8 +598,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     //Ensure all files in the file object are in the message
     message.files = [];
     for (const file of files) {
-      const entity =
-        existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0] || new MessageFile();
+      const existing = existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0];
+      const entity = existing || new MessageFile();
       entity.message_id = message.id;
       entity.id = file.id || undefined;
       entity.company_id = file.company_id;
@@ -630,12 +632,17 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       entity.metadata = file.metadata;
 
-      await this.msgFilesRepository.save(entity);
+      if (!existing || !_.isEqual(existing.metadata, entity.metadata)) {
+        didChange = true;
 
-      message.files.push(entity);
+        await this.msgFilesRepository.save(entity);
+        message.files.push(entity);
+      }
     }
 
-    await this.repository.save(message);
+    if (didChange) {
+      await this.repository.save(message);
+    }
 
     return message;
   }
