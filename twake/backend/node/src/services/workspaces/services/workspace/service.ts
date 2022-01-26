@@ -623,6 +623,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   public decodeInviteToken(encodedToken: string): InviteTokenObject | null {
     try {
       let split = encodedToken.split("-");
+      //We split on "-" but the token can contain "-" so be careful
       const [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
       if (!token) {
         return;
