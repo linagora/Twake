@@ -622,7 +622,8 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
   public decodeInviteToken(encodedToken: string): InviteTokenObject | null {
     try {
-      const [companyId, workspaceId, token] = encodedToken.split("-");
+      let split = encodedToken.split("-");
+      const [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
       if (!token) {
         return;
       }
