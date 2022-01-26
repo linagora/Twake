@@ -27,7 +27,7 @@ const CompanyMessagesCounter = () => {
     }
   }, [company]);
 
-  return !FeatureTogglesService.getFeatureValue(FeatureNames.MESSAGE_HISTORY) ? (
+  return !FeatureTogglesService.isActiveFeatureName(FeatureNames.MESSAGE_HISTORY) ? (
     <>
       <Row
         justify="space-around"
