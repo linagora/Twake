@@ -94,7 +94,7 @@ export default (props: PropsType): JSX.Element => {
 
   const displayGuestManagement = () => {
     return ModalManager.open(
-      FeatureTogglesService.getFeatureValue(FeatureNames.GUESTS) ? (
+      FeatureTogglesService.isActiveFeatureName(FeatureNames.GUESTS) ? (
         <GuestManagement channel={props.channel} />
       ) : (
         <LockedGuestsPopup

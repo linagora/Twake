@@ -28,6 +28,7 @@ class FeatureTogglesService {
   private activeFeatureValues: Map<FeatureNames, FeatureValueType>;
 
   constructor() {
+    (window as any).FeatureTogglesService = this;
     this.activeFeatureNames = [];
     this.activeFeatureValues = new Map<FeatureNames, FeatureValueType>();
   }
@@ -49,6 +50,7 @@ class FeatureTogglesService {
       const shouldRemoveFeature = !value && this.isActiveFeatureName(featureName);
       if (shouldRemoveFeature)
         this.activeFeatureNames = this.activeFeatureNames.filter(name => name !== featureName);
+      this.activeFeatureValues.set(featureName, true);
     } else {
       this.activeFeatureValues.set(featureName, value);
     }
