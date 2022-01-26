@@ -14,7 +14,7 @@ import RouterServices from 'app/features/router/services/router-service';
 import Collection from 'app/deprecated/CollectionsV2/Collection';
 import UsersService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
-import { PendingEmailResource } from 'app/features/channel-members/types/pending-email';
+import { PendingEmailResource } from 'app/features/workspace-members/types/pending-email';
 import GuestManagementService from 'app/features/channel-members/service/guest-management-service';
 import UserService from 'app/features/users/services/current-user-service';
 

@@ -11,7 +11,7 @@ import {
   ChannelType,
 } from 'app/features/channels/types/channel';
 import Collections from 'app/deprecated/CollectionsReact/Collections';
-import { PendingEmailResource } from 'app/features/channel-members/types/pending-email';
+import { PendingEmailResource } from 'app/features/workspace-members/types/pending-email';
 import GuestManagementService from 'app/features/channel-members/service/guest-management-service';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Languages from 'app/features/global/services/languages-service';

@@ -1,7 +1,7 @@
 import {
   PendingEmail,
   PendingEmailResource,
-} from 'app/features/channel-members/types/pending-email';
+} from 'app/features/workspace-members/types/pending-email';
 import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import Collections, { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import RouterServices from 'app/features/router/services/router-service';
