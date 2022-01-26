@@ -23,6 +23,7 @@ import CompanyStatusComponent from 'app/components/on-boarding/company-status-co
 import UserContext from 'app/features/users/state/integration/user-context';
 import { useCurrentUser, useCurrentUserRealtime } from 'app/features/users/hooks/use-current-user';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
+import useUsetiful from 'app/features/global/hooks/use-usetiful';
 
 import './styles.scss';
 
@@ -31,6 +32,8 @@ export default React.memo((): JSX.Element => {
   const { user } = useCurrentUser();
   useCurrentUserRealtime();
   const { FeatureToggles, activeFeatureNames } = useFeatureToggles();
+
+  useUsetiful();
 
   PopupService.useListener();
   Languages.useListener();
