@@ -618,7 +618,6 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       .replace("+", ".")
       .replace("/", "_")
       .replace("=", "-")}`;
-    console.log("encoded", [companyId, workspaceId, token], "to", encodedToken);
     return encodedToken;
   }
 
@@ -627,7 +626,6 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       let split = encodedToken.split("-");
       //We split on "-" but the token can contain "-" so be careful
       const [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
-      console.log("decoded", [companyId, workspaceId, token], "from", encodedToken);
       if (!token) {
         return;
       }
