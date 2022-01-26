@@ -7,6 +7,7 @@ export type EnvironmentType = {
   websocket_url: string;
 
   sentry_dsn?: string | boolean;
+  usetiful_token: string | undefined;
 };
 
 export type EnvironmentVersionType = {
