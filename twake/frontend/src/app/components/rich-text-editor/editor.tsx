@@ -30,7 +30,7 @@ import { EditorSuggestionPlugin, SupportedSuggestionTypes, getPlugins } from './
 import './editor.scss';
 import { TextCountService } from 'app/components/rich-text-editor/text-count';
 import useOnScreen from 'app/features/global/hooks/use-on-screen';
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 import 'draft-js/dist/Draft.css';
 
 const { isSoftNewlineEvent } = KeyBindingUtil;

@@ -4,7 +4,7 @@ import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import userService from 'app/features/users/services/current-user-service';
-import loginService from 'app/features/global/services/login-service';
+import loginService from 'app/features/auth/login-service';
 import AccountService from 'app/deprecated/login/account';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';

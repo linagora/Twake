@@ -1,15 +1,15 @@
 import { UserType } from 'app/features/users/types/user';
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import CurrentUser from 'app/deprecated/user/CurrentUser';
 import Languages from 'app/features/global/services/languages-service';
-import JWT from 'app/features/global/services/jwt-storage-service';
+import JWT from 'app/features/auth/jwt-storage-service';
 import Collections from 'app/deprecated/CollectionsV2/Collections';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import UserNotifications from 'app/features/users/services/user-notifications-service';
 import WorkspacesListener from '../../workspaces/services/workspaces-listener-service';
-import LocalStorage from '../../global/services/local-storage-service';
-import WebSocket from '../../websocket/types/websocket';
+import LocalStorage from '../../global/framework/local-storage-service';
+import WebSocket from '../../global/types/websocket-types';
 
 class Application {
   private logger: Logger.Logger;

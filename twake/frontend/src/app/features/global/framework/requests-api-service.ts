@@ -1,4 +1,4 @@
-import JWTStorage from 'app/features/global/services/jwt-storage-service';
+import JWTStorage from 'app/features/auth/jwt-storage-service';
 import Logger from './logger-service';
 
 class Requests {

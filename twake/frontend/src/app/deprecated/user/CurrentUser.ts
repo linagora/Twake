@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import Login from 'app/features/global/services/login-service';
+import Login from 'app/features/auth/login-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import ws from 'app/deprecated/websocket/websocket';
 import Observable from 'app/deprecated/CollectionsV1/observable';
 import SecuredConnection from 'app/deprecated/CollectionsV1/Collections/SecuredConnection';
@@ -9,7 +9,7 @@ import Number from 'app/features/global/utils/Numbers';
 import ConfiguratorsManager from 'app/deprecated/Configurators/ConfiguratorsManager';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import Languages from 'app/features/global/services/languages-service';
-import JWTStorage from 'app/features/global/services/jwt-storage-service';
+import JWTStorage from 'app/features/auth/jwt-storage-service';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import UserAPIClient from '../../features/users/api/user-api-client';

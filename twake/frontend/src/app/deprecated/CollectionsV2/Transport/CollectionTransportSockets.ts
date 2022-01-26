@@ -1,4 +1,4 @@
-import { WebsocketEvents } from 'app/features/websocket/types/websocket';
+import { WebsocketEvents } from 'app/features/global/types/websocket-types';
 import { merge } from 'lodash';
 import Collections, { Resource } from '../Collections';
 import CollectionTransport from './CollectionTransport';

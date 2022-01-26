@@ -1,5 +1,5 @@
-import WebSocketService from '../../websocket/services/websocket-service';
-import Logger from '../../global/services/logger-service';
+import WebSocketService from '../../global/services/websocket-service';
+import Logger from '../../global/framework/logger-service';
 import { RealtimeEventAction } from '../../global/types/realtime-types';
 
 const logger = Logger.getLogger('OnlineUsersRealtimeAPI');

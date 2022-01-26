@@ -5,7 +5,7 @@ import { IndexLocationWithAlign, ListRange, Virtuoso, VirtuosoHandle } from 'rea
 import classNames from 'classnames';
 import { Spin } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 import Message from './__old/_Message/MessageAndTimeSeparator';
 import GoToBottom from './parts/go-to-bottom';
 import { Message as MessageModel } from 'app/features/messages/types/message';

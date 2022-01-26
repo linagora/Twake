@@ -1,4 +1,4 @@
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 
 export type MagicLinksGeneratorResponse = {
   token: string;

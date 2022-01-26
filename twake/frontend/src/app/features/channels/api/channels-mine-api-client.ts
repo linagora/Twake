@@ -1,7 +1,7 @@
-import Api from '../../global/services/api-service';
+import Api from '../../global/framework/api-service';
 import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
-import { TwakeService } from '../../global/services/twake-service';
-import { WebsocketRoom } from '../../websocket/types/websocket';
+import { TwakeService } from '../../global/framework/registry-decorator-service';
+import { WebsocketRoom } from '../../global/types/websocket-types';
 
 type ChannelsMineGetResponse = { resources: ChannelType[]; websockets: WebsocketRoom[] };
 type ChannelsMineDeleteBaseResponse = {

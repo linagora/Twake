@@ -7,7 +7,7 @@ import Emojione from 'components/emojione/emojione';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import Attribute from 'components/parameters/attribute.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import WorkspaceAppsCreator from './WorkspaceAppsCreator.js';
 import Switch from 'components/inputs/switch';
 import AutoHeight from 'components/auto-height/auto-height.js';

@@ -10,7 +10,7 @@ import {
   ObjectModalFormTitle,
   ObjectModalTitle,
 } from 'components/object-modal/deprecated-object-modal.js';
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import './Pages.scss';
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Emojione from 'components/emojione/emojione';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import LoginService from 'app/features/global/services/login-service';
+import LoginService from 'app/features/auth/login-service';
 
 import Languages from 'app/features/global/services/languages-service';
 import Groups from 'app/deprecated/workspaces/groups.js';

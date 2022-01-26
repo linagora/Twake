@@ -1,8 +1,8 @@
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Number from 'app/features/global/utils/Numbers';
 import MultipleSecuredConnections from './MultipleSecuredConnections.js';
-import LocalStorage from 'app/features/global/services/local-storage-service';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
 /** Collection
  * Act like a doctrine repository and try to be allways in sync with server in realtime
  */

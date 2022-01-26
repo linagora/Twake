@@ -4,8 +4,8 @@ import {
   Participant,
   MessageWithReplies,
 } from 'app/features/messages/types/message';
-import Api from 'app/features/global/services/api-service';
-import { TwakeService } from 'app/features/global/services/twake-service';
+import Api from 'app/features/global/framework/api-service';
+import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
 
 /**
  * This service is to create and update a thread

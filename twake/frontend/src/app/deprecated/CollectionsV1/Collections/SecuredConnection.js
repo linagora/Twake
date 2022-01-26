@@ -1,4 +1,4 @@
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import ws from 'app/deprecated/websocket/websocket.js';
 import CryptoJS from 'crypto-js';
 import sha256 from 'crypto-js/sha256';

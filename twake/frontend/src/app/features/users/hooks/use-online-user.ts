@@ -3,8 +3,8 @@ import { useRecoilCallback, useRecoilValue } from 'recoil';
 
 import { OnlineUserStateFamily, OnlineUserType } from '../state/atoms/online-users';
 import { OnlineUserRealtimeAPI } from '../api/online-user-realtime-api-client';
-import WebSocketFactory from '../../websocket/services/websocket-factory-service';
-import Logger from 'app/features/global/services/logger-service';
+import WebSocketFactory from '../../global/services/websocket-factory-service';
+import Logger from 'app/features/global/framework/logger-service';
 
 const logger = Logger.getLogger('useOnlineUser');
 const OnlineAPI = OnlineUserRealtimeAPI(WebSocketFactory.get());

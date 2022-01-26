@@ -1,4 +1,4 @@
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 import Transport from './Transport';
 import { TransportOptions } from './TransportAPI';
 

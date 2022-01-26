@@ -1,6 +1,6 @@
 import { ChannelMemberType } from 'app/features/channels/types/channel';
-import Api from '../../global/services/api-service';
-import { TwakeService } from '../../global/services/twake-service';
+import Api from '../../global/framework/api-service';
+import { TwakeService } from '../../global/framework/registry-decorator-service';
 
 type ChannelMembersSaveRequest = { resource: Partial<ChannelMemberType> };
 type ChannelMembersSaveResponse = { resource: ChannelMemberType };

@@ -1,16 +1,16 @@
 import { useCallback, useEffect } from 'react';
 import { useRecoilState } from 'recoil';
 
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { OnlineUsersState, OnlineUserType } from '../state/atoms/online-users';
-import useWebSocket from '../../websocket/hooks/use-websocket';
+import useWebSocket from '../../global/hooks/use-websocket';
 import {
   OnlineUserRealtimeAPI,
   ONLINE_ROOM,
   RealtimeUpdateMessageType,
 } from '../../../features/users/api/online-user-realtime-api-client';
-import JWTStorage from '../../global/services/jwt-storage-service';
+import JWTStorage from '../../auth/jwt-storage-service';
 
 const logger = Logger.getLogger('useOnlineUsers');
 

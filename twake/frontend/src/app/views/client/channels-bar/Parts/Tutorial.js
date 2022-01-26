@@ -5,7 +5,7 @@ import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user
 import Emojione from 'components/emojione/emojione';
 import UserService from 'app/features/users/services/current-user-service';
 import CurrentUserService from 'app/deprecated/user/CurrentUser';
-import ElectronService from 'app/features/global/services/electron-service';
+import ElectronService from 'app/features/global/framework/electron-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';

@@ -1,9 +1,9 @@
 import io from 'socket.io-client';
 import { EventEmitter } from 'events';
-import Logger from 'app/features/global/services/logger-service';
-import { WebsocketEvents, WebSocketListener, WebsocketRoomActions } from '../types/websocket';
-import { Maybe } from 'app/types';
-import JWTStorage from '../../global/services/jwt-storage-service';
+import Logger from 'app/features/global/framework/logger-service';
+import { WebsocketEvents, WebSocketListener, WebsocketRoomActions } from '../types/websocket-types';
+import { Maybe } from 'app/features/global/types/global-types';
+import JWTStorage from '../../auth/jwt-storage-service';
 
 export type WebSocketOptions = {
   url: string;

@@ -1,4 +1,4 @@
-import { TwakeService } from 'app/features/global/services/twake-service';
+import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
 import InitService, {
   ConsoleConfiguration,
   InternalConfiguration,
@@ -6,15 +6,15 @@ import InitService, {
 import { AuthProvider } from './provider/auth-provider';
 import OIDCAuthProviderService from './provider/oidc/oidc-auth-provider-service';
 import InternalAuthProviderService from './provider/internal/internal-auth-provider-service';
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 
 import AlertManager from '../../features/global/services/alert-manager-service';
 import Languages from 'app/features/global/services/languages-service';
 import { UserType } from 'app/features/users/types/user';
-import JWT, { JWTDataType } from 'app/features/global/services/jwt-storage-service';
+import JWT, { JWTDataType } from 'app/features/auth/jwt-storage-service';
 import UserAPIClient from '../../features/users/api/user-api-client';
 import Application from 'app/features/applications/services/application-service';
-import LocalStorage from 'app/features/global/services/local-storage-service';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
 import Collections from 'app/deprecated/CollectionsV2/Collections';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 

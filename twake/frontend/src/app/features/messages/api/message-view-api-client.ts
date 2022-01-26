@@ -1,7 +1,7 @@
 import { MessageWithReplies } from 'app/features/messages/types/message';
-import { TwakeService } from 'app/features/global/services/twake-service';
-import Api from 'app/features/global/services/api-service';
-import { WebsocketRoom } from 'app/features/websocket/types/websocket';
+import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
+import Api from 'app/features/global/framework/api-service';
+import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 
 /**
  * This service is to get messages using views.

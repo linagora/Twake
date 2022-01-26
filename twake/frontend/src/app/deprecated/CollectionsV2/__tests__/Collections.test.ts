@@ -1,4 +1,4 @@
-import Login from 'app/features/global/services/login-service';
+import Login from 'app/features/auth/login-service';
 import Collections, { Resource } from '../Collections';
 
 Login.userIsSet = Promise.resolve('1');

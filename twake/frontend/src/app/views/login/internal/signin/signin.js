@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
-import LoginService from 'app/features/global/services/login-service';
+import LoginService from 'app/features/auth/login-service';
 import AccountService from 'app/deprecated/login/account';
 import Emojione from 'components/emojione/emojione';
 import StepCounter from 'components/step-counter/step-counter.js';

@@ -1,4 +1,4 @@
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import { FileType } from 'app/features/files/types/file';
 import { MessageFileType } from 'app/features/messages/types/message';
 import extensionToMime from '../utils/extension-to-mime';

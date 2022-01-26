@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React, { useEffect } from 'react';
 
-import LoginService from 'app/features/global/services/login-service';
+import LoginService from 'app/features/auth/login-service';
 
 export default () => {
   useEffect(() => {

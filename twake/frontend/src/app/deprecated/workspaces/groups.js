@@ -1,12 +1,12 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import ws from 'app/deprecated/websocket/websocket.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import ListenGroups from './listen_groups.js';
 
 import $ from 'jquery';
-import JWTStorage from 'app/features/global/services/jwt-storage-service';
+import JWTStorage from 'app/features/auth/jwt-storage-service';
 import CompanyAPIClient from '../../features/companies/api/company-api-client';
 import UserService from 'app/features/users/services/current-user-service';
 import Globals from 'app/features/global/services/globals-twake-app-service';

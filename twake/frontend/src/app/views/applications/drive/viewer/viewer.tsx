@@ -9,7 +9,7 @@ import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import Button from 'components/buttons/button.js';
-import ElectronService from 'app/features/global/services/electron-service';
+import ElectronService from 'app/features/global/framework/electron-service';
 import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';

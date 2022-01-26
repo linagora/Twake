@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import LoginService from 'app/features/global/services/login-service';
+import LoginService from 'app/features/auth/login-service';
 import Languages from 'app/features/global/services/languages-service';
 import CompanySelector, { CurrentCompanyLogo } from '../CompanySelector/index';
 import { Button } from 'antd';

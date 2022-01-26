@@ -3,7 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { WorkspaceListStateFamily } from '../state/workspace-list';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import RouterService from 'app/features/router/services/router-service';
@@ -12,7 +12,7 @@ import WorkspacesService from 'app/deprecated/workspaces/workspaces.js';
 import AccessRightsService, {
   RightsOrNone,
 } from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import LocalStorage from 'app/features/global/services/local-storage-service';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';

@@ -3,7 +3,7 @@ import Languages from 'app/features/global/services/languages-service';
 import Emojione from 'components/emojione/emojione';
 import './styles.scss';
 import { Button } from 'antd';
-import LoginService from 'app/features/global/services/login-service';
+import LoginService from 'app/features/auth/login-service';
 
 export default () => {
   return (

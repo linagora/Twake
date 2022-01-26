@@ -1,5 +1,5 @@
 import React from 'react';
-import Login from 'app/features/global/services/login-service';
+import Login from 'app/features/auth/login-service';
 import { Resource, Collection } from '../Collections';
 import OriginalCollections from '../../CollectionsV2/Collections';
 import { shallow } from 'enzyme';

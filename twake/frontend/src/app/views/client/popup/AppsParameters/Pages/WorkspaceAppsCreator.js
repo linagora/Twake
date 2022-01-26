@@ -5,7 +5,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import workspaceService from 'app/deprecated/workspaces/workspaces.js';
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import Input from 'components/inputs/input.js';
 
 import './Pages.scss';

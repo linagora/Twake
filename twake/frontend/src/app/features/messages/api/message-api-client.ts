@@ -1,9 +1,9 @@
-import { TwakeService } from '../../global/services/twake-service';
+import { TwakeService } from '../../global/framework/registry-decorator-service';
 import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageViewAPIClient from './message-view-api-client';
 import MessageThreadAPIClient from './message-thread-api-client';
-import Api from 'app/features/global/services/api-service';
-import { WebsocketRoom } from 'app/features/websocket/types/websocket';
+import Api from 'app/features/global/framework/api-service';
+import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 
 /**
  * This service is to get, update, create, list messages in a thread

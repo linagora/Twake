@@ -4,7 +4,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import Languages from 'app/features/global/services/languages-service';
 import UserService from 'app/features/users/services/current-user-service';
 import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
-import LocalStorage from 'app/features/global/services/local-storage-service';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
 
 import ModalManager from 'app/components/modal/modal-manager';
 

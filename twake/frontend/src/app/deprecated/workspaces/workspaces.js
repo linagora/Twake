@@ -3,23 +3,23 @@ import $ from 'jquery';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import PopupManager from 'app/deprecated/popupManager/popupManager.js';
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import ws from 'app/deprecated/websocket/websocket.js';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Groups from 'app/deprecated/workspaces/groups.js';
-import LocalStorage from 'app/features/global/services/local-storage-service';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import WindowService from 'app/features/global/utils/window';
 import workspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import RouterServices from 'app/features/router/services/router-service';
 import NoWorkspaces from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoWorkspaces';
 import NoCompanies from 'app/views/client/workspaces-bar/components/NoWorkspaces/NoCompanies';
-import loginService from 'app/features/global/services/login-service';
+import loginService from 'app/features/auth/login-service';
 import Globals from 'app/features/global/services/globals-twake-app-service';
-import JWTStorage from 'app/features/global/services/jwt-storage-service';
+import JWTStorage from 'app/features/auth/jwt-storage-service';
 import ConsoleService from 'app/features/console/services/console-service';
 import WorkspaceAPIClient from '../../features/workspaces/api/workspace-api-client';
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 
 class Workspaces extends Observable {
   constructor() {

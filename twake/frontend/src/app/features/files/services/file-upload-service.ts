@@ -1,12 +1,12 @@
 import { v1 as uuid } from 'uuid';
 
 import { FileType, PendingFileType } from 'app/features/files/types/file';
-import JWTStorage from 'app/features/global/services/jwt-storage-service';
+import JWTStorage from 'app/features/auth/jwt-storage-service';
 import RouterServices from 'app/features/router/services/router-service';
 import Resumable from 'app/features/files/utils/resumable';
 import FileUploadAPIClient from '../api/file-upload-api-client';
 import { isPendingFileStatusPending } from '../utils/pending-files';
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 import _ from 'lodash';
 
 export enum Events {

@@ -1,6 +1,6 @@
 import React, { ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 import { ItemContent, LogLevel, Virtuoso } from 'react-virtuoso';
-import Logger from 'app/features/global/services/logger-service';
+import Logger from 'app/features/global/framework/logger-service';
 import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
 
 const logger = Logger.getLogger(`ListBuilder`);

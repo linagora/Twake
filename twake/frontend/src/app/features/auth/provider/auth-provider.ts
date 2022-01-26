@@ -1,4 +1,4 @@
-import { JWTDataType } from 'app/features/global/services/jwt-storage-service';
+import { JWTDataType } from 'app/features/auth/jwt-storage-service';
 
 type AuthEvent =
   | 'userLoaded'

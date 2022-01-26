@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Maybe } from 'app/types';
+import { Maybe } from 'app/features/global/types/global-types';
 import Globals from '../services/globals-twake-app-service';
-import JWTStorage from '../services/jwt-storage-service';
-import Logger from '../services/logger-service';
+import JWTStorage from '../../auth/jwt-storage-service';
+import Logger from '../framework/logger-service';
 
 const logger = Logger.getLogger('useHTTP');
 

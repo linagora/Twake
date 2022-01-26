@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
-import LoginService from 'app/features/global/services/login-service';
+import LoginService from 'app/features/auth/login-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import Emojione from 'components/emojione/emojione';
 import StepCounter from 'components/step-counter/step-counter.js';

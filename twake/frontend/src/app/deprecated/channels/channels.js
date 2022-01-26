@@ -2,7 +2,7 @@ import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Collections from 'app/deprecated/CollectionsReact/Collections';
-import LocalStorage from 'app/features/global/services/local-storage-service';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
 import WindowService from 'app/features/global/utils/window';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import Globals from 'app/features/global/services/globals-twake-app-service';

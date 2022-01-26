@@ -12,7 +12,7 @@ import workspaceUserRightsService from 'app/features/workspaces/services/workspa
 import InitService from 'app/features/global/services/init-service';
 import { ChevronUp, ChevronsUp } from 'react-feather';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
-import Api from 'app/features/global/services/api-service';
+import Api from 'app/features/global/framework/api-service';
 import ConsoleService from 'app/features/console/services/console-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';

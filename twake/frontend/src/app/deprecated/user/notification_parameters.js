@@ -1,8 +1,8 @@
 import Languages from 'app/features/global/services/languages-service';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import ws from 'app/deprecated/websocket/websocket.js';
-import Api from 'app/features/global/services/api-service';
-import Login from 'app/features/global/services/login-service';
+import Api from 'app/features/global/framework/api-service';
+import Login from 'app/features/auth/login-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 

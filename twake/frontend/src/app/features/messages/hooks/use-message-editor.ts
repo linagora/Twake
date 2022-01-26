@@ -11,7 +11,7 @@ import {
 import { useMessage, useSetMessage } from './use-message';
 import { v1 as uuidv1 } from 'uuid';
 import MessageThreadAPIClient from 'app/features/messages/api/message-thread-api-client';
-import Login from 'app/features/global/services/login-service';
+import Login from 'app/features/auth/login-service';
 import { messageToMessageWithReplies } from '../utils/message-with-replies';
 import { useAddMessageToChannel, useRemoveMessageFromChannel } from './use-channel-messages';
 import { useAddMessageToThread, useRemoveMessageFromThread } from './use-thread-messages';

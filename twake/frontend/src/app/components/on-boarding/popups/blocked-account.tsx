@@ -4,7 +4,7 @@ import { Button, Row, Typography } from 'antd';
 import ObjectModal from '../../object-modal/object-modal';
 import Languages from 'app/features/global/services/languages-service';
 import ConsoleService from 'app/features/console/services/console-service';
-import LoginService from 'app/features/global/services/login-service';
+import LoginService from 'app/features/auth/login-service';
 
 type PropsType = {
   email: string;

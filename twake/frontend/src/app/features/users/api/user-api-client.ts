@@ -1,8 +1,8 @@
 import { CompanyType } from 'app/features/companies/types/company';
 import { UserType } from 'app/features/users/types/user';
-import Api from '../../global/services/api-service';
-import { TwakeService } from '../../global/services/twake-service';
-import { WebsocketRoom } from '../../websocket/types/websocket';
+import Api from '../../global/framework/api-service';
+import { TwakeService } from '../../global/framework/registry-decorator-service';
+import { WebsocketRoom } from '../../global/types/websocket-types';
 import WorkspaceAPIClient from '../../workspaces/api/workspace-api-client';
 import CurrentUser from '../../../deprecated/user/CurrentUser';
 

@@ -1,6 +1,6 @@
 import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageViewAPIClient from 'app/features/messages/api/message-view-api-client';
-import LoginService from 'app/features/global/services/login-service';
+import LoginService from 'app/features/auth/login-service';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import Numbers from 'app/features/global/utils/Numbers';
 import _ from 'lodash';
