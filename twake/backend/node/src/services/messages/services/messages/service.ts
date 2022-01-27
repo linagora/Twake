@@ -596,6 +596,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     //Ensure all files in the file object are in the message
+    const previousMessageFiles = message.files;
     message.files = [];
     for (const file of files) {
       const existing = existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0];
@@ -636,9 +637,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         didChange = true;
 
         await this.msgFilesRepository.save(entity);
-        message.files.push(entity);
       }
+
+      message.files.push(entity);
     }
+
+    if (!_.isEqual(previousMessageFiles.sort(), message.files.sort())) didChange = true;
 
     if (didChange) {
       await this.repository.save(message);
