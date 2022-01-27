@@ -19,18 +19,10 @@ import {
 import { keyBy } from "lodash";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 
-export class ViewsController
-  implements
-    CrudController<
-      ResourceGetResponse<MessageWithReplies>,
-      ResourceCreateResponse<MessageWithReplies>,
-      ResourceListResponse<MessageWithReplies>,
-      ResourceDeleteResponse
-    >
-{
+export class ViewsController {
   constructor(protected realtime: RealtimeServiceAPI, protected service: MessageServiceAPI) {}
 
-  async list(
+  async feed(
     request: FastifyRequest<{
       Querystring: MessageViewListQueryParameters;
       Params: {
@@ -68,6 +60,7 @@ export class ViewsController
 
       let entities = [];
       if (request.query.include_users) {
+        //Fixme, this takes a very long time
         for (const msg of resources.getEntities()) {
           entities.push(await this.service.messages.includeUsersInMessageWithReplies(msg));
         }
