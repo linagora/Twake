@@ -6,7 +6,6 @@ import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import groupService from 'app/deprecated/workspaces/groups.js';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Switch from 'components/inputs/switch';
-import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import './Pages.scss';
 import Pending from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending';
