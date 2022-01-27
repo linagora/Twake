@@ -32,7 +32,8 @@ export interface RealtimeEvent<T, U> extends  RealtimeBaseEvent{
 
 export interface RealtimeApplicationEvent {
   action: "configure" | "close_configure";
-    application: unknown;
-    form: unknown;
-    hidden_data: unknown;
+  connection_id: string;
+  application: unknown;
+  form: unknown;
+  hidden_data: unknown;
 }

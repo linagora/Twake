@@ -7,7 +7,8 @@ export interface CompanyExecutionContext extends ExecutionContext {
 export interface ApplicationEventRequestBody {
   company_id: string;
   workspace_id: string;
+  connection_id: string;
   type: string;
-  name: string;
+  name?: string;
   content: any;
 }

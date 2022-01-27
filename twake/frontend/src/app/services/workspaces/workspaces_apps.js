@@ -59,8 +59,8 @@ class WorkspacesApps extends Observable {
       data: data,
       content: { },
       connection_id: connection_id,
-      name: '/me/' + CurrentUser.updates_connection.route.split('/')[1]
     };
+
 
     Api.post(`/internal/services/applications/v1/applications/${app_id}/event`, data, res => {}).then()
   }

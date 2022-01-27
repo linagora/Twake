@@ -60,7 +60,6 @@ const useRealtimeRoom = <T>(
         room.token,
         tag,
         (type: string, event:  RealtimeBaseEvent) => {
-          console.log('Received WebSocket event', type, event);
           logger.debug('Received WebSocket event', type, event);
           if (type === 'realtime:resource') {
             newEvent({

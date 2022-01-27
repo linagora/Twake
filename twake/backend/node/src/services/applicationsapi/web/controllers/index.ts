@@ -1,17 +1,14 @@
-import { FastifyReply, FastifyRequest, FastifyInstance, HTTPMethods } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from "fastify";
 import { ApplicationsApiServiceAPI } from "../../api";
-import Application, { ApplicationObject } from "../../../applications/entities/application";
+import { ApplicationObject } from "../../../applications/entities/application";
 import {
   ApplicationApiExecutionContext,
   ApplicationLoginRequest,
   ApplicationLoginResponse,
+  ConfigureRequest,
 } from "../types";
 import { ResourceGetResponse } from "../../../../utils/types";
-import { logger as log } from "../../../../core/platform/framework";
-import {
-  CrudException,
-  ExecutionContext,
-} from "../../../../core/platform/framework/api/crud-service";
+import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import {
   RealtimeApplicationEvent,
@@ -51,58 +48,30 @@ export class ApplicationsApiController {
     return { resource: entity.getApplicationObject() };
   }
 
-  async configure(request: FastifyRequest<{}>, reply: FastifyReply) {
-    try {
-      const body = request.body as any;
+  async configure(request: FastifyRequest<{ Body: ConfigureRequest }>, reply: FastifyReply) {
+    const app_id = request.currentUser.application_id;
 
-      const data = {
-        action: "configure",
-        application: {
-          id: "22d149c0-7918-11ec-88d7-db651e6e2244",
-          identity: {
-            name: "superapp",
-            icon: "http://localhost:3000/public/emoji-datasource/apple/sheets-256/16.png",
-          },
-        },
-        form: body.form,
-        hidden_data: {},
-      };
+    const application = await this.service.applicationService.applications.get({ id: app_id });
 
-      const room = "/me/" + body.user_id;
-
-      localEventBus.publish("realtime:event", {
-        room: room,
-        type: "application",
-        data,
-      } as RealtimeBaseBusEvent<RealtimeApplicationEvent>);
-
-      return { status: "ok" };
-    } catch (e) {
-      console.error(e);
-      throw e;
+    if (!application) {
+      throw CrudException.forbidden("Application not found");
     }
-  }
 
-  async closeConfigure(
-    request: FastifyRequest<{ Params: { configuration_id: string } }>,
-    reply: FastifyReply,
-  ) {
+    const body = request.body;
+
     const data = {
       action: "configure",
       application: {
-        id: "22d149c0-7918-11ec-88d7-db651e6e2244",
-        identity: {
-          name: "superapp",
-          icon: "http://localhost:3000/public/emoji-datasource/apple/sheets-256/16.png",
-        },
+        id: app_id,
+        identity: application.identity,
       },
+      form: body.form,
+      connection_id: body.connection_id,
       hidden_data: {},
     };
 
-    const room = "/me/" + ""; // TODO:
-
     localEventBus.publish("realtime:event", {
-      room: room,
+      room: "/me/" + body.user_id,
       type: "application",
       data,
     } as RealtimeBaseBusEvent<RealtimeApplicationEvent>);

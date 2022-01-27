@@ -21,6 +21,7 @@ import _ from "lodash";
 import { randomBytes } from "crypto";
 import { ApplicationEventRequestBody } from "../types";
 import { logger as log } from "../../../../core/platform/framework";
+import { hasCompanyAdminLevel } from "../../../../utils/company";
 
 export class ApplicationController
   implements
@@ -173,12 +174,32 @@ export class ApplicationController
   ): Promise<ResourceCreateResponse<any>> {
     const context = getExecutionContext(request);
 
-    // TODO: check user belongs to workspace
-
     const content = request.body.content;
+
+    const applicationEntity = await this.service.applications.get({
+      id: request.params.application_id,
+    });
+
+    if (!applicationEntity) {
+      throw CrudException.notFound("Application not found");
+    }
+
+    if (applicationEntity.company_id != request.body.company_id) {
+      throw CrudException.badRequest("You can't manage application of another company");
+    }
+
+    const companyUser = await this.service.companies.getCompanyUser(
+      { id: applicationEntity.company_id },
+      { id: context.user.id },
+    );
+
+    if (!companyUser || !hasCompanyAdminLevel(companyUser.role))
+      throw CrudException.forbidden("You must be company admin");
 
     const hookResponse = await this.service.applications.notifyApp(
       request.params.application_id,
+      request.body.connection_id,
+      context.user.id,
       request.body.type,
       request.body.name,
       content,

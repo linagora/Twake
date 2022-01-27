@@ -15,3 +15,9 @@ export interface ApplicationLoginResponse {
 export interface ApplicationApiExecutionContext extends ExecutionContext {
   application_id: string;
 }
+
+export interface ConfigureRequest {
+  user_id: string;
+  connection_id: string;
+  form?: any;
+}

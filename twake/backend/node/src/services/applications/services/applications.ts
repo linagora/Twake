@@ -171,9 +171,14 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     await this.repository.save(entity);
   }
 
-  async notifyApp(application_id: string, type: string, name: string, content: any): Promise<void> {
-    log.info({ application_id, type, name, content });
-
+  async notifyApp(
+    application_id: string,
+    connection_id: string,
+    user_id: string,
+    type: string,
+    name: string,
+    content: any,
+  ): Promise<void> {
     const app = await this.get({ id: application_id });
     if (!app) {
       throw CrudException.notFound("Application not found");
@@ -187,8 +192,8 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
       type,
       name,
       content,
-      connection_id: "123",
-      user_id: "e5207cd0-786e-11ec-a485-a111926a997e",
+      connection_id: connection_id,
+      user_id: user_id,
     };
 
     const signature = crypto
@@ -196,7 +201,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
       .update(JSON.stringify(payload))
       .digest("hex");
 
-    const remoteData = await axios
+    await axios
       .post(app.api.hooksUrl, payload, {
         headers: {
           "Content-Type": "application/json",

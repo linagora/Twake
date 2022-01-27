@@ -88,13 +88,12 @@ export default class ConfigBodyLayer extends React.Component {
                   style={{
                     backgroundImage:
                       'url(' +
-                      (this.configurator.application.icon_url ||
-                        this.configurator.app.identity?.icon) +
+                      (this.configurator.app.identity?.icon) +
                       ')',
                   }}
                 />
                 <div className="app_name">
-                  {this.configurator.application.name || this.configurator.app.identity?.name}
+                  { this.configurator.app.identity?.name}
                 </div>
 
                 <CloseIcon

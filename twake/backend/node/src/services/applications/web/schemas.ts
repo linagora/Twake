@@ -126,6 +126,6 @@ export const applicationEventHookSchema = {
       name: { type: "string" },
       content: {},
     },
-    required: ["company_id", "workspace_id", "type", "name", "content"],
+    required: ["company_id", "workspace_id", "type", "content"],
   },
 };
