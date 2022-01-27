@@ -5,7 +5,6 @@ import { useRecoilState } from "recoil";
 import { CurrentUserState } from "../state/atoms/current-user";
 import { useRealtimeRoom } from "app/features/global/hooks/use-realtime";
 import Languages from "app/features/global/services/languages-service";
-
 import ConfiguratorsManager from "app/deprecated/Configurators/ConfiguratorsManager.js";
 import { RealtimeApplicationEvent } from "app/features/global/types/realtime-types";
 

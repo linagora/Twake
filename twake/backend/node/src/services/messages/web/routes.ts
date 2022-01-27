@@ -136,28 +136,28 @@ const routes: FastifyPluginCallback<{ service: MessageServiceAPI; realtime: Real
       method: "GET",
       url: "/companies/:company_id/workspaces/:workspace_id/channels/:channel_id/feed",
       preValidation: [fastify.authenticate],
-      handler: viewsController.list.bind(viewsController),
+      handler: viewsController.feed.bind(viewsController),
     });
 
     fastify.route({
       method: "GET",
       url: "/companies/:company_id/files",
       preValidation: [fastify.authenticate],
-      handler: viewsController.list.bind(viewsController),
+      handler: viewsController.feed.bind(viewsController),
     });
 
     fastify.route({
       method: "GET",
       url: "/companies/:company_id/bookmarks",
       preValidation: [fastify.authenticate],
-      handler: viewsController.list.bind(viewsController),
+      handler: viewsController.feed.bind(viewsController),
     });
 
     fastify.route({
       method: "GET",
       url: "/companies/:company_id/inbox",
       preValidation: [fastify.authenticate],
-      handler: viewsController.list.bind(viewsController),
+      handler: viewsController.feed.bind(viewsController),
     });
 
     fastify.route({

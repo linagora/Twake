@@ -458,11 +458,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     const users: UserObject[] = [];
     for (const id of ids) {
-      users.push(
-        await this.user.formatUser(
-          await this.user.users.get({ id }, { user: { id: null, server_request: true } }),
-        ),
-      );
+      users.push(await this.user.formatUser(await this.user.users.getCached({ id })));
     }
 
     let application = null;
@@ -575,6 +571,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       return message;
     }
 
+    let didChange = false;
+
     files = files.map(f => {
       f.message_id = message.id;
       return f;
@@ -597,10 +595,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     //Ensure all files in the file object are in the message
+    const previousMessageFiles = message.files;
     message.files = [];
     for (const file of files) {
-      const entity =
-        existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0] || new MessageFile();
+      const existing = existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0];
+      const entity = existing || new MessageFile();
       entity.message_id = message.id;
       entity.id = file.id || undefined;
       entity.company_id = file.company_id;
@@ -633,12 +632,20 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       entity.metadata = file.metadata;
 
-      await this.msgFilesRepository.save(entity);
+      if (!existing || !_.isEqual(existing.metadata, entity.metadata)) {
+        didChange = true;
+
+        await this.msgFilesRepository.save(entity);
+      }
 
       message.files.push(entity);
     }
 
-    await this.repository.save(message);
+    if (!_.isEqual(previousMessageFiles.sort(), message.files.sort())) didChange = true;
+
+    if (didChange) {
+      await this.repository.save(message);
+    }
 
     return message;
   }

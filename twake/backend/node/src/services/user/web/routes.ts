@@ -71,7 +71,7 @@ const routes: FastifyPluginCallback<{
     url: `${usersUrl}/:id/companies`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],
-    //schema: getUserCompaniesSchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
+    schema: getUserCompaniesSchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
     handler: usersController.getUserCompanies.bind(usersController),
   });
 
@@ -80,7 +80,7 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: "/companies/:id",
     preValidation: [fastify.authenticateOptional],
-    //schema: getCompanySchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
+    schema: getCompanySchema, //Fixme currently not working because we don't know features in advances and so it doesn't pass
     handler: usersController.getCompany.bind(usersController),
   });
 

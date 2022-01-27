@@ -614,16 +614,26 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   }
 
   public encodeInviteToken(companyId: string, workspaceId: string, token: string) {
-    return `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token.replace("/", "_")}`;
+    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token
+      .replace("+", ".")
+      .replace("/", "_")
+      .replace("=", "-")}`;
+    return encodedToken;
   }
 
   public decodeInviteToken(encodedToken: string): InviteTokenObject | null {
     try {
-      const [companyId, workspaceId, token] = encodedToken.split("-");
+      let split = encodedToken.split("-");
+      //We split on "-" but the token can contain "-" so be careful
+      const [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
       if (!token) {
         return;
       }
-      return { c: expandUUID4(companyId), w: expandUUID4(workspaceId), t: token.replace("_", "/") };
+      return {
+        c: expandUUID4(companyId),
+        w: expandUUID4(workspaceId),
+        t: token.replace(".", "+").replace("_", "/").replace("-", "="),
+      };
     } catch (e) {
       return null;
     }

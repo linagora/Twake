@@ -6,7 +6,6 @@ import WorkspacesApps from "app/deprecated/workspaces/workspaces_apps.js";
 import CloseIcon from "@material-ui/icons/CloseOutlined";
 import "./configurators.scss";
 
-
 /*
   Where the configurators will be displayed, this component should be in app.js (menus should be over all elements of the page)
 */
