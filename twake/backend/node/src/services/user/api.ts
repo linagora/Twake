@@ -52,6 +52,7 @@ export interface UsersServiceAPI
     context?: ExecutionContext,
   ): Promise<ListResult<User>>;
 
+  getCached(pk: UserPrimaryKey): Promise<User>;
   getByUsername(username: string): Promise<User>;
   getByEmail(email: string): Promise<User>;
   getByEmails(email: string[]): Promise<User[]>;
