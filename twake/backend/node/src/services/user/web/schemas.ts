@@ -62,6 +62,16 @@ const companyObjectSchema = {
         name: { type: "string" },
         features: {
           type: "object",
+          properties: {
+            "chat:edit_files": { type: "boolean" },
+            "chat:guests": { type: "boolean" },
+            "chat:message_history": { type: "boolean" },
+            "chat:multiple_workspaces": { type: "boolean" },
+            "chat:unlimited_storage": { type: "boolean" },
+            guests: { type: "number" },
+            members: { type: "number" },
+            storage: { type: "number" },
+          },
         },
       },
     },
