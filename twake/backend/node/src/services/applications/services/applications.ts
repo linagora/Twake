@@ -201,7 +201,7 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
       .update(JSON.stringify(payload))
       .digest("hex");
 
-    await axios
+    return await axios
       .post(app.api.hooksUrl, payload, {
         headers: {
           "Content-Type": "application/json",
