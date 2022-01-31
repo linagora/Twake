@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { ApplicationsApiServiceAPI } from "../api";
 import { ApplicationsApiController } from "./controllers";
-import { WorkspaceUsersBaseRequest } from "../../workspaces/web/types";
 import { ApplicationApiBaseRequest } from "./types";
 import { logger as log } from "../../../core/platform/framework";
+import { configureRequestSchema } from "./schemas";
 
 const routes: FastifyPluginCallback<{ service: ApplicationsApiServiceAPI }> = (
   fastify: FastifyInstance,
@@ -40,15 +40,8 @@ const routes: FastifyPluginCallback<{ service: ApplicationsApiServiceAPI }> = (
     method: "POST",
     url: "/console/v1/configure",
     preValidation: [fastify.authenticate],
+    schema: configureRequestSchema,
     handler: controller.configure.bind(controller),
-  });
-
-  //Close a configuration popup on the client side
-  fastify.route({
-    method: "DELETE",
-    url: "/console/v1/configure/:configuration_id",
-    preValidation: [fastify.authenticate],
-    handler: controller.closeConfigure.bind(controller),
   });
 
   //Get myself as an application

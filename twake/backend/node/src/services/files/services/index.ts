@@ -16,7 +16,7 @@ import {
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
-import { DeleteResult, CrudExeption } from "../../../core/platform/framework/api/crud-service";
+import { DeleteResult, CrudException } from "../../../core/platform/framework/api/crud-service";
 
 export function getService(
   databaseService: DatabaseServiceAPI,
@@ -266,7 +266,7 @@ class Service implements FileServiceAPI {
     const fileToDelete = await this.repository.findOne({ id, company_id: context.company.id });
 
     if (!fileToDelete) {
-      throw new CrudExeption("File not found", 404);
+      throw new CrudException("File not found", 404);
     }
 
     await this.repository.remove(fileToDelete);

@@ -1,10 +1,10 @@
 import { FastifyReply } from "fastify";
 import { HttpErrorCodes } from "fastify-sensible/lib/httpError";
-import { CrudExeption } from "../core/platform/framework/api/crud-service";
+import { CrudException } from "../core/platform/framework/api/crud-service";
 
 export function handleError(reply: FastifyReply, err: Error): void {
-  if (err instanceof CrudExeption) {
-    const crudException: CrudExeption = err;
+  if (err instanceof CrudException) {
+    const crudException: CrudException = err;
     reply.getHttpError(crudException.status as HttpErrorCodes, crudException.message);
   } else {
     throw err;

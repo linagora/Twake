@@ -3,10 +3,11 @@ import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api
 import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
-import { WorkspaceBaseRequest } from "../../workspaces/web/types";
+
 import Application from "../entities/application";
 import assert from "assert";
-import { applicationPostSchema } from "./schemas";
+import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
+import { logger as log } from "../../../core/platform/framework";
 
 const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
@@ -22,23 +23,28 @@ const routes: FastifyPluginCallback<{
   );
 
   const adminCheck = async (request: FastifyRequest<{ Body: Application }>) => {
-    const companyId = request.body.company_id;
-    const userId = request.currentUser.id;
-    assert(companyId, "company_id is not defined");
-    const companyUser = await options.service.companies.getCompanyUser(
-      { id: companyId },
-      { id: userId },
-    );
+    try {
+      const companyId = request.body.company_id;
+      const userId = request.currentUser.id;
+      assert(companyId, "company_id is not defined");
+      const companyUser = await options.service.companies.getCompanyUser(
+        { id: companyId },
+        { id: userId },
+      );
 
-    if (!companyUser) {
-      const company = await options.service.companies.getCompany({ id: companyId });
-      if (!company) {
-        throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
+      if (!companyUser) {
+        const company = await options.service.companies.getCompany({ id: companyId });
+        if (!company) {
+          throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
+        }
+        throw fastify.httpErrors.forbidden("User does not belong to this company");
       }
-      throw fastify.httpErrors.forbidden("User does not belong to this company");
-    }
-    if (companyUser.role !== "admin") {
-      throw fastify.httpErrors.forbidden("You must be an admin of this company");
+      if (companyUser.role !== "admin") {
+        throw fastify.httpErrors.forbidden("You must be an admin of this company");
+      }
+    } catch (e) {
+      log.error(e);
+      throw e;
     }
   };
 
@@ -128,6 +134,7 @@ const routes: FastifyPluginCallback<{
     method: "POST",
     url: `${applicationsUrl}/:application_id/event`,
     preValidation: [fastify.authenticate],
+    schema: applicationEventHookSchema,
     handler: applicationController.event.bind(applicationController),
   });
 

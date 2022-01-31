@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import useWebSocket from 'app/features/global/hooks/use-websocket';
-import Logger from 'app/features/global/framework/logger-service';
-import { RealtimeEventAction } from '../types/realtime-types';
-import { WebsocketRoom } from 'app/features/global/types/websocket-types';
+import { useEffect, useRef, useState } from "react";
+import useWebSocket from "app/features/global/hooks/use-websocket";
+import Logger from "app/features/global/framework/logger-service";
+import { RealtimeBaseAction, RealtimeBaseEvent, RealtimeResourceEvent } from "../types/realtime-types";
+import { WebsocketRoom } from "app/features/global/types/websocket-types";
+
 
 const logger = Logger.getLogger('useRealtimeRoom');
 
@@ -12,8 +13,7 @@ export type RealtimeRoomService<T> = {
   emit: (event: string, data: T) => void;
 };
 
-type RealtimeSimpleEvent = { data: any };
-type RealtimeResourceEvent<T> = { action: RealtimeEventAction; resource: T };
+
 
 /**
  * Subscribe to a room using websocket channel.
@@ -28,16 +28,16 @@ type RealtimeResourceEvent<T> = { action: RealtimeEventAction; resource: T };
 const useRealtimeRoom = <T>(
   roomConf: WebsocketRoom,
   tagName: string,
-  onEvent: (action: RealtimeEventAction, event: T) => void,
+  onEvent: (action: RealtimeBaseAction, event: T) => void,
 ) => {
   const { websocket } = useWebSocket();
-  const [lastEvent, setLastEvent] = useState<{ action: RealtimeEventAction; payload: T }>();
+  const [lastEvent, setLastEvent] = useState<{ action: RealtimeBaseAction; payload: T }>();
   const [room, setRoom] = useState(roomConf);
   const [tag] = useState(tagName);
   // subscribe once
   const subscribed = useRef(false);
 
-  const newEvent = (event: { action: RealtimeEventAction; payload: T }) => {
+  const newEvent = (event: { action: RealtimeBaseAction; payload: T }) => {
     if (event) {
       setLastEvent(event);
       onEvent(event.action, event.payload);
@@ -60,7 +60,7 @@ const useRealtimeRoom = <T>(
         room.room,
         room.token,
         tag,
-        (type: string, event: RealtimeResourceEvent<T> | RealtimeSimpleEvent) => {
+        (type: string, event:  RealtimeBaseEvent) => {
           logger.debug('Received WebSocket event', type, event);
           if (type === 'realtime:resource') {
             newEvent({
@@ -68,8 +68,8 @@ const useRealtimeRoom = <T>(
               payload: (event as RealtimeResourceEvent<T>).resource,
             });
           } else if (type === 'realtime:event') {
-            newEvent({ action: 'event', payload: (event as RealtimeSimpleEvent).data });
-          } else if (type === 'realtime:join:success') {
+            newEvent({ action: 'event', payload: event.data });
+          }  else if (type === 'realtime:join:success') {
             logger.debug(`Room ${room} has been joined`);
           } else {
             logger.debug('Event type is not supported', type);

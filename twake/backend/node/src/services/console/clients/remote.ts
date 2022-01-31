@@ -20,7 +20,7 @@ import Company, {
   CompanySearchKey,
   getInstance as getCompanyInstance,
 } from "../../user/entities/company";
-import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
+import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import UserServiceAPI from "../../user/api";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
@@ -221,7 +221,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     const userDTO = await this.fetchUserInfo(code);
 
     if (!userDTO) {
-      throw CrudExeption.badRequest("User not found on Console");
+      throw CrudException.badRequest("User not found on Console");
     }
 
     const roles = userDTO.roles;
@@ -230,7 +230,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     if (!user) {
       if (!userDTO.email) {
-        throw CrudExeption.badRequest("Email is required");
+        throw CrudException.badRequest("Email is required");
       }
 
       let username = userDTO.email
@@ -240,12 +240,12 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         .replace(/ +/g, "_");
 
       if (await this.userService.users.isEmailAlreadyInUse(userDTO.email)) {
-        throw CrudExeption.badRequest("Console user not created because email already exists");
+        throw CrudException.badRequest("Console user not created because email already exists");
       }
 
       username = await this.userService.users.getAvailableUsername(username);
       if (!username) {
-        throw CrudExeption.badRequest("Console user not created because username already exists");
+        throw CrudException.badRequest("Console user not created because username already exists");
       }
 
       user = getInstance({});
@@ -301,7 +301,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         const roleName = role.roleCode;
         const company = await getCompanyByCode(companyConsoleCode);
         if (!company) {
-          throw CrudExeption.notFound(`Company ${companyConsoleCode} not found`);
+          throw CrudException.notFound(`Company ${companyConsoleCode} not found`);
         }
         //Make sure user is active, if not we remove it
         if (role.status !== "deactivated") {
@@ -332,7 +332,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     const user = await this.userService.users.getByConsoleId(consoleUserId);
     if (!user) {
-      throw CrudExeption.notFound(`User ${consoleUserId} doesn't exists`);
+      throw CrudException.notFound(`User ${consoleUserId} doesn't exists`);
     }
     await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
   }
@@ -371,7 +371,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .then(({ data }) => data.company)
       .catch(e => {
         if (e.response.status === 401) {
-          throw CrudExeption.forbidden("Bad console credentials");
+          throw CrudException.forbidden("Bad console credentials");
         }
         throw e;
       });
@@ -389,7 +389,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .then(({ data }) => data)
       .catch(e => {
         if (e.response.status === 401) {
-          throw CrudExeption.forbidden("Bad console credentials");
+          throw CrudException.forbidden("Bad console credentials");
         }
         throw e;
       });
@@ -407,7 +407,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .then(({ data }) => data)
       .catch(e => {
         if (e.response?.status === 401) {
-          throw CrudExeption.forbidden("Bad access token credentials");
+          throw CrudException.forbidden("Bad access token credentials");
         }
         throw e;
       });
@@ -431,7 +431,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .then(({ data }) => data)
       .catch(e => {
         if (e.response.status === 401) {
-          throw CrudExeption.forbidden("Bad credentials");
+          throw CrudException.forbidden("Bad credentials");
         }
         throw e;
       });

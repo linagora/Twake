@@ -1,17 +1,19 @@
-import { FastifyReply, FastifyRequest, FastifyInstance, HTTPMethods } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from "fastify";
 import { ApplicationsApiServiceAPI } from "../../api";
-import Application, { ApplicationObject } from "../../../applications/entities/application";
+import { ApplicationObject } from "../../../applications/entities/application";
 import {
   ApplicationApiExecutionContext,
   ApplicationLoginRequest,
   ApplicationLoginResponse,
+  ConfigureRequest,
 } from "../types";
 import { ResourceGetResponse } from "../../../../utils/types";
-import { logger as log } from "../../../../core/platform/framework";
+import { CrudException } from "../../../../core/platform/framework/api/crud-service";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import {
-  CrudExeption,
-  ExecutionContext,
-} from "../../../../core/platform/framework/api/crud-service";
+  RealtimeApplicationEvent,
+  RealtimeBaseBusEvent,
+} from "../../../../core/platform/services/realtime/types";
 
 export class ApplicationsApiController {
   constructor(readonly service: ApplicationsApiServiceAPI) {}
@@ -40,21 +42,41 @@ export class ApplicationsApiController {
       id: context.application_id,
     });
     if (!entity) {
-      throw CrudExeption.notFound("Application not found");
+      throw CrudException.notFound("Application not found");
     }
 
     return { resource: entity.getApplicationObject() };
   }
 
-  async configure(request: FastifyRequest<{}>, reply: FastifyReply) {
-    return { error: "Not implemented (yet)" };
-  }
+  async configure(request: FastifyRequest<{ Body: ConfigureRequest }>, reply: FastifyReply) {
+    const app_id = request.currentUser.application_id;
 
-  async closeConfigure(
-    request: FastifyRequest<{ Params: { configuration_id: string } }>,
-    reply: FastifyReply,
-  ) {
-    return { error: "Not implemented (yet)" };
+    const application = await this.service.applicationService.applications.get({ id: app_id });
+
+    if (!application) {
+      throw CrudException.forbidden("Application not found");
+    }
+
+    const body = request.body;
+
+    const data = {
+      action: "configure",
+      application: {
+        id: app_id,
+        identity: application.identity,
+      },
+      form: body.form,
+      connection_id: body.connection_id,
+      hidden_data: {},
+    };
+
+    localEventBus.publish("realtime:event", {
+      room: "/me/" + body.user_id,
+      type: "application",
+      data,
+    } as RealtimeBaseBusEvent<RealtimeApplicationEvent>);
+
+    return { status: "ok" };
   }
 
   async proxy(request: FastifyRequest<{}>, reply: FastifyReply, fastify: FastifyInstance) {

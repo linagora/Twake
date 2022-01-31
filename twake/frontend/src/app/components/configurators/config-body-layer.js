@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from "react";
 
-import ConfiguratorsManager from 'app/deprecated/Configurators/ConfiguratorsManager.js';
-import Twacode from 'components/twacode/twacode';
-import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
-import CloseIcon from '@material-ui/icons/CloseOutlined';
-import './configurators.scss';
+import ConfiguratorsManager from "app/deprecated/Configurators/ConfiguratorsManager.js";
+import Twacode from "components/twacode/twacode";
+import WorkspacesApps from "app/deprecated/workspaces/workspaces_apps.js";
+import CloseIcon from "@material-ui/icons/CloseOutlined";
+import "./configurators.scss";
 
 /*
   Where the configurators will be displayed, this component should be in app.js (menus should be over all elements of the page)
@@ -40,7 +40,7 @@ export default class ConfigBodyLayer extends React.Component {
     this.configurator =
       ConfiguratorsManager.currentConfigurators[
         ConfiguratorsManager.configurator_order[ConfiguratorsManager.configurator_order.length - 1]
-      ];
+        ];
   }
   onAction(type, id, context, passives, evt) {
     if (type == 'interactive_action') {
@@ -88,13 +88,12 @@ export default class ConfigBodyLayer extends React.Component {
                   style={{
                     backgroundImage:
                       'url(' +
-                      (this.configurator.application.icon_url ||
-                        this.configurator.app.identity?.icon) +
+                      (this.configurator.app.identity?.icon) +
                       ')',
                   }}
                 />
                 <div className="app_name">
-                  {this.configurator.application.name || this.configurator.app.identity?.name}
+                  { this.configurator.app.identity?.name}
                 </div>
 
                 <CloseIcon

@@ -10,7 +10,7 @@ import {
   SaveResult,
   DeleteResult,
   ListResult,
-  CrudExeption,
+  CrudException,
   Pagination,
 } from "../../../../../core/platform/framework/api/crud-service";
 import { ChannelExecutionContext } from "../../../types";
@@ -85,7 +85,7 @@ export default class ChannelPendingEmailsService implements ChannelPendingEmailS
     const pendingEmail = await this.get(pk);
 
     if (!pendingEmail) {
-      throw CrudExeption.notFound("Channel pendingEmail has not been found");
+      throw CrudException.notFound("Channel pendingEmail has not been found");
     }
 
     await this.repository.remove(pendingEmail);

@@ -80,7 +80,7 @@ export function useCurrentWorkspace() {
   const companyId = useRouterCompany();
   const routerWorkspaceId = useRouterWorkspace();
   const { workspaces, refresh } = useWorkspacesCommons(companyId);
-  const workspace = workspaces.find(w => w.id == routerWorkspaceId);
+  const workspace = workspaces.find(w => w.id === routerWorkspaceId);
 
   //Retro compatibility
   Workspaces.updateCurrentWorkspaceId(workspace?.id || '');
@@ -93,7 +93,7 @@ export function useCurrentWorkspace() {
 export function useWorkspace(workspaceId: string) {
   const companyId = useRouterCompany();
   const { workspaces, refresh } = useWorkspacesCommons(companyId);
-  const workspace = workspaces.find(w => w.id == workspaceId);
+  const workspace = workspaces.find(w => w.id === workspaceId);
   return { workspace, refresh };
 }
 

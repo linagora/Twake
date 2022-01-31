@@ -3,7 +3,7 @@ import { DatabaseServiceAPI } from "../../../../core/platform/services/database/
 import { PushNotificationMessage } from "../../types";
 import { PushServiceAPI } from "../../../../core/platform/services/push/api";
 import User, { TYPE as UserType } from "../../../user/entities/user";
-import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
+import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 
 export class MobilePushService {
   name: "MobilePushService";
@@ -25,7 +25,7 @@ export class MobilePushService {
     const user = await this.userRepository.findOne({ id: userId });
 
     if (!user) {
-      throw CrudExeption.notFound(`User ${userId} not found`);
+      throw CrudException.notFound(`User ${userId} not found`);
     }
 
     const notification = {

@@ -14,9 +14,11 @@ export class Api {
 
   private async convertResponse(response: Promise<Response>): Promise<ApiResponse> {
     const apiResponse = (await response) as ApiResponse;
-    const json = apiResponse.json();
-    apiResponse.resources = json.resources;
-    apiResponse.resource = json.resource;
+    if (apiResponse.statusCode !== 204) {
+      const json = apiResponse.json();
+      apiResponse.resources = json.resources;
+      apiResponse.resource = json.resource;
+    }
     return apiResponse;
   }
 
@@ -29,29 +31,43 @@ export class Api {
     url: string,
     payload: InjectPayload,
     userId: string,
+    headers: any,
   ): Promise<ApiResponse> {
     if (!userId) userId = this.platform.currentUser.id;
+
+    let totalHeaders = { authorization: `Bearer ${await this.getJwtToken(userId)}` };
+
+    if (headers) {
+      totalHeaders = { ...totalHeaders, ...headers };
+    }
 
     return this.convertResponse(
       this.platform.app
         .inject({
           method,
           url,
-          headers: { authorization: `Bearer ${await this.getJwtToken(userId)}` },
+          headers: totalHeaders,
           payload,
         })
         .then(a => {
-          log.debug(a.json(), `${method} ${url}`);
+          if (a.statusCode !== 204) {
+            log.debug(a.json(), `${method} ${url}`);
+          }
           return a;
         }),
     );
   }
 
-  public async get(url: string, userId?: string): Promise<ApiResponse> {
-    return this.request("GET", url, undefined, userId);
+  public async get(url: string, userId?: string, headers?: any): Promise<ApiResponse> {
+    return this.request("GET", url, undefined, userId, headers);
   }
 
-  public async post(url: string, payload: InjectPayload, userId?: string): Promise<ApiResponse> {
-    return this.request("POST", url, payload, userId);
+  public async post(
+    url: string,
+    payload: InjectPayload,
+    userId?: string,
+    headers?: any,
+  ): Promise<ApiResponse> {
+    return this.request("POST", url, payload, userId, headers);
   }
 }
