@@ -55,7 +55,9 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       };
     }
 
-    if (user.skipInvite) {
+    //Fixme: When console solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/35
+    //       we can remove the '|| user.role === "guest"'
+    if (user.skipInvite || user.role === "guest") {
       return this.client
         .post(`/api/companies/${company.code}/users`, user, {
           auth: this.auth(),

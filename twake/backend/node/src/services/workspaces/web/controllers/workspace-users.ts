@@ -428,11 +428,10 @@ export class WorkspaceUsersCrudController
             createUser,
           );
         } catch (err) {
-          console.error(err);
           responses.push({
             email: invitation.email,
             status: "error",
-            message: "Unable to invite this user to your company" + err,
+            message: "Unable to invite this user to your company " + err,
           });
           continue;
         }
