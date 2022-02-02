@@ -2,6 +2,7 @@ import { beforeAll, afterAll, afterEach, beforeEach, describe, expect, it } from
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
+import { CompanyLimitsEnum } from "../../../src/services/user/web/types";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1";
@@ -285,9 +286,8 @@ describe("The /users API", () => {
           expect(resource.plan).toMatchObject({
             name: expect.any(String),
             limits: expect.objectContaining({
-              members: expect.any(Number),
-              guests: expect.any(Number),
-              storage: expect.any(Number),
+              [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: expect.any(Number || undefined),
+              [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: expect.any(Number || undefined),
             }),
           });
         }
