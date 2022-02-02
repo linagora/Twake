@@ -276,10 +276,10 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace moderator", async done => {
+    it("should 403 when requester is not at least workspace member", async done => {
       const companyId = testDbService.company.id;
-      const workspaceId = testDbService.workspaces[0].workspace.id;
-      const userId = testDbService.workspaces[0].users[1].id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[0].id;
       const email = "first@test-user.com";
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
@@ -367,10 +367,10 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace moderator", async done => {
+    it("should 403 when requester is not at least workspace member", async done => {
       const companyId = testDbService.company.id;
-      const workspaceId = testDbService.workspaces[0].workspace.id;
-      const userId = testDbService.workspaces[0].users[1].id;
+      const workspaceId = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[0].id;
       const email = "first@test-user.com";
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
