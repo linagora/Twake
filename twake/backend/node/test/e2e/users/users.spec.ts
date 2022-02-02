@@ -334,9 +334,8 @@ describe("The /users API", () => {
         expect(json.resource.plan).toMatchObject({
           name: expect.any(String),
           limits: expect.objectContaining({
-            members: expect.any(Number),
-            guests: expect.any(Number),
-            storage: expect.any(Number),
+            [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: expect.any(Number || undefined),
+            [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: expect.any(Number || undefined),
           }),
         });
       }
