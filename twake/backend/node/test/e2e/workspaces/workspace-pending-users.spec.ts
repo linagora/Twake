@@ -34,6 +34,7 @@ describe("The /workspace/pending users API", () => {
   const firstEmail = "first@test-user.com";
   const secondEmail = "second@test-user.com";
   const thirdEmail = "third@test-user.com";
+  const fourthUser = "fourth@test-user.com";
   const emailForExistedUser = "exist@email.com";
 
   async function doTheTest() {
@@ -65,14 +66,21 @@ describe("The /workspace/pending users API", () => {
     await testDbService.createCompany(companyId);
     const ws0pk = { id: uuidv1(), company_id: companyId };
     const ws1pk = { id: uuidv1(), company_id: companyId };
+    const ws2pk = { id: uuidv1(), company_id: companyId };
     await testDbService.createWorkspace(ws0pk);
     await testDbService.createWorkspace(ws1pk);
+    await testDbService.createWorkspace(ws2pk);
     await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "moderator" });
     await testDbService.createUser([ws0pk], { companyRole: "member", workspaceRole: "member" });
     await testDbService.createUser([ws1pk], {
       companyRole: "member",
       workspaceRole: "member",
       email: emailForExistedUser,
+    });
+    await testDbService.createUser([ws2pk], {
+      companyRole: "guest",
+      workspaceRole: "member",
+      email: fourthUser,
     });
 
     const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
@@ -122,9 +130,9 @@ describe("The /workspace/pending users API", () => {
       done();
     });
 
-    it("should 403 when requester is not workspace moderator", async done => {
-      const workspace_id = testDbService.workspaces[0].workspace.id;
-      const userId = testDbService.workspaces[0].users[1].id;
+    it("should 403 when requester is not at least workspace member", async done => {
+      const workspace_id = testDbService.workspaces[2].workspace.id;
+      const userId = testDbService.workspaces[2].users[0].id;
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
