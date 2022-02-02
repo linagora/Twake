@@ -1,4 +1,5 @@
 import { webSocketSchema } from "../../../utils/types";
+import { CompanyFeaturesEnum, CompanyLimitsEnum } from "./types";
 
 export const userObjectSchema = {
   type: "object",
@@ -60,18 +61,27 @@ const companyObjectSchema = {
       type: ["object", "null"],
       properties: {
         name: { type: "string" },
+        limits: {
+          type: ["object", "null"],
+          properties: {
+            [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: { type: "number" },
+            [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: { type: "number" },
+          },
+        },
         features: {
           type: "object",
           properties: {
-            "chat:edit_files": { type: "boolean" },
-            "chat:guests": { type: "boolean" },
-            "chat:message_history": { type: "boolean" },
-            "chat:multiple_workspaces": { type: "boolean" },
-            "chat:unlimited_storage": { type: "boolean" },
-            guests: { type: "number" },
-            members: { type: "number" },
-            storage: { type: "number" },
+            [CompanyFeaturesEnum.CHAT_EDIT_FILES]: { type: ["boolean"] },
+            [CompanyFeaturesEnum.CHAT_GUESTS]: { type: ["boolean"] },
+            [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: { type: "boolean" },
+            [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: { type: "boolean" },
+            [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: { type: "boolean" },
+            [CompanyFeaturesEnum.COMPANY_LIMIT_NOT_REACHED]: { type: "boolean" },
+            guests: { type: "number" }, // to rename or delete
+            members: { type: "number" }, //  to rename or delete
+            storage: { type: "number" }, //  to rename or delete
           },
+          required: [] as string[],
         },
       },
     },

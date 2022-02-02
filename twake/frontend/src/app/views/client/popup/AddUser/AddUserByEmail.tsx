@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Typography } from 'antd';
 import Languages from 'app/features/global/services/languages-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import AutoHeight from 'app/components/auto-height/auto-height';
 import ConsoleService from 'app/features/console/services/console-service';
-import RouterServices from 'app/features/router/services/router-service';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
-import './AddUser.scss';
 import MagicLinks from './MagicLinks';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+
+import './AddUser.scss';
+import LockedInviteAlert from 'app/components/locked-features-components/locked-invite-alert';
+import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
+import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
 
 type PropsType = {
   [key: string]: any;
@@ -16,7 +21,9 @@ type PropsType = {
 };
 
 export default (props: PropsType): JSX.Element => {
-  const { companyId, workspaceId } = RouterServices.getStateFromRoute();
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
+  const { FeatureNames } = useFeatureToggles();
   const [disabled, setDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [emails, _setEmails] = useState<string[]>([]);
@@ -56,13 +63,28 @@ export default (props: PropsType): JSX.Element => {
       popupManager.close();
     }, 200);
   };
+
+  useEffect(() => {
+    if (!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_LIMIT_NOT_REACHED))
+      setDisabled(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="add-user-from-twake-console">
-      <Typography.Title level={3} className="">
+      <Typography.Title level={3}>
         {Languages.t('scenes.app.workspaces.create_company.invitations.title_2')}{' '}
       </Typography.Title>
+
+      {!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_LIMIT_NOT_REACHED) && (
+        <div style={{ maxWidth: 328 }}>
+          <LockedInviteAlert />
+        </div>
+      )}
+
       <div className="user-list-container small-y-margin">
         <AutoHeight
+          disabled={disabled}
           minHeight="120px"
           maxHeight="120px"
           onChange={onChange}
@@ -79,7 +101,6 @@ export default (props: PropsType): JSX.Element => {
           {Languages.t('scenes.app.popup.adduser.adresses_message')}
         </Typography.Text>
       </div>
-
       <div className="add-user-button-container">
         <Button
           type="primary"
@@ -92,8 +113,7 @@ export default (props: PropsType): JSX.Element => {
             : Languages.t('general.add')}
         </Button>
       </div>
-
-      {!props.noMagicLink && (
+      {disabled === false && !props.noMagicLink && (
         <div className="magic-links-wrapper">
           <br />
           <MagicLinks />

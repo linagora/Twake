@@ -10,6 +10,8 @@ import { getService as getExternalService } from "./external_links";
 import { getService as getWorkspaceService } from "../../workspaces/services/workspace";
 import { WorkspaceServiceAPI } from "../../workspaces/api";
 import {
+  CompanyFeaturesEnum,
+  CompanyLimitsEnum,
   CompanyObject,
   CompanyShort,
   CompanyStatsObject,
@@ -143,13 +145,41 @@ class Service implements UserServiceAPI {
     };
 
     if (companyUserObject) {
-      res.status = "active"; // FIXME: with real status
+      res.status = "active"; // FIXME: Deactivated console user are removed from company on twake side
       res.role = companyUserObject.role;
     }
 
     if (companyStats) {
       res.stats = companyStats;
     }
+
+    res.plan = {
+      name: res.plan?.name || "free",
+      limits: res.plan?.limits || {},
+      features: res.plan?.features || {},
+    };
+
+    res.plan.limits = Object.assign(
+      {
+        [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000,
+        [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: -1,
+      },
+      res.plan?.limits || {},
+    );
+
+    res.plan.features = Object.assign(
+      {
+        [CompanyFeaturesEnum.CHAT_GUESTS]: true,
+        [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: true,
+        [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: true,
+        [CompanyFeaturesEnum.CHAT_EDIT_FILES]: true,
+        [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: true,
+        [CompanyFeaturesEnum.COMPANY_LIMIT_NOT_REACHED]:
+          res.plan?.limits[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT] <= 0 ||
+          res.stats.total_members < res.plan?.limits[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT],
+      },
+      res.plan?.features || {},
+    );
 
     return res;
   }

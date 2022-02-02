@@ -65,9 +65,38 @@ export interface UserObject {
   companies?: CompanyUserObject[];
 }
 
+export enum CompanyLimitsEnum {
+  CHAT_MESSAGE_HISTORY_LIMIT = "chat:message_history_limit",
+  COMPANY_MEMBERS_LIMIT = "company:members_limit", // 100
+}
+
+export enum CompanyFeaturesEnum {
+  CHAT_GUESTS = "chat:guests",
+  CHAT_MESSAGE_HISTORY = "chat:message_history",
+  CHAT_MULTIPLE_WORKSPACES = "chat:multiple_workspaces",
+  CHAT_EDIT_FILES = "chat:edit_files",
+  CHAT_UNLIMITED_STORAGE = "chat:unlimited_storage",
+  COMPANY_LIMIT_NOT_REACHED = "company:limit_not_reached",
+}
+
+export type CompanyFeaturesObject = {
+  [CompanyFeaturesEnum.CHAT_GUESTS]?: boolean;
+  [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]?: boolean;
+  [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]?: boolean;
+  [CompanyFeaturesEnum.CHAT_EDIT_FILES]?: boolean;
+  [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]?: boolean;
+  [CompanyFeaturesEnum.COMPANY_LIMIT_NOT_REACHED]?: boolean;
+};
+
+export type CompanyLimitsObject = {
+  [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]?: number;
+  [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]?: number;
+};
+
 export interface CompanyPlanObject {
   name: string;
-  features: any;
+  limits?: CompanyLimitsObject;
+  features?: CompanyFeaturesObject;
 }
 
 export interface CompanyStatsObject {

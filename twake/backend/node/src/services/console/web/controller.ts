@@ -83,7 +83,7 @@ export class ConsoleController {
         if (!company) {
           const newCompany = getCompanyInstance({
             name: "Twake",
-            plan: { name: "Local", features: {} },
+            plan: { name: "Local", limits: undefined, features: undefined },
           });
           company = await this.userService.companies.createCompany(newCompany);
         }

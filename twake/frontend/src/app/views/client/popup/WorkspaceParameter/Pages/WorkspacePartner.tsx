@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Search } from 'react-feather';
+import { Row, Col, Button, Input, Typography, Divider } from 'antd';
 
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
@@ -7,12 +9,15 @@ import groupService from 'app/deprecated/workspaces/groups.js';
 import workspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Switch from 'components/inputs/switch';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
-import './Pages.scss';
 import Pending from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Pending';
 import Members from 'app/views/client/popup/WorkspaceParameter/Pages/WorkspacePartnerTabs/Members';
-import { Row, Col, Button, Input, Typography, Divider } from 'antd';
 import AddUserByEmail from '../../AddUser/AddUserByEmail';
-import { Search } from 'react-feather';
+import LockedInviteAlert from 'app/components/locked-features-components/locked-invite-alert';
+import FeatureTogglesService, {
+  FeatureNames,
+} from 'app/features/global/services/feature-toggles-service';
+
+import './Pages.scss';
 
 export const AdminSwitch = (props: { col: any; adminLevelId: string; onChange: any }) => {
   workspacesUsers.useListener(useState);
@@ -86,6 +91,12 @@ export default () => {
       )}
 
       <Divider />
+
+      {!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_LIMIT_NOT_REACHED) ? (
+        <LockedInviteAlert />
+      ) : (
+        <></>
+      )}
 
       <Row className="small-y-margin" justify="space-between" align="middle">
         <Col>
