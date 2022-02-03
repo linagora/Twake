@@ -92,7 +92,7 @@ export default () => {
 
       <Divider />
 
-      {!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_LIMIT_NOT_REACHED) ? (
+      {!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER) ? (
         <LockedInviteAlert />
       ) : (
         <></>

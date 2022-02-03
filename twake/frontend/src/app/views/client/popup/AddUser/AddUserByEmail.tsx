@@ -65,7 +65,7 @@ export default (props: PropsType): JSX.Element => {
   };
 
   useEffect(() => {
-    if (!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_LIMIT_NOT_REACHED))
+    if (!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER))
       setDisabled(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -76,7 +76,7 @@ export default (props: PropsType): JSX.Element => {
         {Languages.t('scenes.app.workspaces.create_company.invitations.title_2')}{' '}
       </Typography.Title>
 
-      {!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_LIMIT_NOT_REACHED) && (
+      {!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER) && (
         <div style={{ maxWidth: 328 }}>
           <LockedInviteAlert />
         </div>

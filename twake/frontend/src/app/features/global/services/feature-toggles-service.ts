@@ -6,7 +6,7 @@ export enum FeatureNames {
   MULTIPLE_WORKSPACES = 'chat:multiple_workspaces',
   EDIT_FILES = 'chat:edit_files',
   UNLIMITED_STORAGE = 'chat:unlimited_storage', //Currently inactive
-  COMPANY_LIMIT_NOT_REACHED = 'company:limit_not_reached',
+  COMPANY_INVITE_MEMBER = 'company:invite_member',
 }
 
 export type FeatureValueType = boolean | number;
@@ -20,7 +20,7 @@ availableFeaturesWithDefaults.set(FeatureNames.MESSAGE_HISTORY_LIMIT, 10000);
 availableFeaturesWithDefaults.set(FeatureNames.MULTIPLE_WORKSPACES, true);
 availableFeaturesWithDefaults.set(FeatureNames.EDIT_FILES, true);
 availableFeaturesWithDefaults.set(FeatureNames.UNLIMITED_STORAGE, true);
-availableFeaturesWithDefaults.set(FeatureNames.COMPANY_LIMIT_NOT_REACHED, true);
+availableFeaturesWithDefaults.set(FeatureNames.COMPANY_INVITE_MEMBER, true);
 
 /**
  * Service that allow you to manage feature flipping in Twake using react feature toggles

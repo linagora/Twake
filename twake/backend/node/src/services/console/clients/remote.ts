@@ -192,7 +192,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: true,
       [CompanyFeaturesEnum.CHAT_EDIT_FILES]: true,
       [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: true,
-      [CompanyFeaturesEnum.COMPANY_LIMIT_NOT_REACHED]: true,
+      [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]: true,
     };
 
     if (companyDTO.limits.members < 0 && this.infos.type === "remote") {

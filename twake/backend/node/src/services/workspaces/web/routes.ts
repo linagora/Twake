@@ -115,7 +115,6 @@ const routes: FastifyPluginCallback<{
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
   ) => {
     if (!request.currentUser.id) {
-      // TODO error auth msg
       throw fastify.httpErrors.forbidden("You must be authenticated");
     }
     const companyUser = await options.service.companies.getCompanyUser(
@@ -132,7 +131,6 @@ const routes: FastifyPluginCallback<{
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
   ) => {
     if (!request.currentUser.id) {
-      // TODO error auth msg
       throw fastify.httpErrors.forbidden("You must be authenticated");
     }
     const workspaceUser = await checkUserWorkspace(request);
@@ -149,7 +147,6 @@ const routes: FastifyPluginCallback<{
     request: FastifyRequest<{ Params: WorkspaceUsersRequest }>,
   ) => {
     if (!request.currentUser.id) {
-      // TODO error auth msg
       throw fastify.httpErrors.forbidden("You must be authenticated");
     }
     const workspaceUser = await checkUserWorkspace(request);

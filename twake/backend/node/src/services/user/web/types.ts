@@ -76,7 +76,7 @@ export enum CompanyFeaturesEnum {
   CHAT_MULTIPLE_WORKSPACES = "chat:multiple_workspaces",
   CHAT_EDIT_FILES = "chat:edit_files",
   CHAT_UNLIMITED_STORAGE = "chat:unlimited_storage",
-  COMPANY_LIMIT_NOT_REACHED = "company:limit_not_reached",
+  COMPANY_INVITE_MEMBER = "company:invite_member",
 }
 
 export type CompanyFeaturesObject = {
@@ -85,7 +85,7 @@ export type CompanyFeaturesObject = {
   [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]?: boolean;
   [CompanyFeaturesEnum.CHAT_EDIT_FILES]?: boolean;
   [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]?: boolean;
-  [CompanyFeaturesEnum.COMPANY_LIMIT_NOT_REACHED]?: boolean;
+  [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]?: boolean;
 };
 
 export type CompanyLimitsObject = {

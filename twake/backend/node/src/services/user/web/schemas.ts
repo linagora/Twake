@@ -76,7 +76,7 @@ const companyObjectSchema = {
             [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: { type: "boolean" },
             [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: { type: "boolean" },
             [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: { type: "boolean" },
-            [CompanyFeaturesEnum.COMPANY_LIMIT_NOT_REACHED]: { type: "boolean" },
+            [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]: { type: "boolean" },
             guests: { type: "number" }, // to rename or delete
             members: { type: "number" }, //  to rename or delete
             storage: { type: "number" }, //  to rename or delete
