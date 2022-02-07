@@ -20,15 +20,18 @@ export const userObjectSchema = {
     last_activity: { type: "number" },
 
     //Below is only if this is myself
-
-    preference: {
+    preferences: {
       type: "object",
       properties: {
-        locale: { type: "string" },
-        timezone: { type: "number" },
+        tutorial_done: { type: ["boolean", "null"] },
+        channel_ordering: { type: ["string", "null"] },
+        recent_workspaces: { type: ["array", "null"] },
+        locale: { type: ["string", "null"] },
+        timezone: { type: ["number", "null"] },
+        language: { type: ["string", "null"] },
+        allow_tracking: { type: ["boolean", "null"] },
       },
     },
-
     companies: {
       type: "array",
       items: {
@@ -47,6 +50,8 @@ export const userObjectSchema = {
         },
       },
     },
+    // TODO this is temporary, should be deleted
+    preference: {},
   },
 };
 
@@ -107,14 +112,18 @@ export const getUserSchema = {
 export const setUserPreferencesSchema = {
   request: {
     properties: {
-      tutorial_done: { type: "boolean" },
-      channel_ordering: { type: "string" },
+      tutorial_done: { type: ["boolean", "null"] },
+      channel_ordering: { type: ["string", "null"] },
+      recent_workspaces: { type: ["array", "null"] },
+      locale: { type: ["string", "null"] },
+      timezone: { type: ["number", "null"] },
+      language: { type: ["string", "null"] },
+      allow_tracking: { type: ["boolean", "null"] },
     },
+    required: [] as any[],
   },
   response: {
-    "2xx": {
-      type: "object",
-    },
+    "2xx": userObjectSchema.properties.preferences,
   },
 };
 

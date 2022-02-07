@@ -39,7 +39,7 @@ const routes: FastifyPluginCallback<{
   });
 
   fastify.route({
-    method: "GET",
+    method: "POST",
     url: `${usersUrl}/me/preferences`,
     preHandler: accessControl,
     preValidation: [fastify.authenticate],

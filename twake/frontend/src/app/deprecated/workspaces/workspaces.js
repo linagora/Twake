@@ -20,6 +20,7 @@ import JWTStorage from 'app/features/auth/jwt-storage-service';
 import ConsoleService from 'app/features/console/services/console-service';
 import WorkspaceAPIClient from '../../features/workspaces/api/workspace-api-client';
 import Logger from 'app/features/global/framework/logger-service';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 
 class Workspaces extends Observable {
   constructor() {
@@ -158,6 +159,9 @@ class Workspaces extends Observable {
     }
 
     LocalStorage.setItem(`default_workspace_id_${workspace.company_id}`, workspace.id);
+    UserAPIClient.setUserPreferences({
+      recent_workspaces: [{ workspaceId: workspace.id, companyId: workspace.company_id }],
+    });
 
     this.notify();
   }

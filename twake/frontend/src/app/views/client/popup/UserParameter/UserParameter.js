@@ -261,9 +261,8 @@ export default class UserParameter extends Component {
                 description={this.state.i18n.t('scenes.apps.account.account.emails.description')}
               >
                 <div className="parameters_form mails_container">
-                  {Collections.get('users')
-                    .find(userService.getCurrentUserId())
-                    .mails.map(mail => {
+                  {(Collections.get('users').find(userService.getCurrentUserId()).mails || []).map(
+                    mail => {
                       return (
                         <div className="mail">
                           <div className="address">{mail.email}</div>
@@ -292,7 +291,8 @@ export default class UserParameter extends Component {
                           )}
                         </div>
                       );
-                    })}
+                    },
+                  )}
 
                   {this.state.subMenuOpened < 1 && (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid

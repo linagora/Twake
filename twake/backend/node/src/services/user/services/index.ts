@@ -114,7 +114,7 @@ class Service implements UserServiceAPI {
 
       resUser = {
         ...resUser,
-        preference: {
+        preferences: {
           ...user.preferences,
           locale: user.preferences?.language || user.language || "en",
           timezone: user.preferences?.timezone || parseInt(user.timezone) || 0,
@@ -123,6 +123,8 @@ class Service implements UserServiceAPI {
 
         companies,
       };
+      // TODO this is temporary, should be deleted
+      resUser.preference = resUser.preferences;
     }
 
     return resUser;

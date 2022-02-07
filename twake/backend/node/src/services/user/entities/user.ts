@@ -30,6 +30,7 @@ export default class User {
   public get status_icon(): string {
     if (this._status_icon && this._status_icon.startsWith("[\\")) {
       try {
+        // eslint-disable-next-line quotes
         const parsed = JSON.parse(this._status_icon.replace(/\\"/g, '"').replace(/\\\\/g, "\\"));
         return `${parsed[0]} ${parsed[1]}`;
       } catch (e) {
@@ -93,11 +94,13 @@ export default class User {
 
   @Column("preferences", "encoded_json")
   preferences: null | {
+    locale?: string;
     timezone?: number;
     language?: string;
     allow_tracking?: boolean;
     tutorial_done?: boolean;
     channel_ordering?: "chronological" | "alphabetical";
+    recent_workspaces?: { companyId: string; workspaceId: string }[]; // { companyId :"", workspaceId: ""}
   };
 
   @Column("cache", "encoded_json")
