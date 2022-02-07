@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { CompanyFeaturesObject, CompanyLimitsObject } from "../web/types";
 
 // backward compatibility with PHP where companies used to be `group_entity`
 export const TYPE = "group_entity";
@@ -21,7 +22,8 @@ export default class Company {
   @Column("plan", "encoded_json")
   plan?: {
     name: string;
-    features: any;
+    limits: CompanyLimitsObject;
+    features: CompanyFeaturesObject;
   };
 
   @Column("stats", "encoded_json")

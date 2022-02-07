@@ -66,6 +66,7 @@ export default class AutoHeight extends Component {
       >
         <textarea
           style={{
+            cursor: this.props.disabled ? 'not-allowed' : undefined,
             maxHeight: this.props.maxHeight ? this.props.maxHeight : '',
             minHeight: this.props.minHeight ? this.props.minHeight : '',
           }}

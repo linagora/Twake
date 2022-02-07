@@ -25,6 +25,7 @@ import UserServiceAPI from "../../user/api";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
 import _ from "lodash";
+import { CompanyFeaturesEnum, CompanyLimitsEnum } from "../../user/web/types";
 
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
@@ -181,32 +182,37 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     }
 
     if (!company.plan) {
-      company.plan = { name: "", features: {} };
+      company.plan = { name: "", limits: undefined, features: undefined };
     }
 
     //FIXME this is a hack right now!
     let planFeatures: any = {
-      "chat:guests": true,
-      "chat:message_history": true,
-      "chat:multiple_workspaces": true,
-      "chat:edit_files": true,
-      "chat:unlimited_storage": true,
+      [CompanyFeaturesEnum.CHAT_GUESTS]: true,
+      [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: true,
+      [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: true,
+      [CompanyFeaturesEnum.CHAT_EDIT_FILES]: true,
+      [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: true,
+      [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]: true,
     };
+
     if (companyDTO.limits.members < 0 && this.infos.type === "remote") {
       //Hack to say this is free version
       planFeatures = {
-        "chat:guests": false,
-        "chat:message_history": false,
-        "chat:message_history_limit": 10000,
-        "chat:multiple_workspaces": false,
-        "chat:edit_files": false,
-        "chat:unlimited_storage": false, //Currently inactive
+        [CompanyFeaturesEnum.CHAT_GUESTS]: false,
+        [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: false,
+        [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: false,
+        [CompanyFeaturesEnum.CHAT_EDIT_FILES]: false,
+        [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: false, // Currently inactive
       };
       company.plan.name = "free";
     } else {
       company.plan.name = "standard";
     }
-    company.plan.features = { ...planFeatures, ...companyDTO.limits };
+    company.plan.features = { ...planFeatures };
+    company.plan.limits = {
+      [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000, // To remove duplicata since we define this in formatCompany function
+      [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: companyDTO.limits["members"],
+    };
 
     company.stats = coalesce(companyDTO.stats, company.stats);
 

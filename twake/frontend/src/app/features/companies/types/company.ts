@@ -7,12 +7,14 @@ export type CompanyBillingObjectType = {
   trial_end: number;
 };
 
+export enum CompanyLimitsEnum {
+  CHAT_MESSAGE_HISTORY_LIMIT = 'chat:message_history_limit',
+  COMPANY_MEMBERS_LIMIT = 'company:members_limit', // 100
+}
+
 export type CompanyLimitsObjectType = {
-  members: number;
-  guests: number;
-  storage: number;
-  guests_feature: boolean; //True to enable it, false to not enable it
-  message_history_limit: number; //Delay in days
+  [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: number;
+  [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: number;
 };
 
 export type CompanyStatsObjectType = {
