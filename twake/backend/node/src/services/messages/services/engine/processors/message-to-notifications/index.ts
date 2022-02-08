@@ -1,7 +1,7 @@
 import { MessageLocalEvent, MessageNotification, specialMention } from "../../../../types";
 import { MessageServiceAPI } from "../../../../api";
 import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
-import { Thread } from "../../../../entities/threads";
+import { ParticipantObject, Thread } from "../../../../entities/threads";
 import { logger } from "../../../../../../core/platform/framework";
 import { PubsubServiceAPI } from "../../../../../../core/platform/services/pubsub/api";
 import { Channel } from "../../../../../channels/entities";
@@ -10,6 +10,8 @@ import { ChannelActivityNotification } from "../../../../../channels/types";
 import UserServiceAPI from "../../../../../user/api";
 import ChannelServiceAPI from "../../../../../channels/provider";
 import { getMentions } from "../../../utils";
+import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
+import { Message } from "src/services/messages/entities/messages";
 
 export class MessageToNotificationsProcessor {
   private name = "MessageToNotificationsProcessor";
@@ -124,8 +126,10 @@ export class MessageToNotificationsProcessor {
             `${this.name} - Forward message ${messageResource.id} to channel:activity and message:created / message:updated`,
           );
 
-          //Ignore system messages
-          if (message.created) {
+          if (
+            message.created ||
+            this.isLastActivityMessageDeleted(participant, messageResource, message)
+          ) {
             await this.pubsub.publish<ChannelActivityNotification>("channel:activity", {
               data: channelEvent,
             });
@@ -143,6 +147,38 @@ export class MessageToNotificationsProcessor {
       }
     } catch (err) {
       logger.warn({ err }, `${this.name} - Error while publishing`);
+    }
+  }
+
+  async isLastActivityMessageDeleted(
+    participant: ParticipantObject,
+    messageResource: Message,
+    message: MessageLocalEvent,
+  ): Promise<boolean> {
+    if (participant.company_id && participant.workspace_id && participant.id) {
+      const list = await this.service.views.listChannel(
+        new Pagination("", "1"),
+        {
+          include_users: false,
+          replies_per_thread: 1,
+          emojis: false,
+        },
+        {
+          channel: {
+            company_id: participant.company_id,
+            workspace_id: participant.workspace_id,
+            id: participant.id,
+          },
+          user: {
+            id: messageResource.user_id,
+          },
+        },
+      );
+
+      return (
+        list.getEntities().pop()?.id === message.resource.id &&
+        messageResource.subtype === "deleted"
+      );
     }
   }
 }
