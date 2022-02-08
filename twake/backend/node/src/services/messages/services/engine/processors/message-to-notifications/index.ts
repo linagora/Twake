@@ -1,4 +1,4 @@
-import { MessageLocalEvent, MessageNotification, specialMention } from "../../../../types";
+import { MessageLocalEvent, MessageNotification } from "../../../../types";
 import { MessageServiceAPI } from "../../../../api";
 import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
 import { ParticipantObject, Thread } from "../../../../entities/threads";
@@ -11,7 +11,7 @@ import UserServiceAPI from "../../../../../user/api";
 import ChannelServiceAPI from "../../../../../channels/provider";
 import { getMentions } from "../../../utils";
 import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
-import { Message } from "src/services/messages/entities/messages";
+import { Message } from "../../../../../../services/messages/entities/messages";
 
 export class MessageToNotificationsProcessor {
   private name = "MessageToNotificationsProcessor";
