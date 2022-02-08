@@ -116,7 +116,7 @@ export default ({
         <FileDetails file={file} source={source} />
         <FileActions
           deletable={context === 'input'}
-          actionMenu={context == 'message' && source === 'internal'}
+          actionMenu={context === 'message' && source === 'internal'}
           status={status}
           file={file}
           onRemove={onRemove}

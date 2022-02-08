@@ -94,11 +94,18 @@ export const FileActions = ({
     if (deletable && status) {
       if (isPendingFileStatusError(status)) {
         return (
-          <Button
-            shape="circle"
-            icon={<RotateCw size={16} color="var(--error)" />}
-            onClick={onClickRetry}
-          />
+          <>
+            <Button
+              shape="circle"
+              icon={<RotateCw size={16} color="var(--error)" />}
+              onClick={onClickRetry}
+            />
+            <Button
+              shape="circle"
+              icon={<X size={16} color="var(--error)" />}
+              onClick={onClickCancel}
+            />
+          </>
         );
       }
 
