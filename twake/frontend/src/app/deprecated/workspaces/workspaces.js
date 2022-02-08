@@ -159,9 +159,6 @@ class Workspaces extends Observable {
     }
 
     LocalStorage.setItem(`default_workspace_id_${workspace.company_id}`, workspace.id);
-    UserAPIClient.setUserPreferences({
-      recent_workspaces: [{ workspaceId: workspace.id, companyId: workspace.company_id }],
-    });
 
     this.notify();
   }
