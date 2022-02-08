@@ -128,7 +128,7 @@ export class MessageToNotificationsProcessor {
 
           if (
             message.created ||
-            this.isLastActivityMessageDeleted(participant, messageResource, message)
+            (await this.isLastActivityMessageDeleted(participant, messageResource, message))
           ) {
             await this.pubsub.publish<ChannelActivityNotification>("channel:activity", {
               data: channelEvent,
