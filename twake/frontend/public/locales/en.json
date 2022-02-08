@@ -866,5 +866,8 @@
     "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "No command found",
     "scenes.app.messages.input.parts.is_writing.message.user_is_writing": "{{$1}} is writing...",
     "scenes.app.messages.input.parts.is_writing.message.users_are_writing": "{{$1}} and {{$2}} are writing...",
-    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} and {{$3}} more users are writing..."
+    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} and {{$3}} more users are writing...",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "Your company has reached it's maximum limit of {{$1}} members. Please ",
+    "components.locked_features_components.locked_invite_alert.message_link": "upgrade your company",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " to invite more members."
 }

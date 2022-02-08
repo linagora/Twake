@@ -5,7 +5,7 @@ import { TwakeService } from '../../global/framework/registry-decorator-service'
 const PREFIX = '/internal/services/channels/v1/companies';
 
 @TwakeService('ChannelAPIClientService')
-class ChannelAPIClient {
+class ChannelAPIClientService {
   async get(companyId: string, workspaceId: string, channelId: string): Promise<ChannelType> {
     return Api.get<{ resource: ChannelType }>(
       `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,
@@ -42,4 +42,5 @@ class ChannelAPIClient {
   }
 }
 
-export default new ChannelAPIClient();
+const ChannelAPIClient = new ChannelAPIClientService();
+export default ChannelAPIClient;

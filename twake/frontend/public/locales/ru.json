@@ -866,5 +866,8 @@
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Неверный формат, разрешены только форматы png, gif и jpg",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Неизвестная ошибка",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Ошибка",
-    "scenes.app.channelsbar.currentuser.reset": "Перезагрузить"
+    "scenes.app.channelsbar.currentuser.reset": "Перезагрузить",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "Ваша компания достигла максимального лимита в {{$1}} участников. Пожалуйста, ",
+    "components.locked_features_components.locked_invite_alert.message_link": "повысьте статус вашей компании",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " чтобы пригласить больше участников."
 }

@@ -116,7 +116,7 @@ export default class CurrentUser extends Component {
 
     if (
       !WorkspaceUserRights.isGroupInvite() &&
-      (AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'moderator') ||
+      (AccessRightsService.hasLevel(Workspaces.currentWorkspaceId, 'member') ||
         AccessRightsService.hasCompanyLevel(Workspaces.currentGroupId, 'admin'))
     ) {
       usermenu.push({ type: 'separator' });

@@ -865,5 +865,8 @@
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Formato incorrecto, solo se permiten png gif y jpg",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Error desconocido",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Error",
-    "scenes.app.channelsbar.currentuser.reset": "Reiniciar"
+    "scenes.app.channelsbar.currentuser.reset": "Reiniciar",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "Su empresa ha alcanzado el número máximo de {{$1}} miembros. Por favor, ",
+    "components.locked_features_components.locked_invite_alert.message_link": "actualice su empresa",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " para invitar a más miembros."
 }
