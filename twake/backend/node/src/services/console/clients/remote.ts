@@ -56,10 +56,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       };
     }
 
-    //Fixme: When console solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/35
-    //       and solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/36
-    //       we can remove the '|| true'
-    if (user.skipInvite || true) {
+    if (user.skipInvite) {
       return this.client
         .post(`/api/companies/${company.code}/users`, user, {
           auth: this.auth(),
@@ -90,7 +87,26 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
             "Content-Type": "application/json",
           },
         })
-        .then(({ data }) => data);
+        .then(async ({ data, status }) => {
+          //Fixme: When console solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/35
+          //       and solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/36
+          //       we can remove this fallback
+          if ([200, 201].indexOf(status) >= 0) {
+            return data;
+          } else {
+            return this.client
+              .post(`/api/companies/${company.code}/users`, user, {
+                auth: this.auth(),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                params: {
+                  skipInvite: user.skipInvite,
+                },
+              })
+              .then(({ data }) => data);
+          }
+        });
 
       return result;
     }
