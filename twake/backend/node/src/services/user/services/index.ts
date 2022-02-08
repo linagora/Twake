@@ -123,7 +123,8 @@ class Service implements UserServiceAPI {
 
         companies,
       };
-      // TODO this is temporary, should be deleted
+      
+      // Fixme: this is for retro compatibility, should be deleted after march 2022 if mobile did implement it https://github.com/linagora/Twake-Mobile/issues/1265
       resUser.preference = resUser.preferences;
     }
 
