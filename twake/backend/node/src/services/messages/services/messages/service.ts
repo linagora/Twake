@@ -169,7 +169,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     if (serverRequest || messageOwnerAndNotRemoved) {
-      message = await this.completeMessage(message, { files: item.files || [] });
+      message = await this.completeMessage(message, { files: item.files || message.files || [] });
     }
 
     await this.onSaved(message, { created: messageCreated }, context);

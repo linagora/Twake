@@ -77,7 +77,7 @@ export class WorkspaceInviteTokensCrudController
     const tokenInfo = this.services.workspaces.decodeInviteToken(request.params.token);
 
     if (!tokenInfo) {
-      throw CrudException.notFound("Invite token malformed");
+      throw CrudException.notFound("Invite token malformed: " + request.params.token);
     }
 
     const deleted = await this.services.workspaces.deleteInviteToken(
