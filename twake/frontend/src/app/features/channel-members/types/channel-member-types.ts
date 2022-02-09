@@ -11,3 +11,9 @@ export type ChannelMemberType = {
   favorite?: boolean; //Did the user add this channel to its favorites
   notification_level?: ChannelMemberNotificationLevel;
 };
+
+export type AtomChannelMembersKey = {
+  companyId: string;
+  workspaceId: string;
+  channelId: string;
+};
