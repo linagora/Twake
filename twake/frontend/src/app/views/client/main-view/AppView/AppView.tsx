@@ -5,6 +5,7 @@ import Calendar from 'app/views/applications/calendar/calendar-content';
 import Tasks from 'app/views/applications/tasks/tasks';
 import NoApp from '../NoApp';
 import AppViewService from 'app/features/router/services/app-view-service';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 type PropsType = {
   viewService: AppViewService;
@@ -25,10 +26,10 @@ const AppView: FC<PropsType> = props => {
   const configuration = props.viewService.getConfiguration();
 
   const channelCollection = configuration.collection;
-  let channel = null;
-  if (channelCollection) {
+  let { channel } = useChannel(props.id);
+  if (!channel && channelCollection) {
     if (channelCollection?.findOne) {
-      channel = channelCollection.findOne({ id: props.id }, { withoutBackend: true });
+      channel = channelCollection.findOne({ id: props.id }, { withoutBackend: true })?.data;
     }
   }
 
@@ -40,9 +41,9 @@ const AppView: FC<PropsType> = props => {
     case 'twake_calendar':
       return <Calendar options={configuration} />;
     case 'twake_tasks':
-      return <Tasks channel={channel} options={configuration} />;
+      return <Tasks channel={{ data: channel }} options={configuration} />;
     case 'messages':
-      return <Messages channel={channel} options={configuration} />;
+      return <Messages channel={{ data: channel }} options={configuration} />;
     default:
       return <NoApp />;
   }
