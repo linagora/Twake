@@ -23,7 +23,7 @@ import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
 import { getWorkspaceRooms } from "../../realtime";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
-import CompanyUser from "src/services/user/entities/company_user";
+import CompanyUser from "../../../user/entities/company_user";
 
 export class WorkspacesCrudController
   implements
