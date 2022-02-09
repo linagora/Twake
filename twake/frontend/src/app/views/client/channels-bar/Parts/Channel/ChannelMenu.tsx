@@ -52,7 +52,7 @@ export default (props: PropsType): JSX.Element => {
       props.channel.id &&
       currentUser?.id
     ) {
-      await ChannelMembersAPIClient.save(
+      await ChannelMembersAPIClient.updateChannelMemberPreferences(
         channelMember,
         { notification_level: preference },
         {
@@ -72,7 +72,7 @@ export default (props: PropsType): JSX.Element => {
       props.channel.id &&
       currentUser?.id
     ) {
-      await ChannelMembersAPIClient.save(
+      await ChannelMembersAPIClient.updateChannelMemberPreferences(
         channelMember,
         { favorite: state },
         {

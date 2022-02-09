@@ -67,7 +67,7 @@ export default () => {
 
   const joinChannel = async (channel: ChannelType) => {
     if (channel.company_id && channel.workspace_id && channel.id) {
-      const channelMembers = await ChannelMembersAPIClient.get(
+      const channelMembers = await ChannelMembersAPIClient.list(
         channel.company_id,
         channel.workspace_id,
         channel.id,
