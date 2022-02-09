@@ -12,17 +12,12 @@ import _ from 'lodash';
 
 type Props = {
   channel: ChannelType;
-  collection: Collection<ChannelResource>;
+  collection: any;
 };
 
 export default (props: Props): JSX.Element => {
   const [isActive, setActive] = useState<boolean>(false);
   const isDirectChannel = props.channel.visibility === 'direct';
-
-  const { set } = useSetChannel();
-  useEffect(() => {
-    set(_.cloneDeep(props.channel));
-  }, [props.channel]);
 
   const menu = (channel: ChannelType) => {
     if (!channel) return <></>;

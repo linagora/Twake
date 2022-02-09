@@ -8,7 +8,6 @@ export function useChannel(channelId: string) {
   return { channel };
 }
 
-//Fixme: it is for retrocompatibility, currently atom is set from channels themselves
 export function useSetChannel() {
   const set = useRecoilCallback(({ set }) => (channel: ChannelType) => {
     if (channel.id) set(ChannelState(channel.id), channel);

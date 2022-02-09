@@ -42,9 +42,9 @@ export type ChannelType = {
   };
 };
 
-export class ChannelResource extends Resource<ChannelType> {
-  _type = 'channel';
-}
+export type ChannelResource = {
+  data: ChannelType;
+};
 
 export class ChannelMemberResource extends Resource<ChannelMemberType> {
   _type = 'channel_member';
