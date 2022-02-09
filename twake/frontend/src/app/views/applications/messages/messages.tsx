@@ -25,7 +25,7 @@ export default (props: Props) => {
 
   return (
     <div className="messages-view">
-      <Suspense fallback="loading...">
+      <Suspense fallback={<></>}>
         {!threadId ? (
           <MessagesList
             key={channelId + threadId}
