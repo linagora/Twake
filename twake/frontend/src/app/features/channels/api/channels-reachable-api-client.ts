@@ -1,6 +1,7 @@
 import Api from '../../global/framework/api-service';
-import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
+import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 
 type ChannelsReachableGetResponse = { resources: ChannelType[] };
 type ChannelsReachableInviteUserResponse = { resource: ChannelMemberType };
