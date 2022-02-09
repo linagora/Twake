@@ -4,7 +4,7 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
-  CrudExeption,
+  CrudException,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
@@ -170,7 +170,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     if (serverRequest || messageOwnerAndNotRemoved) {
-      message = await this.completeMessage(message, { files: item.files || [] });
+      message = await this.completeMessage(message, { files: item.files || message.files || [] });
     }
 
     await this.onSaved(message, { created: messageCreated }, context);

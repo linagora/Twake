@@ -7,7 +7,7 @@ import {
   ListResult,
   OperationType,
   Paginable,
-  CrudExeption,
+  CrudException,
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
 import { UserNotificationBadgeServiceAPI } from "../../api";
@@ -112,7 +112,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
   ): Promise<ListResult<UserNotificationBadge>> {
     if (!company_id || !user_id) {
-      throw CrudExeption.badRequest("company_id and user_id are required");
+      throw CrudException.badRequest("company_id and user_id are required");
     }
 
     return this.repository.find({

@@ -1,5 +1,5 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { CrudExeption, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelTab, ChannelTabPrimaryKey } from "../../entities";
 import { TabService } from "../../provider";
 import {
@@ -55,7 +55,7 @@ export class ChannelTabCrudController
     );
 
     if (!resource) {
-      throw CrudExeption.notFound(`Channel member ${request.params.tab_id} not found`);
+      throw CrudException.notFound(`Channel member ${request.params.tab_id} not found`);
     }
 
     return {

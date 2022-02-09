@@ -1,4 +1,4 @@
-import { CrudExeption } from "../core/platform/framework/api/crud-service";
+import { CrudException } from "../core/platform/framework/api/crud-service";
 import crypto from "crypto";
 import assert from "assert";
 import bcrypt from "bcrypt";
@@ -32,7 +32,7 @@ export default class {
 
   public encodePasswordOldWay(raw: string, salt?: string): string {
     if (this.isPasswordTooLong(raw)) {
-      throw CrudExeption.badRequest("Invalid password.");
+      throw CrudException.badRequest("Invalid password.");
     }
     const salted = Buffer.from(this.mergePasswordAndSalt(raw, salt));
     let digest = crypto.createHash(this.algorithm).update(salted).digest();
