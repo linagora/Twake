@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import Messages from 'app/scenes/Apps/Messages';
-import Drive from 'scenes/Apps/Drive/Drive.js';
-import Calendar from 'scenes/Apps/Calendar/Calendar.js';
-import Tasks from 'scenes/Apps/Tasks/Tasks.js';
 import NoApp from '../NoApp';
 import AppViewService from 'app/services/AppView/AppViewService';
-import { useChannel } from 'app/features/channels/hooks/use-channel';
+import Tasks from 'app/scenes/Apps/Tasks/Tasks';
+import Calendar from 'app/scenes/Apps/Calendar/Calendar';
+import Drive from 'app/scenes/Apps/Drive/Drive';
+import { useChannel } from 'app/state/recoil/hooks/channels/useChannel';
 
 type PropsType = {
   viewService: AppViewService;
