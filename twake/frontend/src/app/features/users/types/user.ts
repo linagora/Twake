@@ -6,6 +6,17 @@ import {
 } from 'app/features/companies/types/company';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 
+export type UserPreferencesType = null | {
+  locale?: string;
+  timezone?: number;
+  language?: string;
+  allow_tracking?: boolean;
+  tutorial_done?: boolean;
+  channel_ordering?: 'chronological' | 'alphabetical';
+  //(CompanyType | WorkspaceType | any)[];
+  recent_workspaces?: { companyId: string; workspaceId: string }[];
+};
+
 export type UserType = {
   connected?: boolean;
   email: string;
@@ -31,7 +42,7 @@ export type UserType = {
   tutorial_status?: any;
   username: string;
   companies?: { company: CompanyType; role: CompanyRoleType; status: CompanyStatusType }[];
-  preference?: { locale?: string; timezone?: number };
+  preferences: UserPreferencesType;
   workspaces?: WorkspaceType[];
   workspaces_id?: string[];
   is_verified?: boolean;

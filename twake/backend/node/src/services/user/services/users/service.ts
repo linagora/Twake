@@ -203,6 +203,8 @@ export class UserService implements UsersServiceAPI {
       //@ts-ignore
       user.preferences[key] = preferences[key];
     }
+
+    await this.save(user);
     return user.preferences;
   }
 

@@ -102,7 +102,8 @@ export const useCurrentCompanyRealtime = () => {
  * Company priority:
  * 1. Router company id
  * 2. Local storage company id
- * 3. User's company with the most total members
+ * 3. User's preferences
+ * 4. User's company with the most total members
  *
  * @param user
  * @returns CompanyType | undefined
@@ -110,6 +111,11 @@ export const useCurrentCompanyRealtime = () => {
 export function useBestCandidateCompany(user: UserType | undefined): CompanyType | undefined {
   const routerCompanyId = useRouterCompany();
   const storageCompanyId = (LocalStorage.getItem('default_company_id') as string) || null;
+
+  const recentWorkspaceObj =
+    user?.preferences && user?.preferences?.recent_workspaces
+      ? user.preferences.recent_workspaces[0]
+      : undefined;
 
   if (!user) {
     return undefined;
@@ -120,6 +126,7 @@ export function useBestCandidateCompany(user: UserType | undefined): CompanyType
   return (
     companies.find(o => o.company.id === routerCompanyId)?.company ||
     companies.find(o => o.company.id === storageCompanyId)?.company ||
+    companies.find(o => o.company.id === recentWorkspaceObj?.companyId)?.company ||
     companies.sort(
       (a, b) => (a.company?.stats?.total_members || 0) - (b.company?.stats?.total_members || 0),
     )?.[0]?.company
