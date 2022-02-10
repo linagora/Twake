@@ -54,14 +54,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
     const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
 
     try {
-      const out = await exec(
-        "jest",
-        args.split(" "),
-        [
-          "test/e2e/workspaces/workspace-users.spec.ts",
-          "test/e2e/workspaces/workspaces.invite-tokens.spec.ts",
-        ].indexOf(path) >= 0,
-      );
+      const out = await exec("jest", args.split(" "));
       if (out.code !== 0) {
         //To get all the logs, we run it again
         console.log(`FAIL ${testName}`);

@@ -45,9 +45,7 @@ export function getInstance(
 export function formatWorkspaceUser(workspaceUser: WorkspaceUser): WorkspaceUser {
   if (!workspaceUser) return workspaceUser;
   return {
-    ...workspaceUser,
     role: workspaceUser.role || "member",
-    dateAdded: workspaceUser.dateAdded ? new Date(workspaceUser.dateAdded).getTime() : null,
-    lastAccess: workspaceUser.lastAccess ? new Date(workspaceUser.lastAccess).getTime() : null,
+    ...workspaceUser,
   };
 }
