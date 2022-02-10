@@ -390,10 +390,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   async getUser(
     workspaceUserPk: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
   ): Promise<WorkspaceUser> {
-    return await this.workspaceUserRepository.findOne({
-      workspace_id: workspaceUserPk.workspaceId,
-      user_id: workspaceUserPk.userId,
-    });
+    return formatWorkspaceUser(
+      await this.workspaceUserRepository.findOne({
+        workspace_id: workspaceUserPk.workspaceId,
+        user_id: workspaceUserPk.userId,
+      }),
+    );
   }
 
   async processPendingUser(user: User): Promise<void> {

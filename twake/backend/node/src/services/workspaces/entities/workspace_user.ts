@@ -44,8 +44,6 @@ export function getInstance(
 
 export function formatWorkspaceUser(workspaceUser: WorkspaceUser): WorkspaceUser {
   if (!workspaceUser) return workspaceUser;
-  return {
-    role: workspaceUser.role || "member",
-    ...workspaceUser,
-  };
+  workspaceUser.role = workspaceUser.role || "member";
+  return workspaceUser;
 }
