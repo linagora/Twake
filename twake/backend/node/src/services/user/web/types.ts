@@ -1,5 +1,6 @@
 import { PaginationQueryParameters } from "../../../utils/types";
 import { ChannelMember } from "../../channels/entities";
+import User from "../entities/user";
 
 export interface UserListQueryParameters extends PaginationQueryParameters {
   user_ids?: string;
@@ -55,14 +56,11 @@ export interface UserObject {
   last_activity: number;
 
   //Below is only if this is myself
-
-  preference?: {
-    locale: string;
-    timezone: number;
-    allow_tracking: boolean;
-  };
-
+  preferences?: User["preferences"];
   companies?: CompanyUserObject[];
+
+  // TODO this is temporary, should be deleted
+  preference?: User["preferences"];
 }
 
 export enum CompanyLimitsEnum {

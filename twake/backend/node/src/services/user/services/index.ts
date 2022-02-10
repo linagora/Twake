@@ -116,7 +116,7 @@ class Service implements UserServiceAPI {
 
       resUser = {
         ...resUser,
-        preference: {
+        preferences: {
           ...user.preferences,
           locale: user.preferences?.language || user.language || "en",
           timezone: user.preferences?.timezone || parseInt(user.timezone) || 0,
@@ -125,6 +125,9 @@ class Service implements UserServiceAPI {
 
         companies,
       };
+      
+      // Fixme: this is for retro compatibility, should be deleted after march 2022 if mobile did implement it https://github.com/linagora/Twake-Mobile/issues/1265
+      resUser.preference = resUser.preferences;
     }
 
     return resUser;

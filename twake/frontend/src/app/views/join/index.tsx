@@ -77,7 +77,13 @@ export default (props: PropsType): JSX.Element => {
   };
 
   const onCreateCompanyBtnClick = () => {
-    console.log('onCreateCompanyBtnClick');
+    if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
+      return document.location.replace(
+        InitService.server_infos?.configuration?.accounts?.console?.account_management_url || '',
+      );
+    } else {
+      document.location.replace('/');
+    }
   };
 
   return (

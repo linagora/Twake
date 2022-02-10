@@ -67,7 +67,7 @@ export class ChannelMember {
    * Defaults to all
    */
   @Column("notification_level", "string")
-  notification_level: ChannelMemberNotificationLevel = ChannelMemberNotificationLevel.MENTIONS;
+  notification_level: ChannelMemberNotificationLevel = ChannelMemberNotificationLevel.ALL;
 
   /**
    * Member expiration in channel (only for guests)

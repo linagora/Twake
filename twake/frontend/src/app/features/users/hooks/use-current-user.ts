@@ -1,12 +1,12 @@
-import { useEffect, useRef } from "react";
-import LoginService from "app/features/auth/login-service";
-import UserAPIClient from "app/features/users/api/user-api-client";
-import { useRecoilState } from "recoil";
-import { CurrentUserState } from "../state/atoms/current-user";
-import { useRealtimeRoom } from "app/features/global/hooks/use-realtime";
-import Languages from "app/features/global/services/languages-service";
-import ConfiguratorsManager from "app/deprecated/Configurators/ConfiguratorsManager.js";
-import { RealtimeApplicationEvent } from "app/features/global/types/realtime-types";
+import { useEffect, useRef } from 'react';
+import LoginService from 'app/features/auth/login-service';
+import UserAPIClient from 'app/features/users/api/user-api-client';
+import { useRecoilState } from 'recoil';
+import { CurrentUserState } from '../state/atoms/current-user';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
+import Languages from 'app/features/global/services/languages-service';
+import ConfiguratorsManager from 'app/deprecated/Configurators/ConfiguratorsManager.js';
+import { RealtimeApplicationEvent } from 'app/features/global/types/realtime-types';
 
 export const useCurrentUser = () => {
   const [user, setUser] = useRecoilState(CurrentUserState);
@@ -21,8 +21,8 @@ export const useCurrentUser = () => {
 
   //Update app language
   useEffect(() => {
-    if (user?.preference?.locale) Languages.setLanguage(user?.preference?.locale);
-  }, [user?.preference?.locale]);
+    if (user?.preferences?.locale) Languages.setLanguage(user?.preferences?.locale);
+  }, [user?.preferences?.locale]);
 
   const updateStatus = async (userStatus: string[]) => {
     await UserAPIClient.updateUserStatus(`${userStatus[0]} ${userStatus[1]}`);
@@ -37,11 +37,9 @@ export const useCurrentUser = () => {
   return { user, refresh, updateStatus };
 };
 
-
 const applicationEventHandler = (event: RealtimeApplicationEvent) => {
-
   switch (event.action) {
-    case "configure":
+    case 'configure':
       if (event.form) {
         ConfiguratorsManager.openConfigurator(event.application, event.form, event.hidden_data);
       } else {
@@ -51,37 +49,27 @@ const applicationEventHandler = (event: RealtimeApplicationEvent) => {
     default:
       console.error(`Unknown application action: ${event.action}`);
   }
-
-
 };
-
 
 export const useCurrentUserRealtime = () => {
   const { user, refresh } = useCurrentUser();
-  const room = UserAPIClient.websocket(user?.id || "");
+  const room = UserAPIClient.websocket(user?.id || '');
 
   const timeout = useRef(0);
 
-  useRealtimeRoom<any>(room, "useCurrentUser", async (action, resource) => {
-
+  useRealtimeRoom<any>(room, 'useCurrentUser', async (action, resource) => {
     switch (resource._type) {
-      case "user":
+      case 'user':
         clearTimeout(timeout.current); //
         timeout.current = setTimeout(() => {
           refresh();
         }, 1000) as any;
         break;
-      case "application":
+      case 'application':
         applicationEventHandler(resource);
         break;
       default:
-        console.error("Unknown resource type");
-
+        console.error('Unknown resource type');
     }
-
-
   });
-
-
-
 };

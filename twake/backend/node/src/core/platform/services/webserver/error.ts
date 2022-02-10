@@ -2,8 +2,18 @@ import { FastifyInstance } from "fastify";
 
 function serverErrorHandler(server: FastifyInstance): void {
   server.setErrorHandler(async (err, request, reply) => {
-    server.log.debug(err.toString());
-    await reply.status(500).send(err);
+    console.error(`Got ${reply.statusCode} error on request ${request.id} : `, err);
+    server.log.debug(`Got ${reply.statusCode} error on request ${request.id} : ${err.toString()}`);
+    await reply.send(
+      reply.statusCode == 500
+        ? {
+            statusCode: reply.statusCode,
+            error: "Internal Server Error",
+            message: "Something went wrong",
+            requestId: request.id,
+          }
+        : err,
+    );
   });
 }
 

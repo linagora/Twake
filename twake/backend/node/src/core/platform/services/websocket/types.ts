@@ -8,7 +8,7 @@ import { JwtType } from "../types";
 
 export interface AdaptersConfiguration {
   types: Array<string>;
-  redis: SocketIORedis.SocketIORedisOptions;
+  redis: SocketIORedis.RedisAdapterOptions;
 }
 
 export interface WebSocketServiceConfiguration {

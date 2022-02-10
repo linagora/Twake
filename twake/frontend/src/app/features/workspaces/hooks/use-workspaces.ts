@@ -17,6 +17,7 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import { LoadingState } from '../../global/state/atoms/Loading';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 
 const logger = Logger.getLogger('useWorkspaces');
 
@@ -101,7 +102,8 @@ export function useWorkspace(workspaceId: string) {
  * Workspace priority:
  * 1. Router workspace id
  * 2. Local storage workspace id
- * 3. User's workspace with the most total members
+ * 3. User's preferences
+ * 4. User's workspace with the most total members
  *
  * @param workspaces
  * @returns WorkspaceType | undefined
@@ -110,13 +112,19 @@ export function useBestCandidateWorkspace(
   companyId: string,
   workspaces: WorkspaceType[],
 ): WorkspaceType | undefined {
+  const { user } = useCurrentUser();
   const routerWorkspaceId = useRouterWorkspace();
   const storageWorkspaceId =
     (LocalStorage.getItem('default_workspace_id_' + companyId) as string) || null;
+  const recentWorkspaceObj =
+    user?.preferences && user?.preferences?.recent_workspaces
+      ? user.preferences.recent_workspaces[0]
+      : undefined;
 
   return (
     workspaces?.find(w => w.id === routerWorkspaceId) ||
     workspaces?.find(w => w.id === storageWorkspaceId) ||
+    workspaces?.find(w => w.id === recentWorkspaceObj?.workspaceId) ||
     _.cloneDeep(workspaces)?.sort((a, b) => a?.stats?.total_members - b.stats?.total_members)[0] ||
     workspaces[0]
   );
