@@ -16,7 +16,7 @@ import {
 import { FastifyReply, FastifyRequest } from "fastify";
 
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
-import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
+import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import { pick } from "lodash";
 
 export class WorkspaceInviteTokensCrudController
@@ -44,7 +44,7 @@ export class WorkspaceInviteTokensCrudController
     );
 
     if (!res) {
-      throw CrudExeption.notFound("Invite token not found");
+      throw CrudException.notFound("Invite token not found");
     }
 
     return {
@@ -77,7 +77,7 @@ export class WorkspaceInviteTokensCrudController
     const tokenInfo = this.services.workspaces.decodeInviteToken(request.params.token);
 
     if (!tokenInfo) {
-      throw CrudExeption.notFound("Invite token malformed");
+      throw CrudException.notFound("Invite token malformed: " + request.params.token);
     }
 
     const deleted = await this.services.workspaces.deleteInviteToken(
@@ -86,7 +86,7 @@ export class WorkspaceInviteTokensCrudController
     );
 
     if (!deleted) {
-      throw CrudExeption.notFound("Invite token not found");
+      throw CrudException.notFound("Invite token not found");
     }
 
     reply.code(204);
@@ -103,7 +103,7 @@ export class WorkspaceInviteTokensCrudController
     const entity = await this.services.workspaces.getInviteTokenInfo(request.body.token);
 
     if (!entity) {
-      throw CrudExeption.notFound("Token not found");
+      throw CrudException.notFound("Token not found");
     }
 
     const { company_id, workspace_id } = entity;

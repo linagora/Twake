@@ -9,7 +9,7 @@ import {
 import { ResourceGetResponse } from "../../../../utils/types";
 import { logger as log } from "../../../../core/platform/framework";
 import {
-  CrudExeption,
+  CrudException,
   ExecutionContext,
 } from "../../../../core/platform/framework/api/crud-service";
 
@@ -40,7 +40,7 @@ export class ApplicationsApiController {
       id: context.application_id,
     });
     if (!entity) {
-      throw CrudExeption.notFound("Application not found");
+      throw CrudException.notFound("Application not found");
     }
 
     return { resource: entity.getApplicationObject() };

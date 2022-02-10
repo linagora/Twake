@@ -37,7 +37,7 @@ export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsub
 
   async process(message: PreviewPubsubCallback): Promise<string> {
     logger.info(
-      `${this.name} - Updating file metadata with preview generation ${message.thumbnails}`,
+      `${this.name} - Updating file metadata with preview generation ${message.thumbnails.length}`,
     );
 
     const pk: { company_id: string; id: string } = JSON.parse(message.document.id);

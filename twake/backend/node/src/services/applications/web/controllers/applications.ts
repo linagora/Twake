@@ -13,7 +13,7 @@ import Application, {
   PublicApplicationObject,
 } from "../../entities/application";
 import {
-  CrudExeption,
+  CrudException,
   ExecutionContext,
 } from "../../../../core/platform/framework/api/crud-service";
 import _ from "lodash";
@@ -85,7 +85,7 @@ export class ApplicationController
       });
 
       if (!entity) {
-        throw CrudExeption.notFound("Application not found");
+        throw CrudException.notFound("Application not found");
       }
 
       entity.publication.requested = app.publication.requested;
@@ -97,7 +97,9 @@ export class ApplicationController
             _.pick(app, "identity", "api", "access", "display"),
           )
         ) {
-          throw CrudExeption.badRequest("You can't update applications details while it published");
+          throw CrudException.badRequest(
+            "You can't update applications details while it published",
+          );
         }
       }
 

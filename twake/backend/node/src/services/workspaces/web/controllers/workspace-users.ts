@@ -29,7 +29,7 @@ import { CompanyShort, CompanyUserRole, CompanyUserStatus } from "../../../user/
 import Company from "../../../user/entities/company";
 import { chain } from "lodash";
 import {
-  CrudExeption,
+  CrudException,
   ListResult,
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
@@ -228,7 +228,7 @@ export class WorkspaceUsersCrudController
     const user = await this.usersService.get({ id: userId });
 
     if (!user) {
-      throw CrudExeption.badRequest("User entity not found");
+      throw CrudException.badRequest("User entity not found");
     }
 
     const userCompanies: CompanyUser[] = await this.usersService.getUserCompanies({ id: userId });
@@ -271,7 +271,7 @@ export class WorkspaceUsersCrudController
     );
 
     if (!companyUser) {
-      throw CrudExeption.badRequest(`User ${userId} does not belong to this company`);
+      throw CrudException.badRequest(`User ${userId} does not belong to this company`);
     }
 
     const workspaceUser = await this.workspaceService.getUser({
@@ -282,7 +282,7 @@ export class WorkspaceUsersCrudController
     if (request.params.user_id) {
       // ON UPDATE
       if (!workspaceUser) {
-        throw CrudExeption.notFound(`User ${userId} not found in this workspace`);
+        throw CrudException.notFound(`User ${userId} not found in this workspace`);
       }
       await this.workspaceService.updateUserRole(
         { workspaceId: context.workspace_id, userId },
@@ -320,7 +320,7 @@ export class WorkspaceUsersCrudController
     });
 
     if (!workspaceUser) {
-      throw CrudExeption.notFound("Workspace has not been found");
+      throw CrudException.notFound("Workspace has not been found");
     }
 
     await this.workspaceService.removeUser({
@@ -428,11 +428,10 @@ export class WorkspaceUsersCrudController
             createUser,
           );
         } catch (err) {
-          console.error(err);
           responses.push({
             email: invitation.email,
             status: "error",
-            message: "Unable to invite this user to your company" + err,
+            message: "Unable to invite this user to your company " + err,
           });
           continue;
         }

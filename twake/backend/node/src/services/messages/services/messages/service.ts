@@ -4,7 +4,7 @@ import {
   DeleteResult,
   ListResult,
   Pagination,
-  CrudExeption,
+  CrudException,
 } from "../../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import { logger, RealtimeSaved, TwakeContext } from "../../../../core/platform/framework";
@@ -170,7 +170,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     if (serverRequest || messageOwnerAndNotRemoved) {
-      message = await this.completeMessage(message, { files: item.files || [] });
+      message = await this.completeMessage(message, { files: item.files || message.files || [] });
     }
 
     await this.onSaved(message, { created: messageCreated }, context);
@@ -539,7 +539,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   //Complete message with all missing information and cache
   async completeMessage(message: Message, options: { files?: Message["files"] } = {}) {
     this.fixReactionsFormat(message);
-    if (options.files) message = await this.completeMessageFiles(message, options.files || []);
+    try {
+      if (options.files) message = await this.completeMessageFiles(message, options.files || []);
+    } catch (err) {
+      logger.warn("Error while completing message files", err);
+    }
 
     //Mobile retro compatibility
     if ((message.blocks?.length || 0) === 0) {
