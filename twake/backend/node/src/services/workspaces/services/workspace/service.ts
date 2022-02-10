@@ -383,7 +383,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       { workspace_id: workspaceId.workspaceId },
       { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
     );
-    //    list.mapEntities(m => formatWorkspaceUser(m) as any);
+    list.mapEntities(m => formatWorkspaceUser(m) as any);
     return list;
   }
 
@@ -439,7 +439,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
         ),
       )
     )
-      //      .map(m => formatWorkspaceUser(m))
+      .map(m => formatWorkspaceUser(m))
       .filter(uw => uw);
 
     //If user is in no workspace, then it must be invited in the default workspaces, expect if he's guest
@@ -457,10 +457,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
             if (companyRole.role !== "guest") {
               await this.addUser(workspace, { id: userId.userId }, role);
-              const uw = await this.workspaceUserRepository.findOne({
-                user_id: userId.userId,
-                workspace_id: workspace.id,
-              });
+              const uw = formatWorkspaceUser(
+                await this.workspaceUserRepository.findOne({
+                  user_id: userId.userId,
+                  workspace_id: workspace.id,
+                }),
+              );
               if (uw) {
                 userWorkspaces.push(uw);
               }
