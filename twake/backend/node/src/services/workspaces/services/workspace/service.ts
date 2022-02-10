@@ -15,6 +15,7 @@ import {
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { WorkspaceServiceAPI } from "../../api";
 import WorkspaceUser, {
+  formatWorkspaceUser,
   getInstance as getWorkspaceUserInstance,
   TYPE as WorkspaceUserType,
   WorkspaceUserPrimaryKey,
@@ -374,23 +375,27 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
-  getUsers(
+  async getUsers(
     workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
   ): Promise<ListResult<WorkspaceUser>> {
-    return this.workspaceUserRepository.find(
+    const list = await this.workspaceUserRepository.find(
       { workspace_id: workspaceId.workspaceId },
       { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
     );
+    list.mapEntities(m => formatWorkspaceUser(m) as any);
+    return list;
   }
 
-  getUser(
+  async getUser(
     workspaceUserPk: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
   ): Promise<WorkspaceUser> {
-    return this.workspaceUserRepository.findOne({
-      workspace_id: workspaceUserPk.workspaceId,
-      user_id: workspaceUserPk.userId,
-    });
+    return formatWorkspaceUser(
+      await this.workspaceUserRepository.findOne({
+        workspace_id: workspaceUserPk.workspaceId,
+        user_id: workspaceUserPk.userId,
+      }),
+    );
   }
 
   async processPendingUser(user: User): Promise<void> {
@@ -435,7 +440,9 @@ export class WorkspaceService implements WorkspaceServiceAPI {
           }),
         ),
       )
-    ).filter(uw => uw);
+    )
+      .map(m => formatWorkspaceUser(m))
+      .filter(uw => uw);
 
     //If user is in no workspace, then it must be invited in the default workspaces, expect if he's guest
     if (userWorkspaces.length === 0) {
@@ -452,10 +459,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
             if (companyRole.role !== "guest") {
               await this.addUser(workspace, { id: userId.userId }, role);
-              const uw = await this.workspaceUserRepository.findOne({
-                user_id: userId.userId,
-                workspace_id: workspace.id,
-              });
+              const uw = formatWorkspaceUser(
+                await this.workspaceUserRepository.findOne({
+                  user_id: userId.userId,
+                  workspace_id: workspace.id,
+                }),
+              );
               if (uw) {
                 userWorkspaces.push(uw);
               }
