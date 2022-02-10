@@ -60,7 +60,6 @@ export class WorkspacesCrudController
     workspace: Workspace,
     usersCount: number,
     userId?: string,
-    role?: WorkspaceUserRole,
   ): Promise<WorkspaceObject> {
     const res: WorkspaceObject = {
       id: workspace.id,
@@ -77,7 +76,7 @@ export class WorkspacesCrudController
       },
     };
 
-    if (role && userId) {
+    if (userId) {
       let role = await this.getWorkspaceUserRole(workspace.id, userId);
       if (role !== "moderator") {
         //Company admins should be workspace moderators automatically
