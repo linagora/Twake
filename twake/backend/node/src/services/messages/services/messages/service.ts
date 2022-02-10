@@ -538,7 +538,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   //Complete message with all missing information and cache
   async completeMessage(message: Message, options: { files?: Message["files"] } = {}) {
     this.fixReactionsFormat(message);
-    if (options.files) message = await this.completeMessageFiles(message, options.files || []);
+    try {
+      if (options.files) message = await this.completeMessageFiles(message, options.files || []);
+    } catch (err) {
+      logger.warn("Error while completing message files", err);
+    }
 
     //Mobile retro compatibility
     if ((message.blocks?.length || 0) === 0) {
