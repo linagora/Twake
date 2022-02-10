@@ -49,25 +49,19 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   let failed = 0;
   let passed = 0;
 
-  for (const path of [
-    "test/e2e/workspaces/workspaces.invite-tokens.spec.ts",
-    "test/e2e/workspaces/workspaces.invite-tokens.spec.ts",
-    "test/e2e/workspaces/workspaces.invite-tokens.spec.ts",
-    "test/e2e/workspaces/workspaces.invite-tokens.spec.ts",
-    "test/e2e/workspaces/workspaces.invite-tokens.spec.ts",
-    "test/e2e/workspaces/workspaces.invite-tokens.spec.ts",
-    "test/e2e/workspaces/workspace-users.spec.ts",
-    "test/e2e/workspaces/workspace-users.spec.ts",
-    "test/e2e/workspaces/workspace-users.spec.ts",
-    "test/e2e/workspaces/workspace-users.spec.ts",
-    "test/e2e/workspaces/workspace-users.spec.ts",
-    "test/e2e/workspaces/workspace-users.spec.ts",
-  ]) {
+  for (const path of srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
     const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
 
     try {
-      const out = await exec("jest", args.split(" "), true);
+      const out = await exec(
+        "jest",
+        args.split(" "),
+        [
+          "test/e2e/workspaces/workspace-users.spec.ts",
+          "test/e2e/workspaces/workspaces.invite-tokens.spec.ts",
+        ].indexOf(path) >= 0,
+      );
       if (out.code !== 0) {
         //To get all the logs, we run it again
         console.log(`FAIL ${testName}`);
