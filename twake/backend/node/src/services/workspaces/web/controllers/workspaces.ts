@@ -23,6 +23,7 @@ import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
 import { getWorkspaceRooms } from "../../realtime";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
+import CompanyUser from "../../../user/entities/company_user";
 
 export class WorkspacesCrudController
   implements
@@ -45,9 +46,9 @@ export class WorkspacesCrudController
       .then(a => (a ? a.role : null));
   }
 
-  private getWorkspaceUserRole(workspaceId: string, context: WorkspaceExecutionContext) {
+  private getWorkspaceUserRole(workspaceId: string, userId: string) {
     return this.workspaceService
-      .getUser({ workspaceId, userId: context.user.id })
+      .getUser({ workspaceId, userId })
       .then(a => (a ? a.role || "member" : null));
   }
 
@@ -55,11 +56,11 @@ export class WorkspacesCrudController
     return this.workspaceService.getUsersCount(workspaceId);
   }
 
-  private static formatWorkspace(
+  private async formatWorkspace(
     workspace: Workspace,
     usersCount: number,
-    role?: WorkspaceUserRole,
-  ): WorkspaceObject {
+    userId?: string,
+  ): Promise<WorkspaceObject> {
     const res: WorkspaceObject = {
       id: workspace.id,
       company_id: workspace.company_id,
@@ -74,7 +75,19 @@ export class WorkspacesCrudController
         total_members: usersCount,
       },
     };
-    if (role) {
+
+    if (userId) {
+      let role = await this.getWorkspaceUserRole(workspace.id, userId);
+      if (role !== "moderator") {
+        //Company admins should be workspace moderators automatically
+        const companyUser: CompanyUser = await this.companyService.getCompanyUser(
+          { id: workspace.company_id },
+          { id: userId },
+        );
+        if (companyUser && hasCompanyAdminLevel(companyUser?.role)) {
+          role = "moderator";
+        }
+      }
       res.role = role;
     }
 
@@ -109,18 +122,17 @@ export class WorkspacesCrudController
       throw CrudException.notFound(`Workspace ${request.params.id} not found`);
     }
 
-    const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
-
+    const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context.user.id);
     if (!workspaceUserRole) {
       const companyUserRole = await this.getCompanyUserRole(context);
-
       if (companyUserRole !== "admin") {
         throw CrudException.forbidden(`You are not belong to workspace ${request.params.id}`);
       }
     }
+
     const count = await this.getWorkspaceUsersCount(workspace.id);
     return {
-      resource: WorkspacesCrudController.formatWorkspace(workspace, count, workspaceUserRole),
+      resource: await this.formatWorkspace(workspace, count, context.user.id),
     };
   }
 
@@ -151,11 +163,7 @@ export class WorkspacesCrudController
     return {
       resources: await Promise.all(
         userWorkspaces.map(async ws =>
-          WorkspacesCrudController.formatWorkspace(
-            ws,
-            await this.getWorkspaceUsersCount(ws.id),
-            allUserWorkspaceRolesMap.get(ws.id),
-          ),
+          this.formatWorkspace(ws, await this.getWorkspaceUsersCount(ws.id), context.user.id),
         ),
       ),
       websockets: this.realtime.sign(getWorkspaceRooms(context), context.user.id),
@@ -174,7 +182,7 @@ export class WorkspacesCrudController
     }
 
     if (!hasCompanyAdminLevel(companyUserRole) && request.params.id) {
-      const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
+      const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context.user.id);
       const companyUserRole = await this.getCompanyUserRole(context);
 
       if (!hasWorkspaceAdminLevel(workspaceUserRole, companyUserRole)) {
@@ -202,13 +210,11 @@ export class WorkspacesCrudController
 
     request.params.id ? reply.code(200) : reply.code(201);
 
-    const workspaceUserRole = await this.getWorkspaceUserRole(workspaceEntity.id, context);
-
     return {
-      resource: WorkspacesCrudController.formatWorkspace(
+      resource: await this.formatWorkspace(
         workspaceEntity,
         await this.getWorkspaceUsersCount(workspaceEntity.id),
-        workspaceUserRole,
+        context.user.id,
       ),
     };
   }
@@ -219,7 +225,7 @@ export class WorkspacesCrudController
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
-    const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context);
+    const workspaceUserRole = await this.getWorkspaceUserRole(request.params.id, context.user.id);
     const companyUserRole = await this.getCompanyUserRole(context);
 
     if (!hasWorkspaceAdminLevel(workspaceUserRole, companyUserRole)) {

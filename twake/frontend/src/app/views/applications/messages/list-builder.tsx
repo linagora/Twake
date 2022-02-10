@@ -2,6 +2,7 @@ import React, { ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 import { ItemContent, LogLevel, Virtuoso } from 'react-virtuoso';
 import Logger from 'app/features/global/framework/logger-service';
 import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
+import { MessagesPlaceHolder } from './placeholder';
 
 const logger = Logger.getLogger(`ListBuilder`);
 const START_INDEX = 1000000;
@@ -57,12 +58,16 @@ export default React.memo(
     }
 
     if (items.length === 0) {
-      return <div style={{ flex: 1 }}>{initiated ? emptyListComponent || <></> : <></>}</div>;
+      return (
+        <div style={{ flex: 1 }}>
+          {initiated ? emptyListComponent || <></> : <MessagesPlaceHolder />}
+        </div>
+      );
     }
 
     return (
       <>
-        <Suspense fallback={<div style={{ flex: 1 }}>loading...</div>}>
+        <Suspense fallback={<div style={{ flex: 1 }}></div>}>
           <Virtuoso
             ref={virtuosoRef}
             initialTopMostItemIndex={items.length - 1}

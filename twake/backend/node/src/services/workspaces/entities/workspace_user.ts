@@ -22,7 +22,7 @@ export default class WorkspaceUser {
   id: string;
 
   @Column("role", "string")
-  role: WorkspaceUserRole; //Relative to workspace only (not relative to company)
+  role: WorkspaceUserRole = "member"; //Relative to workspace only (not relative to company)
 
   @Column("date_added", "number")
   dateAdded: number;
@@ -40,4 +40,10 @@ export function getInstance(
   workspaceUser: Partial<WorkspaceUser> & WorkspaceUserPrimaryKey,
 ): WorkspaceUser {
   return merge(new WorkspaceUser(), workspaceUser);
+}
+
+export function formatWorkspaceUser(workspaceUser: WorkspaceUser): WorkspaceUser {
+  if (!workspaceUser) return workspaceUser;
+  workspaceUser.role = workspaceUser.role || "member";
+  return workspaceUser;
 }
