@@ -614,10 +614,9 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   }
 
   public encodeInviteToken(companyId: string, workspaceId: string, token: string) {
-    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token
-      .replace("+", ".")
-      .replace("/", "_")
-      .replace("=", "-")}`;
+    // Change base64 characters to make them url safe
+    token = token.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "-");
+    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token}`;
     return encodedToken;
   }
 
@@ -625,14 +624,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     try {
       let split = encodedToken.split("-");
       //We split on "-" but the token can contain "-" so be careful
-      const [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
+      let [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
       if (!token) {
         return;
       }
+      // Change back url safe characters to base64
+      token = token.replace(/-/g, "+").replace(/_/g, "/").replace(/-/g, "=");
       return {
         c: expandUUID4(companyId),
         w: expandUUID4(workspaceId),
-        t: token.replace(".", "+").replace("_", "/").replace("-", "="),
+        t: token,
       };
     } catch (e) {
       return null;
