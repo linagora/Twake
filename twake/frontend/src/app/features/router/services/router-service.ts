@@ -139,6 +139,10 @@ class RouterServices extends Observable {
       this.notify();
       this.setRecoilState(this.getStateFromRoute());
     });
+
+    // Transform mobile join format from /?join=token to /join/:token
+    const join = new URLSearchParams(document.location.search).get('join');
+    if (join) this.push('/join/' + join);
   }
 
   useRouteState(observedScope?: (state: ClientStateType) => ClientStateType): ClientStateType {
