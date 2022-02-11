@@ -21,11 +21,11 @@ export const useChannelMembers = (
 
   const refresh = async () => {
     const { companyId, workspaceId, channelId } = key;
-    const channelMembersUpdated = await ChannelMembersAPIClient.list(
+    const channelMembersUpdated = await ChannelMembersAPIClient.list({
       companyId,
       workspaceId,
       channelId,
-    );
+    });
 
     if (channelMembersUpdated) _setChannelMembers(channelMembersUpdated);
   };
@@ -41,6 +41,8 @@ export const useChannelMembers = (
     },
     [key, channelMembers],
   );
+
+  // useRealTimeHook
 
   return {
     channelMembers,

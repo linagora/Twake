@@ -35,11 +35,11 @@ export default ({ channel, joined, active }: PropsType) => {
 
   const joinChannel = async () => {
     if (channel.company_id && channel.workspace_id && channel.id) {
-      const channelMembers = await ChannelMembersAPIClient.list(
-        channel.company_id,
-        channel.workspace_id,
-        channel.id,
-      );
+      const channelMembers = await ChannelMembersAPIClient.list({
+        companyId: channel.company_id,
+        workspaceId: channel.workspace_id,
+        channelId: channel.id,
+      });
 
       const alreadyMemberInChannel = channelMembers.map(m => m.user_id)?.includes(userId);
 

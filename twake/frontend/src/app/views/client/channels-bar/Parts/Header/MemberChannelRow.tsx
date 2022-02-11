@@ -3,20 +3,21 @@ import React, { useState } from 'react';
 import { Button, Col, Row, Tag, Typography } from 'antd';
 import { Mail, PlusCircle, Trash } from 'react-feather';
 
-import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import { getUserParts } from 'app/components/member/user-parts';
 import Languages from 'app/features/global/services/languages-service';
 import './MemberChannelRow.scss';
 import Menu from 'app/components/menus/menu';
 import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import RouterServices from 'app/features/router/services/router-service';
-import Collection from 'app/deprecated/CollectionsV2/Collection';
 import UsersService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
-import { PendingEmailResource } from 'app/features/workspace-members/types/pending-email';
-import GuestManagementService from 'app/features/channel-members/service/guest-management-service';
 import UserService from 'app/features/users/services/current-user-service';
+import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import { useChannelMembers } from 'app/features/channel-members/hooks/use-channel-members';
+import { usePendingEmails } from 'app/features/pending-emails/hooks/use-pending-emails';
+import PendingEmailsAPIClient from 'app/features/pending-emails/api/pending-emails-api-client';
 
 const { Text } = Typography;
 
@@ -24,7 +25,6 @@ type Props = {
   channelId: string;
   userId?: string;
   inAddition?: boolean;
-  collection: Collection<ChannelMemberResource | PendingEmailResource>;
   userType?: 'member' | 'guest' | 'bot' | 'pending-email';
   inPendingEmailAddition?: boolean;
   pendingEmailToAdd?: string;
@@ -32,11 +32,23 @@ type Props = {
   onPendingEmailDeletion?: () => unknown;
 };
 
-export default (props: Props): JSX.Element => {
+const MemberChannelRow = (props: Props): JSX.Element => {
   let userEvents: JSX.Element;
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
   const [isMember, setIsMember] = useState<boolean>(false);
   const [selected, setSelected] = useState<boolean>(false);
-  const { workspaceId, companyId } = RouterServices.getStateFromRoute();
+  const { refresh: refreshChannelMembers } = useChannelMembers({
+    companyId,
+    workspaceId,
+    channelId: props.channelId,
+  });
+
+  const { refresh: refreshPendingEmails } = usePendingEmails({
+    companyId,
+    workspaceId,
+    channelId: props.channelId,
+  });
   const currentUserId: string = UsersService.getCurrentUserId();
 
   const { avatar, name, users, companyRole } = getUserParts({
@@ -46,46 +58,41 @@ export default (props: Props): JSX.Element => {
   });
 
   const addUser = async () => {
-    await props.collection.upsert(
-      new ChannelMemberResource({
-        user_id: props.userId,
-        channel_id: props.channelId,
-        type: 'member', // "member" | "guest" | "bot",
-      }),
-    );
-    return setIsMember(true);
+    props.userId &&
+      (await ChannelsReachableAPIClient.inviteUser(
+        companyId,
+        workspaceId,
+        props.channelId,
+        props.userId,
+      )
+        .then(refreshChannelMembers)
+        .finally(() => setIsMember(true)));
   };
 
   const leaveChannel = async (channelId: string, userId: string) => {
-    //Fixme, this is not pretty, we should find a way to do this in one line
-    const channelMemberResource = new ChannelMemberResource({
-      user_id: userId,
-      channel_id: channelId,
-      type: 'member', // "member" | "guest" | "bot",
-    });
-    channelMemberResource.setPersisted();
-    await props.collection.upsert(channelMemberResource, { withoutBackend: true });
-    await props.collection.remove(channelMemberResource);
-
-    setIsMember(false);
+    await ChannelsReachableAPIClient.removeUser(companyId, workspaceId, channelId, userId)
+      .then(refreshChannelMembers)
+      .finally(() => setIsMember(false));
 
     currentUserId === props.userId && ModalManager.close();
   };
 
   const savePendingEmail = () =>
-    GuestManagementService.upsertPendingEmail({
-      workspace_id: workspaceId || '',
-      channel_id: props.channelId || '',
-      company_id: companyId || '',
-      email: props.pendingEmailToAdd || '',
-    }).finally(props.onPendingEmailAddition);
+    props.pendingEmailToAdd &&
+    PendingEmailsAPIClient.save(props.pendingEmailToAdd, {
+      companyId,
+      workspaceId,
+      channelId: props.channelId,
+    }).finally(refreshPendingEmails);
 
   const removePendingEmail = async () => {
-    const col = props.collection as Collection<PendingEmailResource>;
-    const pendingEmail = col.findOne({ id: props.userId });
-    return await GuestManagementService.deletePendingEmail(pendingEmail.data).finally(
-      props.onPendingEmailDeletion,
-    );
+    props.userId &&
+      props.userType === 'pending-email' &&
+      PendingEmailsAPIClient.delete(props.userId, {
+        companyId,
+        workspaceId,
+        channelId: props.channelId,
+      }).finally(refreshPendingEmails);
   };
 
   if (props.inAddition) {
@@ -160,8 +167,7 @@ export default (props: Props): JSX.Element => {
   }
 
   if (props.userType === 'pending-email') {
-    const col = props.collection as Collection<PendingEmailResource>;
-    const pendingEmail = col.findOne({ id: props.userId });
+    const pendingEmail: string | undefined = props.userId;
     const shouldDisplayPendingRow = !!pendingEmail;
 
     if (shouldDisplayPendingRow) {
@@ -177,7 +183,7 @@ export default (props: Props): JSX.Element => {
           </Col>
           <Col flex="auto" className="small-right-margin">
             <Typography.Text type="secondary" className="pending-email-text">
-              {pendingEmail.data.email}
+              {pendingEmail}
             </Typography.Text>
           </Col>
           <Col>
@@ -227,3 +233,5 @@ export default (props: Props): JSX.Element => {
     </Row>
   );
 };
+
+export default MemberChannelRow;

@@ -1,19 +1,19 @@
-import RouterServices from 'app/features/router/services/router-service';
 import { getUserParts } from 'app/components/member/user-parts';
-import Collections from 'app/deprecated/CollectionsReact/Collections';
-import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
+import { useChannelMembers } from 'app/features/channel-members/hooks/use-channel-members';
 
-export default (props: { workspaceId: string }): JSX.Element => {
-  const { companyId, channelId } = RouterServices.getStateFromRoute();
+export default ({ workspaceId }: { workspaceId: string }): JSX.Element => {
+  const companyId = useRouterCompany();
+  const channelId = useRouterChannel();
 
-  const collectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${props.workspaceId}/channels/${channelId}/members/`;
-  const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
+  const { channelMembers } = useChannelMembers({ companyId, workspaceId, channelId });
 
-  const members = channelMembersCollection
-    .useWatcher({}, { limit: 10 })
-    .map(i => i.data.user_id || '');
+  const members = channelMembers.filter((_m, i) => i < 10).map(m => m.user_id || '');
+
   useUsersListener(members);
+
   const { avatar } = getUserParts({ usersIds: members, keepMyself: true, max: 7 });
 
   return avatar;

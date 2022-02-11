@@ -1,19 +1,13 @@
-import React, { FC, useState } from 'react';
-import { Col, Row, Typography, Input } from 'antd';
+import React, { useState } from 'react';
 import { Search } from 'react-feather';
+import { Col, Row, Typography, Input } from 'antd';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 
-import {
-  ChannelMemberResource,
-  ChannelResource,
-  ChannelType,
-} from 'app/features/channels/types/channel';
 import { UserType } from 'app/features/users/types/user';
-
+import { ChannelType } from 'app/features/channels/types/channel';
 import Strings from 'app/features/global/utils/strings.js';
 import Languages from 'app/features/global/services/languages-service';
 import UsersService from 'app/features/users/services/current-user-service';
-import Collections from 'app/deprecated/CollectionsReact/Collections';
 import MemberChannelRow from 'app/views/client/channels-bar/Parts/Header/MemberChannelRow';
 
 import ObjectModal from 'components/object-modal/object-modal';
@@ -22,6 +16,8 @@ import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
+import { useChannelMembers } from 'app/features/channel-members/hooks/use-channel-members';
+import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 
 type PropsType = {
   closable?: boolean;
@@ -31,17 +27,19 @@ type PropsType = {
 const { Link } = Typography;
 const defaultLimit = 20;
 
-const ChannelMembersList: FC<PropsType> = props => {
+const ChannelMembersList = (props: PropsType) => {
   const { company_id, workspace_id, id } = props.channel;
 
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(defaultLimit);
   const [searchedUsers, setSearchedUsers] = useState<string[]>([]);
+  const { channelMembers } = useChannelMembers({
+    companyId: company_id || '',
+    workspaceId: workspace_id || '',
+    channelId: id || '',
+  });
 
-  const collectionPath: string = `/channels/v1/companies/${company_id}/workspaces/${workspace_id}/channels/${id}/members/`;
-  const channelMembersCollection = Collections.get(collectionPath, ChannelMemberResource);
-  const channelMembers = channelMembersCollection.useWatcher({}, { limit: limit });
-  const channelMembersUid = channelMembers.map(member => member.data.user_id || '');
+  const channelMembersUid = channelMembers.map(member => member.user_id || '');
 
   useUsersListener(channelMembersUid);
 
@@ -62,16 +60,18 @@ const ChannelMembersList: FC<PropsType> = props => {
   const filterUsers = (user: UserType, filter: boolean) => (filter ? user : false);
 
   const compareFullname = (
-    a: UserType | ChannelMemberResource,
-    b: UserType | ChannelMemberResource,
-    isMemberResource?: boolean,
+    a: UserType | ChannelMemberType,
+    b: UserType | ChannelMemberType,
+    isMemberType?: boolean,
   ) => {
     let userA = a;
     let userB = b;
-    if (isMemberResource) {
-      userA = DepreciatedCollections.get('users').find(a.id);
-      userB = DepreciatedCollections.get('users').find(b.id);
+
+    if (isMemberType) {
+      userA = DepreciatedCollections.get('users').find((a as ChannelMemberType).user_id);
+      userB = DepreciatedCollections.get('users').find((b as ChannelMemberType).user_id);
     }
+
     return UsersService.getFullName(userA as UserType).localeCompare(
       UsersService.getFullName(userB as UserType),
     );
@@ -119,21 +119,22 @@ const ChannelMembersList: FC<PropsType> = props => {
         {!search.length &&
           channelMembers.length > 0 &&
           channelMembers
+            .map(m => m)
             .sort((a, b) => compareFullname(a, b, true))
             .map(user =>
               props.channel.id ? (
-                <div key={user.id} className="x-margin" style={{ marginTop: 8 }}>
+                <div key={user.user_id} className="x-margin" style={{ marginTop: 8 }}>
                   <MemberChannelRow
-                    key={user.id}
+                    key={user.user_id}
                     channelId={props.channel.id}
-                    userId={user.data.user_id || ''}
-                    collection={channelMembersCollection}
+                    userId={user.user_id || ''}
                   />
                 </div>
               ) : (
                 <></>
               ),
             )}
+
         {!search.length && !channelMembers.length && (
           <Row
             align="middle"
@@ -152,7 +153,6 @@ const ChannelMembersList: FC<PropsType> = props => {
                   key={userId}
                   userId={userId}
                   channelId={props.channel.id}
-                  collection={channelMembersCollection}
                   inAddition={!channelMembersUid.includes(userId || '') ? true : false}
                 />
               </div>
