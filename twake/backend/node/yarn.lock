@@ -975,6 +975,13 @@
   dependencies:
     ajv "^6.12.6"
 
+"@fastify/busboy@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-1.0.0.tgz#f73182e61955ab91f8ec5a137fda2c9cee366dbd"
+  integrity sha512-tzTXX1TFEjWCseEsNdIlXXkD+48uJoN+zpqIojUX4pSoMscsbhO/UuVEB5SzJucexqDWOo2ma0ECwdD7hZdrzg==
+  dependencies:
+    text-decoding "^1.0.0"
+
 "@hapi/bourne@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@hapi/bourne/-/bourne-2.0.0.tgz"
@@ -2393,13 +2400,6 @@ buffer@^5.5.0, buffer@^5.6.0:
     base64-js "^1.3.1"
     ieee754 "^1.1.13"
 
-busboy@^0.3.1:
-  version "0.3.1"
-  resolved "https://registry.npmjs.org/busboy/-/busboy-0.3.1.tgz"
-  integrity sha512-y7tTxhGKXcyBxRKAni+awqx8uqaJKrSFSNFSeRG5CsWNdmy2BIK+6VGWEW7TZnIO/533mtMEA4rOevQV815YJw==
-  dependencies:
-    dicer "0.3.0"
-
 cache-base@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/cache-base/-/cache-base-1.0.1.tgz"
@@ -3056,13 +3056,6 @@ detect-newline@^3.0.0:
   resolved "https://registry.npmjs.org/detect-newline/-/detect-newline-3.1.0.tgz"
   integrity sha512-TLz+x/vEXm/Y7P7wn1EJFNLxYpUD4TgMosxY6fAVJUnJMbupHBOncxyWUG9OpTaH9EBD7uFI5LfEgmMOc54DsA==
 
-dicer@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.npmjs.org/dicer/-/dicer-0.3.0.tgz"
-  integrity sha512-MdceRRWqltEG2dZqO769g27N/3PXfcKl04VhYnBlo2YhH7zPi88VebsjTKclaOyiuMaGU72hTfw3VkUitGcVCA==
-  dependencies:
-    streamsearch "0.1.2"
-
 diff-sequences@^26.6.2:
   version "26.6.2"
   resolved "https://registry.npmjs.org/diff-sequences/-/diff-sequences-26.6.2.tgz"
@@ -3654,17 +3647,18 @@ fastify-jwt@^2.2.0:
     jsonwebtoken "^8.5.1"
     steed "^1.1.3"
 
-fastify-multipart@*, fastify-multipart@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.npmjs.org/fastify-multipart/-/fastify-multipart-4.0.3.tgz"
-  integrity sha512-RyouqARMlSgTudcPCDmxVN07YEDWojT5iQ+AkjX7DcQ+Y65hHzrOqrNveu5gs+lEIg5afGaH5ESHCNCOZYlveQ==
+fastify-multipart@*, fastify-multipart@5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/fastify-multipart/-/fastify-multipart-5.3.1.tgz#05254d8aa43dc02af6ce01f4e513a6c30bea2886"
+  integrity sha512-c2pnGfkJmiNpYqzFYT2QfBg/06AxG531O+n1elqc8YUbWPRzufdqn3yfGAIV3RA7J4Vnf7Pfvgx0iaWqaRTOVA==
   dependencies:
-    busboy "^0.3.1"
+    "@fastify/busboy" "^1.0.0"
     deepmerge "^4.2.2"
     end-of-stream "^1.4.4"
     fastify-error "^0.3.0"
     fastify-plugin "^3.0.0"
     hexoid "^1.0.0"
+    secure-json-parse "^2.4.0"
     stream-wormhole "^1.1.0"
 
 fastify-plugin@^2.0.0, fastify-plugin@^2.3.4:
@@ -7291,11 +7285,6 @@ stream-wormhole@^1.1.0:
   resolved "https://registry.npmjs.org/stream-wormhole/-/stream-wormhole-1.1.0.tgz"
   integrity sha512-gHFfL3px0Kctd6Po0M8TzEvt3De/xu6cnRrjlfYNhwbhLPLwigI2t1nc6jrzNuaYg5C4YF78PPFuQPzRiqn9ew==
 
-streamsearch@0.1.2:
-  version "0.1.2"
-  resolved "https://registry.npmjs.org/streamsearch/-/streamsearch-0.1.2.tgz"
-  integrity sha1-gIudDlb8Jz2Am6VzOOkpkZoanxo=
-
 string-argv@^0.1.1:
   version "0.1.2"
   resolved "https://registry.npmjs.org/string-argv/-/string-argv-0.1.2.tgz"
@@ -7544,6 +7533,11 @@ test-exclude@^6.0.0:
     "@istanbuljs/schema" "^0.1.2"
     glob "^7.1.4"
     minimatch "^3.0.4"
+
+text-decoding@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/text-decoding/-/text-decoding-1.0.0.tgz#38a5692d23b5c2b12942d6e245599cb58b1bc52f"
+  integrity sha512-/0TJD42KDnVwKmDK6jj3xP7E2MG7SHAOG4tyTgyUCRPdHwvkquYNLEQltmdMa3owq3TkddCVcTsoctJI8VQNKA==
 
 text-table@^0.2.0:
   version "0.2.0"
