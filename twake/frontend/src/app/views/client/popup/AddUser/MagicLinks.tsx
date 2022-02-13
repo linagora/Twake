@@ -33,7 +33,7 @@ export default (props: PropsType): JSX.Element => {
   /* eslint-enable react-hooks/exhaustive-deps */
 
   useEffect(() => {
-    setLink(`${window.location.origin}/join/${currentToken}`);
+    setLink(`${window.location.origin}/?join=${currentToken}`);
   }, [currentToken]);
 
   const init = () => {
