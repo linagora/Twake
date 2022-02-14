@@ -20,11 +20,12 @@ import Company, {
   CompanySearchKey,
   getInstance as getCompanyInstance,
 } from "../../user/entities/company";
-import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
+import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import UserServiceAPI from "../../user/api";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
 import _ from "lodash";
+import { CompanyFeaturesEnum, CompanyLimitsEnum } from "../../user/web/types";
 
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
@@ -86,7 +87,26 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
             "Content-Type": "application/json",
           },
         })
-        .then(({ data }) => data);
+        .then(async ({ data, status }) => {
+          //Fixme: When console solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/35
+          //       and solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/36
+          //       we can remove this fallback
+          if ([200, 201].indexOf(status) >= 0) {
+            return data;
+          } else {
+            return this.client
+              .post(`/api/companies/${company.code}/users`, user, {
+                auth: this.auth(),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                params: {
+                  skipInvite: user.skipInvite,
+                },
+              })
+              .then(({ data }) => data);
+          }
+        });
 
       return result;
     }
@@ -181,32 +201,37 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     }
 
     if (!company.plan) {
-      company.plan = { name: "", features: {} };
+      company.plan = { name: "", limits: undefined, features: undefined };
     }
 
     //FIXME this is a hack right now!
     let planFeatures: any = {
-      "chat:guests": true,
-      "chat:message_history": true,
-      "chat:multiple_workspaces": true,
-      "chat:edit_files": true,
-      "chat:unlimited_storage": true,
+      [CompanyFeaturesEnum.CHAT_GUESTS]: true,
+      [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: true,
+      [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: true,
+      [CompanyFeaturesEnum.CHAT_EDIT_FILES]: true,
+      [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: true,
+      [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]: true,
     };
+
     if (companyDTO.limits.members < 0 && this.infos.type === "remote") {
       //Hack to say this is free version
       planFeatures = {
-        "chat:guests": false,
-        "chat:message_history": false,
-        "chat:message_history_limit": 10000,
-        "chat:multiple_workspaces": false,
-        "chat:edit_files": false,
-        "chat:unlimited_storage": false, //Currently inactive
+        [CompanyFeaturesEnum.CHAT_GUESTS]: false,
+        [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: false,
+        [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: false,
+        [CompanyFeaturesEnum.CHAT_EDIT_FILES]: false,
+        [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: false, // Currently inactive
       };
       company.plan.name = "free";
     } else {
       company.plan.name = "standard";
     }
-    company.plan.features = { ...planFeatures, ...companyDTO.limits };
+    company.plan.features = { ...planFeatures };
+    company.plan.limits = {
+      [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000, // To remove duplicata since we define this in formatCompany function
+      [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: companyDTO.limits["members"],
+    };
 
     company.stats = coalesce(companyDTO.stats, company.stats);
 
@@ -221,7 +246,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     const userDTO = await this.fetchUserInfo(code);
 
     if (!userDTO) {
-      throw CrudExeption.badRequest("User not found on Console");
+      throw CrudException.badRequest("User not found on Console");
     }
 
     const roles = userDTO.roles;
@@ -230,7 +255,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     if (!user) {
       if (!userDTO.email) {
-        throw CrudExeption.badRequest("Email is required");
+        throw CrudException.badRequest("Email is required");
       }
 
       let username = userDTO.email
@@ -240,12 +265,12 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         .replace(/ +/g, "_");
 
       if (await this.userService.users.isEmailAlreadyInUse(userDTO.email)) {
-        throw CrudExeption.badRequest("Console user not created because email already exists");
+        throw CrudException.badRequest("Console user not created because email already exists");
       }
 
       username = await this.userService.users.getAvailableUsername(username);
       if (!username) {
-        throw CrudExeption.badRequest("Console user not created because username already exists");
+        throw CrudException.badRequest("Console user not created because username already exists");
       }
 
       user = getInstance({});
@@ -301,7 +326,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         const roleName = role.roleCode;
         const company = await getCompanyByCode(companyConsoleCode);
         if (!company) {
-          throw CrudExeption.notFound(`Company ${companyConsoleCode} not found`);
+          throw CrudException.notFound(`Company ${companyConsoleCode} not found`);
         }
         //Make sure user is active, if not we remove it
         if (role.status !== "deactivated") {
@@ -332,7 +357,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     const user = await this.userService.users.getByConsoleId(consoleUserId);
     if (!user) {
-      throw CrudExeption.notFound(`User ${consoleUserId} doesn't exists`);
+      throw CrudException.notFound(`User ${consoleUserId} doesn't exists`);
     }
     await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
   }
@@ -371,7 +396,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .then(({ data }) => data.company)
       .catch(e => {
         if (e.response.status === 401) {
-          throw CrudExeption.forbidden("Bad console credentials");
+          throw CrudException.forbidden("Bad console credentials");
         }
         throw e;
       });
@@ -389,7 +414,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .then(({ data }) => data)
       .catch(e => {
         if (e.response.status === 401) {
-          throw CrudExeption.forbidden("Bad console credentials");
+          throw CrudException.forbidden("Bad console credentials");
         }
         throw e;
       });
@@ -407,7 +432,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .then(({ data }) => data)
       .catch(e => {
         if (e.response?.status === 401) {
-          throw CrudExeption.forbidden("Bad access token credentials");
+          throw CrudException.forbidden("Bad access token credentials");
         }
         throw e;
       });
@@ -431,7 +456,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       .then(({ data }) => data)
       .catch(e => {
         if (e.response.status === 401) {
-          throw CrudExeption.forbidden("Bad credentials");
+          throw CrudException.forbidden("Bad credentials");
         }
         throw e;
       });

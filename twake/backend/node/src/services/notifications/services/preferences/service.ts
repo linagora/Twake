@@ -1,7 +1,7 @@
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import { UserNotificationPreferencesAPI } from "../../api";
 import {
-  CrudExeption,
+  CrudException,
   ListResult,
   SaveResult,
   OperationType,
@@ -58,7 +58,7 @@ export class NotificationPreferencesService implements UserNotificationPreferenc
     filter: Pick<UserNotificationPreferencesPrimaryKey, "user_id">,
   ): Promise<ListResult<UserNotificationPreferences>> {
     if (!workspace_id || !company_id || !user_id) {
-      throw CrudExeption.badRequest("workspace_id, company_id and user_id are required");
+      throw CrudException.badRequest("workspace_id, company_id and user_id are required");
     }
 
     return await this.repository.find({

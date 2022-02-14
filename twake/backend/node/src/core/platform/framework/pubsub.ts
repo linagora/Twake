@@ -1,11 +1,9 @@
 import { Subject } from "rxjs";
 import { logger as rootLogger } from "./logger";
 
-const logger = rootLogger.child(
-  {
-    component: "twake.core.platform.framework.pubsub"
-  }
-)
+const logger = rootLogger.child({
+  component: "twake.core.platform.framework.pubsub",
+});
 
 /**
  * A local event bus in the platform. Used by platform components and services to communicate using publish subscribe.
@@ -29,7 +27,7 @@ class EventBus {
         } catch (err) {
           logger.warn({ err }, "Error while calling listener");
         }
-      }
+      },
     });
 
     return this;

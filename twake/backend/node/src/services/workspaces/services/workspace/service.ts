@@ -2,7 +2,7 @@ import { concat, EMPTY, from, Observable } from "rxjs";
 import { mergeMap } from "rxjs/operators";
 import {
   CreateResult,
-  CrudExeption,
+  CrudException,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -15,6 +15,7 @@ import {
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { WorkspaceServiceAPI } from "../../api";
 import WorkspaceUser, {
+  formatWorkspaceUser,
   getInstance as getWorkspaceUserInstance,
   TYPE as WorkspaceUserType,
   WorkspaceUserPrimaryKey,
@@ -345,7 +346,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   ): Promise<void> {
     const workspaceUser = await this.getUser(workspaceUserPk);
     if (!workspaceUser) {
-      throw CrudExeption.notFound("WorkspaceUser entity not found");
+      throw CrudException.notFound("WorkspaceUser entity not found");
     }
     await this.workspaceUserRepository.save(merge(workspaceUser, { role }));
   }
@@ -362,11 +363,11 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const entity = await this.getUser(workspaceUserPk);
 
     if (!entity) {
-      throw CrudExeption.notFound("WorkspaceUser entity not found");
+      throw CrudException.notFound("WorkspaceUser entity not found");
     }
 
     if (!(await this.checkWorkspaceHasOtherAdmin(workspaceUserPk))) {
-      throw CrudExeption.notFound("No other admin found in workspace");
+      throw CrudException.notFound("No other admin found in workspace");
     }
 
     await this.workspaceUserRepository.remove(entity);
@@ -374,23 +375,27 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
-  getUsers(
+  async getUsers(
     workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
   ): Promise<ListResult<WorkspaceUser>> {
-    return this.workspaceUserRepository.find(
+    const list = await this.workspaceUserRepository.find(
       { workspace_id: workspaceId.workspaceId },
       { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
     );
+    list.mapEntities(m => formatWorkspaceUser(m) as any);
+    return list;
   }
 
-  getUser(
+  async getUser(
     workspaceUserPk: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
   ): Promise<WorkspaceUser> {
-    return this.workspaceUserRepository.findOne({
-      workspace_id: workspaceUserPk.workspaceId,
-      user_id: workspaceUserPk.userId,
-    });
+    return formatWorkspaceUser(
+      await this.workspaceUserRepository.findOne({
+        workspace_id: workspaceUserPk.workspaceId,
+        user_id: workspaceUserPk.userId,
+      }),
+    );
   }
 
   async processPendingUser(user: User): Promise<void> {
@@ -435,7 +440,9 @@ export class WorkspaceService implements WorkspaceServiceAPI {
           }),
         ),
       )
-    ).filter(uw => uw);
+    )
+      .map(m => formatWorkspaceUser(m))
+      .filter(uw => uw);
 
     //If user is in no workspace, then it must be invited in the default workspaces, expect if he's guest
     if (userWorkspaces.length === 0) {
@@ -452,10 +459,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
             if (companyRole.role !== "guest") {
               await this.addUser(workspace, { id: userId.userId }, role);
-              const uw = await this.workspaceUserRepository.findOne({
-                user_id: userId.userId,
-                workspace_id: workspace.id,
-              });
+              const uw = formatWorkspaceUser(
+                await this.workspaceUserRepository.findOne({
+                  user_id: userId.userId,
+                  workspace_id: workspace.id,
+                }),
+              );
               if (uw) {
                 userWorkspaces.push(uw);
               }
@@ -492,7 +501,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     companyRole: CompanyUserRole,
   ): Promise<void> {
     if (await this.getPendingUser(primaryKey)) {
-      throw CrudExeption.badRequest("User is pending already");
+      throw CrudException.badRequest("User is pending already");
     }
     const workspacePendingUser = merge(new WorkspacePendingUser(), {
       workspace_id: primaryKey.workspace_id,
@@ -518,7 +527,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   ): Promise<DeleteResult<WorkspacePendingUserPrimaryKey>> {
     const pendingUser = await this.getPendingUser(primaryKey);
     if (!pendingUser) {
-      throw CrudExeption.notFound("Pending user not found");
+      throw CrudException.notFound("Pending user not found");
     }
     await this.workspacePendingUserRepository.remove(pendingUser);
     return new DeleteResult(WorkspacePendingUserType, primaryKey, true);
@@ -614,10 +623,9 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   }
 
   public encodeInviteToken(companyId: string, workspaceId: string, token: string) {
-    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token
-      .replace("+", ".")
-      .replace("/", "_")
-      .replace("=", "-")}`;
+    // Change base64 characters to make them url safe
+    token = token.replace(/\+/g, ".").replace(/\//g, "_").replace(/=/g, "-");
+    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token}`;
     return encodedToken;
   }
 
@@ -625,14 +633,16 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     try {
       let split = encodedToken.split("-");
       //We split on "-" but the token can contain "-" so be careful
-      const [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
+      let [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
       if (!token) {
         return;
       }
+      // Change back url safe characters to base64
+      token = token.replace(/\./g, "+").replace(/_/g, "/").replace(/-/g, "=");
       return {
         c: expandUUID4(companyId),
         w: expandUUID4(workspaceId),
-        t: token.replace(".", "+").replace("_", "/").replace("-", "="),
+        t: token,
       };
     } catch (e) {
       return null;

@@ -3,11 +3,11 @@ import { SkipCLI } from "../../framework/decorators/skip";
 import { localEventBus } from "../../framework/pubsub";
 import WebSocketAPI from "../../services/websocket/provider";
 import AuthServiceAPI from "../auth/provider";
-import { RealtimeEventBus, RealtimeServiceAPI, RealtimeRoomManager } from "./api";
+import { RealtimeEventBus, RealtimeRoomManager, RealtimeServiceAPI } from "./api";
 import { eventBus } from "./bus";
 import RealtimeEntityManager from "./services/entity-manager";
 import RoomManagerImpl from "./services/room-manager";
-import { RealtimeLocalBusEvent } from "./types";
+import { RealtimeBaseBusEvent, RealtimeLocalBusEvent } from "./types";
 
 @Consumes(["websocket", "auth"])
 @ServiceName("realtime")
@@ -33,6 +33,11 @@ export default class RealtimeService
     this.roomManager.init();
     this.entityManager = new RealtimeEntityManager(ws);
     this.entityManager.init();
+
+    localEventBus.subscribe("realtime:event", (event: RealtimeBaseBusEvent<any>) => {
+      event.data._type = event.type;
+      ws.getIo().to(event.room).emit("realtime:event", { name: event.room, data: event.data });
+    });
 
     localEventBus.subscribe("realtime:publish", (data: RealtimeLocalBusEvent<any>) => {
       this.getBus().publish(data.topic, data.event);

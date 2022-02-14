@@ -16,8 +16,9 @@ import {
 import { FastifyReply, FastifyRequest } from "fastify";
 
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
-import { CrudExeption } from "../../../../core/platform/framework/api/crud-service";
-import { pick } from "lodash";
+import { CrudException } from "../../../../core/platform/framework/api/crud-service";
+import { create, pick } from "lodash";
+import { ConsoleCompany } from "../../../console/types";
 
 export class WorkspaceInviteTokensCrudController
   implements
@@ -44,7 +45,7 @@ export class WorkspaceInviteTokensCrudController
     );
 
     if (!res) {
-      throw CrudExeption.notFound("Invite token not found");
+      throw CrudException.notFound("Invite token not found");
     }
 
     return {
@@ -77,7 +78,7 @@ export class WorkspaceInviteTokensCrudController
     const tokenInfo = this.services.workspaces.decodeInviteToken(request.params.token);
 
     if (!tokenInfo) {
-      throw CrudExeption.notFound("Invite token malformed");
+      throw CrudException.notFound("Invite token malformed");
     }
 
     const deleted = await this.services.workspaces.deleteInviteToken(
@@ -86,7 +87,7 @@ export class WorkspaceInviteTokensCrudController
     );
 
     if (!deleted) {
-      throw CrudExeption.notFound("Invite token not found");
+      throw CrudException.notFound("Invite token not found");
     }
 
     reply.code(204);
@@ -103,7 +104,7 @@ export class WorkspaceInviteTokensCrudController
     const entity = await this.services.workspaces.getInviteTokenInfo(request.body.token);
 
     if (!entity) {
-      throw CrudExeption.notFound("Token not found");
+      throw CrudException.notFound("Token not found");
     }
 
     const { company_id, workspace_id } = entity;
@@ -126,24 +127,52 @@ export class WorkspaceInviteTokensCrudController
       resource.auth_required = true;
     } else {
       if (request.body.join) {
-        const user_id = request.currentUser.id;
+        const userId = request.currentUser.id;
 
-        const companyUser = await this.services.companies.getCompanyUser(
+        let companyUser = await this.services.companies.getCompanyUser(
           { id: company_id },
-          { id: user_id },
+          { id: userId },
         );
         if (!companyUser) {
-          await this.services.companies.setUserRole(company_id, user_id, "member");
+          const createdConsoleUser = await this.services.console
+            .getClient()
+            .addUserToCompany(
+              { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
+              {
+                id: userId,
+                email: request.currentUser.email,
+                password: null,
+                firstName: null,
+                lastName: null,
+                name: null,
+                avatar: {
+                  type: null,
+                  value: null,
+                },
+                role: "member",
+                skipInvite: true,
+              },
+            );
+          await this.services.console
+            .getClient()
+            .updateLocalUserFromConsole(createdConsoleUser._id);
+          companyUser = await this.services.companies.getCompanyUser(
+            { id: company_id },
+            { id: userId },
+          );
+        }
+        if (!companyUser) {
+          throw CrudException.badRequest("Unable to add user to the company");
         }
 
         const workspaceUser = await this.services.workspaces.getUser({
           workspaceId: workspace.id,
-          userId: user_id,
+          userId: userId,
         });
         if (!workspaceUser) {
           await this.services.workspaces.addUser(
             pick(workspace, ["company_id", "id"]),
-            { id: user_id },
+            { id: userId },
             "member",
           );
         }

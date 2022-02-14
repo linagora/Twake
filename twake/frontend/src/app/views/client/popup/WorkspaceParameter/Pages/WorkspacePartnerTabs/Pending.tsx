@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import { Divider, Table, Typography } from 'antd';
 import Menu from 'components/menus/menu.js';
-import workspaceUserRightsService from 'app/features/workspaces/services/workspace-user-rights-service';
 import EditIcon from '@material-ui/icons/MoreHorizOutlined';
 import { ColumnsType } from 'antd/lib/table';
 import Api from 'app/features/global/framework/api-service';
 import useBreakpoint from 'antd/lib/grid/hooks/useBreakpoint';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
 type PendingEmailResourceType = {
   company_role: string;
@@ -92,7 +92,7 @@ export default (props: { filter: string }) => {
       dataIndex: 'menu',
       width: 50,
       render: (text, col, index) => {
-        if (!workspaceUserRightsService.hasWorkspacePrivilege()) {
+        if (!AccessRightsService.hasLevel(workspaceId, 'member')) {
           return;
         }
         return (

@@ -115,3 +115,17 @@ export const applicationPostSchema = {
     },
   },
 };
+
+export const applicationEventHookSchema = {
+  body: {
+    type: "object",
+    properties: {
+      company_id: { type: "string" },
+      workspace_id: { type: "string" },
+      type: { type: "string" },
+      name: { type: "string" },
+      content: {},
+    },
+    required: ["company_id", "workspace_id", "type", "content"],
+  },
+};

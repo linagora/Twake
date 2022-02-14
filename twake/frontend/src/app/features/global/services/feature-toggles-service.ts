@@ -6,6 +6,7 @@ export enum FeatureNames {
   MULTIPLE_WORKSPACES = 'chat:multiple_workspaces',
   EDIT_FILES = 'chat:edit_files',
   UNLIMITED_STORAGE = 'chat:unlimited_storage', //Currently inactive
+  COMPANY_INVITE_MEMBER = 'company:invite_member',
 }
 
 export type FeatureValueType = boolean | number;
@@ -19,6 +20,7 @@ availableFeaturesWithDefaults.set(FeatureNames.MESSAGE_HISTORY_LIMIT, 10000);
 availableFeaturesWithDefaults.set(FeatureNames.MULTIPLE_WORKSPACES, true);
 availableFeaturesWithDefaults.set(FeatureNames.EDIT_FILES, true);
 availableFeaturesWithDefaults.set(FeatureNames.UNLIMITED_STORAGE, true);
+availableFeaturesWithDefaults.set(FeatureNames.COMPANY_INVITE_MEMBER, true);
 
 /**
  * Service that allow you to manage feature flipping in Twake using react feature toggles
@@ -31,6 +33,11 @@ class FeatureTogglesService {
     (window as any).FeatureTogglesService = this;
     this.activeFeatureNames = [];
     this.activeFeatureValues = new Map<FeatureNames, FeatureValueType>();
+
+    // We need to set with default features
+    this.setFeaturesFromCompanyPlan({
+      features: {},
+    });
   }
 
   public setFeaturesFromCompanyPlan(plan: { features: { [key: string]: FeatureValueType } }): void {

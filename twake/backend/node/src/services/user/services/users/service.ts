@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   CreateResult,
-  CrudExeption,
+  CrudException,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -32,6 +32,7 @@ import { PlatformServicesAPI } from "../../../../core/platform/services/platform
 import { isNumber } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";
 import { getUserRoom } from "../../realtime";
+import NodeCache from "node-cache";
 
 export class UserService implements UsersServiceAPI {
   version: "1";
@@ -40,6 +41,7 @@ export class UserService implements UsersServiceAPI {
   companyUserRepository: Repository<CompanyUser>;
   extUserRepository: Repository<ExternalUser>;
   private deviceRepository: Repository<Device>;
+  private cache: NodeCache;
 
   constructor(private platformServices: PlatformServicesAPI) {}
 
@@ -59,6 +61,8 @@ export class UserService implements UsersServiceAPI {
       DeviceType,
       Device,
     );
+
+    this.cache = new NodeCache({ stdTTL: 0.2, checkperiod: 120 });
 
     return this;
   }
@@ -199,11 +203,20 @@ export class UserService implements UsersServiceAPI {
       //@ts-ignore
       user.preferences[key] = preferences[key];
     }
+
+    await this.save(user);
     return user.preferences;
   }
 
   async get(pk: UserPrimaryKey): Promise<User> {
     return await this.repository.findOne(pk);
+  }
+
+  async getCached(pk: UserPrimaryKey): Promise<User> {
+    if (this.cache.has(pk.id)) return this.cache.get<User>(pk.id);
+    const entity = await this.get(pk);
+    this.cache.set<User>(pk.id, entity);
+    return entity;
   }
 
   async getByUsername(username: string): Promise<User> {
@@ -249,7 +262,7 @@ export class UserService implements UsersServiceAPI {
   async getUserDevices(userPrimaryKey: UserPrimaryKey): Promise<Device[]> {
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey} not found`);
     }
     if (!user.devices || user.devices.length == 0) {
       return [];
@@ -269,7 +282,7 @@ export class UserService implements UsersServiceAPI {
 
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey} not found`);
     }
     user.devices = user.devices || [];
     user.devices.push(id);
@@ -296,7 +309,7 @@ export class UserService implements UsersServiceAPI {
     const passwordEncoder = new PasswordEncoder();
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey.id} not found`);
     }
     user.password = await passwordEncoder.encodePassword(password);
     user.salt = null;
@@ -306,7 +319,7 @@ export class UserService implements UsersServiceAPI {
   async getHashedPassword(userPrimaryKey: UserPrimaryKey): Promise<[string, string]> {
     const user = await this.get(userPrimaryKey);
     if (!user) {
-      throw CrudExeption.notFound(`User ${userPrimaryKey.id} not found`);
+      throw CrudException.notFound(`User ${userPrimaryKey.id} not found`);
     }
 
     if (user.salt) {

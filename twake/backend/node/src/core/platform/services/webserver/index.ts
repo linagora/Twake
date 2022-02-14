@@ -89,7 +89,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
       exposeRoute: true,
     });
     this.server.register(jwtPlugin);
-    this.server.register(sensible);
+    this.server.register(sensible, { errorHandler: false });
     this.server.register(multipart);
     this.server.register(formbody);
     this.server.register(corsPlugin, this.configuration.get<FastifyCorsOptions>("cors", {}));

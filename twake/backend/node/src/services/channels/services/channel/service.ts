@@ -7,7 +7,7 @@ import {
   RealtimeUpdated,
 } from "../../../../core/platform/framework";
 import {
-  CrudExeption,
+  CrudException,
   DeleteResult,
   ListResult,
   OperationType,
@@ -136,7 +136,7 @@ export class Service implements ChannelService {
       channelToUpdate = await this.get(this.getPrimaryKey(channel));
 
       if (!channelToUpdate) {
-        throw CrudExeption.notFound("Channel not found");
+        throw CrudException.notFound("Channel not found");
       }
 
       const isChannelOwner = this.isChannelOwner(channelToUpdate, context.user);
@@ -156,13 +156,13 @@ export class Service implements ChannelService {
       const fields = Object.keys(channelDiff) as Array<Partial<keyof Channel>>;
 
       if (!fields.length) {
-        throw CrudExeption.badRequest("Nothing to update");
+        throw CrudException.badRequest("Nothing to update");
       }
 
       const updatableFields = fields.filter(field => updatableParameters[field]);
 
       if (!updatableFields.length) {
-        throw CrudExeption.badRequest("Current user can not update requested fields");
+        throw CrudException.badRequest("Current user can not update requested fields");
       }
 
       channelToSave = cloneDeep(channelToUpdate);
@@ -183,7 +183,7 @@ export class Service implements ChannelService {
 
     if (mode === OperationType.CREATE) {
       if (isPrivateChannel && isDefaultChannel) {
-        throw CrudExeption.badRequest("Private channel can not be default");
+        throw CrudException.badRequest("Private channel can not be default");
       }
 
       if (isDirectChannel) {
@@ -192,7 +192,7 @@ export class Service implements ChannelService {
 
         logger.info("Direct channel creation with members %o", options.members);
         if (context.workspace.workspace_id !== ChannelVisibility.DIRECT) {
-          throw CrudExeption.badRequest("Direct Channel creation error: bad workspace");
+          throw CrudException.badRequest("Direct Channel creation error: bad workspace");
         }
 
         const directChannel = await this.getDirectChannelInCompany(
@@ -220,12 +220,12 @@ export class Service implements ChannelService {
             return saveResult;
           } else {
             //Fixme: remove directChannel instance
-            throw CrudExeption.badRequest("table inconsistency");
+            throw CrudException.badRequest("table inconsistency");
           }
         }
       } else {
         if (!channel.name) {
-          throw CrudExeption.badRequest("'name' is required");
+          throw CrudException.badRequest("'name' is required");
         }
       }
 
@@ -272,7 +272,7 @@ export class Service implements ChannelService {
   async update(pk: ChannelPrimaryKey, channel: Channel): Promise<UpdateResult<ChannelObject>> {
     // TODO: Do the update by hand then save
     if (!pk.id) {
-      throw CrudExeption.badRequest("Channel id is required for update");
+      throw CrudException.badRequest("Channel id is required for update");
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -295,13 +295,13 @@ export class Service implements ChannelService {
     const channelToDelete = await this.channelRepository.findOne(this.getPrimaryKey(pk));
 
     if (!channelToDelete) {
-      throw new CrudExeption("Channel not found", 404);
+      throw new CrudException("Channel not found", 404);
     }
 
     const directChannel = isDirectChannel(channelToDelete);
 
     if (directChannel) {
-      throw new CrudExeption("Direct channel can not be deleted", 400);
+      throw new CrudException("Direct channel can not be deleted", 400);
     }
 
     const isWorkspaceAdmin =
@@ -310,7 +310,7 @@ export class Service implements ChannelService {
     const isChannelOwner = this.isChannelOwner(channelToDelete, context.user);
 
     if (!isWorkspaceAdmin && !isChannelOwner) {
-      throw new CrudExeption("Channel can not be deleted", 400);
+      throw new CrudException("Channel can not be deleted", 400);
     }
 
     await this.channelRepository.remove(channelToDelete);
@@ -536,13 +536,13 @@ export class Service implements ChannelService {
     const channel = await this.get(pk);
 
     if (!channel) {
-      throw CrudExeption.notFound("Channel not found");
+      throw CrudException.notFound("Channel not found");
     }
 
     const member = await this.channelService.members.isChannelMember(user, channel);
 
     if (!member) {
-      throw CrudExeption.badRequest("User is not channel member");
+      throw CrudException.badRequest("User is not channel member");
     }
 
     // Updating the member will also publish a message in the pubsub channel
@@ -565,13 +565,13 @@ export class Service implements ChannelService {
     const channel = await this.get(pk);
 
     if (!channel) {
-      throw CrudExeption.notFound("Channel not found");
+      throw CrudException.notFound("Channel not found");
     }
 
     const member = await this.channelService.members.isChannelMember(user, channel);
 
     if (!member) {
-      throw CrudExeption.badRequest("User is not channel member");
+      throw CrudException.badRequest("User is not channel member");
     }
 
     // do nothing here but send a notification so that notification service is updated...

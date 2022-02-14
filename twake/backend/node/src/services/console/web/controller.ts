@@ -12,7 +12,7 @@ import {
   ConsoleOptions,
 } from "../types";
 import Company from "../../user/entities/company";
-import { CrudExeption } from "../../../core/platform/framework/api/crud-service";
+import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import PasswordEncoder from "../../../utils/password-encoder";
 import { AccessToken } from "../../../utils/types";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
@@ -41,7 +41,7 @@ export class ConsoleController {
     } else if (request.body.email && request.body.password) {
       return { access_token: await this.authByPassword(request.body.email, request.body.password) };
     } else {
-      throw CrudExeption.badRequest("remote_access_token or email+password are required");
+      throw CrudException.badRequest("remote_access_token or email+password are required");
     }
   }
 
@@ -83,7 +83,7 @@ export class ConsoleController {
         if (!company) {
           const newCompany = getCompanyInstance({
             name: "Twake",
-            plan: { name: "Local", features: {} },
+            plan: { name: "Local", limits: undefined, features: undefined },
           });
           company = await this.userService.companies.createCompany(newCompany);
         }
@@ -203,7 +203,7 @@ export class ConsoleController {
           break;
         default:
           logger.info("Event not recognized");
-          throw CrudExeption.notImplemented("Unimplemented");
+          throw CrudException.notImplemented("Unimplemented");
       }
     } catch (e) {
       reply.status(400);
@@ -259,7 +259,7 @@ export class ConsoleController {
   private async authByPassword(email: string, password: string): Promise<AccessToken> {
     const user = await this.userService.users.getByEmail(email);
     if (!user) {
-      throw CrudExeption.forbidden("User doesn't exists");
+      throw CrudException.forbidden("User doesn't exists");
     }
 
     // allow to login in development mode with any password. This can be used to test without the console provider because the password is not stored locally...
@@ -269,7 +269,7 @@ export class ConsoleController {
       });
 
       if (!(await this.passwordEncoder.isPasswordValid(storedPassword, password, salt))) {
-        throw CrudExeption.forbidden("Password doesn't match");
+        throw CrudException.forbidden("Password doesn't match");
       }
     } else if (process.env.NODE_ENV === "development") {
       logger.warn("ERROR_NOTONPROD: YOU ARE RUNNING IN DEVELOPMENT MODE, AUTH IS DISABLED!!!");
@@ -286,7 +286,7 @@ export class ConsoleController {
     const userDTO = await client.getUserByAccessToken(accessToken);
     const user = await client.updateLocalUserFromConsole(userDTO._id);
     if (!user) {
-      throw CrudExeption.notFound(`User details not found for access token ${accessToken}`);
+      throw CrudException.notFound(`User details not found for access token ${accessToken}`);
     }
     return this.authService.generateJWT(user.id, user.email_canonical, {
       track: user?.preferences?.allow_tracking || false,

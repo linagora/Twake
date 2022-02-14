@@ -43,7 +43,10 @@ export interface TestPlatformConfiguration {
 
 let testPlatform: TestPlatform = null;
 
-export async function init(testConfig?: TestPlatformConfiguration): Promise<TestPlatform> {
+export async function init(
+  testConfig?: TestPlatformConfiguration,
+  prePlatformStartCallback?: (fastify: FastifyInstance) => void,
+): Promise<TestPlatform> {
   if (!testPlatform) {
     const configuration: TwakePlatformConfiguration = {
       services: config.get("services"),
@@ -52,9 +55,15 @@ export async function init(testConfig?: TestPlatformConfiguration): Promise<Test
     const platform = new TwakePlatform(configuration);
 
     await platform.init();
-    await platform.start();
 
     const app = platform.getProvider<WebServerAPI>("webserver").getServer();
+
+    if (prePlatformStartCallback) {
+      prePlatformStartCallback(app);
+    }
+
+    await platform.start();
+
     const database = platform.getProvider<DatabaseServiceAPI>("database");
     const pubsub = platform.getProvider<PubsubServiceAPI>("pubsub");
     const auth = platform.getProvider<AuthServiceAPI>("auth");

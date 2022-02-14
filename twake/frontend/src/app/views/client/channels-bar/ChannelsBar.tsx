@@ -22,18 +22,23 @@ import HiddenNotificationsButton from 'app/components/scroll-hidden-components/h
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import './ChannelsBar.scss';
 import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 import useChannelWritingActivity from 'app/features/channels/hooks/use-channel-writing-activity';
 import { useChannelsBarLoader } from 'app/features/channels/hooks/use-channels-bar-loader';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import { useSetLastWorkspacePreference } from 'app/features/users/hooks/use-set-last-workspace-preferences';
+
+import './ChannelsBar.scss';
 
 export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const { workspace } = useCurrentWorkspace();
+
+  useSetLastWorkspacePreference();
+
   useChannelWritingActivity();
   const { loading } = useChannelsBarLoader({ companyId, workspaceId });
 

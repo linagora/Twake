@@ -54,7 +54,9 @@ export default (props: PropsType): JSX.Element => {
     if (info.auth_required) {
       const origin = document.location.origin;
       const currentPage = document.location.href;
-      const authUrl = `${InitService.server_infos?.configuration?.accounts?.console?.authority}/oauth2/authorize?invite=0&redirect_uri=${origin}`;
+      const authUrl = `${
+        InitService.server_infos?.configuration?.accounts?.console?.authority
+      }/oauth2/authorize?invite=1&redirect_uri=${encodeURIComponent(origin)}`;
       setCookie('pending-redirect', currentPage, { path: '/', maxAge: 60 * 60 });
       setBusy(true);
       document.location.href = authUrl;
@@ -77,7 +79,13 @@ export default (props: PropsType): JSX.Element => {
   };
 
   const onCreateCompanyBtnClick = () => {
-    console.log('onCreateCompanyBtnClick');
+    if (InitService.server_infos?.configuration?.accounts?.type === 'console') {
+      return document.location.replace(
+        InitService.server_infos?.configuration?.accounts?.console?.account_management_url || '',
+      );
+    } else {
+      document.location.replace('/');
+    }
   };
 
   return (

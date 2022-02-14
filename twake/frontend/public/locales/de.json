@@ -866,5 +866,8 @@
     "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "Kein Benutzer gefunden",
     "scenes.app.channelsbar.currentuser.reset": "Zurücksetzen",
     "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Keine Emojis gefunden",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Kein Befehl gefunden"
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Kein Befehl gefunden",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "Ihr Unternehmen hat die maximale Anzahl von {{$1}} Mitgliedern erreicht. Bitte ",
+    "components.locked_features_components.locked_invite_alert.message_link": "aktualisieren Sie Ihr Unternehmen",
+    "components.locked_features_components.locked_invite_alert.message_part_2": ", um weitere Mitglieder einzuladen."
 }

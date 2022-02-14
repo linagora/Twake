@@ -18,14 +18,14 @@ const services = [
   "pubsub",
   "platform-services",
   "applications",
-  // "auth",
-  // "realtime",
-  // "websocket",
-  // "user",
+  "auth",
+  "realtime",
+  "websocket",
+  "user",
   "search",
   "database",
   "webserver",
-  // "statistics",
+  "statistics",
 ];
 
 const command: yargs.CommandModule<unknown, CLIArgs> = {

@@ -1,7 +1,7 @@
 export default {
-  current: /* @VERSION_DETAIL */ "2021.Q4.860",
+  current: /* @VERSION_DETAIL */ "2022.Q1.874",
   minimal: {
-    web: /* @MIN_VERSION_WEB */ "2021.Q4.860",
-    mobile: /* @MIN_VERSION_MOBILE */ "2021.Q4.860",
+    web: /* @MIN_VERSION_WEB */ "2022.Q1.874",
+    mobile: /* @MIN_VERSION_MOBILE */ "2022.Q1.874",
   },
 };

@@ -1,3 +1,18 @@
+# Twake 2022.Q1.874
+
+### Messages
+
+- Faster loading of message feed
+- Fix message input issues
+
+### General
+
+- Reduce magic links invite urls
+- Fix guest popup not visible on paid plans
+- Fix company owners and admins not able to manage workspaces
+- Fix channels members counters
+- Migrate channels to recoil state management for more stable channels (favorite, rename, create, join etc)
+
 # Twake 2021.Q4.860
 
 ### Messages

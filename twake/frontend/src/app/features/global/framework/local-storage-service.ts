@@ -34,7 +34,7 @@ export default class LocalStorage {
             'jwt',
             'autoload_workspaces',
             'oidc.',
-          ].indexOf(key) >= 0 || key.indexOf(':channel') > 0;
+          ].some(m => key.indexOf(m) === 0) || key.indexOf(':channel') > 0;
         if (key.indexOf(LocalStorage.prefix) === 0 || depreciatedKeysRemove)
           window.localStorage.removeItem(key);
       }

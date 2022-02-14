@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
-  CrudExeption,
+  CrudException,
   ExecutionContext,
   ListResult,
   Pagination,
@@ -59,7 +59,7 @@ export class UsersCrudController
     const user = await this.service.users.get({ id: id }, getExecutionContext(request));
 
     if (!user) {
-      throw CrudExeption.notFound(`User ${id} not found`);
+      throw CrudException.notFound(`User ${id} not found`);
     }
 
     const userObject = await this.service.formatUser(user, {
@@ -157,7 +157,7 @@ export class UsersCrudController
     const user = await this.service.users.get({ id: request.params.id }, context);
 
     if (!user) {
-      throw CrudExeption.notFound(`User ${request.params.id} not found`);
+      throw CrudException.notFound(`User ${request.params.id} not found`);
     }
 
     const [currentUserCompanies, requestedUserCompanies] = await Promise.all(
@@ -203,7 +203,7 @@ export class UsersCrudController
     const context = getExecutionContext(request);
 
     if (!company) {
-      throw CrudExeption.notFound(`Company ${request.params.id} not found`);
+      throw CrudException.notFound(`Company ${request.params.id} not found`);
     }
 
     let companyUserObj: CompanyUserObject | null = null;
@@ -245,7 +245,7 @@ export class UsersCrudController
   ): Promise<ResourceGetResponse<RegisterDeviceParams>> {
     const resource = request.body.resource;
     if (resource.type !== "FCM") {
-      throw CrudExeption.badRequest("Type should be FCM only");
+      throw CrudException.badRequest("Type should be FCM only");
     }
     const context = getExecutionContext(request);
 
