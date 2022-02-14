@@ -97,14 +97,14 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     this.logger = Logger.getLogger(`MessageLoader/${this.channel.id}`);
     this.collection = DepreciatedCollections.get('messages');
     this.initialDirection = 'up';
-    this.onNewMessageFromWebsocketListener = this.onNewMessageFromWebsocketListener.bind(this);
+    this.onNewMessageFromobilesocketListener = this.onNewMessageFromobilesocketListener.bind(this);
   }
 
   async init(params: InitParameters = { direction: 'up' }): Promise<FeedResponse<Message>> {
     this.pageSize = params.pageSize || DEFAULT_PAGE_SIZE;
     this.initialDirection = params.direction ? params.direction : this.initialDirection;
     // FIXME: When not destroyed and calling init again and again, we stack many listeners
-    this.collection.addListener(this.onNewMessageFromWebsocketListener);
+    this.collection.addListener(this.onNewMessageFromobilesocketListener);
 
     if (this.httpLoading) {
       this.logger.warn('Init in progress, skipping');
@@ -429,11 +429,11 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
       }
     });
 
-    newUnknownMessages.forEach(m => this.onNewMessageFromWebsocket(m));
+    newUnknownMessages.forEach(m => this.onNewMessageFromobilesocket(m));
     return newUnknownMessages;
   }
 
-  private onNewMessageFromWebsocketListener(_event: any): void {
+  private onNewMessageFromobilesocketListener(_event: any): void {
     const newMessages = this.detectNewWebsocketsMessages(
       this.collection.findBy(
         {
@@ -448,7 +448,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
     }
   }
 
-  private onNewMessageFromWebsocket(message: Message) {
+  private onNewMessageFromobilesocket(message: Message) {
     // simply update the first and last messages and not the pagination
     this.updateFirstLast([message]);
   }
@@ -551,7 +551,7 @@ export class MessageLoader extends Observable implements FeedLoader<Message> {
   destroy(force?: boolean): void {
     this.logger.debug('Destroying message loader for channel', this.channel.data.id);
     this.httpLoading = false;
-    this.collection.removeListener(this.onNewMessageFromWebsocketListener);
+    this.collection.removeListener(this.onNewMessageFromobilesocketListener);
     if (force) {
       // This has to be used carefully: There is a big timeout on source removal: 10 seconds
       // If removed, we can not switch back to a channel before this delay.
