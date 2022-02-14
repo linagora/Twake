@@ -17,7 +17,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
-import { pick } from "lodash";
+import { create, pick } from "lodash";
+import { ConsoleCompany } from "../../../console/types";
 
 export class WorkspaceInviteTokensCrudController
   implements
@@ -77,7 +78,7 @@ export class WorkspaceInviteTokensCrudController
     const tokenInfo = this.services.workspaces.decodeInviteToken(request.params.token);
 
     if (!tokenInfo) {
-      throw CrudException.notFound("Invite token malformed: " + request.params.token);
+      throw CrudException.notFound("Invite token malformed");
     }
 
     const deleted = await this.services.workspaces.deleteInviteToken(
@@ -126,24 +127,52 @@ export class WorkspaceInviteTokensCrudController
       resource.auth_required = true;
     } else {
       if (request.body.join) {
-        const user_id = request.currentUser.id;
+        const userId = request.currentUser.id;
 
-        const companyUser = await this.services.companies.getCompanyUser(
+        let companyUser = await this.services.companies.getCompanyUser(
           { id: company_id },
-          { id: user_id },
+          { id: userId },
         );
         if (!companyUser) {
-          await this.services.companies.setUserRole(company_id, user_id, "member");
+          const createdConsoleUser = await this.services.console
+            .getClient()
+            .addUserToCompany(
+              { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
+              {
+                id: userId,
+                email: request.currentUser.email,
+                password: null,
+                firstName: null,
+                lastName: null,
+                name: null,
+                avatar: {
+                  type: null,
+                  value: null,
+                },
+                role: "member",
+                skipInvite: true,
+              },
+            );
+          await this.services.console
+            .getClient()
+            .updateLocalUserFromConsole(createdConsoleUser._id);
+          companyUser = await this.services.companies.getCompanyUser(
+            { id: company_id },
+            { id: userId },
+          );
+        }
+        if (!companyUser) {
+          throw CrudException.badRequest("Unable to add user to the company");
         }
 
         const workspaceUser = await this.services.workspaces.getUser({
           workspaceId: workspace.id,
-          userId: user_id,
+          userId: userId,
         });
         if (!workspaceUser) {
           await this.services.workspaces.addUser(
             pick(workspace, ["company_id", "id"]),
-            { id: user_id },
+            { id: userId },
             "member",
           );
         }
