@@ -14,11 +14,11 @@ export default {
   front_root_url: 'https://web.twake.app',
   api_root_url: 'https://api.twake.app',
   websocket_url: 'wss://api.twake.app',
-  mobile_domain: 'mweb.twake.app',
+  mobile_redirect: 'mobile.twake.app',
   mobile_appstore: 'https://apps.apple.com/fr/app/twake/id1588764852?l=en',
   mobile_googleplay: 'https://play.google.com/store/apps/details?id=com.twake.twake&gl=FR'
 };
 
 In this form:
-"export default { env_dev: false, front_root_url: 'https://web.twake.app', api_root_url: 'https://web.twake.app', websocket_url: 'wss://web.twake.app', mobile_domain: 'mweb.twake.app', mobile_appstore: 'https://apps.apple.com/fr/app/twake/id1588764852?l=en',  mobile_googleplay: 'https://play.google.com/store/apps/details?id=com.twake.twake&gl=FR' };"
+"export default { env_dev: false, front_root_url: 'https://web.twake.app', api_root_url: 'https://web.twake.app', websocket_url: 'wss://web.twake.app', mobile_redirect: 'mobile.twake.app', mobile_appstore: 'https://apps.apple.com/fr/app/twake/id1588764852?l=en',  mobile_googleplay: 'https://play.google.com/store/apps/details?id=com.twake.twake&gl=FR' };"
 */
