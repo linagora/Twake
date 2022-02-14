@@ -1,9 +1,11 @@
 import React, { ReactNode, useState } from 'react';
 import { getDevice } from '../../features/global/utils/device';
-import environment from '../../environment/environment';
+import configuration from '../../environment/environment';
 import { Smartphone, X } from 'react-feather';
 import './style.scss';
 import { Button } from 'antd';
+
+const environment = configuration as any;
 
 export default function MobileRedirect(props: { children: ReactNode }) {
   const os = getDevice();
