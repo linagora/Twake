@@ -41,3 +41,10 @@ export function getInstance(
 ): WorkspaceUser {
   return merge(new WorkspaceUser(), workspaceUser);
 }
+
+
+export function formatWorkspaceUser(workspaceUser: WorkspaceUser): WorkspaceUser {
+  if (!workspaceUser) return workspaceUser;
+  workspaceUser.role = workspaceUser.role || "member";
+  return workspaceUser;
+}
