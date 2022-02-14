@@ -1,3 +1,4 @@
+import { CompanyType } from 'app/features/companies/types/company';
 import Api from 'app/features/global/framework/api-service';
 
 export type MagicLinksGeneratorResponse = {
@@ -37,8 +38,10 @@ export class MagicLinksGeneratorService {
 
 export type MagicLinksJoinResponse = {
   company: {
-    id: string;
-    name: string;
+    id: CompanyType['id'];
+    name: CompanyType['name'];
+    stats: CompanyType['stats'];
+    plan: CompanyType['plan'];
   };
   workspace: {
     id: string;

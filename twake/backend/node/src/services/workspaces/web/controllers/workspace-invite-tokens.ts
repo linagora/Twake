@@ -17,8 +17,9 @@ import { FastifyReply, FastifyRequest } from "fastify";
 
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
-import { create, pick } from "lodash";
+import { pick } from "lodash";
 import { ConsoleCompany } from "../../../console/types";
+import { formatCompany, getCompanyStats } from "../../../../services/user/utils";
 
 export class WorkspaceInviteTokensCrudController
   implements
@@ -116,9 +117,14 @@ export class WorkspaceInviteTokensCrudController
         id: workspace_id,
       }),
     ]);
+    const total_messages = await this.services.statistics.get(company.id, "messages");
 
     const resource: WorkspaceJoinByTokenResponse = {
-      company: { name: company.name },
+      company: {
+        name: company.name,
+        stats: formatCompany(company, undefined, getCompanyStats(company, total_messages))?.stats,
+        plan: formatCompany(company, undefined, getCompanyStats(company, total_messages))?.plan,
+      },
       workspace: { name: workspace.name },
       auth_required: false,
     };
