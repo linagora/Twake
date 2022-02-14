@@ -142,7 +142,7 @@ export default class Viewer extends Component<PropsType, StateType> {
                 menu={editor_candidate.map((editor: { [key: string]: any }) => {
                   return {
                     type: 'menu',
-                    text: editor?.app?.name || editor.name,
+                    text: editor?.app?.identity?.name || editor?.app?.name || editor.name,
                     onClick: () => {
                       this.openFile(editor);
                     },
