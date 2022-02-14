@@ -206,7 +206,7 @@ export class Service implements MemberService {
         (memberToSave as any)[field] = member[field];
       });
 
-      await this.userChannelsRepository.save(memberToSave);
+      await this.saveChannelMember(memberToSave);
       this.onUpdated(
         context.channel,
         memberToSave,
@@ -232,12 +232,7 @@ export class Service implements MemberService {
         (isDirectChannel && userIsDefinedInChannelUserList)
       ) {
         const memberToSave = { ...member, ...context.channel };
-        const userChannel = getChannelMemberInstance(pick(memberToSave, ...USER_CHANNEL_KEYS));
-        const channelMember = getMemberOfChannelInstance(
-          pick(memberToSave, ...CHANNEL_MEMBERS_KEYS),
-        );
-        await this.userChannelsRepository.save(userChannel);
-        await this.channelMembersRepository.save(channelMember);
+        await this.saveChannelMember(memberToSave);
 
         await this.usersCounterIncrease(channel, member.user_id);
         this.onCreated(
@@ -247,7 +242,9 @@ export class Service implements MemberService {
           new CreateResult<ChannelMember>("channel_member", memberToSave),
         );
       } else {
-        throw CrudException.badRequest(`User ${member.user_id} is not allowed to join this channel`);
+        throw CrudException.badRequest(
+          `User ${member.user_id} is not allowed to join this channel`,
+        );
       }
     }
 
@@ -622,5 +619,12 @@ export class Service implements MemberService {
 
   async isCompanyMember(companyId: string, userId: string): Promise<boolean> {
     return (await this.companies.getUserRole(companyId, userId)) != "guest";
+  }
+
+  private async saveChannelMember(memberToSave: ChannelMember & Channel) {
+    const userChannel = getChannelMemberInstance(pick(memberToSave, ...USER_CHANNEL_KEYS));
+    const channelMember = getMemberOfChannelInstance(pick(memberToSave, ...CHANNEL_MEMBERS_KEYS));
+    await this.userChannelsRepository.save(userChannel);
+    await this.channelMembersRepository.save(channelMember);
   }
 }
