@@ -13,6 +13,7 @@ import './AddUser.scss';
 import LockedInviteAlert from 'app/components/locked-features-components/locked-invite-alert';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 type PropsType = {
   [key: string]: any;
@@ -28,6 +29,7 @@ export default (props: PropsType): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const [emails, _setEmails] = useState<string[]>([]);
 
+  const { company } = useCurrentCompany();
   const setEmails = (str: string) => _setEmails(WorkspacesUsers.fullStringToEmails(str));
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setEmails(e.target.value);
@@ -78,7 +80,7 @@ export default (props: PropsType): JSX.Element => {
 
       {!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER) && (
         <div style={{ maxWidth: 328 }}>
-          <LockedInviteAlert />
+          <LockedInviteAlert company={company} />
         </div>
       )}
 
