@@ -4,7 +4,7 @@ import {
   ChannelMemberRole,
   ChannelMemberType,
 } from 'app/features/channel-members/types/channel-member-types';
-import { isGuestMember } from '../utils/channel-members-roles';
+import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 
 type ChannelMembersSaveRequest = { resource: Partial<ChannelMemberType> };
 type ChannelMembersSaveResponse = { resource: ChannelMemberType };
@@ -12,6 +12,22 @@ type ChannelMembersSaveResponse = { resource: ChannelMemberType };
 @TwakeService('ChannelMembersAPIClientService')
 class ChannelMembersAPIClientService {
   private readonly prefix = '/internal/services/channels/v1/companies';
+  private realtime: Map<
+    { companyId: string; workspaceId: string; channelId: string },
+    WebsocketRoom[]
+  > = new Map();
+
+  websocket({
+    companyId,
+    workspaceId,
+    channelId,
+  }: {
+    companyId: string;
+    workspaceId: string;
+    channelId: string;
+  }): WebsocketRoom[] {
+    return this.realtime.get({ companyId, workspaceId, channelId }) || [];
+  }
 
   /**
    * Every member of the channel can list members of the channel.
@@ -26,11 +42,14 @@ class ChannelMembersAPIClientService {
     context: { companyId: string; workspaceId: string; channelId: string },
     filters?: { role: ChannelMemberRole },
   ) {
-    return Api.get<{ resources: ChannelMemberType[] }>(
+    return Api.get<{ resources: ChannelMemberType[]; websockets: WebsocketRoom[] }>(
       `${this.prefix}/${context.companyId}/workspaces/${context.workspaceId}/channels/${
         context.channelId
-      }/members${filters?.role ? `?company_role=${filters.role}` : ''}`,
-    ).then(result => result.resources);
+      }/members${filters?.role ? `?company_role=${filters.role}` : ''}?websockets=1`,
+    ).then(result => {
+      result.websockets && this.realtime.set(context, result.websockets);
+      return result.resources;
+    });
   }
 
   /**

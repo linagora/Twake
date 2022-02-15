@@ -8,6 +8,7 @@ import { ChannelMembersState } from 'app/features/channel-members/state/channel-
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import ChannelMembersAPIClient from '../api/channel-members-api-client';
+import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 
 export const useChannelMembers = (
   key: AtomChannelMembersKey,
@@ -42,7 +43,11 @@ export const useChannelMembers = (
     [key, channelMembers],
   );
 
-  // useRealTimeHook
+  const room = ChannelMembersAPIClient.websocket(key)[0];
+
+  useRealtimeRoom<ChannelMemberType[]>(room, 'useChannelMembers', (_action, _resource) => {
+    refresh();
+  });
 
   return {
     channelMembers,
