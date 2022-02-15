@@ -11,6 +11,10 @@ import {
 import Languages from 'app/features/global/services/languages-service';
 import RouterService from 'app/features/router/services/router-service';
 import InitService from 'app/features/global/services/init-service';
+import LockedInviteAlert from 'app/components/locked-features-components/locked-invite-alert';
+import FeatureTogglesService, {
+  FeatureNames,
+} from 'app/features/global/services/feature-toggles-service';
 
 import './styles.scss';
 
@@ -128,13 +132,24 @@ export default (props: PropsType): JSX.Element => {
                   </span>
                 </Title>
                 <Text>{Languages.t('scenes.join.twake_description')}</Text>
+
+                {info?.company &&
+                !FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER) ? (
+                  <div style={{ maxWidth: 400 }}>
+                    <LockedInviteAlert company={info?.company} magicLink />
+                  </div>
+                ) : (
+                  <></>
+                )}
                 <Divider />
                 {info.auth_required ? (
                   <Button
-                    disabled={busy}
+                    disabled={
+                      busy ||
+                      !FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER)
+                    }
                     loading={busy}
                     type="primary"
-                    className="gray-btn"
                     onClick={onJoinAccountBtnClick}
                   >
                     {Languages.t('scenes.join.login_first_button')}
