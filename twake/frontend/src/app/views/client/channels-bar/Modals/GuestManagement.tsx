@@ -12,8 +12,8 @@ import Languages from 'app/features/global/services/languages-service';
 import { usePendingEmails } from 'app/features/pending-emails/hooks/use-pending-emails';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import { useChannelMembers } from 'app/features/channel-members/hooks/use-channel-members';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
+import { useChannelGuests } from 'app/features/channel-members/hooks/use-channel-guests';
 
 type PropsType = {
   channel: ChannelType;
@@ -31,7 +31,7 @@ export default ({ channel }: PropsType): JSX.Element => {
     workspaceId,
     channelId: channel.id || '',
   });
-  const { channelMembers } = useChannelMembers({
+  const { channelGuests } = useChannelGuests({
     companyId,
     workspaceId,
     channelId: channel.id || '',
@@ -40,7 +40,7 @@ export default ({ channel }: PropsType): JSX.Element => {
   GuestManagementService.bind({
     search,
     pendingEmails: pendingEmails.map(o => o),
-    channelMembers: channelMembers.map(o => o).filter(m => m.type === 'guest'),
+    channelMembers: channelGuests.map(o => o),
   });
 
   const { list } = GuestManagementService;

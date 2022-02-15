@@ -1,6 +1,9 @@
 import Api from '../../global/framework/api-service';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
-import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
+import {
+  ChannelMemberRole,
+  ChannelMemberType,
+} from 'app/features/channel-members/types/channel-member-types';
 import { isGuestMember } from '../utils/channel-members-roles';
 
 type ChannelMembersSaveRequest = { resource: Partial<ChannelMemberType> };
@@ -21,15 +24,13 @@ class ChannelMembersAPIClientService {
    */
   async list(
     context: { companyId: string; workspaceId: string; channelId: string },
-    filters?: { guestOnly: boolean },
+    filters?: { role: ChannelMemberRole },
   ) {
     return Api.get<{ resources: ChannelMemberType[] }>(
-      `${this.prefix}/${context.companyId}/workspaces/${context.workspaceId}/channels/${context.channelId}/members`,
-    ).then(result =>
-      filters?.guestOnly // TO REMOVE add filter param in backend instead
-        ? result.resources.filter(m => m.type && isGuestMember(m.type))
-        : result.resources,
-    );
+      `${this.prefix}/${context.companyId}/workspaces/${context.workspaceId}/channels/${
+        context.channelId
+      }/members${filters?.role ? `?company_role=${filters.role}` : ''}`,
+    ).then(result => result.resources);
   }
 
   /**
