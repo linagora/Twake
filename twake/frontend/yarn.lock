@@ -13909,7 +13909,7 @@ react-google-login@^5.1.1:
     "@types/react" "*"
     prop-types "^15.6.0"
 
-react-i18next@^11.11.1:
+react-i18next@^11.15.3:
   version "11.15.4"
   resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-11.15.4.tgz#fe0c792ea93f038548e838cecae3ed4173822937"
   integrity sha512-jKJNAcVcbPGK+yrTcXhLblgPY16n6NbpZZL3Mk8nswj1v3ayIiUBVDU09SgqnT+DluyQBS97hwSvPU5yVFG0yg==
