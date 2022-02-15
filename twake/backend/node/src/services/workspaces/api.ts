@@ -22,12 +22,14 @@ import { ConsoleServiceAPI } from "../console/api";
 import { InviteTokenObject, WorkspaceInviteTokenObject } from "./web/types";
 import WorkspaceInviteTokens from "./entities/workspace_invite_tokens";
 import { Readable } from "stream";
+import { StatisticsAPI } from "../statistics/types";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
   workspaces: WorkspaceServiceAPI;
   companies: CompaniesServiceAPI;
   users: UsersServiceAPI;
   console: ConsoleServiceAPI;
+  statistics: StatisticsAPI;
 }
 
 export interface WorkspaceServiceAPI

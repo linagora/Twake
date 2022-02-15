@@ -869,5 +869,6 @@
     "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Kein Befehl gefunden",
     "components.locked_features_components.locked_invite_alert.message_part_1": "Ihr Unternehmen hat die maximale Anzahl von {{$1}} Mitgliedern erreicht. Bitte ",
     "components.locked_features_components.locked_invite_alert.message_link": "aktualisieren Sie Ihr Unternehmen",
-    "components.locked_features_components.locked_invite_alert.message_part_2": ", um weitere Mitglieder einzuladen."
+    "components.locked_features_components.locked_invite_alert.message_part_2": ", um weitere Mitglieder einzuladen.",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " wenden Sie sich an den Eigentümer oder Verwalter Ihres Unternehmens."
 }

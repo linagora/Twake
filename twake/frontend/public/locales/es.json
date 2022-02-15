@@ -868,5 +868,6 @@
     "scenes.app.channelsbar.currentuser.reset": "Reiniciar",
     "components.locked_features_components.locked_invite_alert.message_part_1": "Su empresa ha alcanzado el número máximo de {{$1}} miembros. Por favor, ",
     "components.locked_features_components.locked_invite_alert.message_link": "actualice su empresa",
-    "components.locked_features_components.locked_invite_alert.message_part_2": " para invitar a más miembros."
+    "components.locked_features_components.locked_invite_alert.message_part_2": " para invitar a más miembros.",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " entre en contacto con el propietario o administrador de su empresa."
 }

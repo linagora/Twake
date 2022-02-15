@@ -1,6 +1,12 @@
 import { PaginationQueryParameters, uuid } from "../../../utils/types";
 import { WorkspaceUserRole } from "../types";
-import { CompanyUserRole, UserObject } from "../../user/web/types";
+import {
+  CompanyPlanObject,
+  CompanyStatsObject,
+  CompanyUserRole,
+  UserObject,
+} from "../../user/web/types";
+import Company from "../../user/entities/company";
 
 export interface WorkspaceRequest extends WorkspaceBaseRequest {
   id: uuid;
@@ -121,8 +127,10 @@ export interface WorkspaceJoinByTokenRequest extends WorkspaceBaseRequest {
 
 export interface WorkspaceJoinByTokenResponse {
   company: {
-    id?: string;
-    name: string;
+    id?: Company["id"];
+    name: Company["name"];
+    stats?: CompanyStatsObject;
+    plan?: CompanyPlanObject;
   };
   workspace: {
     id?: string;
