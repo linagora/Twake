@@ -17,6 +17,12 @@
     .list {
       padding-top: 20px;
       width: 100%;
+
+      &:not(.ps--scrolling-y) {
+        .ps__rail-y {
+          display: none;
+        }
+      }
     }
   }
 }
