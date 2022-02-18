@@ -43,6 +43,7 @@ export class WorkspaceInviteTokensCrudController
     const res = await this.services.workspaces.getInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!res) {
@@ -63,6 +64,7 @@ export class WorkspaceInviteTokensCrudController
     const res = await this.services.workspaces.createInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     return {
@@ -85,6 +87,7 @@ export class WorkspaceInviteTokensCrudController
     const deleted = await this.services.workspaces.deleteInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!deleted) {
@@ -140,6 +143,8 @@ export class WorkspaceInviteTokensCrudController
           { id: userId },
         );
         if (!companyUser) {
+          const inviter = await this.services.users.get({ id: entity.user_id });
+
           const createdConsoleUser = await this.services.console
             .getClient()
             .addUserToCompany(
@@ -157,6 +162,7 @@ export class WorkspaceInviteTokensCrudController
                 },
                 role: "member",
                 skipInvite: true,
+                inviterEmail: inviter.email_canonical,
               },
             );
           await this.services.console
