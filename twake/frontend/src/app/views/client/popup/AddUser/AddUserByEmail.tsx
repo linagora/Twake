@@ -72,7 +72,7 @@ export default (props: PropsType): JSX.Element => {
     if (!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER))
       setDisabled(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [company]);
+  }, [company.stats?.total_members]);
 
   return (
     <div className="add-user-from-twake-console">
