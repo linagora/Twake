@@ -111,6 +111,7 @@ export interface WorkspaceInviteTokenObject {
 export interface InviteTokenObject {
   c: string;
   w: string;
+  u: string;
   t: string;
 }
 
