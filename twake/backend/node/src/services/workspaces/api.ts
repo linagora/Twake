@@ -122,11 +122,19 @@ export interface WorkspaceServiceAPI
     workspaceUserPk: WorkspacePendingUserPrimaryKey,
   ): Promise<DeleteResult<WorkspacePendingUserPrimaryKey>>;
 
-  getInviteToken(companyId: string, workspaceId: string): Promise<WorkspaceInviteTokenObject>;
-  createInviteToken(companyId: string, workspaceId: string): Promise<WorkspaceInviteTokenObject>;
-  deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean>;
+  getInviteToken(
+    companyId: string,
+    workspaceId: string,
+    userId: string,
+  ): Promise<WorkspaceInviteTokenObject>;
+  createInviteToken(
+    companyId: string,
+    workspaceId: string,
+    userId: string,
+  ): Promise<WorkspaceInviteTokenObject>;
+  deleteInviteToken(companyId: string, workspaceId: string, userId: string): Promise<boolean>;
   getInviteTokenInfo(jwtToken: string): Promise<WorkspaceInviteTokens>;
 
-  encodeInviteToken(companyId: string, workspaceId: string, token: string): string;
+  encodeInviteToken(companyId: string, workspaceId: string, userId: string, token: string): string;
   decodeInviteToken(encodedToken: string): InviteTokenObject;
 }
