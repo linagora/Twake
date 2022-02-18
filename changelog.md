@@ -1,3 +1,19 @@
+# Twake 2022.Q1.890
+
+### Messages
+
+- Shows that the last message was deleted on mobile channel list view
+- Now we can cancel failed file uploads
+
+### General
+
+- Save the user last visited companies to open them again after logout
+- Fixed magic links
+- Show a popup to decide to continue on web or open the mobile app
+- Notice users that the company reached the maximum number of users
+- Fixed some issues with workspace invitation
+- Minor bugs fixed
+
 # Twake 2022.Q1.874
 
 ### Messages
