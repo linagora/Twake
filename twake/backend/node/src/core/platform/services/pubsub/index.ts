@@ -84,6 +84,7 @@ export class PubsubService implements PubsubServiceAPI {
   }
 
   publish<T>(topic: string, message: PubsubMessage<T>): Promise<void> {
+    console.log("in publish", topic, message);
     return this.adapter.publish(topic, message);
   }
 

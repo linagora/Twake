@@ -539,13 +539,20 @@ export class Service implements MemberService {
   ): void {
     logger.debug("Member created %o", member);
 
-    this.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:deleted", {
-      data: {
-        channel,
-        user,
-        member,
-      },
-    });
+    this.platformServices.pubsub
+      .publish<ResourceEventsPayload>("channel:member:deleted", {
+        data: {
+          channel,
+          user,
+          member,
+        },
+      })
+      .then(() => {
+        logger.debug("Should have published to channel:member:deleted now %o", member);
+      })
+      .catch(err => {
+        logger.debug(err);
+      });
 
     localEventBus.publish<ResourceEventsPayload>("channel:member:created", {
       channel,
