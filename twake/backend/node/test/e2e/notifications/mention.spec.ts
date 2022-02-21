@@ -18,6 +18,7 @@ import {
 } from "../../../src/core/platform/services/pubsub/api";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { MentionNotification } from "../../../src/services/notifications/types";
+import { threadId } from "worker_threads";
 
 describe("The notification for user mentions", () => {
   let platform: TestPlatform;
@@ -184,6 +185,7 @@ describe("The notification for user mentions", () => {
   });
 
   it("should not mention users with preferences ALL for replies of threads there are not member of", async done => {
+    const threadId = uuidv1();
     const messageId = uuidv1();
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
@@ -196,7 +198,7 @@ describe("The notification for user mentions", () => {
       creation_date: Date.now(),
       id: messageId,
       sender: platform.currentUser.id,
-      thread_id: messageId, //Only thread initial messages generate notifications
+      thread_id: threadId,
       workspace_id: channel.workspace_id,
       mentions: {
         users: [member.user_id, member2.user_id],
@@ -341,8 +343,8 @@ describe("The notification for user mentions", () => {
     await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
 
     await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
-    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.ME);
+    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
 
     await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
 
@@ -358,7 +360,7 @@ describe("The notification for user mentions", () => {
         users: [member2.user_id],
       },
       title: "test",
-      text: "should mention user when notification level is set to ME",
+      text: "should mention user when notification level is set to ME and updated notification later",
     });
 
     const message = await new Promise<IncomingPubsubMessage<MentionNotification>>(

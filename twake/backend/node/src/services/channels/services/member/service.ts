@@ -522,7 +522,7 @@ export class Service implements MemberService {
   ): void {
     logger.debug("Member updated %o", member);
 
-    localEventBus.publish("channel:member:updated", {
+    this.platformServices.pubsub.publish("channel:member:updated", {
       data: {
         channel,
         member,
