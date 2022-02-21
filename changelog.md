@@ -4,6 +4,7 @@
 
 - Shows that the last message was deleted on mobile channel list view
 - Now we can cancel failed file uploads
+- Add spell check to message editor
 
 ### General
 
