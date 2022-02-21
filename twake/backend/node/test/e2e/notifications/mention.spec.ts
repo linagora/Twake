@@ -256,7 +256,7 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
 
-    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
+    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.NONE);
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
