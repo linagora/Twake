@@ -13,6 +13,7 @@ import { MessageServiceAPI } from "../../../services/messages/api";
 import { Thread } from "../../../services/messages/entities/threads";
 import { Message } from "../../../services/messages/entities/messages";
 import { MessageWithReplies } from "../../../services/messages/types";
+import { formatCompany } from "../../../services/user/utils";
 
 /**
  * Merge command parameters. Check the builder definition below for more details.
@@ -73,7 +74,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
 
     //Company
     console.log(`- Create company json file`);
-    writeFileSync(`${output}/company.json`, JSON.stringify(userService.formatCompany(company)));
+    writeFileSync(`${output}/company.json`, JSON.stringify(formatCompany(company)));
 
     //Workspaces
     console.log(`- Create workspaces json file`);

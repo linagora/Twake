@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import useWebSocket from "app/features/global/hooks/use-websocket";
-import Logger from "app/features/global/framework/logger-service";
-import { RealtimeBaseAction, RealtimeBaseEvent, RealtimeResourceEvent } from "../types/realtime-types";
-import { WebsocketRoom } from "app/features/global/types/websocket-types";
-
+import { useEffect, useRef, useState } from 'react';
+import useWebSocket from 'app/features/global/hooks/use-websocket';
+import Logger from 'app/features/global/framework/logger-service';
+import {
+  RealtimeBaseAction,
+  RealtimeBaseEvent,
+  RealtimeResourceEvent,
+} from '../types/realtime-types';
+import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 
 const logger = Logger.getLogger('useRealtimeRoom');
 
@@ -12,8 +15,6 @@ export type RealtimeRoomService<T> = {
   send: (data: T) => void;
   emit: (event: string, data: T) => void;
 };
-
-
 
 /**
  * Subscribe to a room using websocket channel.
@@ -56,26 +57,24 @@ const useRealtimeRoom = <T>(
 
   useEffect(() => {
     if (room && room.room && websocket && !subscribed.current) {
-      websocket.join(
-        room.room,
-        room.token,
-        tag,
-        (type: string, event:  RealtimeBaseEvent) => {
-          logger.debug('Received WebSocket event', type, event);
-          if (type === 'realtime:resource') {
-            newEvent({
-              action: (event as RealtimeResourceEvent<T>).action,
-              payload: (event as RealtimeResourceEvent<T>).resource,
-            });
-          } else if (type === 'realtime:event') {
-            newEvent({ action: 'event', payload: event.data });
-          }  else if (type === 'realtime:join:success') {
-            logger.debug(`Room ${room} has been joined`);
-          } else {
-            logger.debug('Event type is not supported', type);
-          }
-        },
-      );
+      websocket.join(room.room, room.token, tag, (type: string, event: RealtimeBaseEvent) => {
+        logger.debug('Received WebSocket event', type, event);
+        if (type === 'realtime:resource') {
+          newEvent({
+            action: (event as RealtimeResourceEvent<T>).action,
+            payload: {
+              ...(event as RealtimeResourceEvent<T>).resource,
+              _type: (event as RealtimeResourceEvent<T>).type,
+            },
+          });
+        } else if (type === 'realtime:event') {
+          newEvent({ action: 'event', payload: event.data });
+        } else if (type === 'realtime:join:success') {
+          logger.debug(`Room ${room} has been joined`);
+        } else {
+          logger.debug('Event type is not supported', type);
+        }
+      });
       subscribed.current = true;
     }
   }, [websocket, tag, room, onEvent]);

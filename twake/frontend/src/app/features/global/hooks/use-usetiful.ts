@@ -10,11 +10,11 @@ export default function useUsetiful() {
   const { user } = useCurrentUser();
 
   useEffect(() => {
-    if (user && !initiatedService) {
+    if (user && user.id && !initiatedService) {
       initiatedService = true;
 
       if (Globals.environment.usetiful_token?.length) {
-        (window as any).usetifulTags = user.id;
+        (window as any).usetifulTags = { userId: user.id };
         (function (w, d, s) {
           var a = d.getElementsByTagName('head')[0];
           var r = d.createElement('script');

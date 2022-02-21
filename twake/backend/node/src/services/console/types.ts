@@ -41,7 +41,7 @@ export interface CreateConsoleUser {
   password: string;
   role: CompanyUserRole;
   skipInvite: boolean;
-  inviterEmail?: string;
+  inviterEmail: string;
 }
 
 export interface CreateInternalUser {

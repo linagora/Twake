@@ -4,7 +4,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 export const TYPE = "workspace_invite_tokens";
 
 @Entity(TYPE, {
-  primaryKey: [["company_id"], "workspace_id", "invite_token"],
+  primaryKey: [["company_id"], "workspace_id", "user_id", "invite_token"],
   type: TYPE,
 })
 export default class WorkspaceInviteTokens {
@@ -14,13 +14,16 @@ export default class WorkspaceInviteTokens {
   @Column("workspace_id", "string")
   workspace_id: string;
 
+  @Column("user_id", "string")
+  user_id: string;
+
   @Column("invite_token", "string")
   invite_token: string;
 }
 
 export type WorkspaceInviteTokensPrimaryKey = Pick<
   WorkspaceInviteTokens,
-  "company_id" | "workspace_id" | "invite_token"
+  "company_id" | "workspace_id" | "user_id" | "invite_token"
 >;
 
 export function getInstance(

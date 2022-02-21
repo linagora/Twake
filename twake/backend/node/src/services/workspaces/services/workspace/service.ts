@@ -569,33 +569,39 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   async getInviteToken(
     companyId: string,
     workspaceId: string,
+    userId: string,
   ): Promise<WorkspaceInviteTokenObject> {
-    const pk = { company_id: companyId, workspace_id: workspaceId };
+    const pk = { company_id: companyId, workspace_id: workspaceId, user_id: userId };
     const res = await this.workspaceInviteTokensRepository.findOne(pk);
     if (!res) return null;
 
     return {
-      token: this.encodeInviteToken(companyId, workspaceId, res.invite_token),
+      token: this.encodeInviteToken(companyId, workspaceId, userId, res.invite_token),
     };
   }
 
   async createInviteToken(
     companyId: string,
     workspaceId: string,
+    userId: string,
   ): Promise<WorkspaceInviteTokenObject> {
-    await this.deleteInviteToken(companyId, workspaceId);
+    await this.deleteInviteToken(companyId, workspaceId, userId);
     const token = randomBytes(32).toString("base64");
-    const pk = { company_id: companyId, workspace_id: workspaceId };
+    const pk = { company_id: companyId, workspace_id: workspaceId, user_id: userId };
     await this.workspaceInviteTokensRepository.save(
       getWorkspaceInviteTokensInstance({ ...pk, invite_token: token }),
     );
     return {
-      token: this.encodeInviteToken(companyId, workspaceId, token),
+      token: this.encodeInviteToken(companyId, workspaceId, userId, token),
     };
   }
 
-  async deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean> {
-    const pk = { company_id: companyId, workspace_id: workspaceId };
+  async deleteInviteToken(
+    companyId: string,
+    workspaceId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const pk = { company_id: companyId, workspace_id: workspaceId, user_id: userId };
     const currentRecord = await this.workspaceInviteTokensRepository.findOne(pk);
     if (!currentRecord) {
       return false;
@@ -617,15 +623,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const pk: WorkspaceInviteTokensPrimaryKey = {
       company_id: tokenInfo.c,
       workspace_id: tokenInfo.w,
+      user_id: tokenInfo.u,
       invite_token: tokenInfo.t,
     };
     return this.workspaceInviteTokensRepository.findOne(pk);
   }
 
-  public encodeInviteToken(companyId: string, workspaceId: string, token: string) {
+  public encodeInviteToken(companyId: string, workspaceId: string, userId: string, token: string) {
     // Change base64 characters to make them url safe
     token = token.replace(/\+/g, ".").replace(/\//g, "_").replace(/=/g, "-");
-    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token}`;
+    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${reduceUUID4(
+      userId,
+    )}-${token}`;
     return encodedToken;
   }
 
@@ -633,7 +642,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     try {
       let split = encodedToken.split("-");
       //We split on "-" but the token can contain "-" so be careful
-      let [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
+      let [companyId, workspaceId, userId, token] = [
+        split.shift(),
+        split.shift(),
+        split.shift(),
+        split.join("-"),
+      ];
       if (!token) {
         return;
       }
@@ -642,6 +656,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       return {
         c: expandUUID4(companyId),
         w: expandUUID4(workspaceId),
+        u: expandUUID4(userId),
         t: token,
       };
     } catch (e) {
