@@ -135,8 +135,8 @@ describe("The notification for user mentions", () => {
       mentions: {
         users: [member.user_id, member2.user_id, unknownUser, member3.user_id],
       },
-      title: "",
-      text: "",
+      title: "test",
+      text: "should mention all users when preferences are default ones",
     });
   });
 
@@ -169,8 +169,8 @@ describe("The notification for user mentions", () => {
       mentions: {
         users: [member.user_id, member2.user_id, unknownUser, member3.user_id],
       },
-      title: "",
-      text: "",
+      title: "test",
+      text: "should not mention user when notification level is set to NONE",
     });
   });
 
@@ -204,8 +204,8 @@ describe("The notification for user mentions", () => {
         users: [],
         specials: ["all"],
       },
-      title: "",
-      text: "",
+      title: "test",
+      text: "should mention user when notification level is set to channel mention and notification is for @all",
     });
   });
 
@@ -239,8 +239,8 @@ describe("The notification for user mentions", () => {
         users: [],
         specials: ["here"],
       },
-      title: "",
-      text: "",
+      title: "test",
+      text: "should mention user when notification level is set to channel mention and notification is for @here",
     });
   });
 
@@ -272,8 +272,8 @@ describe("The notification for user mentions", () => {
       mentions: {
         users: [member2.user_id],
       },
-      title: "",
-      text: "",
+      title: "test",
+      text: "should mention user when notification level is set to ME",
     });
   });
 });
