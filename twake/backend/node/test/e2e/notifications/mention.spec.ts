@@ -153,7 +153,6 @@ describe("The notification for user mentions", () => {
   });
 
   it("should mention all users when preferences are default ones (ALL)", async done => {
-    const threadId = uuidv1();
     const messageId = uuidv1();
     const unknownUser = uuidv1();
     const channel = await createChannel();
@@ -167,7 +166,7 @@ describe("The notification for user mentions", () => {
       creation_date: Date.now(),
       id: messageId,
       sender: platform.currentUser.id,
-      thread_id: threadId,
+      thread_id: messageId, //Only thread initial messages generate notifications
       workspace_id: channel.workspace_id,
       title: "test",
       text: "should mention all users when preferences are default ones (ALL)",
@@ -180,6 +179,37 @@ describe("The notification for user mentions", () => {
     expect(message.data.mentions.users).toContain(member2.user_id);
     expect(message.data.mentions.users).toContain(member3.user_id);
     expect(message.data.mentions.users).not.toContain(unknownUser);
+
+    done();
+  });
+
+  it("should not mention users with preferences ALL for replies of threads there are not member of", async done => {
+    const messageId = uuidv1();
+    const channel = await createChannel();
+    const member = await joinChannel(platform.currentUser.id, channel);
+    const member2 = await joinChannel(uuidv1(), channel);
+    const member3 = await joinChannel(uuidv1(), channel);
+
+    pushMessage({
+      channel_id: channel.id,
+      company_id: channel.company_id,
+      creation_date: Date.now(),
+      id: messageId,
+      sender: platform.currentUser.id,
+      thread_id: messageId, //Only thread initial messages generate notifications
+      workspace_id: channel.workspace_id,
+      mentions: {
+        users: [member.user_id, member2.user_id],
+      },
+      title: "test",
+      text: "should mention all users when preferences are default ones (ALL)",
+    });
+
+    const message = await new Promise<IncomingPubsubMessage<MentionNotification>>(
+      resolve => (pubsubHandler = resolve),
+    );
+    expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
+    expect(message.data.mentions.users).not.toContain(member3.user_id);
 
     done();
   });
@@ -296,17 +326,25 @@ describe("The notification for user mentions", () => {
     done();
   });
 
-  it("should mention user when notification level is set to ME", async done => {
+  it("should mention user when notification level is set to ME and updated notification later", async done => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const channel = await createChannel();
     const member = await joinChannel(
       platform.currentUser.id,
       channel,
-      ChannelMemberNotificationLevel.MENTIONS,
+      ChannelMemberNotificationLevel.NONE,
     );
-    const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
-    const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.ME);
+    const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.NONE);
+    const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.NONE);
+
+    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
+
+    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
+    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
+    await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.ME);
+
+    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
 
     pushMessage({
       channel_id: channel.id,
