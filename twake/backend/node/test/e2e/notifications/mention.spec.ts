@@ -74,9 +74,15 @@ describe("The notification for user mentions", () => {
     return creationResult.entity;
   }
 
-  async function joinChannel(userId: string, channel: Channel): Promise<ChannelMember> {
+  async function joinChannel(
+    userId: string,
+    channel: Channel,
+    notificationLevel?: ChannelMemberNotificationLevel,
+  ): Promise<ChannelMember> {
     const user: User = { id: userId };
     const member = channelMemberUtils.getMember(channel, user);
+
+    if (notificationLevel) member.notification_level = notificationLevel;
 
     const memberCreationResult = await channelService.members.save(
       member,
@@ -112,13 +118,13 @@ describe("The notification for user mentions", () => {
     const messageId = uuidv1();
     const unknownUser = uuidv1();
     const channel = await createChannel();
-    const member = await joinChannel(platform.currentUser.id, channel);
-    const member2 = await joinChannel(uuidv1(), channel);
-    const member3 = await joinChannel(uuidv1(), channel);
-
-    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
-    await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
-    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
+    const member = await joinChannel(
+      platform.currentUser.id,
+      channel,
+      ChannelMemberNotificationLevel.MENTIONS,
+    );
+    const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
+    const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
 
     pushMessage({
       channel_id: channel.id,
@@ -183,15 +189,13 @@ describe("The notification for user mentions", () => {
     const messageId = uuidv1();
     const unknownUser = uuidv1();
     const channel = await createChannel();
-    const member = await joinChannel(platform.currentUser.id, channel);
-    const member2 = await joinChannel(uuidv1(), channel);
-    const member3 = await joinChannel(uuidv1(), channel);
-
-    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
-
-    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
-    await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.NONE);
-    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
+    const member = await joinChannel(
+      platform.currentUser.id,
+      channel,
+      ChannelMemberNotificationLevel.MENTIONS,
+    );
+    const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.NONE);
+    const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
 
     pushMessage({
       channel_id: channel.id,
@@ -222,15 +226,13 @@ describe("The notification for user mentions", () => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const channel = await createChannel();
-    const member = await joinChannel(platform.currentUser.id, channel);
-    const member2 = await joinChannel(uuidv1(), channel);
-    const member3 = await joinChannel(uuidv1(), channel);
-
-    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
-
-    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.NONE);
-    await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
-    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
+    const member = await joinChannel(
+      platform.currentUser.id,
+      channel,
+      ChannelMemberNotificationLevel.MENTIONS,
+    );
+    const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
+    const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.ME);
 
     pushMessage({
       channel_id: channel.id,
@@ -263,13 +265,8 @@ describe("The notification for user mentions", () => {
     const messageId = uuidv1();
     const channel = await createChannel();
     const member = await joinChannel(platform.currentUser.id, channel);
-    const member2 = await joinChannel(uuidv1(), channel);
-    const member3 = await joinChannel(uuidv1(), channel);
-
-    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
-
-    await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
-    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
+    const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
+    const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.ME);
 
     pushMessage({
       channel_id: channel.id,
@@ -303,15 +300,13 @@ describe("The notification for user mentions", () => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const channel = await createChannel();
-    const member = await joinChannel(platform.currentUser.id, channel);
-    const member2 = await joinChannel(uuidv1(), channel);
-    const member3 = await joinChannel(uuidv1(), channel);
-
-    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
-
-    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
-    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
-    await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.ME);
+    const member = await joinChannel(
+      platform.currentUser.id,
+      channel,
+      ChannelMemberNotificationLevel.MENTIONS,
+    );
+    const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
+    const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.ME);
 
     pushMessage({
       channel_id: channel.id,
