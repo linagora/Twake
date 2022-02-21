@@ -714,7 +714,7 @@ export class Service implements ChannelService {
    */
   @PubsubPublish("channel:read")
   onRead(
-    //@PubsubParameter("channel")
+    @PubsubParameter("channel")
     channel: Channel,
     //@PubsubParameter("member")
     member: ChannelMember,
