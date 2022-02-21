@@ -539,17 +539,7 @@ export class Service implements MemberService {
   ): void {
     logger.debug("Member created %o", member);
 
-    // Look at the second code paragraph, it seems it is a duplicate
-    localEventBus.publish("channel:member:created", {
-      data: {
-        channel,
-        member,
-        user,
-      },
-    });
-
-    // Not sure about this, we use it on Tracker + Activities
-    localEventBus.publish<ResourceEventsPayload>("channel:member:created:activity", {
+    localEventBus.publish<ResourceEventsPayload>("channel:member:created", {
       channel,
       user,
       member,
@@ -561,21 +551,12 @@ export class Service implements MemberService {
   onDeleted(member: ChannelMember, user: User, channel: ChannelEntity): void {
     logger.debug("Member deleted %o", member);
 
-    // Look at the second code paragraph, it seems it is a duplicate
-    localEventBus.publish("channel:member:deleted", {
-      data: {
-        channel,
-        member,
-        user,
-      },
-    });
-
-    // Not sure about this, we use it on Tracker + Activities
-    localEventBus.publish<ResourceEventsPayload>("channel:member:deleted:activity", {
+    localEventBus.publish<ResourceEventsPayload>("channel:member:deleted", {
       actor: user,
       resourcesBefore: [member],
       channel: channel,
       user,
+      member,
     });
   }
 

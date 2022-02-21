@@ -19,8 +19,8 @@ export default class Activities implements Initializable {
   async init(): Promise<this> {
     const channelConnectorCreatedEvent = "channel:connector:created";
     const channelConnectorDeletedEvent = "channel:connector:deleted";
-    const channelMemberCreatedEvent = "channel:member:created:activity";
-    const channelMemberDeletedEvent = "channel:member:deleted:activity";
+    const channelMemberCreatedEvent = "channel:member:created";
+    const channelMemberDeletedEvent = "channel:member:deleted";
     const channelTabCreatedEvent = "channel:tab:created";
     const channelTabDeletedEvent = "channel:tab:deleted";
     const channelUpdatedEvent = "channel:updated";
