@@ -539,6 +539,14 @@ export class Service implements MemberService {
   ): void {
     logger.debug("Member created %o", member);
 
+    this.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:deleted", {
+      data: {
+        channel,
+        user,
+        member,
+      },
+    });
+
     localEventBus.publish<ResourceEventsPayload>("channel:member:created", {
       channel,
       user,
@@ -551,10 +559,18 @@ export class Service implements MemberService {
   onDeleted(member: ChannelMember, user: User, channel: ChannelEntity): void {
     logger.debug("Member deleted %o", member);
 
-    localEventBus.publish<ResourceEventsPayload>("channel:member:deleted", {
+    this.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:deleted", {
+      data: {
+        channel,
+        user,
+        member,
+      },
+    });
+
+    localEventBus.publish<ResourceEventsPayload>("channel:member:deleted:activity", {
       actor: user,
       resourcesBefore: [member],
-      channel: channel,
+      channel,
       user,
       member,
     });
