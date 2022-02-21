@@ -17,8 +17,9 @@ import { FastifyReply, FastifyRequest } from "fastify";
 
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
-import { create, pick } from "lodash";
+import { pick } from "lodash";
 import { ConsoleCompany } from "../../../console/types";
+import { formatCompany, getCompanyStats } from "../../../../services/user/utils";
 
 export class WorkspaceInviteTokensCrudController
   implements
@@ -42,6 +43,7 @@ export class WorkspaceInviteTokensCrudController
     const res = await this.services.workspaces.getInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!res) {
@@ -62,6 +64,7 @@ export class WorkspaceInviteTokensCrudController
     const res = await this.services.workspaces.createInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     return {
@@ -84,6 +87,7 @@ export class WorkspaceInviteTokensCrudController
     const deleted = await this.services.workspaces.deleteInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!deleted) {
@@ -116,9 +120,14 @@ export class WorkspaceInviteTokensCrudController
         id: workspace_id,
       }),
     ]);
+    const total_messages = await this.services.statistics.get(company.id, "messages");
 
     const resource: WorkspaceJoinByTokenResponse = {
-      company: { name: company.name },
+      company: {
+        name: company.name,
+        stats: formatCompany(company, undefined, getCompanyStats(company, total_messages))?.stats,
+        plan: formatCompany(company, undefined, getCompanyStats(company, total_messages))?.plan,
+      },
       workspace: { name: workspace.name },
       auth_required: false,
     };
@@ -134,6 +143,8 @@ export class WorkspaceInviteTokensCrudController
           { id: userId },
         );
         if (!companyUser) {
+          const inviter = await this.services.users.get({ id: entity.user_id });
+
           const createdConsoleUser = await this.services.console
             .getClient()
             .addUserToCompany(
@@ -151,6 +162,7 @@ export class WorkspaceInviteTokensCrudController
                 },
                 role: "member",
                 skipInvite: true,
+                inviterEmail: inviter.email_canonical,
               },
             );
           await this.services.console

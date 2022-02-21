@@ -100,7 +100,7 @@ export default class User {
     allow_tracking?: boolean;
     tutorial_done?: boolean;
     channel_ordering?: "chronological" | "alphabetical";
-    recent_workspaces?: { companyId: string; workspaceId: string }[]; // { companyId :"", workspaceId: ""}
+    recent_workspaces?: { company_id: string; workspace_id: string }[];
   };
 
   @Column("cache", "encoded_json")

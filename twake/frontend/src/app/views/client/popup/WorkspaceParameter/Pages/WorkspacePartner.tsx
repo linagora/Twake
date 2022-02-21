@@ -16,6 +16,7 @@ import LockedInviteAlert from 'app/components/locked-features-components/locked-
 import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 import './Pages.scss';
 
@@ -42,6 +43,7 @@ export default () => {
   WorkspaceService.useListener();
   workspacesUsers.useListener();
   Languages.useListener();
+  const { company } = useCurrentCompany();
 
   const usersInGroup = [];
   Object.keys(workspacesUsers.users_by_group[groupService.currentGroupId] || {}).map(
@@ -94,7 +96,7 @@ export default () => {
       <Divider />
 
       {!FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER) ? (
-        <LockedInviteAlert />
+        <LockedInviteAlert company={company} />
       ) : (
         <></>
       )}
