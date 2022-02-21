@@ -123,7 +123,7 @@ describe("The /workspaces API (invite tokens)", () => {
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
 
-      await workspaceServicesAPI.workspaces.createInviteToken(companyId, workspaceId);
+      await workspaceServicesAPI.workspaces.createInviteToken(companyId, workspaceId, userId);
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -340,7 +340,7 @@ describe("The /workspaces API (invite tokens)", () => {
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
 
-      await workspaceServicesAPI.workspaces.createInviteToken(companyId, workspaceId);
+      await workspaceServicesAPI.workspaces.createInviteToken(companyId, workspaceId, userId);
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -403,7 +403,11 @@ describe("The /workspaces API (invite tokens)", () => {
       companyId = testDbService.company.id;
       workspaceId = testDbService.workspaces[0].workspace.id;
       userId = testDbService.workspaces[2].users[0].id;
-      inviteToken = await workspaceServicesAPI.workspaces.createInviteToken(companyId, workspaceId);
+      inviteToken = await workspaceServicesAPI.workspaces.createInviteToken(
+        companyId,
+        workspaceId,
+        userId,
+      );
     });
     afterAll(shutdown);
 

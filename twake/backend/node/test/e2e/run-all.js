@@ -49,6 +49,8 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   let failed = 0;
   let passed = 0;
 
+  let summary = "";
+
   for (const path of srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
     const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
@@ -62,6 +64,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
         console.log(out.error);
         await exec("jest", args.split(" "), true);
         failed++;
+        summary += `FAIL ${testName}\n`;
       } else {
         passed++;
         console.log(`PASS ${testName}`);
@@ -74,6 +77,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
   }
 
   console.log(`\nResults: ${passed} passed, ${failed} failed, total ${failed + passed}`);
+  console.log(summary);
 
   process.exit(failed > 0 ? 1 : 0);
 })();

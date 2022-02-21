@@ -8,30 +8,30 @@ export type RealtimeResources<T> = {
   websockets: WebSocketResource[];
 };
 
-
-export type RealtimeApplicationEventAction = "configure" | "close_configure";
+export type RealtimeApplicationEventAction = 'configure' | 'close_configure';
 export type RealtimeEventAction = 'saved' | 'updated' | 'deleted' | 'event';
 
-export type RealtimeBaseAction = RealtimeEventAction | RealtimeApplicationEventAction
+export type RealtimeBaseAction = RealtimeEventAction | RealtimeApplicationEventAction;
 
-
-export interface RealtimeBaseEvent{
+export interface RealtimeBaseEvent {
   action: RealtimeEventAction;
-  data?: any
+  data?: any;
 }
 
-export interface RealtimeResourceEvent<T> extends RealtimeBaseEvent { resource: T };
+export interface RealtimeResourceEvent<T> extends RealtimeBaseEvent {
+  resource: T;
+  type?: string;
+}
 
-export interface RealtimeEvent<T, U> extends  RealtimeBaseEvent{
+export interface RealtimeEvent<T, U> extends RealtimeBaseEvent {
   room: string;
   path: string;
   type: U;
   resource: T;
-};
-
+}
 
 export interface RealtimeApplicationEvent {
-  action: "configure" | "close_configure";
+  action: 'configure' | 'close_configure';
   connection_id: string;
   application: unknown;
   form: unknown;

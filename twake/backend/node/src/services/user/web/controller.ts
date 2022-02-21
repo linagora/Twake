@@ -220,7 +220,7 @@ export class UsersCrudController
     }
 
     return {
-      resource: this.service.formatCompany(
+      resource: formatCompany(
         company,
         companyUserObj,
         getCompanyStats(company, await this.service.statistics.get(company.id, "messages")),

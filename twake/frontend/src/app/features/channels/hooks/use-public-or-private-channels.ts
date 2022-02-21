@@ -40,9 +40,19 @@ export function usePublicOrPrivateChannels(): {
     [companyId, workspaceId],
   );
 
+  //Public channels
   useRealtimeRoom<ChannelType[]>(
     ChannelsMineAPIClient.websockets(companyId, workspaceId)[0],
-    'usePublicOrPrivateChannels',
+    'usePublicOrPrivateChannelsPublic',
+    (_action, _resource) => {
+      if (_action === 'saved') refresh();
+    },
+  );
+
+  //Private channels
+  useRealtimeRoom<ChannelType[]>(
+    ChannelsMineAPIClient.websockets(companyId, workspaceId)[1],
+    'usePublicOrPrivateChannelsPrivate',
     (_action, _resource) => {
       if (_action === 'saved') refresh();
     },

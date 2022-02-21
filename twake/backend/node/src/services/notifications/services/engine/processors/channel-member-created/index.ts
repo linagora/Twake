@@ -9,7 +9,8 @@ import { Channel, ChannelMember } from "../../../../../channels/entities";
 type JoinChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class JoinChannelMessageProcessor
-  implements NotificationPubsubHandler<JoinChannelMessage, void> {
+  implements NotificationPubsubHandler<JoinChannelMessage, void>
+{
   constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {
