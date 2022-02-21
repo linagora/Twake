@@ -673,6 +673,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
             blockStyleFn={this.handleBlockStyle}
             customStyleMap={this.customStyleMap}
             placeholder={this.props.placeholder || ''}
+            spellCheck={true}
           />
         </div>
         {this.state.isVisible && this.state.displaySuggestion && this.state.suggestionType && (
