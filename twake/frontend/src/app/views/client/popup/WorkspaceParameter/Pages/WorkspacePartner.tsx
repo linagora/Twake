@@ -21,6 +21,7 @@ import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import './Pages.scss';
 
 export const AdminSwitch = (props: { col: any; adminLevelId: string; onChange: any }) => {
+  // @ts-ignore
   workspacesUsers.useListener(useState);
   const loading = workspacesUsers.updateLevelUserLoading[props.col.user.id];
   const checked = props.col.level === props.adminLevelId;

@@ -1,20 +1,20 @@
 import { CharacterMetadata, ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
 import { getSelectedBlock } from 'draftjs-utils';
+
 import { Mention } from './mention';
 import MentionSuggestion from './mention-suggestion';
 import { EditorSuggestionPlugin, SelectOrInsertOptions } from '../';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces';
-import Collections from 'app/deprecated/CollectionsReact/Collections';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
-import { getChannelMembers } from 'app/deprecated/channels/ChannelCollectionPath';
 import { UserType } from 'app/features/users/types/user';
-import { ChannelMemberResource } from 'app/features/channels/types/channel';
 import UserService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/features/router/services/router-service';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import Strings from 'app/features/global/utils/strings';
+import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
+import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 
 import './style.scss';
 
@@ -36,7 +36,7 @@ const findMentionEntities = (
   }, callback);
 };
 
-const resolver = (
+const resolver = async (
   text: string,
   max: number,
   callback: (mentions: MentionSuggestionType[]) => void,
@@ -45,20 +45,17 @@ const resolver = (
   const { companyId, workspaceId, channelId } = RouterService.getStateFromRoute();
 
   if (AccessRightsService.getCompanyLevel(WorkspaceService.currentGroupId) === 'guest') {
-    // user is guest, lookup for channel members only
-    const channelMembersCollection = Collections.get(
-      getChannelMembers(companyId, workspaceId, channelId),
-      ChannelMemberResource,
-    );
-    const users = channelMembersCollection
-      .find({})
-      .map(member => DepreciatedCollections.get('users').find(member.id))
-      .filter(
-        (user: UserType) =>
-          `${user.username} ${user.first_name} ${user.last_name} ${user.email}`
-            .toLocaleLowerCase()
-            .indexOf(text.toLocaleLowerCase()) >= 0,
-      );
+    const users =
+      companyId && workspaceId && channelId
+        ? await ChannelMembersAPIClient.list({ companyId, workspaceId, channelId })
+        : ([] as ChannelMemberType[])
+            .map(member => DepreciatedCollections.get('users').find(member.user_id))
+            .filter(
+              (user: UserType) =>
+                `${user.username} ${user.first_name} ${user.last_name} ${user.email}`
+                  .toLocaleLowerCase()
+                  .indexOf(text.toLocaleLowerCase()) >= 0,
+            );
 
     for (let j = 0; j < Math.min(max, users.length); j++) {
       result[j] = { ...users[j], ...{ autocomplete_id: j } };

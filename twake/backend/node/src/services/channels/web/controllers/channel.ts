@@ -378,13 +378,13 @@ export class ChannelCrudController
     }>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reply: FastifyReply,
-  ): Promise<ResourceCreateResponse<CreateResult<ChannelPendingEmails>>> {
+  ): Promise<ResourceCreateResponse<ChannelPendingEmails>> {
     const pendingEmail = await this.pendingEmails.create(
       getChannelPendingEmailsInstance(request.body.resource),
       getChannelPendingEmailsExecutionContext(request),
     );
     logger.debug("reqId: %s - save - PendingEmails input %o", request.id, pendingEmail.entity);
-    return { resource: pendingEmail };
+    return { resource: pendingEmail.entity };
   }
 
   async deletePendingEmails(

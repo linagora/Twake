@@ -1,5 +1,5 @@
-import { PendingEmailResource } from 'app/features/workspace-members/types/pending-email';
-import { ChannelMemberResource } from 'app/features/channels/types/channel';
+import { PendingEmail } from 'app/features/pending-emails/types/pending-email';
+import { ChannelMemberType } from './channel-member-types';
 
 export type GenericMemberType = 'pending-email' | 'guest';
 
@@ -7,5 +7,5 @@ export type GenericMember = {
   key: string;
   type: GenericMemberType;
   filterString: string;
-  resource: PendingEmailResource | ChannelMemberResource;
+  resource: PendingEmail | ChannelMemberType;
 };
