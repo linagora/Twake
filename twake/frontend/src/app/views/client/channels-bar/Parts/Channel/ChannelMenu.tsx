@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
-import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
 import Icon from 'app/components/icon/icon';
 import Menu from 'components/menus/menu';
@@ -41,7 +41,7 @@ export default (props: PropsType): JSX.Element => {
   const companyId = props.channel.company_id;
   const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
   const { Feature, FeatureNames } = useFeatureToggles();
-  const channelMember: ChannelMemberType = props.channel.user_member || {};
+  const channelMember = props.channel.user_member || {};
 
   Languages.useListener();
 
@@ -52,7 +52,7 @@ export default (props: PropsType): JSX.Element => {
       props.channel.id &&
       currentUser?.id
     ) {
-      await ChannelMembersAPIClient.save(
+      await ChannelMembersAPIClient.updateChannelMemberPreferences(
         channelMember,
         { notification_level: preference },
         {
@@ -72,7 +72,7 @@ export default (props: PropsType): JSX.Element => {
       props.channel.id &&
       currentUser?.id
     ) {
-      await ChannelMembersAPIClient.save(
+      await ChannelMembersAPIClient.updateChannelMemberPreferences(
         channelMember,
         { favorite: state },
         {
