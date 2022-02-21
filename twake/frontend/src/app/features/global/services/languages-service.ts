@@ -10,20 +10,21 @@ class Languages extends Observable {
   private language: string = '';
   private default = 'en';
   private available = [
-    'en',
-    'fr',
     'de',
+    'en',
+    'eo',
     'es',
-    'ja',
-    'ru',
-    'vi',
-    'it',
-    'tr',
-    'si',
-    'nb_NO',
-    'zh_Hans',
-    'fi',
     'eu',
+    'fi',
+    'fr',
+    'it',
+    'ja',
+    'nb_NO',
+    'ru',
+    'si',
+    'tr',
+    'vi',
+    'zh_Hans',
   ];
 
   constructor() {
