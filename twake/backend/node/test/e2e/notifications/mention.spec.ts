@@ -107,7 +107,44 @@ describe("The notification for user mentions", () => {
     });
   }
 
-  it("should mention all users when preferences are default ones", async done => {
+  it("should mention all users when preferences are MENTION", async done => {
+    const threadId = uuidv1();
+    const messageId = uuidv1();
+    const unknownUser = uuidv1();
+    const channel = await createChannel();
+    const member = await joinChannel(platform.currentUser.id, channel);
+    const member2 = await joinChannel(uuidv1(), channel);
+    const member3 = await joinChannel(uuidv1(), channel);
+
+    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
+    await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
+    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
+
+    pubsubHandler = message => {
+      expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
+      expect(message.data.mentions.users).toContain(member2.user_id);
+      expect(message.data.mentions.users).toContain(member3.user_id);
+      expect(message.data.mentions.users).not.toContain(unknownUser);
+      done();
+    };
+
+    pushMessage({
+      channel_id: channel.id,
+      company_id: channel.company_id,
+      creation_date: Date.now(),
+      id: messageId,
+      sender: platform.currentUser.id,
+      thread_id: threadId,
+      workspace_id: channel.workspace_id,
+      mentions: {
+        users: [member.user_id, member2.user_id, unknownUser, member3.user_id],
+      },
+      title: "test",
+      text: "should mention all users when preferences are default ones",
+    });
+  });
+
+  it("should mention all users when preferences are default ones (ALL)", async done => {
     const threadId = uuidv1();
     const messageId = uuidv1();
     const unknownUser = uuidv1();
@@ -132,9 +169,6 @@ describe("The notification for user mentions", () => {
       sender: platform.currentUser.id,
       thread_id: threadId,
       workspace_id: channel.workspace_id,
-      mentions: {
-        users: [member.user_id, member2.user_id, unknownUser, member3.user_id],
-      },
       title: "test",
       text: "should mention all users when preferences are default ones",
     });
@@ -182,6 +216,7 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
 
+    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
@@ -217,6 +252,7 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
 
+    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
@@ -252,6 +288,8 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
 
+    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
+    await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.ME);
 
     pubsubHandler = message => {

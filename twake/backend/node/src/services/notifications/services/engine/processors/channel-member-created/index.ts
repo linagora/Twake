@@ -25,11 +25,6 @@ export class JoinChannelMessageProcessor
   readonly name = "JoinChannelMessageProcessor";
 
   validate(message: JoinChannelMessage): boolean {
-    logger.info(
-      `${this.name} - Validating join channel message for user ${
-        message.member.user_id
-      } in channel ${message.channel.id}, full message: ${JSON.stringify(message)}`,
-    );
     return !!(message && message.channel && message.member);
   }
 
