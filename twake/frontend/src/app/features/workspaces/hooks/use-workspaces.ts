@@ -124,7 +124,7 @@ export function useBestCandidateWorkspace(
   return (
     workspaces?.find(w => w.id === routerWorkspaceId) ||
     workspaces?.find(w => w.id === storageWorkspaceId) ||
-    workspaces?.find(w => w.id === recentWorkspaceObj?.workspaceId) ||
+    workspaces?.find(w => w.id === recentWorkspaceObj?.workspace_id) ||
     _.cloneDeep(workspaces)?.sort((a, b) => a?.stats?.total_members - b.stats?.total_members)[0] ||
     workspaces[0]
   );
