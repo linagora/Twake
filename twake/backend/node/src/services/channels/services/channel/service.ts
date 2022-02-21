@@ -714,9 +714,9 @@ export class Service implements ChannelService {
    */
   @PubsubPublish("channel:read")
   onRead(
-    @PubsubParameter("channel")
+    //@PubsubParameter("channel")
     channel: Channel,
-    @PubsubParameter("member")
+    //@PubsubParameter("member")
     member: ChannelMember,
   ): void {
     logger.info(`Channel ${channel.id} as been marked as read for user ${member.id}`);
@@ -731,9 +731,9 @@ export class Service implements ChannelService {
    */
   @PubsubPublish("channel:unread")
   onUnread(
-    @PubsubParameter("channel")
+    //@PubsubParameter("channel")
     channel: Channel,
-    @PubsubParameter("member")
+    //@PubsubParameter("member")
     member: ChannelMember,
   ): void {
     logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);

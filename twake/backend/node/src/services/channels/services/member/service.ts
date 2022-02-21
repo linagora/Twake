@@ -520,9 +520,9 @@ export class Service implements MemberService {
 
   @PubsubPublish("channel:member:updated")
   onUpdated(
-    @PubsubParameter("channel")
+    //@PubsubParameter("channel")
     channel: Channel,
-    @PubsubParameter("member")
+    //@PubsubParameter("member")
     member: ChannelMember,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateResult: UpdateResult<ChannelMember>,
@@ -532,11 +532,11 @@ export class Service implements MemberService {
 
   @PubsubPublish("channel:member:created")
   onCreated(
-    @PubsubParameter("channel")
+    //@PubsubParameter("channel")
     channel: ChannelEntity,
-    @PubsubParameter("member")
+    //@PubsubParameter("member")
     member: ChannelMember,
-    @PubsubParameter("user")
+    //@PubsubParameter("user")
     user: User,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createResult: SaveResult<ChannelMember>,
@@ -555,11 +555,11 @@ export class Service implements MemberService {
 
   @PubsubPublish("channel:member:deleted")
   onDeleted(
-    @PubsubParameter("member")
+    //@PubsubParameter("member")
     member: ChannelMember,
-    @PubsubParameter("user")
+    //@PubsubParameter("user")
     user: User,
-    @PubsubParameter("channel")
+    //@PubsubParameter("channel")
     channel: ChannelEntity,
   ): void {
     logger.debug("Member deleted %o", member);
