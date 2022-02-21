@@ -120,14 +120,6 @@ describe("The notification for user mentions", () => {
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
 
-    pubsubHandler = message => {
-      expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
-      expect(message.data.mentions.users).toContain(member2.user_id);
-      expect(message.data.mentions.users).toContain(member3.user_id);
-      expect(message.data.mentions.users).not.toContain(unknownUser);
-      done();
-    };
-
     pushMessage({
       channel_id: channel.id,
       company_id: channel.company_id,
@@ -142,6 +134,16 @@ describe("The notification for user mentions", () => {
       title: "test",
       text: "should mention all users when preferences are MENTION ones",
     });
+
+    const message = await new Promise<IncomingPubsubMessage<MentionNotification>>(
+      resolve => (pubsubHandler = resolve),
+    );
+    expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
+    expect(message.data.mentions.users).toContain(member2.user_id);
+    expect(message.data.mentions.users).toContain(member3.user_id);
+    expect(message.data.mentions.users).not.toContain(unknownUser);
+
+    done();
   });
 
   it("should mention all users when preferences are default ones (ALL)", async done => {
@@ -152,14 +154,6 @@ describe("The notification for user mentions", () => {
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
-
-    pubsubHandler = message => {
-      expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
-      expect(message.data.mentions.users).toContain(member2.user_id);
-      expect(message.data.mentions.users).toContain(member3.user_id);
-      expect(message.data.mentions.users).not.toContain(unknownUser);
-      done();
-    };
 
     pushMessage({
       channel_id: channel.id,
@@ -172,6 +166,16 @@ describe("The notification for user mentions", () => {
       title: "test",
       text: "should mention all users when preferences are default ones (ALL)",
     });
+
+    const message = await new Promise<IncomingPubsubMessage<MentionNotification>>(
+      resolve => (pubsubHandler = resolve),
+    );
+    expect(message.data.mentions.users).not.toContain(member.user_id); //The sender is not in the notified users
+    expect(message.data.mentions.users).toContain(member2.user_id);
+    expect(message.data.mentions.users).toContain(member3.user_id);
+    expect(message.data.mentions.users).not.toContain(unknownUser);
+
+    done();
   });
 
   it("should not mention user when notification level is set to NONE", async done => {
@@ -183,16 +187,11 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
 
+    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
+
     await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.NONE);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
-
-    pubsubHandler = message => {
-      expect(message.data.mentions.users).not.toContain(member.user_id);
-      expect(message.data.mentions.users).toContain(member3.user_id);
-      expect(message.data.mentions.users).not.toContain(member2.user_id);
-      done();
-    };
 
     pushMessage({
       channel_id: channel.id,
@@ -208,6 +207,15 @@ describe("The notification for user mentions", () => {
       title: "test",
       text: "should not mention user when notification level is set to NONE",
     });
+
+    const message = await new Promise<IncomingPubsubMessage<MentionNotification>>(
+      resolve => (pubsubHandler = resolve),
+    );
+    expect(message.data.mentions.users).not.toContain(member.user_id);
+    expect(message.data.mentions.users).toContain(member3.user_id);
+    expect(message.data.mentions.users).not.toContain(member2.user_id);
+
+    done();
   });
 
   it("should mention user when notification level is set to channel mention and notification is for @all", async done => {
@@ -217,6 +225,8 @@ describe("The notification for user mentions", () => {
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
+
+    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
 
     await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.NONE);
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
@@ -256,7 +266,8 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
 
-    await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.NONE);
+    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
+
     await updateNotificationLevel(channel, member2, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.ME);
 
@@ -279,6 +290,8 @@ describe("The notification for user mentions", () => {
     const message = await new Promise<IncomingPubsubMessage<MentionNotification>>(
       resolve => (pubsubHandler = resolve),
     );
+
+    //Sender dont get notified
     expect(message.data.mentions.users).not.toContain(member.user_id);
     expect(message.data.mentions.users).toContain(member2.user_id);
     expect(message.data.mentions.users).not.toContain(member3.user_id);
@@ -293,6 +306,8 @@ describe("The notification for user mentions", () => {
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
+
+    await new Promise(resolve => setTimeout(resolve, 1000)); //Wait for the channel members to be created
 
     await updateNotificationLevel(channel, member, ChannelMemberNotificationLevel.MENTIONS);
     await updateNotificationLevel(channel, member3, ChannelMemberNotificationLevel.MENTIONS);
