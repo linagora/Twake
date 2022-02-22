@@ -17,6 +17,7 @@ import FeatureTogglesService, {
 } from 'app/features/global/services/feature-toggles-service';
 
 import './styles.scss';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
 
 const { Title, Text } = Typography;
 
@@ -58,6 +59,14 @@ export default (props: PropsType): JSX.Element => {
     if (info.auth_required) {
       const origin = document.location.origin;
       const currentPage = document.location.href;
+
+      //Save requested URL for after redirect / sign-in
+      //Fixme this is code duplication from auth service
+      LocalStorage.setItem('requested_url', {
+        url: document.location.href,
+        time: new Date().getTime(),
+      });
+
       const authUrl = `${
         InitService.server_infos?.configuration?.accounts?.console?.authority
       }/oauth2/authorize?invite=1&redirect_uri=${encodeURIComponent(origin)}`;
