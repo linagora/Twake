@@ -98,6 +98,7 @@ export function useChannelWritingActivityEmit(
   threadId: string | null,
 ): ChannelWritingActivityTypeEmit {
   const companyId = useRouterCompany();
+  const { user } = useCurrentUser();
 
   const { send } = useRealtimeRoom<WritingEvent>(
     WorkspaceAPIClient.websockets(companyId)[0],
@@ -108,17 +109,17 @@ export function useChannelWritingActivityEmit(
 
   const iAmWriting = useCallback(
     async (writing: boolean) => {
-      const currentUser = await UserAPIClient.getCurrent();
-      send({
-        type: 'writing',
-        event: {
-          channel_id: channelId,
-          thread_id: threadId,
-          user_id: currentUser.id,
-          name: UserService.getFullName(currentUser),
-          is_writing: writing,
-        },
-      } as WritingEvent);
+      if (user)
+        send({
+          type: 'writing',
+          event: {
+            channel_id: channelId,
+            thread_id: threadId,
+            user_id: user.id,
+            name: UserService.getFullName(user),
+            is_writing: writing,
+          },
+        } as WritingEvent);
     },
     [send],
   );
