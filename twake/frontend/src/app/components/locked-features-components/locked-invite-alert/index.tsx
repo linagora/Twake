@@ -10,7 +10,7 @@ type PropsType = { company: Partial<CompanyType>; magicLink?: boolean };
 
 const { Text, Link } = Typography;
 const LockedInviteAlert = (props: PropsType): JSX.Element => {
-  const limit = (props?.company as any)[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT] || 0;
+  const limit = props?.company?.plan?.limits?.[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT] || 0;
   const onClickBtn = () =>
     window.open(
       InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url || '',
