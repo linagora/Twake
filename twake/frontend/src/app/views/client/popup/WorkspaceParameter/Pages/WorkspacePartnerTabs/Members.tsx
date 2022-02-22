@@ -18,6 +18,7 @@ import WorkspaceService from 'app/deprecated/workspaces/workspaces.js';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import Icon from 'app/components/icon/icon';
 
 type ColumnObjectType = { [key: string]: any };
 
@@ -295,9 +296,26 @@ export default ({ filter }: { filter: string }) => {
   return (
     <>
       <div>
+        {InitService.server_infos?.configuration?.accounts.type === 'console' && (
+          <a
+            style={{ float: 'right' }}
+            href="#"
+            onClick={() => {
+              window.open(
+                ConsoleService.getCompanyUsersManagementUrl(WorkspaceService.currentGroupId),
+                '_blank',
+              );
+            }}
+          >
+            <Icon type="external-link-alt" className="m-icon-small" /> See all my company members on
+            the console
+          </a>
+        )}
+
         <Typography.Title level={3}>
           {Languages.t('scenes.apps.parameters.workspace_sections.members.members')}
         </Typography.Title>
+
         <Table<ColumnObjectType>
           columns={columns}
           loading={loading}
