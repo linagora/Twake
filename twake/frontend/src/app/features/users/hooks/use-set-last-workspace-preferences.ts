@@ -14,5 +14,6 @@ export const useSetLastWorkspacePreference = () => {
       ...user?.preferences,
       recent_workspaces: [{ workspace_id: workspaceId, company_id: companyId }],
     });
-  }, [workspaceId, companyId, user?.preferences]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [workspaceId, companyId]);
 };
