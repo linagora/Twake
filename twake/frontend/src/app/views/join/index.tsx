@@ -36,6 +36,8 @@ export default (props: PropsType): JSX.Element => {
   const [busy, setBusy] = useState<boolean>(false);
   const [cookies, setCookie] = useCookies(['pending-redirect']);
 
+  if (info?.company?.plan) FeatureTogglesService.setFeaturesFromCompanyPlan(info?.company?.plan);
+
   const params = useParams() as any;
   let service = new MagicLinksJoinService(params.token, (val: boolean) => setBusy(val));
 
@@ -88,6 +90,7 @@ export default (props: PropsType): JSX.Element => {
           );
         })
         .catch(err => {
+          console.log(err);
           setError(err.message);
         });
     }
@@ -102,6 +105,9 @@ export default (props: PropsType): JSX.Element => {
       document.location.replace('/');
     }
   };
+
+  const lockedInvitation =
+    info?.company && !FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER);
 
   return (
     <Layout className="joinPage">
@@ -143,37 +149,41 @@ export default (props: PropsType): JSX.Element => {
                   </span>
                 </Title>
                 <Text>{Languages.t('scenes.join.twake_description')}</Text>
+                <Divider />
 
-                {info?.company &&
-                !FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER) ? (
+                {lockedInvitation && (
                   <div style={{ maxWidth: 400 }}>
                     <LockedInviteAlert company={info?.company} magicLink />
                   </div>
-                ) : (
-                  <></>
                 )}
-                <Divider />
-                {info.auth_required ? (
-                  <Button
-                    disabled={
-                      busy ||
-                      !FeatureTogglesService.isActiveFeatureName(FeatureNames.COMPANY_INVITE_MEMBER)
-                    }
-                    loading={busy}
-                    type="primary"
-                    onClick={onJoinAccountBtnClick}
-                  >
-                    {Languages.t('scenes.join.login_first_button')}
-                  </Button>
-                ) : (
-                  <Button
-                    disabled={busy}
-                    loading={busy}
-                    type="primary"
-                    onClick={onJoinAccountBtnClick}
-                  >
-                    {Languages.t('scenes.join.join_the_team_button')}
-                  </Button>
+
+                {!lockedInvitation && (
+                  <>
+                    {info.auth_required ? (
+                      <Button
+                        disabled={
+                          busy ||
+                          !FeatureTogglesService.isActiveFeatureName(
+                            FeatureNames.COMPANY_INVITE_MEMBER,
+                          )
+                        }
+                        loading={busy}
+                        type="primary"
+                        onClick={onJoinAccountBtnClick}
+                      >
+                        {Languages.t('scenes.join.login_first_button')}
+                      </Button>
+                    ) : (
+                      <Button
+                        disabled={busy}
+                        loading={busy}
+                        type="primary"
+                        onClick={onJoinAccountBtnClick}
+                      >
+                        {Languages.t('scenes.join.join_the_team_button')}
+                      </Button>
+                    )}
+                  </>
                 )}
               </Space>
             )}

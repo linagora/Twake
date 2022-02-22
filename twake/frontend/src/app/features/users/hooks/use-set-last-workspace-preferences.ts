@@ -11,8 +11,7 @@ export const useSetLastWorkspacePreference = () => {
 
   useEffect(() => {
     UserAPIClient.setUserPreferences({
-      ...user?.preferences,
       recent_workspaces: [{ workspace_id: workspaceId, company_id: companyId }],
     });
-  }, [workspaceId, companyId, user?.preferences]);
+  }, [workspaceId, companyId]);
 };
