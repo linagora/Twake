@@ -56,7 +56,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       };
     }
 
-    if (user.skipInvite) {
+    if (user.skipInvite && user.name && user.email && user.password) {
       return this.client
         .post(`/api/companies/${company.code}/users`, user, {
           auth: this.auth(),

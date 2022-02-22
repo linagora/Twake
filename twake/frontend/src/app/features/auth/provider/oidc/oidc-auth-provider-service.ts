@@ -240,11 +240,13 @@ export default class OIDCAuthProviderService
   }
 
   signinRedirect() {
-    //Save requested URL for after redirect / sign-in
-    LocalStorage.setItem('requested_url', {
-      url: document.location.href,
-      time: new Date().getTime(),
-    });
+    if (document.location.href.indexOf('/login') === -1) {
+      //Save requested URL for after redirect / sign-in
+      LocalStorage.setItem('requested_url', {
+        url: document.location.href,
+        time: new Date().getTime(),
+      });
+    }
 
     if (this.userManager) this.userManager.signinRedirect();
   }
@@ -253,9 +255,9 @@ export default class OIDCAuthProviderService
     //If user requested an url in the last 10 minutes, we open it
     const ref = LocalStorage.getItem('requested_url') as { url: string; time: number };
     if (ref && new Date().getTime() - ref.time < 1000 * 60 * 10) {
+      LocalStorage.setItem('requested_url', null);
       document.location.replace(ref.url);
     }
-    LocalStorage.setItem('requested_url', null);
     //End of post-login redirection
 
     this.params?.onInitialized();
