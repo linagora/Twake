@@ -62,7 +62,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     const mapping = entity.options?.search?.esMapping;
 
     let mappings: any = {};
-    mappings[`_doc`] = { ...mapping, _source: { enabled: true } };
+    mappings[`_doc`] = { ...mapping, _source: { enabled: false } };
 
     try {
       await this.client.indices.get({
