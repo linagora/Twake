@@ -161,7 +161,7 @@ export class WorkspaceInviteTokensCrudController
                   value: null,
                 },
                 role: "member",
-                skipInvite: true,
+                skipInvite: false,
                 inviterEmail: inviter.email_canonical,
               },
             );

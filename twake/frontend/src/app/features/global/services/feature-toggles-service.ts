@@ -51,13 +51,9 @@ class FeatureTogglesService {
 
   private setActiveFeatureName(featureName: FeatureNames, value: FeatureValueType): void {
     if (typeof value === 'boolean') {
-      const shouldAddFeature = value && !this.isActiveFeatureName(featureName);
-      if (shouldAddFeature) this.activeFeatureNames.push(featureName);
-
-      const shouldRemoveFeature = !value && this.isActiveFeatureName(featureName);
-      if (shouldRemoveFeature)
-        this.activeFeatureNames = this.activeFeatureNames.filter(name => name !== featureName);
-      this.activeFeatureValues.set(featureName, true);
+      this.activeFeatureNames = this.activeFeatureNames.filter(name => name !== featureName);
+      if (value) this.activeFeatureNames.push(featureName);
+      this.activeFeatureValues.set(featureName, !!value);
     } else {
       this.activeFeatureValues.set(featureName, value);
     }
