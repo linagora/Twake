@@ -137,6 +137,7 @@ export class WorkspaceInviteTokensCrudController
     } else {
       if (request.body.join) {
         const userId = request.currentUser.id;
+        const user = await this.services.users.get({ id: userId });
 
         let companyUser = await this.services.companies.getCompanyUser(
           { id: company_id },
@@ -145,7 +146,7 @@ export class WorkspaceInviteTokensCrudController
         if (!companyUser) {
           const inviter = await this.services.users.get({ id: entity.user_id });
 
-          const createdConsoleUser = await this.services.console
+          await this.services.console
             .getClient()
             .addUserToCompany(
               { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
@@ -165,9 +166,10 @@ export class WorkspaceInviteTokensCrudController
                 inviterEmail: inviter.email_canonical,
               },
             );
+
           await this.services.console
             .getClient()
-            .updateLocalUserFromConsole(createdConsoleUser._id);
+            .updateLocalUserFromConsole(user.identity_provider_id);
           companyUser = await this.services.companies.getCompanyUser(
             { id: company_id },
             { id: userId },
