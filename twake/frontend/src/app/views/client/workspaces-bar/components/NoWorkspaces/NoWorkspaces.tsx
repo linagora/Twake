@@ -6,6 +6,7 @@ import { Button } from 'antd';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import InitService from 'app/features/global/services/init-service';
+import GotALink from './GotALink';
 
 import './styles.scss';
 
@@ -28,25 +29,26 @@ export default () => {
               {Languages.t('scenes.app.workspaces.welcome_page.no_workspace_subtitle')}
             </div>
 
+            <GotALink />
+
             <div className="retry">
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" className="link" onClick={() => retry()}>
                 {Languages.t('scenes.app.workspaces.welcome_page.try_again')}
               </a>
-              <br />
-              <br />
-
-              {InitService.server_infos?.configuration?.accounts?.type === 'console' && (
-                <ChangeCompany />
-              )}
-
-              <br />
-
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a className="blue_link" onClick={() => LoginService.logout()}>
                 {Languages.t('scenes.apps.account.account.logout')}
               </a>
             </div>
+
+            <br />
+            <br />
+
+            {InitService.server_infos?.configuration?.accounts?.type === 'console' && (
+              <ChangeCompany />
+            )}
           </div>
         </div>
       </div>
