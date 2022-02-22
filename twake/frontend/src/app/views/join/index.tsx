@@ -53,19 +53,21 @@ export default (props: PropsType): JSX.Element => {
       );
   }, []);
 
+  if (info?.auth_required) {
+    //Save requested URL for after redirect / sign-in
+    //Fixme this is code duplication from auth service
+    LocalStorage.setItem('requested_url', {
+      url: document.location.href,
+      time: new Date().getTime(),
+    });
+  }
+
   const onJoinAccountBtnClick = () => {
     if (!info) return null;
 
     if (info.auth_required) {
       const origin = document.location.origin;
       const currentPage = document.location.href;
-
-      //Save requested URL for after redirect / sign-in
-      //Fixme this is code duplication from auth service
-      LocalStorage.setItem('requested_url', {
-        url: document.location.href,
-        time: new Date().getTime(),
-      });
 
       const authUrl = `${
         InitService.server_infos?.configuration?.accounts?.console?.authority
@@ -111,12 +113,12 @@ export default (props: PropsType): JSX.Element => {
             {error && (
               <Space direction="vertical" align="center">
                 <Title>
-                  {error.title}{' '}
+                  {error.title || 'An error occured'}{' '}
                   <span role="img" aria-label="">
                     ✋
                   </span>
                 </Title>
-                <Text>{error.description}</Text>
+                <Text>{error.description || 'An unknown error occured, please try again.'}</Text>
                 <Divider />
                 <Button
                   disabled={busy}
@@ -129,7 +131,7 @@ export default (props: PropsType): JSX.Element => {
               </Space>
             )}
 
-            {info && (
+            {!error && info && (
               <Space direction="vertical" align="center">
                 <Title>
                   {Languages.t('scenes.join.join_workspace_from_company', [
