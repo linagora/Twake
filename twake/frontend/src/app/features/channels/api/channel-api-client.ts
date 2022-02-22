@@ -1,6 +1,7 @@
 import Api from '../../global/framework/api-service';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 
 const PREFIX = '/internal/services/channels/v1/companies';
 
@@ -33,11 +34,16 @@ class ChannelAPIClientService {
     { status = true, requireFocus = false },
   ): Promise<void> {
     if (requireFocus && !document.hasFocus()) return;
-    return Api.post<{ value: boolean }, void>(
-      `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/read`,
-      {
-        value: status,
-      },
+    delayRequest(
+      'reach-end-read-channel-' + channelId,
+      () =>
+        Api.post<{ value: boolean }, void>(
+          `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/read`,
+          {
+            value: status,
+          },
+        ),
+      { doInitialCall: false, timeout: 2000 },
     );
   }
 }

@@ -161,6 +161,8 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
 
+    await new Promise(resolve => setTimeout(resolve, 500)); //Wait for the channel members to be created on all services
+
     pushMessage({
       channel_id: channel.id,
       company_id: channel.company_id,
@@ -191,6 +193,8 @@ describe("The notification for user mentions", () => {
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv1(), channel);
     const member3 = await joinChannel(uuidv1(), channel);
+
+    await new Promise(resolve => setTimeout(resolve, 500)); //Wait for the channel members to be created on all services
 
     pushMessage({
       channel_id: channel.id,
@@ -229,6 +233,8 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.NONE);
     const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
 
+    await new Promise(resolve => setTimeout(resolve, 500)); //Wait for the channel members to be created on all services
+
     pushMessage({
       channel_id: channel.id,
       company_id: channel.company_id,
@@ -266,6 +272,8 @@ describe("The notification for user mentions", () => {
     const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
     const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.ME);
 
+    await new Promise(resolve => setTimeout(resolve, 500)); //Wait for the channel members to be created on all services
+
     pushMessage({
       channel_id: channel.id,
       company_id: channel.company_id,
@@ -299,6 +307,8 @@ describe("The notification for user mentions", () => {
     const member = await joinChannel(platform.currentUser.id, channel);
     const member2 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.MENTIONS);
     const member3 = await joinChannel(uuidv1(), channel, ChannelMemberNotificationLevel.ME);
+
+    await new Promise(resolve => setTimeout(resolve, 500)); //Wait for the channel members to be created on all services
 
     pushMessage({
       channel_id: channel.id,
