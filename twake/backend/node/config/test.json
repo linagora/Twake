@@ -8,7 +8,10 @@
       "contactPoints": ["scylladb:9042"],
       "wait": true,
       "retries": 50,
-      "delay": 500
+      "delay": 500,
+      "queryOptions": {
+        "consistency": 1
+      }
     }
   },
   "pubsub": {
