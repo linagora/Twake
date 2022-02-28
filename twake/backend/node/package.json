@@ -103,7 +103,7 @@
     "@types/socket.io-parser": "^3.0.0",
     "@types/socket.io-redis": "^1.0.26",
     "amqp-connection-manager": "^3.7.0",
-    "amqplib": "^0.7.1",
+    "amqplib": "^0.8.0",
     "analytics-node": "^5.0.0",
     "axios": "^0.21.3",
     "bcrypt": "^5.0.1",
