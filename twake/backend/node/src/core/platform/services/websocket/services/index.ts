@@ -1,6 +1,7 @@
-import socketIO from "socket.io";
-import SocketIORedis from "socket.io-redis";
-import socketIOJWT from "socketio-jwt";
+import socketIO, { Server } from "socket.io";
+const { createClient } = require("redis");
+import SocketIORedis from "@socket.io/redis-adapter";
+import jwt from "jsonwebtoken";
 import WebSocketAPI from "../provider";
 import {
   WebSocket,
@@ -10,6 +11,7 @@ import {
 } from "../types";
 import { EventEmitter } from "events";
 import { User } from "../../../../../utils/types";
+import { JwtType } from "../../types";
 
 export class WebSocketService extends EventEmitter implements WebSocketAPI {
   version: "1";
@@ -17,20 +19,35 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
 
   constructor(serviceConfiguration: WebSocketServiceConfiguration) {
     super();
-    this.io = socketIO(serviceConfiguration.server, serviceConfiguration.options);
+    this.io = new Server(serviceConfiguration.server, serviceConfiguration.options);
 
     if (serviceConfiguration.adapters?.types?.includes("redis")) {
-      this.io.adapter(SocketIORedis(serviceConfiguration.adapters.redis));
+      const pubClient = createClient(serviceConfiguration.adapters.redis);
+      const subClient = pubClient.duplicate();
+      this.io.adapter(SocketIORedis.createAdapter(pubClient, subClient));
     }
 
-    this.io.sockets
-      .on(
-        "connection",
-        socketIOJWT.authorize({
-          secret: serviceConfiguration.auth.secret,
-          timeout: 15000,
-        }),
-      )
+    this.io
+      .use((socket, next) => {
+        if (socket.handshake.query && socket.handshake.query.token) {
+          jwt.verify(
+            socket.handshake.query.token as string,
+            serviceConfiguration.auth.secret as string,
+            (err, decoded) => {
+              if (err) return next(new Error("Authentication error"));
+              (socket as unknown as WebSocket).decoded_token = decoded as JwtType;
+              next();
+            },
+          );
+        } else {
+          next(new Error("Authentication error"));
+        }
+      })
+      .on("connection", socket => {
+        socket.on("message", message => {
+          this.io.emit("message", message);
+        });
+      })
       .on("authenticated", (socket: WebSocket) => {
         const user = this.getUser(socket);
 

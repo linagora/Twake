@@ -1,4 +1,3 @@
-import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
 import { Consumes, ServiceName, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "./provider";
@@ -26,7 +25,7 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
         path: this.configuration.get<string>("path", "/socket"),
       },
       adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
-      auth: this.configuration.get<SocketIOJWTOptions>("auth.jwt"),
+      auth: this.configuration.get<{ secret: string }>("auth.jwt"),
     });
 
     fastify.register(websocketPlugin, {

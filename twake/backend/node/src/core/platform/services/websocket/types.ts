@@ -1,21 +1,20 @@
 import { Server as HttpServer } from "http";
 import { Server as HttpsServer } from "https";
-import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
-import socketIO from "socket.io";
-import { SocketIORedisOptions } from "socket.io-redis";
+import socketIO, { Socket } from "socket.io";
+import { RedisAdapterOptions } from "@socket.io/redis-adapter";
 import { User } from "../../../../utils/types";
 import { JwtType } from "../types";
 
 export interface AdaptersConfiguration {
   types: Array<string>;
-  redis: SocketIORedisOptions;
+  redis: RedisAdapterOptions;
 }
 
 export interface WebSocketServiceConfiguration {
   server: HttpServer | HttpsServer;
-  options?: socketIO.ServerOptions;
+  options?: socketIO.ServerOptions | { path: string };
   adapters?: AdaptersConfiguration;
-  auth?: SocketIOJWTOptions;
+  auth?: { secret: string };
 }
 
 export interface WebSocketUser extends User {
@@ -26,7 +25,7 @@ export interface WebSockets {
   [index: string]: WebSocket[];
 }
 
-export interface WebSocket extends SocketIO.Socket {
+export interface WebSocket extends Socket {
   decoded_token: DecodedToken;
 }
 
