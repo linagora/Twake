@@ -45,5 +45,43 @@ async function client(origin, query, parameters, options) {
     [],
     {},
   );
-  console.log(result.rows.map(row => row.table_name));
+  for (row of result.rows) {
+    const fromTable = fromKeyspace + "." + row.table_name;
+    const toTable = toKeyspace + "." + row.table_name;
+
+    const fromResult = await client(fromClient, "SELECT count(*) from " + fromTable + "", [], {});
+    const fromCount = fromResult.rows[0].count;
+
+    try {
+      const toResult = await client(toClient, "SELECT count(*) from " + toTable + "", [], {});
+      const toCount = toResult.rows[0].count;
+      console.log(fromTable.padEnd(50) + " | " + (toCount + "/" + fromCount).padEnd(20) + " | ");
+
+      if (fromCount < toCount) {
+        await new Promise(r => {
+          fromClient.eachRow(
+            "SELECT JSON * from " + fromTable,
+            [],
+            { prepare: true, fetchSize: 1000 },
+            async function (n, row) {
+              const json = row["[json]"];
+              //TODO the prod table can have additional depreciated fields, we need to remove them
+              await client(toClient, "INSERT INTO " + toTable + " JSON '" + json + "'", [], {});
+            },
+            function (err, result) {
+              if (result && result.nextPage) {
+                result.nextPage();
+              } else {
+                r();
+              }
+            },
+          );
+        });
+      }
+    } catch (err) {
+      console.log(fromTable.padEnd(50) + " | " + ("error" + "/" + fromCount).padEnd(20) + " | ");
+    }
+
+    //TODO copy content
+  }
 })();
