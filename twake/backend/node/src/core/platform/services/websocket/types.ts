@@ -2,13 +2,13 @@ import { Server as HttpServer } from "http";
 import { Server as HttpsServer } from "https";
 import { IOptions as SocketIOJWTOptions } from "socketio-jwt";
 import socketIO from "socket.io";
-import SocketIORedis from "socket.io-redis";
+import { SocketIORedisOptions } from "socket.io-redis";
 import { User } from "../../../../utils/types";
 import { JwtType } from "../types";
 
 export interface AdaptersConfiguration {
   types: Array<string>;
-  redis: SocketIORedis.RedisAdapterOptions;
+  redis: SocketIORedisOptions;
 }
 
 export interface WebSocketServiceConfiguration {

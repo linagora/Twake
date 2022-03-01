@@ -20,7 +20,7 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
     this.io = socketIO(serviceConfiguration.server, serviceConfiguration.options);
 
     if (serviceConfiguration.adapters?.types?.includes("redis")) {
-      this.io.adapter(SocketIORedis.createAdapter(serviceConfiguration.adapters.redis));
+      this.io.adapter(SocketIORedis(serviceConfiguration.adapters.redis));
     }
 
     this.io.sockets
