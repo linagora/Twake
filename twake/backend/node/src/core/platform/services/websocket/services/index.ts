@@ -12,7 +12,6 @@ import {
 import { EventEmitter } from "events";
 import { User } from "../../../../../utils/types";
 import { JwtType } from "../../types";
-import FastifyIO from "fastify-socket.io";
 
 export class WebSocketService extends EventEmitter implements WebSocketAPI {
   version: "1";
@@ -21,8 +20,7 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
   constructor(serviceConfiguration: WebSocketServiceConfiguration) {
     super();
 
-    serviceConfiguration.server.register(FastifyIO, serviceConfiguration.options);
-
+    /*
     serviceConfiguration.server.ready().then(() => {
       this.io = serviceConfiguration.server.io;
 
@@ -76,7 +74,7 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
             } as WebsocketUserEvent),
           );
         });
-    });
+    });*/
   }
 
   onUserConnected(listener: (event: WebsocketUserEvent) => void): this {

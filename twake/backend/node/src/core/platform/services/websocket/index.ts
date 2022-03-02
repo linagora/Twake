@@ -3,6 +3,7 @@ import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "./provider";
 import { WebSocketService } from "./services";
 import { AdaptersConfiguration } from "./types";
+import FastifyIO from "fastify-socket.io";
 
 @Consumes(["webserver"])
 @ServiceName("websocket")
@@ -18,14 +19,18 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
   async doInit(): Promise<this> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
 
+    const options = {
+      path: this.configuration.get<string>("path", "/socket"),
+    };
+
     this.service = new WebSocketService({
       server: fastify,
-      options: {
-        path: this.configuration.get<string>("path", "/socket"),
-      },
+      options,
       adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
       auth: this.configuration.get<{ secret: string }>("auth.jwt"),
     });
+
+    fastify.register(FastifyIO, options);
 
     return this;
   }
