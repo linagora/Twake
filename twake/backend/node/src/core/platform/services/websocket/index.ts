@@ -24,7 +24,7 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
       path: this.configuration.get<string>("path", "/socket"),
     };
 
-    fastify.register(FastifyIO, options);
+    fastify.register(FastifyIO, { ...options, allowEIO3: true });
 
     this.service = new WebSocketService({
       server: fastify,
