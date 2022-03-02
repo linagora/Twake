@@ -113,9 +113,12 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   @SkipCLI()
   async doStart(): Promise<this> {
     try {
+      console.log("Server start to listen NOW");
+
       await this.server.listen(this.configuration.get<number>("port", 3000), "0.0.0.0");
 
       this.server.ready(err => {
+        console.log("Server was READY v2");
         if (err) throw err;
         this.server.swagger();
       });

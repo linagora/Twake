@@ -21,6 +21,8 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
     super();
 
     serviceConfiguration.server.ready().then(() => {
+      console.log("Server was READY !");
+
       this.io = serviceConfiguration.server.io;
 
       if (serviceConfiguration.adapters?.types?.includes("redis")) {
