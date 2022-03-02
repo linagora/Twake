@@ -12,6 +12,7 @@ import {
 import { EventEmitter } from "events";
 import { User } from "../../../../../utils/types";
 import { JwtType } from "../../types";
+import FastifyIO from "fastify-socket.io";
 
 export class WebSocketService extends EventEmitter implements WebSocketAPI {
   version: "1";
@@ -19,58 +20,63 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
 
   constructor(serviceConfiguration: WebSocketServiceConfiguration) {
     super();
-    this.io = new Server(serviceConfiguration.server, serviceConfiguration.options);
 
-    if (serviceConfiguration.adapters?.types?.includes("redis")) {
-      const pubClient = createClient(serviceConfiguration.adapters.redis);
-      const subClient = pubClient.duplicate();
-      this.io.adapter(SocketIORedis.createAdapter(pubClient, subClient));
-    }
+    serviceConfiguration.server.register(FastifyIO, serviceConfiguration.options);
 
-    this.io
-      .use((socket, next) => {
-        if (socket.handshake.query && socket.handshake.query.token) {
-          jwt.verify(
-            socket.handshake.query.token as string,
-            serviceConfiguration.auth.secret as string,
-            (err, decoded) => {
-              if (err) return next(new Error("Authentication error"));
-              (socket as unknown as WebSocket).decoded_token = decoded as JwtType;
-              next();
-            },
-          );
-        } else {
-          next(new Error("Authentication error"));
-        }
-      })
-      .on("connection", socket => {
-        console.log("New connection on websocket");
-        console.log(socket);
-        socket.on("message", message => {
-          console.log("New message on websocket");
-          console.log(message);
-          this.io.emit("message", message);
-        });
-      })
-      .on("authenticated", (socket: WebSocket) => {
-        const user = this.getUser(socket);
-        console.log("User is authenticated on websocket");
-        console.log(user);
+    serviceConfiguration.server.ready().then(() => {
+      this.io = serviceConfiguration.server.io;
 
-        this.emit("user:connected", {
-          user,
-          socket,
-          event: "user:connected",
-        } as WebsocketUserEvent);
+      if (serviceConfiguration.adapters?.types?.includes("redis")) {
+        const pubClient = createClient(serviceConfiguration.adapters.redis);
+        const subClient = pubClient.duplicate();
+        this.io.adapter(SocketIORedis.createAdapter(pubClient, subClient));
+      }
 
-        socket.on("disconnect", () =>
-          this.emit("user:disconnected", {
+      this.io
+        .use((socket, next) => {
+          if (socket.handshake.query && socket.handshake.query.token) {
+            jwt.verify(
+              socket.handshake.query.token as string,
+              serviceConfiguration.auth.secret as string,
+              (err, decoded) => {
+                if (err) return next(new Error("Authentication error"));
+                (socket as unknown as WebSocket).decoded_token = decoded as JwtType;
+                next();
+              },
+            );
+          } else {
+            next(new Error("Authentication error"));
+          }
+        })
+        .on("connection", socket => {
+          console.log("New connection on websocket");
+          console.log(socket);
+          socket.on("message", message => {
+            console.log("New message on websocket");
+            console.log(message);
+            this.io.emit("message", message);
+          });
+        })
+        .on("authenticated", (socket: WebSocket) => {
+          const user = this.getUser(socket);
+          console.log("User is authenticated on websocket");
+          console.log(user);
+
+          this.emit("user:connected", {
             user,
             socket,
-            event: "user:disconnected",
-          } as WebsocketUserEvent),
-        );
-      });
+            event: "user:connected",
+          } as WebsocketUserEvent);
+
+          socket.on("disconnect", () =>
+            this.emit("user:disconnected", {
+              user,
+              socket,
+              event: "user:disconnected",
+            } as WebsocketUserEvent),
+          );
+        });
+    });
   }
 
   onUserConnected(listener: (event: WebsocketUserEvent) => void): this {

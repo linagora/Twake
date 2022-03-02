@@ -64,7 +64,7 @@ describe("The Websocket authentication", () => {
           .on("authenticated", () => {
             done(new Error("Should not occur"));
           })
-          .on("unauthorized", (msg: UnauthorizedError) => {
+          .on("unauthorized", (msg: any) => {
             console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
             done();
           });

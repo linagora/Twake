@@ -4026,6 +4026,13 @@ fastify-sensible@^3.0.1:
     type-is "^1.6.18"
     vary "^1.1.2"
 
+fastify-socket.io@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/fastify-socket.io/-/fastify-socket.io-3.0.0.tgz#9fa74b4fbba48675ea4367e9751d855b092c9a14"
+  integrity sha512-rVNs6NPY6ZoUQFMxZCRQreQpNyNkyKXrTbzXXzw55/grEegTW0meKBI02JAyWd2/T+k7nKB+d/7aNhYlB/Q5Bg==
+  dependencies:
+    fastify-plugin "^3.0.0"
+
 fastify-static@^4.0.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/fastify-static/-/fastify-static-4.5.0.tgz#0d3feff5373f5ed9c4e4cf31a2b84c2f70c35bb2"
