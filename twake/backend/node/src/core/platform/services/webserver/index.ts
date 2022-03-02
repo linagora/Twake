@@ -17,7 +17,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   name = "webserver";
   version = "1";
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
-  private onReadyHandlers: Function[];
+  private onReadyHandlers: Function[] = [];
 
   getServer(): FastifyInstance {
     return this.server;
