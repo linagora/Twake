@@ -17,9 +17,14 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   name = "webserver";
   version = "1";
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
+  private onReadyHandlers: Function[];
 
   getServer(): FastifyInstance {
     return this.server;
+  }
+
+  onReady(handler: Function): void {
+    this.onReadyHandlers.push(handler);
   }
 
   api(): WebServerAPI {
@@ -118,9 +123,12 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
       await this.server.listen(this.configuration.get<number>("port", 3000), "0.0.0.0");
 
       this.server.ready(err => {
-        console.log("Server was READY v2");
         if (err) throw err;
         this.server.swagger();
+
+        this.onReadyHandlers.forEach(handler => {
+          handler(err);
+        });
       });
 
       return this;

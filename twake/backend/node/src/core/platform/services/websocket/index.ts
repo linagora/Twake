@@ -17,7 +17,8 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
   }
 
   async doInit(): Promise<this> {
-    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
+    const webserver = this.context.getProvider<WebServerAPI>("webserver");
+    const fastify = webserver.getServer();
 
     const options = {
       path: this.configuration.get<string>("path", "/socket"),
@@ -28,6 +29,7 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
     this.service = new WebSocketService({
       server: fastify,
       options,
+      ready: webserver.onReady,
       adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
       auth: this.configuration.get<{ secret: string }>("auth.jwt"),
     });

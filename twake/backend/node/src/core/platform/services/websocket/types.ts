@@ -13,6 +13,7 @@ export interface AdaptersConfiguration {
 
 export interface WebSocketServiceConfiguration {
   server: FastifyInstance;
+  ready: Function;
   options?: socketIO.ServerOptions | { path: string };
   adapters?: AdaptersConfiguration;
   auth?: { secret: string };
