@@ -29,7 +29,7 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
     this.service = new WebSocketService({
       server: fastify,
       options,
-      ready: webserver.onReady,
+      ready: webserver.onReady.bind(webserver),
       adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
       auth: this.configuration.get<{ secret: string }>("auth.jwt"),
     });
