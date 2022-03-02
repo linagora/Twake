@@ -20,6 +20,8 @@ export default class RoomManager implements RealtimeRoomManager {
       logger.info(`User ${event.user.id} is connected`);
 
       event.socket.on("realtime:join", async (joinEvent: JoinRoomEvent) => {
+        console.log("got join event", joinEvent);
+
         const canJoin =
           joinEvent.name.indexOf("previous::") === 0 || //Compatibility with old collections
           (await this.userCanJoinRoom(event.user, joinEvent));

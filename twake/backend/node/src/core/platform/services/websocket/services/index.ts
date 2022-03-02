@@ -44,12 +44,18 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
         }
       })
       .on("connection", socket => {
+        console.log("New connection on websocket");
+        console.log(socket);
         socket.on("message", message => {
+          console.log("New message on websocket");
+          console.log(message);
           this.io.emit("message", message);
         });
       })
       .on("authenticated", (socket: WebSocket) => {
         const user = this.getUser(socket);
+        console.log("User is authenticated on websocket");
+        console.log(user);
 
         this.emit("user:connected", {
           user,
