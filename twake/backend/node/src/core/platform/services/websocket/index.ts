@@ -1,7 +1,6 @@
 import { Consumes, ServiceName, TwakeService } from "../../framework";
 import WebServerAPI from "../webserver/provider";
 import WebSocketAPI from "./provider";
-import websocketPlugin from "./plugin";
 import { WebSocketService } from "./services";
 import { AdaptersConfiguration } from "./types";
 
@@ -26,10 +25,6 @@ export default class WebSocket extends TwakeService<WebSocketAPI> {
       },
       adapters: this.configuration.get<AdaptersConfiguration>("adapters"),
       auth: this.configuration.get<{ secret: string }>("auth.jwt"),
-    });
-
-    fastify.register(websocketPlugin, {
-      io: this.service.getIo(),
     });
 
     return this;
