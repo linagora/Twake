@@ -20,32 +20,31 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
   constructor(serviceConfiguration: WebSocketServiceConfiguration) {
     super();
 
-    this.io = serviceConfiguration.server.io;
-
-    if (serviceConfiguration.adapters?.types?.includes("redis")) {
-      const pubClient = createClient(serviceConfiguration.adapters.redis);
-      const subClient = pubClient.duplicate();
-      this.io.adapter(SocketIORedis.createAdapter(pubClient, subClient));
-    }
-
-    this.io.use((socket, next) => {
-      if (socket.handshake.query && socket.handshake.query.token) {
-        jwt.verify(
-          socket.handshake.query.token as string,
-          serviceConfiguration.auth.secret as string,
-          (err, decoded) => {
-            if (err) return next(new Error("Authentication error"));
-            (socket as unknown as WebSocket).decoded_token = decoded as JwtType;
-            next();
-          },
-        );
-      } else {
-        next(new Error("Authentication error"));
-      }
-    });
-
     serviceConfiguration.server.ready().then(() => {
+      this.io = serviceConfiguration.server.io;
+
+      if (serviceConfiguration.adapters?.types?.includes("redis")) {
+        const pubClient = createClient(serviceConfiguration.adapters.redis);
+        const subClient = pubClient.duplicate();
+        this.io.adapter(SocketIORedis.createAdapter(pubClient, subClient));
+      }
+
       this.io
+        .use((socket, next) => {
+          if (socket.handshake.query && socket.handshake.query.token) {
+            jwt.verify(
+              socket.handshake.query.token as string,
+              serviceConfiguration.auth.secret as string,
+              (err, decoded) => {
+                if (err) return next(new Error("Authentication error"));
+                (socket as unknown as WebSocket).decoded_token = decoded as JwtType;
+                next();
+              },
+            );
+          } else {
+            next(new Error("Authentication error"));
+          }
+        })
         .on("connection", socket => {
           console.log("New connection on websocket");
           console.log(socket);
