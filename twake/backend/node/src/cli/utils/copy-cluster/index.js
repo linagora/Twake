@@ -49,6 +49,19 @@ async function client(origin, query, parameters, options) {
     const fromTable = fromKeyspace + "." + row.table_name;
     const toTable = toKeyspace + "." + row.table_name;
 
+    const destColumns = (
+      await client(
+        toClient,
+        "SELECT column_name from system_schema.columns where keyspace_name = '" +
+          fromKeyspace +
+          "' and table_name : '" +
+          row.table_name +
+          "'",
+        [],
+        {},
+      )
+    ).rows.map(r => r.column_name);
+
     const fromResult = await client(fromClient, "SELECT count(*) from " + fromTable + "", [], {});
     const fromCount = fromResult.rows[0].count;
 
@@ -64,9 +77,20 @@ async function client(origin, query, parameters, options) {
             [],
             { prepare: true, fetchSize: 1000 },
             async function (n, row) {
-              const json = row["[json]"];
-              //TODO the prod table can have additional depreciated fields, we need to remove them
-              await client(toClient, "INSERT INTO " + toTable + " JSON '" + json + "'", [], {});
+              const json = JSON.parse(row["[json]"]);
+
+              //The from table can have additional depreciated fields, we need to remove them
+              const filteredJson = {};
+              for (const col of destColumns) {
+                if (json[col]) filteredJson[col] = json[col];
+              }
+
+              await client(
+                toClient,
+                "INSERT INTO " + toTable + " JSON '" + JSON.stringify(filteredJson) + "'",
+                [],
+                {},
+              );
             },
             function (err, result) {
               if (result && result.nextPage) {
