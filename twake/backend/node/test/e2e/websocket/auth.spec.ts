@@ -1,7 +1,6 @@
 import { describe, it, beforeEach, afterEach } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import io from "socket.io-client";
-import { UnauthorizedError } from "socketio-jwt";
 
 describe("The Websocket authentication", () => {
   let platform: TestPlatform;
@@ -45,12 +44,15 @@ describe("The Websocket authentication", () => {
     it("should not be able to connect without a JWT token", done => {
       socket.connect();
       socket.on("connect", () => {
+        console.log("CONNECTED emit auth");
         socket
           .emit("authenticate", {})
           .on("authenticated", () => {
+            console.log("authenticated received");
             done(new Error("Should not occur"));
           })
-          .on("unauthorized", (msg: UnauthorizedError) => {
+          .on("unauthorized", (msg: any) => {
+            console.log("unauthorized received");
             console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
             done();
           });
@@ -65,7 +67,7 @@ describe("The Websocket authentication", () => {
           .on("authenticated", () => {
             done(new Error("Should not occur"));
           })
-          .on("unauthorized", (msg: UnauthorizedError) => {
+          .on("unauthorized", (msg: any) => {
             console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
             done();
           });
