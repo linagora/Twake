@@ -8,6 +8,7 @@ import LockedHistoryBanner from 'app/components/locked-features-components/locke
 import MessageHistoryService from 'app/features/messages/services/message-history-service';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 
 type Props = {
   companyId: string;
@@ -71,7 +72,9 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
         loadMore={loadMore}
         atBottomStateChange={(atBottom: boolean) => {
           if (atBottom && window.reachedEnd)
-            ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
+            ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
+              status: true,
+            });
         }}
       />
     </MessagesListContext.Provider>

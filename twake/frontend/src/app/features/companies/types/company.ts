@@ -1,3 +1,5 @@
+import { FeatureValueType } from 'app/features/global/services/feature-toggles-service';
+
 export type CompanyRoleType = 'owner' | 'admin' | 'member' | 'guest';
 
 export type CompanyStatusType = 'active' | 'deactivated' | 'invited';
@@ -30,6 +32,7 @@ export type CompanyPlanObjectType = {
   name: string;
   billing?: CompanyBillingObjectType;
   limits?: CompanyLimitsObjectType;
+  features: { [key: string]: FeatureValueType };
 };
 
 export type CompanyType = {
