@@ -33,6 +33,8 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
 
       this.io
         .use((socket, next) => {
+          console.log("In the use on websocket");
+
           if (socket.handshake.query && socket.handshake.query.token) {
             jwt.verify(
               socket.handshake.query.token as string,
