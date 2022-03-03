@@ -8,6 +8,8 @@ var toAuthProvider = new cassandra.auth.PlainTextAuthProvider("", "");
 var toContactPoints = [""];
 var toKeyspace = "twake";
 
+var forceUpdateAll = false;
+
 // -- start process
 
 var fromClient = new cassandra.Client({
@@ -89,15 +91,26 @@ async function client(origin, query, parameters, options) {
       try {
         const toResult = await client(toClient, "SELECT count(*) from " + toTable + "", [], {});
         const toCount = toResult.rows[0].count;
-        console.log(
-          fromTable.padEnd(50) +
-            " | " +
-            (toCount + "/" + fromCount).padEnd(20) +
-            " | " +
-            (toCount >= fromCount ? "✅" : "❌"),
-        );
 
-        if (fromCount > toCount || !fromCount) {
+        if (row.table_name.indexOf("counter") >= 0) {
+          console.log(
+            fromTable.padEnd(50) + " | " + ("counter_table" + "/" + fromCount).padEnd(20) + " | 🧮",
+          );
+          if (fromCount > toCount || !fromCount || forceUpdateAll) {
+            //TODO handle counters (it is special !)
+          }
+          continue;
+        } else {
+          console.log(
+            fromTable.padEnd(50) +
+              " | " +
+              (toCount + "/" + fromCount).padEnd(20) +
+              " | " +
+              (toCount >= fromCount ? "✅" : "❌"),
+          );
+        }
+
+        if (fromCount > toCount || !fromCount || forceUpdateAll) {
           await new Promise(r => {
             fromClient.eachRow(
               "SELECT JSON * from " + fromTable,
@@ -127,8 +140,9 @@ async function client(origin, query, parameters, options) {
                   console.log(err);
                 }
               },
-              function (err, result) {
+              async function (err, result) {
                 if (result && result.nextPage) {
+                  await new Promise(r => setTimeout(r, 1000));
                   result.nextPage();
                 } else {
                   r();
