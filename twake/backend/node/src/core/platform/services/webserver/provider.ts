@@ -7,4 +7,6 @@ export default interface WebServerAPI extends TwakeServiceProvider {
    * Get the fastify webserver instance
    */
   getServer(): FastifyInstance<Server, IncomingMessage, ServerResponse>;
+
+  onReady(handler: Function): void;
 }
