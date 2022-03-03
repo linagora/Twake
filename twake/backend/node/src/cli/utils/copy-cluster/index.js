@@ -49,6 +49,7 @@ async function client(origin, query, parameters, options) {
     try {
       const fromTable = fromKeyspace + "." + row.table_name;
       const toTable = toKeyspace + "." + row.table_name;
+      let fromCount = 0;
 
       const destColumns = (
         await client(
@@ -56,7 +57,7 @@ async function client(origin, query, parameters, options) {
           "SELECT column_name from system_schema.columns where keyspace_name = '" +
             toKeyspace +
             "' and table_name = '" +
-            toTable +
+            row.table_name +
             "'",
           [],
           {},
@@ -68,12 +69,11 @@ async function client(origin, query, parameters, options) {
           fromTable.padEnd(50) +
             " | " +
             ("table_not_in_destination" + "/" + fromCount).padEnd(20) +
-            " | ",
+            " | ⏺",
         );
         continue;
       }
 
-      let fromCount = 0;
       try {
         const fromResult = await client(
           fromClient,
@@ -89,9 +89,15 @@ async function client(origin, query, parameters, options) {
       try {
         const toResult = await client(toClient, "SELECT count(*) from " + toTable + "", [], {});
         const toCount = toResult.rows[0].count;
-        console.log(fromTable.padEnd(50) + " | " + (toCount + "/" + fromCount).padEnd(20) + " | ");
+        console.log(
+          fromTable.padEnd(50) +
+            " | " +
+            (toCount + "/" + fromCount).padEnd(20) +
+            " | " +
+            (toCount >= fromCount ? "✅" : "❌"),
+        );
 
-        if (fromCount < toCount || !fromCount) {
+        if (fromCount > toCount || !fromCount) {
           await new Promise(r => {
             fromClient.eachRow(
               "SELECT JSON * from " + fromTable,
@@ -109,7 +115,11 @@ async function client(origin, query, parameters, options) {
 
                   await client(
                     toClient,
-                    "INSERT INTO " + toTable + " JSON '" + JSON.stringify(filteredJson) + "'",
+                    "INSERT INTO " +
+                      toTable +
+                      " JSON '" +
+                      JSON.stringify(filteredJson).replace(/'/g, "'$&") +
+                      "'",
                     [],
                     {},
                   );
@@ -128,7 +138,9 @@ async function client(origin, query, parameters, options) {
           });
         }
       } catch (err) {
-        console.log(fromTable.padEnd(50) + " | " + ("error" + "/" + fromCount).padEnd(20) + " | ");
+        console.log(
+          fromTable.padEnd(50) + " | " + ("error" + "/" + fromCount).padEnd(20) + " | ❌",
+        );
       }
     } catch (err) {
       console.log(err);
