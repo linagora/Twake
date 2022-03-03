@@ -46,64 +46,93 @@ async function client(origin, query, parameters, options) {
     {},
   );
   for (row of result.rows) {
-    const fromTable = fromKeyspace + "." + row.table_name;
-    const toTable = toKeyspace + "." + row.table_name;
-
-    const destColumns = (
-      await client(
-        toClient,
-        "SELECT column_name from system_schema.columns where keyspace_name = '" +
-          fromKeyspace +
-          "' and table_name : '" +
-          row.table_name +
-          "'",
-        [],
-        {},
-      )
-    ).rows.map(r => r.column_name);
-
-    const fromResult = await client(fromClient, "SELECT count(*) from " + fromTable + "", [], {});
-    const fromCount = fromResult.rows[0].count;
-
     try {
-      const toResult = await client(toClient, "SELECT count(*) from " + toTable + "", [], {});
-      const toCount = toResult.rows[0].count;
-      console.log(fromTable.padEnd(50) + " | " + (toCount + "/" + fromCount).padEnd(20) + " | ");
+      const fromTable = fromKeyspace + "." + row.table_name;
+      const toTable = toKeyspace + "." + row.table_name;
 
-      if (fromCount < toCount) {
-        await new Promise(r => {
-          fromClient.eachRow(
-            "SELECT JSON * from " + fromTable,
-            [],
-            { prepare: true, fetchSize: 1000 },
-            async function (n, row) {
-              const json = JSON.parse(row["[json]"]);
+      const destColumns = (
+        await client(
+          toClient,
+          "SELECT column_name from system_schema.columns where keyspace_name = '" +
+            toKeyspace +
+            "' and table_name = '" +
+            toTable +
+            "'",
+          [],
+          {},
+        )
+      ).rows.map(r => r.column_name);
 
-              //The from table can have additional depreciated fields, we need to remove them
-              const filteredJson = {};
-              for (const col of destColumns) {
-                if (json[col]) filteredJson[col] = json[col];
-              }
+      if (destColumns.length === 0) {
+        console.log(
+          fromTable.padEnd(50) +
+            " | " +
+            ("table_not_in_destination" + "/" + fromCount).padEnd(20) +
+            " | ",
+        );
+        continue;
+      }
 
-              await client(
-                toClient,
-                "INSERT INTO " + toTable + " JSON '" + JSON.stringify(filteredJson) + "'",
-                [],
-                {},
-              );
-            },
-            function (err, result) {
-              if (result && result.nextPage) {
-                result.nextPage();
-              } else {
-                r();
-              }
-            },
-          );
-        });
+      let fromCount = 0;
+      try {
+        const fromResult = await client(
+          fromClient,
+          "SELECT count(*) from " + fromTable + "",
+          [],
+          {},
+        );
+        fromCount = fromResult.rows[0].count;
+      } catch (err) {
+        fromCount = NaN;
+      }
+
+      try {
+        const toResult = await client(toClient, "SELECT count(*) from " + toTable + "", [], {});
+        const toCount = toResult.rows[0].count;
+        console.log(fromTable.padEnd(50) + " | " + (toCount + "/" + fromCount).padEnd(20) + " | ");
+
+        if (fromCount < toCount || !fromCount) {
+          await new Promise(r => {
+            fromClient.eachRow(
+              "SELECT JSON * from " + fromTable,
+              [],
+              { prepare: true, fetchSize: 1000 },
+              async function (n, row) {
+                try {
+                  const json = JSON.parse(row["[json]"]);
+
+                  //The from table can have additional depreciated fields, we need to remove them
+                  const filteredJson = {};
+                  for (const col of destColumns) {
+                    if (json[col] !== undefined) filteredJson[col] = json[col];
+                  }
+
+                  await client(
+                    toClient,
+                    "INSERT INTO " + toTable + " JSON '" + JSON.stringify(filteredJson) + "'",
+                    [],
+                    {},
+                  );
+                } catch (err) {
+                  console.log(err);
+                }
+              },
+              function (err, result) {
+                if (result && result.nextPage) {
+                  result.nextPage();
+                } else {
+                  r();
+                }
+              },
+            );
+          });
+        }
+      } catch (err) {
+        console.log(fromTable.padEnd(50) + " | " + ("error" + "/" + fromCount).padEnd(20) + " | ");
       }
     } catch (err) {
-      console.log(fromTable.padEnd(50) + " | " + ("error" + "/" + fromCount).padEnd(20) + " | ");
+      console.log(err);
+      continue;
     }
 
     //TODO copy content
