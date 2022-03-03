@@ -21,8 +21,6 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
     super();
 
     serviceConfiguration.ready(() => {
-      console.log("Server was READY !");
-
       this.io = serviceConfiguration.server.io;
 
       if (serviceConfiguration.adapters?.types?.includes("redis")) {
@@ -31,52 +29,49 @@ export class WebSocketService extends EventEmitter implements WebSocketAPI {
         this.io.adapter(SocketIORedis.createAdapter(pubClient, subClient));
       }
 
-      this.io
-        .use((socket, next) => {
-          console.log("In the use on websocket");
-
-          if (socket.handshake.query && socket.handshake.query.token) {
+      this.io.on("connection", socket => {
+        socket.on("authenticate", message => {
+          if (message.token) {
             jwt.verify(
-              socket.handshake.query.token as string,
+              message.token as string,
               serviceConfiguration.auth.secret as string,
               (err, decoded) => {
-                if (err) return next(new Error("Authentication error"));
+                if (err) {
+                  socket.emit("unauthorized", { err });
+                  socket.disconnect();
+                  return;
+                }
                 (socket as unknown as WebSocket).decoded_token = decoded as JwtType;
-                next();
+                const user = this.getUser(socket as WebSocket);
+
+                socket.emit("authenticated");
+
+                socket.on("message", message => {
+                  this.io.emit("message", message);
+                });
+
+                this.emit("user:connected", {
+                  user,
+                  socket,
+                  event: "user:connected",
+                } as WebsocketUserEvent);
+
+                socket.on("disconnect", () =>
+                  this.emit("user:disconnected", {
+                    user,
+                    socket,
+                    event: "user:disconnected",
+                  } as WebsocketUserEvent),
+                );
               },
             );
           } else {
-            next(new Error("Authentication error"));
+            socket.emit("unauthorized", { err: "No token provided" });
+            socket.disconnect();
+            return;
           }
-        })
-        .on("connection", socket => {
-          console.log("New connection on websocket");
-          console.log(socket);
-          socket.on("message", message => {
-            console.log("New message on websocket");
-            console.log(message);
-            this.io.emit("message", message);
-          });
-        })
-        .on("authenticated", (socket: WebSocket) => {
-          const user = this.getUser(socket);
-          console.log("User is authenticated on websocket");
-          console.log(user);
-
-          this.emit("user:connected", {
-            user,
-            socket,
-            event: "user:connected",
-          } as WebsocketUserEvent);
-
-          socket.on("disconnect", () =>
-            this.emit("user:disconnected", {
-              user,
-              socket,
-              event: "user:disconnected",
-            } as WebsocketUserEvent),
-          );
         });
+      });
     });
   }
 
