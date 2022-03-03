@@ -10,6 +10,7 @@ var toKeyspace = "twake";
 
 var forceUpdateAll = false;
 var ignoreTables = ["notification"];
+var countersTables = ["statistics", "stats_counter", "channel_counters", "scheduled_queue_counter"];
 
 // -- start process
 
@@ -96,7 +97,7 @@ async function client(origin, query, parameters, options) {
         const toResult = await client(toClient, "SELECT count(*) from " + toTable + "", [], {});
         const toCount = toResult.rows[0].count;
 
-        if (row.table_name.indexOf("counter") >= 0) {
+        if (row.table_name.indexOf("counter") >= 0 || countersTables.includes(row.table_name)) {
           console.log(
             fromTable.padEnd(50) + " | " + ("counter_table" + "/" + fromCount).padEnd(20) + " | 🧮",
           );
