@@ -9,6 +9,7 @@ var toContactPoints = [""];
 var toKeyspace = "twake";
 
 var forceUpdateAll = false;
+var ignoreTables = ["notification"];
 
 // -- start process
 
@@ -51,6 +52,12 @@ async function client(origin, query, parameters, options) {
     try {
       const fromTable = fromKeyspace + "." + row.table_name;
       const toTable = toKeyspace + "." + row.table_name;
+
+      if (ignoreTables.includes(row.table_name)) {
+        console.log(fromTable.padEnd(50) + " | " + "ignored".padEnd(20) + " | ⏺");
+        continue;
+      }
+
       let fromCount = 0;
 
       const destColumns = (
@@ -66,16 +73,6 @@ async function client(origin, query, parameters, options) {
         )
       ).rows.map(r => r.column_name);
 
-      if (destColumns.length === 0) {
-        console.log(
-          fromTable.padEnd(50) +
-            " | " +
-            ("table_not_in_destination" + "/" + fromCount).padEnd(20) +
-            " | ⏺",
-        );
-        continue;
-      }
-
       try {
         const fromResult = await client(
           fromClient,
@@ -86,6 +83,13 @@ async function client(origin, query, parameters, options) {
         fromCount = fromResult.rows[0].count;
       } catch (err) {
         fromCount = NaN;
+      }
+
+      if (destColumns.length === 0) {
+        console.log(
+          fromTable.padEnd(50) + " | " + ("not_in_dest" + "/" + fromCount).padEnd(20) + " | ⏺",
+        );
+        continue;
       }
 
       try {
@@ -123,6 +127,14 @@ async function client(origin, query, parameters, options) {
                   //The from table can have additional depreciated fields, we need to remove them
                   const filteredJson = {};
                   for (const col of destColumns) {
+                    if (
+                      typeof json[col] == "string" &&
+                      (json[col] || "").match(
+                        /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]+/,
+                      )
+                    ) {
+                      json[col] = json[col].split(".")[0];
+                    }
                     if (json[col] !== undefined) filteredJson[col] = json[col];
                   }
 
