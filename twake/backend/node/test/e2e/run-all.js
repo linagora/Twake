@@ -51,8 +51,7 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
 
   let summary = "";
 
-  for (const path of ["test/e2e/websocket/auth.spec.ts", "test/e2e/websocket/realtime.spec.ts"] ||
-    srcFiles) {
+  for (const path of srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
     const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
 
