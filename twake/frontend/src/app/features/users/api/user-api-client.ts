@@ -7,8 +7,8 @@ import WorkspaceAPIClient from '../../workspaces/api/workspace-api-client';
 import CurrentUser from '../../../deprecated/user/CurrentUser';
 import RouterService from 'app/features/router/services/router-service';
 
-type SearchContextType = {
-  scope: 'company' | 'workspace';
+export type SearchContextType = {
+  scope: 'company' | 'workspace' | 'all';
   companyId?: string;
   workspaceId?: string;
 };
@@ -32,10 +32,12 @@ class UserAPIClientService {
    *
    * @param id
    */
-  async list(users: string[] = []): Promise<UserType[]> {
+  async list(users: string[] = [], companyIds?: string[]): Promise<UserType[]> {
     return new Promise<UserType[]>(resolve => {
       Api.get(
-        `/internal/services/users/v1/users?user_ids=${users.join(',')}`,
+        `/internal/services/users/v1/users${users.length ? `?user_ids=${users.join(',')}` : ''}${
+          companyIds?.length ? `?company_ids=${companyIds.join(',')}` : ''
+        }`,
         (res: { resources: UserType[] }): void => {
           resolve(res.resources && res.resources.length ? res.resources : []);
         },
@@ -101,7 +103,11 @@ class UserAPIClientService {
     ).then(result => result.data);
   }
 
-  async search<T>(query: string, context: SearchContextType, callback?: (users: T[]) => void) {
+  async search<T>(
+    query: string | undefined,
+    context: SearchContextType,
+    callback?: (users: T[]) => void,
+  ) {
     let result: T[] = [];
 
     if (query === 'me') {
@@ -126,10 +132,10 @@ class UserAPIClientService {
   getSearchUsersRoute(query: string = '', context: SearchContextType) {
     let route = '';
 
-    if (context.scope === 'company') {
+    if (context.scope === 'company' || context.scope === 'all') {
       route = `${this.prefixUrl}/users${
         query.length
-          ? `?search=${encodeURIComponent(query)}${
+          ? `?include_companies=1&search=${encodeURIComponent(query)}${
               context.companyId && context.scope === 'company'
                 ? `&search_company_id=${context.companyId}`
                 : ''

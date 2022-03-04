@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Input, Row, Typography, InputRef } from 'antd';
-import Languages from 'app/features/global/services/languages-service';
-import Icon from 'app/components/icon/icon';
-import ObjectModal from 'components/object-modal/object-modal';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+
 import listService, {
   GenericChannel,
 } from 'app/features/global/services/search-list-manager-service';
+import Languages from 'app/features/global/services/languages-service';
+import Icon from 'app/components/icon/icon';
+import ObjectModal from 'components/object-modal/object-modal';
 import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
 import ChannelsService from 'app/deprecated/channels/channels.js';
 import RouterServices from 'app/features/router/services/router-service';
@@ -13,11 +15,12 @@ import ModalManager from 'app/components/modal/modal-manager';
 import { UserType } from 'app/features/users/types/user';
 import UsersService from 'app/features/users/services/current-user-service';
 import { ChannelType } from 'app/features/channels/types/channel';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
+import { useSetUserList, useUserList } from 'app/features/users/hooks/use-user-list';
+import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
 
 export default () => {
   const [search, setSearch] = useState<string>('');
@@ -28,9 +31,24 @@ export default () => {
   const currentUserId: string = UsersService.getCurrentUserId();
   const inputRef = useRef<InputRef>(null);
   const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
+  const { set: setUserList } = useSetUserList('WorkspaceChannelList');
+  const { userList } = useUserList();
+
+  const { search: searchUserList, result: searchedUserList } = useSearchUserList({
+    scope: 'company',
+  });
 
   useEffect(() => {
-    listService.searchAll('');
+    listService.searchAll('', { userListState: userList?.map(u => u) });
+  }, []);
+
+  useEffect(() => {
+    const users = list
+      .filter(generic => generic.type === 'user')
+      .map(generic => generic.resource as UserType);
+
+    if (users.length) setUserList(users);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -111,10 +129,13 @@ export default () => {
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setSearch(event.target.value);
             event.persist();
-
-            delayRequest('channel_members_list_search', () =>
-              listService.searchAll(event.target.value),
-            );
+            searchUserList(event.target.value);
+            delayRequest('channel_members_list_search', () => {
+              console.log(`result here for ${event.target.value}`, searchedUserList);
+              listService.searchAll(event.target.value, {
+                userListState: searchedUserList.map(u => u),
+              });
+            });
 
             return setCursor(0);
           }}

@@ -19,6 +19,9 @@ import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import Icon from 'app/components/icon/icon';
+import UserAPIClient from 'app/features/users/api/user-api-client';
+import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
+import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 
 type ColumnObjectType = { [key: string]: any };
 
@@ -49,6 +52,7 @@ export default ({ filter }: { filter: string }) => {
   const prefixRoute = '/internal/services/workspaces/v1';
   const workspaceUsersRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/users`;
 
+  const { set: setUserList } = useSetUserList('Members');
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { xs, sm, md, lg, xl } = useBreakpoint();
 
@@ -67,15 +71,22 @@ export default ({ filter }: { filter: string }) => {
       delayRequest('workspace_members_search', async () => {
         try {
           setLoading(true);
-          await Api.get(workspaceUsersRoute + `?search=${filter}`, (res: any) => {
-            const resources: ColumnObjectType[] = res.resources;
+          await UserAPIClient.search<WorkspaceUserType>(
+            filter,
+            { scope: 'workspace', companyId, workspaceId },
+            wsUsers => {
+              const resources: ColumnObjectType[] = wsUsers;
 
-            // Make sure we have unicity in this combined list
-            setServerSearchedData(
-              _.uniqBy([...serverSearchedData, ...(resources || [])], col => col.user.id),
-            );
-            updateFilteredData();
-          });
+              // Make sure we have unicity in this combined list
+              setServerSearchedData(
+                _.uniqBy([...serverSearchedData, ...(resources || [])], col => col.user.id),
+              );
+              updateFilteredData();
+
+              wsUsers && setUserList(wsUsers.map(wsUser => wsUser.user));
+            },
+          );
+
           setLoading(false);
         } catch (e) {
           console.error(e);
@@ -102,12 +113,15 @@ export default ({ filter }: { filter: string }) => {
   const requestWorkspaceUsers = async (pageToken?: string) => {
     try {
       setLoading(true);
+
       const res = (await Api.get(
         `${workspaceUsersRoute}?limit=25${pageToken ? `&page_token=${pageToken}` : ''}`,
-      )) as any;
+      )) as { resources: WorkspaceUserType[]; next_page_token: string };
       setPageToken(res.next_page_token || null);
-      if (res.resources)
+      if (res.resources) {
         setData(pageToken ? _.uniqBy([...data, ...res.resources], col => col.id) : res.resources);
+        setUserList(res.resources.map(wsUser => wsUser.user));
+      }
       setLoading(false);
     } catch (e) {
       console.error(e);

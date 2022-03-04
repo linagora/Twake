@@ -35,8 +35,9 @@ class SearchListManager extends Observable {
 
   public async searchAll(
     search: string,
-    opt?: {
-      onlyChannel: boolean;
+    opts?: {
+      onlyChannel?: boolean;
+      userListState?: UserType[];
     },
   ): Promise<void> {
     const { workspaceId, companyId } = RouterServices.getStateFromRoute();
@@ -50,13 +51,12 @@ class SearchListManager extends Observable {
     // Mine
     let mineWorkspaceChannels: ChannelType[] = [];
 
-    let usersSearched: UserType[] = [];
-
+    let usersSearched: UserType[] = opts?.userListState ? opts.userListState : [];
+    console.log('searchAll usersSearched', usersSearched);
     if (companyId && workspaceId) {
       channels = await ChannelsReachableAPIClient.get(companyId, workspaceId);
       directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
       mineWorkspaceChannels = await ChannelsMineAPIClient.get({ companyId, workspaceId });
-      usersSearched = await this.searchUsers(search);
     }
 
     // Filters
@@ -65,12 +65,14 @@ class SearchListManager extends Observable {
       mineWorkspaceChannels,
     });
 
-    this.directChannels = opt?.onlyChannel
+    this.directChannels = opts?.onlyChannel
       ? []
       : this.filterDirectChannels({ channels: directChannels });
+
     this.users = this.filterUsers({ users: usersSearched });
     // Concat list
     this.list = [...this.workspaceChannels, ...this.directChannels, ...this.users];
+    console.log('searchAll this.list', this.list);
 
     this.removeDuplicate();
 
@@ -144,7 +146,7 @@ class SearchListManager extends Observable {
 
       return (
         user && {
-          sortString: name,
+          sortString: UsersService.getFullName(user),
           filterString: UsersService.getFullName(user),
           type: 'user',
           resource: user,

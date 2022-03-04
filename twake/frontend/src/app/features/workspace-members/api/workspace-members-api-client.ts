@@ -5,7 +5,7 @@ import { TwakeService } from '../../global/framework/registry-decorator-service'
 const PREFIX = '/internal/services/workspaces/v1/companies';
 
 @TwakeService('WorkspaceUserAPIClientService')
-class WorkspaceUserAPIClient {
+class WorkspaceUserAPIClientService {
   /**
    * Get all workspace users
    *
@@ -33,5 +33,5 @@ class WorkspaceUserAPIClient {
     ).then(result => result.resource);
   }
 }
-
-export default new WorkspaceUserAPIClient();
+const WorkspaceUserAPIClient = new WorkspaceUserAPIClientService();
+export default WorkspaceUserAPIClient;

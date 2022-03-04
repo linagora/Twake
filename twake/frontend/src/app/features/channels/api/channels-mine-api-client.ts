@@ -49,7 +49,7 @@ class ChannelsMineAPIClient {
     return Api.get<ChannelsMineGetResponse>(
       `${this.prefix}/${context.companyId}/workspaces/${
         context.workspaceId && !options?.direct ? context.workspaceId : 'direct'
-      }/channels?mine=1&websockets=1`,
+      }/channels?mine=1&websockets=1${options?.direct ? '&include_users=1' : ''}`,
     ).then(result => {
       context.workspaceId &&
         this.realtime.set(

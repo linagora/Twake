@@ -8,12 +8,12 @@ export default (
   props: {
     maxItems?: number;
     render?: (item: any) => ReactElement;
-    onSearch?: (query: string, callback: (res: any[]) => void) => void;
+    onSearch?: (query: string, callback: (res: string[]) => void) => void;
     onSelect?: (id: string) => void;
     align?: 'top' | 'bottom';
   } & Omit<AutoCompleteProps, 'onSearch' | 'onSelect'>,
 ) => {
-  const [list, setList] = useState<any[]>([]);
+  const [list, setList] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
 
   const resetInputValue = () => setInputValue('');
@@ -47,10 +47,12 @@ export default (
       onChange={e => setInputValue(e || '')}
     >
       {list.slice(0, props.maxItems || 10).map((item: any) => {
-        return (
-          <Option key={item?.id} value={item?.id || ''}>
+        return item ? (
+          <Option key={item} value={item || ''}>
             {props.render ? props.render(item) : item?.id}
           </Option>
+        ) : (
+          <></>
         );
       })}
     </AutoComplete>

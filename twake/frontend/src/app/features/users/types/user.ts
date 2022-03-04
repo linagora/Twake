@@ -17,6 +17,12 @@ export type UserPreferencesType = null | {
   recent_workspaces?: { company_id: string; workspace_id: string }[];
 };
 
+export type UserCompanyType = {
+  company: CompanyType;
+  role: CompanyRoleType;
+  status: CompanyStatusType;
+};
+
 export type UserType = {
   connected?: boolean;
   email: string;
@@ -41,7 +47,7 @@ export type UserType = {
   timezone_offset?: string;
   tutorial_status?: any;
   username: string;
-  companies?: { company: CompanyType; role: CompanyRoleType; status: CompanyStatusType }[];
+  companies?: UserCompanyType[];
   preferences: UserPreferencesType;
   workspaces?: WorkspaceType[];
   workspaces_id?: string[];

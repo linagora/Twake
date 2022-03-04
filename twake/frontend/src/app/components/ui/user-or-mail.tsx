@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar, Col, Typography } from 'antd';
 import UsersService from 'app/features/users/services/current-user-service';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import './elements.scss';
-import { UserType } from 'app/features/users/types/user';
 import UserAPIClient from 'app/features/users/api/user-api-client';
+import { useUser } from 'app/features/users/hooks/use-user';
 
 const { Text } = Typography;
 
@@ -26,28 +25,7 @@ const EmailRow = ({ email }: { email: string }): JSX.Element => {
 };
 
 const UserRow = ({ id }: { id: string }): JSX.Element => {
-  const collection = Collections.get('users');
-  const [user, setUser] = useState<UserType>();
-
-  const handleUser = async () => {
-    const u = (await UserAPIClient.list([id]))[0];
-
-    if (u) setUser(u);
-  };
-
-  useEffect(() => {
-    handleUser();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    const listener = collection.addListener(useState, [user]);
-
-    return () => {
-      collection.removeListener(listener);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  const user = useUser(id);
 
   return user ? (
     <>
