@@ -96,9 +96,10 @@ async function client(origin, query, parameters, options) {
       }
 
       if (destColumns.length === 0) {
-        console.log(
-          fromTable.padEnd(50) + " | " + ("not_in_dest" + "/" + fromCount).padEnd(20) + " | ⏺",
-        );
+        if (fromCount > 0)
+          console.log(
+            fromTable.padEnd(50) + " | " + ("not_in_dest" + "/" + fromCount).padEnd(20) + " | ⏺",
+          );
         continue;
       }
 
@@ -115,6 +116,9 @@ async function client(origin, query, parameters, options) {
         );
 
         if (row.table_name.indexOf("counter") >= 0 || countersTables.includes(row.table_name)) {
+          console.log(
+            fromTable.padEnd(50) + " | " + ("counter_table" + "/" + fromCount).padEnd(20) + " | 🧮",
+          );
           if (fromCount > toCount || !fromCount || forceUpdateAll) {
             await new Promise(r => {
               fromClient.eachRow(
