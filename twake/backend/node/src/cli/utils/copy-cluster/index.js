@@ -12,6 +12,12 @@ var forceUpdateAll = false;
 var ignoreTables = ["notification"];
 var countersTables = ["statistics", "stats_counter", "channel_counters", "scheduled_queue_counter"];
 
+var specialConversions = {
+  "twake.group_user.date_added": value => {
+    return new Date(value).getTime();
+  },
+};
+
 // -- start process
 
 var fromClient = new cassandra.Client({
@@ -26,6 +32,9 @@ var toClient = new cassandra.Client({
   contactPoints: toContactPoints,
   authProvider: toAuthProvider,
   keyspace: toKeyspace,
+  queryOptions: {
+    consistency: cassandra.types.consistencies.quorum,
+  },
 });
 
 // -- Get all tables and copy schema
@@ -81,7 +90,7 @@ async function client(origin, query, parameters, options) {
           [],
           {},
         );
-        fromCount = fromResult.rows[0].count;
+        fromCount = parseInt(fromResult.rows[0].count);
       } catch (err) {
         fromCount = NaN;
       }
@@ -95,24 +104,40 @@ async function client(origin, query, parameters, options) {
 
       try {
         const toResult = await client(toClient, "SELECT count(*) from " + toTable + "", [], {});
-        const toCount = toResult.rows[0].count;
+        const toCount = parseInt(toResult.rows[0].count);
+
+        console.log(
+          fromTable.padEnd(50) +
+            " | " +
+            (toCount + "/" + fromCount).padEnd(20) +
+            " | " +
+            (toCount >= fromCount ? "✅" : "❌"),
+        );
 
         if (row.table_name.indexOf("counter") >= 0 || countersTables.includes(row.table_name)) {
-          console.log(
-            fromTable.padEnd(50) + " | " + ("counter_table" + "/" + fromCount).padEnd(20) + " | 🧮",
-          );
           if (fromCount > toCount || !fromCount || forceUpdateAll) {
-            //TODO handle counters (it is special !)
+            await new Promise(r => {
+              fromClient.eachRow(
+                "SELECT JSON * from " + fromTable,
+                [],
+                { prepare: true, fetchSize: 1000 },
+                async function (n, row) {
+                  //
+                  //TODO handle counters (it is special !)
+                },
+                async function (err, result) {
+                  if (result && result.nextPage) {
+                    await new Promise(r => setTimeout(r, 1000));
+                    result.nextPage();
+                  } else {
+                    r();
+                  }
+                },
+              );
+            });
           }
+
           continue;
-        } else {
-          console.log(
-            fromTable.padEnd(50) +
-              " | " +
-              (toCount + "/" + fromCount).padEnd(20) +
-              " | " +
-              (toCount >= fromCount ? "✅" : "❌"),
-          );
         }
 
         if (fromCount > toCount || !fromCount || forceUpdateAll) {
@@ -136,6 +161,11 @@ async function client(origin, query, parameters, options) {
                     ) {
                       json[col] = json[col].split(".")[0];
                     }
+
+                    if (specialConversions[fromTable + "." + col]) {
+                      json[col] = specialConversions[fromTable + "." + col](json[col]);
+                    }
+
                     if (json[col] !== undefined) filteredJson[col] = json[col];
                   }
 
