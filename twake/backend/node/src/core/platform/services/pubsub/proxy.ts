@@ -167,7 +167,6 @@ export default class PubsubProxyService implements PubsubProxy {
     options?: PubsubSubscriptionOptions,
   ): Promise<void> {
     logger.debug(`${LOG_PREFIX} Trying to subscribe to ${topic} topic with options %o`, options);
-    console.log(`${LOG_PREFIX} Trying to subscribe to ${topic} topic with options %o`, this.client);
     return this.client?.subscribe(topic, listener, options);
   }
 }
