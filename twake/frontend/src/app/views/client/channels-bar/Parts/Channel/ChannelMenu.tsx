@@ -25,9 +25,10 @@ import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/u
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
-import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
+import { useRefreshFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
+import { useRefreshDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
 type PropsType = {
   channel: ChannelType;
@@ -40,7 +41,8 @@ export default (props: PropsType): JSX.Element => {
   const workspaceId = useRouterWorkspace();
   const { user: currentUser } = useCurrentUser();
   const companyId = props.channel.company_id;
-  const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
+  const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
+  const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
   const { Feature, FeatureNames } = useFeatureToggles();
   const channelMember = props.channel.user_member || {};
 
@@ -125,6 +127,7 @@ export default (props: PropsType): JSX.Element => {
       } else {
         redirectToWorkspace();
         refreshFavoriteChannels();
+        refreshDirectChannels();
       }
     }
   };
