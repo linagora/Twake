@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react';
 
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { UserType } from 'app/features/users/types/user';
-import { useUserList } from './use-user-list';
+import { useSetUserList, useUserList } from './use-user-list';
 import UserAPIClient, { SearchContextType } from '../api/user-api-client';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import Strings from 'app/features/global/utils/strings';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
-import { useWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 export const useSearchUserList = ({
   scope,
@@ -18,11 +17,11 @@ export const useSearchUserList = ({
   search: (str?: string) => void;
   result: UserType[];
 } => {
+  const { set: setUserList } = useSetUserList('use-search-user-list');
   const [query, setQuery] = useState<string | undefined>();
   const { userList } = useUserList();
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [searched, setSearched] = useState<(UserType | WorkspaceUserType)[]>([]);
   let result = userList || [];
   const search = async (str?: string) => {
     setQuery(str);
@@ -30,15 +29,26 @@ export const useSearchUserList = ({
 
   useEffect(() => {
     delayRequest('useSearchUserList', async () => {
-      setSearched(
-        await UserAPIClient.search<UserType>(query, {
+      await UserAPIClient.search<WorkspaceUserType>(
+        query,
+        {
           companyId,
           workspaceId: scope === 'workspace' ? workspaceId : undefined,
           scope,
-        }),
+        },
+        list => {
+          if (list && scope === 'workspace') {
+            setUserList(
+              list.map(wsUser => ({
+                ...wsUser.user,
+                workspaces: [{ id: workspaceId, company_id: companyId }],
+              })),
+            );
+          }
+        },
       );
     });
-  }, [companyId, query, scope, workspaceId]);
+  }, [companyId, query, scope, setUserList, workspaceId]);
 
   if (query) {
     result = result
@@ -56,8 +66,7 @@ export const useSearchUserList = ({
   }
 
   if (scope === 'workspace') {
-    const wsSearched = searched as WorkspaceUserType[];
-    result = result.filter(u => wsSearched.map(wsUser => wsUser.user_id).includes(u.id || ''));
+    result = result.filter(u => u.workspaces?.map(ws => ws.id).includes(workspaceId));
   }
 
   return { search, result };

@@ -82,8 +82,13 @@ export default ({ filter }: { filter: string }) => {
                 _.uniqBy([...serverSearchedData, ...(resources || [])], col => col.user.id),
               );
               updateFilteredData();
-
-              wsUsers && setUserList(wsUsers.map(wsUser => wsUser.user));
+              wsUsers &&
+                setUserList(
+                  wsUsers.map(wsUser => ({
+                    ...wsUser.user,
+                    workspaces: [{ id: workspaceId, company_id: companyId }],
+                  })),
+                );
             },
           );
 
@@ -120,7 +125,12 @@ export default ({ filter }: { filter: string }) => {
       setPageToken(res.next_page_token || null);
       if (res.resources) {
         setData(pageToken ? _.uniqBy([...data, ...res.resources], col => col.id) : res.resources);
-        setUserList(res.resources.map(wsUser => wsUser.user));
+        setUserList(
+          res.resources.map(wsUser => ({
+            ...wsUser.user,
+            workspaces: [{ id: workspaceId, company_id: companyId }],
+          })),
+        );
       }
       setLoading(false);
     } catch (e) {

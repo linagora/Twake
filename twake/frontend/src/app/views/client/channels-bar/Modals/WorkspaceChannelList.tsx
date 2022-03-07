@@ -21,12 +21,13 @@ import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reach
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import { useSetUserList, useUserList } from 'app/features/users/hooks/use-user-list';
 import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 export default () => {
   const [search, setSearch] = useState<string>('');
   const [limit, setLimit] = useState(10);
   const [cursor, setCursor] = useState<number>(-1);
-  const { companyId } = RouterServices.getStateFromRoute();
+  const companyId = useRouterCompany();
   const list = listService.useWatcher(() => listService.list);
   const currentUserId: string = UsersService.getCurrentUserId();
   const inputRef = useRef<InputRef>(null);

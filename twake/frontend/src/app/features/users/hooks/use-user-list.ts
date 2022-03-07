@@ -1,39 +1,13 @@
 import { useEffect } from 'react';
-import { clone, cloneDeep, concat, isEqual } from 'lodash';
+import { cloneDeep, concat, isEqual, uniqBy } from 'lodash';
 import { RecoilState, useRecoilCallback, useRecoilValueLoadable } from 'recoil';
 
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import { UserCompanyType, UserType } from 'app/features/users/types/user';
+import { UserCompanyType, UserType, UserWorkspaceType } from 'app/features/users/types/user';
 import WorkspaceUserAPIClient from 'app/features/workspace-members/api/workspace-members-api-client';
 import { UserListState } from '../state/atoms/user-list';
 import Logger from 'app/features/global/framework/logger-service';
-
-/**
- *
- * Refactor User recoil hooks:
- * Enlever les setUserList des react components;
- * enlerver setUserList du status component
- *
- * // Recupérer les users
- * . La liste des messages
- * . La liste des membres dans l'objet channel (direct)
- * . la liste des workspace-members
- * . La liste des channel-members
- * . La liste des channel-guests
- *
- * . Completer les users avec l'object companies
- *
- * 
- * Dans la route workspaces members ajouter option include_companies coté back GET list
- * 
-  // Move me and refactor
- * 
- * // La recherche user
- * Hook pour la recherche User basé sur le UserApiClient
- * Optimiser le resultat des recherches entre le backend et le frontend
- *
- */
 
 export const useUserList = (): {
   userList?: UserType[];
@@ -78,6 +52,15 @@ const completeUserWithCompanies = (user: UserType, companies?: UserCompanyType[]
   companies: companies !== undefined ? companies : user.companies || [],
 });
 
+const completeUserWithWorkspaces = (
+  user: UserType,
+  previousWorkspaces?: UserWorkspaceType[],
+): UserType => ({
+  ...user,
+  workspaces:
+    uniqBy([...(user.workspaces || []), ...(previousWorkspaces || [])], ws => ws.id) || [],
+});
+
 // Access from hooks-components
 export function useSetUserList(key: string) {
   const logger = Logger.getLogger(`[${key}]`);
@@ -91,13 +74,15 @@ export function useSetUserList(key: string) {
         nextList,
       )
         .map(u => cloneDeep(u))
+        .map(u => completeUserWithCompanies(u, currentList.find(obj => obj.id === u.id)?.companies))
         .map(u =>
-          completeUserWithCompanies(u, currentList.find(obj => obj.id === u.id)?.companies),
+          completeUserWithWorkspaces(u, currentList.find(obj => obj.id === u.id)?.workspaces),
         );
 
       newList.sort();
 
       if (currentList && newList && !isEqual(currentList, newList)) {
+        // TO REMOVE
         logger.debug(`UserListState is updated to`, cloneDeep(currentList), newList);
         set(UserListState, newList);
         currentUserList = newList;

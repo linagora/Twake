@@ -52,7 +52,6 @@ class SearchListManager extends Observable {
     let mineWorkspaceChannels: ChannelType[] = [];
 
     let usersSearched: UserType[] = opts?.userListState ? opts.userListState : [];
-    console.log('searchAll usersSearched', usersSearched);
     if (companyId && workspaceId) {
       channels = await ChannelsReachableAPIClient.get(companyId, workspaceId);
       directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
@@ -72,7 +71,6 @@ class SearchListManager extends Observable {
     this.users = this.filterUsers({ users: usersSearched });
     // Concat list
     this.list = [...this.workspaceChannels, ...this.directChannels, ...this.users];
-    console.log('searchAll this.list', this.list);
 
     this.removeDuplicate();
 

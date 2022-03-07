@@ -23,6 +23,8 @@ export type UserCompanyType = {
   status: CompanyStatusType;
 };
 
+export type UserWorkspaceType = Partial<WorkspaceType>;
+
 export type UserType = {
   connected?: boolean;
   email: string;
@@ -49,7 +51,7 @@ export type UserType = {
   username: string;
   companies?: UserCompanyType[];
   preferences: UserPreferencesType;
-  workspaces?: WorkspaceType[];
+  workspaces?: UserWorkspaceType[];
   workspaces_id?: string[];
   is_verified?: boolean;
   created_at?: number;
