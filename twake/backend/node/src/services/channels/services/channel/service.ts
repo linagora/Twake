@@ -625,7 +625,9 @@ export class Service implements ChannelService {
     if (isDirectChannel(channel)) {
       const users = [];
       for (const user of channel.members) {
-        const e = await this.userService.formatUser(await this.userService.users.get({ id: user }));
+        const e = await this.userService.formatUser(
+          await this.userService.users.getCached({ id: user }),
+        );
         users.push(e);
       }
       channelWithUsers.users = users;
