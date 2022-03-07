@@ -89,7 +89,7 @@ export default (
     strategy: findEmojiEntities,
     component: Emoji,
   },
-  trigger: /\B:([-+\w]+)$/,
+  trigger: /\B:([-+\w]{2,})$/,
   resourceType: EmojiResourceType,
   onSelected: (emoji: EmojiSuggestionType, editorState: EditorState) =>
     addEmoji(emoji, editorState),

@@ -22,6 +22,9 @@ const services = [
   "database",
   "webserver",
   "statistics",
+  "applications",
+  "auth",
+  "realtime",
 ];
 
 const command: yargs.CommandModule<unknown, CLIArgs> = {

@@ -34,7 +34,10 @@ export class AMQPPubSub implements PubsubClient {
       const data = err ? originalMessage : message;
 
       if (err) {
-        logger.error(`${LOG_PREFIX} Received a message which can not be parsed on topic ${topic}: %o`, originalMessage?.content.toString());
+        logger.error(
+          `${LOG_PREFIX} Received a message which can not be parsed on topic ${topic}: %o`,
+          originalMessage?.content.toString(),
+        );
       }
 
       listener({
@@ -51,7 +54,12 @@ export class AMQPPubSub implements PubsubClient {
     }
 
     return options?.unique
-      ? this.client.subscribeToDurableQueue(topic, options?.queue || topic, subscribeOptions, callback)
+      ? this.client.subscribeToDurableQueue(
+          topic,
+          options?.queue || topic,
+          subscribeOptions,
+          callback,
+        )
       : this.client.subscribe(topic, subscribeOptions, callback);
   }
 }

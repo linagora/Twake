@@ -27,6 +27,7 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
+import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 
 type PropsType = {
   channel: ChannelType;
@@ -169,8 +170,18 @@ export default (props: PropsType): JSX.Element => {
       ),
       onClick: () => {
         notificationsCollection.find({ channel_id: props.channel.id }).length > 0
-          ? Notifications.read(props.channel)
-          : Notifications.unread(props.channel);
+          ? ChannelAPIClient.read(
+              props.channel.company_id || '',
+              props.channel.workspace_id || '',
+              props.channel.id || '',
+              { status: true, now: true },
+            )
+          : ChannelAPIClient.read(
+              props.channel.company_id || '',
+              props.channel.workspace_id || '',
+              props.channel.id || '',
+              { status: false, now: true },
+            );
       },
     },
     {

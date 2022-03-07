@@ -21,7 +21,6 @@ class EventBus {
 
     this.subjects.get(name).subscribe({
       next: (value: T) => {
-        logger.trace("Got a new value to dispatch to topic '%s': %o", name, value);
         try {
           listener(value);
         } catch (err) {
@@ -38,7 +37,6 @@ class EventBus {
       return false;
     }
 
-    logger.trace("Publish new value to topic '%s': %o", name, data);
     this.subjects.get(name)?.next(data);
 
     return true;
