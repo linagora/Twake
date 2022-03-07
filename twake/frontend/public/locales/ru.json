@@ -869,5 +869,6 @@
     "scenes.app.channelsbar.currentuser.reset": "Перезагрузить",
     "components.locked_features_components.locked_invite_alert.message_part_1": "Ваша компания достигла максимального лимита в {{$1}} участников. Пожалуйста, ",
     "components.locked_features_components.locked_invite_alert.message_link": "повысьте статус вашей компании",
-    "components.locked_features_components.locked_invite_alert.message_part_2": " чтобы пригласить больше участников."
+    "components.locked_features_components.locked_invite_alert.message_part_2": " чтобы пригласить больше участников.",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " обратитесь к владельцу или администратору вашей компании."
 }
