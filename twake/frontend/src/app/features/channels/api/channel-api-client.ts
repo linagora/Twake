@@ -31,7 +31,7 @@ class ChannelAPIClientService {
     companyId: string,
     workspaceId: string,
     channelId: string,
-    { status = true, requireFocus = false },
+    { status = true, requireFocus = false, now = false },
   ): Promise<void> {
     if (requireFocus && !document.hasFocus()) return;
     delayRequest(
@@ -43,7 +43,7 @@ class ChannelAPIClientService {
             value: status,
           },
         ),
-      { doInitialCall: false, timeout: 2000 },
+      { doInitialCall: now, timeout: 2000 },
     );
   }
 }

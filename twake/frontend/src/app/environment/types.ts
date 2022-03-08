@@ -6,9 +6,6 @@ export type EnvironmentType = {
   front_root_url: string;
   websocket_url: string;
 
-  mobile_redirect?: string;
-  mobile_appstore?: string;
-  mobile_googleplay?: string;
   sentry_dsn?: string | boolean;
   usetiful_token?: string;
 };

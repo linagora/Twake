@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { ChannelType } from 'app/features/channels/types/channel';
 import { DirectChannelsState } from '../state/channels';
@@ -9,6 +9,23 @@ import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+
+export function useRefreshDirectChannels(): {
+  refresh: () => Promise<void>;
+} {
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
+
+  const _setDirectChannels = useSetRecoilState(DirectChannelsState({ companyId, workspaceId }));
+
+  const refresh = async () => {
+    const directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
+
+    if (directChannels) _setDirectChannels(directChannels);
+  };
+
+  return { refresh };
+}
 
 export function useDirectChannels(): {
   directChannels: ChannelType[];
@@ -21,11 +38,7 @@ export function useDirectChannels(): {
   );
   const [, setLoading] = useRecoilState(LoadingState(`channels-direct-${companyId}`));
 
-  const refresh = async () => {
-    const directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
-
-    if (directChannels) _setDirectChannels(directChannels);
-  };
+  const { refresh } = useRefreshDirectChannels();
 
   useGlobalEffect(
     'useDirectChannels',
