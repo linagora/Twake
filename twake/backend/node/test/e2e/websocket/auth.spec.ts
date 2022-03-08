@@ -44,16 +44,12 @@ describe("The Websocket authentication", () => {
     it("should not be able to connect without a JWT token", done => {
       socket.connect();
       socket.on("connect", () => {
-        console.log("CONNECTED emit auth");
         socket
           .emit("authenticate", {})
           .on("authenticated", () => {
-            console.log("authenticated received");
             done(new Error("Should not occur"));
           })
           .on("unauthorized", (msg: any) => {
-            console.log("unauthorized received");
-            console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
             done();
           });
       });
@@ -68,7 +64,6 @@ describe("The Websocket authentication", () => {
             done(new Error("Should not occur"));
           })
           .on("unauthorized", (msg: any) => {
-            console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
             done();
           });
       });

@@ -20,7 +20,7 @@ export class Channel {
   workspace_id: string | ChannelType.DIRECT;
 
   @Type(() => String)
-  @Column("id", "timeuuid", { generator: "timeuuid" })
+  @Column("id", "uuid", { generator: "uuid" })
   id: string;
 
   @Column("name", "encoded_string")
