@@ -870,5 +870,6 @@
     "components.locked_features_components.locked_invite_alert.message_part_1": "Votre entreprise a atteint sa limite maximale de {{$1}} membres. Veuillez ",
     "components.locked_features_components.locked_invite_alert.message_link": "mettre à niveau votre entreprise",
     "components.locked_features_components.locked_invite_alert.message_part_2": " pour inviter davantage de membres.", 
-    "components.locked_features_components.locked_invite_alert.message_magic_link": " contacter le propriétaire ou l'administrateur de votre entreprise."
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " contacter le propriétaire ou l'administrateur de votre entreprise.",
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Voir tous les membres de mon entreprise sur la console"
 }

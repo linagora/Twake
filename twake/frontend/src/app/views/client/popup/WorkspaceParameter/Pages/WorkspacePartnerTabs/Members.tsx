@@ -25,6 +25,8 @@ import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 
 type ColumnObjectType = { [key: string]: any };
 
+const { Link, Text, Title } = Typography;
+
 const RoleComponent = ({ text, icon }: { text: string; icon?: JSX.Element }): JSX.Element => (
   <Row align="middle">
     {!!icon && (
@@ -33,9 +35,9 @@ const RoleComponent = ({ text, icon }: { text: string; icon?: JSX.Element }): JS
       </Col>
     )}
     <Col>
-      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+      <Text type="secondary" style={{ fontSize: 12 }}>
         {text}
-      </Typography.Text>
+      </Text>
     </Col>
   </Row>
 );
@@ -285,11 +287,9 @@ export default ({ filter }: { filter: string }) => {
               }}
             />
 
-            {fullName.length > 0 && (
-              <Typography.Text className="small-right-margin">{fullName}</Typography.Text>
-            )}
+            {fullName.length > 0 && <Text className="small-right-margin">{fullName}</Text>}
 
-            {col.user.email && <Typography.Text type="secondary">{col.user.email}</Typography.Text>}
+            {col.user.email && <Text type="secondary">{col.user.email}</Text>}
           </div>
         );
       },
@@ -300,12 +300,12 @@ export default ({ filter }: { filter: string }) => {
       ),
       dataIndex: 'tags',
       render: (text, col, index) => (
-        <Typography.Text type="secondary">
+        <Text type="secondary">
           {getRoleTitle({
             companyRole: UserService.getUserRole(col.user, companyId),
             workspaceRole: col.role,
           })}
-        </Typography.Text>
+        </Text>
       ),
     },
     {
@@ -321,7 +321,7 @@ export default ({ filter }: { filter: string }) => {
     <>
       <div>
         {InitService.server_infos?.configuration?.accounts.type === 'console' && (
-          <a
+          <Link
             style={{ float: 'right' }}
             href="#"
             onClick={() => {
@@ -331,14 +331,16 @@ export default ({ filter }: { filter: string }) => {
               );
             }}
           >
-            <Icon type="external-link-alt" className="m-icon-small" /> See all my company members on
-            the console
-          </a>
+            <Icon type="external-link-alt" className="m-icon-small" />{' '}
+            {Languages.t(
+              'views.client.popup.workspace_parameter.pages.workspace_members.link_to_console',
+            )}
+          </Link>
         )}
 
-        <Typography.Title level={3}>
+        <Title level={3}>
           {Languages.t('scenes.apps.parameters.workspace_sections.members.members')}
-        </Typography.Title>
+        </Title>
 
         <Table<ColumnObjectType>
           columns={columns}
@@ -350,9 +352,9 @@ export default ({ filter }: { filter: string }) => {
         />
         {pageToken !== null && pageToken.length && (
           <Row justify="center" align="middle" className="small-y-margin">
-            <Typography.Link onClick={() => requestWorkspaceUsers(pageToken)}>
+            <Link onClick={() => requestWorkspaceUsers(pageToken)}>
               {Languages.t('components.searchpopup.load_more')}
-            </Typography.Link>
+            </Link>
           </Row>
         )}
       </div>
