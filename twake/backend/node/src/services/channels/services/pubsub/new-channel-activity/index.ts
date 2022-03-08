@@ -8,7 +8,7 @@ import {
   ChannelCounterEntity,
   ChannelUserCounterType,
   TYPE as ChannelCounterEntityType,
-} from "../../../entities/channel_counters";
+} from "../../../entities/channel-counters";
 import { PlatformServicesAPI } from "../../../../../core/platform/services/platform-services";
 
 const logger = getLogger("channel.pubsub.new-channel-activity");

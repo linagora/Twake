@@ -44,7 +44,7 @@ import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/
 import { getLogger } from "../../../../core/platform/framework/logger";
 import _ from "lodash";
 import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
-import { ChannelUserCounterType } from "../../entities/channel_counters";
+import { ChannelUserCounterType } from "../../entities/channel-counters";
 
 const logger = getLogger("channel.controller");
 
