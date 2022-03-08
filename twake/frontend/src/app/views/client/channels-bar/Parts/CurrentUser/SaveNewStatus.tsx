@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
-import { Button, Input } from 'antd';
+import { Button, Input, InputRef } from 'antd';
 import classNames from 'classnames';
 
 import Languages from 'app/features/global/services/languages-service';
@@ -19,7 +19,7 @@ export default ({ level }: PropsType): JSX.Element => {
   const text = user?.status?.split(' ').slice(1).join(' ') || '';
   const [status, setStatus] = useState([icon, text]);
   const statusRef = useRef(status);
-  const inputRef = useRef<Input>();
+  const inputRef = useRef<InputRef>();
 
   const save = useCallback(() => {
     updateStatus(status);
@@ -42,7 +42,7 @@ export default ({ level }: PropsType): JSX.Element => {
       }}
     >
       <InputWithIcon
-        inputRef={(node: Input) => node && (inputRef.current = node)}
+        inputRef={(node: InputRef) => node && (inputRef.current = node)}
         focusOnDidMount
         menu_level={level}
         placeholder={Languages.t(
