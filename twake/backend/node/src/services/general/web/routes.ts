@@ -18,7 +18,7 @@ const routes: FastifyPluginCallback<{ configuration: ServerConfiguration["config
         status: "ready",
         version: version,
         configuration: {
-          ..._.pick(options.configuration, "help_url", "pricing_plan_url"),
+          ..._.pick(options.configuration, "help_url", "pricing_plan_url", "mobile"),
           accounts: {
             type: accounts.type,
             console: _.pick(

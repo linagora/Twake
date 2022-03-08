@@ -625,7 +625,9 @@ export class Service implements ChannelService {
     if (isDirectChannel(channel)) {
       const users = [];
       for (const user of channel.members) {
-        const e = await this.userService.formatUser(await this.userService.users.get({ id: user }));
+        const e = await this.userService.formatUser(
+          await this.userService.users.getCached({ id: user }),
+        );
         users.push(e);
       }
       channelWithUsers.users = users;
@@ -711,7 +713,7 @@ export class Service implements ChannelService {
   onRead(channel: Channel, member: ChannelMember): void {
     logger.info(`Channel ${channel.id} as been marked as read for user ${member.id}`);
 
-    localEventBus.publish("channel:read", {
+    this.platformServices.pubsub.publish("channel:read", {
       data: {
         channel,
         member,
@@ -729,7 +731,7 @@ export class Service implements ChannelService {
   onUnread(channel: Channel, member: ChannelMember): void {
     logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
 
-    localEventBus.publish("channel:unread", {
+    this.platformServices.pubsub.publish("channel:unread", {
       data: {
         channel,
         member,
