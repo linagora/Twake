@@ -229,10 +229,6 @@ export default (props: Props) => {
     setRichTextEditorState(newEditorState);
   };
 
-  const onFilePaste = (files: Blob[]) => {
-    messageEditorService.getUploadZone(props.threadId).upload(files);
-  };
-
   const isEditing = (): boolean => {
     return !!(props.messageId && props.messageId === messageEditorService.currentEditorMessageId);
   };
@@ -256,6 +252,24 @@ export default (props: Props) => {
 
   const onAddFiles = async (files: File[]) => {
     await upload(files);
+  };
+
+  const onFilePaste = (blobs: Blob[]) => {
+    if (blobs.length > 0) {
+      const file = new File(
+        [blobs[0]],
+        'pasted_' +
+          new Date()
+            .toISOString()
+            .replaceAll(/(Z|\.[0-9]+)/gm, '')
+            .replace(/T/, '_') +
+          '.png',
+        {
+          type: 'image/png',
+        },
+      );
+      upload([file]);
+    }
   };
 
   const disabled = isEmpty() || isTooLong;

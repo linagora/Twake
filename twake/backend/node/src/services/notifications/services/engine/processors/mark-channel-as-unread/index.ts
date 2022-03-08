@@ -5,7 +5,8 @@ import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../a
 import { ChannelUnreadMessage } from "../../../../types";
 
 export class MarkChannelAsUnreadMessageProcessor
-  implements NotificationPubsubHandler<ChannelUnreadMessage, void> {
+  implements NotificationPubsubHandler<ChannelUnreadMessage, void>
+{
   constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {
