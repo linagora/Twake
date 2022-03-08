@@ -14,7 +14,7 @@ export type UserPreferencesType = null | {
   tutorial_done?: boolean;
   channel_ordering?: 'chronological' | 'alphabetical';
   //(CompanyType | WorkspaceType | any)[];
-  recent_workspaces?: { companyId: string; workspaceId: string }[];
+  recent_workspaces?: { company_id: string; workspace_id: string }[];
 };
 
 export type UserType = {

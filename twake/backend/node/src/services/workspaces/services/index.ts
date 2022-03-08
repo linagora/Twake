@@ -8,6 +8,7 @@ import { ConsoleServiceAPI } from "../../console/api";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../applications/api";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
+import { StatisticsAPI } from "../../../services/statistics/types";
 
 export function getService(
   platformServices: PlatformServicesAPI,
@@ -15,8 +16,16 @@ export function getService(
   applicationsService: ApplicationServiceAPI,
   auth: AuthServiceAPI,
   users: UserServiceAPI,
+  statistics: StatisticsAPI,
 ): WorkspaceServicesAPI {
-  return new Service(platformServices, consoleService, applicationsService, auth, users);
+  return new Service(
+    platformServices,
+    consoleService,
+    applicationsService,
+    auth,
+    users,
+    statistics,
+  );
 }
 
 class Service implements WorkspaceServicesAPI {
@@ -24,6 +33,7 @@ class Service implements WorkspaceServicesAPI {
   workspaces: WorkspaceServiceAPI;
   companies: CompaniesServiceAPI;
   users: UsersServiceAPI;
+  statistics: StatisticsAPI;
 
   constructor(
     platformServices: PlatformServicesAPI,
@@ -31,6 +41,7 @@ class Service implements WorkspaceServicesAPI {
     readonly applications: ApplicationServiceAPI,
     readonly auth: AuthServiceAPI,
     protected userService: UserServiceAPI,
+    readonly statisticsService: StatisticsAPI,
   ) {
     this.companies = this.userService.companies;
     this.users = getUsersService(platformServices);
@@ -41,6 +52,7 @@ class Service implements WorkspaceServicesAPI {
       this.applications,
       auth,
     );
+    this.statistics = statisticsService;
   }
 
   async init(context: TwakeContext): Promise<this> {

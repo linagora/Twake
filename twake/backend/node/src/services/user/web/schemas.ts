@@ -56,7 +56,7 @@ export const userObjectSchema = {
   },
 };
 
-const companyObjectSchema = {
+export const companyObjectSchema = {
   type: "object",
   properties: {
     id: { type: "string" },

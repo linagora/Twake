@@ -869,5 +869,6 @@
     "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} et {{$3}} autres utilisateurs sont en train d'écrire...",
     "components.locked_features_components.locked_invite_alert.message_part_1": "Votre entreprise a atteint sa limite maximale de {{$1}} membres. Veuillez ",
     "components.locked_features_components.locked_invite_alert.message_link": "mettre à niveau votre entreprise",
-    "components.locked_features_components.locked_invite_alert.message_part_2": " pour inviter davantage de membres."
+    "components.locked_features_components.locked_invite_alert.message_part_2": " pour inviter davantage de membres.", 
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " contacter le propriétaire ou l'administrateur de votre entreprise."
 }

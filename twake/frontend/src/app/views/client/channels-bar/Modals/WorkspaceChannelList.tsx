@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Input, Row, Typography } from 'antd';
+import { Input, Row, Typography, InputRef } from 'antd';
 import Languages from 'app/features/global/services/languages-service';
 import Icon from 'app/components/icon/icon';
 import ObjectModal from 'components/object-modal/object-modal';
@@ -13,7 +13,6 @@ import ModalManager from 'app/components/modal/modal-manager';
 import { UserType } from 'app/features/users/types/user';
 import UsersService from 'app/features/users/services/current-user-service';
 import { ChannelType } from 'app/features/channels/types/channel';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
@@ -27,7 +26,7 @@ export default () => {
   const { companyId } = RouterServices.getStateFromRoute();
   const list = listService.useWatcher(() => listService.list);
   const currentUserId: string = UsersService.getCurrentUserId();
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
   const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
 
   useEffect(() => {
@@ -67,11 +66,11 @@ export default () => {
 
   const joinChannel = async (channel: ChannelType) => {
     if (channel.company_id && channel.workspace_id && channel.id) {
-      const channelMembers = await ChannelMembersAPIClient.get(
-        channel.company_id,
-        channel.workspace_id,
-        channel.id,
-      );
+      const channelMembers = await ChannelMembersAPIClient.list({
+        companyId: channel.company_id,
+        workspaceId: channel.workspace_id,
+        channelId: channel.id,
+      });
 
       const alreadyMemberInChannel = channelMembers.map(m => m.user_id)?.includes(currentUserId);
 

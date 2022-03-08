@@ -17,9 +17,14 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   name = "webserver";
   version = "1";
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
+  private onReadyHandlers: Function[] = [];
 
   getServer(): FastifyInstance {
     return this.server;
+  }
+
+  onReady(handler: Function): void {
+    this.onReadyHandlers.push(handler);
   }
 
   api(): WebServerAPI {
@@ -89,7 +94,7 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
       exposeRoute: true,
     });
     this.server.register(jwtPlugin);
-    this.server.register(sensible);
+    this.server.register(sensible, { errorHandler: false });
     this.server.register(multipart);
     this.server.register(formbody);
     this.server.register(corsPlugin, this.configuration.get<FastifyCorsOptions>("cors", {}));
@@ -113,11 +118,17 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   @SkipCLI()
   async doStart(): Promise<this> {
     try {
+      console.log("Server start to listen NOW");
+
       await this.server.listen(this.configuration.get<number>("port", 3000), "0.0.0.0");
 
       this.server.ready(err => {
         if (err) throw err;
         this.server.swagger();
+
+        this.onReadyHandlers.forEach(handler => {
+          handler(err);
+        });
       });
 
       return this;

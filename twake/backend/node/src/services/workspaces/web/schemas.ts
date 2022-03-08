@@ -1,5 +1,5 @@
 import { webSocketSchema } from "../../../utils/types";
-import { userObjectSchema } from "../../user/web/schemas";
+import { companyObjectSchema, userObjectSchema } from "../../user/web/schemas";
 
 const workspaceObjectSchema = {
   type: "object",
@@ -330,7 +330,12 @@ export const joinInviteTokenSchema = {
           properties: {
             company: {
               type: "object",
-              properties: { id: { type: "string" }, name: { type: "string" } },
+              properties: {
+                id: { type: "string" },
+                name: { type: "string" },
+                plan: companyObjectSchema["properties"]["plan"],
+                stats: companyObjectSchema["properties"]["stats"],
+              },
             },
             workspace: {
               type: "object",

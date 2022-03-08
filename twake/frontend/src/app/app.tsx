@@ -4,6 +4,7 @@ import { Router } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
+import MobileRedirect from './views/mobile-redirect';
 import Integration from 'app/views/integration';
 import RouterServices, { RouteType } from './features/router/services/router-service';
 import ErrorBoundary from 'app/views/error/error-boundary';
@@ -50,41 +51,43 @@ export default () => {
 
   return (
     <RecoilRoot>
-      <Integration>
-        <Router history={RouterServices.history}>
-          <Switch>
-            {RouterServices.routes.map((route: RouteType, index: number) => (
-              <Route
-                key={`${route.key}_${index}`}
-                exact={route.exact ? route.exact : false}
-                path={route.path}
-                component={() =>
-                  route.options?.withErrorBoundary ? (
-                    <ErrorBoundary key={route.key}>
-                      <route.component />
-                    </ErrorBoundary>
-                  ) : (
-                    <route.component key={route.key} />
-                  )
-                }
-              />
-            ))}
-            {
-              <Route
-                path="/"
-                component={() => {
-                  RouterServices.replace(
-                    `${
-                      RouterServices.pathnames.LOGIN
-                    }?auto&${RouterServices.history.location.search.substr(1)}`,
-                  );
-                  return <div />;
-                }}
-              />
-            }
-          </Switch>
-        </Router>
-      </Integration>
+      <MobileRedirect>
+        <Integration>
+          <Router history={RouterServices.history}>
+            <Switch>
+              {RouterServices.routes.map((route: RouteType, index: number) => (
+                <Route
+                  key={`${route.key}_${index}`}
+                  exact={route.exact ? route.exact : false}
+                  path={route.path}
+                  component={() =>
+                    route.options?.withErrorBoundary ? (
+                      <ErrorBoundary key={route.key}>
+                        <route.component />
+                      </ErrorBoundary>
+                    ) : (
+                      <route.component key={route.key} />
+                    )
+                  }
+                />
+              ))}
+              {
+                <Route
+                  path="/"
+                  component={() => {
+                    RouterServices.replace(
+                      `${
+                        RouterServices.pathnames.LOGIN
+                      }?auto&${RouterServices.history.location.search.substr(1)}`,
+                    );
+                    return <div />;
+                  }}
+                />
+              }
+            </Switch>
+          </Router>
+        </Integration>
+      </MobileRedirect>
     </RecoilRoot>
   );
 };

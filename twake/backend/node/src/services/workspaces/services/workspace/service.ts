@@ -15,6 +15,7 @@ import {
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { WorkspaceServiceAPI } from "../../api";
 import WorkspaceUser, {
+  formatWorkspaceUser,
   getInstance as getWorkspaceUserInstance,
   TYPE as WorkspaceUserType,
   WorkspaceUserPrimaryKey,
@@ -374,23 +375,27 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
-  getUsers(
+  async getUsers(
     workspaceId: Pick<WorkspaceUserPrimaryKey, "workspaceId">,
     pagination?: Paginable,
   ): Promise<ListResult<WorkspaceUser>> {
-    return this.workspaceUserRepository.find(
+    const list = await this.workspaceUserRepository.find(
       { workspace_id: workspaceId.workspaceId },
       { pagination: { limitStr: pagination?.limitStr, page_token: pagination?.page_token } },
     );
+    list.mapEntities(m => formatWorkspaceUser(m) as any);
+    return list;
   }
 
-  getUser(
+  async getUser(
     workspaceUserPk: Pick<WorkspaceUserPrimaryKey, "workspaceId" | "userId">,
   ): Promise<WorkspaceUser> {
-    return this.workspaceUserRepository.findOne({
-      workspace_id: workspaceUserPk.workspaceId,
-      user_id: workspaceUserPk.userId,
-    });
+    return formatWorkspaceUser(
+      await this.workspaceUserRepository.findOne({
+        workspace_id: workspaceUserPk.workspaceId,
+        user_id: workspaceUserPk.userId,
+      }),
+    );
   }
 
   async processPendingUser(user: User): Promise<void> {
@@ -435,7 +440,9 @@ export class WorkspaceService implements WorkspaceServiceAPI {
           }),
         ),
       )
-    ).filter(uw => uw);
+    )
+      .map(m => formatWorkspaceUser(m))
+      .filter(uw => uw);
 
     //If user is in no workspace, then it must be invited in the default workspaces, expect if he's guest
     if (userWorkspaces.length === 0) {
@@ -452,10 +459,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
             if (companyRole.role !== "guest") {
               await this.addUser(workspace, { id: userId.userId }, role);
-              const uw = await this.workspaceUserRepository.findOne({
-                user_id: userId.userId,
-                workspace_id: workspace.id,
-              });
+              const uw = formatWorkspaceUser(
+                await this.workspaceUserRepository.findOne({
+                  user_id: userId.userId,
+                  workspace_id: workspace.id,
+                }),
+              );
               if (uw) {
                 userWorkspaces.push(uw);
               }
@@ -560,33 +569,39 @@ export class WorkspaceService implements WorkspaceServiceAPI {
   async getInviteToken(
     companyId: string,
     workspaceId: string,
+    userId: string,
   ): Promise<WorkspaceInviteTokenObject> {
-    const pk = { company_id: companyId, workspace_id: workspaceId };
+    const pk = { company_id: companyId, workspace_id: workspaceId, user_id: userId };
     const res = await this.workspaceInviteTokensRepository.findOne(pk);
     if (!res) return null;
 
     return {
-      token: this.encodeInviteToken(companyId, workspaceId, res.invite_token),
+      token: this.encodeInviteToken(companyId, workspaceId, userId, res.invite_token),
     };
   }
 
   async createInviteToken(
     companyId: string,
     workspaceId: string,
+    userId: string,
   ): Promise<WorkspaceInviteTokenObject> {
-    await this.deleteInviteToken(companyId, workspaceId);
+    await this.deleteInviteToken(companyId, workspaceId, userId);
     const token = randomBytes(32).toString("base64");
-    const pk = { company_id: companyId, workspace_id: workspaceId };
+    const pk = { company_id: companyId, workspace_id: workspaceId, user_id: userId };
     await this.workspaceInviteTokensRepository.save(
       getWorkspaceInviteTokensInstance({ ...pk, invite_token: token }),
     );
     return {
-      token: this.encodeInviteToken(companyId, workspaceId, token),
+      token: this.encodeInviteToken(companyId, workspaceId, userId, token),
     };
   }
 
-  async deleteInviteToken(companyId: string, workspaceId: string): Promise<boolean> {
-    const pk = { company_id: companyId, workspace_id: workspaceId };
+  async deleteInviteToken(
+    companyId: string,
+    workspaceId: string,
+    userId: string,
+  ): Promise<boolean> {
+    const pk = { company_id: companyId, workspace_id: workspaceId, user_id: userId };
     const currentRecord = await this.workspaceInviteTokensRepository.findOne(pk);
     if (!currentRecord) {
       return false;
@@ -608,16 +623,18 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     const pk: WorkspaceInviteTokensPrimaryKey = {
       company_id: tokenInfo.c,
       workspace_id: tokenInfo.w,
+      user_id: tokenInfo.u,
       invite_token: tokenInfo.t,
     };
     return this.workspaceInviteTokensRepository.findOne(pk);
   }
 
-  public encodeInviteToken(companyId: string, workspaceId: string, token: string) {
-    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${token
-      .replace("+", ".")
-      .replace("/", "_")
-      .replace("=", "-")}`;
+  public encodeInviteToken(companyId: string, workspaceId: string, userId: string, token: string) {
+    // Change base64 characters to make them url safe
+    token = token.replace(/\+/g, ".").replace(/\//g, "_").replace(/=/g, "-");
+    const encodedToken = `${reduceUUID4(companyId)}-${reduceUUID4(workspaceId)}-${reduceUUID4(
+      userId,
+    )}-${token}`;
     return encodedToken;
   }
 
@@ -625,14 +642,22 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     try {
       let split = encodedToken.split("-");
       //We split on "-" but the token can contain "-" so be careful
-      const [companyId, workspaceId, token] = [split.shift(), split.shift(), split.join("-")];
+      let [companyId, workspaceId, userId, token] = [
+        split.shift(),
+        split.shift(),
+        split.shift(),
+        split.join("-"),
+      ];
       if (!token) {
         return;
       }
+      // Change back url safe characters to base64
+      token = token.replace(/\./g, "+").replace(/_/g, "/").replace(/-/g, "=");
       return {
         c: expandUUID4(companyId),
         w: expandUUID4(workspaceId),
-        t: token.replace(".", "+").replace("_", "/").replace("-", "="),
+        u: expandUUID4(userId),
+        t: token,
       };
     } catch (e) {
       return null;

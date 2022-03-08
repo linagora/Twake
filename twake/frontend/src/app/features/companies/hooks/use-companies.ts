@@ -126,7 +126,7 @@ export function useBestCandidateCompany(user: UserType | undefined): CompanyType
   return (
     companies.find(o => o.company.id === routerCompanyId)?.company ||
     companies.find(o => o.company.id === storageCompanyId)?.company ||
-    companies.find(o => o.company.id === recentWorkspaceObj?.companyId)?.company ||
+    companies.find(o => o.company.id === recentWorkspaceObj?.company_id)?.company ||
     companies.sort(
       (a, b) => (a.company?.stats?.total_members || 0) - (b.company?.stats?.total_members || 0),
     )?.[0]?.company

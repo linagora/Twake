@@ -147,7 +147,7 @@ export class ConsoleController {
   }
 
   private async getCompanyDataFromConsole(
-    company: ConsoleHookCompany | ConsoleHookCompany["details"],
+    company: ConsoleHookCompany | ConsoleHookCompany["details"] | { code: string },
   ): Promise<ConsoleHookCompany> {
     return this.consoleService
       .getClient()
@@ -220,6 +220,7 @@ export class ConsoleController {
   private async userAdded(content: ConsoleHookBodyContent): Promise<void> {
     const userDTO = content.user;
     const user = await this.consoleService.getClient().updateLocalUserFromConsole(userDTO._id);
+    await this.updateCompany(content.company);
     await this.consoleService.processPendingUser(user);
   }
 

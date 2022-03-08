@@ -23,7 +23,7 @@ export default class CompanyUser {
   id: string;
 
   @Column("role", "string")
-  role: CompanyUserRole;
+  role: CompanyUserRole = "member";
 
   @Column("nb_workspace", "number")
   nbWorkspaces: number;

@@ -171,9 +171,7 @@ export class MergeProcess {
     return progress$;
   }
 
-  private getStreams(
-    concurrent: number = 1,
-  ): {
+  private getStreams(concurrent: number = 1): {
     // hot companies observable
     companies$: Observable<CompanyCreatedStreamObject>;
     // hot users observable
@@ -325,6 +323,7 @@ export class MergeProcess {
           }),
           skipInvite: true,
           role,
+          inviterEmail: "",
         },
       );
 

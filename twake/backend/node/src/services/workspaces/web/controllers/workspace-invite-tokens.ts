@@ -18,6 +18,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { WorkspaceInviteTokensExecutionContext } from "../../types";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import { pick } from "lodash";
+import { ConsoleCompany } from "../../../console/types";
+import { formatCompany, getCompanyStats } from "../../../../services/user/utils";
 
 export class WorkspaceInviteTokensCrudController
   implements
@@ -41,6 +43,7 @@ export class WorkspaceInviteTokensCrudController
     const res = await this.services.workspaces.getInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!res) {
@@ -61,6 +64,7 @@ export class WorkspaceInviteTokensCrudController
     const res = await this.services.workspaces.createInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     return {
@@ -83,6 +87,7 @@ export class WorkspaceInviteTokensCrudController
     const deleted = await this.services.workspaces.deleteInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!deleted) {
@@ -115,9 +120,14 @@ export class WorkspaceInviteTokensCrudController
         id: workspace_id,
       }),
     ]);
+    const total_messages = await this.services.statistics.get(company.id, "messages");
 
     const resource: WorkspaceJoinByTokenResponse = {
-      company: { name: company.name },
+      company: {
+        name: company.name,
+        stats: formatCompany(company, undefined, getCompanyStats(company, total_messages))?.stats,
+        plan: formatCompany(company, undefined, getCompanyStats(company, total_messages))?.plan,
+      },
       workspace: { name: workspace.name },
       auth_required: false,
     };
@@ -126,24 +136,57 @@ export class WorkspaceInviteTokensCrudController
       resource.auth_required = true;
     } else {
       if (request.body.join) {
-        const user_id = request.currentUser.id;
+        const userId = request.currentUser.id;
+        const user = await this.services.users.get({ id: userId });
 
-        const companyUser = await this.services.companies.getCompanyUser(
+        let companyUser = await this.services.companies.getCompanyUser(
           { id: company_id },
-          { id: user_id },
+          { id: userId },
         );
         if (!companyUser) {
-          await this.services.companies.setUserRole(company_id, user_id, "member");
+          const inviter = await this.services.users.get({ id: entity.user_id });
+
+          await this.services.console
+            .getClient()
+            .addUserToCompany(
+              { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
+              {
+                id: userId,
+                email: request.currentUser.email,
+                password: null,
+                firstName: null,
+                lastName: null,
+                name: null,
+                avatar: {
+                  type: null,
+                  value: null,
+                },
+                role: "member",
+                skipInvite: false,
+                inviterEmail: inviter.email_canonical,
+              },
+            );
+
+          await this.services.console
+            .getClient()
+            .updateLocalUserFromConsole(user.identity_provider_id);
+          companyUser = await this.services.companies.getCompanyUser(
+            { id: company_id },
+            { id: userId },
+          );
+        }
+        if (!companyUser) {
+          throw CrudException.badRequest("Unable to add user to the company");
         }
 
         const workspaceUser = await this.services.workspaces.getUser({
           workspaceId: workspace.id,
-          userId: user_id,
+          userId: userId,
         });
         if (!workspaceUser) {
           await this.services.workspaces.addUser(
             pick(workspace, ["company_id", "id"]),
-            { id: user_id },
+            { id: userId },
             "member",
           );
         }

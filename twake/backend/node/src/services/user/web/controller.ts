@@ -33,6 +33,7 @@ import CompanyUser from "../entities/company_user";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import coalesce from "../../../utils/coalesce";
 import { getCompanyRooms, getUserRooms } from "../realtime";
+import { formatCompany, getCompanyStats } from "../utils";
 
 export class UsersCrudController
   implements
@@ -184,13 +185,13 @@ export class UsersCrudController
           retrieveCompanyCached(uc.group_id).then(async (c: Company) => [
             c,
             uc,
-            await this.getCompanyStats(c),
+            getCompanyStats(c, await this.service.statistics.get(c.id, "messages")),
           ]),
         ),
     )) as [Company, CompanyUserObject, CompanyStatsObject][];
 
     return {
-      resources: combos.map(combo => this.service.formatCompany(...combo)),
+      resources: combos.map(combo => formatCompany(...combo)),
       websockets: this.realtime.sign([], context.user.id),
     };
   }
@@ -219,23 +220,14 @@ export class UsersCrudController
     }
 
     return {
-      resource: this.service.formatCompany(
+      resource: formatCompany(
         company,
         companyUserObj,
-        await this.getCompanyStats(company),
+        getCompanyStats(company, await this.service.statistics.get(company.id, "messages")),
       ),
       websocket: context.user?.id
         ? this.realtime.sign(getCompanyRooms(company), context.user.id)[0]
         : undefined,
-    };
-  }
-
-  private async getCompanyStats(company: Company): Promise<CompanyStatsObject> {
-    return {
-      created_at: company.dateAdded,
-      total_members: company.stats?.total_members || 0,
-      total_guests: company.stats?.total_guests || 0,
-      total_messages: await this.service.statistics.get(company.id, "messages"),
     };
   }
 

@@ -45,10 +45,6 @@ import Repository, {
   FindFilter,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { ChannelActivity } from "../../entities/channel-activity";
-import {
-  PubsubParameter,
-  PubsubPublish,
-} from "../../../../core/platform/services/pubsub/decorators/publish";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
 import UserServiceAPI from "../../../user/api";
@@ -629,7 +625,9 @@ export class Service implements ChannelService {
     if (isDirectChannel(channel)) {
       const users = [];
       for (const user of channel.members) {
-        const e = await this.userService.formatUser(await this.userService.users.get({ id: user }));
+        const e = await this.userService.formatUser(
+          await this.userService.users.getCached({ id: user }),
+        );
         users.push(e);
       }
       channelWithUsers.users = users;
@@ -712,14 +710,15 @@ export class Service implements ChannelService {
    * @param channel
    * @param member
    */
-  @PubsubPublish("channel:read")
-  onRead(
-    @PubsubParameter("channel")
-    channel: Channel,
-    @PubsubParameter("member")
-    member: ChannelMember,
-  ): void {
+  onRead(channel: Channel, member: ChannelMember): void {
     logger.info(`Channel ${channel.id} as been marked as read for user ${member.id}`);
+
+    this.platformServices.pubsub.publish("channel:read", {
+      data: {
+        channel,
+        member,
+      },
+    });
   }
 
   /**
@@ -729,13 +728,14 @@ export class Service implements ChannelService {
    * @param channel
    * @param member
    */
-  @PubsubPublish("channel:unread")
-  onUnread(
-    @PubsubParameter("channel")
-    channel: Channel,
-    @PubsubParameter("member")
-    member: ChannelMember,
-  ): void {
+  onUnread(channel: Channel, member: ChannelMember): void {
     logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
+
+    this.platformServices.pubsub.publish("channel:unread", {
+      data: {
+        channel,
+        member,
+      },
+    });
   }
 }

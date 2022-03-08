@@ -1,17 +1,16 @@
+import {
+  ChannelsReachableGetResponse,
+  ChannelsReachableInviteUserRequest,
+  ChannelsReachableInviteUserResponse,
+  ChannelsReachableRemoveUserResponse,
+} from 'app/features/channels/types/channels-reachable-types';
 import Api from '../../global/framework/api-service';
-import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
-
-type ChannelsReachableGetResponse = { resources: ChannelType[] };
-type ChannelsReachableInviteUserResponse = { resource: ChannelMemberType };
-type ChannelsReachableInviteUserRequest = {
-  resource: {
-    user_id: string;
-  };
-};
+import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 
 @TwakeService('ChannelsReachableAPIClientService')
-class ChannelsReachableAPIClient {
+class ChannelsReachableAPIClientService {
   private readonly prefix = '/internal/services/channels/v1/companies';
 
   /**
@@ -26,12 +25,12 @@ class ChannelsReachableAPIClient {
   }
 
   /**
-   * Add or remove user to/from a channel.
+   * Add user to a channel.
    * Every user in the channel (except guests) can invite or remove someone.
    * A system message will be sent on invitations.
-   * @param _companyId string
-   * @param _workspaceId string
-   * @param _userId string
+   * @param companyId string
+   * @param workspaceId string
+   * @param userId string
    *
    */
   async inviteUser(
@@ -41,7 +40,7 @@ class ChannelsReachableAPIClient {
     userId: string,
   ): Promise<ChannelMemberType> {
     return Api.post<ChannelsReachableInviteUserRequest, ChannelsReachableInviteUserResponse>(
-      `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/${userId}`,
+      `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members`,
       {
         resource: {
           user_id: userId,
@@ -49,6 +48,26 @@ class ChannelsReachableAPIClient {
       },
     ).then(result => result.resource);
   }
-}
 
-export default new ChannelsReachableAPIClient();
+  /**
+   * Remove user from a channel.
+   * Every user in the channel (except guests) can invite or remove someone.
+   * A system message will be sent on invitations.
+   * @param companyId string
+   * @param workspaceId string
+   * @param userId string
+   *
+   */
+  async removeUser(
+    companyId: string,
+    workspaceId: string,
+    channelId: string,
+    userId: string,
+  ): Promise<ChannelsReachableRemoveUserResponse> {
+    return Api.delete<ChannelsReachableRemoveUserResponse>(
+      `${this.prefix}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/members/${userId}`,
+    ).then(result => result);
+  }
+}
+const ChannelsReachableAPIClient = new ChannelsReachableAPIClientService();
+export default ChannelsReachableAPIClient;

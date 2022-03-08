@@ -11,7 +11,8 @@ const logger = getLogger("channel.pubsub.new-pending-emails-in-workspace-join-ch
  * In such case, the email must be added to all the channels that he is invited.
  */
 export class NewPendingEmailsInWorkspaceJoinChannelsProcessor
-  implements PubsubHandler<NewUserInWorkspaceNotification, void> {
+  implements PubsubHandler<NewUserInWorkspaceNotification, void>
+{
   constructor(readonly service: ChannelServiceAPI) {}
 
   readonly topics = {
@@ -38,8 +39,6 @@ export class NewPendingEmailsInWorkspaceJoinChannelsProcessor
         workspace_id: message.workspace_id,
         company_id: message.company_id,
       });
-
-      logger.debug("Pending email %s has been added as member to channel %o");
     } catch (err) {
       logger.error(
         { err },
