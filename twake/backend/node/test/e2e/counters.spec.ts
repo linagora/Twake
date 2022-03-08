@@ -22,7 +22,7 @@ import {
   ChannelCounterEntity,
   ChannelCounterPrimaryKey,
   ChannelUserCounterType,
-} from "../../src/services/channels/entities/channel_counters";
+} from "../../src/services/channels/entities/channel-counters";
 import { ChannelMemberType } from "../../src/services/channels/types";
 import { getMemberOfChannelInstance, MemberOfChannel } from "../../src/services/channels/entities";
 

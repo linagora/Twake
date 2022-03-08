@@ -45,7 +45,7 @@ import {
   ChannelCounterPrimaryKey,
   ChannelUserCounterType,
   TYPE as ChannelCounterEntityType,
-} from "../../entities/channel_counters";
+} from "../../entities/channel-counters";
 import { CounterProvider } from "../../../../core/platform/services/counter/provider";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";

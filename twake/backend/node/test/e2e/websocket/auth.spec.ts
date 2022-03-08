@@ -1,7 +1,6 @@
 import { describe, it, beforeEach, afterEach } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import io from "socket.io-client";
-import { UnauthorizedError } from "socketio-jwt";
 
 describe("The Websocket authentication", () => {
   let platform: TestPlatform;
@@ -50,8 +49,7 @@ describe("The Websocket authentication", () => {
           .on("authenticated", () => {
             done(new Error("Should not occur"));
           })
-          .on("unauthorized", (msg: UnauthorizedError) => {
-            console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
+          .on("unauthorized", (msg: any) => {
             done();
           });
       });
@@ -65,8 +63,7 @@ describe("The Websocket authentication", () => {
           .on("authenticated", () => {
             done(new Error("Should not occur"));
           })
-          .on("unauthorized", (msg: UnauthorizedError) => {
-            console.log(`unauthorized: ${JSON.stringify(msg.data)}`);
+          .on("unauthorized", (msg: any) => {
             done();
           });
       });
