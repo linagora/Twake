@@ -4,6 +4,7 @@ import twake from "../../../twake";
 import UserServiceAPI from "../../../services/user/api";
 import { getInstance as getUserInstance } from "../../../services/user/entities/user";
 import Table from "cli-table";
+import { exit } from "process";
 
 /**
  * Merge command parameters. Check the builder definition below for more details.
@@ -22,6 +23,10 @@ const services = [
   "database",
   "webserver",
   "statistics",
+  "applications",
+  "auth",
+  "realtime",
+  "websocket",
 ];
 
 const command: yargs.CommandModule<unknown, CLIArgs> = {
@@ -66,13 +71,15 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
         },
       );
 
-      const finalUser = await userService.users.get(getUserInstance({ id: argv.id }));
+      const finalUser = await userService.users.get({ id: argv.id });
 
       // Table after
       tableAfter.push([finalUser.id, finalUser.username_canonical, finalUser.deleted]);
 
       spinner.stop();
     }
+
+    exit();
   },
 };
 

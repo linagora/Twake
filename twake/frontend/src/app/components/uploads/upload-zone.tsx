@@ -29,7 +29,6 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
       upload_manager: UploadManager,
     };
     UploadManager.addListener(this);
-    this.paste = this.paste.bind(this);
   }
 
   componentWillUnmount() {
@@ -229,44 +228,6 @@ export default class UploadZone extends React.Component<PropsType, StateType> {
     });
 
     this.upload(filesToUpload);
-  }
-
-  /**
-   *
-   * @param event
-   */
-  paste(event: any) {
-    if (this.props.allowPaste) {
-      const clipboardData: any = event.clipboardData || event.originalEvent.clipboardData;
-      const items: any = clipboardData.items;
-      let filename: any = (clipboardData.getData('Text') || 'image').split('\n')[0];
-      filename = filename.replace(/\.(png|jpeg|jpg|tiff|gif)$/i, '');
-      const types: any = [];
-      let hasImage: any = false;
-      let imageBlob: any = false;
-      let imageType: any = false;
-
-      for (const index in items) {
-        const item: any = items[index];
-        if (item.kind === 'file' && item.type.startsWith('image/')) {
-          hasImage = true;
-          imageBlob = item.getAsFile();
-          imageType = item.type;
-        }
-        types.push(item.type);
-      }
-      if (hasImage === true) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const blob: any = imageBlob;
-        filename = filename + '.' + (imageType.split('/')[1] || 'png');
-        const file: any = new File([blob], filename, { type: imageType });
-        const list: any = {};
-        list[filename] = file;
-        this.upload(list, 1, file.size);
-      }
-    }
   }
 
   /**
