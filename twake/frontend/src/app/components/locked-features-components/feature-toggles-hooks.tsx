@@ -12,7 +12,7 @@ export const useFeatureToggles = () => {
   useEffect(() => {
     const companyPlan = company?.plan;
     companyPlan && FeatureTogglesService.setFeaturesFromCompanyPlan(companyPlan as any);
-  }, [company]);
+  }, [JSON.stringify(company)]);
 
   return {
     activeFeatureNames,

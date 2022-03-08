@@ -125,65 +125,11 @@ class Service implements UserServiceAPI {
 
         companies,
       };
-      
+
       // Fixme: this is for retro compatibility, should be deleted after march 2022 if mobile did implement it https://github.com/linagora/Twake-Mobile/issues/1265
       resUser.preference = resUser.preferences;
     }
 
     return resUser;
-  }
-
-  public formatCompany(
-    companyEntity: Company,
-    companyUserObject?: CompanyUserObject,
-    companyStats?: CompanyStatsObject,
-  ): CompanyObject {
-    const res: CompanyObject = {
-      id: companyEntity.id,
-      name: companyEntity.name || "",
-      logo: companyEntity.logo || "",
-      plan: companyEntity.plan,
-      identity_provider: companyEntity.identity_provider,
-      identity_provider_id: companyEntity.identity_provider_id,
-    };
-
-    if (companyUserObject) {
-      res.status = "active"; // FIXME: Deactivated console user are removed from company on twake side
-      res.role = companyUserObject.role;
-    }
-
-    if (companyStats) {
-      res.stats = companyStats;
-    }
-
-    res.plan = {
-      name: res.plan?.name || "free",
-      limits: res.plan?.limits || {},
-      features: res.plan?.features || {},
-    };
-
-    res.plan.limits = Object.assign(
-      {
-        [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000,
-        [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: -1,
-      },
-      res.plan?.limits || {},
-    );
-
-    res.plan.features = Object.assign(
-      {
-        [CompanyFeaturesEnum.CHAT_GUESTS]: true,
-        [CompanyFeaturesEnum.CHAT_MESSAGE_HISTORY]: true,
-        [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: true,
-        [CompanyFeaturesEnum.CHAT_EDIT_FILES]: true,
-        [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: true,
-        [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]:
-          res.plan?.limits[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT] <= 0 ||
-          res.stats.total_members < res.plan?.limits[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT],
-      },
-      res.plan?.features || {},
-    );
-
-    return res;
   }
 }

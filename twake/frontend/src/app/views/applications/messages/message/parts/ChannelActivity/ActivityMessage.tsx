@@ -3,10 +3,11 @@ import { Row, Typography } from 'antd';
 import Languages from 'app/features/global/services/languages-service';
 import Emojione from 'app/components/emojione/emojione';
 import User from 'app/components/twacode/blocks/user';
-import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { TabType } from 'app/features/tabs/types/tab';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';
+import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 
 enum ChannelActivityEnum {
   CHANNEL_MEMBER_CREATED = 'channel:activity:member:created',

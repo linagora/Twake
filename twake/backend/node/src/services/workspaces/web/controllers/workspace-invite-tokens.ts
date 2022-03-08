@@ -43,6 +43,7 @@ export class WorkspaceInviteTokensCrudController
     const res = await this.services.workspaces.getInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!res) {
@@ -63,6 +64,7 @@ export class WorkspaceInviteTokensCrudController
     const res = await this.services.workspaces.createInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     return {
@@ -85,6 +87,7 @@ export class WorkspaceInviteTokensCrudController
     const deleted = await this.services.workspaces.deleteInviteToken(
       context.company_id,
       context.workspace_id,
+      context.user.id,
     );
 
     if (!deleted) {
@@ -134,13 +137,16 @@ export class WorkspaceInviteTokensCrudController
     } else {
       if (request.body.join) {
         const userId = request.currentUser.id;
+        const user = await this.services.users.get({ id: userId });
 
         let companyUser = await this.services.companies.getCompanyUser(
           { id: company_id },
           { id: userId },
         );
         if (!companyUser) {
-          const createdConsoleUser = await this.services.console
+          const inviter = await this.services.users.get({ id: entity.user_id });
+
+          await this.services.console
             .getClient()
             .addUserToCompany(
               { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
@@ -156,12 +162,14 @@ export class WorkspaceInviteTokensCrudController
                   value: null,
                 },
                 role: "member",
-                skipInvite: true,
+                skipInvite: false,
+                inviterEmail: inviter.email_canonical,
               },
             );
+
           await this.services.console
             .getClient()
-            .updateLocalUserFromConsole(createdConsoleUser._id);
+            .updateLocalUserFromConsole(user.identity_provider_id);
           companyUser = await this.services.companies.getCompanyUser(
             { id: company_id },
             { id: userId },

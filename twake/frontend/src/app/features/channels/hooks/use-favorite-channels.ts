@@ -1,25 +1,32 @@
 import { ChannelType } from 'app/features/channels/types/channel';
-import { useDirectChannels } from './use-direct-channels';
-import { usePublicOrPrivateChannels } from './use-public-or-private-channels';
+import { useDirectChannels, useRefreshDirectChannels } from './use-direct-channels';
+import {
+  usePublicOrPrivateChannels,
+  useRefreshPublicOrPrivateChannels,
+} from './use-public-or-private-channels';
+
+export function useRefreshFavoriteChannels(): {
+  refresh: () => void;
+} {
+  const { refresh: refreshPublicOrPrivateChannels } = useRefreshPublicOrPrivateChannels();
+  const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
+
+  const refresh = async () => {
+    await refreshPublicOrPrivateChannels();
+    await refreshDirectChannels();
+  };
+
+  return { refresh };
+}
 
 export function useFavoriteChannels(): {
   favoriteChannels: ChannelType[];
   refresh: () => void;
 } {
-  const {
-    publicChannels,
-    privateChannels,
-    refresh: refreshPublicOrPrivateChannels,
-  } = usePublicOrPrivateChannels();
-  const { directChannels, refresh: refreshDirectChannels } = useDirectChannels();
+  const { publicChannels, privateChannels } = usePublicOrPrivateChannels();
+  const { directChannels } = useDirectChannels();
 
-  /**
-   * This function will refresh public, private and direct channels state
-   */
-  const refresh = async () => {
-    await refreshPublicOrPrivateChannels();
-    await refreshDirectChannels();
-  };
+  const { refresh } = useRefreshFavoriteChannels();
 
   return {
     favoriteChannels: [...publicChannels, ...privateChannels, ...directChannels].filter(

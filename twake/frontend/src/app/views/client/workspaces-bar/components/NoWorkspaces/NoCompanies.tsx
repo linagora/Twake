@@ -14,6 +14,7 @@ import SecondMail from '../../../popup/SecondMail/SecondMail.js';
 import InitService from 'app/features/global/services/init-service';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import CompanySelector from '../CompanySelector/index';
+import GotALink from './GotALink';
 
 import './styles.scss';
 
@@ -61,14 +62,14 @@ export default class WelcomePage extends Component {
               <Emojione type=":crying_cat_face:" />
             </div>
 
+            <GotALink />
+
             <div className="retry">
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a href="#" className="link" onClick={() => this.retry()}>
                 {Languages.t('scenes.app.workspaces.welcome_page.try_again')}
               </a>
-            </div>
-
-            <div className="otherMail text">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
               <a className="blue_link" onClick={() => LoginService.logout()}>
                 {Languages.t('scenes.apps.account.account.logout')}

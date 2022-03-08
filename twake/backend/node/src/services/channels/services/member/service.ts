@@ -33,10 +33,6 @@ import { getMemberPath, getRoomName } from "./realtime";
 import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
 import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import {
-  PubsubParameter,
-  PubsubPublish,
-} from "../../../../core/platform/services/pubsub/decorators/publish";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { plainToClass } from "class-transformer";
 import UserServiceAPI, { CompaniesServiceAPI } from "../../../user/api";
@@ -518,32 +514,39 @@ export class Service implements MemberService {
     return new ListResult("channel_member", members);
   }
 
-  @PubsubPublish("channel:member:updated")
   onUpdated(
-    @PubsubParameter("channel")
     channel: Channel,
-    @PubsubParameter("member")
     member: ChannelMember,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateResult: UpdateResult<ChannelMember>,
   ): void {
     logger.debug("Member updated %o", member);
+
+    this.platformServices.pubsub.publish("channel:member:updated", {
+      data: {
+        channel,
+        member,
+      },
+    });
   }
 
-  @PubsubPublish("channel:member:created")
   onCreated(
-    @PubsubParameter("channel")
     channel: ChannelEntity,
-    @PubsubParameter("member")
     member: ChannelMember,
-    @PubsubParameter("user")
     user: User,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     createResult: SaveResult<ChannelMember>,
   ): void {
     logger.debug("Member created %o", member);
 
-    // Not sure about this, we use it on Tracker + Activities
+    this.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:created", {
+      data: {
+        channel,
+        user,
+        member,
+      },
+    });
+
     localEventBus.publish<ResourceEventsPayload>("channel:member:created", {
       channel,
       user,
@@ -553,22 +556,23 @@ export class Service implements MemberService {
     });
   }
 
-  @PubsubPublish("channel:member:deleted")
-  onDeleted(
-    @PubsubParameter("member")
-    member: ChannelMember,
-    @PubsubParameter("user")
-    user: User,
-    @PubsubParameter("channel")
-    channel: ChannelEntity,
-  ): void {
+  onDeleted(member: ChannelMember, user: User, channel: ChannelEntity): void {
     logger.debug("Member deleted %o", member);
+
+    this.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:deleted", {
+      data: {
+        channel,
+        user,
+        member,
+      },
+    });
 
     localEventBus.publish<ResourceEventsPayload>("channel:member:deleted", {
       actor: user,
       resourcesBefore: [member],
-      channel: channel,
+      channel,
       user,
+      member,
     });
   }
 

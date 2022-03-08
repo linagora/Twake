@@ -4,23 +4,30 @@ import configuration from '../../environment/environment';
 import { Smartphone, X } from 'react-feather';
 import './style.scss';
 import { Button } from 'antd';
+import InitService from '../../features/global/services/init-service';
 
 const environment = configuration as any;
 
 export default function MobileRedirect(props: { children: ReactNode }) {
   const os = getDevice();
-  const forceUseWeb = new URLSearchParams(window.location.search).get('useweb');
+  const searchParams = Object.fromEntries(new URLSearchParams(window.location.search)) as any;
+
+  const parameters = InitService.server_infos?.configuration.mobile;
+
+  const getapp = searchParams.getapp;
+  const forceUseWeb = searchParams.useweb;
+  const originInUrl = searchParams.origin;
+
+  delete searchParams.useweb;
+  delete searchParams.getapp;
+  delete searchParams.origin;
 
   //If requested in url: redirect to stores
-  if (
-    new URLSearchParams(window.location.search).get('getapp') &&
-    environment.mobile_appstore &&
-    environment.mobile_googleplay
-  ) {
+  if (getapp && parameters?.mobile_appstore && parameters?.mobile_googleplay) {
     if (os === 'android') {
-      document.location.replace(environment.mobile_googleplay);
+      document.location.replace(parameters?.mobile_googleplay);
     } else if (os === 'ios') {
-      document.location.replace(environment.mobile_appstore);
+      document.location.replace(parameters?.mobile_appstore);
     }
   }
 
@@ -28,30 +35,36 @@ export default function MobileRedirect(props: { children: ReactNode }) {
   if (
     forceUseWeb ||
     os === 'other' ||
-    !environment.mobile_redirect ||
-    !environment.front_root_url ||
+    !parameters?.mobile_redirect ||
+    (!environment?.front_root_url && !originInUrl) ||
     typeof window === 'undefined'
   ) {
     return <>{props.children}</>;
   }
 
-  const origin = environment.front_root_url.replace(/https?:\/\//g, '').replace(/\//g, '');
-  const redirectOrigin = environment.mobile_redirect.replace(/https?:\/\//g, '').replace(/\//g, '');
+  const origin = (originInUrl || environment?.front_root_url)
+    .replace(/https?:\/\//g, '')
+    .replace(/\//g, '');
+  const redirectOrigin = parameters?.mobile_redirect.replace(/https?:\/\//g, '').replace(/\//g, '');
 
   //For mobile first we ensure to be on the m.domain.com url
   if (window.location.origin.replace(/https?:\/\//g, '').replace(/\//g, '') !== redirectOrigin) {
     window.location.replace(
       //The redirection to the app MUST be from ANOTHER domain to work in devices webviews (like in facebook messenger)
-      `${window.location.protocol}//${redirectOrigin}${window.location.pathname}${window.location.search}`,
+      `${window.location.protocol}//${redirectOrigin}${
+        window.location.pathname
+      }?${new URLSearchParams(
+        Object.assign(searchParams, { origin: window.location.origin }),
+      ).toString()}`,
     );
     return <div></div>;
   }
 
   //Here we are on m.domain.com/some-path and we are on a mobile device
   const backToWebUrl = (getApp: boolean = true) =>
-    `${window.location.protocol}//${origin}${window.location.pathname}${window.location.search}${
-      getApp ? (window.location.search ? '&' : '?') + 'getapp=1' : 'useweb=1'
-    }`;
+    `${window.location.protocol}//${origin}${window.location.pathname}?${new URLSearchParams(
+      Object.assign({}, searchParams, getApp ? { getapp: 1 } : { useweb: 1 }),
+    ).toString()}`;
 
   return (
     <>

@@ -51,11 +51,14 @@ export function formatCompany(
       [CompanyFeaturesEnum.CHAT_MULTIPLE_WORKSPACES]: true,
       [CompanyFeaturesEnum.CHAT_EDIT_FILES]: true,
       [CompanyFeaturesEnum.CHAT_UNLIMITED_STORAGE]: true,
+      [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]: true,
+    },
+    {
+      ...(res.plan?.features || {}),
       [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]:
         res.plan?.limits[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT] <= 0 ||
         res.stats.total_members < res.plan?.limits[CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT],
     },
-    res.plan?.features || {},
   );
 
   return res;

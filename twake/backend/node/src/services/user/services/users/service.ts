@@ -199,7 +199,6 @@ export class UserService implements UsersServiceAPI {
     const user = await this.repository.findOne(pk);
     if (!user.preferences) user.preferences = {};
     for (const key in preferences) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       user.preferences[key] = preferences[key];
     }

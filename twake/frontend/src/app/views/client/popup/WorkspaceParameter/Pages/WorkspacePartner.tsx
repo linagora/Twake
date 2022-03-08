@@ -17,10 +17,12 @@ import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
+import ConsoleService from 'app/features/console/services/console-service';
 
 import './Pages.scss';
 
 export const AdminSwitch = (props: { col: any; adminLevelId: string; onChange: any }) => {
+  // @ts-ignore
   workspacesUsers.useListener(useState);
   const loading = workspacesUsers.updateLevelUserLoading[props.col.user.id];
   const checked = props.col.level === props.adminLevelId;

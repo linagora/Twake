@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 import React from 'react';
 
-import { ChannelMemberType, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
 import Icon from 'app/components/icon/icon';
 import Menu from 'components/menus/menu';
@@ -25,8 +25,10 @@ import { isDirectChannel, isPrivateChannel } from 'app/features/channels/utils/u
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
-import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
+import { useRefreshFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
+import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
+import { useRefreshDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
 type PropsType = {
   channel: ChannelType;
@@ -39,9 +41,10 @@ export default (props: PropsType): JSX.Element => {
   const workspaceId = useRouterWorkspace();
   const { user: currentUser } = useCurrentUser();
   const companyId = props.channel.company_id;
-  const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
+  const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
+  const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
   const { Feature, FeatureNames } = useFeatureToggles();
-  const channelMember: ChannelMemberType = props.channel.user_member || {};
+  const channelMember = props.channel.user_member || {};
 
   Languages.useListener();
 
@@ -52,7 +55,7 @@ export default (props: PropsType): JSX.Element => {
       props.channel.id &&
       currentUser?.id
     ) {
-      await ChannelMembersAPIClient.save(
+      await ChannelMembersAPIClient.updateChannelMemberPreferences(
         channelMember,
         { notification_level: preference },
         {
@@ -72,7 +75,7 @@ export default (props: PropsType): JSX.Element => {
       props.channel.id &&
       currentUser?.id
     ) {
-      await ChannelMembersAPIClient.save(
+      await ChannelMembersAPIClient.updateChannelMemberPreferences(
         channelMember,
         { favorite: state },
         {
@@ -124,6 +127,7 @@ export default (props: PropsType): JSX.Element => {
       } else {
         redirectToWorkspace();
         refreshFavoriteChannels();
+        refreshDirectChannels();
       }
     }
   };
@@ -169,8 +173,18 @@ export default (props: PropsType): JSX.Element => {
       ),
       onClick: () => {
         notificationsCollection.find({ channel_id: props.channel.id }).length > 0
-          ? Notifications.read(props.channel)
-          : Notifications.unread(props.channel);
+          ? ChannelAPIClient.read(
+              props.channel.company_id || '',
+              props.channel.workspace_id || '',
+              props.channel.id || '',
+              { status: true, now: true },
+            )
+          : ChannelAPIClient.read(
+              props.channel.company_id || '',
+              props.channel.workspace_id || '',
+              props.channel.id || '',
+              { status: false, now: true },
+            );
       },
     },
     {

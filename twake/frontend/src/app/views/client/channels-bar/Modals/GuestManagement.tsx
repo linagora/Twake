@@ -1,20 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { capitalize } from 'lodash';
 import { Input, Row, Typography } from 'antd';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+
 import ObjectModal from 'app/components/object-modal/object-modal';
-import RouterService from 'app/features/router/services/router-service';
 import MemberChannelRow from '../Parts/Header/MemberChannelRow';
-import {
-  ChannelMemberResource,
-  ChannelResource,
-  ChannelType,
-} from 'app/features/channels/types/channel';
-import Collections from 'app/deprecated/CollectionsReact/Collections';
-import { PendingEmailResource } from 'app/features/workspace-members/types/pending-email';
+import { ChannelType } from 'app/features/channels/types/channel';
 import GuestManagementService from 'app/features/channel-members/service/guest-management-service';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import Languages from 'app/features/global/services/languages-service';
+import { usePendingEmails } from 'app/features/pending-emails/hooks/use-pending-emails';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
+import { useChannelGuests } from 'app/features/channel-members/hooks/use-channel-guests';
 
 type PropsType = {
   channel: ChannelType;
@@ -24,22 +23,27 @@ export default ({ channel }: PropsType): JSX.Element => {
   const [search, setSearch] = useState<string>('');
   const [limit, setLimit] = useState<number>(10);
   const [shouldDisplayAdditionRow, setShouldDisplayAdditionRow] = useState<boolean>(false);
-  const { workspaceId, companyId } = RouterService.getStateFromRoute();
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
 
-  GuestManagementService.bind({ search, channel_id: channel.id || '' });
+  const { pendingEmails } = usePendingEmails({
+    companyId,
+    workspaceId,
+    channelId: channel.id || '',
+  });
+  const { channelGuests } = useChannelGuests({
+    companyId,
+    workspaceId,
+    channelId: channel.id || '',
+  });
+
+  GuestManagementService.bind({
+    search,
+    pendingEmails: pendingEmails.map(o => o),
+    channelMembers: channelGuests.map(o => o),
+  });
+
   const { list } = GuestManagementService;
-
-  const memberCollectionPath: string = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.id}/members/`;
-  const channelMembersCollection = Collections.get(memberCollectionPath, ChannelMemberResource);
-
-  const pendingEmailsCollectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channel.id}/pending_emails/`;
-  const pendingEmailsCollection = Collections.get(
-    pendingEmailsCollectionPath,
-    PendingEmailResource,
-  );
-
-  channelMembersCollection.useWatcher({});
-  pendingEmailsCollection.useWatcher({});
 
   useEffect(() => {
     const searchedEmail = WorkspacesUsers.fullStringToEmails(search)[0] as string;
@@ -84,7 +88,6 @@ export default ({ channel }: PropsType): JSX.Element => {
         {shouldDisplayAdditionRow && (
           <MemberChannelRow
             channelId={channel.id || ''}
-            collection={pendingEmailsCollection}
             userType="pending-email"
             inPendingEmailAddition
             pendingEmailToAdd={search}
@@ -98,12 +101,11 @@ export default ({ channel }: PropsType): JSX.Element => {
                 <div key={member.key} className="x-margin">
                   <MemberChannelRow
                     key={member.key}
-                    channelId={member.resource.data.channel_id || ''}
-                    userId={member.resource.data.id || ''}
-                    collection={
+                    channelId={member.resource.channel_id || ''}
+                    userId={
                       member.type === 'pending-email'
-                        ? pendingEmailsCollection
-                        : channelMembersCollection
+                        ? member.key
+                        : (member.resource as ChannelMemberType).user_id || ''
                     }
                     userType={member.type}
                   />
