@@ -8,6 +8,8 @@ import { ChannelGuestsState } from 'app/features/channel-members/state/channel-g
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import ChannelMembersAPIClient from '../api/channel-members-api-client';
+import UserAPIClient from 'app/features/users/api/user-api-client';
+import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 
 export const useChannelGuests = (
   key: AtomChannelMembersKey,
@@ -18,6 +20,7 @@ export const useChannelGuests = (
 } => {
   const [channelGuests, _setChannelGuests] = useRecoilState(ChannelGuestsState(key));
   const [loading, setLoading] = useRecoilState(LoadingState(`channel-guests-${key.channelId}`));
+  const { set: setUserList } = useSetUserList('useChannelGuests');
 
   const refresh = async () => {
     const { companyId, workspaceId, channelId } = key;
@@ -31,6 +34,11 @@ export const useChannelGuests = (
     );
 
     if (channelGuestsUpdated) _setChannelGuests(channelGuestsUpdated);
+
+    const usersIdx = channelGuestsUpdated.map(guest => guest.user_id || '');
+    const users = await UserAPIClient.list(usersIdx, [companyId]);
+
+    if (users.length) setUserList(users);
   };
 
   useGlobalEffect(
