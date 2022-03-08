@@ -127,6 +127,7 @@ export default () => {
                 {Languages.t('scenes.app.popup.workspaceparameter.pages.configure_button')}
               </Button>
             )}
+
             <div style={{ display: 'inline-block' }}>
               <Menu menu={buildMenu(application)}>
                 <Button

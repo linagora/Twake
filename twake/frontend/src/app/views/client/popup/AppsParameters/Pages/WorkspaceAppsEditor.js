@@ -1,109 +1,161 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
+import Api from 'app/features/global/framework/api-service';
 
 import Languages from 'app/features/global/services/languages-service';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import workspaceService from 'app/deprecated/workspaces/workspaces.js';
-import Emojione from 'components/emojione/emojione';
-import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
-import Attribute from 'components/parameters/attribute.js';
-import AlertManager from 'app/features/global/services/alert-manager-service';
-import Api from 'app/features/global/framework/api-service';
-import WorkspaceAppsCreator from './WorkspaceAppsCreator.js';
-import Switch from 'components/inputs/switch';
-import AutoHeight from 'components/auto-height/auto-height.js';
-import TagPicker from 'components/tag-picker/tag-picker.js';
-import Icon from 'app/components/icon/icon.js';
-import InputWithClipBoard from 'components/input-with-clip-board/input-with-clip-board.js';
-import Input from 'components/inputs/input.js';
-import InlineTagPicker from 'app/components/inline-tag-picker/inline-tag-picker';
+
+import Icon from "components/icon/icon";
+import Emojione from "components/emojione/emojione";
+import Attribute from "components/parameters/attribute";
+import Input from "components/inputs/input";
+import TagPicker from "components/tag-picker/tag-picker";
+import AutoHeight from "components/auto-height/auto-height";
+import InputWithClipBoard from "components/input-with-clip-board/input-with-clip-board";
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 
 import './Pages.scss';
 import WorkspacesApp from 'app/deprecated/workspaces/workspaces_apps.js';
+import InlineTagPicker from "components/inline-tag-picker/inline-tag-picker";
+import Switch from "components/inputs/switch";
+import ButtonWithTimeout from "components/buttons/button-with-timeout";
 
-export default class WorkspaceAppsEditor extends Component {
-  constructor(props) {
-    super();
-    this.state = {
-      id: props.appId,
-      application: {},
-      show_api_key: false,
-    };
-  }
+import _ from 'lodash';
 
-  saveApp() {
-    var saveApp = () => {
-      this.setState({ loading: true, error: false, error_code: false });
+export default (props) => {
 
-      var data = {
-        application: this.state.application,
-        workspace_id: workspaceService.currentWorkspaceId,
-      };
+  const [originalApplication, setOriginalApplication] = useState({})
 
-      Api.post('/ajax/market/app/update', data, res => {
-        if (res.data && res.data.id) {
-          Collections.get('applications').completeObject(res.data);
+  const [application, _setApplication] = useState({})
+  const setApplication = (data) => _setApplication(_.cloneDeep(data))
 
-          this.props.exit();
-        } else {
-          if (res.errors.indexOf('code_used') >= 0) {
-            this.setState({ loading: false, error_code: true });
-          } else {
-            this.setState({ loading: false, error: true });
-          }
-        }
-      });
-    };
+  const [loading, setLoading] = useState(true)
+  const [showApiKey, setShowApiKey] = useState(false)
+  const [displayJsonError, setDisplayJsonError] = useState(false)
+  const [error, setError] = useState(false)
+  const [errorCode, setErrorCode] = useState(false)
 
-    if (this.state.application.install_count > 0) {
-      AlertManager.confirm(
-        () => {
-          saveApp();
-        },
-        null,
-        {
-          text: Languages.t(
-            'scenes.app.popup.appsparameters.pages.app_update',
-            [this.state.application.name, this.state.application.install_count || 0],
-            "Mettre à jour l'application $1 (l'application est utilisée $2 fois.)",
-          ),
-        },
-      );
-    } else {
-      saveApp();
+  const [identity, setIdentity] = useState({})
+
+  let api_key_timeout= null;
+
+  useEffect (()=> {
+    const fetchData = async () => {
+      const res = await Api.get(`/internal/services/applications/v1/applications/${props.appId}`);
+      setLoading(false);
+      if (!res.resource) {
+        console.error(res)
+        return
+      }
+
+      console.log('APPLICATION', res.resource)
+
+      res.resource.categories = []
+      res.resource.available_categories = [1,2,3]
+
+
+      res.resource.capabilities = []
+      res.resource.available_capabilities = [1,2,3]
+
+      res.resource.privileges = []
+      res.resource.available_privileges = [1,2,3]
+
+      res.resource.hooks = []
+      res.resource.available_hooks = [1,2,3]
+
+      setApplication(res.resource)
+      setOriginalApplication(res.resource);
+
+      setIdentity(res.resource.identity)
+
     }
-  }
 
-  removeApp() {
-    AlertManager.confirm(
-      () => {
-        this.setState({ loading: true, error: false });
+    if (props.appId && !application.id) {
+      fetchData()
+    }
 
-        var data = {
-          application_id: this.state.application.id,
-        };
+  }, [])
 
-        Api.post('/ajax/market/app/remove', data, res => {
-          if (res.data && !res.errors.length) {
-            Collections.get('applications').removeObject(this.state.application.front_id);
-            this.props.exit();
-          } else {
-            this.setState({ loading: false, error: true });
-          }
-        });
-      },
-      null,
-      {
-        text: Languages.t(
-          'scenes.app.popup.appsparameters.pages.remove_app',
-          [this.state.application.name],
-          "Supprimer l'application $1 définitivement.",
-        ),
-      },
-    );
-  }
 
-  convertToSimpleName(value) {
+  //
+  //
+  // // this.state = {
+  // //   id: props.appId,
+  // //   application: {},
+  // //   show_api_key: false,
+  // // };
+  //
+  // const saveApp = () => {
+  //   var saveApp = () => {
+  //     this.setState({ loading: true, error: false, error_code: false });
+  //
+  //     var data = {
+  //       application: this.state.application,
+  //       workspace_id: workspaceService.currentWorkspaceId,
+  //     };
+  //
+  //     Api.post('/ajax/market/app/update', data, res => {
+  //       if (res.data && res.data.id) {
+  //         Collections.get('applications').completeObject(res.data);
+  //
+  //         this.props.exit();
+  //       } else {
+  //         if (res.errors.indexOf('code_used') >= 0) {
+  //           this.setState({ loading: false, error_code: true });
+  //         } else {
+  //           this.setState({ loading: false, error: true });
+  //         }
+  //       }
+  //     });
+  //   };
+  //
+  //   if (this.state.application.install_count > 0) {
+  //     AlertManager.confirm(
+  //       () => {
+  //         saveApp();
+  //       },
+  //       null,
+  //       {
+  //         text: Languages.t(
+  //           'scenes.app.popup.appsparameters.pages.app_update',
+  //           [this.state.application.name, this.state.application.install_count || 0],
+  //           "Mettre à jour l'application $1 (l'application est utilisée $2 fois.)",
+  //         ),
+  //       },
+  //     );
+  //   } else {
+  //     saveApp();
+  //   }
+  // }
+  //
+  // const removeApp = () => {
+  //   AlertManager.confirm(
+  //     () => {
+  //       this.setState({ loading: true, error: false });
+  //
+  //       var data = {
+  //         application_id: this.state.application.id,
+  //       };
+  //
+  //       Api.post('/ajax/market/app/remove', data, res => {
+  //         if (res.data && !res.errors.length) {
+  //           Collections.get('applications').removeObject(this.state.application.front_id);
+  //           this.props.exit();
+  //         } else {
+  //           this.setState({ loading: false, error: true });
+  //         }
+  //       });
+  //     },
+  //     null,
+  //     {
+  //       text: Languages.t(
+  //         'scenes.app.popup.appsparameters.pages.remove_app',
+  //         [this.state.application.name],
+  //         "Supprimer l'application $1 définitivement.",
+  //       ),
+  //     },
+  //   );
+  // }
+  //
+  const convertToSimpleName = (value) => {
     value = value || '';
     value = value.toLocaleLowerCase();
     value = value.replace(/[^a-z0-9]/g, '_');
@@ -111,36 +163,43 @@ export default class WorkspaceAppsEditor extends Component {
     value = value.replace(/^_+/g, '');
     return value;
   }
+  //
+  //
+  //   if (this.state.application.id !== this.state.id) {
+  //     // eslint-disable-next-line react/no-direct-mutation-state
+  //     this.state.application = JSON.parse(JSON.stringify(getApplication(this.state.id) || {}));
+  //   }
+  //
+  //   var isNew = false;
+  //   var application = this.state.application;
+  //
+  //
+  //   if (!application || !application.id) {
+  //     isNew = true;
+  //   }
+  //
+  //   var workspace_id = workspaceService.currentWorkspaceId;
+  //   var workspace = Collections.get('workspaces').find(workspace_id);
+  //   // eslint-disable-next-line no-unused-vars
+  //   var group = Collections.get('groups').find(workspace?.group?.id || workspace.company_id);
+  //
+  //   if (isNew) {
+  //     return (
+  //       <WorkspaceAppsCreator exit={this.props.exit} openApp={id => this.setState({ id: id })} />
+  //     );
+  //   }
+  //
+  //   var original_app = getApplication(props.appId);
+  //   console.log(original_app)
 
-  render() {
-    if (this.state.application.id !== this.state.id) {
-      // eslint-disable-next-line react/no-direct-mutation-state
-      this.state.application = JSON.parse(JSON.stringify(getApplication(this.state.id) || {}));
-    }
 
-    var isNew = false;
-    var application = this.state.application;
-    if (!application || !application.id) {
-      isNew = true;
-    }
-
-    var workspace_id = workspaceService.currentWorkspaceId;
-    var workspace = Collections.get('workspaces').find(workspace_id);
-    // eslint-disable-next-line no-unused-vars
-    var group = Collections.get('groups').find(workspace?.group?.id || workspace.company_id);
-
-    if (isNew) {
-      return (
-        <WorkspaceAppsCreator exit={this.props.exit} openApp={id => this.setState({ id: id })} />
-      );
-    }
-
-    var original_app = getApplication(this.state.id);
-
-    var public_lock = original_app.public || original_app.is_available_to_public;
-
-    return (
-      <div className="fade_in app_editor">
+  //
+    var public_lock = false; // TODO
+    // var public_lock = original_app.public || original_app.is_available_to_public;
+  //
+    return application?.id && (
+    <div>
+      <div className="_fade_in _app_editor">
         <div className="title">
           <Icon
             className="app_icon"
@@ -172,91 +231,55 @@ export default class WorkspaceAppsEditor extends Component {
 
         <div className="group_section">
           <Attribute
-            label={Languages.t(
-              'scenes.app.popup.appsparameters.pages._app_identity',
-              [],
-              "Identité de l'application",
-            )}
-            description={Languages.t(
-              'scenes.app.popup.appsparameters.pages.modify_public_data',
-              [],
-              'Modifier les données publiques de votre application.',
-            )}
+            label={Languages.t('scenes.app.popup.appsparameters.pages._app_identity')}
+            description={Languages.t('scenes.app.popup.appsparameters.pages.modify_public_data')}
           >
             <div className="parameters_form" style={{ maxWidth: 'none' }}>
-              <div className="label for_input">Nom</div>
+              <div className="label for_input">{Languages.t('scenes.app.popup.appsparameters.pages.app_name_label')}</div>
               <Input
-                placeholder={Languages.t(
-                  'scenes.app.popup.appsparameters.pages.amazing_app_name',
-                  [],
-                  'My amazing app',
-                )}
+                placeholder={Languages.t('scenes.app.popup.appsparameters.pages.amazing_app_name')}
                 type="text"
-                disabled={this.state.loading || public_lock}
-                value={application.name}
+                disabled={loading || public_lock}
+                value={application.identity.name}
                 onChange={ev => {
-                  application.name = ev.target.value;
-                  this.setState({});
+                  application.identity.name = ev.target.value
+                  setApplication(application)
                 }}
               />
 
-              <div className="label for_input">
-                {Languages.t(
-                  'scenes.app.popup.appsparameters.pages.grp_section_surname_label',
-                  [],
-                  'Nom simplifié',
-                )}
-              </div>
-              <div className="smalltext" style={{ paddingBottom: 0 }}>
-                {Languages.t(
-                  'scenes.app.popup.appsparameters.pages.string_information',
-                  [],
-                  "Cette chaine de caractère permet d'identifier votre application et sera utilisée dans les commandes de message.",
-                )}
-              </div>
-              <Input
-                placeholder={'my_amazing_app'}
-                type="text"
-                disabled={this.state.loading || public_lock}
-                value={application?.identity?.code}
-                onChange={ev => {
-                  var simple = this.convertToSimpleName(ev.target.value);
-                  application.identity.code = simple;
-                  this.setState({});
+              <div className="label for_input">{Languages.t('scenes.app.popup.appsparameters.pages.grp_section_surname_label')}</div>
+              <div className="smalltext" style={{ paddingBottom: 0 }}>{Languages.t('scenes.app.popup.appsparameters.pages.string_information')}</div>
+              <Input  placeholder={'my_amazing_app'}  type="text"  disabled={loading || public_lock}
+                value={application?.identity?.code}  onChange={ev => {
+                application.identity.code = convertToSimpleName(ev.target.value)
+                setApplication(application)
                 }}
               />
-              {this.state.error_code && (
+              {error && (
                 <div className="smalltext error" style={{ opacity: 1 }}>
-                  {Languages.t(
-                    'scenes.app.popup.appsparameters.pages.grp_section_name-error',
-                    [],
-                    'Ce nom est déjà utilisé par une autre application, veuillez en choisir un autre.',
-                  )}
+                  {Languages.t('scenes.app.popup.appsparameters.pages.grp_section_name-error')}
                 </div>
               )}
 
               <div className="label for_input">
-                {Languages.t('scenes.app.popup.appsparameters.pages.icon_url', 'icon')}
+                {Languages.t('scenes.app.popup.appsparameters.pages.icon', 'icon')}
               </div>
               <div className="smalltext" style={{ paddingBottom: 0 }}>
-                {Languages.t(
-                  'scenes.app.popup.appsparameters.pages.optimal_format',
-                  [],
-                  'Format optimal : 48x48px.',
-                )}
+                {Languages.t('scenes.app.popup.appsparameters.pages.optimal_format')}
               </div>
               <Input
                 placeholder={'https://domain.com/my_icon.png'}
                 type="text"
-                disabled={this.state.loading || public_lock}
-                value={application.icon_url}
+                disabled={loading || public_lock}
+                value={application.identity.icon}
                 onChange={ev => {
-                  application.icon_url = ev.target.value;
-                  this.setState({});
+                  application.identity.icon = ev.target.value
+                  setApplication(application)
                 }}
               />
+              {/*
               <TagPicker
-                disabled={this.state.loading || public_lock}
+                disabled={loading || public_lock}
                 canCreate={false}
                 inline
                 data={application.available_categories.map(item => {
@@ -267,21 +290,19 @@ export default class WorkspaceAppsEditor extends Component {
                 })}
                 onChange={values => {
                   application.categories = values.map(item => item.name);
-                  this.setState({});
                 }}
               />
+              */}
 
-              <div className="label for_input">
-                {Languages.t('scenes.app.popup.appsparameters.pages.website_label', [], 'Site web')}
-              </div>
+              <div className="label for_input">{Languages.t('scenes.app.popup.appsparameters.pages.website_label')}</div>
               <Input
                 placeholder={'https://domain.com/'}
                 type="text"
-                disabled={this.state.loading || public_lock}
-                value={application.website}
+                disabled={loading || public_lock}
+                value={application.identity.website}
                 onChange={ev => {
-                  application.website = ev.target.value;
-                  this.setState({});
+                  application.identity.website = ev.target.value
+                  setApplication(application)
                 }}
               />
 
@@ -298,17 +319,18 @@ export default class WorkspaceAppsEditor extends Component {
                   [],
                   'Description',
                 )}
-                disabled={this.state.loading || public_lock}
+                disabled={loading || public_lock}
                 onChange={evt => {
-                  application.description = evt.target.value;
-                  this.setState({});
+                  application.identity.description = evt.target.value;
+                  setApplication(application)
                 }}
               >
-                {application.description}
+                {application.identity.description}
               </AutoHeight>
             </div>
           </Attribute>
         </div>
+
 
         <div className="group_section">
           <Attribute
@@ -334,14 +356,14 @@ export default class WorkspaceAppsEditor extends Component {
               <InputWithClipBoard disabled={true} value={application.api_id} />
 
               <div className="label for_input">
-                Private key {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                Private key
                 <a
                   style={{ float: 'inherit' }}
                   onClick={() => {
-                    clearTimeout(this.api_key_timeout || '');
-                    this.setState({ show_api_key: true });
-                    this.api_key_timeout = setTimeout(() => {
-                      this.setState({ show_api_key: false });
+                    clearTimeout(api_key_timeout || '');
+                    setShowApiKey(true)
+                    api_key_timeout = setTimeout(() => {
+                      setShowApiKey(false)
                     }, 5000);
                   }}
                 >
@@ -350,8 +372,8 @@ export default class WorkspaceAppsEditor extends Component {
               </div>
               <InputWithClipBoard
                 disabled={true}
-                hideBtn={!this.state.show_api_key}
-                value={this.state.show_api_key ? application.api_key : '••••••••••••••'}
+                hideBtn={!showApiKey}
+                value={showApiKey ? application.api_key : '••••••••••••••'}
               />
 
               <div className="label for_input">
@@ -364,11 +386,10 @@ export default class WorkspaceAppsEditor extends Component {
               <Input
                 placeholder={'https://domain.com/api/twake/events'}
                 type="text"
-                disabled={this.state.loading}
+                disabled={loading}
                 value={application.api_event_url}
                 onChange={ev => {
                   application.api_event_url = ev.target.value;
-                  this.setState({});
                 }}
               />
 
@@ -395,11 +416,10 @@ export default class WorkspaceAppsEditor extends Component {
               <Input
                 placeholder={'ip1, ip2, ip3'}
                 type="text"
-                disabled={this.state.loading}
+                disabled={loading}
                 value={application.api_allowed_ips}
                 onChange={ev => {
                   application.api_allowed_ips = ev.target.value;
-                  this.setState({});
                 }}
               />
             </div>
@@ -437,15 +457,15 @@ export default class WorkspaceAppsEditor extends Component {
               </div>
               <AutoHeight
                 placeholder={'{JSON}'}
-                className={this.state.display_json_error ? 'error' : ''}
-                disabled={this.state.loading || public_lock}
+                className={displayJsonError ? 'error' : ''}
+                disabled={loading || public_lock}
                 onChange={evt => {
                   try {
                     application.display = JSON.parse(evt.target.value);
-                    this.setState({ display_json_error: false });
+                    setDisplayJsonError(false);
                   } catch (e) {
                     application.display = evt.target.value;
-                    this.setState({ display_json_error: true });
+                    setDisplayJsonError(true);
                   }
                 }}
               >
@@ -456,7 +476,7 @@ export default class WorkspaceAppsEditor extends Component {
             </div>
           </Attribute>
         </div>
-
+        {/*
         <div className="group_section">
           <Attribute
             label={Languages.t(
@@ -483,7 +503,6 @@ export default class WorkspaceAppsEditor extends Component {
                 value={application.capabilities}
                 onChange={items => {
                   application.capabilities = items;
-                  this.setState({});
                 }}
               />
               <div className="label for_input" style={{ marginBottom: 5 }}>
@@ -498,7 +517,6 @@ export default class WorkspaceAppsEditor extends Component {
                 value={application.privileges}
                 onChange={items => {
                   application.privileges = items;
-                  this.setState({});
                 }}
               />
               <div className="label for_input" style={{ marginBottom: 5 }}>
@@ -509,7 +527,6 @@ export default class WorkspaceAppsEditor extends Component {
                 value={application.hooks}
                 onChange={items => {
                   application.hooks = items;
-                  this.setState({});
                 }}
               />
             </div>
@@ -538,7 +555,7 @@ export default class WorkspaceAppsEditor extends Component {
                 )}
               </div>
 
-              {original_app.public && !original_app.is_available_to_public && (
+              {originalApplication.public && !originalApplication.is_available_to_public && (
                 <div className="smalltext" style={{ paddingTop: 0, opacity: 1 }}>
                   <Emojione type={':information_source:'} />{' '}
                   {Languages.t(
@@ -558,7 +575,6 @@ export default class WorkspaceAppsEditor extends Component {
                 checked={application.public}
                 onChange={value => {
                   application.public = value;
-                  this.setState({});
                 }}
               />
             </div>
@@ -594,17 +610,18 @@ export default class WorkspaceAppsEditor extends Component {
                   [],
                   "Supprimer l'application",
                 )}
-                disabled={this.state.loading || public_lock}
-                loading={this.state.loading}
+                disabled={loading || public_lock}
+                loading={loading}
                 onClick={() => {
-                  this.removeApp();
+                  removeApp();
                 }}
               />
             </div>
           </Attribute>
         </div>
+
         <div className="group_section">
-          {this.state.error_code && (
+          {errorCode && (
             <div className="smalltext error" style={{ opacity: 1 }}>
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_app_code_message',
@@ -614,7 +631,7 @@ export default class WorkspaceAppsEditor extends Component {
             </div>
           )}
 
-          {this.state.error && (
+          {error && (
             <div className="smalltext error" style={{ opacity: 1 }}>
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_app_update_message',
@@ -627,9 +644,9 @@ export default class WorkspaceAppsEditor extends Component {
           <ButtonWithTimeout
             className="small buttonGoBack secondary"
             value={Languages.t('general.back', [], 'Retour')}
-            disabled={this.state.loading}
+            disabled={loading}
             onClick={() => {
-              this.props.exit();
+              props.exit();
             }}
           />
 
@@ -640,14 +657,21 @@ export default class WorkspaceAppsEditor extends Component {
               [],
               'Mettre à jour',
             )}
-            disabled={this.state.loading}
-            loading={this.state.loading}
-            onClick={() => {
-              this.saveApp();
+            disabled={loading}
+            loading={loading}
+            onClick={() => {this.saveApp();
             }}
           />
         </div>
+        */}
+
+
+
       </div>
-    );
-  }
+      <pre>
+          {JSON.stringify(application,null,2)}
+        </pre>
+    </div>
+    ) || <div>Loading</div>;
+
 }
