@@ -81,7 +81,6 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "@types/antd": "^1.0.0",
     "@types/crypto-js": "^3.1.43",
     "@types/emoji-mart": "^3.0.2",
     "@types/emojione": "^2.2.6",
@@ -103,7 +102,7 @@
     "@typescript-eslint/parser": "^4.30.0",
     "anchorme": "1.1.2",
     "animated-scroll-to": "^2.0.12",
-    "antd": "^4.18.3",
+    "antd": "^4.18.5",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.1.0",
@@ -166,7 +165,6 @@
     "minimongo": "^6.10.0",
     "moment": "^2.27.0",
     "moment-timezone": "^0.5.31",
-    "node-sass": "^6.0.1",
     "oidc-client": "^1.11.5",
     "oidc-react": "^1.5.1",
     "optimize-css-assets-webpack-plugin": "5.0.3",
@@ -223,7 +221,7 @@
     "ts-pnp": "1.2.0",
     "typescript": "~3.9.7",
     "url-loader": "2.3.0",
-    "url-parse": "^1.4.5",
+    "url-parse": "^1.5.9",
     "uuid": "^8.3.1",
     "workbox-webpack-plugin": "4.3.1"
   },
@@ -233,6 +231,7 @@
     "@types/is-url": "^1.2.28",
     "@types/markdown-draft-js": "^2.2.3",
     "craco-alias": "^2.1.1",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "sass": "^1.49.9"
   }
 }

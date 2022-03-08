@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Input, Row, Typography } from 'antd';
+import { Input, Row, Typography, InputRef } from 'antd';
 import Languages from 'app/features/global/services/languages-service';
 import Icon from 'app/components/icon/icon';
 import ObjectModal from 'components/object-modal/object-modal';
@@ -26,7 +26,7 @@ export default () => {
   const { companyId } = RouterServices.getStateFromRoute();
   const list = listService.useWatcher(() => listService.list);
   const currentUserId: string = UsersService.getCurrentUserId();
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
   const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
 
   useEffect(() => {
