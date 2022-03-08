@@ -39,10 +39,12 @@ const ChannelMembersList = (props: PropsType) => {
     channelId: id || '',
   });
 
-  const channelMembersUid = channelMembers.map(member => member.user_id || '');
   const { search: searchUserList, result } = useSearchUserList({
     scope: 'workspace',
   });
+
+  const channelMembersUid = channelMembers.map(member => member.user_id || '');
+
   useUsersListener(channelMembersUid);
   const filterSearch = (res: UserType[]) => {
     const addedUsers: UserType[] = res
@@ -144,6 +146,7 @@ const ChannelMembersList = (props: PropsType) => {
         )}
         {result
           .map(u => u.id)
+          .filter(userId => !channelMembersUid.includes(userId || ''))
           .map(userId =>
             props.channel.id ? (
               <div key={userId} className="x-margin" style={{ marginTop: 8 }}>
