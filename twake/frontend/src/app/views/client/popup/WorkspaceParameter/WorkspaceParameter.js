@@ -16,6 +16,8 @@ import MenuList from 'components/menus/menu-component.js';
 import InitService from 'app/features/global/services/init-service';
 import ConsoleService from 'app/features/console/services/console-service';
 
+import WorkspaceAppsEditor from 'app/views/client/popup/AppsParameters/Pages/WorkspaceAppsEditor'
+
 import './WorkspaceParameter.scss';
 
 export default class WorkspaceParameter extends Component {
@@ -56,7 +58,8 @@ export default class WorkspaceParameter extends Component {
   }
   displayScene() {
     if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page === 1) {
-      return <WorkspaceIdentity />;
+      return <WorkspaceAppsEditor appId="8beac060-9305-11ec-9547-d1bbb976dc1a" />
+      // return <WorkspaceIdentity />;
     }
     if (this.state.page === 2) {
       return <WorkspacePartner />;

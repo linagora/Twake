@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
@@ -7,18 +7,20 @@ import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import Api from 'app/features/global/framework/api-service';
 import Input from 'components/inputs/input.js';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 
 import './Pages.scss';
 
-export default class WorkspaceAppsCreator extends Component {
-  constructor(props) {
-    super();
-    this.state = {
-      loading: false,
-    };
-  }
+export default (props) => {
 
-  convertToSimpleName(value) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState({error:false, error_code:false});
+
+  const [newApp, setNewApp] = useState({ new_app_name: '', new_app_code: '', app_group_name: '' });
+
+  const {company} = useCurrentCompany()
+
+  const convertToSimpleName = (value) => {
     value = value || '';
     value = value.toLocaleLowerCase();
     value = value.replace(/[^a-z0-9]/g, '_');
@@ -27,13 +29,14 @@ export default class WorkspaceAppsCreator extends Component {
     return value;
   }
 
-  createApp() {
+  const createApp = () => {
     AlertManager.confirm(() => {
-      var name = this.state.new_app_name;
-      var code = this.state.new_app_code;
-      var app_group_name = this.state.new_app_group_name;
+      var name = newApp.new_app_name;
+      var code = newApp.new_app_code;
+      var app_group_name = newApp.new_app_group_name;
 
-      this.setState({ loading: true, error: false, error_code: false });
+      setLoading(true)
+      setError({error:false, error_code: false})
 
       var data = {
         name: name,
@@ -42,25 +45,113 @@ export default class WorkspaceAppsCreator extends Component {
         workspace_id: workspaceService.currentWorkspaceId,
       };
 
-      Api.post('/ajax/market/app/create', data, res => {
-        if (res.data && res.data.id) {
-          this.setState({ new_app_name: '', new_app_code: '', app_group_name: '' });
 
-          Collections.get('applications').completeObject(res.data);
+      const postPayload = {
+        is_default: true,
+        company_id: company.id,
+        identity: {
+          code: "code",
+          name: "name",
+          icon: "icon",
+          description: "description",
+          website: "website",
+          categories: [],
+          compatibility: [],
+        },
+        api: {
+          hooksUrl: "hooksUrl",
+          allowedIps: "allowedIps",
+        },
+        access: {
+          read: ["messages"],
+          write: ["messages"],
+          delete: ["messages"],
+          hooks: ["messages"],
+        },
+        display: {
+          twake: {
+            version: 1,
+
+            files: {
+              editor: {
+                preview_url: "string", //Open a preview inline (iframe)
+                edition_url: "string", //Url to edit the file (full screen)
+                extensions: [], //Main extensions app can read
+                // if file was created by the app, then the app is able to edit with or without extension
+                empty_files: [
+                  {
+                    url: "string", // "https://[...]/empty.docx";
+                    filename: "string", // "Untitled.docx";
+                    name: "string", // "Word Document";
+                  },
+                ],
+              },
+              actions: [
+                //List of action that can apply on a file
+                {
+                  name: "string",
+                  id: "string",
+                },
+              ],
+            },
+
+            //Chat plugin
+            chat: {
+              input: true,
+              commands: [
+                {
+                  command: "string", // my_app mycommand
+                  description: "string",
+                },
+              ],
+              actions: [
+                //List of action that can apply on a message
+                {
+                  name: "string",
+                  id: "string",
+                },
+              ],
+            },
+
+            //Allow app to appear as a bot user in direct chat
+            direct: false,
+
+            //Display app as a standalone application in a tab
+            tab: { url: "string" },
+
+            //Display app as a standalone application on the left bar
+            standalone: { url: "string" },
+
+            //Define where the app can be configured from
+            configuration: ["global", "channel"],
+          },
+        },
+        publication: {
+          requested: false, //Publication requested
+        },
+      };
+
+      Api.post('/internal/services/applications/v1/applications', postPayload, res => {
+        console.log(res.data)
+        if (res.data && res.data.resource?.id) {
+          setNewApp({ new_app_name: '', new_app_code: '', app_group_name: '' })
+
+          Collections.get('applications').completeObject(res.data.resource);
 
           this.props.openApp(res.data.id);
         } else {
-          if (res.errors.indexOf('code_used') >= 0) {
-            this.setState({ loading: false, error_code: true });
+          setLoading(false);
+          if (res.errors && res.errors.indexOf('code_used') >= 0) {
+            setError({error: false, error_code: true})
           } else {
-            this.setState({ loading: false, error: true });
+            setError({error: true, error_code: false})
           }
         }
       });
     });
   }
 
-  render() {
+
     var workspace_id = workspaceService.currentWorkspaceId;
     var workspace = Collections.get('workspaces').find(workspace_id);
     var group = Collections.get('groups').find(workspace?.group?.id || workspace.company_id);
@@ -90,18 +181,18 @@ export default class WorkspaceAppsCreator extends Component {
               'My amazing app',
             )}
             type="text"
-            disabled={this.state.loading}
-            value={this.state.new_app_name}
+            disabled={loading}
+            value={newApp.new_app_name}
             onChange={ev =>
-              this.setState({
+              setNewApp({
                 new_app_name: ev.target.value,
-                new_app_code: this.state.new_app_code_modified
-                  ? this.state.new_app_code
-                  : this.convertToSimpleName(ev.target.value),
+                new_app_code: newApp.new_app_code_modified
+                  ? newApp.new_app_code
+                  : convertToSimpleName(ev.target.value),
               })
             }
           />
-          {this.state.error_code && (
+          {error.error_code && (
             <div className="smalltext error" style={{ opacity: 1 }}>
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_message',
@@ -123,7 +214,7 @@ export default class WorkspaceAppsCreator extends Component {
           <br />
           <br />
 
-          {this.state.error && (
+          {error.error && (
             <div className="smalltext error" style={{ opacity: 1 }}>
               {Languages.t(
                 'scenes.app.popup.appsparameters.pages.error_check_needed',
@@ -136,9 +227,9 @@ export default class WorkspaceAppsCreator extends Component {
           <ButtonWithTimeout
             className="small buttonGoBack secondary"
             value={Languages.t('scenes.app.popup.appsparameters.pages.go_back', [], 'Retour')}
-            disabled={this.state.loading}
+            disabled={loading}
             onClick={() => {
-              this.props.exit();
+              props.exit();
             }}
           />
 
@@ -149,14 +240,14 @@ export default class WorkspaceAppsCreator extends Component {
               [],
               'Créer mon application',
             )}
-            disabled={this.state.loading}
-            loading={this.state.loading}
+            disabled={loading}
+            loading={loading}
             onClick={() => {
-              this.createApp();
+              createApp();
             }}
           />
         </div>
       </div>
     );
-  }
+
 }
