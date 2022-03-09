@@ -104,7 +104,7 @@ describe("The /messages API", () => {
       expect(resources.length).toEqual(4);
 
       resources = await search("second");
-      expect(resources.length).toEqual(2);
+      expect(resources.length).toEqual(3);
 
       resources = await search("another");
       expect(resources.length).toEqual(1);
