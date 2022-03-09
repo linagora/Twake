@@ -429,7 +429,7 @@ export class Service implements MemberService {
       users.map(async user => {
         const channelContext: ChannelExecutionContext = {
           channel,
-          user: context.user || user,
+          user: context?.user || user,
         };
 
         const member: ChannelMember = getChannelMemberInstance({

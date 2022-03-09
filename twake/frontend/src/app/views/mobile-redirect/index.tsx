@@ -14,8 +14,6 @@ export default function MobileRedirect(props: { children: ReactNode }) {
 
   let parameters = InitService.server_infos?.configuration.mobile;
 
-  if (parameters) parameters.mobile_redirect = 'localhost:3000';
-
   const getapp = searchParams.getapp;
   const forceUseWeb = searchParams.useweb;
   const originInUrl = searchParams.origin;
@@ -46,6 +44,16 @@ export default function MobileRedirect(props: { children: ReactNode }) {
     (!environment?.front_root_url && !originInUrl) ||
     typeof window === 'undefined'
   ) {
+    if (os !== 'other')
+      console.log('Keep on browser because:', {
+        forceUseWeb,
+        os,
+        mobile_redirect: parameters?.mobile_redirect,
+        front_root_url: environment?.front_root_url,
+        originInUrl,
+        windowUndefined: typeof window === 'undefined',
+      });
+
     return <>{props.children}</>;
   }
 
@@ -75,30 +83,28 @@ export default function MobileRedirect(props: { children: ReactNode }) {
 
   return (
     <>
-      {!forceUseWeb && (
-        <div className="mobile_redirect_container">
-          <div className="open_on_mobile">
-            <span className="open_on_mobile_title">Open Twake in...</span>
-            <a className="open_on_mobile_actions" href={backToWebUrl()}>
-              <Smartphone /> <span>Twake App</span>
-              <span style={{ flex: 1 }}></span>
-              <Button className="action_button" type="primary">
-                Open
-              </Button>
-            </a>
-            <span
-              className="open_on_mobile_actions"
-              onClick={() => document.location.replace(backToWebUrl(false))}
-            >
-              <X /> <span>Continue on web</span>
-              <span style={{ flex: 1 }}></span>
-              <Button className="action_button" type="ghost">
-                Continue
-              </Button>
-            </span>
-          </div>
+      <div className="mobile_redirect_container">
+        <div className="open_on_mobile">
+          <span className="open_on_mobile_title">Open Twake in...</span>
+          <a className="open_on_mobile_actions" href={backToWebUrl()}>
+            <Smartphone /> <span>Twake App</span>
+            <span style={{ flex: 1 }}></span>
+            <Button className="action_button" type="primary">
+              Open
+            </Button>
+          </a>
+          <span
+            className="open_on_mobile_actions"
+            onClick={() => document.location.replace(backToWebUrl(false))}
+          >
+            <X /> <span>Continue on web</span>
+            <span style={{ flex: 1 }}></span>
+            <Button className="action_button" type="ghost">
+              Continue
+            </Button>
+          </span>
         </div>
-      )}
+      </div>
     </>
   );
 }

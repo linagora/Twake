@@ -178,7 +178,7 @@ export interface MemberService
   addUsersToChannel(
     users: Pick<User, "id">[],
     channel: ChannelPrimaryKey,
-    context: ExecutionContext,
+    context?: ExecutionContext,
   ): Promise<ListResult<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 
   /**
