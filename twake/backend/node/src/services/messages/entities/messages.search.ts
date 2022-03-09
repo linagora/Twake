@@ -1,4 +1,3 @@
-import { expandStringForPrefix } from "../../../core/platform/services/search/adapters/utils";
 import { Message } from "./messages";
 
 export default {

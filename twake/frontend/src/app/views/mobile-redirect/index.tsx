@@ -12,7 +12,9 @@ export default function MobileRedirect(props: { children: ReactNode }) {
   const os = getDevice();
   const searchParams = Object.fromEntries(new URLSearchParams(window.location.search)) as any;
 
-  const parameters = InitService.server_infos?.configuration.mobile;
+  let parameters = InitService.server_infos?.configuration.mobile;
+
+  if (parameters) parameters.mobile_redirect = 'localhost:3000';
 
   const getapp = searchParams.getapp;
   const forceUseWeb = searchParams.useweb;
@@ -29,6 +31,11 @@ export default function MobileRedirect(props: { children: ReactNode }) {
     } else if (os === 'ios') {
       document.location.replace(parameters?.mobile_appstore);
     }
+  }
+
+  //We must wait for server parameters at least
+  if (!InitService.server_infos_loaded) {
+    return <></>;
   }
 
   //For desktop we don't show the open on app popup

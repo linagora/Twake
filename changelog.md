@@ -1,10 +1,11 @@
-# Twake 2022.Q1.890
+# Twake 2022.Q1.899
 
 ### Messages
 
 - Shows that the last message was deleted on mobile channel list view
 - Now we can cancel failed file uploads
-- Add spell check to message editor
+- Add spell check to message editor, fix autocompletion for emojis
+- Copy paste images to message editor fixed
 
 ### General
 

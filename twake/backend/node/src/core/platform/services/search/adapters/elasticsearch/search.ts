@@ -60,6 +60,13 @@ export function buildSearchQuery<Entity>(
         esBody.query.bool.should.push({
           match,
         });
+
+        //Allow prefix search
+        if (indexProperties[key].index_prefixes !== undefined) {
+          esBody.query.bool.should.push({
+            query: { [key]: { value: options.$text.$search } },
+          });
+        }
       }
     }
   }
