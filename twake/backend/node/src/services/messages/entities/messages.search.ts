@@ -4,7 +4,7 @@ export default {
   index: "messages",
   source: (entity: Message) => {
     const source: any = {
-      text: entity.text,
+      text: entity.text + " " + entity.files.map(file => file.metadata.name).join(" "),
     };
     if (entity.cache) {
       return {
