@@ -36,12 +36,11 @@ export const useUserList = (): {
 
 // Access from any services
 // You can't use it before calling the useSetUserList hook
-export let setUserList: (
-  recoilVal: RecoilState<UserType[]>,
-  valOrUpdater: UserType[] | ((currVal: UserType[]) => UserType[]),
-) => void = _u => {};
+export let setUserList: (nextList: UserType[]) => void = _ => {};
 
 let currentUserList: UserType[] = [];
+
+export const getCurrentUserList = () => currentUserList;
 
 export const getUser = (userId: string) => {
   return currentUserList.filter(u => u.id === userId)[0];
@@ -88,9 +87,9 @@ export function useSetUserList(key: string) {
         currentUserList = newList;
       }
     }
-
-    setUserList = set;
   });
+
+  setUserList = set;
 
   return { set };
 }

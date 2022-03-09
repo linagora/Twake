@@ -40,7 +40,8 @@ export default (props: Props) => {
   let { message } = useMessage(context);
   let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
 
-  let user = useUser(message.user_id);
+  const user = useUser(message.user_id);
+
   const companyApplications =
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   let application = companyApplications.find(a => a.id === message.application_id);
