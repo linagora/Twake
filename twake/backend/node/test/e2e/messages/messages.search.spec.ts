@@ -142,7 +142,12 @@ describe("The /messages API", () => {
     return e2e_createMessage(platform, threadId, createMessage({ text }));
   }
 
-  async function search(searchString: string, companyId?: string): Promise<any[]> {
+  async function search(
+    searchString: string,
+    companyId?: string,
+    workspaceId?: string,
+    channelId?: string,
+  ): Promise<any[]> {
     const jwtToken = await platform.auth.getJWTToken();
     const response = await platform.app.inject({
       method: "GET",
@@ -153,7 +158,9 @@ describe("The /messages API", () => {
       },
       query: {
         q: searchString,
-        ...(companyId ? { search_company_id: companyId } : {}),
+        ...(channelId ? { channel_id: channelId } : {}),
+        ...(workspaceId ? { workspace_id: workspaceId } : {}),
+        ...(companyId ? { company_id: companyId } : {}),
       },
     });
 

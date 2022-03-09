@@ -12,6 +12,7 @@ import Application, {
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 import CompanyUser, { TYPE as CompanyUserTYPE } from "../../../services/user/entities/company_user";
+import { Message, TYPE as MessageTYPE } from "../../../services/messages/entities/messages";
 
 type Options = {
   repository?: string;
@@ -29,6 +30,7 @@ class SearchIndexAll {
 
   public async run(options: Options = {}): Promise<void> {
     const repositories: Map<string, Repository<any>> = new Map();
+    repositories.set("messages", await this.database.getRepository(MessageTYPE, Message));
     repositories.set("users", await this.database.getRepository(UserTYPE, User));
     repositories.set(
       "applications",
@@ -66,14 +68,17 @@ class SearchIndexAll {
     }
 
     console.log("Start indexing...");
+    let count = 0;
     // Get all items
     let page: Pagination = { limitStr: "100" };
     do {
+      console.log("Indexed " + count + " items...");
       const list = await repository.find({}, { pagination: page });
       page = list.nextPage as Pagination;
       await this.search.upsert(list.getEntities());
       await new Promise(r => setTimeout(r, 200));
     } while (page.page_token);
+    console.log("Done!");
   }
 }
 
