@@ -221,9 +221,13 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         onDrop: res => {
           const doc = res.document;
           logger.error(
-            `Operation ${doc.action} was droped while pushing to elasticsearch index ${doc.index} (doc.id: ${doc.id})`,
-            res.error,
+            `Operation ${
+              doc.action
+            } was droped while pushing to elasticsearch index ${JSON.stringify(
+              doc.index,
+            )} (doc.id: ${doc.id})`,
           );
+          logger.error(res.error);
         },
       });
     } catch (err) {
