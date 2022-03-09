@@ -56,7 +56,7 @@ describe("The /messages API", () => {
   });
 
   describe("The GET /messages/?search=... route", () => {
-    it("Should find the searched users", async done => {
+    it("Should find the searched messages", async done => {
       const testDbService = new TestDbService(platform);
       await testDbService.createCompany(platform.workspace.company_id);
       const workspacePk = {
@@ -104,7 +104,7 @@ describe("The /messages API", () => {
       expect(resources.length).toEqual(4);
 
       resources = await search("second");
-      expect(resources.length).toEqual(3);
+      expect(resources.length).toEqual(2);
 
       resources = await search("another");
       expect(resources.length).toEqual(1);
