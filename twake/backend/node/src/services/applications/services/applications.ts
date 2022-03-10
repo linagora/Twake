@@ -184,8 +184,8 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
       throw CrudException.notFound("Application not found");
     }
 
-    if (!app.api.hooksUrl) {
-      throw CrudException.badRequest("Application hooksUrl is not defined");
+    if (!app.api.hooks_url) {
+      throw CrudException.badRequest("Application hooks_url is not defined");
     }
 
     const payload = {
@@ -197,12 +197,12 @@ class ApplicationService implements MarketplaceApplicationServiceAPI {
     };
 
     const signature = crypto
-      .createHmac("sha256", app.api.privateKey)
+      .createHmac("sha256", app.api.private_key)
       .update(JSON.stringify(payload))
       .digest("hex");
 
     return await axios
-      .post(app.api.hooksUrl, payload, {
+      .post(app.api.hooks_url, payload, {
         headers: {
           "Content-Type": "application/json",
           "X-Twake-Signature": signature,

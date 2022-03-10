@@ -10,7 +10,7 @@ export default {
       categories: entity.identity.categories,
       compatibility: entity.identity.compatibility,
       published: entity.publication.published,
-      createdAt: entity.stats.createdAt,
+      created_at: entity.stats.created_at,
     };
   },
   mongoMapping: {
@@ -27,7 +27,7 @@ export default {
       categories: { type: "keyword" },
       compatibility: { type: "keyword" },
       published: { type: "boolean" },
-      createdAt: { type: "number" },
+      created_at: { type: "number" },
     },
   },
 };

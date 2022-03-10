@@ -52,6 +52,7 @@ export class Channel {
   @Type(() => String)
   owner: string;
 
+  //This is only used for direct channels
   @Column("members", "encoded_json")
   members: string[] = [];
 
