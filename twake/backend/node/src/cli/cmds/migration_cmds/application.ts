@@ -135,16 +135,16 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
     //@ts-ignore
     newApplication.stats = newApplication.stats || {};
     newApplication.stats.version = 1;
-    newApplication.stats.createdAt = Date.now();
-    newApplication.stats.updatedAt = Date.now();
+    newApplication.stats.created_at = Date.now();
+    newApplication.stats.updated_at = Date.now();
   }
 
-  if (!newApplication.api?.privateKey) {
+  if (!newApplication.api?.private_key) {
     //@ts-ignore
     newApplication.api = newApplication.api || {};
-    newApplication.api.hooksUrl = application.depreciated_api_events_url;
-    newApplication.api.allowedIps = application.depreciated_api_allowed_ip;
-    newApplication.api.privateKey = application.depreciated_api_private_key;
+    newApplication.api.hooks_url = application.depreciated_api_events_url;
+    newApplication.api.allowed_ips = application.depreciated_api_allowed_ip;
+    newApplication.api.private_key = application.depreciated_api_private_key;
   }
 
   if (newApplication.access?.write === undefined) {

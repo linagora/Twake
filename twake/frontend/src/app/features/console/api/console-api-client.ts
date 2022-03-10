@@ -1,6 +1,6 @@
 import Api from 'app/features/global/framework/api-service';
 import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
-import { JWTDataType } from 'app/features/auth/jwt-storage-service';
+import JWTStorage, { JWTDataType } from 'app/features/auth/jwt-storage-service';
 
 type LoginParams = {
   email: string;
@@ -44,11 +44,15 @@ class ConsoleAPIClient {
       Api.post<
         undefined,
         { access_token: JWTDataType; message: string; error: string; statusCode: number }
-      >('/internal/services/console/v1/token', undefined, response =>
+      >('/internal/services/console/v1/token', undefined, response => {
+        if (JWTStorage.isRefreshExpired() && JWTStorage.isAccessExpired()) {
+          reject(new Error('Can not get access token'));
+          return;
+        }
         response.access_token
           ? resolve(response.access_token)
-          : reject(new Error('Can not get access token')),
-      );
+          : reject(new Error('Can not get access token'));
+      });
     });
   }
 }

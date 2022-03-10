@@ -12,7 +12,7 @@ describe("Applications", () => {
   let testDbService: TestDbService;
   let api: Api;
   let appId: string;
-  let privateKey: string;
+  let private_key: string;
   let accessToken: ApplicationLoginResponse["access_token"];
 
   beforeAll(async ends => {
@@ -29,7 +29,7 @@ describe("Applications", () => {
     );
 
     appId = createdApplication.resource.id;
-    privateKey = createdApplication.resource.api.privateKey;
+    private_key = createdApplication.resource.api.private_key;
 
     ends();
   });
@@ -44,7 +44,7 @@ describe("Applications", () => {
 
       const response = await api.post("/api/console/v1/login", {
         id: appId,
-        secret: privateKey,
+        secret: private_key,
       });
       expect(response.statusCode).toBe(200);
 
@@ -127,8 +127,8 @@ const postPayload = {
     compatibility: [],
   },
   api: {
-    hooksUrl: "hooksUrl",
-    allowedIps: "allowedIps",
+    hooks_url: "hooks_url",
+    allowed_ips: "allowed_ips",
   },
   access: {
     read: ["messages"],

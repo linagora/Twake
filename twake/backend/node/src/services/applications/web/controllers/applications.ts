@@ -109,12 +109,12 @@ export class ApplicationController
         }
 
         entity.identity = app.identity;
-        entity.api.hooksUrl = app.api.hooksUrl;
-        entity.api.allowedIps = app.api.allowedIps;
+        entity.api.hooks_url = app.api.hooks_url;
+        entity.api.allowed_ips = app.api.allowed_ips;
         entity.access = app.access;
         entity.display = app.display;
 
-        entity.stats.updatedAt = now;
+        entity.stats.updated_at = now;
         entity.stats.version++;
 
         const res = await this.service.applications.save(entity);
@@ -124,11 +124,11 @@ export class ApplicationController
 
         app.is_default = false;
         app.publication.published = false;
-        app.api.privateKey = randomBytes(32).toString("base64");
+        app.api.private_key = randomBytes(32).toString("base64");
 
         app.stats = {
-          createdAt: now,
-          updatedAt: now,
+          created_at: now,
+          updated_at: now,
           version: 0,
         };
 
