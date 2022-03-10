@@ -6,4 +6,5 @@ export type SearchUserOptions = {
   search?: string;
   companyId?: string;
   workspaceId?: string;
+  channelId?: string;
 };

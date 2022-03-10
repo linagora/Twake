@@ -3,6 +3,7 @@ import {
   CreateResult,
   CrudException,
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   Pagination,
@@ -223,8 +224,9 @@ export class Service implements MemberService {
       // 2. The channel creator check is only here on channel creation
       if (
         isChannelCreator ||
-        (isPrivateChannel && currentUserIsMember) ||
         isPublicChannel ||
+        context.user.server_request ||
+        (isPrivateChannel && currentUserIsMember) ||
         (isDirectChannel && userIsDefinedInChannelUserList)
       ) {
         const memberToSave = { ...member, ...context.channel };
@@ -405,6 +407,7 @@ export class Service implements MemberService {
   async addUsersToChannel(
     users: Pick<User, "id">[] = [],
     channel: ChannelEntity,
+    context?: ExecutionContext,
   ): Promise<
     ListResult<{ channel: ChannelEntity; added: boolean; member?: ChannelMember; err?: Error }>
   > {
@@ -424,9 +427,9 @@ export class Service implements MemberService {
       err?: Error;
     }> = await Promise.all(
       users.map(async user => {
-        const context: ChannelExecutionContext = {
+        const channelContext: ChannelExecutionContext = {
           channel,
-          user,
+          user: context?.user || user,
         };
 
         const member: ChannelMember = getChannelMemberInstance({
@@ -443,7 +446,7 @@ export class Service implements MemberService {
             return { channel, added: false };
           }
 
-          const result = await this.save(member, null, context);
+          const result = await this.save(member, null, channelContext);
 
           return {
             channel,

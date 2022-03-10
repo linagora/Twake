@@ -3,7 +3,7 @@ import twake from "../../../twake";
 import ora from "ora";
 import { TwakePlatform } from "../../../core/platform/platform";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import { Pagination } from "../../../core/platform/framework/api/crud-service";
+import { ListResult, Pagination } from "../../../core/platform/framework/api/crud-service";
 import _ from "lodash";
 import User, { TYPE as UserTYPE } from "../../../services/user/entities/user";
 import Application, {
@@ -11,9 +11,12 @@ import Application, {
 } from "../../../services/applications/entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { SearchServiceAPI } from "../../../core/platform/services/search/api";
+import CompanyUser, { TYPE as CompanyUserTYPE } from "../../../services/user/entities/company_user";
+import { Message, TYPE as MessageTYPE } from "../../../services/messages/entities/messages";
 
 type Options = {
   repository?: string;
+  repairEntities?: boolean;
 };
 
 class SearchIndexAll {
@@ -27,6 +30,7 @@ class SearchIndexAll {
 
   public async run(options: Options = {}): Promise<void> {
     const repositories: Map<string, Repository<any>> = new Map();
+    repositories.set("messages", await this.database.getRepository(MessageTYPE, Message));
     repositories.set("users", await this.database.getRepository(UserTYPE, User));
     repositories.set(
       "applications",
@@ -38,15 +42,43 @@ class SearchIndexAll {
       throw `No such repository ready for indexation, available are: users, applications`;
     }
 
-    // Get all companies
+    // Complete user with companies in cache
+    if (options.repository === "users" && options.repairEntities) {
+      console.log("Complete user with companies in cache");
+      const companiesUsersRepository = await this.database.getRepository(
+        CompanyUserTYPE,
+        CompanyUser,
+      );
+      const userRepository = await this.database.getRepository(UserTYPE, User);
+      let page: Pagination = { limitStr: "100" };
+      // For each rows
+      do {
+        const list = await userRepository.find({}, { pagination: page });
+
+        for (const user of list.getEntities()) {
+          const companies = await companiesUsersRepository.find({ user_id: user.id });
+          user.cache ||= { companies: [] };
+          user.cache.companies = companies.getEntities().map(company => company.group_id);
+          await repositories.get("users").save(user);
+        }
+
+        page = list.nextPage as Pagination;
+        await new Promise(r => setTimeout(r, 200));
+      } while (page.page_token);
+    }
+
+    console.log("Start indexing...");
+    let count = 0;
+    // Get all items
     let page: Pagination = { limitStr: "100" };
-    // For each devices
     do {
+      console.log("Indexed " + count + " items...");
       const list = await repository.find({}, { pagination: page });
       page = list.nextPage as Pagination;
       await this.search.upsert(list.getEntities());
       await new Promise(r => setTimeout(r, 200));
     } while (page.page_token);
+    console.log("Done!");
   }
 }
 
@@ -60,6 +92,11 @@ const command: yargs.CommandModule<unknown, unknown> = {
       default: "",
       type: "string",
       description: "Choose a repository to reindex",
+    },
+    repairEntities: {
+      default: false,
+      type: "boolean",
+      description: "Choose to repair entities too when possible",
     },
   },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

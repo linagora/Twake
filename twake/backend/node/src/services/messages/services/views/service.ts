@@ -221,6 +221,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         pagination,
         ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
         ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
+        ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
         $text: {
           $search: options.search,
         },

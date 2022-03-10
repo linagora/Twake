@@ -20,9 +20,11 @@ export default class Search extends TwakeService<SearchServiceAPI> {
   name = "search";
   service: SearchAdapterInterface;
   database: DatabaseServiceAPI;
+  type: SearchConfiguration["type"];
 
   public async doInit(): Promise<this> {
     const type = this.configuration.get("type") as SearchConfiguration["type"];
+    this.type = type;
     this.database = this.context.getProvider<DatabaseServiceAPI>("database");
 
     if (type === "elasticsearch") {
