@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
+import { SearchServiceAPI } from "../../../src/core/platform/services/search/api";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1";
@@ -84,7 +85,7 @@ describe("The /users API", () => {
       await new Promise(r => setTimeout(r, 5000));
 
       let resources = await search("ha");
-      expect(resources.length).toBe(1);
+      expect(resources.length).toBe(2);
 
       resources = await search("bob rabiot");
 

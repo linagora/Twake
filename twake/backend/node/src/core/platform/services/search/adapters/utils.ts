@@ -20,10 +20,15 @@ export function parsePrimaryKey(
   return pk;
 }
 
-export function expandStringForPrefix(str: string, minimalSize: number = 3) {
+export function expandStringForPrefix(
+  str: string,
+  minimalSize: number = 1,
+  maximalSize: number = 5,
+) {
   let expanded: string[] = [];
   [...str.split(" "), ...str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").split(" ")].map(w => {
-    for (let i = minimalSize; i <= w.length; i++) expanded.push(w.slice(0, i));
+    for (let i = minimalSize; i <= Math.min(maximalSize, w.length); i++)
+      expanded.push(w.slice(0, i));
   });
   return _.uniq(expanded).join(" ");
 }

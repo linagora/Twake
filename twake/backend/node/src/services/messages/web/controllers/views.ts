@@ -103,6 +103,8 @@ export class ViewsController {
         new Pagination(request.query.page_token, request.query.limit),
         {
           search: request.query.q,
+          workspaceId: request.query.workspace_id,
+          channelId: request.query.channel_id,
           companyId: request.params.company_id,
         },
         context,
@@ -113,6 +115,9 @@ export class ViewsController {
       await this.service.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
       item => item.id,
     );
+
+    //TODO for each message check we have access to it (check we are member in the channel of this message + avoid making everything slow while doing this check so maybe some quick cache)
+    //TODO as some messages will be filtered out after previous TODO, we should loop on the elastic search calls to reach the expected limit (For instance first 100 messages returned by ES could all be from unaccessible channel so we need to get the next 100 messages and so on)
 
     const resources = messages.map((resource: Message) => {
       const firstMessage = firstMessagesMap[resource.thread_id];
@@ -135,6 +140,8 @@ export interface MessageViewListQueryParameters
 
 export interface MessageViewSearchQueryParameters extends PaginationQueryParameters {
   q: string;
+  workspace_id: string;
+  channel_id: string;
 }
 
 function getChannelViewExecutionContext(
