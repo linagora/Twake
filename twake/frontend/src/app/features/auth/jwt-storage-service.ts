@@ -100,6 +100,8 @@ class JWTStorage {
   }
 
   isAccessExpired() {
+    if (!this.jwtData?.expiration) return true;
+
     const expired = new Date().getTime() / 1000 - this.jwtData.expiration > 0;
 
     expired &&
@@ -109,6 +111,8 @@ class JWTStorage {
   }
 
   isRefreshExpired() {
+    if (!this.jwtData?.expiration) return true;
+
     const expired = new Date().getTime() / 1000 - this.jwtData.refresh_expiration > 0;
 
     expired &&

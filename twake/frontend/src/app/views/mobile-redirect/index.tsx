@@ -5,6 +5,7 @@ import { Smartphone, X } from 'react-feather';
 import './style.scss';
 import { Button } from 'antd';
 import InitService from '../../features/global/services/init-service';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
 
 const environment = configuration as any;
 
@@ -15,12 +16,21 @@ export default function MobileRedirect(props: { children: ReactNode }) {
   let parameters = InitService.server_infos?.configuration.mobile;
 
   const getapp = searchParams.getapp;
-  const forceUseWeb = searchParams.useweb;
+  let forceUseWeb = searchParams.useweb;
   const originInUrl = searchParams.origin;
 
   delete searchParams.useweb;
   delete searchParams.getapp;
   delete searchParams.origin;
+
+  if (forceUseWeb) {
+    LocalStorage.setItem('useweb', new Date().getTime());
+  } else {
+    forceUseWeb =
+      new Date().getTime() - parseInt(LocalStorage.getItem('useweb') || '0') <
+      1000 * 60 * 60 * 24 * 3; //We re-ask to download app every 3 days
+    LocalStorage.setItem('useweb', 0);
+  }
 
   //If requested in url: redirect to stores
   if (getapp && parameters?.mobile_appstore && parameters?.mobile_googleplay) {
@@ -29,6 +39,7 @@ export default function MobileRedirect(props: { children: ReactNode }) {
     } else if (os === 'ios') {
       document.location.replace(parameters?.mobile_appstore);
     }
+    return <></>;
   }
 
   //We must wait for server parameters at least
