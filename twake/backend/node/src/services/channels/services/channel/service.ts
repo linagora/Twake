@@ -248,6 +248,17 @@ export class Service implements ChannelService {
     await this.addContextUserToChannel(context, saveResult);
     await this.onSaved(channelToSave, options, context, saveResult, mode);
 
+    // Shortcut to invite members to a channel
+    if (!isDirectChannel && options.members && options.members.length > 0) {
+      await this.channelService.members.addUsersToChannel(
+        options.members.map(id => {
+          return { id };
+        }),
+        saveResult.entity,
+        context,
+      );
+    }
+
     return saveResult;
   }
 

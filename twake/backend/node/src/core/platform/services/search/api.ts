@@ -54,6 +54,7 @@ export interface SearchServiceAPI extends TwakeServiceProvider {
   getRepository<Entity>(table: string, entityType: EntityTarget<Entity>): SearchRepository<Entity>;
   upsert(entities: any[]): Promise<void>;
   remove(entities: any[]): Promise<void>;
+  type: SearchConfiguration["type"];
 }
 
 export type SearchConfiguration = {

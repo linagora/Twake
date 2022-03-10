@@ -1,5 +1,6 @@
 import {
   CRUDService,
+  ExecutionContext,
   ListResult,
   Paginable,
   Pagination,
@@ -177,6 +178,7 @@ export interface MemberService
   addUsersToChannel(
     users: Pick<User, "id">[],
     channel: ChannelPrimaryKey,
+    context?: ExecutionContext,
   ): Promise<ListResult<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 
   /**
