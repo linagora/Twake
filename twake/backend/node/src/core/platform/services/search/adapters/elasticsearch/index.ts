@@ -21,8 +21,8 @@ import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
 import { buildSearchQuery } from "./search";
 
 type Operation = {
-  index?: { _index: string; _id: string; _type: string };
-  delete?: { _index: string; _id: string; _type: string };
+  index?: { _index: string; _id: string };
+  delete?: { _index: string; _id: string };
   [key: string]: any;
 };
 
@@ -61,9 +61,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     const name = entity.options?.search?.index || entity.name;
     const mapping = entity.options?.search?.esMapping;
 
-    let mappings: any = {};
-    mappings[`_doc`] = { ...mapping, _source: { enabled: false } };
-
     try {
       await this.client.indices.get({
         index: name,
@@ -72,25 +69,24 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     } catch (e) {
       logger.info(`Create index ${name} with mapping %o`, mapping);
 
-      const rep = await this.client.indices.create(
-        {
-          index: name,
-          body: {
-            settings: {
-              analysis: {
-                analyzer: {
-                  folding: {
-                    tokenizer: "standard",
-                    filter: ["lowercase", "asciifolding"],
-                  },
+      const indice = {
+        index: name,
+        body: {
+          settings: {
+            analysis: {
+              analyzer: {
+                folding: {
+                  tokenizer: "standard",
+                  filter: ["lowercase", "asciifolding"],
                 },
               },
             },
-            mappings: { ...mappings },
           },
+          mappings: { ...mapping, _source: { enabled: false } },
         },
-        { ignore: [400] },
-      );
+      };
+
+      const rep = await this.client.indices.create(indice, { ignore: [400] });
 
       if (rep.statusCode !== 200) {
         logger.error(`${this.name} -  ${JSON.stringify(rep.body)}`);
@@ -132,7 +128,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         index: {
           _index: index,
           _id: stringifyPrimaryKey(entity),
-          _type: `_doc`,
         },
         ...body,
       };
@@ -161,7 +156,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         delete: {
           _index: index,
           _id: stringifyPrimaryKey(entity),
-          _type: `_doc`,
         },
       };
 

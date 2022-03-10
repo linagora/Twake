@@ -6,7 +6,7 @@ export default {
     let source: any = {
       first_name: entity.first_name,
       last_name: entity.last_name,
-      email_canonical: entity.email_canonical,
+      email: entity.email_canonical,
       username: entity.username_canonical,
     };
     if (entity.cache?.companies) {
@@ -21,7 +21,7 @@ export default {
     text: {
       first_name: "text",
       last_name: "text",
-      email_canonical: "text",
+      email: "text",
       username: "text",
     },
   },
@@ -29,7 +29,7 @@ export default {
     properties: {
       first_name: { type: "text", index_prefixes: {} },
       last_name: { type: "text", index_prefixes: {} },
-      email_canonical: { type: "text", index_prefixes: {} },
+      email: { type: "text", index_prefixes: {} },
       username: { type: "text", index_prefixes: {} },
       companies: { type: "keyword" },
     },

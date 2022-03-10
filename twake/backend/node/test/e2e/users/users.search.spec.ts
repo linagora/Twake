@@ -83,14 +83,14 @@ describe("The /users API", () => {
       //Wait for indexation to happen
       await new Promise(r => setTimeout(r, 5000));
 
-      let resources = await search("bob rabiot");
+      let resources = await search("ha");
+      expect(resources.length).toBe(2);
+
+      resources = await search("bob rabiot");
 
       expect(resources.map(e => e.email).includes("rabiot.b@twake.app")).toBe(true);
       expect(resources.map(e => e.email).includes("rbs@twake.app")).toBe(true);
       expect(resources.map(e => e.email).includes("bob@twake.app")).toBe(true);
-
-      resources = await search("ha");
-      expect(resources.length).toBe(1);
 
       resources = await search("alexis");
       expect(resources[0].email).toBe("alexis.goelans@twake.app");
