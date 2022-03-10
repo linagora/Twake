@@ -1,3 +1,4 @@
+import { expandStringForPrefix } from "../../../core/platform/services/search/adapters/utils";
 import User from "./user";
 
 export default {
@@ -8,6 +9,15 @@ export default {
       last_name: entity.last_name,
       email: entity.email_canonical,
       username: entity.username_canonical,
+      prefix: expandStringForPrefix(
+        entity.first_name +
+          " " +
+          entity.last_name +
+          " " +
+          entity.email_canonical.split("@")[0] +
+          " " +
+          entity.username_canonical,
+      ),
     };
     if (entity.cache?.companies) {
       return {
@@ -23,6 +33,7 @@ export default {
       last_name: "text",
       email: "text",
       username: "text",
+      prefix: "text",
     },
   },
   esMapping: {
