@@ -46,7 +46,7 @@ describe("Application events", () => {
     );
 
     appId = createdApplication.resource.id;
-    signingSecret = createdApplication.resource.api.privateKey;
+    signingSecret = createdApplication.resource.api.private_key;
 
     ends();
 
@@ -84,8 +84,8 @@ const postPayload = {
     compatibility: [],
   },
   api: {
-    hooksUrl: "http://localhost:3000/test/appHook",
-    allowedIps: "allowedIps",
+    hooks_url: "http://localhost:3000/test/appHook",
+    allowed_ips: "allowed_ips",
   },
   access: {
     read: ["messages"],
