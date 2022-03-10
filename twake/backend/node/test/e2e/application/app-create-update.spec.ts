@@ -67,25 +67,25 @@ describe("Applications", () => {
       expect(r.display).toMatchObject(payload.display);
       expect(r.publication).toMatchObject(payload.publication);
       expect(r.stats).toMatchObject({
-        createdAt: expect.any(Number),
-        updatedAt: expect.any(Number),
+        created_at: expect.any(Number),
+        updated_at: expect.any(Number),
         version: 0,
       });
 
       expect(r.api).toMatchObject({
-        hooksUrl: payload.api.hooksUrl,
-        allowedIps: payload.api.allowedIps,
-        privateKey: expect.any(String),
+        hooks_url: payload.api.hooks_url,
+        allowed_ips: payload.api.allowed_ips,
+        private_key: expect.any(String),
       });
 
-      expect(r.api.privateKey).not.toBe("");
+      expect(r.api.private_key).not.toBe("");
 
       const dbData = await appRepo.findOne({ id: response.resource.id });
 
       expect(dbData.api).toMatchObject({
-        allowedIps: payload.api.allowedIps,
-        hooksUrl: payload.api.hooksUrl,
-        privateKey: expect.any(String),
+        allowed_ips: payload.api.allowed_ips,
+        hooks_url: payload.api.hooks_url,
+        private_key: expect.any(String),
       });
 
       done();
@@ -127,7 +127,7 @@ describe("Applications", () => {
 
         payload.is_default = true;
         payload.identity.name = "test2";
-        payload.api.hooksUrl = "123123";
+        payload.api.hooks_url = "123123";
         payload.access.read = [];
         payload.publication.requested = true;
 
@@ -144,8 +144,8 @@ describe("Applications", () => {
         expect(r.display).toMatchObject(payload.display);
         expect(r.publication).toMatchObject(payload.publication);
         expect(r.stats).toMatchObject({
-          createdAt: expect.any(Number),
-          updatedAt: expect.any(Number),
+          created_at: expect.any(Number),
+          updated_at: expect.any(Number),
           version: 1,
         });
 
@@ -154,9 +154,9 @@ describe("Applications", () => {
         const dbData = await appRepo.findOne({ id: response.resource.id });
 
         expect(dbData.api).toMatchObject({
-          allowedIps: payload.api.allowedIps,
-          hooksUrl: payload.api.hooksUrl,
-          privateKey: expect.any(String),
+          allowed_ips: payload.api.allowed_ips,
+          hooks_url: payload.api.hooks_url,
+          private_key: expect.any(String),
         });
 
         done();
@@ -278,8 +278,8 @@ const postPayload = {
     compatibility: [],
   },
   api: {
-    hooksUrl: "hooksUrl",
-    allowedIps: "allowedIps",
+    hooks_url: "hooks_url",
+    allowed_ips: "allowed_ips",
   },
   access: {
     read: ["messages"],

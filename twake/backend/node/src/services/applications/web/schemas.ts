@@ -50,21 +50,21 @@ const responseApplicationPublication = {
 const applicationStats = {
   type: "object",
   properties: {
-    createdAt: { type: "number" },
-    updatedAt: { type: "number" },
+    created_at: { type: "number" },
+    updated_at: { type: "number" },
     version: { type: "number" },
   },
-  required: ["createdAt", "updatedAt", "version"],
+  required: ["created_at", "updated_at", "version"],
 };
 
 const apiObject = {
   type: "object",
   properties: {
-    hooksUrl: { type: "string" },
-    allowedIps: { type: "string" },
-    privateKey: { type: "string" },
+    hooks_url: { type: "string" },
+    allowed_ips: { type: "string" },
+    private_key: { type: "string" },
   },
-  required: ["hooksUrl", "allowedIps"],
+  required: ["hooks_url", "allowed_ips"],
 };
 
 const requestApplicationObject = {

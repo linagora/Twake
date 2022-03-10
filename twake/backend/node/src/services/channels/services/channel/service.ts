@@ -235,6 +235,11 @@ export class Service implements ChannelService {
 
     logger.info("Saving channel %o", channelToSave);
     await this.channelRepository.save(channelToSave);
+
+    if (!isDirectChannel) {
+      channel.members = []; //Members is specific to direct channels
+    }
+
     const saveResult = new SaveResult<ChannelObject>(
       "channel",
       {

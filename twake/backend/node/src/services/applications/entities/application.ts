@@ -117,15 +117,15 @@ export type ApplicationPublication = {
 };
 
 export type ApplicationStatistics = {
-  createdAt: number; // RO
-  updatedAt: number; // RO
+  created_at: number; // RO
+  updated_at: number; // RO
   version: number; // RO
 };
 
 export type ApplicationApi = {
-  hooksUrl: string;
-  allowedIps: string;
-  privateKey: string; // RO
+  hooks_url: string;
+  allowed_ips: string;
+  private_key: string; // RO
 };
 
 type ApplicationScopes =
