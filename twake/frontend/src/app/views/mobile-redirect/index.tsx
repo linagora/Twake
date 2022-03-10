@@ -29,7 +29,6 @@ export default function MobileRedirect(props: { children: ReactNode }) {
     forceUseWeb =
       new Date().getTime() - parseInt(LocalStorage.getItem('useweb') || '0') <
       1000 * 60 * 60 * 24 * 3; //We re-ask to download app every 3 days
-    LocalStorage.setItem('useweb', 0);
   }
 
   //If requested in url: redirect to stores
