@@ -14,6 +14,7 @@ import {
 } from 'recoil';
 import { CompanyApplicationsStateFamily } from 'app/features/applications/state/company-applications';
 import { UserSelector } from 'app/features/users/state/selectors/user-selector';
+import { useUser } from 'app/features/users/hooks/use-user';
 
 type Props = {
   small?: boolean;
@@ -23,9 +24,8 @@ export default (props: Props) => {
   const context = useContext(MessageContext);
   let { message } = useMessage(context);
 
-  let user =
-    useRecoilValueLoadable(UserSelector(message.user_id)).valueMaybe() ||
-    (message.users || []).find(u => u.id === message.user_id);
+  const user =
+    useUser(message.user_id) || (message.users || []).find(u => u.id === message.user_id);
   const companyApplications =
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   let application = companyApplications.find(a => a.id === message.application_id);

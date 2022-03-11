@@ -13,7 +13,6 @@ export type UserPreferencesType = null | {
   allow_tracking?: boolean;
   tutorial_done?: boolean;
   channel_ordering?: 'chronological' | 'alphabetical';
-  //(CompanyType | WorkspaceType | any)[];
   recent_workspaces?: { company_id: string; workspace_id: string }[];
 };
 
@@ -51,6 +50,10 @@ export type UserType = {
   username: string;
   companies?: UserCompanyType[];
   preferences: UserPreferencesType;
+
+  /**
+   * this field is filled when available and so we cannot rely on it except on search service for filtering
+   **/
   workspaces?: UserWorkspaceType[];
   workspaces_id?: string[];
   is_verified?: boolean;

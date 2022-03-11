@@ -24,6 +24,7 @@ const MainView: FC<PropsType> = ({ className }) => {
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
 
+  // We call this hook here to be able to preload some users in user list state
   useUserList();
 
   const loaded = useWatcher(ChannelsBarService, async () => {
