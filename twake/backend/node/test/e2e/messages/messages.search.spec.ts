@@ -119,9 +119,10 @@ describe("The /messages API", () => {
     });
   });
 
-  it.only("Filter out messages from channels we are not member of", async done => {
+  it("Filter out messages from channels we are not member of", async done => {
     const channel = await createChannel();
-    const anotherChannel = await createChannel("123");
+    const anotherChannel = await createChannel(uuidv1());
+    const anotherUserId = uuidv1();
 
     const participant = {
       type: "channel",
@@ -154,10 +155,10 @@ describe("The /messages API", () => {
 
     const thirdThreadId = await createThread("Filtered thread 3", [participant]);
     await createReply(thirdThreadId, "Filtered message 9");
-    await createReply(thirdThreadId, "Filtered message 10", { userId: "123456" });
-    await createReply(thirdThreadId, "Filtered message 11", { userId: "123456" });
+    await createReply(thirdThreadId, "Filtered message 10", { userId: anotherUserId });
+    await createReply(thirdThreadId, "Filtered message 11", { userId: anotherUserId });
 
-    await createReply(thirdThreadId, "Filtered message 12", { userId: "123456", files: [file] });
+    await createReply(thirdThreadId, "Filtered message 12", { userId: anotherUserId, files: [file] });
 
     //Wait for indexation to happen
     await new Promise(r => setTimeout(r, 3000));
@@ -170,7 +171,7 @@ describe("The /messages API", () => {
     expect(resources2.length).toEqual(0);
 
     // check for the user
-    const resources3 = await search("Filtered", { sender: "123456" });
+    const resources3 = await search("Filtered", { sender: anotherUserId });
     expect(resources3.length).toEqual(3);
 
     // check for the files
@@ -178,10 +179,9 @@ describe("The /messages API", () => {
     expect(resources4.length).toEqual(2);
 
     // check for the user and files
-    const resources5 = await search("Filtered", { sender: "123456", has_files: true });
+    const resources5 = await search("Filtered", { sender: anotherUserId, has_files: true });
     expect(resources5.length).toEqual(1);
 
-    console.log(platform.workspace.company_id);
 
     done();
   });
