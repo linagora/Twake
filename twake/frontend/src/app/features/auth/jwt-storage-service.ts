@@ -60,6 +60,7 @@ class JWTStorage {
       refresh: '',
       type: 'Bearer',
     };
+    LocalStorage.setItem('jwt', null);
   }
 
   updateJWT(jwtData: JWTDataType, options?: { fromLocalStorage: boolean }) {

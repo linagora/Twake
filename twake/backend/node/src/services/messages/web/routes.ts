@@ -154,21 +154,21 @@ const routes: FastifyPluginCallback<{
     method: "GET",
     url: "/companies/:company_id/files",
     preValidation: [fastify.authenticate],
-    handler: viewsController.feed.bind(viewsController),
+    handler: viewsController.files.bind(viewsController),
   });
 
   fastify.route({
     method: "GET",
     url: "/companies/:company_id/bookmarks",
     preValidation: [fastify.authenticate],
-    handler: viewsController.feed.bind(viewsController),
+    handler: viewsController.bookmarks.bind(viewsController),
   });
 
   fastify.route({
     method: "GET",
     url: "/companies/:company_id/inbox",
     preValidation: [fastify.authenticate],
-    handler: viewsController.feed.bind(viewsController),
+    handler: viewsController.inbox.bind(viewsController),
   });
 
   fastify.route({

@@ -122,7 +122,7 @@ export class ViewsService implements MessageViewsServiceAPI {
       }
     }
 
-    return new ListResult("thread", [], null);
+    return new ListResult("thread", threads, null);
   }
 
   async listChannelThreads(

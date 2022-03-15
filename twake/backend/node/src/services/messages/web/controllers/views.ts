@@ -14,8 +14,6 @@ import { keyBy } from "lodash";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import ChannelServiceAPI from "../../../channels/provider";
 import WorkspaceServicesAPI from "../../../workspaces/api";
-import { WorkspaceExecutionContext } from "../../../channels/types";
-import { uniq } from "lodash";
 
 class SimpleChannelsCache {
   private readonly data: { [key: string]: { [key: string]: boolean } };
@@ -149,6 +147,21 @@ export class ViewsController {
       ),
     );
     return userChannels;
+  }
+
+  // Bookmarked messages of user from all over workspace
+  async bookmarks(): Promise<ResourceListResponse<MessageWithReplies>> {
+    return { resources: [] };
+  }
+
+  // Uploaded and downloaded files of user from all over workspace
+  async files(): Promise<ResourceListResponse<MessageWithReplies>> {
+    return { resources: [] };
+  }
+
+  // Latest messages of user from all over workspace
+  async inbox(): Promise<ResourceListResponse<MessageWithReplies>> {
+    return { resources: [] };
   }
 
   async search(

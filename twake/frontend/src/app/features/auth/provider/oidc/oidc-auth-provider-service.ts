@@ -9,7 +9,7 @@ import { TwakeService } from '../../../global/framework/registry-decorator-servi
 import EnvironmentService from '../../../global/framework/environment-service';
 import { AuthProvider, InitParameters } from '../auth-provider';
 import ConsoleService from 'app/features/console/services/console-service';
-import { JWTDataType } from 'app/features/auth/jwt-storage-service';
+import jwtStorageService, { JWTDataType } from 'app/features/auth/jwt-storage-service';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 
 const OIDC_CALLBACK_URL = '/oidccallback';
@@ -247,6 +247,8 @@ export default class OIDCAuthProviderService
         time: new Date().getTime(),
       });
     }
+
+    jwtStorageService.clear();
 
     if (this.userManager) this.userManager.signinRedirect();
   }
