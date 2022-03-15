@@ -2,20 +2,29 @@ import { FastifyInstance, FastifyPluginCallback } from "fastify";
 import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import { MessageServiceAPI } from "../api";
 import {
-  ThreadsController,
   MessagesController,
+  ThreadsController,
   UserBookmarksController,
   ViewsController,
 } from "./controllers";
+import WorkspaceServicesAPI from "../../workspaces/api";
+import ChannelServiceAPI from "../../channels/provider";
 
 const routes: FastifyPluginCallback<{
   service: MessageServiceAPI;
   realtime: RealtimeServiceAPI;
+  workspaceService: WorkspaceServicesAPI;
+  channelService: ChannelServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
   const threadsController = new ThreadsController(options.service);
   const messagesController = new MessagesController(options.realtime, options.service);
   const userBookmarksController = new UserBookmarksController(options.realtime, options.service);
-  const viewsController = new ViewsController(options.realtime, options.service);
+  const viewsController = new ViewsController(
+    options.realtime,
+    options.service,
+    options.workspaceService,
+    options.channelService,
+  );
 
   /**
    * User bookmarks collection

@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
@@ -7,14 +7,9 @@ import { ResourceUpdateResponse } from "../../../src/utils/types";
 import { ParticipantObject, Thread } from "../../../src/services/messages/entities/threads";
 import { deserialize } from "class-transformer";
 import { Channel } from "../../../src/services/channels/entities";
-import {
-  ChannelUtils,
-  get as getChannelUtils,
-  getMemberUtils,
-  ChannelMemberUtils,
-} from "../channels/utils";
+import { ChannelUtils, get as getChannelUtils } from "../channels/utils";
 import ChannelServiceAPI from "../../../src/services/channels/provider";
-import { assign } from "lodash";
+import { MessageFile } from "../../../src/services/messages/entities/message-files";
 
 describe("The /messages API", () => {
   const url = "/internal/services/messages/v1";
@@ -22,7 +17,7 @@ describe("The /messages API", () => {
   let channelUtils: ChannelUtils;
   let channelService;
 
-  beforeEach(async ends => {
+  beforeAll(async ends => {
     platform = await init({
       services: [
         "database",
@@ -46,10 +41,28 @@ describe("The /messages API", () => {
     channelUtils = getChannelUtils(platform);
     channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
 
+    const testDbService = new TestDbService(platform);
+    await testDbService.createCompany(platform.workspace.company_id);
+
+    const workspacePk = {
+      id: platform.workspace.workspace_id,
+      company_id: platform.workspace.company_id,
+    };
+
+    const workspacePk2 = {
+      id: uuidv1(),
+      company_id: uuidv1(),
+    };
+    await testDbService.createWorkspace(workspacePk);
+
+    const user = await testDbService.createUser([workspacePk], {});
+
+    platform.currentUser.id = user.id;
+
     ends();
   });
 
-  afterEach(async ends => {
+  afterAll(async ends => {
     platform && (await platform.tearDown());
     platform = null;
     ends();
@@ -57,17 +70,6 @@ describe("The /messages API", () => {
 
   describe("The GET /messages/?search=... route", () => {
     it("Should find the searched messages", async done => {
-      const testDbService = new TestDbService(platform);
-      await testDbService.createCompany(platform.workspace.company_id);
-      const workspacePk = {
-        id: platform.workspace.workspace_id,
-        company_id: platform.workspace.company_id,
-      };
-      const workspacePk2 = {
-        id: uuidv1(),
-        company_id: uuidv1(),
-      };
-      await testDbService.createWorkspace(workspacePk);
       // await testDbService.createWorkspace(workspacePk2);
 
       const channel = await createChannel();
@@ -117,12 +119,79 @@ describe("The /messages API", () => {
     });
   });
 
-  async function createChannel(): Promise<Channel> {
-    const channel = channelUtils.getChannel(platform.currentUser.id);
+  it.only("Filter out messages from channels we are not member of", async done => {
+    const channel = await createChannel();
+    const anotherChannel = await createChannel("123");
+
+    const participant = {
+      type: "channel",
+      id: channel.id,
+      company_id: platform.workspace.company_id,
+      workspace_id: platform.workspace.workspace_id,
+    } as ParticipantObject;
+
+    const participant2 = {
+      type: "channel",
+      id: anotherChannel.id,
+      company_id: platform.workspace.company_id,
+      workspace_id: platform.workspace.workspace_id,
+    } as ParticipantObject;
+
+    const file = new MessageFile();
+    file.metadata = { external_id: undefined, source: undefined, name: "test" };
+
+    const firstThreadId = await createThread("Filtered thread", [participant]);
+    await createReply(firstThreadId, "Filtered message 1");
+    await createReply(firstThreadId, "Filtered message 2");
+    await createReply(firstThreadId, "Filtered message 3");
+    await createReply(firstThreadId, "Filtered message 4", { files: [file] });
+
+    const secondThreadId = await createThread("Filtered thread 2", [participant2]);
+    await createReply(secondThreadId, "Filtered message 5");
+    await createReply(secondThreadId, "Filtered message 6");
+    await createReply(secondThreadId, "Filtered message 7");
+    await createReply(secondThreadId, "Filtered message 8");
+
+    const thirdThreadId = await createThread("Filtered thread 3", [participant]);
+    await createReply(thirdThreadId, "Filtered message 9");
+    await createReply(thirdThreadId, "Filtered message 10", { userId: "123456" });
+    await createReply(thirdThreadId, "Filtered message 11", { userId: "123456" });
+
+    await createReply(thirdThreadId, "Filtered message 12", { userId: "123456", files: [file] });
+
+    //Wait for indexation to happen
+    await new Promise(r => setTimeout(r, 3000));
+
+    const resources = await search("Filtered", { limit: 9 });
+    expect(resources.length).toEqual(9);
+
+    // check for the empty result set
+    const resources2 = await search("Filtered2", { limit: 10 });
+    expect(resources2.length).toEqual(0);
+
+    // check for the user
+    const resources3 = await search("Filtered", { sender: "123456" });
+    expect(resources3.length).toEqual(3);
+
+    // check for the files
+    const resources4 = await search("Filtered", { has_files: true });
+    expect(resources4.length).toEqual(2);
+
+    // check for the user and files
+    const resources5 = await search("Filtered", { sender: "123456", has_files: true });
+    expect(resources5.length).toEqual(1);
+
+    console.log(platform.workspace.company_id);
+
+    done();
+  });
+
+  async function createChannel(userId = platform.currentUser.id): Promise<Channel> {
+    const channel = channelUtils.getChannel(userId);
     const creationResult = await channelService.channels.save(
       channel,
       {},
-      channelUtils.getContext(),
+      channelUtils.getContext({ id: userId }),
     );
 
     return creationResult.entity;
@@ -138,17 +207,29 @@ describe("The /messages API", () => {
     return result.resource.id;
   }
 
-  async function createReply(threadId, text) {
-    return e2e_createMessage(platform, threadId, createMessage({ text }));
+  async function createReply(threadId, text, options?: { userId?: string; files?: MessageFile[] }) {
+    const cr = options?.userId ? { currentUser: { id: options?.userId } } : undefined;
+
+    const message = { text, ...(options?.files ? { files: options.files } : {}) };
+
+    return e2e_createMessage(platform, threadId, createMessage(message, cr as TestPlatform));
   }
 
   async function search(
     searchString: string,
-    companyId?: string,
-    workspaceId?: string,
-    channelId?: string,
+    options?: {
+      company_id?: string;
+      workspace_id?: string;
+      channel_id?: string;
+      limit?: number;
+      sender?: string;
+      has_files?: boolean;
+    },
   ): Promise<any[]> {
     const jwtToken = await platform.auth.getJWTToken();
+
+    const query: any = options || {};
+
     const response = await platform.app.inject({
       method: "GET",
       // url: `${url}/companies/${platform.workspace.company_id}/woskpaces/`,
@@ -157,10 +238,8 @@ describe("The /messages API", () => {
         authorization: `Bearer ${jwtToken}`,
       },
       query: {
+        ...query,
         q: searchString,
-        ...(channelId ? { channel_id: channelId } : {}),
-        ...(workspaceId ? { workspace_id: workspaceId } : {}),
-        ...(companyId ? { company_id: companyId } : {}),
       },
     });
 

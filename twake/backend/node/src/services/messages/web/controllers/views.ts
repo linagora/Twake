@@ -1,26 +1,67 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { MessageServiceAPI } from "../../api";
-import {
-  ResourceCreateResponse,
-  ResourceDeleteResponse,
-  ResourceGetResponse,
-  ResourceListResponse,
-} from "../../../../utils/types";
+import { ResourceListResponse } from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { handleError } from "../../../../utils/handleError";
 import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import {
   ChannelViewExecutionContext,
   MessageViewListOptions,
-  PaginationQueryParameters,
   MessageWithReplies,
+  PaginationQueryParameters,
 } from "../../types";
 import { keyBy } from "lodash";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import ChannelServiceAPI from "../../../channels/provider";
+import WorkspaceServicesAPI from "../../../workspaces/api";
+import { WorkspaceExecutionContext } from "../../../channels/types";
+import { uniq } from "lodash";
+
+class SimpleChannelsCache {
+  private readonly data: { [key: string]: { [key: string]: boolean } };
+  private readonly expiration: { [key: string]: number };
+  static now = () => new Date().getTime();
+
+  constructor(protected minutesTTL: number) {
+    this.data = {};
+    this.expiration = {};
+    setInterval(() => {
+      const now = SimpleChannelsCache.now();
+      Object.keys(this.expiration).forEach(key => {
+        if (now > this.expiration[key]) {
+          delete this.expiration[key];
+          delete this.data[key];
+        }
+      });
+    }, minutesTTL * 1000);
+  }
+
+  async get(key: string, setIfMissing: () => Promise<{ [key: string]: boolean }> = undefined) {
+    const exp = this.expiration[key];
+    if (!exp || SimpleChannelsCache.now() > exp) {
+      if (!setIfMissing) {
+        return null;
+      }
+      this.set(key, await setIfMissing());
+    }
+    return this.data[key];
+  }
+
+  set(key: string, value: { [key: string]: boolean }) {
+    this.expiration[key] = SimpleChannelsCache.now() + this.minutesTTL * 1000;
+    this.data[key] = value;
+  }
+}
+
+const simpleChannelsCache = new SimpleChannelsCache(5);
 
 export class ViewsController {
-  constructor(protected realtime: RealtimeServiceAPI, protected service: MessageServiceAPI) {}
+  constructor(
+    protected realtime: RealtimeServiceAPI,
+    protected service: MessageServiceAPI,
+    protected workspaceService: WorkspaceServicesAPI,
+    protected channelService: ChannelServiceAPI,
+  ) {}
 
   async feed(
     request: FastifyRequest<{
@@ -89,6 +130,27 @@ export class ViewsController {
     }
   }
 
+  private async getUserChannels(
+    userId: string,
+    companyId: string,
+  ): Promise<{ [key: string]: boolean }> {
+    const userWorkspaces = await this.workspaceService.workspaces.getAllIdsForUser(
+      userId,
+      companyId,
+    );
+    const userChannels = {} as { [key: string]: boolean };
+    await Promise.all(
+      userWorkspaces.map(ws =>
+        this.channelService.members.listAllUserChannelsIds(userId, companyId, ws).then(items =>
+          items.forEach(id => {
+            userChannels[id] = true;
+          }),
+        ),
+      ),
+    );
+    return userChannels;
+  }
+
   async search(
     request: FastifyRequest<{
       Querystring: MessageViewSearchQueryParameters;
@@ -98,26 +160,72 @@ export class ViewsController {
     }>,
     context: ChannelViewExecutionContext,
   ): Promise<ResourceListResponse<MessageWithReplies>> {
-    const messages: Message[] = await this.service.views
-      .search(
-        new Pagination(request.query.page_token, request.query.limit),
-        {
-          search: request.query.q,
-          workspaceId: request.query.workspace_id,
-          channelId: request.query.channel_id,
-          companyId: request.params.company_id,
-        },
-        context,
-      )
-      .then(a => a.getEntities());
+    const limit = +request.query.limit || 100;
+
+    const companyId = request.params.company_id;
+
+    const userChannels = await simpleChannelsCache.get(request.currentUser.id, async () =>
+      this.getUserChannels(request.currentUser.id, companyId),
+    );
+
+    async function* getNextMessages(service: MessageServiceAPI) {
+      let lastPageToken = null;
+      let messages: Message[] = [];
+      let hasMoreMessages = true;
+      do {
+        messages = await service.views
+          .search(
+            new Pagination(lastPageToken, limit.toString()),
+            {
+              search: request.query.q,
+              workspaceId: request.query.workspace_id,
+              channelId: request.query.channel_id,
+              companyId: request.params.company_id,
+              ...(request.query.has_files ? { hasFiles: true } : {}),
+            },
+            context,
+          )
+          .then((a: ListResult<Message>) => {
+            lastPageToken = a.nextPage.page_token;
+            if (!lastPageToken) {
+              hasMoreMessages = false;
+            }
+            return a.getEntities();
+          });
+
+        if (messages.length) {
+          yield messages;
+        } else {
+          hasMoreMessages = false;
+        }
+      } while (hasMoreMessages);
+    }
+
+    let messages = [] as Message[];
+
+    for await (let m of getNextMessages(this.service)) {
+      m = m.filter(msg => {
+        return !(
+          !userChannels[msg.cache.channel_id] ||
+          (request.query.sender && msg.user_id != request.query.sender) ||
+          (request.query.has_files && !(msg.files || []).length)
+        );
+      });
+
+      m.forEach(msg => {
+        messages.push(msg);
+      });
+      if (messages.length >= limit) {
+        break;
+      }
+    }
+
+    messages = messages.slice(0, limit);
 
     const firstMessagesMap = keyBy(
       await this.service.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
       item => item.id,
     );
-
-    //TODO for each message check we have access to it (check we are member in the channel of this message + avoid making everything slow while doing this check so maybe some quick cache)
-    //TODO as some messages will be filtered out after previous TODO, we should loop on the elastic search calls to reach the expected limit (For instance first 100 messages returned by ES could all be from unaccessible channel so we need to get the next 100 messages and so on)
 
     const resources = messages.map((resource: Message) => {
       const firstMessage = firstMessagesMap[resource.thread_id];
@@ -142,6 +250,8 @@ export interface MessageViewSearchQueryParameters extends PaginationQueryParamet
   q: string;
   workspace_id: string;
   channel_id: string;
+  sender: string;
+  has_files: boolean;
 }
 
 function getChannelViewExecutionContext(

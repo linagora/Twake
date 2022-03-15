@@ -28,7 +28,7 @@ type Operation = {
 
 export default class ElasticSearch extends SearchAdapter implements SearchAdapterInterface {
   private client: Client;
-  private bulkReaders: number = 0;
+  private bulkReaders = 0;
   private buffer: Operation[] = [];
   private name = "ElasticSearch";
 
@@ -172,7 +172,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       return;
     }
 
-    logger.info(`Start new Elasticsearch bulk reader.`);
+    logger.info("Start new Elasticsearch bulk reader.");
     this.bulkReaders += 1;
 
     let buffer;
@@ -229,7 +229,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       logger.error(err);
     }
 
-    logger.info(`Elasticsearch bulk flushed.`);
+    logger.info("Elasticsearch bulk flushed.");
     this.bulkReaders += -1;
 
     this.startBulkReader();
@@ -252,9 +252,13 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
     };
 
     let esResponse: ApiResponse;
+
     if (options.pagination.page_token) {
       esResponse = await this.client.scroll(
-        { scroll_id: options.pagination.page_token, ...esParamsWithScroll },
+        {
+          scroll_id: options.pagination.page_token,
+          // ...esParamsWithScroll
+        },
         esOptions,
       );
     } else {

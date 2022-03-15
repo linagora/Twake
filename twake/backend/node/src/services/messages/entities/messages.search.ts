@@ -5,6 +5,7 @@ export default {
   source: (entity: Message) => {
     const source: any = {
       text: entity.text + " " + (entity.files || []).map(file => file.metadata.name).join(" "),
+      has_files: (entity.files || []).length > 0,
     };
     if (entity.cache) {
       return {
@@ -27,6 +28,7 @@ export default {
       company_id: { type: "keyword" },
       workspace_id: { type: "keyword" },
       channel_id: { type: "keyword" },
+      has_files: { type: "boolean" },
     },
   },
 };

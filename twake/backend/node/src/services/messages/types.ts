@@ -108,3 +108,11 @@ export interface MessagesSaveOptions {
 export interface MessagesGetThreadOptions {
   replies_per_thread?: number;
 }
+
+export type SearchMessageOptions = {
+  search?: string;
+  companyId?: string;
+  workspaceId?: string;
+  channelId?: string;
+  hasFiles?: boolean;
+};

@@ -11,7 +11,7 @@ import { Thread } from "../../entities/threads";
 import {
   ChannelViewExecutionContext,
   MessageViewListOptions,
-  MessageWithReplies,
+  MessageWithReplies, SearchMessageOptions,
 } from "../../types";
 import { MessageChannelRef } from "../../entities/message-channel-refs";
 import { buildMessageListPagination } from "../utils";
@@ -212,7 +212,7 @@ export class ViewsService implements MessageViewsServiceAPI {
 
   async search(
     pagination: Pagination,
-    options?: SearchUserOptions,
+    options?: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>> {
     return await this.searchRepository.search(
@@ -222,6 +222,7 @@ export class ViewsService implements MessageViewsServiceAPI {
         ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
         ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
         ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
+        // TODO: implement boolean for hasFiles
         $text: {
           $search: options.search,
         },

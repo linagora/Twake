@@ -163,6 +163,8 @@ export interface MemberService
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<ChannelMember>>;
 
+  listAllUserChannelsIds(userId: string, companyId: string, workspaceId: string): Promise<string[]>;
+
   /**
    * Check if user is channel member
    */

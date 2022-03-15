@@ -370,6 +370,37 @@ export class Service implements MemberService {
     );
   }
 
+  async listAllUserChannelsIds(
+    user_id: string,
+    company_id: string,
+    workspace_id: string,
+  ): Promise<string[]> {
+    let pagination = new Pagination(null);
+    const channels: string[] = [];
+    let result: ListResult<ChannelMember>;
+    let hasMoreItems = true;
+    do {
+      result = await this.userChannelsRepository.find(
+        {
+          company_id,
+          workspace_id,
+          user_id,
+        },
+        { pagination },
+      );
+      if (result.isEmpty()) {
+        hasMoreItems = false;
+      } else {
+        result.getEntities().forEach(entity => {
+          channels.push(entity.channel_id);
+        });
+        if (!result.nextPage.page_token) hasMoreItems = false;
+        else pagination = new Pagination(result.nextPage.page_token);
+      }
+    } while (hasMoreItems);
+    return channels;
+  }
+
   async listUserChannels(
     user: User,
     pagination: Pagination,
