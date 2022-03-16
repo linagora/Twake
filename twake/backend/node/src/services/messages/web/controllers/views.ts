@@ -130,6 +130,7 @@ export class ViewsController {
               channelId: request.query.channel_id,
               companyId: request.params.company_id,
               ...(request.query.has_files ? { hasFiles: true } : {}),
+              ...(request.query.sender ? { sender: request.query.sender } : {}),
             },
             context,
           )
@@ -165,9 +166,9 @@ export class ViewsController {
       );
       if (!isChannelMember) continue;
 
-      if (request.query.sender && msg.user_id != request.query.sender) continue;
+      // if (request.query.sender && msg.user_id != request.query.sender) continue;
 
-      if (request.query.has_files && !(msg.files || []).length) continue;
+      // if (request.query.has_files && !(msg.files || []).length) continue;
 
       messages.push(msg);
       if (messages.length == limit) {

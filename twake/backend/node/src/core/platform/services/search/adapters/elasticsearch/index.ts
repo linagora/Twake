@@ -257,7 +257,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
       esResponse = await this.client.scroll(
         {
           scroll_id: options.pagination.page_token,
-          // ...esParamsWithScroll
         },
         esOptions,
       );

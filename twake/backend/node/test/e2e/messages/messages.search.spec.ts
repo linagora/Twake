@@ -119,7 +119,7 @@ describe("The /messages API", () => {
     });
   });
 
-  it.only("Filter out messages from channels we are not member of", async done => {
+  it("Filter out messages from channels we are not member of", async done => {
     const channel = await createChannel();
     const anotherChannel = await createChannel(uuidv1());
     const anotherUserId = uuidv1();

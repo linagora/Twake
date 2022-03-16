@@ -12,6 +12,7 @@ export default {
         company_id: entity.cache?.company_id,
         workspace_id: entity.cache?.workspace_id,
         channel_id: entity.cache?.channel_id,
+        user_id: entity.user_id,
         ...source,
       };
     }
@@ -25,6 +26,7 @@ export default {
   esMapping: {
     properties: {
       text: { type: "text" },
+      user_id: { type: "text" },
       company_id: { type: "keyword" },
       workspace_id: { type: "keyword" },
       channel_id: { type: "keyword" },

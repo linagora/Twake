@@ -141,7 +141,7 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
 
   search(
     pagination: Pagination,
-    options?: SearchMessageOptions,
+    options: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>>;
 

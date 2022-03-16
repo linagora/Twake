@@ -11,12 +11,12 @@ import { Thread } from "../../entities/threads";
 import {
   ChannelViewExecutionContext,
   MessageViewListOptions,
-  MessageWithReplies, SearchMessageOptions,
+  MessageWithReplies,
+  SearchMessageOptions,
 } from "../../types";
 import { MessageChannelRef } from "../../entities/message-channel-refs";
 import { buildMessageListPagination } from "../utils";
-import { uniqBy, isEqual, uniqWith } from "lodash";
-import { SearchUserOptions } from "../../../user/services/users/types";
+import { isEqual, uniqBy, uniqWith } from "lodash";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import SearchRepository from "../../../../core/platform/services/search/repository";
 import { uuid } from "../../../../utils/types";
@@ -75,7 +75,7 @@ export class ViewsService implements MessageViewsServiceAPI {
       buildMessageListPagination(pagination, "id"),
     );
 
-    let threads: MessageWithReplies[] = [];
+    const threads: MessageWithReplies[] = [];
     for (const ref of refs.getEntities()) {
       const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
       const extendedThread = await this.service.messages.getThread(thread, {
@@ -110,7 +110,7 @@ export class ViewsService implements MessageViewsServiceAPI {
       buildMessageListPagination(pagination, "thread_id"),
     );
 
-    let threads: MessageWithReplies[] = [];
+    const threads: MessageWithReplies[] = [];
     for (const ref of refs.getEntities()) {
       const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
       const extendedThread = await this.service.messages.getThread(thread, {
@@ -212,18 +212,19 @@ export class ViewsService implements MessageViewsServiceAPI {
 
   async search(
     pagination: Pagination,
-    options?: SearchMessageOptions,
+    options: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>> {
     return await this.searchRepository.search(
       {
-        // TODO: implement boolean for hasFiles
+        ...(options.hasFiles ? { has_files: true } : {}),
       },
       {
         pagination,
         ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
         ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
         ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
+        ...(options.sender ? { $in: [["user_id", [options.sender]]] } : {}),
         $text: {
           $search: options.search,
         },
