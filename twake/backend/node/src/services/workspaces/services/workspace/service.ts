@@ -421,17 +421,6 @@ export class WorkspaceService implements WorkspaceServiceAPI {
     }
   }
 
-  async getAllIdsForUser(userId: string, companyId: string): Promise<string[]> {
-    return Promise.all(
-      (await this.getAllForCompany(companyId)).map(workspace =>
-        this.workspaceUserRepository.findOne({
-          user_id: userId,
-          workspace_id: workspace.id,
-        }),
-      ),
-    ).then(a => a.map(m => m.workspaceId).filter(uw => uw));
-  }
-
   async getAllForUser(
     userId: Pick<WorkspaceUserPrimaryKey, "userId">,
     companyId: CompanyPrimaryKey,

@@ -216,13 +216,14 @@ export class ViewsService implements MessageViewsServiceAPI {
     context?: ExecutionContext,
   ): Promise<ListResult<Message>> {
     return await this.searchRepository.search(
-      {},
+      {
+        // TODO: implement boolean for hasFiles
+      },
       {
         pagination,
         ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
         ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
         ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
-        // TODO: implement boolean for hasFiles
         $text: {
           $search: options.search,
         },

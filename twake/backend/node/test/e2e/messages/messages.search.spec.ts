@@ -119,7 +119,7 @@ describe("The /messages API", () => {
     });
   });
 
-  it("Filter out messages from channels we are not member of", async done => {
+  it.only("Filter out messages from channels we are not member of", async done => {
     const channel = await createChannel();
     const anotherChannel = await createChannel(uuidv1());
     const anotherUserId = uuidv1();
@@ -157,8 +157,10 @@ describe("The /messages API", () => {
     await createReply(thirdThreadId, "Filtered message 9");
     await createReply(thirdThreadId, "Filtered message 10", { userId: anotherUserId });
     await createReply(thirdThreadId, "Filtered message 11", { userId: anotherUserId });
-
-    await createReply(thirdThreadId, "Filtered message 12", { userId: anotherUserId, files: [file] });
+    await createReply(thirdThreadId, "Filtered message 12", {
+      userId: anotherUserId,
+      files: [file],
+    });
 
     //Wait for indexation to happen
     await new Promise(r => setTimeout(r, 3000));
@@ -181,7 +183,6 @@ describe("The /messages API", () => {
     // check for the user and files
     const resources5 = await search("Filtered", { sender: anotherUserId, has_files: true });
     expect(resources5.length).toEqual(1);
-
 
     done();
   });

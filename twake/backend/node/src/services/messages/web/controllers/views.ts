@@ -15,44 +15,6 @@ import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/
 import ChannelServiceAPI from "../../../channels/provider";
 import WorkspaceServicesAPI from "../../../workspaces/api";
 
-class SimpleChannelsCache {
-  private readonly data: { [key: string]: { [key: string]: boolean } };
-  private readonly expiration: { [key: string]: number };
-  static now = () => new Date().getTime();
-
-  constructor(protected minutesTTL: number) {
-    this.data = {};
-    this.expiration = {};
-    setInterval(() => {
-      const now = SimpleChannelsCache.now();
-      Object.keys(this.expiration).forEach(key => {
-        if (now > this.expiration[key]) {
-          delete this.expiration[key];
-          delete this.data[key];
-        }
-      });
-    }, minutesTTL * 1000);
-  }
-
-  async get(key: string, setIfMissing: () => Promise<{ [key: string]: boolean }> = undefined) {
-    const exp = this.expiration[key];
-    if (!exp || SimpleChannelsCache.now() > exp) {
-      if (!setIfMissing) {
-        return null;
-      }
-      this.set(key, await setIfMissing());
-    }
-    return this.data[key];
-  }
-
-  set(key: string, value: { [key: string]: boolean }) {
-    this.expiration[key] = SimpleChannelsCache.now() + this.minutesTTL * 1000;
-    this.data[key] = value;
-  }
-}
-
-const simpleChannelsCache = new SimpleChannelsCache(5);
-
 export class ViewsController {
   constructor(
     protected realtime: RealtimeServiceAPI,
@@ -128,27 +90,6 @@ export class ViewsController {
     }
   }
 
-  private async getUserChannels(
-    userId: string,
-    companyId: string,
-  ): Promise<{ [key: string]: boolean }> {
-    const userWorkspaces = await this.workspaceService.workspaces.getAllIdsForUser(
-      userId,
-      companyId,
-    );
-    const userChannels = {} as { [key: string]: boolean };
-    await Promise.all(
-      userWorkspaces.map(ws =>
-        this.channelService.members.listAllUserChannelsIds(userId, companyId, ws).then(items =>
-          items.forEach(id => {
-            userChannels[id] = true;
-          }),
-        ),
-      ),
-    );
-    return userChannels;
-  }
-
   // Bookmarked messages of user from all over workspace
   async bookmarks(): Promise<ResourceListResponse<MessageWithReplies>> {
     return { resources: [] };
@@ -175,13 +116,7 @@ export class ViewsController {
   ): Promise<ResourceListResponse<MessageWithReplies>> {
     const limit = +request.query.limit || 100;
 
-    const companyId = request.params.company_id;
-
-    const userChannels = await simpleChannelsCache.get(request.currentUser.id, async () =>
-      this.getUserChannels(request.currentUser.id, companyId),
-    );
-
-    async function* getNextMessages(service: MessageServiceAPI) {
+    async function* getNextMessages(service: MessageServiceAPI): AsyncIterableIterator<Message> {
       let lastPageToken = null;
       let messages: Message[] = [];
       let hasMoreMessages = true;
@@ -207,33 +142,38 @@ export class ViewsController {
           });
 
         if (messages.length) {
-          yield messages;
+          for (const message of messages) {
+            yield message;
+          }
         } else {
           hasMoreMessages = false;
         }
       } while (hasMoreMessages);
     }
 
-    let messages = [] as Message[];
+    const messages = [] as Message[];
 
-    for await (let m of getNextMessages(this.service)) {
-      m = m.filter(msg => {
-        return !(
-          !userChannels[msg.cache.channel_id] ||
-          (request.query.sender && msg.user_id != request.query.sender) ||
-          (request.query.has_files && !(msg.files || []).length)
-        );
-      });
+    for await (const msg of getNextMessages(this.service)) {
+      const isChannelMember = await this.channelService.members.isChannelMember(
+        { id: request.currentUser.id },
+        {
+          company_id: msg.cache.company_id,
+          workspace_id: msg.cache.workspace_id,
+          id: msg.cache.channel_id,
+        },
+        50,
+      );
+      if (!isChannelMember) continue;
 
-      m.forEach(msg => {
-        messages.push(msg);
-      });
-      if (messages.length >= limit) {
+      if (request.query.sender && msg.user_id != request.query.sender) continue;
+
+      if (request.query.has_files && !(msg.files || []).length) continue;
+
+      messages.push(msg);
+      if (messages.length == limit) {
         break;
       }
     }
-
-    messages = messages.slice(0, limit);
 
     const firstMessagesMap = keyBy(
       await this.service.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),

@@ -88,8 +88,6 @@ export interface WorkspaceServiceAPI
     companyId: CompanyPrimaryKey,
   ): Promise<WorkspaceUser[]>;
 
-  getAllIdsForUser(userId: string, companyId: string): Promise<string[]>;
-
   /**
    * Get all the users of a workspace as Observable
    *
