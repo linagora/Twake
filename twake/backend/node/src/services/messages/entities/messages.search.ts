@@ -26,7 +26,7 @@ export default {
   esMapping: {
     properties: {
       text: { type: "text" },
-      user_id: { type: "text" },
+      user_id: { type: "keyword" },
       company_id: { type: "keyword" },
       workspace_id: { type: "keyword" },
       channel_id: { type: "keyword" },

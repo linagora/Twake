@@ -627,14 +627,6 @@ export class Service implements MemberService {
       return;
     }
 
-    const get = () =>
-      this.get({
-        channel_id: channel.id,
-        company_id: channel.company_id,
-        workspace_id: channel.workspace_id,
-        user_id: user.id,
-      });
-
     if (cacheTtlSec) {
       const pk = JSON.stringify({ user, channel });
       if (this.cache.has(pk)) return this.cache.get<ChannelMember>(pk);
@@ -643,7 +635,12 @@ export class Service implements MemberService {
       return entity;
     }
 
-    return get();
+    return this.get({
+      channel_id: channel.id,
+      company_id: channel.company_id,
+      workspace_id: channel.workspace_id,
+      user_id: user.id,
+    });
   }
 
   getPrimaryKey(

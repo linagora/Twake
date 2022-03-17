@@ -166,10 +166,6 @@ export class ViewsController {
       );
       if (!isChannelMember) continue;
 
-      // if (request.query.sender && msg.user_id != request.query.sender) continue;
-
-      // if (request.query.has_files && !(msg.files || []).length) continue;
-
       messages.push(msg);
       if (messages.length == limit) {
         break;
