@@ -27,6 +27,7 @@ import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
 import { NewUserInWorkspaceNotification } from "./services/channel/types";
 import { ChannelCounterPrimaryKey, ChannelUserCounterType } from "./entities/channel-counters";
+import CompanyUser from "../user/entities/company_user";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -163,10 +164,16 @@ export interface MemberService
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<ChannelMember>>;
 
+  listAllUserChannelsIds(userId: string, companyId: string, workspaceId: string): Promise<string[]>;
+
   /**
    * Check if user is channel member
    */
-  isChannelMember(user: User, channel: Channel): Promise<ChannelMember>;
+  isChannelMember(
+    user: User,
+    channel: Partial<Pick<Channel, "company_id" | "workspace_id" | "id">>,
+    cacheTtlSec?: number,
+  ): Promise<ChannelMember>;
 
   /**
    * Add a list of users to channel.
