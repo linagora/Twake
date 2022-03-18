@@ -26,12 +26,14 @@ export function buildSelectQuery<Entity>(
       }
       findOptions.$in = findOptions.$in || [];
       findOptions.$in.push([key, filters[key]]);
-    } else {
+    } else if (columnsDefinition[key]) {
       where[key] = transformValueToDbString(filters[key], columnsDefinition[key].type, {
         columns: columnsDefinition[key].options,
         secret: options.secret,
         disableSalts: true,
       });
+    } else {
+      where[key] = filters[key];
     }
   });
 

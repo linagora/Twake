@@ -211,7 +211,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       }
     }
     if (options.logo_b64) {
-      var s = new Readable();
+      const s = new Readable();
       s.push(Buffer.from(options.logo_b64.split(",").pop(), "base64"));
       s.push(null);
       await this.platformServices.storage.write(logoInternalPath, s);
@@ -640,7 +640,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
   public decodeInviteToken(encodedToken: string): InviteTokenObject | null {
     try {
-      let split = encodedToken.split("-");
+      const split = encodedToken.split("-");
       //We split on "-" but the token can contain "-" so be careful
       let [companyId, workspaceId, userId, token] = [
         split.shift(),
