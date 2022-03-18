@@ -24,7 +24,7 @@ export default class SearchRepository<EntityType> {
     const { entityDefinition } = getEntityDefinition(instance);
     const repository = await this.service.database.getRepository(this.table, this.entityType);
 
-    let results: EntityType[] = [];
+    const results: EntityType[] = [];
     let nextPage: Paginable = new Pagination();
     try {
       //1. Get objects primary keys from search connector

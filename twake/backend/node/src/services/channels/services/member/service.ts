@@ -47,6 +47,7 @@ import { CounterProvider } from "../../../../core/platform/services/counter/prov
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
 import { getService as getCompanyService } from "../../../user/services/companies";
+import NodeCache from "node-cache";
 
 const USER_CHANNEL_KEYS = [
   "id",
@@ -78,6 +79,7 @@ export class Service implements MemberService {
   channelMembersRepository: Repository<MemberOfChannel>;
   private channelCounter: CounterProvider<ChannelCounterEntity>;
   private companies: CompaniesServiceAPI;
+  private cache: NodeCache;
 
   constructor(
     private platformServices: PlatformServicesAPI,
@@ -125,6 +127,8 @@ export class Service implements MemberService {
         { type },
       );
     }, 400);
+
+    this.cache = new NodeCache({ stdTTL: 1, checkperiod: 120 });
 
     return this;
   }
@@ -370,6 +374,37 @@ export class Service implements MemberService {
     );
   }
 
+  async listAllUserChannelsIds(
+    user_id: string,
+    company_id: string,
+    workspace_id: string,
+  ): Promise<string[]> {
+    let pagination = new Pagination(null);
+    const channels: string[] = [];
+    let result: ListResult<ChannelMember>;
+    let hasMoreItems = true;
+    do {
+      result = await this.userChannelsRepository.find(
+        {
+          company_id,
+          workspace_id,
+          user_id,
+        },
+        { pagination },
+      );
+      if (result.isEmpty()) {
+        hasMoreItems = false;
+      } else {
+        result.getEntities().forEach(entity => {
+          channels.push(entity.channel_id);
+        });
+        if (!result.nextPage.page_token) hasMoreItems = false;
+        else pagination = new Pagination(result.nextPage.page_token);
+      }
+    } while (hasMoreItems);
+    return channels;
+  }
+
   async listUserChannels(
     user: User,
     pagination: Pagination,
@@ -583,9 +618,21 @@ export class Service implements MemberService {
     return String(member.user_id) === String(user.id);
   }
 
-  isChannelMember(user: User, channel: Channel): Promise<ChannelMember> {
+  async isChannelMember(
+    user: User,
+    channel: Partial<Pick<Channel, "company_id" | "workspace_id" | "id">>,
+    cacheTtlSec?: number,
+  ): Promise<ChannelMember> {
     if (!user) {
       return;
+    }
+
+    if (cacheTtlSec) {
+      const pk = JSON.stringify({ user, channel });
+      if (this.cache.has(pk)) return this.cache.get<ChannelMember>(pk);
+      const entity = await this.isChannelMember(user, channel);
+      this.cache.set<ChannelMember>(pk, entity, cacheTtlSec);
+      return entity;
     }
 
     return this.get({
