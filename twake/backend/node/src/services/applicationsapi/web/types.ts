@@ -4,7 +4,6 @@ import { ExecutionContext } from "../../../core/platform/framework/api/crud-serv
 export interface ApplicationApiBaseRequest {
   id: string;
   secret: string;
-  company_id: string;
 }
 
 export type ApplicationLoginRequest = ApplicationApiBaseRequest;

@@ -34,27 +34,12 @@ export class ApplicationsApiController {
       throw CrudException.forbidden("Secret key is not valid");
     }
 
-    const company_id = request.body.company_id;
-    if (!company_id) {
-      throw CrudException.forbidden("You must provide a valid company_id");
-    }
-
-    const companyApplication = this.service.applicationService.companyApplications.get({
-      company_id,
-      application_id: app.id,
-    });
-
-    if (!companyApplication) {
-      throw CrudException.forbidden("This application is not installed in the requested company");
-    }
-
     return {
       resource: {
         access_token: this.service.authService.generateJWT(null, null, {
           track: false,
           provider_id: "",
           application_id: request.body.id,
-          access: { ...app.access, company_id },
         }),
       },
     };
@@ -107,12 +92,46 @@ export class ApplicationsApiController {
     return { status: "ok" };
   }
 
-  async proxy(request: FastifyRequest<{}>, reply: FastifyReply, fastify: FastifyInstance) {
-    //TODO Check the application has access to this company
+  async proxy(
+    request: FastifyRequest<{ Params: { company_id: string; service: string; version: string } }>,
+    reply: FastifyReply,
+    fastify: FastifyInstance,
+  ) {
+    // Check the application has access to this company
+    const company_id = request.params.company_id;
+    const companyApplication = this.service.applicationService.companyApplications.get({
+      company_id,
+      application_id: request.currentUser.application_id,
+    });
+    if (!companyApplication) {
+      throw CrudException.forbidden("This application is not installed in the requested company");
+    }
+
+    const app = await this.service.applicationService.applications.get({
+      id: request.currentUser.application_id,
+    });
+
+    // Check call can be done from this IP
+    if (
+      app.api.allowed_ips.trim() &&
+      app.api.allowed_ips !== "*" &&
+      !_.includes(
+        app.api.allowed_ips
+          .split(",")
+          .map(a => a.trim())
+          .filter(a => a),
+        request.ip,
+      )
+    ) {
+      throw CrudException.forbidden(
+        `This application is not allowed to access from this IP (${request.ip})`,
+      );
+    }
 
     //TODO Check application access rights (write, read, remove for each micro services)
+    const access = app.access;
 
-    //TODO save some statistics about API usage
+    //TODO save some statistics about API usage for application and per companies
 
     const route = request.url.replace("/api/", "/internal/services/");
 

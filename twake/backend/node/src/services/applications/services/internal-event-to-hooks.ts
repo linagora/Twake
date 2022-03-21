@@ -29,6 +29,9 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
 
   async process(message: HookType): Promise<void> {
     logger.debug(`${this.name} - Receive hook of type ${message.type}`);
+
+    //TODO Check application access rights (hooks)
+
     await this.applicationService.hooks.notifyApp(
       message.application_id,
       null,
