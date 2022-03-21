@@ -10,11 +10,9 @@ import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Col
 import { UserType } from 'app/features/users/types/user';
 import UserService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/features/router/services/router-service';
-import UserAPIClient from 'app/features/users/api/user-api-client';
-import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
-import Strings from 'app/features/global/utils/strings';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
+import { searchBackend, searchFrontend } from 'app/features/users/hooks/use-search-user-list';
 
 import './style.scss';
 
@@ -63,23 +61,34 @@ const resolver = async (
 
     callback(result);
   } else {
-    UserAPIClient.search<WorkspaceUserType>(
-      Strings.removeAccents(text),
-      {
-        scope: 'workspace',
+    if (companyId && workspaceId) {
+      const resultFrontend = searchFrontend(text, {
         companyId,
         workspaceId,
-      },
-      wsUsers => {
-        const users = wsUsers.map(wsUser => wsUser.user);
+        scope: 'workspace',
+      });
 
-        for (let j = 0; j < Math.min(max, users.length); j++) {
-          result[j] = { ...users[j], ...{ autocomplete_id: j } };
-        }
+      searchBackend(text, {
+        companyId,
+        workspaceId,
+        scope: 'workspace',
+        callback: () => {
+          const resultFrontend = searchFrontend(text, {
+            companyId,
+            workspaceId,
+            scope: 'workspace',
+          });
 
-        callback(result);
-      },
-    );
+          callback([...resultFrontend]);
+        },
+      });
+
+      for (let j = 0; j < Math.min(max, resultFrontend.length); j++) {
+        result[j] = { ...resultFrontend[j], ...{ autocomplete_id: j } };
+      }
+
+      callback(result);
+    }
   }
 };
 

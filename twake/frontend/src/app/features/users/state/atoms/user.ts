@@ -1,13 +1,13 @@
-import { atomFamily } from 'recoil';
+import { atomFamily, RecoilState, useRecoilCallback } from 'recoil';
 
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { UserType } from 'app/features/users/types/user';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import _ from 'lodash';
 
-export const UsersState = atomFamily<UserType, string>({
-  key: 'UsersState',
-  default: async (id: string) => (await UserAPIClient.list([id]))?.[0],
+export const UserState = atomFamily<UserType | undefined, string>({
+  key: 'UserState',
+  default: undefined,
 
   //Retro-compatibility
   effects_UNSTABLE: () => [

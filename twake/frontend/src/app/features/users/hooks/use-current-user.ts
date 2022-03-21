@@ -7,9 +7,11 @@ import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import Languages from 'app/features/global/services/languages-service';
 import ConfiguratorsManager from 'app/deprecated/Configurators/ConfiguratorsManager.js';
 import { RealtimeApplicationEvent } from 'app/features/global/types/realtime-types';
+import { useSetUserList } from './use-user-list';
 
 export const useCurrentUser = () => {
   const [user, setUser] = useRecoilState(CurrentUserState);
+  const { set: setUserList } = useSetUserList('useCurrentUser');
 
   //Depreciated way to get use update from LoginService
   LoginService.recoilUpdateUser = setUser;
@@ -17,6 +19,7 @@ export const useCurrentUser = () => {
     if (!user) {
       LoginService.init();
     }
+    if (user) setUserList([user]);
   }, [user]);
 
   //Update app language

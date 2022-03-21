@@ -13,6 +13,7 @@ import './MainView.scss';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
+import { useUserList } from 'app/features/users/hooks/use-user-list';
 
 type PropsType = {
   className?: string;
@@ -22,6 +23,9 @@ const MainView: FC<PropsType> = ({ className }) => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
+
+  // We call this hook here to be able to preload some users in user list state
+  useUserList();
 
   const loaded = useWatcher(ChannelsBarService, async () => {
     return (
