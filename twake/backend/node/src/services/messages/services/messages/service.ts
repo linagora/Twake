@@ -458,7 +458,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     const users: UserObject[] = [];
     for (const id of ids) {
-      users.push(await this.user.formatUser(await this.user.users.getCached({ id })));
+      const user_id = await this.user.users.getCached({ id });
+      if (user_id) users.push(await this.user.formatUser(await this.user.users.getCached({ id })));
     }
 
     let application = null;

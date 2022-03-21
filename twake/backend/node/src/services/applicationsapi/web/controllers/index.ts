@@ -14,6 +14,7 @@ import {
   RealtimeApplicationEvent,
   RealtimeBaseBusEvent,
 } from "../../../../core/platform/services/realtime/types";
+import _ from "lodash";
 
 export class ApplicationsApiController {
   constructor(readonly service: ApplicationsApiServiceAPI) {}
@@ -21,12 +22,19 @@ export class ApplicationsApiController {
   async token(
     request: FastifyRequest<{ Body: ApplicationLoginRequest }>,
   ): Promise<ResourceGetResponse<ApplicationLoginResponse>> {
+    // TODO Get the application and check secret is correct
+
+    // company_id
+
+    //this.service.applicationService.companyApplications.get({});
+
     return {
       resource: {
-        access_token: this.service.authService.generateJWT(request.body.id, null, {
+        access_token: this.service.authService.generateJWT(null, null, {
           track: false,
           provider_id: "",
           application_id: request.body.id,
+          // TODO Add application access rights for checks in the proxy route
         }),
       },
     };
@@ -90,6 +98,8 @@ export class ApplicationsApiController {
       {
         method: request.method as HTTPMethods,
         url: route,
+        payload: request.body as any,
+        headers: _.pick(request.headers, "authorization"),
       },
       (err, response) => {
         reply.headers(response.headers);
