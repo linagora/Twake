@@ -5,7 +5,6 @@ import { Mail, PlusCircle, Trash } from 'react-feather';
 
 import { getUserParts } from 'app/components/member/user-parts';
 import Languages from 'app/features/global/services/languages-service';
-import './MemberChannelRow.scss';
 import Menu from 'app/components/menus/menu';
 import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
@@ -18,6 +17,8 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useChannelMembers } from 'app/features/channel-members/hooks/use-channel-members';
 import { usePendingEmails } from 'app/features/pending-emails/hooks/use-pending-emails';
 import PendingEmailsAPIClient from 'app/features/pending-emails/api/pending-emails-api-client';
+
+import './MemberChannelRow.scss';
 
 const { Text } = Typography;
 
@@ -211,11 +212,13 @@ const MemberChannelRow = (props: Props): JSX.Element => {
       className={`pending-email ${selected ? 'selected' : ''}`}
     >
       <Col className="small-x-margin">{avatar}</Col>
-      <Col flex={4}>
-        <Text strong className="pending-email-text">
+      <Col flex={4} className="username-col">
+        <Text strong className="pending-email-text small-right-margin">
           {name}
         </Text>{' '}
-        @{users[0]?.username}
+        <Text ellipsis={true} style={{ maxWidth: 200 }}>
+          @{users[0]?.username}
+        </Text>
       </Col>
       <Col>
         {props.userId === currentUserId && (

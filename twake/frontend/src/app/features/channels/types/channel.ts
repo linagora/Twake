@@ -1,5 +1,6 @@
 import { Resource } from 'app/deprecated/CollectionsReact/Collections';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
+import { UserType } from 'app/features/users/types/user';
 
 export type ChannelType = {
   company_id?: string;
@@ -28,6 +29,7 @@ export type ChannelType = {
     title: string;
     text: string;
   };
+  users?: UserType[];
 };
 
 export class ChannelResource extends Resource<ChannelType> {

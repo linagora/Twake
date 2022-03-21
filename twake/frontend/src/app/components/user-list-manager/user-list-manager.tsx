@@ -6,21 +6,27 @@ import TrashIcon from '@material-ui/icons/DeleteOutlined';
 import Strings from 'app/features/global/utils/strings';
 import UsersService from 'app/features/users/services/current-user-service';
 import Languages from 'app/features/global/services/languages-service';
-import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import UserOrMail from '../ui/user-or-mail';
 import Icon from '../icon/icon';
 import WorkspacesUsers from 'app/features/workspace-members/services/workspace-members-service';
 import AutoCompleteExtended from 'components/auto-complete-extended/auto-complete-extended';
 import { UserType } from 'app/features/users/types/user';
 import UserAPIClient from 'app/features/users/api/user-api-client';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import { useWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 import './user-list-manager.scss';
+import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
 
 type PropsType = {
   [key: string]: any;
 };
 
 const UserListManager = (props: PropsType) => {
+  const { result, search } = useSearchUserList({ scope: props.scope || 'company' });
+  const workspaceId = useRouterWorkspace();
+  const { workspace } = useWorkspace(workspaceId);
   const [input, setInput] = useState<string>('');
   const [editing, setEditing] = useState<boolean>(props.autoFocus ? props.autoFocus : false);
   const [usersIds, setUsersIds] = useState<string[]>([...props.users]);
@@ -62,29 +68,9 @@ const UserListManager = (props: PropsType) => {
       callback([]);
       return;
     }
-    UserAPIClient.search(
-      text,
-      {
-        scope: props.scope,
-        companyId: Workspaces.currentGroupId,
-        workspaceId: Workspaces.currentWorkspaceId,
-      },
-      (res: any) => {
-        res = res.filter((el: any) => !!el);
-        callback(
-          res.filter((item: any) => {
-            if (
-              (props.hideUsersIds || []).indexOf(item.id) >= 0 ||
-              usersIds.indexOf(item.id) >= 0 ||
-              usersIds.indexOf(item) >= 0
-            ) {
-              return false;
-            }
-            return true;
-          }),
-        );
-      },
-    );
+
+    search(text);
+    callback([...result.map(u => u.id)]);
   };
 
   const renderLine = (item: any, added?: boolean): JSX.Element => {
@@ -140,7 +126,6 @@ const UserListManager = (props: PropsType) => {
       if (props.onUpdate) props.onUpdate(newArr);
     }
   };
-
   return (
     <div
       className={classNames(['userListManager', 'menu-cancel-margin'], {
@@ -192,7 +177,7 @@ const UserListManager = (props: PropsType) => {
               autoFocus
               onSearch={(text, cb) =>
                 filter(text, list => {
-                  cb(list.map(u => u?.user || u));
+                  cb(list);
                 })
               }
               render={(user: UserType) => (
@@ -214,19 +199,14 @@ const UserListManager = (props: PropsType) => {
             </Typography.Link>
           )}
           {!!props.showAddAll &&
-            Object.keys(WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {})
-              .length > usersIds.length &&
-            Workspaces.getCurrentWorkspace().stats.total_members < 30 && (
+            Object.keys(workspace || {}).length > usersIds.length &&
+            workspace?.stats &&
+            workspace.stats.total_members < 30 && (
               <Button
                 className="small primary-text"
                 onClick={() => {
-                  Object.keys(
-                    WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId) || {},
-                  ).map(id =>
-                    select(
-                      (WorkspacesUsers.getUsersByWorkspace(Workspaces.currentWorkspaceId)[id] || {})
-                        .user,
-                    ),
+                  Object.keys(WorkspacesUsers.getUsersByWorkspace(workspaceId) || {}).map(id =>
+                    select((WorkspacesUsers.getUsersByWorkspace(workspaceId)[id] || {}).user),
                   );
                 }}
               >

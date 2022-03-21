@@ -13,9 +13,16 @@ export type UserPreferencesType = null | {
   allow_tracking?: boolean;
   tutorial_done?: boolean;
   channel_ordering?: 'chronological' | 'alphabetical';
-  //(CompanyType | WorkspaceType | any)[];
   recent_workspaces?: { company_id: string; workspace_id: string }[];
 };
+
+export type UserCompanyType = {
+  company: CompanyType;
+  role: CompanyRoleType;
+  status: CompanyStatusType;
+};
+
+export type UserWorkspaceType = Partial<WorkspaceType>;
 
 export type UserType = {
   connected?: boolean;
@@ -41,9 +48,13 @@ export type UserType = {
   timezone_offset?: string;
   tutorial_status?: any;
   username: string;
-  companies?: { company: CompanyType; role: CompanyRoleType; status: CompanyStatusType }[];
+  companies?: UserCompanyType[];
   preferences: UserPreferencesType;
-  workspaces?: WorkspaceType[];
+
+  /**
+   * this field is filled when available and so we cannot rely on it except on search service for filtering
+   **/
+  workspaces?: UserWorkspaceType[];
   workspaces_id?: string[];
   is_verified?: boolean;
   created_at?: number;
