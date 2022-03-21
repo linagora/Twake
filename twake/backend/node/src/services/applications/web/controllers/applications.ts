@@ -196,7 +196,7 @@ export class ApplicationController
     if (!companyUser || !hasCompanyAdminLevel(companyUser.role))
       throw CrudException.forbidden("You must be company admin");
 
-    const hookResponse = await this.service.applications.notifyApp(
+    const hookResponse = await this.service.hooks.notifyApp(
       request.params.application_id,
       request.body.connection_id,
       context.user.id,

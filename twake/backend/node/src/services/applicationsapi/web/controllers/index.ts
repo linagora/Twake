@@ -22,11 +22,31 @@ export class ApplicationsApiController {
   async token(
     request: FastifyRequest<{ Body: ApplicationLoginRequest }>,
   ): Promise<ResourceGetResponse<ApplicationLoginResponse>> {
-    // TODO Get the application and check secret is correct
+    const app = await this.service.applicationService.applications.get({
+      id: request.body.id,
+    });
 
-    // company_id
+    if (!app) {
+      throw CrudException.forbidden("Application not found");
+    }
 
-    //this.service.applicationService.companyApplications.get({});
+    if (app.api.private_key !== request.body.secret) {
+      throw CrudException.forbidden("Secret key is not valid");
+    }
+
+    const company_id = request.body.company_id;
+    if (!company_id) {
+      throw CrudException.forbidden("You must provide a valid company_id");
+    }
+
+    const companyApplication = this.service.applicationService.companyApplications.get({
+      company_id,
+      application_id: app.id,
+    });
+
+    if (!companyApplication) {
+      throw CrudException.forbidden("This application is not installed in the requested company");
+    }
 
     return {
       resource: {
@@ -34,7 +54,7 @@ export class ApplicationsApiController {
           track: false,
           provider_id: "",
           application_id: request.body.id,
-          // TODO Add application access rights for checks in the proxy route
+          access: { ...app.access, company_id },
         }),
       },
     };
@@ -88,6 +108,8 @@ export class ApplicationsApiController {
   }
 
   async proxy(request: FastifyRequest<{}>, reply: FastifyReply, fastify: FastifyInstance) {
+    //TODO Check the application has access to this company
+
     //TODO Check application access rights (write, read, remove for each micro services)
 
     //TODO save some statistics about API usage

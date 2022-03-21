@@ -24,6 +24,7 @@ export interface ApplicationServiceAPI extends TwakeServiceProvider, Initializab
   applications: MarketplaceApplicationServiceAPI;
   companyApplications: CompanyApplicationServiceAPI;
   companies: CompaniesServiceAPI;
+  hooks: ApplicationHooksServiceAPI;
 }
 
 export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, Initializable {
@@ -51,7 +52,9 @@ export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, 
 
   publish(pk: ApplicationPrimaryKey): Promise<void>;
   unpublish(pk: ApplicationPrimaryKey): Promise<void>;
+}
 
+export interface ApplicationHooksServiceAPI extends TwakeServiceProvider, Initializable {
   notifyApp(
     application_id: string,
     connection_id: string,
