@@ -1,26 +1,27 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { MessageServiceAPI } from "../../api";
-import {
-  ResourceCreateResponse,
-  ResourceDeleteResponse,
-  ResourceGetResponse,
-  ResourceListResponse,
-} from "../../../../utils/types";
+import { ResourceListResponse } from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { handleError } from "../../../../utils/handleError";
 import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import {
   ChannelViewExecutionContext,
   MessageViewListOptions,
-  PaginationQueryParameters,
   MessageWithReplies,
+  PaginationQueryParameters,
 } from "../../types";
 import { keyBy } from "lodash";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import ChannelServiceAPI from "../../../channels/provider";
+import WorkspaceServicesAPI from "../../../workspaces/api";
 
 export class ViewsController {
-  constructor(protected realtime: RealtimeServiceAPI, protected service: MessageServiceAPI) {}
+  constructor(
+    protected realtime: RealtimeServiceAPI,
+    protected service: MessageServiceAPI,
+    protected workspaceService: WorkspaceServicesAPI,
+    protected channelService: ChannelServiceAPI,
+  ) {}
 
   async feed(
     request: FastifyRequest<{
@@ -113,26 +114,68 @@ export class ViewsController {
     }>,
     context: ChannelViewExecutionContext,
   ): Promise<ResourceListResponse<MessageWithReplies>> {
-    const messages: Message[] = await this.service.views
-      .search(
-        new Pagination(request.query.page_token, request.query.limit),
+    const limit = +request.query.limit || 100;
+
+    async function* getNextMessages(service: MessageServiceAPI): AsyncIterableIterator<Message> {
+      let lastPageToken = null;
+      let messages: Message[] = [];
+      let hasMoreMessages = true;
+      do {
+        messages = await service.views
+          .search(
+            new Pagination(lastPageToken, limit.toString()),
+            {
+              search: request.query.q,
+              workspaceId: request.query.workspace_id,
+              channelId: request.query.channel_id,
+              companyId: request.params.company_id,
+              ...(request.query.has_files ? { hasFiles: true } : {}),
+              ...(request.query.sender ? { sender: request.query.sender } : {}),
+            },
+            context,
+          )
+          .then((a: ListResult<Message>) => {
+            lastPageToken = a.nextPage.page_token;
+            if (!lastPageToken) {
+              hasMoreMessages = false;
+            }
+            return a.getEntities();
+          });
+
+        if (messages.length) {
+          for (const message of messages) {
+            yield message;
+          }
+        } else {
+          hasMoreMessages = false;
+        }
+      } while (hasMoreMessages);
+    }
+
+    const messages = [] as Message[];
+
+    for await (const msg of getNextMessages(this.service)) {
+      const isChannelMember = await this.channelService.members.isChannelMember(
+        { id: request.currentUser.id },
         {
-          search: request.query.q,
-          workspaceId: request.query.workspace_id,
-          channelId: request.query.channel_id,
-          companyId: request.params.company_id,
+          company_id: msg.cache.company_id,
+          workspace_id: msg.cache.workspace_id,
+          id: msg.cache.channel_id,
         },
-        context,
-      )
-      .then(a => a.getEntities());
+        50,
+      );
+      if (!isChannelMember) continue;
+
+      messages.push(msg);
+      if (messages.length == limit) {
+        break;
+      }
+    }
 
     const firstMessagesMap = keyBy(
       await this.service.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
       item => item.id,
     );
-
-    //TODO for each message check we have access to it (check we are member in the channel of this message + avoid making everything slow while doing this check so maybe some quick cache)
-    //TODO as some messages will be filtered out after previous TODO, we should loop on the elastic search calls to reach the expected limit (For instance first 100 messages returned by ES could all be from unaccessible channel so we need to get the next 100 messages and so on)
 
     const resources = messages.map((resource: Message) => {
       const firstMessage = firstMessagesMap[resource.thread_id];
@@ -157,6 +200,8 @@ export interface MessageViewSearchQueryParameters extends PaginationQueryParamet
   q: string;
   workspace_id: string;
   channel_id: string;
+  sender: string;
+  has_files: boolean;
 }
 
 function getChannelViewExecutionContext(

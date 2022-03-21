@@ -6,6 +6,7 @@ import Moment from 'react-moment';
 import { Typography } from 'antd';
 import classNames from 'classnames';
 import { AlertTriangle } from 'react-feather';
+import { useRecoilState } from 'recoil';
 
 import User from 'app/features/users/services/current-user-service';
 import ChannelsService from 'app/deprecated/channels/channels.js';
@@ -22,14 +23,6 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import { useUser } from 'app/features/users/hooks/use-user';
 import { UserType } from 'app/features/users/types/user';
-import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
-import {
-  useRecoilState,
-  useRecoilStateLoadable,
-  useRecoilValue,
-  useRecoilValueLoadable,
-} from 'recoil';
-import { UsersState } from 'app/features/users/state/atoms/users';
 import { CompanyApplicationsStateFamily } from 'app/features/applications/state/company-applications';
 
 type Props = {
@@ -47,9 +40,8 @@ export default (props: Props) => {
   let { message } = useMessage(context);
   let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
 
-  let user =
-    useRecoilValueLoadable(UsersState(message.user_id)).valueMaybe() ||
-    (message.users || []).find(u => u.id === message.user_id);
+  const user = useUser(message.user_id);
+
   const companyApplications =
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
   let application = companyApplications.find(a => a.id === message.application_id);

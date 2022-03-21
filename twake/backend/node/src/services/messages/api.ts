@@ -21,7 +21,7 @@ import {
   ThreadExecutionContext,
   MessageWithReplies,
   MessagesGetThreadOptions,
-  MessageWithRepliesWithUsers,
+  MessageWithRepliesWithUsers, SearchMessageOptions,
 } from "./types";
 
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
@@ -141,9 +141,10 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
 
   search(
     pagination: Pagination,
-    options?: SearchUserOptions,
+    options: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>>;
 
   getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]>;
 }
+

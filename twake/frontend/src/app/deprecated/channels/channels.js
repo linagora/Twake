@@ -49,6 +49,7 @@ class Channels extends Observable {
 
   readChannelIfNeeded(channel) {}
 
+  // Move me and refactor
   async openDiscussion(membersIds, companyId = null) {
     membersIds = membersIds.map(e => e); //Copy original list
     companyId = companyId || (RouterService.getStateFromRoute() || {}).companyId;

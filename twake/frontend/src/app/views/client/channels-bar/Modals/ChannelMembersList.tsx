@@ -5,7 +5,6 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 
 import { UserType } from 'app/features/users/types/user';
 import { ChannelType } from 'app/features/channels/types/channel';
-import Strings from 'app/features/global/utils/strings.js';
 import Languages from 'app/features/global/services/languages-service';
 import UsersService from 'app/features/users/services/current-user-service';
 import MemberChannelRow from 'app/views/client/channels-bar/Parts/Header/MemberChannelRow';
@@ -13,11 +12,11 @@ import MemberChannelRow from 'app/views/client/channels-bar/Parts/Header/MemberC
 import ObjectModal from 'components/object-modal/object-modal';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
-import UserAPIClient from 'app/features/users/api/user-api-client';
-import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { useChannelMembers } from 'app/features/channel-members/hooks/use-channel-members';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
+import { useSetUserList } from 'app/features/users/hooks/use-user-list';
+import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
 
 type PropsType = {
   closable?: boolean;
@@ -30,6 +29,7 @@ const defaultLimit = 20;
 const ChannelMembersList = (props: PropsType) => {
   const { company_id, workspace_id, id } = props.channel;
 
+  const { set: setUserList } = useSetUserList('ChannelMembersList');
   const [search, setSearch] = useState('');
   const [limit, setLimit] = useState(defaultLimit);
   const [searchedUsers, setSearchedUsers] = useState<string[]>([]);
@@ -39,22 +39,27 @@ const ChannelMembersList = (props: PropsType) => {
     channelId: id || '',
   });
 
+  const { search: searchUserList, result } = useSearchUserList({
+    scope: 'workspace',
+  });
+
   const channelMembersUid = channelMembers.map(member => member.user_id || '');
 
   useUsersListener(channelMembersUid);
-
   const filterSearch = (res: UserType[]) => {
-    const addedUsers: string[] = res
+    const addedUsers: UserType[] = res
       .filter(user => filterUsers(user, channelMembersUid.includes(user.id || '')))
-      .sort(compareFullname)
-      .map(user => user.id || '');
+      .sort(compareFullname);
 
-    const notAddedUsers: string[] = res
+    const notAddedUsers: UserType[] = res
       .filter(user => filterUsers(user, !channelMembersUid.includes(user.id || '')))
-      .sort(compareFullname)
-      .map(user => user.id || '');
+      .sort(compareFullname);
 
-    return setSearchedUsers([...addedUsers, ...notAddedUsers]);
+    const searchedUserList = [...addedUsers, ...notAddedUsers];
+
+    if (searchedUserList.length) setUserList(searchedUserList);
+
+    return setSearchedUsers(searchedUserList.map(user => user.id || ''));
   };
 
   const filterUsers = (user: UserType, filter: boolean) => (filter ? user : false);
@@ -77,16 +82,10 @@ const ChannelMembersList = (props: PropsType) => {
     );
   };
 
-  const onSearchMembers = (text: string) =>
-    UserAPIClient.search<WorkspaceUserType>(
-      Strings.removeAccents(text),
-      {
-        scope: 'workspace',
-        companyId: company_id,
-        workspaceId: workspace_id || undefined,
-      },
-      list => filterSearch((list || []).map(wsUser => wsUser.user)),
-    );
+  const onSearchMembers = (text: string) => {
+    searchUserList(text);
+    filterSearch(result);
+  };
 
   return (
     <ObjectModal
@@ -145,8 +144,10 @@ const ChannelMembersList = (props: PropsType) => {
             {Languages.t('scenes.client.channelbar.channelmemberslist.no_members')}
           </Row>
         )}
-        {!!search.length &&
-          searchedUsers.map(userId =>
+        {result
+          .map(u => u.id)
+          .filter(userId => !channelMembersUid.includes(userId || ''))
+          .map(userId =>
             props.channel.id ? (
               <div key={userId} className="x-margin" style={{ marginTop: 8 }}>
                 <MemberChannelRow

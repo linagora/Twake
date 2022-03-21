@@ -9,6 +9,7 @@ import UserService from 'app/features/users/services/current-user-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import UsersService from 'app/features/users/services/current-user-service';
 import UserIcon from 'components/user/user';
+import { getUser, useUserList } from 'app/features/users/hooks/use-user-list';
 
 type UserPartsType = {
   avatar: JSX.Element;
@@ -44,7 +45,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
 
   let users: UserType[] = [];
 
-  channelMembers?.map(userId => users.push(Collections.get('users').find(userId)));
+  channelMembers?.forEach(userId => users.push(getUser(userId)));
 
   if (channelMembers?.length === 1) {
     const avatarSrc = users[0]?.id ? (

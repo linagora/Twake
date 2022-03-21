@@ -4,18 +4,16 @@ import Languages from 'app/features/global/services/languages-service';
 import MediumPopupComponent from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
 import UserListManager from 'components/user-list-manager/user-list-manager';
-import RouterServices from 'app/features/router/services/router-service';
 import ChannelsService from 'app/deprecated/channels/channels.js';
 import ModalManager from 'app/components/modal/modal-manager';
 import { Button, Typography } from 'antd';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
-import { Trans } from 'react-i18next';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 const NewDirectMessagesPopup: FC = () => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const { companyId } = RouterServices.getStateFromRoute();
+  const companyId = useRouterCompany();
 
   const upsertDirectMessage = async (): Promise<any> => {
     setLoading(true);
