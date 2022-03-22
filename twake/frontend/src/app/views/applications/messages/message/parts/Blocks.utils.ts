@@ -6,7 +6,7 @@ export const preparse = (str: string) => {
       //Prevent html security issues
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
-      .replace(/>/g, '&rt;')
+      .replace(/>/g, '&gt;')
       //Prepare mentions
       .replace(/([ \t]|^)@([\w]+)/g, '$1<user id="$2"/>')
       .replace(/([ \t]|^)#([\w]+)/g, '$1<channel id="$2"/>')

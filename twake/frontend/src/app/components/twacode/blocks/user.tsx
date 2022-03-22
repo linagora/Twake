@@ -60,7 +60,7 @@ export default (props: PropsType): JSX.Element => {
 
   const highlighted =
     user?.id === UserService.getCurrentUserId() ||
-    globalMentions.includes(props.username || props.id);
+    globalMentions.includes(props.username || props.id || '');
 
   if (user) {
     return (

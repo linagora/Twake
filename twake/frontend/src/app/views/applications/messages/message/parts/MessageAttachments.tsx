@@ -5,6 +5,7 @@ import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import { useUploadZones } from 'app/features/files/hooks/use-upload-zones';
+import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 
 export default () => {
   const context = useContext(MessageContext);
@@ -36,6 +37,15 @@ export default () => {
             key={i}
             type={'message'}
             file={file}
+            large={
+              //If all the documents are images
+              files.length <= 6 &&
+              files.filter(
+                file =>
+                  (file.metadata?.thumbnails?.length || 0) > 0 &&
+                  FileUploadAPIClient.mimeToType(file.metadata?.mime || '') === 'image',
+              ).length === files.length
+            }
             onRemove={() => setFiles(files.filter(f => f.id !== file.id))}
           />
         ) : (

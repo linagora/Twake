@@ -11,6 +11,7 @@ type PropsType = {
   file: MessageFileType;
   onRemove?: Function;
   type: 'input' | 'message';
+  large?: boolean;
 };
 
 export default ({ file, onRemove, type }: PropsType) => {
