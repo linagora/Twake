@@ -34,7 +34,7 @@ export default () => {
       {files.map((file, i) =>
         file.metadata ? (
           <PossiblyPendingAttachment
-            key={i}
+            key={file.metadata.external_id || file.id}
             type={'message'}
             file={file}
             large={
