@@ -201,7 +201,7 @@ class Service implements FileServiceAPI {
     id: string,
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; name: string; mime: string; size: number }> {
-    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+    const entity = await this.get(id, context);
     if (!entity) {
       throw "File not found";
     }
@@ -225,7 +225,7 @@ class Service implements FileServiceAPI {
     index: string,
     context: CompanyExecutionContext,
   ): Promise<{ file: Readable; type: string; size: number }> {
-    const entity = await this.repository.findOne({ company_id: context.company.id, id: id });
+    const entity = await this.get(id, context);
 
     if (!entity) {
       throw "File not found";
@@ -251,6 +251,9 @@ class Service implements FileServiceAPI {
   }
 
   get(id: string, context: CompanyExecutionContext): Promise<File> {
+    if (!id || !context.company.id) {
+      return null;
+    }
     return this.repository.findOne({ id, company_id: context.company.id });
   }
 
@@ -263,7 +266,7 @@ class Service implements FileServiceAPI {
   }
 
   async delete(id: string, context: CompanyExecutionContext): Promise<DeleteResult<File>> {
-    const fileToDelete = await this.repository.findOne({ id, company_id: context.company.id });
+    const fileToDelete = await this.get(id, context);
 
     if (!fileToDelete) {
       throw new CrudException("File not found", 404);
