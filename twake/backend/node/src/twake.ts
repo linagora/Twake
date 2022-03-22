@@ -1,6 +1,8 @@
 import path from "path";
 import { TwakePlatform, TwakePlatformConfiguration } from "./core/platform/platform";
 
+import globalResolver from "./services/global-resolver";
+
 /**
  * Instanciate and start a new TwakePlatform with the given services.
  */
@@ -16,7 +18,7 @@ async function run(services: string[] = []): Promise<TwakePlatform> {
       platform = new TwakePlatform(configuration);
       await platform.init();
       await platform.start();
-
+      await globalResolver.doInit(platform);
       return platform;
     } catch (err) {
       console.error("Will exit process because of: ", err);

@@ -2,7 +2,6 @@ import yargs from "yargs";
 import twake from "../../../twake";
 import UserServiceAPI from "../../../services/user/api";
 import { mkdirSync, writeFileSync } from "fs";
-import { WorkspaceServiceAPI } from "../../../services/workspaces/api";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import WorkspaceUser from "../../../services/workspaces/entities/workspace_user";
 import { ApplicationServiceAPI } from "../../../services/applications/api";
@@ -10,7 +9,6 @@ import ChannelServiceAPI from "../../../services/channels/provider";
 import { ChannelVisibility } from "../../../services/channels/types";
 import { Channel, ChannelMember } from "../../../services/channels/entities";
 import { MessageServiceAPI } from "../../../services/messages/api";
-import { Thread } from "../../../services/messages/entities/threads";
 import { Message } from "../../../services/messages/entities/messages";
 import { MessageWithReplies } from "../../../services/messages/types";
 import { formatCompany } from "../../../services/user/utils";
@@ -73,19 +71,19 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     mkdirSync(output, { recursive: true });
 
     //Company
-    console.log(`- Create company json file`);
+    console.log("- Create company json file");
     writeFileSync(`${output}/company.json`, JSON.stringify(formatCompany(company)));
 
     //Workspaces
-    console.log(`- Create workspaces json file`);
+    console.log("- Create workspaces json file");
     const workspaces = await userService.workspaces.getAllForCompany(company.id);
     writeFileSync(`${output}/workspaces.json`, JSON.stringify(workspaces));
 
     //Users
-    console.log(`- Create users json file`);
-    let users = [];
+    console.log("- Create users json file");
+    const users = [];
     for (const workspace of workspaces) {
-      let workspace_users = [];
+      const workspace_users = [];
       let workspaceUsers: WorkspaceUser[] = [];
       let pagination = new Pagination();
       do {
@@ -112,7 +110,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     writeFileSync(`${output}/users.json`, JSON.stringify(users));
 
     //Applications
-    console.log(`- Create applications json file`);
+    console.log("- Create applications json file");
     const applicationService = platform.getProvider<ApplicationServiceAPI>("applications");
     const applications = await applicationService.companyApplications.list(
       new Pagination(),
@@ -122,8 +120,8 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     writeFileSync(`${output}/applications.json`, JSON.stringify(applications));
 
     //Channels
-    console.log(`- Create channels json file`);
-    let directChannels: Channel[] = [];
+    console.log("- Create channels json file");
+    const directChannels: Channel[] = [];
     let allPublicChannels: Channel[] = [];
     const channelService = platform.getProvider<ChannelServiceAPI>("channels");
 
@@ -176,7 +174,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     writeFileSync(`${output}/direct_channels.json`, JSON.stringify(directChannels));
 
     //Channels users
-    console.log(`- Create channels users json file`);
+    console.log("- Create channels users json file");
     for (const channel of [...allPublicChannels /*, ...directChannels*/]) {
       let members: ChannelMember[] = [];
       let pagination = new Pagination();
@@ -207,7 +205,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     }
 
     //Messages
-    console.log(`- Create messages json file`);
+    console.log("- Create messages json file");
     const messageService = platform.getProvider<MessageServiceAPI>("messages");
     //Note: direct channels content is private and not needed for R&D
     for (const channel of [...allPublicChannels /*, ...directChannels*/]) {

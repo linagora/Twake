@@ -1,12 +1,10 @@
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
-import UserServiceAPI, { CompaniesServiceAPI } from "../../api";
+import { CompaniesServiceAPI, UsersServiceAPI } from "../../api";
 import { CompanyService } from "./service";
-import { CounterAPI } from "../../../../core/platform/services/counter/types";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 
 export function getService(
   platformServices: PlatformServicesAPI,
-  userServiceAPI: UserServiceAPI,
+  usersServiceAPI: UsersServiceAPI,
 ): CompaniesServiceAPI {
-  return new CompanyService(platformServices, userServiceAPI);
+  return new CompanyService(platformServices, usersServiceAPI);
 }

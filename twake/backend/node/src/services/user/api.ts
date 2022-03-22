@@ -20,7 +20,7 @@ import {
   CompanyUserRole,
   UserObject,
 } from "./web/types";
-import { WorkspaceServiceAPI } from "../workspaces/api";
+import { WorkspaceService } from "../workspaces/api";
 import { uuid } from "../../utils/types";
 import Device from "./entities/device";
 import { StatisticsAPI } from "../statistics/types";
@@ -28,7 +28,7 @@ import { StatisticsAPI } from "../statistics/types";
 export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
   users: UsersServiceAPI;
   companies: CompaniesServiceAPI;
-  workspaces: WorkspaceServiceAPI;
+  workspaces: WorkspaceService;
   external: UserExternalLinksServiceAPI;
   statistics: StatisticsAPI;
 

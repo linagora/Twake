@@ -1,7 +1,6 @@
 import { TwakeContext } from "../../../core/platform/framework";
-import WorkspaceServicesAPI, { WorkspaceServiceAPI } from "../api";
+import WorkspaceServicesAPI, { WorkspaceService } from "../api";
 import { getService as getWorkspaceService } from "./workspace";
-import { getService as getCompaniesService } from "../../user/services/companies";
 import { getService as getUsersService } from "../../user/services/users";
 import UserServiceAPI, { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
 import { ConsoleServiceAPI } from "../../console/api";
@@ -30,7 +29,7 @@ export function getService(
 
 class Service implements WorkspaceServicesAPI {
   version: "1";
-  workspaces: WorkspaceServiceAPI;
+  workspaces: WorkspaceService;
   companies: CompaniesServiceAPI;
   users: UsersServiceAPI;
   statistics: StatisticsAPI;

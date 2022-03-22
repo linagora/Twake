@@ -8,6 +8,7 @@ import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import { Workspace } from "../../../src/utils/types";
 import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
 import config from "config";
+import globalResolver from "../../../src/services/global-resolver";
 
 type TokenPayload = {
   sub: string;
@@ -63,6 +64,7 @@ export async function init(
     }
 
     await platform.start();
+    await globalResolver.doInit(platform);
 
     const database = platform.getProvider<DatabaseServiceAPI>("database");
     const pubsub = platform.getProvider<PubsubServiceAPI>("pubsub");

@@ -20,7 +20,7 @@ export default class ApplicationsService extends TwakeService<ApplicationService
   public async doInit(): Promise<this> {
     const platformServices = this.context.getProvider<PlatformServicesAPI>("platform-services");
     const fastify = platformServices.fastify.getServer();
-    this.service = getService(platformServices, null);
+    this.service = getService(platformServices);
     const realtime = this.context.getProvider<RealtimeServiceAPI>("realtime");
     await this.service.init(this.context);
 

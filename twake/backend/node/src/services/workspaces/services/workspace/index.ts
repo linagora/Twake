@@ -1,8 +1,9 @@
 import { UsersServiceAPI, CompaniesServiceAPI } from "../../../user/api";
-import { WorkspaceService } from "./service";
+import { Service } from "./service";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../../applications/api";
 import AuthServiceAPI from "../../../../core/platform/services/auth/provider";
+import { WorkspaceService } from "../../api";
 
 export function getService(
   platformServices: PlatformServicesAPI,
@@ -11,5 +12,5 @@ export function getService(
   applications: ApplicationServiceAPI,
   auth: AuthServiceAPI,
 ): WorkspaceService {
-  return new WorkspaceService(platformServices, user, companies, applications, auth);
+  return new Service(platformServices, user, companies, applications, auth);
 }

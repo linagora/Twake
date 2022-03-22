@@ -25,14 +25,14 @@ import { Readable } from "stream";
 import { StatisticsAPI } from "../statistics/types";
 
 export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
-  workspaces: WorkspaceServiceAPI;
+  workspaces: WorkspaceService;
   companies: CompaniesServiceAPI;
   users: UsersServiceAPI;
   console: ConsoleServiceAPI;
   statistics: StatisticsAPI;
 }
 
-export interface WorkspaceServiceAPI
+export interface WorkspaceService
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<Workspace, WorkspacePrimaryKey, ExecutionContext> {

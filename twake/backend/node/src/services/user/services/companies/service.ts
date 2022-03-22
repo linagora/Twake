@@ -13,7 +13,7 @@ import Repository, {
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { UserPrimaryKey } from "../../entities/user";
-import UserServiceAPI, { CompaniesServiceAPI } from "../../api";
+import { CompaniesServiceAPI, UsersServiceAPI } from "../../api";
 import Company, {
   CompanyPrimaryKey,
   CompanySearchKey,
@@ -31,7 +31,7 @@ import ExternalGroup, {
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
-import { RealtimeDeleted, RealtimeSaved } from "../../../../core/platform/framework";
+import { RealtimeSaved } from "../../../../core/platform/framework";
 import { getCompanyRoom, getUserRoom } from "../../realtime";
 
 export class CompanyService implements CompaniesServiceAPI {
@@ -42,7 +42,7 @@ export class CompanyService implements CompaniesServiceAPI {
 
   constructor(
     private platformServices: PlatformServicesAPI,
-    private userServiceAPI: UserServiceAPI,
+    private userServiceAPI: UsersServiceAPI,
   ) {}
 
   async init(): Promise<this> {
@@ -144,7 +144,7 @@ export class CompanyService implements CompaniesServiceAPI {
       .then(a => a.getEntities());
 
     // Update user cache with companies
-    const user = await this.userServiceAPI.users.get({ id: userId });
+    const user = await this.userServiceAPI.get({ id: userId });
     if (
       user.cache?.companies.length === 0 ||
       _.difference(
@@ -154,11 +154,7 @@ export class CompanyService implements CompaniesServiceAPI {
     ) {
       if (!user.cache) user.cache = { companies: [] };
       user.cache.companies = list.map(c => c.group_id);
-      await this.userServiceAPI.users.save(
-        user,
-        {},
-        { user: { id: user.id, server_request: true } },
-      );
+      await this.userServiceAPI.save(user, {}, { user: { id: user.id, server_request: true } });
     }
 
     return list;
@@ -187,15 +183,11 @@ export class CompanyService implements CompaniesServiceAPI {
     if (entity) {
       await Promise.all([this.companyUserRepository.remove(entity)]);
 
-      const user = await this.userServiceAPI.users.get(userPk);
+      const user = await this.userServiceAPI.get(userPk);
       if ((user.cache?.companies || []).includes(companyPk.id)) {
         // Update user cache with companies
         user.cache.companies = user.cache.companies.filter(id => id != companyPk.id);
-        await this.userServiceAPI.users.save(
-          user,
-          {},
-          { user: { id: user.id, server_request: true } },
-        );
+        await this.userServiceAPI.save(user, {}, { user: { id: user.id, server_request: true } });
       }
     }
 
@@ -250,16 +242,12 @@ export class CompanyService implements CompaniesServiceAPI {
     entity.role = role;
     await this.companyUserRepository.save(entity);
 
-    const user = await this.userServiceAPI.users.get({ id: userId });
+    const user = await this.userServiceAPI.get({ id: userId });
     if (!(user.cache?.companies || []).includes(companyId)) {
       // Update user cache with companies
       if (!user.cache) user.cache = { companies: [] };
       user.cache.companies.push(companyId);
-      await this.userServiceAPI.users.save(
-        user,
-        {},
-        { user: { id: user.id, server_request: true } },
-      );
+      await this.userServiceAPI.save(user, {}, { user: { id: user.id, server_request: true } });
     }
 
     return new SaveResult("company_user", entity, OperationType.UPDATE);

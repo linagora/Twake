@@ -8,19 +8,14 @@ import { getService as getUserService } from "./users";
 import { getService as getCompanyService } from "./companies";
 import { getService as getExternalService } from "./external_links";
 import { getService as getWorkspaceService } from "../../workspaces/services/workspace";
-import { WorkspaceServiceAPI } from "../../workspaces/api";
+import { WorkspaceService } from "../../workspaces/api";
 import {
-  CompanyFeaturesEnum,
-  CompanyLimitsEnum,
-  CompanyObject,
   CompanyShort,
-  CompanyStatsObject,
   CompanyUserObject,
   CompanyUserRole,
   CompanyUserStatus,
   UserObject,
 } from "../web/types";
-import Company from "../entities/company";
 import User from "../entities/user";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { ApplicationServiceAPI } from "../../applications/api";
@@ -41,7 +36,7 @@ class Service implements UserServiceAPI {
   users: UsersServiceAPI;
   companies: CompaniesServiceAPI;
   external: UserExternalLinksServiceAPI;
-  workspaces: WorkspaceServiceAPI;
+  workspaces: WorkspaceService;
 
   constructor(
     platformServices: PlatformServicesAPI,
@@ -51,7 +46,7 @@ class Service implements UserServiceAPI {
   ) {
     this.users = getUserService(platformServices);
     this.external = getExternalService(platformServices.database);
-    this.companies = getCompanyService(platformServices, this);
+    this.companies = getCompanyService(platformServices, this.users);
     this.workspaces = getWorkspaceService(
       platformServices,
       this.users,

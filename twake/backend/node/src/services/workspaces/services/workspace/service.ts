@@ -13,7 +13,7 @@ import {
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { WorkspaceServiceAPI } from "../../api";
+import { WorkspaceService } from "../../api";
 import WorkspaceUser, {
   formatWorkspaceUser,
   getInstance as getWorkspaceUserInstance,
@@ -61,7 +61,7 @@ import { Readable } from "stream";
 import { reduceUUID4 } from "../../../../utils/uuid-reducer";
 import { expandUUID4 } from "../../../../utils/uuid-reducer";
 
-export class WorkspaceService implements WorkspaceServiceAPI {
+export class Service implements WorkspaceService {
   version: "1";
   private workspaceUserRepository: Repository<WorkspaceUser>;
   private workspaceRepository: Repository<Workspace>;

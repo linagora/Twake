@@ -5,7 +5,6 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../../utils/types";
-import { WorkspaceServiceAPI } from "../../api";
 import {
   UpdateWorkspaceBody,
   WorkspaceBaseRequest,
@@ -15,8 +14,7 @@ import {
 } from "../types";
 import { FastifyReply, FastifyRequest } from "fastify";
 import Workspace from "../../entities/workspace";
-import { CompaniesServiceAPI } from "../../../user/api";
-import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
+import { WorkspaceExecutionContext } from "../../types";
 import { plainToClass } from "class-transformer";
 import { hasCompanyAdminLevel, hasCompanyMemberLevel } from "../../../../utils/company";
 import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
@@ -24,6 +22,7 @@ import { getWorkspaceRooms } from "../../realtime";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import CompanyUser from "../../../user/entities/company_user";
+import gr from "../../../global-resolver";
 
 export class WorkspacesCrudController
   implements
@@ -34,26 +33,22 @@ export class WorkspacesCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(
-    protected realtime: RealtimeServiceAPI,
-    protected workspaceService: WorkspaceServiceAPI,
-    protected companyService: CompaniesServiceAPI,
-  ) {}
+  constructor(protected realtime: RealtimeServiceAPI) {}
 
   private getCompanyUserRole(context: WorkspaceExecutionContext) {
-    return this.companyService
+    return gr.services.companies
       .getCompanyUser({ id: context.company_id }, { id: context.user.id })
       .then(a => (a ? a.role : null));
   }
 
   private getWorkspaceUserRole(workspaceId: string, userId: string) {
-    return this.workspaceService
+    return gr.services.workspaces
       .getUser({ workspaceId, userId })
       .then(a => (a ? a.role || "member" : null));
   }
 
   private getWorkspaceUsersCount(workspaceId: string) {
-    return this.workspaceService.getUsersCount(workspaceId);
+    return gr.services.workspaces.getUsersCount(workspaceId);
   }
 
   private async formatWorkspace(
@@ -80,7 +75,7 @@ export class WorkspacesCrudController
       let role = await this.getWorkspaceUserRole(workspace.id, userId);
       if (role !== "moderator") {
         //Company admins should be workspace moderators automatically
-        const companyUser: CompanyUser = await this.companyService.getCompanyUser(
+        const companyUser: CompanyUser = await gr.services.companies.getCompanyUser(
           { id: workspace.company_id },
           { id: userId },
         );
@@ -98,7 +93,7 @@ export class WorkspacesCrudController
     request: FastifyRequest<{ Params: WorkspaceRequest }>,
     response: FastifyReply,
   ): Promise<void> {
-    const data = await this.workspaceService.thumbnail(request.params.id);
+    const data = await gr.services.workspaces.thumbnail(request.params.id);
     const filename = "thumbnail.png";
 
     response.header("Content-disposition", `inline; filename="${filename}"`);
@@ -113,7 +108,7 @@ export class WorkspacesCrudController
   ): Promise<ResourceGetResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
 
-    const workspace = await this.workspaceService.get({
+    const workspace = await gr.services.workspaces.get({
       company_id: context.company_id,
       id: request.params.id,
     });
@@ -141,9 +136,9 @@ export class WorkspacesCrudController
   ): Promise<ResourceListResponse<WorkspaceObject>> {
     const context = getExecutionContext(request);
 
-    const allCompanyWorkspaces = await this.workspaceService.getAllForCompany(context.company_id);
+    const allCompanyWorkspaces = await gr.services.workspaces.getAllForCompany(context.company_id);
 
-    const allUserWorkspaceRolesMap = await this.workspaceService
+    const allUserWorkspaceRolesMap = await gr.services.workspaces
       .getAllForUser({ userId: context.user.id }, { id: context.company_id })
       .then(
         uws =>
@@ -204,7 +199,7 @@ export class WorkspacesCrudController
       },
     });
 
-    const workspaceEntity = await this.workspaceService
+    const workspaceEntity = await gr.services.workspaces
       .save(entity, request.body.options || {}, context)
       .then(a => a.entity);
 
@@ -235,7 +230,7 @@ export class WorkspacesCrudController
       }
     }
 
-    const deleteResult = await this.workspaceService.delete(
+    const deleteResult = await gr.services.workspaces.delete(
       { id: request.params.id, company_id: context.company_id },
       context,
     );
