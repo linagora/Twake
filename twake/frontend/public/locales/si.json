@@ -863,5 +863,12 @@
     "components.rich_text_editor.plugins.suggestions.default_message.display_results": "පරිශීලකයන් සංදර්ශන කිරීමට අවම වශයෙන් අකුරු තුනක් ලියන්න",
     "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "පරිශීලකයෙකු හමු නොවීය",
     "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "ඉමොජි හමු නොවීය",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "විධානයක් හමු නොවීය"
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "විධානයක් හමු නොවීය",
+    "scenes.app.messages.input.parts.is_writing.message.user_is_writing": "{{$1}} ලියනවා...",
+    "scenes.app.messages.input.parts.is_writing.message.users_are_writing": "{{$1}} සහ {{$2}} ලියනවා...",
+    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} සහ {{$3}} තවත් පරිශීලකයින් ලියන්නේ...",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "ඔබේ සමාගම එහි උපරිම සාමාජිකයින්ගේ {{$1}} සීමාවට ළඟා වී ඇත. කරුණාකර ",
+    "components.locked_features_components.locked_invite_alert.message_link": "ඔබේ සමාගම උසස් කරන්න",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " තවත් සාමාජිකයින්ට ආරාධනා කිරීමට.",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " ඔබේ සමාගමේ හිමිකරු හෝ පරිපාලක අමතන්න."
 }
