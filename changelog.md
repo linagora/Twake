@@ -6,7 +6,7 @@
 - Now we can cancel failed file uploads
 - Add spell check to message editor, fix autocompletion for emojis
 - Copy paste images to message editor fixed
-- Large files preview now available
+- Large files preview is now available
 - Mentions are back in messages
 
 ### General
