@@ -118,7 +118,7 @@ export default ({
   return (
     <div
       className={classNames(classNameArguments)}
-      style={{ width: computedWidth }}
+      style={large ? { width: computedWidth } : {}}
       onClick={() => companyId && onClickFile()}
     >
       {large && (
