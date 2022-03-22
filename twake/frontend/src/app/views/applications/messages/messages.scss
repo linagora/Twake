@@ -7,6 +7,7 @@
   flex: 1;
 
   .user-writing-info-message-view {
+    position: relative;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -16,6 +17,15 @@
     max-width: 1000px;
     width: calc(100% - 32px);
     position: relative;
+    .user-writing-info-message-view-inner {
+      position: absolute;
+      bottom: -8px;
+      left: 0px;
+      font-size: 11px;
+      pointer-events: none;
+      background: #ffffff88;
+      border-radius: 4px;
+    }
   }
 
   .loading-full {

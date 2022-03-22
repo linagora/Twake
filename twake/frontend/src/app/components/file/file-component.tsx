@@ -78,7 +78,7 @@ export default ({
     }
   }, []);
 
-  const onClickFile = async (data: DataFileType, companyId: string) => {
+  const onClickFile = async () => {
     if (source === 'internal') {
       //Only if upload has ended
       if (!status || isPendingFileStatusSuccess(status))
@@ -86,7 +86,10 @@ export default ({
           {
             id: file.id,
             name: file.name,
-            url: FileUploadService.getDownloadRoute({ companyId, fileId: file.id }),
+            url: FileUploadService.getDownloadRoute({
+              companyId: companyId || '',
+              fileId: file.id,
+            }),
             extension: file.name.split('.').pop(),
           },
           true,
@@ -107,10 +110,7 @@ export default ({
     }
   };
   return (
-    <div
-      className={classNames(classNameArguments)}
-      onClick={() => companyId && onClickFile(file, companyId)}
-    >
+    <div className={classNames(classNameArguments)} onClick={() => companyId && onClickFile()}>
       <div className="file-info-container">
         <FileThumbnail file={file} />
         <FileDetails file={file} source={source} />
