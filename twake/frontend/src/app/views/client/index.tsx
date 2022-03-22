@@ -39,44 +39,42 @@ export default React.memo((): JSX.Element => {
   Languages.useListener();
 
   let page: JSX.Element = <></>;
-  if (PopupService.isOpen()) {
-    page = <PopupComponent key="PopupComponent" />;
-  } else {
-    if (user?.id) {
-      page = (
-        <Layout className="appPage fade_in">
-          <NewVersionComponent />
-          <CompanyStatusComponent />
-          <FeatureToggles features={activeFeatureNames}>
-            <Layout hasSider>
-              <Layout.Sider
-                trigger={<Menu size={16} />}
-                breakpoint="lg"
-                collapsedWidth="0"
-                theme="light"
-                width={290}
-                onCollapse={(collapsed, type) => {
-                  if (type === 'responsive') return setMenuIsOpen(false);
-                  setMenuIsOpen(!collapsed);
-                }}
-              >
-                <Suspense fallback={<LoadingSidebar />}>
-                  <SideBars />
-                </Suspense>
-              </Layout.Sider>
-              <Suspense fallback={<></>}>
-                <MainView className={classNames({ collapsed: menuIsOpen })} />
+
+  if (user?.id) {
+    page = (
+      <Layout className="appPage fade_in">
+        <NewVersionComponent />
+        <CompanyStatusComponent />
+        <FeatureToggles features={activeFeatureNames}>
+          <Layout hasSider>
+            <Layout.Sider
+              trigger={<Menu size={16} />}
+              breakpoint="lg"
+              collapsedWidth="0"
+              theme="light"
+              width={290}
+              onCollapse={(collapsed, type) => {
+                if (type === 'responsive') return setMenuIsOpen(false);
+                setMenuIsOpen(!collapsed);
+              }}
+            >
+              <Suspense fallback={<LoadingSidebar />}>
+                <SideBars />
               </Suspense>
-            </Layout>
-          </FeatureToggles>
-          <UserContext />
-        </Layout>
-      );
-    }
+            </Layout.Sider>
+            <Suspense fallback={<></>}>
+              <MainView className={classNames({ collapsed: menuIsOpen })} />
+            </Suspense>
+          </Layout>
+        </FeatureToggles>
+        <UserContext />
+      </Layout>
+    );
   }
 
   return (
     <>
+      {PopupService.isOpen() && <PopupComponent key="PopupComponent" />}
       {page}
       <MenusBodyLayer />
       <DraggableBodyLayer />

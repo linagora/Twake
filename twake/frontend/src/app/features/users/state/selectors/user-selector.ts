@@ -9,3 +9,11 @@ export const UserSelector = selectorFamily<UserType | undefined, string>({
     ({ get }) =>
       get(UserListState).find(user => user.id === id),
 });
+
+export const UserByUsernameSelector = selectorFamily<string | undefined, string>({
+  key: 'UserSelector',
+  get:
+    str =>
+    ({ get }) =>
+      get(UserListState).find(user => user.username === str)?.id,
+});
