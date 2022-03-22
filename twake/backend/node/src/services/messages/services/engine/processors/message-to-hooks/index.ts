@@ -68,6 +68,7 @@ export class MessageToHooksProcessor {
               data: {
                 type: "message",
                 application_id: appId,
+                company_id: participant.company_id,
                 channel: channel,
                 thread: thread,
                 message: messageResource,

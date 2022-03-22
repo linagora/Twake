@@ -30,7 +30,25 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
   async process(message: HookType): Promise<void> {
     logger.debug(`${this.name} - Receive hook of type ${message.type}`);
 
+    const application = await this.applicationService.applications.get({
+      id: message.application_id,
+    });
+
     //TODO Check application access rights (hooks)
+    const access = application.access;
+
+    // Check application still exists in the company
+    if (
+      !(await this.applicationService.companyApplications.get({
+        company_id: message.company_id,
+        application_id: message.application_id,
+      }))
+    ) {
+      logger.error(
+        `${this.name} - Application ${message.application_id} not found in company ${message.company_id}`,
+      );
+      return;
+    }
 
     await this.applicationService.hooks.notifyApp(
       message.application_id,

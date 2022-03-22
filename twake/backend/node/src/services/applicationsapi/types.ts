@@ -5,6 +5,7 @@ import { Thread } from "../messages/entities/threads";
 export type HookType = {
   type: "message";
   application_id: string;
+  company_id: string;
 
   channel?: Channel;
   thread: Thread;
