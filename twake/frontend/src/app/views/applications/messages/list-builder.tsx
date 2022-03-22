@@ -11,7 +11,7 @@ const IDENTIFIER = 'threadId';
 type Props = {
   items: any[];
   loadMore: (direction: 'history' | 'future') => Promise<void>;
-  itemContent: ItemContent<any, any>;
+  itemContent: ItemContent<any>;
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
   atBottomStateChange?: (atBottom: boolean) => void;
