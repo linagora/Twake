@@ -14,7 +14,7 @@ type PropsType = {
   large?: boolean;
 };
 
-export default ({ file, onRemove, type }: PropsType) => {
+export default ({ file, onRemove, type, large }: PropsType) => {
   const { getOnePendingFile } = useUpload();
 
   const id =
@@ -35,6 +35,8 @@ export default ({ file, onRemove, type }: PropsType) => {
     name: file.metadata?.name || '',
     size: file.metadata?.size || 0,
     thumbnail: FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file) || '',
+    thumbnail_ratio:
+      (file.metadata?.thumbnails?.[0]?.width || 1) / (file.metadata?.thumbnails?.[0]?.height || 1),
     type: FileUploadAPIClient.mimeToType(file.metadata?.mime || ''),
   };
 
@@ -50,6 +52,7 @@ export default ({ file, onRemove, type }: PropsType) => {
       name: pendingFile.originalFile.name,
       size: pendingFile.originalFile.size,
       thumbnail: URL.createObjectURL(pendingFile.originalFile),
+      thumbnail_ratio: 1,
       type: FileUploadAPIClient.mimeToType(pendingFile.originalFile.type || ''),
     };
     status = pendingFile.status || undefined;
@@ -63,6 +66,7 @@ export default ({ file, onRemove, type }: PropsType) => {
       source={file.metadata?.source || 'internal'}
       externalId={file.metadata?.external_id}
       file={formatedFile}
+      large={large}
       status={status}
       progress={progress}
       onRemove={onRemove}

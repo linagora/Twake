@@ -6,6 +6,8 @@
 - Now we can cancel failed file uploads
 - Add spell check to message editor, fix autocompletion for emojis
 - Copy paste images to message editor fixed
+- Large files preview now available
+- Mentions are back in messages
 
 ### General
 
@@ -14,6 +16,7 @@
 - Show a popup to decide to continue on web or open the mobile app
 - Notice users that the company reached the maximum number of users
 - Fixed some issues with workspace invitation
+- New workspaces parameters page view
 - Minor bugs fixed
 
 # Twake 2022.Q1.874

@@ -42,6 +42,7 @@ export default () => {
               files.length <= 6 &&
               files.filter(
                 file =>
+                  file.metadata?.source === 'internal' &&
                   (file.metadata?.thumbnails?.length || 0) > 0 &&
                   FileUploadAPIClient.mimeToType(file.metadata?.mime || '') === 'image',
               ).length === files.length
