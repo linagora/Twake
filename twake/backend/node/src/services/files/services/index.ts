@@ -166,9 +166,6 @@ class Service implements FileServiceAPI {
           await this.repository.save(entity);
 
           try {
-            //On OVH S3 the file isn't accessible right way so we wait a second
-            await new Promise(r => setTimeout(r, 1000));
-
             await this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
               data: { document, output },
             });
