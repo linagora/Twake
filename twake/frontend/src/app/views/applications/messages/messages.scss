@@ -8,17 +8,18 @@
 
   .user-writing-info-message-view {
     position: relative;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    color: var(--grey-dark);
     margin: 0 auto;
     min-width: 0;
     max-width: 1000px;
     width: calc(100% - 32px);
     position: relative;
+
     .user-writing-info-message-view-inner {
       position: absolute;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      color: var(--grey-dark);
       bottom: -8px;
       left: 0px;
       font-size: 11px;
