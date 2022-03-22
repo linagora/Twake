@@ -22,6 +22,6 @@ export const preunparse = (str: string) => {
       //Prevent html security issues
       .replace(/&amp;/g, '&')
       .replace(/&lt;/g, '<')
-      .replace(/&rt;/g, '>')
+      .replace(/&gt;/g, '>')
   );
 };
