@@ -165,6 +165,8 @@ export default (props: Props) => {
 
       WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
 
+      setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
+
       return;
     }
 
