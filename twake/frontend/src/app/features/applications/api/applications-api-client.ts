@@ -2,16 +2,15 @@ import Api from '../../global/framework/api-service';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import { Application } from 'app/features/applications/types/application';
 
-const PREFIX = '/internal/services/applications/v1/applications';
-
 @TwakeService('ApplicationsAPIClientService')
-class ApplicationsAPIClient {
+class ApplicationsAPIClientService {
+  prefix = '/internal/services/applications/v1/applications';
   /**
    * Search all applications
    */
   async search(search?: string): Promise<Application[]> {
     return Api.get<{ resources: Application[] }>(
-      `${PREFIX}${search ? `?search=${search}` : ''}`,
+      `${this.prefix}${search ? `?search=${search}` : ''}`,
     ).then(result => (result.resources && result.resources.length ? result.resources : []));
   }
 
@@ -22,10 +21,28 @@ class ApplicationsAPIClient {
    * @returns
    */
   async get(applicationId: string): Promise<Application> {
-    return Api.get<{ resource: Application }>(`${PREFIX}/${applicationId}`).then(
+    return Api.get<{ resource: Application }>(`${this.prefix}/${applicationId}`).then(
+      result => result.resource,
+    );
+  }
+
+  async save(
+    applicationId: string,
+    partialsToUpdate: Partial<Application>,
+    callback?: (result: Application) => void,
+  ): Promise<Application> {
+    return Api.post<Partial<Application>, Application>(
+      `${this.prefix}/${applicationId}`,
+      partialsToUpdate,
+      callback,
+    );
+  }
+
+  async createCustomApplication(application: Partial<Application>): Promise<Application> {
+    return Api.post<Partial<Application>, { resource: Application }>(this.prefix, application).then(
       result => result.resource,
     );
   }
 }
-
-export default new ApplicationsAPIClient();
+const ApplicationsAPIClient = new ApplicationsAPIClientService();
+export default ApplicationsAPIClient;

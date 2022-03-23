@@ -39,6 +39,9 @@ const routes: FastifyPluginCallback<{
         }
         throw fastify.httpErrors.forbidden("User does not belong to this company");
       }
+
+      // FIX me owner should be allowed to create applications hasCompanyAdminLevel
+      // twake/backend/node/src/utils/company.ts
       if (companyUser.role !== "admin") {
         throw fastify.httpErrors.forbidden("You must be an admin of this company");
       }

@@ -24,7 +24,7 @@ const { Text, Link, Title } = Typography;
 const { Item } = Descriptions;
 
 const InformationsDescriptions = ({ application }: { application: Application }) => {
-  const createdDate = moment(application.stats.createdAt).format('L');
+  const createdDate = moment(application.stats.created_at).format('L');
 
   return (
     <Descriptions layout="vertical" bordered>

@@ -19,6 +19,7 @@ import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 
 import './ApplicationsStyles.scss';
 import AlertManager from 'app/features/global/services/alert-manager-service';
+import ApplicationEditor from '../../../application-parameters/pages/application-editor';
 
 type ColumnObjectType = { key: number } & Application;
 
@@ -33,6 +34,7 @@ export default () => {
     applications: companyApplications,
     loading: isLoadingCompanyApplications,
     remove: deleteOneCompanyApplication,
+    isInstalled: isApplicationInstalledInCompany,
   } = useCompanyApplications(company?.id);
   useCompanyApplicationsRealtime();
 
@@ -55,11 +57,25 @@ export default () => {
       {
         type: 'menu',
         text: Languages.t(
+          // TODO: Translations here "show"
           'scenes.app.integrations_parameters.company_applications_table.more_menu.show_application',
         ),
         onClick: () =>
           ModalManager.open(
             <CompanyApplicationPopup application={application} companyId={company.id} />,
+            {
+              position: 'center',
+              size: { width: '600px' },
+            },
+          ),
+      },
+      {
+        type: 'menu',
+        // TODO: Translations here "modify"
+        text: 'Settings',
+        onClick: () =>
+          ModalManager.open(
+            <ApplicationEditor application={application} companyId={company.id} />,
             {
               position: 'center',
               size: { width: '600px' },

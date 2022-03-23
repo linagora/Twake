@@ -148,12 +148,19 @@ export type ApplicationDisplay = {
     configuration?: string[];
   };
 };
+export type ApplicationScopes =
+  | 'files'
+  | 'applications'
+  | 'workspaces'
+  | 'users'
+  | 'messages'
+  | 'channels';
 
 export type ApplicationAccess = {
-  delete: string[];
-  hooks: string[];
-  read: string[];
-  write: string[];
+  delete: ApplicationScopes[];
+  hooks: ApplicationScopes[];
+  read: ApplicationScopes[];
+  write: ApplicationScopes[];
 };
 
 export type ApplicationIdentity = {
@@ -168,12 +175,19 @@ export type ApplicationIdentity = {
 
 type ApplicationPublication = {
   published?: boolean;
+  requested?: boolean;
   pending?: boolean;
 };
 
+type ApplicationApi = {
+  hooks_url?: string;
+  allowed_ips?: string;
+  private_key?: string;
+};
+
 type ApplicationStatistics = {
-  createdAt: number;
-  updatedAt: number;
+  created_at: number;
+  updated_at: number;
   version: number;
 };
 
@@ -185,4 +199,5 @@ export type Application = {
   identity: ApplicationIdentity;
   publication: ApplicationPublication;
   stats: ApplicationStatistics;
+  api?: ApplicationApi;
 };

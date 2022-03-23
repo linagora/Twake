@@ -87,6 +87,7 @@ export default () => {
             className="applications-table-actions-btn"
             onClick={() => onClickButton(application)}
           >
+            {/* TODO: Translation here */}
             Install
           </Button>
         );

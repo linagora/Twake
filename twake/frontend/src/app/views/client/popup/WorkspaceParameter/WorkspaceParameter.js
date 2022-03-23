@@ -6,7 +6,6 @@ import LoginService from 'app/features/auth/login-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import userService from 'app/features/users/services/current-user-service';
 import currentUserService from 'app/deprecated/user/CurrentUser';
-import WorkspaceIdentity from './Pages/Workspace/WorkspaceIdentity';
 import CompanyIntegration from './Pages/CompanyIntegrations';
 import WorkspacePartner from './Pages/WorkspacePartner';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
@@ -16,8 +15,7 @@ import MenuList from 'components/menus/menu-component.js';
 import InitService from 'app/features/global/services/init-service';
 import ConsoleService from 'app/features/console/services/console-service';
 
-import WorkspaceAppsEditor from 'app/views/client/popup/AppsParameters/Pages/WorkspaceAppsEditor'
-
+import WorkspaceAppsEditor from '../application-parameters/pages/WorkspaceAppsEditor.js';
 import './WorkspaceParameter.scss';
 
 export default class WorkspaceParameter extends Component {
@@ -58,8 +56,8 @@ export default class WorkspaceParameter extends Component {
   }
   displayScene() {
     if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page === 1) {
-      return <WorkspaceAppsEditor appId="8beac060-9305-11ec-9547-d1bbb976dc1a" />
-      // return <WorkspaceIdentity />;
+      //return <WorkspaceIdentity />;
+      return <WorkspaceAppsEditor appId="5fdf5bb0-a14d-11ec-a0eb-8bf019f8d65d" />;
     }
     if (this.state.page === 2) {
       return <WorkspacePartner />;
