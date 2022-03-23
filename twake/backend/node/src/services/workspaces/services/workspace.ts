@@ -11,55 +11,65 @@ import {
   Pagination,
   SaveResult,
   UpdateResult,
-} from "../../../../core/platform/framework/api/crud-service";
-import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { WorkspaceService } from "../../api";
+} from "../../../core/platform/framework/api/crud-service";
+import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
+import { WorkspaceService } from "../api";
 import WorkspaceUser, {
   formatWorkspaceUser,
   getInstance as getWorkspaceUserInstance,
   TYPE as WorkspaceUserType,
   WorkspaceUserPrimaryKey,
-} from "../../../workspaces/entities/workspace_user";
+} from "../../workspaces/entities/workspace_user";
 import Workspace, {
   getInstance as getWorkspaceInstance,
   TYPE,
   TYPE as WorkspaceType,
   WorkspacePrimaryKey,
-} from "../../../workspaces/entities/workspace";
-import { WorkspaceExecutionContext, WorkspaceUserRole } from "../../types";
-import User, { UserPrimaryKey } from "../../../user/entities/user";
-import { CompanyPrimaryKey } from "../../../user/entities/company";
+} from "../../workspaces/entities/workspace";
+import { WorkspaceExecutionContext, WorkspaceUserRole } from "../types";
+import User, { UserPrimaryKey } from "../../user/entities/user";
+import { CompanyPrimaryKey } from "../../user/entities/company";
 import _, { merge } from "lodash";
 import WorkspacePendingUser, {
   TYPE as WorkspacePendingUserType,
   WorkspacePendingUserPrimaryKey,
-} from "../../entities/workspace_pending_users";
-import { CompanyUserRole } from "../../../user/web/types";
-import { uuid } from "../../../../utils/types";
-import { CompaniesServiceAPI, UsersServiceAPI } from "../../../user/api";
-import { CounterProvider } from "../../../../core/platform/services/counter/provider";
+} from "../entities/workspace_pending_users";
+import { CompanyUserRole } from "../../user/web/types";
+import { uuid } from "../../../utils/types";
+import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
+import { CounterProvider } from "../../../core/platform/services/counter/provider";
 import {
   TYPE as WorkspaceCounterEntityType,
   WorkspaceCounterEntity,
   WorkspaceCounterPrimaryKey,
-} from "../../entities/workspace_counters";
-import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
-import { countRepositoryItems } from "../../../../utils/counters";
-import { ApplicationServiceAPI } from "../../../applications/api";
-import { RealtimeSaved } from "../../../../core/platform/framework";
-import { ResourcePath } from "../../../../core/platform/services/realtime/types";
-import { getRoomName, getWorkspacePath } from "../../realtime";
-import { InviteTokenObject, WorkspaceInviteTokenObject } from "../../web/types";
+} from "../entities/workspace_counters";
+import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
+import { countRepositoryItems } from "../../../utils/counters";
+import { ApplicationServiceAPI } from "../../applications/api";
+import { RealtimeSaved } from "../../../core/platform/framework";
+import { ResourcePath } from "../../../core/platform/services/realtime/types";
+import { getRoomName, getWorkspacePath } from "../realtime";
+import { InviteTokenObject, WorkspaceInviteTokenObject } from "../web/types";
 import WorkspaceInviteTokens, {
   TYPE as WorkspaceInviteTokensType,
   getInstance as getWorkspaceInviteTokensInstance,
   WorkspaceInviteTokensPrimaryKey,
-} from "../../entities/workspace_invite_tokens";
-import AuthServiceAPI from "../../../../core/platform/services/auth/provider";
+} from "../entities/workspace_invite_tokens";
+import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import { randomBytes } from "crypto";
 import { Readable } from "stream";
-import { reduceUUID4 } from "../../../../utils/uuid-reducer";
-import { expandUUID4 } from "../../../../utils/uuid-reducer";
+import { reduceUUID4 } from "../../../utils/uuid-reducer";
+import { expandUUID4 } from "../../../utils/uuid-reducer";
+
+export function getService(
+  platformServices: PlatformServicesAPI,
+  user: UsersServiceAPI,
+  companies: CompaniesServiceAPI,
+  applications: ApplicationServiceAPI,
+  auth: AuthServiceAPI,
+): WorkspaceService {
+  return new Service(platformServices, user, companies, applications, auth);
+}
 
 export class Service implements WorkspaceService {
   version: "1";
@@ -642,6 +652,7 @@ export class Service implements WorkspaceService {
     try {
       const split = encodedToken.split("-");
       //We split on "-" but the token can contain "-" so be careful
+      // eslint-disable-next-line prefer-const
       let [companyId, workspaceId, userId, token] = [
         split.shift(),
         split.shift(),

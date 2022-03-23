@@ -54,8 +54,8 @@ export async function init(
       servicesPath: pathResolve(__dirname, "../../../src/services/"),
     };
     const platform = new TwakePlatform(configuration);
-
     await platform.init();
+    await globalResolver.doInit(platform);
 
     const app = platform.getProvider<WebServerAPI>("webserver").getServer();
 
@@ -64,7 +64,6 @@ export async function init(
     }
 
     await platform.start();
-    await globalResolver.doInit(platform);
 
     const database = platform.getProvider<DatabaseServiceAPI>("database");
     const pubsub = platform.getProvider<PubsubServiceAPI>("pubsub");

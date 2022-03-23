@@ -19,7 +19,6 @@ import { plainToClass } from "class-transformer";
 import { hasCompanyAdminLevel, hasCompanyMemberLevel } from "../../../../utils/company";
 import { hasWorkspaceAdminLevel } from "../../../../utils/workspace";
 import { getWorkspaceRooms } from "../../realtime";
-import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import CompanyUser from "../../../user/entities/company_user";
 import gr from "../../../global-resolver";
@@ -33,8 +32,6 @@ export class WorkspacesCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(protected realtime: RealtimeServiceAPI) {}
-
   private getCompanyUserRole(context: WorkspaceExecutionContext) {
     return gr.services.companies
       .getCompanyUser({ id: context.company_id }, { id: context.user.id })
@@ -161,7 +158,7 @@ export class WorkspacesCrudController
           this.formatWorkspace(ws, await this.getWorkspaceUsersCount(ws.id), context.user.id),
         ),
       ),
-      websockets: this.realtime.sign(getWorkspaceRooms(context), context.user.id),
+      websockets: gr.platformServices.realtime.sign(getWorkspaceRooms(context), context.user.id),
     };
   }
 
