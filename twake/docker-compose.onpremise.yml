@@ -12,11 +12,15 @@ services:
   rabbitmq:
     image: rabbitmq:3
 
+  plugins:
+    image: twaketech/twake-plugins:latest
+
   node:
     image: twaketech/twake-node:2021.Q2.505
     environment:
       - NODE_ENV=production
       - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
+      - PLUGINS_SERVER=plugins:3100
     volumes:
       - ./configuration/backend-node/production.json:/usr/src/app/config/production.json
       - ./docker-data/documents/:/storage/

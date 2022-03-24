@@ -7,6 +7,9 @@ services:
     volumes:
       - ./docker-data/mongo:/data/db
 
+  plugins:
+    image: twaketech/twake-plugins:latest
+    
   node:
     image: twaketech/twake-node:latest
     ports:
@@ -16,6 +19,7 @@ services:
       - SEARCH_DRIVER=mongodb
       - DB_DRIVER=mongodb
       - PUBSUB_TYPE=local
+      - PLUGINS_SERVER=plugins:3100
     volumes:
       - ./docker-data/documents/:/storage/
     depends_on:

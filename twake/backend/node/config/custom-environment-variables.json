@@ -67,5 +67,8 @@
     "amqp": {
       "urls": "PUBSUB_URLS"
     }
+  },
+  "plugins": {
+    "server": "PLUGINS_SERVER"
   }
 }
