@@ -1,7 +1,7 @@
 import React, { FC, useState, useEffect } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import InputWithIcon from 'components/inputs/input-with-icon';
-import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { Select, Typography, Checkbox, Input } from 'antd';
 import InputWithSelect from 'app/components/inputs/input-with-select';
 import { Collection } from 'app/deprecated/CollectionsReact/Collections';

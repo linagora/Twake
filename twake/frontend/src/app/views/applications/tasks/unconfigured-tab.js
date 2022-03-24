@@ -38,8 +38,8 @@ export default class UnconfiguredTab extends Component {
     this.creating = true;
     var board = Collections.get('boards').editCopy({});
     board.workspace_id = RouterService.getStateFromRoute().workspaceId;
-    board.title = this.props.channel.data.name;
-    board.emoji = this.props.channel.data.icon;
+    board.title = this.props.channel.name;
+    board.emoji = this.props.channel.icon;
     Collections.get('boards').save(board, this.props.collectionKey, board => {
       this.creating = false;
       this.initInBoard(board);

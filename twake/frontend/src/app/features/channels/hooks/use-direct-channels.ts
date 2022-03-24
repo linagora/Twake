@@ -11,6 +11,7 @@ import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 import { UserType } from 'app/features/users/types/user';
+import { useSetChannel } from './use-channel';
 
 export function useRefreshDirectChannels(): {
   refresh: () => Promise<void>;
@@ -18,6 +19,7 @@ export function useRefreshDirectChannels(): {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const { set: setUserList } = useSetUserList('useRefreshDirectChannels');
+  const { set } = useSetChannel();
 
   const _setDirectChannels = useSetRecoilState(DirectChannelsState({ companyId, workspaceId }));
 
@@ -31,6 +33,8 @@ export function useRefreshDirectChannels(): {
     directChannels.forEach(c => {
       if (c.users) users.push(...c.users);
     });
+
+    directChannels.forEach(c => set(c));
 
     if (users) setUserList(users);
   };

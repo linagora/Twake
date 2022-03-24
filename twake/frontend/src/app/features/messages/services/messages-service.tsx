@@ -15,8 +15,7 @@ import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import FilePicker from 'components/drive/file-picker/file-picker.js';
 import MessageEditorManager from './message-editor-service-factory';
-import MessagesListServerUtilsManager from './message-loader-factory';
-import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import SideViewService from 'app/features/router/services/side-view-service';
 import { Message, MessageFileType } from '../types/message';
 import { Application } from 'app/features/applications/types/application';
@@ -132,101 +131,6 @@ class Messages extends Observable {
     } else return [{ type: 'br' }];
   }
 
-  async sendMessage(
-    value: string,
-    options: { [key: string]: any },
-    collectionKey: string,
-    attachements: MessageFileType[],
-  ) {
-    return new Promise(async resolve => {
-      value = PseudoMarkdownCompiler.transformChannelsUsers(value);
-      let channel = await this.findChannel(options.channel_id);
-
-      if (value[0] === '/') {
-        let app: any = null;
-        let app_name = value.split(' ')[0].slice(1);
-        // eslint-disable-next-line array-callback-return
-        getCompanyApplications(Groups.currentGroupId).map((_app: any) => {
-          if (_app?.identity?.code === app_name) {
-            app = _app;
-          }
-        });
-
-        if (!app) {
-          AlertManager.alert(() => {}, {
-            text: Languages.t('services.apps.messages.no_command_possible', [value, app_name]),
-            title: Languages.t('services.apps.messages.no_app'),
-          });
-
-          resolve(false);
-          return;
-        }
-        let data = {
-          command: value.split(' ').slice(1).join(' '),
-          channel: channel.data,
-          parent_message: options.parent_message_id
-            ? this.collection.find(options.parent_message_id, () => {}) || null
-            : null,
-        };
-
-        WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
-
-        resolve(false);
-        return;
-      }
-
-      options = options || {};
-
-      let message: Message = this.collection.edit(null);
-      let val = PseudoMarkdownCompiler.compileToJSON(value);
-
-      message.text = value;
-      message.channel_id = options.channel_id;
-      message.parent_message_id = options.parent_message_id || '';
-      message.sender = CurrentUser.get().id;
-
-      this.updateParentCounter(message);
-
-      message.hidden_data = {};
-      message.pinned = false;
-      message.responses_count = 0;
-
-      message.files = [
-        ...attachements.filter(f => f.metadata?.source !== 'pending').map(file => file),
-      ];
-
-      message.creation_date = new Date().getTime() / 1000 + 10; //To be on the bottom
-      message.content = val;
-      /*
-      ChannelsService.markFrontAsRead(channel.id, message.creation_date);
-      this.collection.save(message, collectionKey, (message: Message) => {
-        if (message) {
-          ChannelsService.markFrontAsRead(channel.id);
-          ChannelsService.incrementChannel(channel);
-        }
-        resolve(message);
-      });
-      */
-
-      //TODO      MessageAPIClient.save("", "", message);
-    });
-  }
-
-  async retrySendMessage(message: Message, collectionKey: string) {
-    (message as any)._retrying = true;
-    const channel = await this.findChannel(message.channel_id || '');
-    ChannelsService.markFrontAsRead(channel.id, message.creation_date);
-
-    this.collection.save(message, collectionKey, (message: Message) => {
-      if (message) {
-        ChannelsService.markFrontAsRead(channel.id);
-        ChannelsService.incrementChannel(channel);
-      }
-    });
-
-    CurrentUser.updateTutorialStatus('first_message_sent');
-  }
-
   updateParentCounter(message: Message) {
     if (message.parent_message_id) {
       let parent = this.collection.find(message.parent_message_id);
@@ -327,80 +231,6 @@ class Messages extends Observable {
         'edition',
       );
     }
-  }
-
-  dropMessage(message: any, message_container: Message | null, collectionKey: string) {
-    if (!message) {
-      return;
-    }
-
-    if (
-      (!message_container && !message.parent_message_id) ||
-      (message_container &&
-        (message.id === message_container.id || message.parent_message_id === message_container.id))
-    ) {
-      return;
-    }
-
-    let moved: any = [];
-    let old_count = message.responses_count || 0;
-    if ((message?.responses_count || 0) > 0) {
-      //Move all children in new parent
-      DepreciatedCollections.get('messages')
-        .findBy({ channel_id: message.channel_id, parent_message_id: message.id })
-        .forEach((message: Message) => {
-          this.collection.completeObject(
-            { parent_message_id: message_container?.id || '' },
-            message.front_id,
-          );
-          moved.push(message);
-        });
-
-      message.responses_count = 0;
-    }
-
-    let old_parent: any = null;
-    if (message.parent_message_id) {
-      old_parent = this.collection.find(message.parent_message_id);
-      if (old_parent) {
-        this.collection.completeObject(
-          { responses_count: old_parent.responses_count - 1 },
-          old_parent.front_id,
-        );
-      }
-    }
-
-    let new_parent: any = null;
-    if (message_container) {
-      new_parent = this.collection.find(message_container.id);
-      this.collection.completeObject(
-        { responses_count: new_parent.responses_count + 1 + Math.max(old_count, moved.length) },
-        new_parent.front_id,
-      );
-    }
-
-    message._once_replace_message = message.id;
-    message._once_replace_message_parent_message = message.parent_message_id || '';
-
-    message.parent_message_id = message_container ? message_container.id : '';
-
-    this.collection.completeObject(message, message.front_id);
-    this.collection.save(message, collectionKey, () => {
-      let parent = this.collection.find(message.parent_message_id);
-      if (parent && parent.parent_message_id !== '') {
-        this.collection.updateObject(
-          { parent_message_id: parent.parent_message_id },
-          message.front_id,
-        );
-      }
-
-      if (old_parent) this.collection.share(old_parent);
-      if (new_parent) this.collection.share(new_parent);
-
-      moved.forEach((message: any) => {
-        this.collection.share(message);
-      });
-    }); //Call a notify
   }
 
   pinMessage(message: Message, value: any, messagesCollectionKey: string) {
@@ -508,14 +338,12 @@ class Messages extends Observable {
     this.current_ephemeral[app.id] = [message, messagesCollectionKey];
   }
 
-  async showMessage(id?: string) {
+  async showMessage(id?: string, channel?: ChannelType) {
     if (!id) return;
 
     const message = this.collection.find(id);
-    const channel = await this.findChannel(message.channel_id);
 
-    SideViewService.select(channel.id, {
-      collection: MainViewService.getViewCollection(),
+    SideViewService.select(channel?.id || '', {
       app: { identity: { code: 'messages' } } as Application,
       context: {
         viewType: 'channel_thread',
@@ -534,20 +362,11 @@ class Messages extends Observable {
   }
 
   async findChannel(channelId: string, companyId?: string, workspaceId?: string) {
-    return this.getCollection(channelId, companyId, workspaceId).findOne(
-      { id: channelId },
-      { withoutBackend: true },
-    );
+    return null;
   }
 
   getCollection(channelId: string, companyId?: string, workspaceId?: string | null) {
-    if (!companyId || !workspaceId) {
-      const context = MessagesListServerUtilsManager.channelsContextById[channelId];
-      companyId = context.companyId;
-      workspaceId = context.workspaceId;
-    }
-    const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-    return Collections.get(path, ChannelResource);
+    return null;
   }
 }
 

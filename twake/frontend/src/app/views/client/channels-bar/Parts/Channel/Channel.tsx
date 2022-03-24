@@ -6,7 +6,7 @@ import Icon from 'app/components/icon/icon';
 import { Application } from 'app/features/applications/types/application';
 import WindowState from 'app/features/global/utils/window';
 import Emojione from 'components/emojione/emojione';
-import { ChannelResource } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import AvatarComponent from 'app/components/avatar/avatar';
 import Beacon from 'app/components/scroll-hidden-components/beacon';
 import MainViewService from 'app/features/router/services/main-view-service';
@@ -20,7 +20,6 @@ import useChannelWritingActivity, {
 import WritingLoader from 'app/components/writing-loader/writing-loader';
 
 type Props = {
-  collection?: Collection<ChannelResource>;
   app?: Application;
   name: string;
   icon: string | JSX.Element;
@@ -36,16 +35,16 @@ type Props = {
   showTooltip?: boolean;
   active?: boolean;
   writingActivity?: boolean;
+  selected?: boolean;
 };
 
 export default (props: Props) => {
-  const selected = useRouterChannelSelected(props.id || '');
-  const writingActivity = useChannelWritingActivityState(props.id || '');
+  const selected = props.selected;
+  const writingActivity = props.writingActivity || false;
 
-  const onChannelChange = () => {
+  const onClick = () => {
     props.id &&
       MainViewService.select(props.id, {
-        collection: props.collection,
         app: props.app || {
           identity: {
             code: 'messages',
@@ -57,14 +56,14 @@ export default (props: Props) => {
             compatibility: [],
           },
         },
-        context: null,
+        context: { type: props.app ? 'application' : 'channel' },
         hasTabs: props.visibility !== 'direct' && !props.app,
       });
 
     WindowState.setSuffix(props.name);
   };
 
-  if (selected && props.id && MainViewService.getId() !== props.id) onChannelChange();
+  if (selected && props.id && MainViewService.getId() !== props.id) onClick();
 
   const getDefaultApplicationIcon = (code: string) => {
     switch (code) {
@@ -85,7 +84,7 @@ export default (props: Props) => {
         className={`channel ${selected ? 'selected ' : ''} ${
           props.unreadMessages ? 'unread ' : ''
         } ${props.active ? 'menu-open' : ''}`}
-        onClick={onChannelChange}
+        onClick={onClick}
       >
         {!!props.favorite && (
           <div className="icon small-right-margin">
@@ -109,9 +108,7 @@ export default (props: Props) => {
           {props.name + ' '}
           {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
         </div>
-        <div className="writing_Activity">
-          {!selected && writingActivity.length > 0 && <WritingLoader />}
-        </div>
+        <div className="writing_Activity">{!selected && writingActivity && <WritingLoader />}</div>
         <div className="more">
           {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
           {props.notifications > 0 && (

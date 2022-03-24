@@ -81,8 +81,6 @@ export function useSetUserList(key: string) {
       newList.sort();
 
       if (currentList && newList && !isEqual(currentList, newList)) {
-        // TO REMOVE
-        logger.debug(`UserListState is updated to`, cloneDeep(currentList), newList);
         set(UserListState, newList);
         currentUserList = newList;
       }

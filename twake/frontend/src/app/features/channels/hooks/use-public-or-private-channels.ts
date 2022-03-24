@@ -10,6 +10,7 @@ import { isPrivateChannel, isPublicChannel } from 'app/features/channels/utils/u
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+import { useSetChannel } from './use-channel';
 
 export function useRefreshPublicOrPrivateChannels(): {
   refresh: () => Promise<void>;
@@ -17,9 +18,11 @@ export function useRefreshPublicOrPrivateChannels(): {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const _setMineChannels = useSetRecoilState(MineChannelsState({ companyId, workspaceId }));
+  const { set } = useSetChannel();
 
   const refresh = async () => {
     const res = await ChannelsMineAPIClient.get({ companyId, workspaceId });
+    res.forEach(c => set(c));
     if (res) _setMineChannels(res);
   };
 
@@ -38,7 +41,6 @@ export function usePublicOrPrivateChannels(): {
   );
 
   const [, setLoading] = useRecoilState(LoadingState(`channels-${companyId}-${workspaceId}`));
-
   const { refresh } = useRefreshPublicOrPrivateChannels();
 
   useGlobalEffect(

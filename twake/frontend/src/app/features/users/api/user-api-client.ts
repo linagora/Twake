@@ -6,6 +6,9 @@ import { WebsocketRoom } from '../../global/types/websocket-types';
 import WorkspaceAPIClient from '../../workspaces/api/workspace-api-client';
 import CurrentUser from '../../../deprecated/user/CurrentUser';
 import RouterService from 'app/features/router/services/router-service';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
+import _ from 'lodash';
+import { setUserList } from '../hooks/use-user-list';
 
 export type SearchContextType = {
   scope: 'company' | 'workspace' | 'all';
@@ -32,8 +35,41 @@ class UserAPIClientService {
    *
    * @param id
    */
-  async list(users: string[] = [], companyIds?: string[]): Promise<UserType[]> {
-    return new Promise<UserType[]>(resolve => {
+  private listBuffer: any[] = [];
+  async list(
+    users: string[] = [],
+    companyIds?: string[],
+    options?: { bufferize?: boolean; callback?: Function },
+  ): Promise<UserType[]> {
+    if (options?.bufferize) {
+      const isFirst = this.listBuffer.length === 0;
+
+      this.listBuffer = this.listBuffer.concat({
+        users: users,
+        companies: companyIds,
+        callback: options.callback,
+      });
+
+      if (isFirst) {
+        await new Promise(r => setTimeout(r, 100));
+
+        users = this.listBuffer.reduce((c, acc) => acc.concat(c.users), []);
+        companyIds = this.listBuffer.reduce((c, acc) => acc.concat(c.companies), []);
+        let callbacks = this.listBuffer.reduce((c, acc) => acc.push(c.callback), []);
+        this.listBuffer = [];
+
+        this.list(users, companyIds, {
+          bufferize: false,
+          callback: (res: UserType[]) => {
+            callbacks.forEach((b: Function) => b && b(res));
+          },
+        });
+      }
+
+      return [];
+    }
+
+    const res = await new Promise<UserType[]>(resolve =>
       Api.get(
         `/internal/services/users/v1/users${users.length ? `?user_ids=${users.join(',')}` : ''}${
           companyIds?.length ? `?company_ids=${companyIds.join(',')}` : ''
@@ -41,8 +77,15 @@ class UserAPIClientService {
         (res: { resources: UserType[] }): void => {
           resolve(res.resources && res.resources.length ? res.resources : []);
         },
-      );
-    });
+      ),
+    );
+
+    if (options?.callback) options.callback(res);
+
+    //Update state management
+    setUserList(res);
+
+    return res;
   }
 
   async getCurrentUserCompanies(): Promise<CompanyType[]> {

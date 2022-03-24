@@ -126,15 +126,13 @@ class JWTStorage {
 
   authenticateCall(callback?: () => void) {
     if (this.isAccessExpired() && LoginService.currentUserId) {
-      if (this.isRefreshExpired()) {
-        this.clear();
-      }
       this.logger.debug('authenticateCall: Updating user because the access token expired');
       this.renew()
         .then(() => {
           LoginService.updateUser(callback);
         })
         .catch(async () => {
+          this.clear();
           if (await LoginService.pingServer()) (window as any).document.location.reload();
         });
       return;

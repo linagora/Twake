@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Input, Row, Typography } from 'antd';
 import Icon from 'app/components/icon/icon';
 import { capitalize } from 'lodash';
-import { ChannelResource } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import RouterServices from 'app/features/router/services/router-service';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Languages from 'app/features/global/services/languages-service';
@@ -16,13 +16,13 @@ export default (): JSX.Element => {
     return <></>;
   }
 
-  const channel = new ChannelResource({
+  const channel = {
     name: Languages.t(
       'app.identity?.name.' + application?.identity?.code,
       [],
       application.identity?.name,
     ),
-  });
+  };
   const IconType = WorkspacesApps.getAppIcon(application, true);
   let icon: JSX.Element;
   if (typeof IconType === 'string') {
@@ -43,9 +43,9 @@ export default (): JSX.Element => {
             {icon}
           </div>
           <Typography.Text className="small-right-margin" strong>
-            {capitalize(channel.data.name)}
+            {capitalize(channel.name)}
           </Typography.Text>
-          <Typography.Text>{' ' + (channel.data.description || '')}</Typography.Text>
+          <Typography.Text> </Typography.Text>
         </span>
       </Col>
 

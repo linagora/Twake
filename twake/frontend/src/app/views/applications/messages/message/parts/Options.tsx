@@ -27,6 +27,7 @@ import { ViewContext } from 'app/views/client/main-view/MainContent';
 import SideViewService from 'app/features/router/services/side-view-service';
 import MainViewService from 'app/features/router/services/main-view-service';
 import Emojione from 'app/components/emojione/emojione';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 type Props = {
   onOpen?: () => void;
@@ -39,6 +40,7 @@ export default (props: Props) => {
   const workspaceId = useRouterWorkspace();
   const context = useContext(MessageContext);
   let { message, react, remove, pin } = useMessage(context);
+  const { channel } = useChannel(channelId);
 
   const location = `message-${message.id}`;
   const subLocation = useContext(ViewContext).type;
@@ -79,7 +81,7 @@ export default (props: Props) => {
       icon: 'arrow-up-right',
       text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
       onClick: () => {
-        MessagesService.showMessage(message.thread_id);
+        MessagesService.showMessage(message.thread_id, channel);
       },
     });
 
@@ -265,7 +267,6 @@ export default (props: Props) => {
               className="option"
               onClick={() => {
                 SideViewService.select(channelId, {
-                  collection: MainViewService.getViewCollection(),
                   app: { identity: { code: 'messages' } } as Application,
                   context: {
                     viewType: 'channel_thread',

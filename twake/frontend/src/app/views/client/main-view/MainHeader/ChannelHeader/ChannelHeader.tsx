@@ -41,6 +41,8 @@ export default (): JSX.Element => {
     return <Col></Col>;
   }
 
+  console.log(channel);
+
   if (!channel.user_member?.user_id) {
     ChannelsBarService.updateCurrentChannelId(companyId, workspaceId, '');
     redirectToWorkspace();

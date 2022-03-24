@@ -1,14 +1,10 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import Collections from 'app/deprecated/CollectionsReact/Collections';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 import WindowService from 'app/features/global/utils/window';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import Globals from 'app/features/global/services/globals-twake-app-service';
-import { TabResource } from 'app/features/tabs/types/tab';
-import { ChannelResource } from 'app/features/channels/types/channel';
-import UsersService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/features/router/services/router-service';
 import _ from 'lodash';
 
@@ -51,10 +47,11 @@ class Channels extends Observable {
 
   // Move me and refactor
   async openDiscussion(membersIds, companyId = null) {
+    /*
     membersIds = membersIds.map(e => e); //Copy original list
     companyId = companyId || (RouterService.getStateFromRoute() || {}).companyId;
     const collectionPath = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
-    const channelsCollections = Collections.get(collectionPath, ChannelResource);
+    const channelsCollections = Collections.get(collectionPath, ChannelType);
 
     membersIds.push(UsersService.getCurrentUserId());
     membersIds = _.uniq(membersIds);
@@ -69,11 +66,11 @@ class Channels extends Observable {
     let res = channelsCollections
       .find({ company_id: companyId, workspace_id: 'direct' }, { withoutBackend: true })
       .filter(channel =>
-        _.isEqual(_.uniq(channel.data.members).sort(), _.uniq(membersIds).sort()),
+        _.isEqual(_.uniq(channel.members).sort(), _.uniq(membersIds).sort()),
       )[0];
 
     if (!res) {
-      res = await channelsCollections.upsert(new ChannelResource(newDirectMessage), {
+      res = await channelsCollections.upsert(new ChannelType(newDirectMessage), {
         query: { members: membersIds },
         waitServerReply: true,
       });
@@ -89,8 +86,10 @@ class Channels extends Observable {
     }
 
     MenusManager.closeMenu();
+    */
   }
 
+  //Should not be used anymore
   search(query, callback) {
     if (query.length === 0) {
       callback([]);
@@ -101,7 +100,7 @@ class Channels extends Observable {
     const collection = this.getCollection(companyId, workspaceId);
     callback(
       collection.find({}).filter(channel => {
-        return channel.data.name.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) >= 0;
+        return channel.name.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) >= 0;
       }),
     );
   }
@@ -163,40 +162,6 @@ class Channels extends Observable {
     MenusManager.closeMenu();
   }
 
-  async saveTab(companyId, workspaceId, channelId, tabId, configuration) {
-    const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/tabs/`;
-    const TabsCollection = Collections.get(collectionPath, TabResource);
-    const tab = TabsCollection.findOne(tabId, { withoutBackend: true });
-    tab.data.configuration = configuration;
-    await TabsCollection.upsert(tab);
-  }
-
-  updateBadge(channel) {
-    var old_state = this.old_channel_state[channel.id];
-    var ui = channel._user_last_message_increment || 0;
-    if (ui === undefined) {
-      channel._user_last_message_increment = channel.messages_increment;
-      ui = channel._user_last_message_increment || 0;
-    }
-    var state = channel.messages_increment - ui;
-    if (!channel._user_last_quoted_message_id && channel._user_muted >= 1) {
-      state = 0;
-    }
-    if (state === old_state) {
-      return;
-    }
-    this.old_channel_state[channel.id] = state;
-  }
-
-  incrementChannel(channel) {
-    channel._user_last_message_increment = channel._user_last_message_increment || 0;
-    channel._user_last_message_increment++;
-    channel.messages_increment++;
-    channel.last_activity = new Date().getTime() / 1000;
-    channel._user_last_access = new Date().getTime() / 1000;
-    DepreciatedCollections.get('channels').completeObject(channel);
-  }
-
   getChannelForApp(app_id, workspace_id) {
     return DepreciatedCollections.get('channels').findBy({
       application: true,
@@ -206,14 +171,9 @@ class Channels extends Observable {
     })[0];
   }
 
-  markFrontAsRead(channel_id, date = undefined) {
-    this.channel_front_read_state[channel_id] = date || new Date().getTime() / 1000;
-    this.notify();
-  }
-
   getCollection(companyId, workspaceId) {
-    const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-    return Collections.get(path, ChannelResource);
+    //const path = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
+    //return Collections.get(path, ChannelType);
   }
 }
 
