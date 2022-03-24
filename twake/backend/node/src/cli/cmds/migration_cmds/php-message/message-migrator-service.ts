@@ -19,7 +19,7 @@ import { MessageChannelRef } from "../../../../services/messages/entities/messag
 import { ParticipantObject, Thread } from "../../../../services/messages/entities/threads";
 import { Block } from "../../../../services/messages/blocks-types";
 import { WorkspaceExecutionContext } from "../../../../services/workspaces/types";
-
+import gr from "../../../../services/global-resolver";
 type MigratedChannel = {
   id: string;
   workspace_id: string;
@@ -42,7 +42,7 @@ class MessageMigrator {
   private channelService: ChannelServiceAPI;
   private phpMessageService: PhpMessagesService;
   private nodeMessageService: MessageServiceAPI;
-  private migratedMessages: number = 0;
+  private migratedMessages = 0;
   private options: Options = {};
 
   constructor(readonly platform: TwakePlatform) {
@@ -142,9 +142,11 @@ class MessageMigrator {
    * Set all messages in company and set them to channelPhpMessages
    */
   private async migrateCompanyChannelsMessages(company: Company) {
+    await gr.doInit(this.platform);
+
     // Get all workspaces in company
     const workspacesInCompany = (
-      await this.userService.workspaces.list({ limitStr: "" }, {}, {
+      await gr.services.workspaces.list({ limitStr: "" }, {}, {
         user: {
           id: null,
           server_request: true,

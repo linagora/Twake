@@ -7,13 +7,11 @@ import {
   UserBookmarksController,
   ViewsController,
 } from "./controllers";
-import WorkspaceServicesAPI from "../../workspaces/api";
 import ChannelServiceAPI from "../../channels/provider";
 
 const routes: FastifyPluginCallback<{
   service: MessageServiceAPI;
   realtime: RealtimeServiceAPI;
-  workspaceService: WorkspaceServicesAPI;
   channelService: ChannelServiceAPI;
 }> = (fastify: FastifyInstance, options, next) => {
   const threadsController = new ThreadsController(options.service);
@@ -22,7 +20,6 @@ const routes: FastifyPluginCallback<{
   const viewsController = new ViewsController(
     options.realtime,
     options.service,
-    options.workspaceService,
     options.channelService,
   );
 

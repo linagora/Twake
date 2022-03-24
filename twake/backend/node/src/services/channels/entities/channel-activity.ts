@@ -29,7 +29,7 @@ export class ChannelActivity {
   @Column("last_message", "encoded_json")
   last_message:
     | null
-    | {}
+    | Record<string, unknown>
     | {
         date: number;
         sender: string;

@@ -13,13 +13,11 @@ import {
 import { keyBy } from "lodash";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import ChannelServiceAPI from "../../../channels/provider";
-import WorkspaceServicesAPI from "../../../workspaces/api";
 
 export class ViewsController {
   constructor(
     protected realtime: RealtimeServiceAPI,
     protected service: MessageServiceAPI,
-    protected workspaceService: WorkspaceServicesAPI,
     protected channelService: ChannelServiceAPI,
   ) {}
 

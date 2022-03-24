@@ -23,7 +23,8 @@ export class NotificationPrerencesController
       ResourceCreateResponse<UserNotificationPreferences>,
       ResourceListResponse<UserNotificationPreferences>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(protected service: NotificationServiceAPI) {}
 
   async list(

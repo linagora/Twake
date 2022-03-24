@@ -8,7 +8,8 @@ import { isDirectChannel } from "../../../../../channels/utils";
 type LeaveChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class LeaveChannelMessageProcessor
-  implements NotificationPubsubHandler<LeaveChannelMessage, void> {
+  implements NotificationPubsubHandler<LeaveChannelMessage, void>
+{
   constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {

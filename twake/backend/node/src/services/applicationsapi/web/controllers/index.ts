@@ -79,7 +79,7 @@ export class ApplicationsApiController {
     return { status: "ok" };
   }
 
-  async proxy(request: FastifyRequest<{}>, reply: FastifyReply, fastify: FastifyInstance) {
+  async proxy(request: FastifyRequest, reply: FastifyReply, fastify: FastifyInstance) {
     //TODO Check application access rights (write, read, remove for each micro services)
 
     //TODO save some statistics about API usage

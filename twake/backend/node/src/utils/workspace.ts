@@ -4,6 +4,7 @@ import Company from "../services/user/entities/company";
 import CompanyUser from "../services/user/entities/company_user";
 import WorkspaceUser from "../services/workspaces/entities/workspace_user";
 import { hasCompanyAdminLevel } from "./company";
+import gr from "../services/global-resolver";
 
 export async function isWorkspaceAdmin(
   userService: UserServiceAPI,
@@ -48,7 +49,7 @@ export async function getWorkspaceUser(
     return null;
   }
 
-  const workspaceUser = await userService.workspaces.getUser({
+  const workspaceUser = await gr.services.workspaces.getUser({
     workspaceId: workspace.workspace_id,
     userId: user.id,
   });

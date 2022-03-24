@@ -4,7 +4,7 @@ import User from "./user";
 export default {
   index: "user",
   source: (entity: User) => {
-    let source: any = {
+    const source: any = {
       first_name: entity.first_name,
       last_name: entity.last_name,
       email: entity.email_canonical,

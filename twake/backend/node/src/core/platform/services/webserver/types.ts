@@ -8,7 +8,7 @@ export interface CrudController<
   GetResponseType,
   SaveResponseType,
   ListResponseType,
-  DeleteResponseType
+  DeleteResponseType,
 > {
   get?: CrudHandler<GetResponseType>;
   save?: CrudHandler<SaveResponseType>;

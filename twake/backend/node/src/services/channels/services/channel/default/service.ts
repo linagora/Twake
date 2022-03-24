@@ -22,6 +22,7 @@ import { ChannelMember } from "../../../../channels/entities/channel-member";
 import { User } from "../../../../../utils/types";
 import { Channel } from "../../../../../services/channels/entities";
 import WorkspaceUser from "../../../../workspaces/entities/workspace_user";
+import gr from "../../../../global-resolver";
 
 const logger = getLogger("channel.default");
 
@@ -136,7 +137,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
   addWorkspaceUsersToChannel(
     channel: DefaultChannelPrimaryKey,
   ): Observable<{ user?: WorkspaceUser; member?: ChannelMember; added: boolean; err?: Error }> {
-    const workspaceUsers$ = this.userService.workspaces.getAllUsers$({
+    const workspaceUsers$ = gr.services.workspaces.getAllUsers$({
       workspaceId: channel.workspace_id,
     });
 

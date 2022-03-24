@@ -13,7 +13,7 @@ export function parsePrimaryKey(
 ): { [key: string]: any } {
   const pkColumns = unwrapPrimarykey(entityDefinition).sort((a, b) => a.localeCompare(b));
   const pkList = JSON.parse(pkStr);
-  let pk: { [key: string]: any } = {};
+  const pk: { [key: string]: any } = {};
   pkColumns.forEach((c, index) => {
     pk[c] = pkList[index];
   });
@@ -25,7 +25,7 @@ export function expandStringForPrefix(
   minimalSize: number = 1,
   maximalSize: number = 5,
 ) {
-  let expanded: string[] = [];
+  const expanded: string[] = [];
   [...str.split(" "), ...str.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ").split(" ")].map(w => {
     for (let i = minimalSize; i <= Math.min(maximalSize, w.length); i++)
       expanded.push(w.slice(0, i));

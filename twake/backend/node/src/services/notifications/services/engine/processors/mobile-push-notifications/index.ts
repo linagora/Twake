@@ -7,7 +7,8 @@ import _ from "lodash";
  * Push new message notification to a set of users
  */
 export class PushNotificationMessageProcessor
-  implements NotificationPubsubHandler<PushNotificationMessage, PushNotificationMessageResult> {
+  implements NotificationPubsubHandler<PushNotificationMessage, PushNotificationMessageResult>
+{
   constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {

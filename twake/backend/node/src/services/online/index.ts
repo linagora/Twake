@@ -97,7 +97,7 @@ export default class OnlineService
   }
 
   private async areOnline(ids: Array<string> = []): Promise<Array<[string, boolean]>> {
-    let users = [];
+    const users = [];
     //This foreach is needed for $in operators https://github.com/linagora/Twake/issues/1246
     for (let i = 0; i < ids.length; i += 100) {
       users.push(

@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const unoconv = require("unoconv-promise");
 import { logger } from "../../../../core/platform/framework/logger";
 import { cleanFiles } from "../../utils";
@@ -23,6 +24,6 @@ export async function convertFromOffice(
     }
     return { output: outputPath, done: true };
   } else {
-    logger.error(`Unoconv can't processe, number of pages lower than 1`);
+    logger.error("Unoconv can't processe, number of pages lower than 1");
   }
 }

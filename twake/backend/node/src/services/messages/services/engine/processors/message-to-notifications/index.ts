@@ -24,7 +24,9 @@ export class MessageToNotificationsProcessor {
     readonly service: MessageServiceAPI,
   ) {}
 
-  async init() {}
+  async init() {
+    //
+  }
 
   async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
     logger.debug(`${this.name} - Share message with notification microservice`);
@@ -63,7 +65,7 @@ export class MessageToNotificationsProcessor {
 
         const company = await this.user.companies.getCompany({ id: participant.company_id });
 
-        let companyName = company?.name || "";
+        const companyName = company?.name || "";
         let workspaceName = "";
         let senderName = "Twake";
         if (messageResource.user_id) {
@@ -74,7 +76,7 @@ export class MessageToNotificationsProcessor {
 
         let title = "";
         let text = (messageResource.text || "").substr(0, 255);
-        let body = messageResource.text; // we need original body just in case text gets updated further on
+        const body = messageResource.text; // we need original body just in case text gets updated further on
         if (isDirectChannel(channel)) {
           title = `${senderName} in ${companyName}`;
         } else {

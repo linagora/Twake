@@ -4,9 +4,7 @@ import { ConsoleServiceAPI } from "./console/api";
 import { ApplicationServiceAPI } from "./applications/api";
 import { StatisticsAPI } from "./statistics/types";
 import AuthServiceAPI from "../core/platform/services/auth/provider";
-import { CompaniesServiceAPI, UsersServiceAPI } from "./user/api";
-import { WorkspaceService } from "./workspaces/api";
-import { getService as getWorkspaceService } from "./workspaces/services/workspace";
+import { CompaniesServiceAPI, UsersServiceInterface } from "./user/api";
 import { getService as getUsersService } from "./user/services/users";
 import { getService as GetCompaniesService } from "./user/services/companies";
 import { RealtimeServiceAPI } from "../core/platform/services/realtime/api";
@@ -15,6 +13,8 @@ import { FastifyInstance } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
 import { TwakeContext } from "../core/platform/framework";
 import web from "./workspaces/web";
+import { WorkspaceService } from "./workspaces/api";
+import { WorkspaceServiceImpl } from "./workspaces/services/workspace";
 
 type PlatformServices = {
   realtime: RealtimeServiceAPI;
@@ -23,7 +23,7 @@ type PlatformServices = {
 type CoreServices = {
   workspaces: WorkspaceService;
   companies: CompaniesServiceAPI;
-  users: UsersServiceAPI;
+  users: UsersServiceInterface;
   console: ConsoleServiceAPI;
   statistics: StatisticsAPI;
 };
@@ -64,7 +64,13 @@ class GlobalResolver {
     const companies = GetCompaniesService(platformServices, users);
     await companies.init();
 
-    const workspaces = getWorkspaceService(platformServices, users, companies, applications, auth);
+    const workspaces = new WorkspaceServiceImpl(
+      platformServices,
+      users,
+      companies,
+      applications,
+      auth,
+    );
     await workspaces.init();
 
     this.services = {

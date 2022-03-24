@@ -13,7 +13,7 @@ export function buildSearchQuery<Entity>(
   const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
   const indexProperties = entityDefinition.options.search.esMapping.properties || {};
 
-  let esBody: any = {
+  const esBody: any = {
     query: {
       bool: {
         boost: 1.0,
@@ -24,7 +24,7 @@ export function buildSearchQuery<Entity>(
   if (Object.keys(filters || {}).length > 0) {
     esBody.query.bool.must = esBody.query.bool.must || [];
     for (const [key, value] of Object.entries(filters)) {
-      let match: any = {};
+      const match: any = {};
       match[key] = { query: value, operator: "AND" };
       esBody.query.bool.must.push({ match });
     }
@@ -34,9 +34,9 @@ export function buildSearchQuery<Entity>(
     esBody.query.bool.must = esBody.query.bool.must || [];
     for (const inOperation of options.$in) {
       if (inOperation[1].length > 0) {
-        let bool: any = { bool: { should: [], minimum_should_match: 1 } };
+        const bool: any = { bool: { should: [], minimum_should_match: 1 } };
         for (const value of inOperation[1]) {
-          let match: any = {};
+          const match: any = {};
           match[inOperation[0]] = { query: value, operator: "AND" };
           bool.bool.should.push({ match });
         }
@@ -53,7 +53,7 @@ export function buildSearchQuery<Entity>(
 
     for (const [key, value] of Object.entries(indexProperties)) {
       if ((value as any)["type"] === "text") {
-        let match: any = {};
+        const match: any = {};
         match[key] = {
           query: options.$text.$search,
         };
@@ -80,7 +80,7 @@ export function buildSearchQuery<Entity>(
     body: esBody,
   };
 
-  let esOptions: TransportRequestOptions = {
+  const esOptions: TransportRequestOptions = {
     ignore: [404],
     maxRetries: 3,
   };

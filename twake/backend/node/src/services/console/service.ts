@@ -6,6 +6,7 @@ import { ConsoleOptions, ConsoleType, MergeProgress } from "./types";
 import { ConsoleServiceClient } from "./client-interface";
 import { ConsoleClientFactory } from "./client-factory";
 import User from "../user/entities/user";
+import gr from "../global-resolver";
 
 class ConsoleService implements ConsoleServiceAPI {
   version: "1";
@@ -63,8 +64,7 @@ class ConsoleService implements ConsoleServiceAPI {
   }
 
   async processPendingUser(user: User): Promise<void> {
-    const services = this.services.userService;
-    await services.workspaces.processPendingUser(user);
+    await gr.services.workspaces.processPendingUser(user);
   }
 }
 

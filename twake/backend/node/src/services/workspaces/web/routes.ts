@@ -32,7 +32,7 @@ const workspacePendingUsersUrl = "/companies/:company_id/workspaces/:workspace_i
 const workspaceUsersUrl = "/companies/:company_id/workspaces/:workspace_id/users";
 const workspaceInviteTokensUrl = "/companies/:company_id/workspaces/:workspace_id/users/tokens";
 
-const routes: FastifyPluginCallback<{}> = (fastify: FastifyInstance, options, next) => {
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
   const workspacesController = new WorkspacesCrudController();
   const workspaceUsersController = new WorkspaceUsersCrudController();
   const workspaceInviteTokensController = new WorkspaceInviteTokensCrudController();

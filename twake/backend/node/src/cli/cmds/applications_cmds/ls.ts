@@ -8,7 +8,7 @@ import * as process from "process";
 /**
  * Merge command parameters. Check the builder definition below for more details.
  */
-type CLIArgs = {};
+type CLIArgs = Record<string, unknown>;
 
 const services = [
   "storage",
@@ -50,7 +50,5 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     process.exit(0);
   },
 };
-
-const showUnpublishedApplications = async () => {};
 
 export default command;

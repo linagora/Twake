@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment */
 import {
   CreateResult,
   CrudException,
@@ -15,7 +15,7 @@ import Repository, {
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import User, { getInstance, UserPrimaryKey } from "../../entities/user";
-import { UsersServiceAPI } from "../../api";
+import { UsersServiceInterface } from "../../api";
 import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
 import SearchRepository from "../../../../core/platform/services/search/repository";
@@ -34,7 +34,7 @@ import { RealtimeSaved } from "../../../../core/platform/framework";
 import { getUserRoom } from "../../realtime";
 import NodeCache from "node-cache";
 
-export class UserService implements UsersServiceAPI {
+export class UserService implements UsersServiceInterface {
   version: "1";
   repository: Repository<User>;
   searchRepository: SearchRepository<User>;

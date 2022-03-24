@@ -18,6 +18,7 @@ import PhpNodeAPI from "./provider";
 import { RealtimeServiceAPI } from "../realtime/api";
 import { UsersCrudController } from "../../../../services/user/web/controller";
 import UserServiceAPI from "../../../../services/user/api";
+import gr from "../../../../services/global-resolver";
 
 @Consumes(["webserver", "websocket", "user", "channels"])
 export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements PhpNodeAPI {
@@ -151,7 +152,7 @@ export default class PhpNodeService extends TwakeService<PhpNodeAPI> implements 
           reply.code(500).send(); //Server is not ready
           return;
         }
-        const workspaces = await this.users.workspaces.getAllForCompany(request.params.company_id);
+        const workspaces = await gr.services.workspaces.getAllForCompany(request.params.company_id);
 
         for (const w of workspaces) {
           const channel = await this.channels.channels.get({

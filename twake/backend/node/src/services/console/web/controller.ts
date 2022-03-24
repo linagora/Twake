@@ -22,6 +22,7 @@ import { logger } from "../../../core/platform/framework/logger";
 import { getInstance } from "../../../services/user/entities/user";
 import { getInstance as getCompanyInstance } from "../../../services/user/entities/company";
 import Workspace from "../../../services/workspaces/entities/workspace";
+import gr from "../../global-resolver";
 
 export class ConsoleController {
   private passwordEncoder: PasswordEncoder;
@@ -90,15 +91,15 @@ export class ConsoleController {
         await this.userService.companies.setUserRole(company.id, user.entity.id, "admin");
 
         //In case someone invited us to a workspace
-        await this.userService.workspaces.processPendingUser(user.entity);
+        await gr.services.workspaces.processPendingUser(user.entity);
 
         //If user is in no workspace, then we create one for they
-        const workspaces = await this.userService.workspaces.getAllForUser(
+        const workspaces = await gr.services.workspaces.getAllForUser(
           { userId: user.entity.id },
           { id: company.id },
         );
         if (workspaces.length === 0) {
-          this.userService.workspaces.create(
+          gr.services.workspaces.create(
             {
               company_id: company.id,
               name: `${

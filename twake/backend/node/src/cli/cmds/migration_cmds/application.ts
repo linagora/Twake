@@ -9,10 +9,9 @@ import PhpApplication, {
 } from "./php-application/php-application-entity";
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Application, {
+  ApplicationPublication,
   TYPE,
-  getInstance,
 } from "../../../services/applications/entities/application";
-import _ from "lodash";
 
 type Options = {
   onlyApplication?: string;
@@ -124,32 +123,44 @@ export const importDepreciatedFields = (application: PhpApplication): Applicatio
   }
 
   if (newApplication.publication?.published === undefined) {
-    //@ts-ignore
-    newApplication.publication = newApplication.publication || {};
+    newApplication.publication = newApplication.publication || {
+      published: false,
+      requested: false,
+    };
     newApplication.publication.published = application.depreciated_is_available_to_public;
     newApplication.publication.requested =
       application.depreciated_public && !application.depreciated_twake_team_validation;
   }
 
   if (!newApplication.stats?.version) {
-    //@ts-ignore
-    newApplication.stats = newApplication.stats || {};
+    newApplication.stats = newApplication.stats || {
+      created_at: null,
+      updated_at: null,
+      version: null,
+    };
     newApplication.stats.version = 1;
     newApplication.stats.created_at = Date.now();
     newApplication.stats.updated_at = Date.now();
   }
 
   if (!newApplication.api?.private_key) {
-    //@ts-ignore
-    newApplication.api = newApplication.api || {};
+    newApplication.api = newApplication.api || {
+      hooks_url: null,
+      allowed_ips: null,
+      private_key: null,
+    };
     newApplication.api.hooks_url = application.depreciated_api_events_url;
     newApplication.api.allowed_ips = application.depreciated_api_allowed_ip;
     newApplication.api.private_key = application.depreciated_api_private_key;
   }
 
   if (newApplication.access?.write === undefined) {
-    //@ts-ignore
-    newApplication.access = newApplication.access || {};
+    newApplication.access = newApplication.access || {
+      read: null,
+      write: null,
+      delete: null,
+      hooks: null,
+    };
     try {
       newApplication.access.write = JSON.parse(application.depreciated_capabilities || "[]") || [];
       newApplication.access.delete = JSON.parse(application.depreciated_capabilities || "[]") || [];

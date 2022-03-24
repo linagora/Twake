@@ -2,13 +2,11 @@ import { TwakeContext } from "../../../core/platform/framework";
 import UserServiceAPI, {
   CompaniesServiceAPI,
   UserExternalLinksServiceAPI,
-  UsersServiceAPI,
+  UsersServiceInterface,
 } from "../api";
 import { getService as getUserService } from "./users";
 import { getService as getCompanyService } from "./companies";
 import { getService as getExternalService } from "./external_links";
-import { getService as getWorkspaceService } from "../../workspaces/services/workspace";
-import { WorkspaceService } from "../../workspaces/api";
 import {
   CompanyShort,
   CompanyUserObject,
@@ -33,10 +31,9 @@ export function getService(
 
 class Service implements UserServiceAPI {
   version: "1";
-  users: UsersServiceAPI;
+  users: UsersServiceInterface;
   companies: CompaniesServiceAPI;
   external: UserExternalLinksServiceAPI;
-  workspaces: WorkspaceService;
 
   constructor(
     platformServices: PlatformServicesAPI,
@@ -47,13 +44,6 @@ class Service implements UserServiceAPI {
     this.users = getUserService(platformServices);
     this.external = getExternalService(platformServices.database);
     this.companies = getCompanyService(platformServices, this.users);
-    this.workspaces = getWorkspaceService(
-      platformServices,
-      this.users,
-      this.companies,
-      this.applications,
-      auth,
-    );
   }
 
   async init(context: TwakeContext): Promise<this> {
@@ -62,7 +52,6 @@ class Service implements UserServiceAPI {
         this.users.init(context),
         this.companies.init(context),
         this.external.init(context),
-        this.workspaces.init(context),
       ]);
     } catch (err) {
       console.error("Error while initializing user service", err);

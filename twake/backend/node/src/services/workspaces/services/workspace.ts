@@ -36,7 +36,7 @@ import WorkspacePendingUser, {
 } from "../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../user/web/types";
 import { uuid } from "../../../utils/types";
-import { CompaniesServiceAPI, UsersServiceAPI } from "../../user/api";
+import { CompaniesServiceAPI, UsersServiceInterface } from "../../user/api";
 import { CounterProvider } from "../../../core/platform/services/counter/provider";
 import {
   TYPE as WorkspaceCounterEntityType,
@@ -61,17 +61,7 @@ import { Readable } from "stream";
 import { reduceUUID4 } from "../../../utils/uuid-reducer";
 import { expandUUID4 } from "../../../utils/uuid-reducer";
 
-export function getService(
-  platformServices: PlatformServicesAPI,
-  user: UsersServiceAPI,
-  companies: CompaniesServiceAPI,
-  applications: ApplicationServiceAPI,
-  auth: AuthServiceAPI,
-): WorkspaceService {
-  return new Service(platformServices, user, companies, applications, auth);
-}
-
-export class Service implements WorkspaceService {
+export class WorkspaceServiceImpl implements WorkspaceService {
   version: "1";
   private workspaceUserRepository: Repository<WorkspaceUser>;
   private workspaceRepository: Repository<Workspace>;
@@ -81,7 +71,7 @@ export class Service implements WorkspaceService {
 
   constructor(
     private platformServices: PlatformServicesAPI,
-    private users: UsersServiceAPI,
+    private users: UsersServiceInterface,
     private companies: CompaniesServiceAPI,
     private applications: ApplicationServiceAPI,
     private auth: AuthServiceAPI,

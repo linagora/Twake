@@ -13,7 +13,8 @@ import { localEventBus } from "../../../../../../core/platform/framework/pubsub"
 import { ChannelType, ResourceEventsPayload } from "../../../../../../utils/types";
 
 export class NewChannelMessageProcessor
-  implements NotificationPubsubHandler<MessageNotification, MentionNotification> {
+  implements NotificationPubsubHandler<MessageNotification, MentionNotification>
+{
   constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {

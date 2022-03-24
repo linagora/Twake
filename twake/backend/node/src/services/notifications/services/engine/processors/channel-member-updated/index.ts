@@ -7,7 +7,8 @@ import { Channel, ChannelMember } from "../../../../../channels/entities";
 type UpdateChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class UpdateChannelMemberMessageProcessor
-  implements NotificationPubsubHandler<UpdateChannelMessage, void> {
+  implements NotificationPubsubHandler<UpdateChannelMessage, void>
+{
   constructor(readonly service: NotificationServiceAPI) {}
 
   readonly topics = {

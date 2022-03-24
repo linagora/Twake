@@ -13,7 +13,7 @@ import Repository, {
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { UserPrimaryKey } from "../../entities/user";
-import { CompaniesServiceAPI, UsersServiceAPI } from "../../api";
+import { CompaniesServiceAPI, UsersServiceInterface } from "../../api";
 import Company, {
   CompanyPrimaryKey,
   CompanySearchKey,
@@ -42,7 +42,7 @@ export class CompanyService implements CompaniesServiceAPI {
 
   constructor(
     private platformServices: PlatformServicesAPI,
-    private userServiceAPI: UsersServiceAPI,
+    private userServiceAPI: UsersServiceInterface,
   ) {}
 
   async init(): Promise<this> {

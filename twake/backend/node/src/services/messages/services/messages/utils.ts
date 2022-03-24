@@ -24,7 +24,7 @@ export function updateMessageReactions(
   selectedReactions: string[],
   userId: string,
 ) {
-  let reactions: { [key: string]: MessageReaction } = {};
+  const reactions: { [key: string]: MessageReaction } = {};
   for (const reaction of message.reactions || []) {
     reactions[reaction.name] = reaction;
   }

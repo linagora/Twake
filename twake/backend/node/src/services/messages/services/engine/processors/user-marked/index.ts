@@ -17,5 +17,7 @@ export class UserMarkedViewProcessor {
     );
   }
 
-  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {}
+  async process(thread: Thread, message: MessageLocalEvent): Promise<void> {
+    //
+  }
 }

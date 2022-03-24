@@ -9,9 +9,7 @@ import { getService as getCompanyApplicationService } from "./company-applicatio
 import { getService as getCompaniesService } from "../../user/services/companies";
 import { CompaniesServiceAPI } from "../../user/api";
 
-export function getService(
-  platformService: PlatformServicesAPI,
-): ApplicationServiceAPI {
+export function getService(platformService: PlatformServicesAPI): ApplicationServiceAPI {
   return new Service(platformService);
 }
 

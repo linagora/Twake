@@ -39,6 +39,7 @@ import { DatabaseServiceAPI } from "../../../core/platform/services/database/api
 import { CompanyUserRole } from "../../user/web/types";
 import { ConsoleServiceAPI } from "../api";
 import { getService as getConsoleService } from "../service";
+import gr from "../../global-resolver";
 
 const logger = getLogger("console.process.merge");
 
@@ -294,7 +295,7 @@ export class MergeProcess {
         if (companyUser.isExterne) {
           role = "guest";
         }
-        const workspacesUsers = await this.userService.workspaces.getAllForUser(
+        const workspacesUsers = await gr.services.workspaces.getAllForUser(
           { userId: companyUser.user_id },
           { id: company.id },
         );

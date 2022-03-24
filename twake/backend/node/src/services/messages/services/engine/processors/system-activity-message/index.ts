@@ -6,7 +6,8 @@ import { getInstance } from "../../../../entities/messages";
 import { logger } from "../../../../../../core/platform/framework";
 
 export class ChannelSystemActivityMessageProcessor
-  implements PubsubHandler<ActivityPublishedType, void> {
+  implements PubsubHandler<ActivityPublishedType, void>
+{
   constructor(readonly service: MessageServiceAPI) {}
 
   readonly topics = {

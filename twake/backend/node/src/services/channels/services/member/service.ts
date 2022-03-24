@@ -1,4 +1,4 @@
-import {getLogger, RealtimeDeleted, RealtimeSaved} from "../../../../core/platform/framework";
+import { getLogger, RealtimeDeleted, RealtimeSaved } from "../../../../core/platform/framework";
 import {
   CreateResult,
   CrudException,
@@ -10,7 +10,7 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import ChannelServiceAPI, {MemberService} from "../../provider";
+import ChannelServiceAPI, { MemberService } from "../../provider";
 
 import {
   Channel as ChannelEntity,
@@ -20,27 +20,32 @@ import {
   getMemberOfChannelInstance,
   MemberOfChannel,
 } from "../../entities";
-import {ChannelExecutionContext, ChannelMemberType, ChannelVisibility, WorkspaceExecutionContext,} from "../../types";
-import {Channel, ResourceEventsPayload, User} from "../../../../utils/types";
-import {cloneDeep, isNil, omitBy} from "lodash";
-import {updatedDiff} from "deep-object-diff";
-import {pick} from "../../../../utils/pick";
-import {getMemberPath, getRoomName} from "./realtime";
-import {ChannelListOptions, ChannelMemberSaveOptions} from "../../web/types";
-import {ResourcePath} from "../../../../core/platform/services/realtime/types";
+import {
+  ChannelExecutionContext,
+  ChannelMemberType,
+  ChannelVisibility,
+  WorkspaceExecutionContext,
+} from "../../types";
+import { Channel, ResourceEventsPayload, User } from "../../../../utils/types";
+import { cloneDeep, isNil, omitBy } from "lodash";
+import { updatedDiff } from "deep-object-diff";
+import { pick } from "../../../../utils/pick";
+import { getMemberPath, getRoomName } from "./realtime";
+import { ChannelListOptions, ChannelMemberSaveOptions } from "../../web/types";
+import { ResourcePath } from "../../../../core/platform/services/realtime/types";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import {localEventBus} from "../../../../core/platform/framework/pubsub";
-import {plainToClass} from "class-transformer";
-import UserServiceAPI, {CompaniesServiceAPI} from "../../../user/api";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
+import { plainToClass } from "class-transformer";
+import UserServiceAPI, { CompaniesServiceAPI } from "../../../user/api";
 import {
   ChannelCounterEntity,
   ChannelCounterPrimaryKey,
   ChannelUserCounterType,
   TYPE as ChannelCounterEntityType,
 } from "../../entities/channel-counters";
-import {CounterProvider} from "../../../../core/platform/services/counter/provider";
-import {PlatformServicesAPI} from "../../../../core/platform/services/platform-services";
-import {countRepositoryItems} from "../../../../utils/counters";
+import { CounterProvider } from "../../../../core/platform/services/counter/provider";
+import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { countRepositoryItems } from "../../../../utils/counters";
 import NodeCache from "node-cache";
 
 const USER_CHANNEL_KEYS = [

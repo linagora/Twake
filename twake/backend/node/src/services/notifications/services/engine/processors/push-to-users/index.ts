@@ -21,7 +21,8 @@ import { getNotificationRoomName } from "../../../realtime";
  * Push new message notification to a set of users
  */
 export class PushNotificationToUsersMessageProcessor
-  implements NotificationPubsubHandler<MentionNotification, MentionNotificationResult> {
+  implements NotificationPubsubHandler<MentionNotification, MentionNotificationResult>
+{
   constructor(readonly service: NotificationServiceAPI, private pubsub: PubsubServiceAPI) {}
 
   readonly topics = {

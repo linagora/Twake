@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types */
 import {
   CRUDService,
   DeleteResult,
@@ -7,7 +8,7 @@ import {
   Pagination,
   SaveResult,
 } from "../../core/platform/framework/api/crud-service";
-import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
+import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import {
   UserMessageBookmark,
   UserMessageBookmarkPrimaryKey,
@@ -17,17 +18,17 @@ import { MessagesEngine } from "./services/engine";
 import {
   ChannelViewExecutionContext,
   CompanyExecutionContext,
-  MessageViewListOptions,
-  ThreadExecutionContext,
-  MessageWithReplies,
   MessagesGetThreadOptions,
-  MessageWithRepliesWithUsers, SearchMessageOptions,
+  MessageViewListOptions,
+  MessageWithReplies,
+  MessageWithRepliesWithUsers,
+  SearchMessageOptions,
+  ThreadExecutionContext,
 } from "./types";
 
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
 import { StatisticsAPI } from "../statistics/types";
-import { SearchUserOptions } from "../user/services/users/types";
 import { uuid } from "../../utils/types";
 
 export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
@@ -147,4 +148,3 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
 
   getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]>;
 }
-

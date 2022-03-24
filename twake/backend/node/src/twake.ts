@@ -4,7 +4,7 @@ import { TwakePlatform, TwakePlatformConfiguration } from "./core/platform/platf
 import globalResolver from "./services/global-resolver";
 
 /**
- * Instanciate and start a new TwakePlatform with the given services.
+ * Instantiate and start a new TwakePlatform with the given services.
  */
 async function run(services: string[] = []): Promise<TwakePlatform> {
   let platform: TwakePlatform;

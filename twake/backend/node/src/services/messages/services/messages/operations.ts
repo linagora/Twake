@@ -29,7 +29,7 @@ export class ThreadMessagesOperationsService {
 
   async pin(
     operation: PinOperation,
-    options: {},
+    options: Record<string, unknown>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
@@ -43,7 +43,7 @@ export class ThreadMessagesOperationsService {
     });
 
     if (!message) {
-      logger.error(`This message doesn't exists`);
+      logger.error("This message doesn't exists");
       throw Error("Can't edit this message.");
     }
 
@@ -66,7 +66,7 @@ export class ThreadMessagesOperationsService {
 
   async reaction(
     operation: ReactionOperation,
-    options: {},
+    options: Record<string, unknown>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     if (!context?.user?.server_request && !this.service.threads.checkAccessToThread(context)) {
@@ -80,7 +80,7 @@ export class ThreadMessagesOperationsService {
     });
 
     if (!message) {
-      logger.error(`This message doesn't exists`);
+      logger.error("This message doesn't exists");
       throw Error("Can't edit this message.");
     }
 
@@ -99,7 +99,7 @@ export class ThreadMessagesOperationsService {
 
   async bookmark(
     operation: BookmarkOperation,
-    options: {},
+    options: Record<string, unknown>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
     const message = await this.repository.findOne({
@@ -108,7 +108,7 @@ export class ThreadMessagesOperationsService {
     });
 
     if (!message) {
-      logger.error(`This message doesn't exists`);
+      logger.error("This message doesn't exists");
       throw Error("Can't edit this message.");
     }
 

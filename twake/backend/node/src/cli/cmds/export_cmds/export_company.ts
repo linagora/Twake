@@ -12,6 +12,7 @@ import { MessageServiceAPI } from "../../../services/messages/api";
 import { Message } from "../../../services/messages/entities/messages";
 import { MessageWithReplies } from "../../../services/messages/types";
 import { formatCompany } from "../../../services/user/utils";
+import gr from "../../../services/global-resolver";
 
 /**
  * Merge command parameters. Check the builder definition below for more details.
@@ -57,6 +58,8 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
   },
   handler: async argv => {
     const platform = await twake.run(services);
+    await gr.doInit(platform);
+
     const userService = platform.getProvider<UserServiceAPI>("user");
 
     const company = await userService.companies.getCompany({ id: argv.id });
@@ -76,7 +79,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
 
     //Workspaces
     console.log("- Create workspaces json file");
-    const workspaces = await userService.workspaces.getAllForCompany(company.id);
+    const workspaces = await gr.services.workspaces.getAllForCompany(company.id);
     writeFileSync(`${output}/workspaces.json`, JSON.stringify(workspaces));
 
     //Users
@@ -87,7 +90,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       let workspaceUsers: WorkspaceUser[] = [];
       let pagination = new Pagination();
       do {
-        const res = await userService.workspaces.getUsers(
+        const res = await gr.services.workspaces.getUsers(
           { workspaceId: workspace.id },
           pagination,
         );

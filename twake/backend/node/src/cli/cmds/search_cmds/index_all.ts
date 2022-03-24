@@ -39,7 +39,7 @@ class SearchIndexAll {
 
     const repository = repositories.get(options.repository);
     if (!repository) {
-      throw `No such repository ready for indexation, available are: users, applications`;
+      throw "No such repository ready for indexation, available are: users, applications";
     }
 
     // Complete user with companies in cache
@@ -68,7 +68,7 @@ class SearchIndexAll {
     }
 
     console.log("Start indexing...");
-    let count = 0;
+    const count = 0;
     // Get all items
     let page: Pagination = { limitStr: "100" };
     do {
