@@ -160,7 +160,7 @@ export default (props: Props) => {
       let data = {
         command: content.split(' ').slice(1).join(' '),
         channel: channel,
-        parent_message: parentMessage || null,
+        thread: parentMessage || null,
       };
 
       WorkspacesApps.notifyApp(app.id, 'action', 'command', data);

@@ -27,6 +27,7 @@ import { ViewContext } from 'app/views/client/main-view/MainContent';
 import SideViewService from 'app/features/router/services/side-view-service';
 import MainViewService from 'app/features/router/services/main-view-service';
 import Emojione from 'app/components/emojione/emojione';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 type Props = {
   onOpen?: () => void;
@@ -39,6 +40,12 @@ export default (props: Props) => {
   const workspaceId = useRouterWorkspace();
   const context = useContext(MessageContext);
   let { message, react, remove, pin } = useMessage(context);
+  let { channel } = useChannel(channelId);
+  let { message: thread } = useMessage({
+    companyId: channel.company_id || '',
+    threadId: message.thread_id,
+    id: message.thread_id,
+  });
 
   const location = `message-${message.id}`;
   const subLocation = useContext(ViewContext).type;
@@ -51,8 +58,8 @@ export default (props: Props) => {
 
   const triggerApp = (app: any) => {
     var data = {
-      channel: {}, //TODO Collections.get('channels').find(message.channel_id),
-      parent_message: {}, //TODO Collections.get('messages').find(message.parent_message_id) || null,
+      channel: channel,
+      thread: thread.id !== message.id ? thread : null,
       message: message,
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'action', data);
