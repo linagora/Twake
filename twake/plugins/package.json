@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Twake plugins server",
   "scripts": {
+    "install-plugin": "tsc --project . --outDir ./dist; node ./dist/install.js",
     "build": "npm run build:clean && npm run build:ts && npm run build:copy-assets",
     "build:ts": "tsc",
     "build:clean": "rimraf ./dist",
@@ -79,6 +80,7 @@
     "class-transformer": "^0.3.1",
     "cli-table": "^0.3.6",
     "config": "^3.3.2",
+    "download-git-repo": "^3.0.2",
     "fastify": "^3.27.1",
     "fastify-cors": "^4.1.0",
     "fastify-formbody": "^5.0.0",

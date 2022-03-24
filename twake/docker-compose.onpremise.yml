@@ -14,6 +14,8 @@ services:
 
   plugins:
     image: twaketech/twake-plugins:latest
+    volumes:
+      - ./configuration/plugins/production.json:/usr/src/app/config/production.json
 
   node:
     image: twaketech/twake-node:2021.Q2.505
