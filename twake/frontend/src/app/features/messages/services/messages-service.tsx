@@ -225,7 +225,7 @@ class Messages extends Observable {
 
     let data = {
       channel,
-      thread: thread,
+      thread: thread?.id ? thread : null,
       from_icon: from_icon,
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
