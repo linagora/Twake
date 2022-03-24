@@ -18,7 +18,7 @@ import MessageEditorManager from './message-editor-service-factory';
 import MessagesListServerUtilsManager from './message-loader-factory';
 import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
 import SideViewService from 'app/features/router/services/side-view-service';
-import { Message, MessageFileType } from '../types/message';
+import { Message, MessageFileType, MessageWithReplies } from '../types/message';
 import { Application } from 'app/features/applications/types/application';
 import {
   getCompanyApplications,
@@ -158,7 +158,14 @@ class Messages extends Observable {
     }
   }
 
-  async triggerApp(channel: ChannelType, threadId: string, app: any, from_icon: any, evt: any) {
+  async triggerApp(
+    channel: ChannelType,
+    thread: MessageWithReplies | null,
+    app: any,
+    from_icon: any,
+    evt: any,
+  ) {
+    let threadId = thread?.id;
     if (app?.identity?.code === 'twake_drive') {
       let menu = [];
       let has_drive_app = getCompanyApplication(app.id);
@@ -218,7 +225,7 @@ class Messages extends Observable {
 
     let data = {
       channel,
-      thread: false,
+      thread: thread,
       from_icon: from_icon,
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);

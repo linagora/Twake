@@ -59,7 +59,7 @@ export default (props: Props) => {
   const triggerApp = (app: any) => {
     var data = {
       channel: channel,
-      thread: thread.id !== message.id ? thread : null,
+      thread: thread.id && thread.id !== message.id ? thread : null,
       message: message,
     };
     WorkspacesApps.notifyApp(app.id, 'action', 'action', data);

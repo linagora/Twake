@@ -160,7 +160,7 @@ export default (props: Props) => {
       let data = {
         command: content.split(' ').slice(1).join(' '),
         channel: channel,
-        thread: parentMessage || null,
+        thread: parentMessage?.id ? parentMessage : null,
       };
 
       WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
@@ -180,7 +180,7 @@ export default (props: Props) => {
       return;
     }
     disable_app[app.id] = new Date().getTime();
-    MessagesService.triggerApp(channel, props.threadId, app, from_icon, evt);
+    MessagesService.triggerApp(channel, parentMessage, app, from_icon, evt);
   };
 
   const focus = () => {
