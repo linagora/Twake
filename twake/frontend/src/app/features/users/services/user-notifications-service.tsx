@@ -12,7 +12,6 @@ import { NotificationResource } from 'app/features/users/types/notification-type
 import WorkspacesService from 'app/deprecated/workspaces/workspaces';
 import popupManager from 'app/deprecated/popupManager/popupManager';
 import RouterService from '../../router/services/router-service';
-import ChannelsService from 'app/deprecated/channels/channels';
 import NotificationParameters from 'app/deprecated/user/notification_parameters';
 import UserService from 'app/features/users/services/current-user-service';
 import NotificationPreferences from '../../../deprecated/user/NotificationPreferences';

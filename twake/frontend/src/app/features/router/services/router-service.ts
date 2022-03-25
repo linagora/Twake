@@ -9,7 +9,6 @@ import Error from 'app/views/error';
 import Join from 'app/views/join';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
-import Channels from 'app/deprecated/channels/channels';
 import PublicMainView from 'app/views/client/main-view/PublicMainView';
 import Observable from '../../../deprecated/Observable/Observable';
 
@@ -204,9 +203,6 @@ class RouterServices extends Observable {
         state[key] = reducedState[key];
       }
     });
-
-    //Retro compatibility with old code
-    Channels.currentChannelFrontId = Collections.get('channels').find(state.channelId)?.front_id;
 
     return state;
   }

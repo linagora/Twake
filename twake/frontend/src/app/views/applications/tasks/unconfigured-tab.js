@@ -4,7 +4,6 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import Languages from 'app/features/global/services/languages-service';
 import BoardPicker from './board-picker/board-picker.js';
 import Menu from 'components/menus/menu.js';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 import Button from 'components/buttons/button.js';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces';

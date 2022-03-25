@@ -55,7 +55,7 @@ export function buildSearchQuery<Entity>(
       if ((value as any)["type"] === "text") {
         let match: any = {};
         match[key] = {
-          query: options.$text.$search,
+          query: (options.$text.$search || "").toLocaleLowerCase(),
         };
         esBody.query.bool.should.push({
           match,
@@ -64,7 +64,7 @@ export function buildSearchQuery<Entity>(
         //Allow prefix search
         if (indexProperties[key].index_prefixes !== undefined) {
           esBody.query.bool.should.push({
-            prefix: { [key]: { value: options.$text.$search } },
+            prefix: { [key]: { value: (options.$text.$search || "").toLocaleLowerCase() } },
           });
         }
       }

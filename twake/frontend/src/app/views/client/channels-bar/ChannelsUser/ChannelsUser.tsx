@@ -27,7 +27,7 @@ export default () => {
 
   const [delayed, setDelayed] = useState(true);
 
-  //This delay make the app superfast
+  //This delay make the app faster: could be removed with an implementation of virtualized list
   useEffect(() => {
     setTimeout(() => setDelayed(false), 50);
   }, []);

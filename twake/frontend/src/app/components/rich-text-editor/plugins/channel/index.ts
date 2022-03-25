@@ -1,7 +1,6 @@
 import { ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
 import { getSelectedBlock } from 'draftjs-utils';
 import { Channel } from './channel';
-import ChannelsService from 'app/deprecated/channels/channels';
 import { ChannelType } from 'app/features/channels/types/channel';
 import ChannelSuggestion from './channel-suggestion';
 import { EditorSuggestionPlugin, SelectOrInsertOptions } from '../';
@@ -27,16 +26,8 @@ const resolver = (
   max: number,
   callback: (channels: ChannelSuggestionType[]) => void,
 ) => {
-  ChannelsService.search(text, (channels: ChannelType[]) => {
-    if (!channels || !channels.length) {
-      callback([]);
-      return;
-    }
-
-    return callback(
-      channels.map((channel, index) => ({ ...channel, ...{ autocomplete_id: index } })),
-    );
-  });
+  //TODO
+  callback([]);
 };
 
 const addChannel = (

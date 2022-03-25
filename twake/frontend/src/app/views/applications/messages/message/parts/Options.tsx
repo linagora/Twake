@@ -88,44 +88,43 @@ export default (props: Props) => {
       },
     });
 
-    if (message.thread_id == message.id) {
-      if (!message.context?.disable_pin) {
-        menu.push({
-          type: 'menu',
-          icon: 'link',
-          text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
-          onClick: () => {
-            const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-              workspaceId: workspaceId,
-              channelId: channelId,
-              messageId: message.thread_id || message.id,
-            })}`;
-            const el = document.createElement('textarea');
-            el.value = url;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-          },
-        });
+    //Fixme put back when jump to message is working
+    if (false)
+      menu.push({
+        type: 'menu',
+        icon: 'link',
+        text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
+        onClick: () => {
+          const url = `${document.location.origin}${RouterServices.generateRouteFromState({
+            workspaceId: workspaceId,
+            channelId: channelId,
+            messageId: message.thread_id || message.id,
+          })}`;
+          const el = document.createElement('textarea');
+          el.value = url;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+        },
+      });
 
-        menu.push({
-          type: 'menu',
-          icon: 'map-pin',
-          text: Languages.t(
-            !message.pinned_info?.pinned_at
-              ? 'scenes.apps.messages.message.pin_button'
-              : 'scenes.apps.messages.message.unpin_button',
-            [],
-            'Pin message',
-          ),
-          className: 'option_button',
-          onClick: () => {
-            pin(!message.pinned_info?.pinned_at);
-          },
-        });
-      }
-    }
+    if (!message.context?.disable_pin)
+      menu.push({
+        type: 'menu',
+        icon: 'map-pin',
+        text: Languages.t(
+          !message.pinned_info?.pinned_at
+            ? 'scenes.apps.messages.message.pin_button'
+            : 'scenes.apps.messages.message.unpin_button',
+          [],
+          'Pin message',
+        ),
+        className: 'option_button',
+        onClick: () => {
+          pin(!message.pinned_info?.pinned_at);
+        },
+      });
 
     const apps =
       getCompanyApplications(Groups.currentGroupId).filter(
