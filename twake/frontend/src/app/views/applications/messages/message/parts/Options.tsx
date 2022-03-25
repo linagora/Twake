@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import 'moment-timezone';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 
-import MessagesService from 'app/features/messages/services/messages-service';
 import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
 import Menu from 'components/menus/menu.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
@@ -11,8 +10,6 @@ import AlertManager from 'app/features/global/services/alert-manager-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import User from 'app/features/users/services/current-user-service';
-import DragIndicator from '@material-ui/icons/DragIndicator';
-import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
 import RouterServices from 'app/features/router/services/router-service';
 import { Application } from 'app/features/applications/types/application';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
@@ -81,7 +78,13 @@ export default (props: Props) => {
       icon: 'arrow-up-right',
       text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
       onClick: () => {
-        MessagesService.showMessage(message.thread_id, channel);
+        SideViewService.select(channel?.id || '', {
+          app: { identity: { code: 'messages' } } as Application,
+          context: {
+            viewType: 'channel_thread',
+            threadId: message.thread_id,
+          },
+        });
       },
     });
 

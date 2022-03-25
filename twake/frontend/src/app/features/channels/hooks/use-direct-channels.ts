@@ -12,6 +12,9 @@ import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 import { UserType } from 'app/features/users/types/user';
 import { useSetChannel } from './use-channel';
+import ChannelAPIClient from '../api/channel-api-client';
+import MenusManager from 'app/components/menus/menus-manager.js';
+import RouterService from 'app/features/router/services/router-service';
 
 export function useRefreshDirectChannels(): {
   refresh: () => Promise<void>;
@@ -74,6 +77,7 @@ export function useDirectChannelsSetup() {
 export function useDirectChannels(): {
   directChannels: ChannelType[];
   refresh: () => Promise<void>;
+  openDiscussion: (membersId: string[]) => Promise<void>;
 } {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
@@ -82,8 +86,23 @@ export function useDirectChannels(): {
   );
   const { refresh } = useRefreshDirectChannels();
 
+  const openDiscussion = async (membersIds: string[]) => {
+    const channel = await ChannelAPIClient.getDirect(companyId, membersIds);
+    await refresh();
+    if (channel) {
+      RouterService.push(
+        RouterService.generateRouteFromState({
+          channelId: channel.id,
+          companyId: channel.company_id,
+        }),
+      );
+    }
+    MenusManager.closeMenu();
+  };
+
   return {
     refresh,
     directChannels,
+    openDiscussion,
   };
 }

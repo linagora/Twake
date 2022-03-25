@@ -11,7 +11,6 @@ import Strings from 'app/features/global/utils/strings.js';
 import DriveService from 'app/deprecated/Apps/Drive/Drive.js';
 import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import TasksService from 'app/deprecated/Apps/Tasks/Tasks.js';
-import MessagesService from 'app/features/messages/services/messages-service';
 
 import Globals from 'app/features/global/services/globals-twake-app-service';
 
@@ -54,7 +53,7 @@ class SearchService extends Observable {
   }
 
   selectMessage(item, i) {
-    if (i > 20) {
+    /*if (i > 20) {
       return;
     }
 
@@ -73,7 +72,7 @@ class SearchService extends Observable {
           '',
           item.message.parent_message_id || '',
         );
-        /*MessagesService.scrollToMessage(
+        MessagesService.scrollToMessage(
           item.channel.id || '',
           item.message.parent_message_id || '',
           item.message.id || '',
@@ -81,13 +80,13 @@ class SearchService extends Observable {
         setTimeout(() => {
           MessagesService.showMessage(item.message.parent_message_id);
         }, 500);
-        */
       }
     } else {
       setTimeout(() => {
         this.selectMessage(item, i + 1);
       }, 200);
     }
+        */
   }
 
   select(item, i) {

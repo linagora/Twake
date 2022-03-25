@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
@@ -24,6 +24,17 @@ export default () => {
       size: { width: '400px' },
     });
   };
+
+  const [delayed, setDelayed] = useState(true);
+
+  //This delay make the app superfast
+  useEffect(() => {
+    setTimeout(() => setDelayed(false), 50);
+  }, []);
+
+  if (delayed) {
+    return <></>;
+  }
 
   return (
     <div className="users_channels">

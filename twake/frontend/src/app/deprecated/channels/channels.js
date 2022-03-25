@@ -7,6 +7,7 @@ import MenusManager from 'app/components/menus/menus-manager.js';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import RouterService from 'app/features/router/services/router-service';
 import _ from 'lodash';
+import ChannelAPIClient from '../../features/channels/api/channel-api-client';
 
 class Channels extends Observable {
   constructor() {
@@ -44,50 +45,6 @@ class Channels extends Observable {
   }
 
   readChannelIfNeeded(channel) {}
-
-  // Move me and refactor
-  async openDiscussion(membersIds, companyId = null) {
-    /*
-    membersIds = membersIds.map(e => e); //Copy original list
-    companyId = companyId || (RouterService.getStateFromRoute() || {}).companyId;
-    const collectionPath = `/channels/v1/companies/${companyId}/workspaces/direct/channels/::mine`;
-    const channelsCollections = Collections.get(collectionPath, ChannelType);
-
-    membersIds.push(UsersService.getCurrentUserId());
-    membersIds = _.uniq(membersIds);
-
-    const newDirectMessage = {
-      company_id: companyId,
-      workspace_id: 'direct',
-      visibility: 'direct',
-      members: membersIds,
-    };
-
-    let res = channelsCollections
-      .find({ company_id: companyId, workspace_id: 'direct' }, { withoutBackend: true })
-      .filter(channel =>
-        _.isEqual(_.uniq(channel.members).sort(), _.uniq(membersIds).sort()),
-      )[0];
-
-    if (!res) {
-      res = await channelsCollections.upsert(new ChannelType(newDirectMessage), {
-        query: { members: membersIds },
-        waitServerReply: true,
-      });
-    }
-
-    if (res) {
-      RouterService.push(
-        RouterService.generateRouteFromState({
-          channelId: res.id,
-          companyId: res.data.company_id,
-        }),
-      );
-    }
-
-    MenusManager.closeMenu();
-    */
-  }
 
   //Should not be used anymore
   search(query, callback) {
