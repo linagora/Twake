@@ -18,8 +18,6 @@ export default () => {
   const { companyId } = RouterServices.getStateFromRoute();
   let { directChannels } = useDirectChannels();
 
-  console.log(directChannels);
-
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {
       position: 'center',

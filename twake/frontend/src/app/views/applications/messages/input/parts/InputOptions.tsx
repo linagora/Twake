@@ -67,8 +67,8 @@ export default (props: Props) => {
           };
 
           if (
-            app?.identity?.code === 'twake_drive' ||
-            app.display?.twake?.chat?.input?.type === 'file'
+            app.display?.twake?.chat?.input?.type === 'file' &&
+            app?.identity?.code !== 'twake_drive'
           ) {
             addon_files.push(menu_item);
           } else if (

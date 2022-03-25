@@ -25,9 +25,8 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useCurrentWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 import useChannelWritingActivity from 'app/features/channels/hooks/use-channel-writing-activity';
 import { useChannelsBarLoader } from 'app/features/channels/hooks/use-channels-bar-loader';
-import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
-import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
-import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import { usePublicOrPrivateChannelsSetup } from 'app/features/channels/hooks/use-public-or-private-channels';
+import { useDirectChannelsSetup } from 'app/features/channels/hooks/use-direct-channels';
 import { useSetLastWorkspacePreference } from 'app/features/users/hooks/use-set-last-workspace-preferences';
 
 import './ChannelsBar.scss';
@@ -42,9 +41,8 @@ export default () => {
   useChannelWritingActivity();
   const { loading } = useChannelsBarLoader({ companyId, workspaceId });
 
-  usePublicOrPrivateChannels();
-  useDirectChannels();
-  useFavoriteChannels();
+  usePublicOrPrivateChannelsSetup();
+  useDirectChannelsSetup();
 
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
@@ -95,7 +93,7 @@ export default () => {
           <ChannelsWorkspace key={`workspace_chans_${workspaceId}`} />
           <ChannelsUser key={companyId} />
           {AccessRightsService.hasLevel(workspaceId, 'moderator') &&
-            Workspaces.getCurrentWorkspace().stats.total_members <= 5 && <AddUserButton />}
+            (Workspaces.getCurrentWorkspace()?.stats?.total_members || 0) <= 5 && <AddUserButton />}
         </PerfectScrollbar>
       </ScrollWithHiddenComponents>
       <Footer />

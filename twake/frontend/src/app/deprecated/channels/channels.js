@@ -105,62 +105,7 @@ class Channels extends Observable {
     );
   }
 
-  select(channel, side = false, sideOptions = {}) {
-    if (side) {
-      if (
-        this.currentSideChannelFrontId !== channel.front_id &&
-        channel.id &&
-        !channel.application
-      ) {
-        this.readChannelIfNeeded(channel);
-      }
-
-      this.currentSideChannelOptions = sideOptions;
-      this.currentSideChannelFrontId = channel.front_id;
-      this.currentSideChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
-    } else {
-      if (channel) {
-        this.channel_front_read_state[channel.id] = channel._user_last_access;
-      }
-
-      if (channel && channel.direct && !channel.id) {
-        this.openDiscussion(channel.members);
-      }
-
-      channel = DepreciatedCollections.get('channels').findByFrontId(channel.front_id);
-
-      if (!channel) {
-        return;
-      }
-
-      this.reached_initial_channel = true;
-
-      if (this.currentChannelFrontId !== channel.front_id && channel.id && !channel.application) {
-        this.readChannelIfNeeded(channel);
-      }
-
-      (channel.tabs || []).forEach(tab => {
-        DepreciatedCollections.get('channel_tabs').completeObject(tab);
-      });
-      DepreciatedCollections.get('channel_tabs').notify();
-
-      this.currentChannelFrontId = channel.front_id;
-      this.currentChannelFrontIdByWorkspace[Workspaces.currentWorkspaceId] = channel.front_id;
-
-      RouterService.push(RouterService.generateRouteFromState({ channelId: channel.id }));
-
-      this.current_tab_id = this.current_tab_id_by_channel_id[channel.id] || null;
-
-      LocalStorage.setItem('autoload_channel', {
-        front_id: this.currentChannelFrontId,
-        type: channel.type,
-        id: channel.id,
-      });
-    }
-    this.notify();
-
-    MenusManager.closeMenu();
-  }
+  select(channel, side = false, sideOptions = {}) {}
 
   getChannelForApp(app_id, workspace_id) {
     return DepreciatedCollections.get('channels').findBy({

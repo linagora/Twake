@@ -29,27 +29,22 @@ export function useRefreshPublicOrPrivateChannels(): {
   return { refresh };
 }
 
-export function usePublicOrPrivateChannels(): {
-  privateChannels: ChannelType[];
-  publicChannels: ChannelType[];
-  refresh: () => Promise<void>;
-} {
+export function usePublicOrPrivateChannelsSetup() {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [mineChannels, _setMineChannels] = useRecoilState(
-    MineChannelsState({ companyId, workspaceId }),
-  );
-
   const [, setLoading] = useRecoilState(LoadingState(`channels-${companyId}-${workspaceId}`));
+  const [didLoad, setDidLoad] = useRecoilState(
+    LoadingState(`channels-did-load-${companyId}-${workspaceId}`),
+  );
   const { refresh } = useRefreshPublicOrPrivateChannels();
 
   useGlobalEffect(
     'usePublicOrPrivateChannels',
     async () => {
-      if (!mineChannels) setLoading(true);
+      if (!didLoad) setLoading(true);
       await refresh();
-
       setLoading(false);
+      setDidLoad(true);
     },
     [companyId, workspaceId],
   );
@@ -71,6 +66,20 @@ export function usePublicOrPrivateChannels(): {
       if (_action === 'saved') refresh();
     },
   );
+}
+
+export function usePublicOrPrivateChannels(): {
+  privateChannels: ChannelType[];
+  publicChannels: ChannelType[];
+  refresh: () => Promise<void>;
+} {
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
+  const [mineChannels, _setMineChannels] = useRecoilState(
+    MineChannelsState({ companyId, workspaceId }),
+  );
+
+  const { refresh } = useRefreshPublicOrPrivateChannels();
 
   return {
     refresh: refresh,

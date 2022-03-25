@@ -42,24 +42,22 @@ export function useRefreshDirectChannels(): {
   return { refresh };
 }
 
-export function useDirectChannels(): {
-  directChannels: ChannelType[];
-  refresh: () => Promise<void>;
-} {
+export function useDirectChannelsSetup() {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [directChannels, _setDirectChannels] = useRecoilState(
-    DirectChannelsState({ companyId, workspaceId }),
-  );
   const [, setLoading] = useRecoilState(LoadingState(`channels-direct-${companyId}`));
+  const [didLoad, setDidLoad] = useRecoilState(
+    LoadingState(`channels-direct-did-load-${companyId}`),
+  );
   const { refresh } = useRefreshDirectChannels();
 
   useGlobalEffect(
     'useDirectChannels',
     async () => {
-      if (!directChannels) setLoading(true);
+      if (!didLoad) setLoading(true);
       await refresh();
       setLoading(false);
+      setDidLoad(true);
     },
     [companyId],
   );
@@ -71,6 +69,18 @@ export function useDirectChannels(): {
       if (_action === 'saved') refresh();
     },
   );
+}
+
+export function useDirectChannels(): {
+  directChannels: ChannelType[];
+  refresh: () => Promise<void>;
+} {
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
+  const [directChannels, _setDirectChannels] = useRecoilState(
+    DirectChannelsState({ companyId, workspaceId }),
+  );
+  const { refresh } = useRefreshDirectChannels();
 
   return {
     refresh,
