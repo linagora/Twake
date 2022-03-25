@@ -20,11 +20,10 @@ export function useRefreshDirectChannels(): {
   refresh: () => Promise<void>;
 } {
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace();
   const { set: setUserList } = useSetUserList('useRefreshDirectChannels');
   const { set } = useSetChannel();
 
-  const _setDirectChannels = useSetRecoilState(DirectChannelsState({ companyId, workspaceId }));
+  const _setDirectChannels = useSetRecoilState(DirectChannelsState(companyId));
 
   const refresh = async () => {
     const directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
@@ -80,10 +79,7 @@ export function useDirectChannels(): {
   openDiscussion: (membersId: string[]) => Promise<void>;
 } {
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace();
-  const [directChannels, _setDirectChannels] = useRecoilState(
-    DirectChannelsState({ companyId, workspaceId }),
-  );
+  const [directChannels, _setDirectChannels] = useRecoilState(DirectChannelsState(companyId));
   const { refresh } = useRefreshDirectChannels();
 
   const openDiscussion = async (membersIds: string[]) => {

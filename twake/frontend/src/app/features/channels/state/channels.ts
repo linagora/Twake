@@ -30,7 +30,7 @@ export const ReachableChannelsState = atomFamily<ChannelType[], ChannelsListCont
   default: [],
 });
 
-export const DirectChannelsState = atomFamily<ChannelType[], ChannelsListContextType>({
+export const DirectChannelsState = atomFamily<ChannelType[], string>({
   key: 'DirectChannelsState',
   default: [],
 });
