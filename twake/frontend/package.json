@@ -11,7 +11,9 @@
     "dev:linter": "eslint src/",
     "start": "craco start",
     "test": "CI=true craco test",
-    "build": "CI=false craco --max_old_space_size=4096 --optimize-for-size build"
+    "build": "CI=false craco --max_old_space_size=4096 --optimize-for-size build",
+    "prepare": "yarn run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six"
@@ -225,7 +227,8 @@
     "url-loader": "2.3.0",
     "url-parse": "^1.4.5",
     "uuid": "^8.3.1",
-    "workbox-webpack-plugin": "4.3.1"
+    "workbox-webpack-plugin": "4.3.1",
+    "@snyk/protect": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.8.7",
@@ -234,5 +237,6 @@
     "@types/markdown-draft-js": "^2.2.3",
     "craco-alias": "^2.1.1",
     "prettier": "^2.0.5"
-  }
+  },
+  "snyk": true
 }
