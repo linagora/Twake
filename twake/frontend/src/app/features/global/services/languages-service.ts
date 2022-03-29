@@ -5,7 +5,7 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-class Languages extends Observable {
+class LanguagesService extends Observable {
   private i18nt: Function | null = null;
   private language: string = '';
   private default = 'en';
@@ -88,5 +88,5 @@ class Languages extends Observable {
     return '';
   }
 }
-
-export default new Languages();
+const Languages = new LanguagesService();
+export default Languages;

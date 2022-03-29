@@ -5,13 +5,17 @@ import Languages from 'app/features/global/services/languages-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import ApplicationsAPIClient from 'app/features/applications/api/applications-api-client';
-import { buildDefaultApplicationPayload } from 'app/features/applications/utils/application';
+import {
+  buildDefaultApplicationPayload,
+  getApplicationIdentityCode,
+} from 'app/features/applications/utils/application';
 import CompanyApplicationPopup from '../../WorkspaceParameter/Pages/Applications/CompanyApplicationPopup';
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'app/components/object-modal/object-modal';
 import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
 
 import './pages.scss';
+import ApplicationEditor from './application-editor';
 
 type ErrorObjectStateType = { statusCode: number; message: string; error: string };
 
@@ -48,15 +52,6 @@ const ApplicationCreator = () => {
     handleDisabledBtn(appName);
   }, [appName]);
 
-  const convertToSimpleName = (value: string) => {
-    value = value || '';
-    value = value.toLocaleLowerCase();
-    value = value.replace(/[^a-z0-9]/g, '_');
-    value = value.replace(/_+/g, '_');
-    value = value.replace(/^_+/g, '');
-    return value;
-  };
-
   const clearFields = () => {
     setAppName(undefined);
     setAppDescription(undefined);
@@ -74,7 +69,7 @@ const ApplicationCreator = () => {
 
     if (appName) {
       applicationPayload.identity.name = appName;
-      applicationPayload.identity.code = convertToSimpleName(appName);
+      applicationPayload.identity.code = getApplicationIdentityCode(appName);
     }
 
     if (appDescription) {
@@ -89,10 +84,10 @@ const ApplicationCreator = () => {
           .then(() => ModalManager.closeAll)
           .finally(() => {
             ModalManager.open(
-              <CompanyApplicationPopup application={application} companyId={company.id} />,
+              <ApplicationEditor application={application} companyId={company.id} />,
               {
                 position: 'center',
-                size: { width: '600px' },
+                size: { width: 700 },
               },
             );
           });
@@ -117,7 +112,11 @@ const ApplicationCreator = () => {
       closable
       title={
         /* TODO:translation here */
-        'New integration'
+        <Row align="middle" justify="start">
+          <Title level={3} style={{ margin: 0 }}>
+            New integration
+          </Title>
+        </Row>
       }
       footer={
         <Button
@@ -134,18 +133,18 @@ const ApplicationCreator = () => {
         </Button>
       }
     >
-      <div className="x-margin">
+      <div style={{ padding: '0 24px' }}>
         {error && (
           <Row className="small-bottom-margin">
             <ErrorComponent error={error} />
           </Row>
         )}
 
-        <Row className="small-bottom-margin">
+        <Row>
           {/* TODO:translation here */}
           <Title level={5}>Name</Title>
         </Row>
-        <Row className="small-bottom-margin">
+        <Row className="bottom-margin">
           <Input
             placeholder={Languages.t('scenes.app.popup.appsparameters.pages.amazing_app_name')}
             type="text"
@@ -155,7 +154,7 @@ const ApplicationCreator = () => {
           />
         </Row>
 
-        <Row className="small-bottom-margin" wrap={false}>
+        <Row wrap={false}>
           {/* TODO:translation here */}
           <Col className="small-right-margin">
             <Title level={5}>Description</Title>
@@ -164,8 +163,9 @@ const ApplicationCreator = () => {
             <Text type="secondary">Optionnal</Text>
           </Col>
         </Row>
-        <Row className="small-bottom-margin">
+        <Row className="bottom-margin">
           <Input.TextArea
+            // TODO: Translation here
             placeholder={'Describe your application in a few words'}
             disabled={loading}
             value={appDescription}

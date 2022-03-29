@@ -1,41 +1,41 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { ColumnsType } from 'antd/lib/table';
 import { MoreHorizontal } from 'react-feather';
 import { Divider, Table, Typography, Row, Col, Button, Grid } from 'antd';
 
+import {
+  useCompanyApplications,
+  useCompanyApplicationsRealtime,
+} from 'app/features/applications/hooks/use-company-applications';
 import { Application } from 'app/features/applications/types/application';
 import Languages from 'app/features/global/services/languages-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import AvatarComponent from 'app/components/avatar/avatar';
 import CompanyApplicationPopup from './CompanyApplicationPopup';
-import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
-import {
-  useCompanyApplications,
-  useCompanyApplicationsRealtime,
-} from 'app/features/applications/hooks/use-company-applications';
 import Menu from 'components/menus/menu';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
-
-import './ApplicationsStyles.scss';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import ApplicationEditor from '../../../application-parameters/pages/application-editor';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+
+import './ApplicationsStyles.scss';
 
 type ColumnObjectType = { key: number } & Application;
 
 const DEFAULT_PAGE_SIZE = 20;
 const { useBreakpoint } = Grid;
 export default () => {
-  const { company } = useCurrentCompany();
+  const companyId = useRouterCompany();
 
-  if (!company?.id) return <></>;
+  if (!companyId) return <></>;
 
   const {
     applications: companyApplications,
     loading: isLoadingCompanyApplications,
     remove: deleteOneCompanyApplication,
     isInstalled: isApplicationInstalledInCompany,
-  } = useCompanyApplications(company?.id);
+  } = useCompanyApplications(companyId);
   useCompanyApplicationsRealtime();
 
   const [data, _setData] = useState<ColumnObjectType[]>([]);
@@ -57,32 +57,30 @@ export default () => {
       {
         type: 'menu',
         text: Languages.t(
-          // TODO: Translations here "show"
-          'scenes.app.integrations_parameters.company_applications_table.more_menu.show_application',
+          // TODO: Translations here "show details"
+          'Show details',
+          //'scenes.app.integrations_parameters.company_applications_table.more_menu.show_application',
         ),
         onClick: () =>
           ModalManager.open(
-            <CompanyApplicationPopup application={application} companyId={company.id} />,
+            <CompanyApplicationPopup application={application} companyId={companyId} />,
             {
               position: 'center',
               size: { width: '600px' },
             },
           ),
       },
-      {
+      application.company_id === companyId && {
         type: 'menu',
         // TODO: Translations here "modify"
-        text: 'Settings',
+        text: 'Developer settings',
         onClick: () =>
-          ModalManager.open(
-            <ApplicationEditor application={application} companyId={company.id} />,
-            {
-              position: 'center',
-              size: { width: '600px' },
-            },
-          ),
+          ModalManager.open(<ApplicationEditor application={application} companyId={companyId} />, {
+            position: 'center',
+            size: { width: 700 },
+          }),
       },
-      {
+      application.company_id !== companyId && {
         type: 'menu',
         className: 'error',
         text: Languages.t(
@@ -117,8 +115,11 @@ export default () => {
         index: number,
       ) => {
         return (
-          <Row key={index} align="middle">
-            <AvatarComponent url={icon} />
+          <Row key={index} align="middle" onClick={() => console.log('iciii', companyApplications)}>
+            <AvatarComponent
+              url={icon?.length ? icon : undefined}
+              fallback={`${process.env.PUBLIC_URL}/public/img/hexagon.png`}
+            />
             <Typography.Text className="small-left-margin">{name}</Typography.Text>
           </Row>
         );
@@ -140,6 +141,7 @@ export default () => {
                   WorkspacesApps.notifyApp(application.id, 'configuration', 'workspace', {});
                 }}
               >
+                {/* TODO: Translation here Configure -> Preferences */}
                 {Languages.t('scenes.app.popup.workspaceparameter.pages.configure_button')}
               </Button>
             )}

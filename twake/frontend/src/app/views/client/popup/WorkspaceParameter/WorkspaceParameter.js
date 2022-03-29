@@ -17,6 +17,7 @@ import ConsoleService from 'app/features/console/services/console-service';
 
 import WorkspaceAppsEditor from '../application-parameters/pages/WorkspaceAppsEditor.js';
 import './WorkspaceParameter.scss';
+import WorkspaceIdentity from './Pages/Workspace/WorkspaceIdentity';
 
 export default class WorkspaceParameter extends Component {
   constructor(props) {
@@ -56,8 +57,7 @@ export default class WorkspaceParameter extends Component {
   }
   displayScene() {
     if (WorkspaceUserRights.hasWorkspacePrivilege() && this.state.page === 1) {
-      //return <WorkspaceIdentity />;
-      return <WorkspaceAppsEditor appId="5fdf5bb0-a14d-11ec-a0eb-8bf019f8d65d" />;
+      return <WorkspaceIdentity />;
     }
     if (this.state.page === 2) {
       return <WorkspacePartner />;

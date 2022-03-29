@@ -5,7 +5,7 @@ import { Avatar, AvatarProps, Image } from 'antd';
 import './avatar.scss';
 
 type PropsType = {
-  url: string;
+  url?: string;
   size?: number;
   shape?: AvatarProps['shape'];
   borderRadius?: React.CSSProperties['borderRadius'];

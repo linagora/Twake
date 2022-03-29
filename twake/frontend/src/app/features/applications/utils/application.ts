@@ -6,16 +6,16 @@ const defaultApplicationPayload: Application = {
   id: '',
   company_id: '',
   identity: {
-    code: 'code',
-    name: 'name',
-    icon: 'icon',
+    code: '',
+    name: '',
+    icon: '',
     description: 'This is a cool application',
-    website: 'website',
+    website: '',
     categories: [],
     compatibility: [],
   },
   api: {
-    hooks_url: 'hooksUrl',
+    hooks_url: '',
     allowed_ips: '*',
   },
   access: {
@@ -30,57 +30,34 @@ const defaultApplicationPayload: Application = {
 
       files: {
         editor: {
-          preview_url: 'string',
-          edition_url: 'string',
+          preview_url: '',
+          edition_url: '',
           extensions: [],
 
           // if file was created by the app, then the app is able to edit with or without extension
-          empty_files: [
-            {
-              url: 'string',
-              filename: 'string',
-              name: 'string', // "Word Document";
-            },
-          ],
+          empty_files: [],
         },
-        actions: [
-          //List of action that can apply on a file
-          {
-            name: 'string',
-            id: 'string',
-          },
-        ],
+        actions: [],
       },
 
       //Chat plugin
       chat: {
         input: undefined,
-        commands: [
-          {
-            command: 'string',
-            description: 'string',
-          },
-        ],
-        actions: [
-          //List of action that can apply on a message
-          {
-            name: 'string',
-            id: 'string',
-          },
-        ],
+        commands: [],
+        actions: [],
       },
 
       //Allow app to appear as a bot user in direct chat
       direct: undefined,
 
       //Display app as a standalone application in a tab
-      tab: { url: 'string' },
+      tab: { url: '' },
 
       //Display app as a standalone application on the left bar
-      standalone: { url: 'string' },
+      standalone: { url: '' },
 
       //Define where the app can be configured from
-      configuration: ['global', 'channel'],
+      configuration: [],
     },
   },
   publication: {
@@ -99,3 +76,12 @@ export const buildDefaultApplicationPayload = (
   ...defaultApplicationPayload,
   ...partials,
 });
+
+export const getApplicationIdentityCode = (value: string) => {
+  value = value || '';
+  value = value.toLocaleLowerCase();
+  value = value.replace(/[^a-z0-9]/g, '_');
+  value = value.replace(/_+/g, '_');
+  value = value.replace(/^_+/g, '');
+  return value;
+};

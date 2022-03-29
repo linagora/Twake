@@ -166,9 +166,9 @@ export type ApplicationAccess = {
 export type ApplicationIdentity = {
   code: string;
   name: string;
-  icon: string;
-  description: string;
-  website: string;
+  icon?: string;
+  description?: string;
+  website?: string;
   categories: string[];
   compatibility: string[];
 };

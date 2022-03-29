@@ -74,7 +74,7 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
                     <TabsTemplateEditor tab={tab} onChangeTabs={(item: TabType) => save(item)} />,
                     {
                       position: 'center',
-                      size: { width: '500px', minHeight: '329px' },
+                      size: { width: '600px', minHeight: '329px' },
                     },
                   ),
               },

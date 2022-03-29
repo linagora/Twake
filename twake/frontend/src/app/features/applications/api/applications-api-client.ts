@@ -2,6 +2,10 @@ import Api from '../../global/framework/api-service';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import { Application } from 'app/features/applications/types/application';
 
+type DeleteApplicationResponse = {
+  status: 'success' | 'error';
+};
+
 @TwakeService('ApplicationsAPIClientService')
 class ApplicationsAPIClientService {
   prefix = '/internal/services/applications/v1/applications';
@@ -36,6 +40,10 @@ class ApplicationsAPIClientService {
       partialsToUpdate,
       callback,
     );
+  }
+
+  delete(applicationId: string): Promise<DeleteApplicationResponse> {
+    return Api.delete<DeleteApplicationResponse>(`${this.prefix}/${applicationId}`);
   }
 
   async createCustomApplication(application: Partial<Application>): Promise<Application> {

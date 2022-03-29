@@ -26,6 +26,7 @@ export default () => (
           })
         }
       >
+        {/* TODO: Translation here */}
         New integration
       </Button>
     </Row>
