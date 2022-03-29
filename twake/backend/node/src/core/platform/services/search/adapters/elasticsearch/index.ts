@@ -16,7 +16,7 @@ import { SearchAdapter } from "../abstract";
 import { DatabaseServiceAPI } from "../../../database/api";
 import { getEntityDefinition, unwrapPrimarykey } from "../../api";
 import { ListResult, Paginable, Pagination } from "../../../../framework/api/crud-service";
-import { parsePrimaryKey, stringifyPrimaryKey } from "../utils";
+import { asciiFold, parsePrimaryKey, stringifyPrimaryKey } from "../utils";
 import { ApiResponse } from "@elastic/elasticsearch/lib/Transport";
 import { buildSearchQuery } from "./search";
 
@@ -121,6 +121,15 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         ..._.pick(entity, ...pkColumns),
         ...entityDefinition.options.search.source(entity),
       };
+
+      Object.keys(entityDefinition.options?.search.esMapping?.properties || []).forEach(
+        (key: string) => {
+          const mapping: any = entityDefinition.options?.search?.esMapping[key];
+          if (mapping.type === "text") {
+            body[key] = _.lowerCase(asciiFold(body[key]));
+          }
+        },
+      );
 
       const index = entityDefinition.options?.search?.index || entityDefinition.name;
 

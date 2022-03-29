@@ -48,7 +48,6 @@ export default ({ file, onRemove, type, large }: PropsType) => {
       if (onRemove) onRemove();
       return <></>;
     }
-    console.log('thefile1', pendingFile, pendingFile?.backendFile?.id);
 
     formatedFile = {
       id: pendingFile?.backendFile?.id || '',

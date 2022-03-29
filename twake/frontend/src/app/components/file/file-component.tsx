@@ -117,8 +117,6 @@ export default ({
 
   const computedWidth = file.thumbnail_ratio * 200;
 
-  console.log('thefile2', file);
-
   return (
     <div
       className={classNames(classNameArguments)}

@@ -8,6 +8,7 @@ import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
 import UserServiceAPI from "../user/api";
 import { PushServiceAPI } from "../../core/platform/services/push/api";
 import { RealtimeServiceAPI } from "../../core/platform/services/realtime/api";
+import ChannelServiceAPI from "../channels/provider";
 
 @Prefix("/internal/services/notifications/v1")
 @Consumes(["webserver", "database", "pubsub", "user", "push", "realtime"])
@@ -28,8 +29,9 @@ export default class NotificationService extends TwakeService<NotificationServic
     const push = this.context.getProvider<PushServiceAPI>("push");
     const user = await this.context.getProvider<UserServiceAPI>("user").init();
     const realtime = await this.context.getProvider<RealtimeServiceAPI>("realtime");
+    const channel = await this.context.getProvider<ChannelServiceAPI>("channels");
 
-    this.service = getService(database, pubsub, push, user);
+    this.service = getService(database, pubsub, push, user, channel);
     await this.service?.init(this.context);
 
     fastify.register((instance, _opts, next) => {
