@@ -74,10 +74,10 @@ export interface PaginationQueryParameters {
   direction?: "history" | "future";
 }
 export interface MessageViewListOptions {
-  include_users: boolean;
-  replies_per_thread: number;
-  flat: boolean;
-  emojis: boolean;
+  include_users?: boolean;
+  replies_per_thread?: number;
+  flat?: boolean;
+  emojis?: boolean;
 }
 
 export interface MessageListQueryParameters extends PaginationQueryParameters {

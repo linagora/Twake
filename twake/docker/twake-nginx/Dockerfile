@@ -18,22 +18,6 @@ RUN /opt/certbot/bin/pip install --upgrade pip
 RUN /opt/certbot/bin/pip install certbot
 RUN ln -s /opt/certbot/bin/certbot /usr/bin/certbot
 
-RUN apt-get update && apt-get install -y \
-    augeas-lenses binutils cpp cpp-8 dh-python gcc gcc-8 libasan5 libatomic1 \
-    libaugeas0 libc-dev-bin libc6-dev libcilkrts5 libexpat1-dev \
-    libffi-dev libgcc-8-dev libgomp1 libisl19 libitm1 liblsan0 libmpc3 \
-    libmpdec2 libmpfr6 libpython-dev libpython-stdlib libpython2.7 \
-    libpython2.7-dev libpython2.7-minimal libpython2.7-stdlib libpython3-stdlib \
-    libpython3.7-minimal libpython3.7-stdlib libquadmath0 libsqlite3-0 \
-    libssl-dev libtsan0 libubsan0 linux-libc-dev mime-support python \
-    python-chardet python-colorama python-dev python-distlib \
-    python-html5lib python-minimal python-pip-whl python-pkg-resources \
-    python-requests python-setuptools python-six python-urllib3 \
-    python-virtualenv python2.7 python2.7-dev python2.7-minimal python3 \
-    python3-minimal python3-pkg-resources python3-virtualenv python3.7 \
-    python3.7-minimal virtualenv zlib1g-dev
-
-
 ADD ./nginx.conf /etc/nginx/nginx.conf
 
 # Install yarn
