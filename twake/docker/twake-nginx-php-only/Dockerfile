@@ -19,7 +19,7 @@ RUN /opt/certbot/bin/pip install --upgrade pip
 RUN /opt/certbot/bin/pip install certbot
 RUN ln -s /opt/certbot/bin/certbot /usr/bin/certbot
 
-ADD ./nginx.conf /etc/nginx/nginx.conf
+ADD docker/twake-nginx-php-only/nginx.conf /etc/nginx/nginx.conf
 
 # Install yarn
 RUN apt-get update
