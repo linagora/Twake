@@ -77,7 +77,6 @@ export default (props: Props) => {
         active,
         'loading-interaction': loadingAction,
         'link-to-thread': props.linkToThread,
-        pinned: message.pinned_info?.pinned_at,
       })}
       onMouseEnter={() => {
         setDidMouseOver(true);

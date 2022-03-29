@@ -76,6 +76,7 @@ export interface PaginationQueryParameters {
 export interface MessageViewListOptions {
   include_users: boolean;
   replies_per_thread: number;
+  flat: boolean;
   emojis: boolean;
 }
 
@@ -116,4 +117,14 @@ export type SearchMessageOptions = {
   channelId?: string;
   hasFiles?: boolean;
   sender?: string;
+};
+
+export type FlatFileFromMessage = {
+  file: any;
+  thread: any;
+};
+
+export type FlatPinnedFromMessage = {
+  message: any;
+  thread: any;
 };
