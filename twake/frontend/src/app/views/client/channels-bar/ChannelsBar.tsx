@@ -28,6 +28,7 @@ import { useChannelsBarLoader } from 'app/features/channels/hooks/use-channels-b
 import { usePublicOrPrivateChannelsSetup } from 'app/features/channels/hooks/use-public-or-private-channels';
 import { useDirectChannelsSetup } from 'app/features/channels/hooks/use-direct-channels';
 import { useSetLastWorkspacePreference } from 'app/features/users/hooks/use-set-last-workspace-preferences';
+import { useAutoSelectChannel } from 'app/features/channels/hooks/use-autoselect-channel';
 
 import './ChannelsBar.scss';
 
@@ -35,6 +36,8 @@ export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const { workspace } = useCurrentWorkspace();
+
+  useAutoSelectChannel();
 
   useSetLastWorkspacePreference();
 

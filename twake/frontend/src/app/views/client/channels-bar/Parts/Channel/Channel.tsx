@@ -4,20 +4,12 @@ import { Calendar, CheckSquare, Folder, Star } from 'react-feather';
 
 import Icon from 'app/components/icon/icon';
 import { Application } from 'app/features/applications/types/application';
-import WindowState from 'app/features/global/utils/window';
 import Emojione from 'components/emojione/emojione';
-import { ChannelType } from 'app/features/channels/types/channel';
-import AvatarComponent from 'app/components/avatar/avatar';
 import Beacon from 'app/components/scroll-hidden-components/beacon';
-import MainViewService from 'app/features/router/services/main-view-service';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
-import useRouterChannelSelected from 'app/features/router/hooks/use-router-channel-selected';
+import RouterServices from 'app/features/router/services/router-service';
+import WritingLoader from 'app/components/writing-loader/writing-loader';
 
 import './Channel.scss';
-import useChannelWritingActivity, {
-  useChannelWritingActivityState,
-} from 'app/features/channels/hooks/use-channel-writing-activity';
-import WritingLoader from 'app/components/writing-loader/writing-loader';
 
 type Props = {
   app?: Application;
@@ -43,27 +35,11 @@ export default (props: Props) => {
   const writingActivity = props.writingActivity || false;
 
   const onClick = () => {
-    props.id &&
-      MainViewService.select(props.id, {
-        app: props.app || {
-          identity: {
-            code: 'messages',
-            name: '',
-            icon: '',
-            description: '',
-            website: '',
-            categories: [],
-            compatibility: [],
-          },
-        },
-        context: { type: props.app ? 'application' : 'channel' },
-        hasTabs: props.visibility !== 'direct' && !props.app,
-      });
-
-    WindowState.setSuffix(props.name);
+    const url = RouterServices.generateRouteFromState({
+      channelId: props.id,
+    });
+    RouterServices.push(url);
   };
-
-  if (selected && props.id && MainViewService.getId() !== props.id) onClick();
 
   const getDefaultApplicationIcon = (code: string) => {
     switch (code) {

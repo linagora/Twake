@@ -21,15 +21,20 @@ import { NotificationExecutionContext } from "../../types";
 import { getNotificationRoomName } from "../realtime";
 import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
-import { pick } from "lodash";
+import { pick, uniq } from "lodash";
 import _ from "lodash";
 import UserServiceAPI from "../../../../services/user/api";
+import ChannelServiceAPI from "../../../../services/channels/provider";
 
 export class UserNotificationBadgeService implements UserNotificationBadgeServiceAPI {
   version: "1";
   repository: Repository<UserNotificationBadge>;
 
-  constructor(private database: DatabaseServiceAPI, private userService: UserServiceAPI) {}
+  constructor(
+    private database: DatabaseServiceAPI,
+    private userService: UserServiceAPI,
+    private channelsService: ChannelServiceAPI,
+  ) {}
 
   async init(context: TwakeContext): Promise<this> {
     this.repository = await this.database.getRepository<UserNotificationBadge>(
@@ -103,10 +108,13 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
       result = result.concat(find.getEntities());
     }
 
-    return new ListResult(type, result);
+    const badges = new ListResult(type, result);
+    await this.ensureBadgesAreReachable(badges);
+
+    return badges;
   }
 
-  listForUser(
+  async listForUser(
     company_id: string,
     user_id: string,
     filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
@@ -115,13 +123,46 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
       throw CrudException.badRequest("company_id and user_id are required");
     }
 
-    return this.repository.find({
+    const badges = await this.repository.find({
       ...{
         company_id,
         user_id,
       },
       ...pick(filter, ["workspace_id", "channel_id", "thread_id"]),
     });
+
+    await this.ensureBadgesAreReachable(badges);
+
+    return badges;
+  }
+
+  // This will ensure we are still in the channels and if not, we'll remove the badge
+  async ensureBadgesAreReachable(
+    badges: ListResult<UserNotificationBadge>,
+  ): Promise<ListResult<UserNotificationBadge>> {
+    const channels = uniq(badges.getEntities().map(r => r.channel_id));
+
+    for (const channelId of channels) {
+      const channelMemberPk = {
+        company_id: badges.getEntities()[0].company_id,
+        workspace_id: badges.getEntities()[0].workspace_id,
+        channel_id: channelId,
+        user_id: badges.getEntities()[0].user_id,
+      };
+      const context = {
+        user: { id: channelMemberPk.user_id, server_request: true },
+        channel: { id: channelId, ...channelMemberPk },
+      };
+      const exists = await this.channelsService.members.get(channelMemberPk, context);
+      if (!exists) {
+        for (const badge of badges.getEntities()) {
+          if (badge.channel_id === channelId) this.removeUserChannelBadges(badge);
+        }
+        badges.filterEntities(b => b.channel_id !== channelId);
+      }
+    }
+
+    return badges;
   }
 
   /**

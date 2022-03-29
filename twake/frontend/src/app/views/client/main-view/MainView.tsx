@@ -13,7 +13,11 @@ import './MainView.scss';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
-import { useUserList } from 'app/features/users/hooks/use-user-list';
+import MainViewService from 'app/features/router/services/main-view-service';
+import WindowState from 'app/features/global/utils/window';
+import { useCompanyApplications } from 'app/features/applications/hooks/use-company-applications';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
+import app from '../app';
 
 type PropsType = {
   className?: string;
@@ -23,6 +27,8 @@ const MainView: FC<PropsType> = ({ className }) => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
+  const { applications } = useCompanyApplications();
+  const { channel } = useChannel(channelId);
 
   const loaded = useWatcher(ChannelsBarService, async () => {
     return (
@@ -31,6 +37,30 @@ const MainView: FC<PropsType> = ({ className }) => {
     );
   });
   const ready = loaded && !!companyId && !!workspaceId;
+
+  const updateView = () => {
+    if (channelId) {
+      const app = applications.find(a => a.id === channelId);
+      MainViewService.select(channelId, {
+        app: app || {
+          identity: {
+            code: 'messages',
+            name: '',
+            icon: '',
+            description: '',
+            website: '',
+            categories: [],
+            compatibility: [],
+          },
+        },
+        context: { type: app ? 'application' : 'channel' },
+        hasTabs: channel?.visibility !== 'direct' && !app,
+      });
+      WindowState.setSuffix(channel?.name || app?.identity?.name);
+    }
+  };
+
+  if (channelId && MainViewService.getId() !== channelId) updateView();
 
   return (
     <Layout className={'global-view-layout ' + (className ? className : '')}>
