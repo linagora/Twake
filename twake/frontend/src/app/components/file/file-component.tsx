@@ -49,7 +49,7 @@ export default ({
     {
       'file-component-error':
         status && (isPendingFileStatusError(status) || isPendingFileStatusCancel(status)),
-      'file-component-uploading': progress && progress < 1,
+      'file-component-uploading': progress != undefined && progress < 1,
     },
   ];
 
@@ -78,13 +78,15 @@ export default ({
           ),
         });
       })();
+    } else {
+      setFile(_file);
     }
-  }, []);
+  }, [_file]);
 
   const onClickFile = async () => {
     if (source === 'internal') {
       //Only if upload has ended
-      if (!status || isPendingFileStatusSuccess(status))
+      if ((!status || isPendingFileStatusSuccess(status)) && file.id)
         DriveService.viewDocument(
           {
             id: file.id,
@@ -114,6 +116,8 @@ export default ({
   };
 
   const computedWidth = file.thumbnail_ratio * 200;
+
+  console.log('thefile2', file);
 
   return (
     <div

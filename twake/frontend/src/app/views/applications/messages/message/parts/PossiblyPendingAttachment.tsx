@@ -6,6 +6,8 @@ import { PendingFileRecoilType } from 'app/features/files/types/file';
 import _ from 'lodash';
 import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 import { MessageFileType } from 'app/features/messages/types/message';
+import consoleLogin from 'app/views/login/console/console-login';
+import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 type PropsType = {
   file: MessageFileType;
@@ -46,6 +48,8 @@ export default ({ file, onRemove, type, large }: PropsType) => {
       if (onRemove) onRemove();
       return <></>;
     }
+    console.log('thefile1', pendingFile, pendingFile?.backendFile?.id);
+
     formatedFile = {
       id: pendingFile?.backendFile?.id || '',
       company_id: pendingFile?.backendFile?.company_id || '',

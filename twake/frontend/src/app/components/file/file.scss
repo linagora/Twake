@@ -53,16 +53,20 @@
   }
 
   &.file-component-uploading {
-    opacity: 0.5;
     border-radius: 8px 8px 0px 0px;
+
+    & .file-info-container {
+      opacity: 0.5;
+    }
 
     .file-info-container {
       padding-bottom: 0;
     }
 
     .file-progress-bar-container {
-      padding-top: 8px;
-      height: 2px;
+      padding-top: 3px;
+      padding-bottom: 3px;
+      height: 5px;
     }
   }
 
@@ -125,13 +129,15 @@
 
   .file-progress-bar {
     .ant-progress-outer {
-      height: 2px;
+      height: 3px;
       display: flex;
 
       .ant-progress-inner {
+        border-radius: 0px;
+
         .ant-progress-bg {
-          border-radius: 0 0 8px 8px;
-          height: 2px !important;
+          border-radius: 2px;
+          height: 3px !important;
           transition: all 0.2s;
         }
       }

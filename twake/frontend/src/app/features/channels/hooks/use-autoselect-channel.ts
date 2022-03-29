@@ -10,8 +10,6 @@ const fromLocalStorage = LocalStorage.getItem('default_channel_id_per_workspace'
 let activeChannelPerWorkspace: { [key: string]: string } =
   (typeof fromLocalStorage === 'object' ? (fromLocalStorage as any) : {}) || {};
 
-console.log('activeChannelPerWorkspace', activeChannelPerWorkspace);
-
 export function useAutoSelectChannel() {
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
