@@ -10,10 +10,10 @@ import {
 import { RealtimeRoomManager } from "../api";
 import WebSocketAPI from "../../../services/websocket/provider";
 import { WebSocketUser, WebSocket } from "../../../services/websocket/types";
-import AuthServiceAPI from "../../auth/provider";
+import AuthService from "../../auth/provider";
 
 export default class RoomManager implements RealtimeRoomManager {
-  constructor(private ws: WebSocketAPI, private auth: AuthServiceAPI) {}
+  constructor(private ws: WebSocketAPI, private auth: AuthService) {}
 
   init(): void {
     this.ws.onUserConnected(event => {

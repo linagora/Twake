@@ -20,10 +20,10 @@ describe("The PubsubServiceProcessor class", () => {
     outTopic = "outTopic";
     subscribe = jest.fn();
     publish = jest.fn();
-    pubsubService = ({
+    pubsubService = {
       publish,
       subscribe,
-    } as unknown) as PubsubServiceAPI;
+    } as unknown as PubsubServiceAPI;
   });
 
   afterEach(() => {
@@ -82,13 +82,13 @@ describe("The PubsubServiceProcessor class", () => {
         const validate = jest.fn().mockReturnValue(false);
         const process = jest.fn().mockReturnValue(true);
         const processor = new PubsubServiceProcessor(
-          ({
+          {
             topics: {
               in: topic,
             },
             validate,
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as PubsubHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -108,13 +108,13 @@ describe("The PubsubServiceProcessor class", () => {
         const validate = jest.fn().mockReturnValue(true);
         const process = jest.fn().mockReturnValue(true);
         const processor = new PubsubServiceProcessor(
-          ({
+          {
             topics: {
               in: topic,
             },
             validate,
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as PubsubHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -135,12 +135,12 @@ describe("The PubsubServiceProcessor class", () => {
         } as IncomingPubsubMessage<string>;
         const process = jest.fn().mockRejectedValue(new Error("I failed to process"));
         const processor = new PubsubServiceProcessor(
-          ({
+          {
             topics: {
               in: topic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as PubsubHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -159,13 +159,13 @@ describe("The PubsubServiceProcessor class", () => {
         } as IncomingPubsubMessage<string>;
         const process = jest.fn().mockRejectedValue(new Error("I failed to process"));
         const processor = new PubsubServiceProcessor(
-          ({
+          {
             topics: {
               in: topic,
               error: errorTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as PubsubHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -183,16 +183,18 @@ describe("The PubsubServiceProcessor class", () => {
         const message = {
           data: "foo",
         } as IncomingPubsubMessage<string>;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const process = jest.fn().mockResolvedValue(null);
         const processor = new PubsubServiceProcessor(
-          ({
+          {
             topics: {
               in: topic,
               out: outTopic,
               error: errorTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as PubsubHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -209,15 +211,17 @@ describe("The PubsubServiceProcessor class", () => {
         const message = {
           data: "foo",
         } as IncomingPubsubMessage<string>;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const process = jest.fn().mockResolvedValue(true);
         const processor = new PubsubServiceProcessor(
-          ({
+          {
             topics: {
               in: topic,
               error: errorTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as PubsubHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -235,16 +239,18 @@ describe("The PubsubServiceProcessor class", () => {
         const message = {
           data: "foo",
         } as IncomingPubsubMessage<string>;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const process = jest.fn().mockResolvedValue(result);
         const processor = new PubsubServiceProcessor(
-          ({
+          {
             topics: {
               in: topic,
               error: errorTopic,
               out: outTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as PubsubHandler<unknown, unknown>,
           pubsubService,
         );
 
@@ -269,16 +275,18 @@ describe("The PubsubServiceProcessor class", () => {
         const message = {
           data: "foo",
         } as IncomingPubsubMessage<string>;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const process = jest.fn().mockResolvedValue(result);
         const processor = new PubsubServiceProcessor(
-          ({
+          {
             topics: {
               in: topic,
               error: errorTopic,
               out: outTopic,
             },
             process,
-          } as unknown) as PubsubHandler<unknown, unknown>,
+          } as unknown as PubsubHandler<unknown, unknown>,
           pubsubService,
         );
 

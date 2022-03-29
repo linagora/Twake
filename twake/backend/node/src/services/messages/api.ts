@@ -31,15 +31,6 @@ import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/message
 import { StatisticsAPI } from "../statistics/types";
 import { uuid } from "../../utils/types";
 
-export interface MessageServiceAPI extends TwakeServiceProvider, Initializable {
-  userBookmarks: MessageUserBookmarksServiceAPI;
-  threads: MessageThreadsServiceAPI;
-  messages: MessageThreadMessagesServiceAPI;
-  views: MessageViewsServiceAPI;
-  engine: MessagesEngine;
-  statistics: StatisticsAPI;
-}
-
 export interface MessageUserBookmarksServiceAPI
   extends TwakeServiceProvider,
     Initializable,

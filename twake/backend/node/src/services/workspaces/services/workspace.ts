@@ -36,30 +36,26 @@ import WorkspacePendingUser, {
 } from "../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../user/web/types";
 import { uuid } from "../../../utils/types";
-import { CompaniesServiceAPI, UsersServiceInterface } from "../../user/api";
 import { CounterProvider } from "../../../core/platform/services/counter/provider";
 import {
   TYPE as WorkspaceCounterEntityType,
   WorkspaceCounterEntity,
   WorkspaceCounterPrimaryKey,
 } from "../entities/workspace_counters";
-import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../utils/counters";
-import { ApplicationServiceAPI } from "../../applications/api";
 import { RealtimeSaved } from "../../../core/platform/framework";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import { getRoomName, getWorkspacePath } from "../realtime";
 import { InviteTokenObject, WorkspaceInviteTokenObject } from "../web/types";
 import WorkspaceInviteTokens, {
-  TYPE as WorkspaceInviteTokensType,
   getInstance as getWorkspaceInviteTokensInstance,
+  TYPE as WorkspaceInviteTokensType,
   WorkspaceInviteTokensPrimaryKey,
 } from "../entities/workspace_invite_tokens";
-import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import { randomBytes } from "crypto";
 import { Readable } from "stream";
-import { reduceUUID4 } from "../../../utils/uuid-reducer";
-import { expandUUID4 } from "../../../utils/uuid-reducer";
+import { expandUUID4, reduceUUID4 } from "../../../utils/uuid-reducer";
+import gr from "../../global-resolver";
 
 export class WorkspaceServiceImpl implements WorkspaceService {
   version: "1";
@@ -69,39 +65,25 @@ export class WorkspaceServiceImpl implements WorkspaceService {
   private workspaceCounter: CounterProvider<WorkspaceCounterEntity>;
   private workspaceInviteTokensRepository: Repository<WorkspaceInviteTokens>;
 
-  constructor(
-    private platformServices: PlatformServicesAPI,
-    private users: UsersServiceInterface,
-    private companies: CompaniesServiceAPI,
-    private applications: ApplicationServiceAPI,
-    private auth: AuthServiceAPI,
-  ) {}
-
   async init(): Promise<this> {
-    this.workspaceUserRepository =
-      await this.platformServices.database.getRepository<WorkspaceUser>(
-        WorkspaceUserType,
-        WorkspaceUser,
-      );
-
-    this.workspaceRepository = await this.platformServices.database.getRepository<Workspace>(
-      WorkspaceType,
-      Workspace,
+    this.workspaceUserRepository = await gr.database.getRepository<WorkspaceUser>(
+      WorkspaceUserType,
+      WorkspaceUser,
     );
 
-    const workspaceCountersRepository =
-      await this.platformServices.database.getRepository<WorkspaceCounterEntity>(
-        WorkspaceCounterEntityType,
-        WorkspaceCounterEntity,
-      );
+    this.workspaceRepository = await gr.database.getRepository<Workspace>(WorkspaceType, Workspace);
 
-    this.workspacePendingUserRepository =
-      await this.platformServices.database.getRepository<WorkspacePendingUser>(
-        WorkspacePendingUserType,
-        WorkspacePendingUser,
-      );
+    const workspaceCountersRepository = await gr.database.getRepository<WorkspaceCounterEntity>(
+      WorkspaceCounterEntityType,
+      WorkspaceCounterEntity,
+    );
 
-    this.workspaceCounter = await this.platformServices.counter.getCounter<WorkspaceCounterEntity>(
+    this.workspacePendingUserRepository = await gr.database.getRepository<WorkspacePendingUser>(
+      WorkspacePendingUserType,
+      WorkspacePendingUser,
+    );
+
+    this.workspaceCounter = await gr.platformServices.counter.getCounter<WorkspaceCounterEntity>(
       workspaceCountersRepository,
     );
 
@@ -112,11 +94,10 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       return 0;
     });
 
-    this.workspaceInviteTokensRepository =
-      await this.platformServices.database.getRepository<WorkspaceInviteTokens>(
-        WorkspaceInviteTokensType,
-        WorkspaceInviteTokens,
-      );
+    this.workspaceInviteTokensRepository = await gr.database.getRepository<WorkspaceInviteTokens>(
+      WorkspaceInviteTokensType,
+      WorkspaceInviteTokens,
+    );
 
     return this;
   }
@@ -144,13 +125,10 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       { company_id: workspace.company_id, user: { id: userId, server_request: true } },
     );
 
-    await this.applications.companyApplications.initWithDefaultApplications(
-      created.entity.company_id,
-      {
-        company: { id: created.entity.company_id },
-        user: { id: userId, server_request: true },
-      },
-    );
+    await gr.services.companyApplications.initWithDefaultApplications(created.entity.company_id, {
+      company: { id: created.entity.company_id },
+      user: { id: userId, server_request: true },
+    });
 
     return new CreateResult<Workspace>(TYPE, created.entity);
   }
@@ -206,7 +184,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
     let logoPublicUrl = undefined;
     if (workspace.logo) {
       if (!item.logo || options.logo_b64) {
-        await this.platformServices.storage.remove(logoInternalPath);
+        await gr.platformServices.storage.remove(logoInternalPath);
         workspace.logo = null;
       }
     }
@@ -214,7 +192,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       const s = new Readable();
       s.push(Buffer.from(options.logo_b64.split(",").pop(), "base64"));
       s.push(null);
-      await this.platformServices.storage.write(logoInternalPath, s);
+      await gr.platformServices.storage.write(logoInternalPath, s);
       logoPublicUrl = logoPublicPath;
     }
 
@@ -236,7 +214,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
     }
 
     if (!item.id) {
-      this.platformServices.pubsub.publish("workspace:added", {
+      gr.platformServices.pubsub.publish("workspace:added", {
         data: {
           company_id: workspace.company_id,
           workspace_id: workspace.id,
@@ -253,7 +231,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
 
   async thumbnail(workspaceId: string) {
     const logoInternalPath = `/workspaces/${workspaceId}/thumbnail.png`;
-    const file = await this.platformServices.storage.read(logoInternalPath);
+    const file = await gr.platformServices.storage.read(logoInternalPath);
     return { file };
   }
 
@@ -329,7 +307,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       }),
     );
 
-    await this.platformServices.pubsub.publish("workspace:member:added", {
+    await gr.platformServices.pubsub.publish("workspace:member:added", {
       data: {
         company_id: workspacePk.company_id,
         workspace_id: workspacePk.id,
@@ -399,7 +377,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
   }
 
   async processPendingUser(user: User): Promise<void> {
-    const userCompanies = await this.companies.getAllForUser(user.id);
+    const userCompanies = await gr.services.companies.getAllForUser(user.id);
     for (const userCompany of userCompanies) {
       const workspaces = await this.getAllForCompany(userCompany.group_id);
       for (const workspace of workspaces) {
@@ -426,7 +404,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
     companyId: CompanyPrimaryKey,
   ): Promise<WorkspaceUser[]> {
     //Process pending invitation to workspace for this user
-    const user = await this.users.get({ id: userId.userId });
+    const user = await gr.services.users.get({ id: userId.userId });
     await this.processPendingUser(user);
 
     //Get all workspaces for this user
@@ -450,7 +428,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
         if (workspace.isDefault && !workspace.isArchived && !workspace.isDeleted) {
           try {
             //Role will match the company role in the default workspaces
-            const companyRole = await this.companies.getCompanyUser(
+            const companyRole = await gr.services.companies.getCompanyUser(
               { id: companyId.id },
               { id: userId.userId },
             );

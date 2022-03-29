@@ -6,63 +6,36 @@ import Application, {
   TYPE,
 } from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger } from "../../../core/platform/framework";
-import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
+import { logger, logger as log } from "../../../core/platform/framework";
 import {
-  CreateResult,
   CrudException,
   DeleteResult,
-  EntityOperationResult,
   ExecutionContext,
   ListResult,
   OperationType,
   Pagination,
   SaveResult,
-  UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import assert from "assert";
-import { logger as log } from "../../../core/platform/framework";
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import axios from "axios";
 import * as crypto from "crypto";
 import { isObject } from "lodash";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
-import {
-  RealtimeApplicationEvent,
-  RealtimeBaseBusEvent,
-  RealtimeEntityActionType,
-  RealtimeEntityEvent,
-  RealtimeLocalBusEvent,
-  ResourcePath,
-} from "../../../core/platform/services/realtime/types";
-import { getThreadMessagePath } from "../../messages/web/realtime";
-import { ThreadExecutionContext } from "../../messages/types";
-import { Message } from "../../messages/entities/messages";
-import { eventBus } from "../../../core/platform/services/realtime/bus";
-import { getNotificationRoomName } from "../../notifications/services/realtime";
-import { v1 as uuid } from "uuid";
 
-export function getService(platformService: PlatformServicesAPI): MarketplaceApplicationServiceAPI {
-  return new ApplicationService(platformService);
-}
+import gr from "../../global-resolver";
 
-class ApplicationService implements MarketplaceApplicationServiceAPI {
+export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI {
   version: "1";
   repository: Repository<Application>;
   searchRepository: SearchRepository<Application>;
 
-  constructor(readonly platformService: PlatformServicesAPI) {}
-
   async init(): Promise<this> {
     try {
-      this.searchRepository = this.platformService.search.getRepository<Application>(
+      this.searchRepository = gr.platformServices.search.getRepository<Application>(
         TYPE,
         Application,
       );
-      this.repository = await this.platformService.database.getRepository<Application>(
-        TYPE,
-        Application,
-      );
+      this.repository = await gr.database.getRepository<Application>(TYPE, Application);
     } catch (err) {
       console.log(err);
       logger.error("Error while initializing applications service");

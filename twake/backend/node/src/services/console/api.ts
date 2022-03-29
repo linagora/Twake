@@ -2,7 +2,6 @@ import { TwakeServiceProvider } from "../../core/platform/framework";
 import { ConsoleOptions, ConsoleType, MergeProgress } from "./types";
 import { ConsoleServiceClient } from "./client-interface";
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import UserServiceAPI from "../user/api";
 import User from "../user/entities/user";
 
 export interface ConsoleServiceAPI extends TwakeServiceProvider {
@@ -22,7 +21,6 @@ export interface ConsoleServiceAPI extends TwakeServiceProvider {
   consoleOptions: ConsoleOptions;
   services: {
     database: DatabaseServiceAPI;
-    userService: UserServiceAPI;
   };
 
   processPendingUser(user: User): Promise<void>;

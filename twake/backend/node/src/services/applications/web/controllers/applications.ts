@@ -1,5 +1,4 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ApplicationServiceAPI } from "../../api";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   PaginationQueryParameters,
@@ -22,6 +21,7 @@ import { randomBytes } from "crypto";
 import { ApplicationEventRequestBody } from "../types";
 import { logger as log } from "../../../../core/platform/framework";
 import { hasCompanyAdminLevel } from "../../../../utils/company";
+import gr from "../../../global-resolver";
 
 export class ApplicationController
   implements
@@ -32,18 +32,16 @@ export class ApplicationController
       ResourceDeleteResponse
     >
 {
-  constructor(protected service: ApplicationServiceAPI) {}
-
   async get(
     request: FastifyRequest<{ Params: { application_id: string } }>,
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await this.service.applications.get({
+    const entity = await gr.services.applications.get({
       id: request.params.application_id,
     });
 
-    const companyUser = await this.service.companies.getCompanyUser(
+    const companyUser = await gr.services.companies.getCompanyUser(
       { id: entity.company_id },
       { id: context.user.id },
     );
@@ -61,7 +59,7 @@ export class ApplicationController
     }>,
   ): Promise<ResourceListResponse<PublicApplicationObject>> {
     const context = getExecutionContext(request);
-    const entities = await this.service.applications.list(
+    const entities = await gr.services.applications.list(
       request.query,
       { search: request.query.search },
       context,
@@ -85,7 +83,7 @@ export class ApplicationController
       let entity: Application;
 
       if (request.params.application_id) {
-        entity = await this.service.applications.get({
+        entity = await gr.services.applications.get({
           id: request.params.application_id,
         });
 
@@ -117,7 +115,7 @@ export class ApplicationController
         entity.stats.updated_at = now;
         entity.stats.version++;
 
-        const res = await this.service.applications.save(entity);
+        const res = await gr.services.applications.save(entity);
         entity = res.entity;
       } else {
         // INSERT
@@ -132,7 +130,7 @@ export class ApplicationController
           version: 0,
         };
 
-        const res = await this.service.applications.save(app);
+        const res = await gr.services.applications.save(app);
         entity = res.entity;
       }
 
@@ -176,7 +174,7 @@ export class ApplicationController
 
     const content = request.body.content;
 
-    const applicationEntity = await this.service.applications.get({
+    const applicationEntity = await gr.services.applications.get({
       id: request.params.application_id,
     });
 
@@ -188,7 +186,7 @@ export class ApplicationController
       throw CrudException.badRequest("You can't manage application of another company");
     }
 
-    const companyUser = await this.service.companies.getCompanyUser(
+    const companyUser = await gr.services.companies.getCompanyUser(
       { id: applicationEntity.company_id },
       { id: context.user.id },
     );
@@ -196,7 +194,7 @@ export class ApplicationController
     if (!companyUser || !hasCompanyAdminLevel(companyUser.role))
       throw CrudException.forbidden("You must be company admin");
 
-    const hookResponse = await this.service.applications.notifyApp(
+    const hookResponse = await gr.services.applications.notifyApp(
       request.params.application_id,
       request.body.connection_id,
       context.user.id,

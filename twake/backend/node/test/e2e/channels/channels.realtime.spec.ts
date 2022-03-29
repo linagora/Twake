@@ -1,9 +1,10 @@
 import "reflect-metadata";
 import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
 import { ObjectId } from "mongodb";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import io from "socket.io-client";
 import { Channel } from "../../../src/services/channels/entities/channel";
-import ChannelServiceAPI from "../../../src/services/channels/provider";
 import {
   getChannelPath,
   getPublicRoomName,
@@ -11,7 +12,7 @@ import {
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { TestPlatform, init } from "../setup";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
-
+import gr from "../../../src/services/global-resolver";
 describe("The Channels Realtime feature", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
@@ -113,11 +114,10 @@ describe("The Channels Realtime feature", () => {
       const roomToken = "twake";
       const channelName = new ObjectId().toString();
 
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel(platform.currentUser.id);
       channel.name = channelName;
 
-      const creationResult = await channelService.channels.save(
+      const creationResult = await gr.services.channels.save(
         channel,
         {},
         channelUtils.getContext({ id: channel.owner }),

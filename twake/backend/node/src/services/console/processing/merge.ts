@@ -16,7 +16,6 @@ import { getLogger } from "../../../core/platform/framework";
 import { Paginable } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
 import User from "../../user/entities/user";
-import UserServiceAPI from "../../user/api";
 import {
   CompanyCreatedStreamObject,
   CompanyReport,
@@ -38,8 +37,8 @@ import { ConsoleServiceClient } from "../client-interface";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { CompanyUserRole } from "../../user/web/types";
 import { ConsoleServiceAPI } from "../api";
-import { getService as getConsoleService } from "../service";
 import gr from "../../global-resolver";
+import { ConsoleServiceImpl } from "../service";
 
 const logger = getLogger("console.process.merge");
 
@@ -48,14 +47,12 @@ export class MergeProcess {
 
   constructor(
     private database: DatabaseServiceAPI,
-    private userService: UserServiceAPI,
     private dryRun: boolean,
     private consoleId: string = "console",
     private linkExternal: boolean = true,
     consoleClientOptions: ConsoleOptions,
   ) {
-    const consoleService = getConsoleService(null, null, "remote", consoleClientOptions);
-
+    const consoleService = new ConsoleServiceImpl(consoleClientOptions);
     this.client = new ConsoleRemoteClient(consoleService, dryRun);
   }
 
@@ -209,7 +206,7 @@ export class MergeProcess {
   }
 
   private getUserIds(company: Company, paginable?: Paginable): Observable<CompanyUser> {
-    return from(this.userService.companies.getUsers({ group_id: company.id }, paginable)).pipe(
+    return from(gr.services.companies.getUsers({ group_id: company.id }, paginable)).pipe(
       mergeMap(companyUsers => {
         const items$ = from(companyUsers.getEntities());
         const next$ = companyUsers?.nextPage?.page_token
@@ -222,7 +219,7 @@ export class MergeProcess {
   }
 
   private getCompanies(paginable?: Paginable): Observable<Company> {
-    return from(this.userService.companies.getCompanies(paginable)).pipe(
+    return from(gr.services.companies.getCompanies(paginable)).pipe(
       mergeMap(companiesResult => {
         const items$ = from(companiesResult.getEntities());
         const next$ = companiesResult?.nextPage?.page_token
@@ -277,7 +274,7 @@ export class MergeProcess {
     let result: CreatedConsoleUser;
 
     try {
-      const user = await this.userService.users.get({ id: companyUser.user_id });
+      const user = await gr.services.users.get({ id: companyUser.user_id });
 
       if (!user) {
         throw new Error(`User ${companyUser.user_id} not found`);
@@ -363,7 +360,7 @@ export class MergeProcess {
       return;
     }
 
-    await this.userService.external.createExternalUser(
+    await gr.services.externalUser.createExternalUser(
       getExternalUserInstance({
         service_id: serviceId,
         external_id: remoteUser._id,
@@ -381,7 +378,7 @@ export class MergeProcess {
       return;
     }
 
-    await this.userService.external.createExternalGroup(
+    await gr.services.externalUser.createExternalGroup(
       getExternalGroupInstance({
         service_id: serviceId,
         company_id: localCompany.id,

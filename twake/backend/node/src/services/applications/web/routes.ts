@@ -1,6 +1,4 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
-import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
 
@@ -8,32 +6,27 @@ import Application from "../entities/application";
 import assert from "assert";
 import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
 import { logger as log } from "../../../core/platform/framework";
+import gr from "../../global-resolver";
 
 const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
 
-const routes: FastifyPluginCallback<{
-  service: ApplicationServiceAPI;
-  realtime: RealtimeServiceAPI;
-}> = (fastify: FastifyInstance, options, next) => {
-  const applicationController = new ApplicationController(options.service);
-  const companyApplicationController = new CompanyApplicationController(
-    options.realtime,
-    options.service,
-  );
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const applicationController = new ApplicationController();
+  const companyApplicationController = new CompanyApplicationController();
 
   const adminCheck = async (request: FastifyRequest<{ Body: Application }>) => {
     try {
       const companyId = request.body.company_id;
       const userId = request.currentUser.id;
       assert(companyId, "company_id is not defined");
-      const companyUser = await options.service.companies.getCompanyUser(
+      const companyUser = await gr.services.companies.getCompanyUser(
         { id: companyId },
         { id: userId },
       );
 
       if (!companyUser) {
-        const company = await options.service.companies.getCompany({ id: companyId });
+        const company = await gr.services.companies.getCompany({ id: companyId });
         if (!company) {
           throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
         }

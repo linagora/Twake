@@ -2,7 +2,6 @@ import yargs from "yargs";
 import ora from "ora";
 import Table from "cli-table";
 import twake from "../../../twake";
-import UserServiceAPI from "../../../services/user/api";
 import gr from "../../../services/global-resolver";
 /**
  * Merge command parameters. Check the builder definition below for more details.

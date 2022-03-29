@@ -1,41 +1,38 @@
 import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
-import { MessageServiceAPI } from "../../../../api";
-import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
 import { Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import {
-  MessageUserInboxRef,
   getInstance as getInboxRefInstance,
+  MessageUserInboxRef,
 } from "../../../../entities/message-user-inbox-refs";
 import {
-  MessageUserInboxRefReversed,
   getInstance as getInboxThreadInstance,
+  MessageUserInboxRefReversed,
 } from "../../../../entities/message-user-inbox-refs-reversed";
 import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
 import {
   RealtimeEntityActionType,
   RealtimeLocalBusEvent,
+  ResourcePath,
 } from "../../../../../../core/platform/services/realtime/types";
-import { ResourcePath } from "../../../../../../core/platform/services/realtime/types";
 import { getThreadMessagePath } from "../../../../web/realtime";
 import {
   CreateResult,
   UpdateResult,
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../entities/messages";
+import gr from "../../../../../global-resolver";
 
 export class UserInboxViewProcessor {
   repositoryRef: Repository<MessageUserInboxRef>;
   repositoryReversed: Repository<MessageUserInboxRefReversed>;
 
-  constructor(readonly database: DatabaseServiceAPI, readonly service: MessageServiceAPI) {}
-
   async init() {
-    this.repositoryRef = await this.database.getRepository<MessageUserInboxRef>(
+    this.repositoryRef = await gr.database.getRepository<MessageUserInboxRef>(
       "message_user_inbox_refs",
       MessageUserInboxRef,
     );
-    this.repositoryReversed = await this.database.getRepository<MessageUserInboxRefReversed>(
+    this.repositoryReversed = await gr.database.getRepository<MessageUserInboxRefReversed>(
       "message_user_inbox_refs_reversed",
       MessageUserInboxRefReversed,
     );

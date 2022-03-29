@@ -21,23 +21,20 @@ import Company, {
   getInstance as getCompanyInstance,
 } from "../../user/entities/company";
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
-import UserServiceAPI from "../../user/api";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
 import _ from "lodash";
 import { CompanyFeaturesEnum, CompanyLimitsEnum } from "../../user/web/types";
-
+import gr from "../../global-resolver";
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
   client: AxiosInstance;
 
   private infos: ConsoleOptions;
-  private userService: UserServiceAPI;
 
   constructor(consoleInstance: ConsoleServiceAPI, private dryRun: boolean) {
     this.infos = consoleInstance.consoleOptions;
     this.client = axios.create({ baseURL: this.infos.url });
-    this.userService = consoleInstance.services.userService;
   }
 
   private auth() {
@@ -172,7 +169,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     const companyDTO = await this.fetchCompanyInfo(partialCompanyDTO.details.code);
 
-    let company = await this.userService.companies.getCompany({
+    let company = await gr.services.companies.getCompany({
       identity_provider_id: companyDTO.details.code,
     });
 
@@ -182,7 +179,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         identity_provider: "console",
         identity_provider_id: companyDTO.details.code,
       });
-      company = await this.userService.companies.createCompany(newCompany);
+      company = await gr.services.companies.createCompany(newCompany);
     }
 
     const details = companyDTO.details;
@@ -235,7 +232,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     company.stats = coalesce(companyDTO.stats, company.stats);
 
-    await this.userService.companies.updateCompany(company);
+    await gr.services.companies.updateCompany(company);
 
     return company;
   }
@@ -251,7 +248,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
     const roles = userDTO.roles;
 
-    let user = await this.userService.users.getByConsoleId(userDTO._id);
+    let user = await gr.services.users.getByConsoleId(userDTO._id);
 
     if (!user) {
       if (!userDTO.email) {
@@ -264,11 +261,11 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         .replace(/[^a-zA-Z0-9]/g, "")
         .replace(/ +/g, "_");
 
-      if (await this.userService.users.isEmailAlreadyInUse(userDTO.email)) {
+      if (await gr.services.users.isEmailAlreadyInUse(userDTO.email)) {
         throw CrudException.badRequest("Console user not created because email already exists");
       }
 
-      username = await this.userService.users.getAvailableUsername(username);
+      username = await gr.services.users.getAvailableUsername(username);
       if (!username) {
         throw CrudException.badRequest("Console user not created because username already exists");
       }
@@ -303,16 +300,16 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         ? this.infos.url.replace(/\/$/, "") + "/api/avatars/" + avatar.value
         : "";
 
-    await this.userService.users.save(user);
+    await gr.services.users.save(user);
 
     const getCompanyByCode = async (companyCode: string) => {
-      let company = await this.userService.companies.getCompany({
+      let company = await gr.services.companies.getCompany({
         identity_provider_id: companyCode,
       });
       if (!company) {
         const companyDTO = await this.fetchCompanyInfo(companyCode);
         await this.updateLocalCompanyFromConsole(companyDTO);
-        company = await this.userService.companies.getCompany({
+        company = await gr.services.companies.getCompany({
           identity_provider_id: companyCode,
         });
       }
@@ -331,23 +328,23 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         //Make sure user is active, if not we remove it
         if (role.status !== "deactivated") {
           companies.push(company);
-          await this.userService.companies.setUserRole(company.id, user.id, roleName);
+          await gr.services.companies.setUserRole(company.id, user.id, roleName);
         }
       }
     }
 
     // Remove user from companies not in the console
-    const currentCompanies = await this.userService.companies.getAllForUser(user.id);
+    const currentCompanies = await gr.services.companies.getAllForUser(user.id);
     for (const company of currentCompanies) {
       if (!companies.map(c => c.id).includes(company.group_id)) {
-        await this.userService.companies.removeUserFromCompany(
+        await gr.services.companies.removeUserFromCompany(
           { id: company.group_id },
           { id: user.id },
         );
       }
     }
 
-    await this.userService.users.save(user, {}, { user: { id: user.id, server_request: true } });
+    await gr.services.users.save(user, {}, { user: { id: user.id, server_request: true } });
 
     return user;
   }
@@ -355,23 +352,23 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   async removeCompanyUser(consoleUserId: string, company: Company): Promise<void> {
     logger.info("Remote: removeCompanyUser");
 
-    const user = await this.userService.users.getByConsoleId(consoleUserId);
+    const user = await gr.services.users.getByConsoleId(consoleUserId);
     if (!user) {
       throw CrudException.notFound(`User ${consoleUserId} doesn't exists`);
     }
-    await this.userService.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
+    await gr.services.companies.removeUserFromCompany({ id: company.id }, { id: user.id });
   }
 
   async removeUser(consoleUserId: string): Promise<void> {
     logger.info("Remote: removeUser");
 
-    const user = await this.userService.users.getByConsoleId(consoleUserId);
+    const user = await gr.services.users.getByConsoleId(consoleUserId);
 
     if (!user) {
       throw new Error("User does not exists on Twake.");
     }
 
-    await this.userService.users.anonymizeAndDelete(
+    await gr.services.users.anonymizeAndDelete(
       { id: user.id },
       {
         user: { id: user.id, server_request: true },
@@ -381,7 +378,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
   async removeCompany(companySearchKey: CompanySearchKey): Promise<void> {
     logger.info("Remote: removeCompany");
-    await this.userService.companies.removeCompany(companySearchKey);
+    await gr.services.companies.removeCompany(companySearchKey);
   }
 
   fetchCompanyInfo(consoleCompanyCode: string): Promise<ConsoleHookCompany> {

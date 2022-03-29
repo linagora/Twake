@@ -1,6 +1,5 @@
 import { FastifyRequest } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { NotificationServiceAPI } from "../../api";
 import { NotificationListQueryParameters } from "../../types";
 import {
   ResourceCreateResponse,
@@ -10,7 +9,7 @@ import {
 } from "../../../../utils/types";
 import { UserNotificationBadge } from "../../entities";
 import { getWebsocketInformation } from "../../services/realtime";
-import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import gr from "../../../global-resolver";
 
 export class NotificationController
   implements
@@ -21,24 +20,24 @@ export class NotificationController
       ResourceDeleteResponse
     >
 {
-  constructor(protected realtime: RealtimeServiceAPI, protected service: NotificationServiceAPI) {}
-
   async list(
     request: FastifyRequest<{
       Querystring: NotificationListQueryParameters;
     }>,
   ): Promise<ResourceListResponse<UserNotificationBadge>> {
     let resources: UserNotificationBadge[] = [];
-    let page_token: string = "";
+    let page_token = "";
 
     //Get one badge per company if requested
     if (request.query.all_companies) {
-      const list = await this.service.badges.listForUserPerCompanies(request.currentUser.id);
+      const list = await gr.services.notificationBadge.listForUserPerCompanies(
+        request.currentUser.id,
+      );
       resources = resources.concat(list.getEntities());
     }
 
     if (request.query.company_id) {
-      const list = await this.service.badges.listForUser(
+      const list = await gr.services.notificationBadge.listForUser(
         request.query.company_id,
         request.currentUser.id,
         { ...request.query },
@@ -52,7 +51,7 @@ export class NotificationController
         resources,
       },
       ...(request.query.websockets && {
-        websockets: this.realtime.sign(
+        websockets: gr.platformServices.realtime.sign(
           [getWebsocketInformation(request.currentUser)],
           request.currentUser.id,
         ),

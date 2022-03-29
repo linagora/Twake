@@ -15,7 +15,7 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import ChannelServiceAPI, {
+import {
   ChannelActivityMessage,
   ChannelPrimaryKey,
   ChannelService,
@@ -47,41 +47,28 @@ import Repository, {
 import { ChannelActivity } from "../../entities/channel-activity";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
-import UserServiceAPI from "../../../user/api";
-import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
+import { formatUser } from "../../../../utils/users";
+import gr from "../../../global-resolver";
 
 const logger = getLogger("channel.service");
 
-export class Service implements ChannelService {
+export class ChannelServiceImpl implements ChannelService {
   version: "1";
   activityRepository: Repository<ChannelActivity>;
   channelRepository: Repository<Channel>;
   directChannelRepository: Repository<DirectChannel>;
   defaultChannelService: DefaultChannelService;
 
-  constructor(
-    private platformServices: PlatformServicesAPI,
-    private channelService: ChannelServiceAPI,
-    private userService: UserServiceAPI,
-  ) {}
-
   async init(): Promise<this> {
-    this.defaultChannelService = new DefaultChannelServiceImpl(
-      this.platformServices.database,
-      this.channelService,
-      this.userService,
-    );
+    this.defaultChannelService = new DefaultChannelServiceImpl();
 
     try {
-      this.activityRepository = await this.platformServices.database.getRepository(
+      this.activityRepository = await gr.database.getRepository(
         "channel_activity",
         ChannelActivity,
       );
-      this.channelRepository = await this.platformServices.database.getRepository(
-        "channels",
-        Channel,
-      );
-      this.directChannelRepository = await this.platformServices.database.getRepository(
+      this.channelRepository = await gr.database.getRepository("channels", Channel);
+      this.directChannelRepository = await gr.database.getRepository(
         "direct_channels",
         DirectChannel,
       );
@@ -114,8 +101,7 @@ export class Service implements ChannelService {
     const mode = channel.id ? OperationType.UPDATE : OperationType.CREATE;
     const isDirectChannel = Channel.isDirectChannel(channel);
     const isWorkspaceAdmin =
-      !isDirectChannel &&
-      (await userIsWorkspaceAdmin(this.userService, context.user, context.workspace));
+      !isDirectChannel && (await userIsWorkspaceAdmin(context.user, context.workspace));
     const isPrivateChannel = Channel.isPrivateChannel(channel);
     const isDefaultChannel = Channel.isDefaultChannel(channel);
 
@@ -255,7 +241,7 @@ export class Service implements ChannelService {
 
     // Shortcut to invite members to a channel
     if (!isDirectChannel && options.members && options.members.length > 0) {
-      await this.channelService.members.addUsersToChannel(
+      await gr.services.members.addUsersToChannel(
         options.members.map(id => {
           return { id };
         }),
@@ -317,8 +303,7 @@ export class Service implements ChannelService {
     }
 
     const isWorkspaceAdmin =
-      !directChannel &&
-      (await userIsWorkspaceAdmin(this.userService, context.user, context.workspace));
+      !directChannel && (await userIsWorkspaceAdmin(context.user, context.workspace));
     const isChannelOwner = this.isChannelOwner(channelToDelete, context.user);
 
     if (!isWorkspaceAdmin && !isChannelOwner) {
@@ -424,14 +409,14 @@ export class Service implements ChannelService {
     let activityPerChannel: Map<string, ChannelActivity>;
     const isDirectWorkspace = isDirectChannel(context.workspace);
     const isWorkspaceAdmin =
-      !isDirectWorkspace && userIsWorkspaceAdmin(this.userService, context.user, context.workspace);
+      !isDirectWorkspace && userIsWorkspaceAdmin(context.user, context.workspace);
     const findFilters: FindFilter = {
       company_id: context.workspace.company_id,
       workspace_id: context.workspace.workspace_id,
     };
 
     if (options?.mine || isDirectWorkspace) {
-      const userChannels = await this.channelService.members.listUserChannels(
+      const userChannels = await gr.services.members.listUserChannels(
         context.user,
         pagination,
         context,
@@ -551,7 +536,7 @@ export class Service implements ChannelService {
       throw CrudException.notFound("Channel not found");
     }
 
-    const member = await this.channelService.members.isChannelMember(user, channel);
+    const member = await gr.services.members.isChannelMember(user, channel);
 
     if (!member) {
       throw CrudException.badRequest("User is not channel member");
@@ -562,7 +547,7 @@ export class Service implements ChannelService {
     // cf this.members.onUpdated
     member.last_access = now;
     const updatedMember = (
-      await this.channelService.members.save(member, null, {
+      await gr.services.members.save(member, null, {
         channel,
         user,
       })
@@ -580,7 +565,7 @@ export class Service implements ChannelService {
       throw CrudException.notFound("Channel not found");
     }
 
-    const member = await this.channelService.members.isChannelMember(user, channel);
+    const member = await gr.services.members.isChannelMember(user, channel);
 
     if (!member) {
       throw CrudException.badRequest("User is not channel member");
@@ -624,9 +609,7 @@ export class Service implements ChannelService {
     //Add requester as member
     if (context.user.id) {
       try {
-        await this.channelService.members.addUserToChannels({ id: context.user.id }, [
-          savedChannel,
-        ]);
+        await gr.services.members.addUserToChannels({ id: context.user.id }, [savedChannel]);
       } catch (err) {
         logger.warn({ err }, "Can not add requester as channel member");
       }
@@ -641,9 +624,7 @@ export class Service implements ChannelService {
     if (isDirectChannel(channel)) {
       const users = [];
       for (const user of channel.members) {
-        const e = await this.userService.formatUser(
-          await this.userService.users.getCached({ id: user }),
-        );
+        const e = await formatUser(await gr.services.users.getCached({ id: user }));
         users.push(e);
       }
       channelWithUsers.users = users;
@@ -682,9 +663,7 @@ export class Service implements ChannelService {
       } else {
         if (options.addCreatorAsMember && savedChannel.owner) {
           try {
-            await this.channelService.members.addUserToChannels({ id: savedChannel.owner }, [
-              savedChannel,
-            ]);
+            await gr.services.members.addUserToChannels({ id: savedChannel.owner }, [savedChannel]);
           } catch (err) {
             logger.warn({ err }, "Can not add owner as channel member");
           }
@@ -729,7 +708,7 @@ export class Service implements ChannelService {
   onRead(channel: Channel, member: ChannelMember): void {
     logger.info(`Channel ${channel.id} as been marked as read for user ${member.id}`);
 
-    this.platformServices.pubsub.publish("channel:read", {
+    gr.platformServices.pubsub.publish("channel:read", {
       data: {
         channel,
         member,
@@ -747,7 +726,7 @@ export class Service implements ChannelService {
   onUnread(channel: Channel, member: ChannelMember): void {
     logger.info(`Channel ${channel.id} as been marked as unread for user ${member.id}`);
 
-    this.platformServices.pubsub.publish("channel:unread", {
+    gr.platformServices.pubsub.publish("channel:unread", {
       data: {
         channel,
         member,

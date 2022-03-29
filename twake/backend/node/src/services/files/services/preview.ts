@@ -10,11 +10,7 @@ import { File } from "../entities/file";
  * Update the file metadata and upload the thumbnails in storage
  */
 export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsubCallback, string> {
-  constructor(
-    readonly service: FileServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    private repository: Repository<File>,
-  ) {}
+  constructor(readonly service: FileServiceAPI, private repository: Repository<File>) {}
 
   async init(context?: TwakeContext): Promise<this> {
     return this;

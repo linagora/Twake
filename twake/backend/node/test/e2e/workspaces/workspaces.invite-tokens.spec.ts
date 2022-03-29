@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
+import AuthService from "../../../src/core/platform/services/auth/provider";
 import { InviteTokenObject } from "../../../src/services/workspaces/web/types";
 import gr from "../../../src/services/global-resolver";
 
@@ -11,7 +11,7 @@ describe("The /workspaces API (invite tokens)", () => {
   let platform: TestPlatform;
 
   let testDbService: TestDbService;
-  let authServiceApi: AuthServiceAPI;
+  let authServiceApi: AuthService;
 
   let companyId = uuidv1();
 
@@ -36,7 +36,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
     companyId = platform.workspace.company_id;
 
-    authServiceApi = await platform.platform.getProvider<AuthServiceAPI>("auth");
+    authServiceApi = await platform.platform.getProvider<AuthService>("auth");
     testDbService = new TestDbService(platform);
     await resetDatabase();
   };

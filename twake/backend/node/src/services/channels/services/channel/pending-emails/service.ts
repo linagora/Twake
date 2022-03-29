@@ -1,45 +1,34 @@
-import { DatabaseServiceAPI } from "../../../../../core/platform/services/database/api";
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import ChannelServiceAPI, {
-  ChannelPendingEmailService,
-  ChannelPrimaryKey,
-} from "../../../provider";
+import { ChannelPendingEmailService, ChannelPrimaryKey } from "../../../provider";
 import {
   CreateResult,
-  UpdateResult,
-  SaveResult,
+  CrudException,
   DeleteResult,
   ListResult,
-  CrudException,
   Pagination,
+  SaveResult,
+  UpdateResult,
 } from "../../../../../core/platform/framework/api/crud-service";
 import { ChannelExecutionContext } from "../../../types";
 import { getLogger } from "../../../../../core/platform/framework";
 import {
-  ChannelPendingEmailsPrimaryKey,
   ChannelPendingEmails,
+  ChannelPendingEmailsPrimaryKey,
   getChannelPendingEmailsInstance,
 } from "../../../entities";
 import { ChannelPendingEmailsListQueryParameters } from "../../../web/types";
 import { plainToClass } from "class-transformer";
-import UserServiceAPI from "../../../../user/api";
 import { NewUserInWorkspaceNotification } from "../types";
-
+import gr from "../../../../global-resolver";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const logger = getLogger("channel.pending_emails");
 
-export default class ChannelPendingEmailsService implements ChannelPendingEmailService {
+export default class ChannelPendingEmailServiceImpl implements ChannelPendingEmailService {
   version: "1";
   repository: Repository<ChannelPendingEmails>;
 
-  constructor(
-    private database: DatabaseServiceAPI,
-    private userService: UserServiceAPI,
-    private service: ChannelServiceAPI,
-  ) {}
-
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository(
+    this.repository = await gr.database.getRepository(
       "channel_pending_emails",
       ChannelPendingEmails,
     );
@@ -131,7 +120,7 @@ export default class ChannelPendingEmailsService implements ChannelPendingEmailS
     workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
   ): Promise<void> {
     // Get user object
-    const userObj = await this.userService.users.get({
+    const userObj = await gr.services.users.get({
       id: user.user_id,
     });
 
@@ -146,7 +135,7 @@ export default class ChannelPendingEmailsService implements ChannelPendingEmailS
       .getEntities()
       .forEach(async ({ workspace_id, channel_id, company_id, email }) => {
         // Add user to channel
-        const list = await this.service.members.addUserToChannels(userObj, [
+        const list = await gr.services.members.addUserToChannels(userObj, [
           {
             workspace_id,
             company_id,

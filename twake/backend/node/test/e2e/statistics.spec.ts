@@ -2,7 +2,6 @@ import { beforeAll, beforeEach, afterAll, describe, expect, it } from "@jest/glo
 import { init, TestPlatform } from "./setup";
 
 import { v1 as uuidv1 } from "uuid";
-import ChannelServiceAPI from "../../src/services/channels/provider";
 import {
   createMessage,
   createParticipant,
@@ -15,6 +14,7 @@ import { WorkspaceExecutionContext } from "../../src/services/channels/types";
 import { ChannelUtils, get as getChannelUtils } from "./channels/utils";
 import { StatisticsAPI } from "../../src/services/statistics/types";
 import { ResourceUpdateResponse, User } from "../../src/utils/types";
+import gr from "../../src/services/global-resolver";
 
 describe("Statistics implementation", () => {
   let platform: TestPlatform;
@@ -80,9 +80,8 @@ describe("Statistics implementation", () => {
 
   describe("On user use messages in channel view", () => {
     it("should create a message and retrieve it in channel view", async () => {
-      const channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
       const channel = channelUtils.getChannel();
-      await channelService.channels.save(channel, {}, getContext());
+      await gr.services.channels.save(channel, {}, getContext());
       const channelId = channel.id;
 
       //Reset global value because messages could have been created somewhere else

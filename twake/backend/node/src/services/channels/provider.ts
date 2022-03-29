@@ -208,13 +208,6 @@ export interface TabService
     Initializable,
     CRUDService<ChannelTab, ChannelTabPrimaryKey, ChannelExecutionContext> {}
 
-export default interface ChannelServiceAPI extends TwakeServiceProvider, Initializable {
-  channels: ChannelService;
-  pendingEmails: ChannelPendingEmailService;
-  members: MemberService;
-  tabs: TabService;
-}
-
 /**
  * Manage default channels entities
  */

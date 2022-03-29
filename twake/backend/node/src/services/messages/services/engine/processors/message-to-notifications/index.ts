@@ -1,28 +1,16 @@
 import { MessageLocalEvent, MessageNotification } from "../../../../types";
-import { MessageServiceAPI } from "../../../../api";
-import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
 import { ParticipantObject, Thread } from "../../../../entities/threads";
 import { logger } from "../../../../../../core/platform/framework";
-import { PubsubServiceAPI } from "../../../../../../core/platform/services/pubsub/api";
 import { Channel } from "../../../../../channels/entities";
 import { isDirectChannel } from "../../../../../channels/utils";
 import { ChannelActivityNotification } from "../../../../../channels/types";
-import UserServiceAPI from "../../../../../user/api";
-import ChannelServiceAPI from "../../../../../channels/provider";
 import { getMentions } from "../../../utils";
 import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../../../services/messages/entities/messages";
+import gr from "../../../../../global-resolver";
 
 export class MessageToNotificationsProcessor {
   private name = "MessageToNotificationsProcessor";
-
-  constructor(
-    readonly database: DatabaseServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    private user: UserServiceAPI,
-    private channels: ChannelServiceAPI,
-    readonly service: MessageServiceAPI,
-  ) {}
 
   async init() {
     //
@@ -44,7 +32,7 @@ export class MessageToNotificationsProcessor {
           continue;
         }
 
-        const channel: Channel = await this.channels.channels.get(
+        const channel: Channel = await gr.services.channels.get(
           {
             id: participant.id,
             company_id: participant.company_id,
@@ -63,13 +51,13 @@ export class MessageToNotificationsProcessor {
           continue;
         }
 
-        const company = await this.user.companies.getCompany({ id: participant.company_id });
+        const company = await gr.services.companies.getCompany({ id: participant.company_id });
 
         const companyName = company?.name || "";
         let workspaceName = "";
         let senderName = "Twake";
         if (messageResource.user_id) {
-          const user = await this.user.users.get({ id: messageResource.user_id });
+          const user = await gr.services.users.get({ id: messageResource.user_id });
           senderName =
             `${user?.first_name} ${user?.last_name}`.trim() || `@${user?.username_canonical}`;
         }
@@ -81,14 +69,14 @@ export class MessageToNotificationsProcessor {
           title = `${senderName} in ${companyName}`;
         } else {
           const workspace =
-            (await this.user.companies.getCompany({ id: participant.workspace_id })) || null;
+            (await gr.services.companies.getCompany({ id: participant.workspace_id })) || null;
           workspaceName = workspace?.name || workspaceName;
           title = `${channel.name} in ${companyName} • ${workspaceName}`;
           text = `${senderName}: ${text}`;
         }
 
         const mentions = await getMentions(messageResource, async (username: string) => {
-          return await this.user.users.getByUsername(username);
+          return await gr.services.users.getByUsername(username);
         });
 
         const messageEvent: MessageNotification = {
@@ -132,12 +120,15 @@ export class MessageToNotificationsProcessor {
             message.created ||
             (await this.isLastActivityMessageDeleted(participant, messageResource, message))
           ) {
-            await this.pubsub.publish<ChannelActivityNotification>("channel:activity", {
-              data: channelEvent,
-            });
+            await gr.platformServices.pubsub.publish<ChannelActivityNotification>(
+              "channel:activity",
+              {
+                data: channelEvent,
+              },
+            );
           }
 
-          await this.pubsub.publish<MessageNotification>(
+          await gr.platformServices.pubsub.publish<MessageNotification>(
             message.created ? "message:created" : "message:updated",
             {
               data: messageEvent,
@@ -158,7 +149,7 @@ export class MessageToNotificationsProcessor {
     message: MessageLocalEvent,
   ): Promise<boolean> {
     if (participant.company_id && participant.workspace_id && participant.id) {
-      const list = await this.service.views.listChannel(
+      const list = await gr.services.views.listChannel(
         new Pagination("", "1"),
         {
           include_users: false,

@@ -2,7 +2,7 @@ import { Consumes, ServiceName, TwakeService } from "../../framework";
 import { SkipCLI } from "../../framework/decorators/skip";
 import { localEventBus } from "../../framework/pubsub";
 import WebSocketAPI from "../../services/websocket/provider";
-import AuthServiceAPI from "../auth/provider";
+import AuthService from "../auth/provider";
 import { RealtimeEventBus, RealtimeRoomManager, RealtimeServiceAPI } from "./api";
 import { eventBus } from "./bus";
 import RealtimeEntityManager from "./services/entity-manager";
@@ -17,7 +17,7 @@ export default class RealtimeService
 {
   private roomManager: RoomManagerImpl;
   private entityManager: RealtimeEntityManager;
-  private auth: AuthServiceAPI;
+  private auth: AuthService;
   version = "1";
 
   api(): RealtimeServiceAPI {
@@ -27,7 +27,7 @@ export default class RealtimeService
   @SkipCLI()
   async doStart(): Promise<this> {
     const ws = this.context.getProvider<WebSocketAPI>("websocket");
-    this.auth = this.context.getProvider<AuthServiceAPI>("auth");
+    this.auth = this.context.getProvider<AuthService>("auth");
 
     this.roomManager = new RoomManagerImpl(ws, this.auth);
     this.roomManager.init();

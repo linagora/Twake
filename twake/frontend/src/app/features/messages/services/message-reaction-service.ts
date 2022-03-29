@@ -6,7 +6,7 @@ import DepreciatedCollections, {
 } from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 
 /**
- * Service that allow you to manage message reactions
+ * ChannelServiceImpl that allow you to manage message reactions
  */
 class MessageReactionService {
   collection: Collection;

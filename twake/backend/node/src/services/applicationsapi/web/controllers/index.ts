@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from "fastify";
-import { ApplicationsApiServiceAPI } from "../../api";
 import { ApplicationObject } from "../../../applications/entities/application";
 import {
   ApplicationApiExecutionContext,
@@ -14,16 +13,15 @@ import {
   RealtimeApplicationEvent,
   RealtimeBaseBusEvent,
 } from "../../../../core/platform/services/realtime/types";
+import gr from "../../../global-resolver";
 
 export class ApplicationsApiController {
-  constructor(readonly service: ApplicationsApiServiceAPI) {}
-
   async token(
     request: FastifyRequest<{ Body: ApplicationLoginRequest }>,
   ): Promise<ResourceGetResponse<ApplicationLoginResponse>> {
     return {
       resource: {
-        access_token: this.service.authService.generateJWT(request.body.id, null, {
+        access_token: gr.platformServices.auth.generateJWT(request.body.id, null, {
           track: false,
           provider_id: "",
           application_id: request.body.id,
@@ -38,7 +36,7 @@ export class ApplicationsApiController {
   ): Promise<ResourceGetResponse<ApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await this.service.applicationService.applications.get({
+    const entity = await gr.services.applications.get({
       id: context.application_id,
     });
     if (!entity) {
@@ -51,7 +49,7 @@ export class ApplicationsApiController {
   async configure(request: FastifyRequest<{ Body: ConfigureRequest }>, reply: FastifyReply) {
     const app_id = request.currentUser.application_id;
 
-    const application = await this.service.applicationService.applications.get({ id: app_id });
+    const application = await gr.services.applications.get({ id: app_id });
 
     if (!application) {
       throw CrudException.forbidden("Application not found");

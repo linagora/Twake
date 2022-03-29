@@ -2,9 +2,8 @@ import yargs from "yargs";
 import ora from "ora";
 import twake from "../../../twake";
 import Table from "cli-table";
-import { ApplicationServiceAPI } from "../../../services/applications/api";
 import * as process from "process";
-
+import gr from "../../../services/global-resolver";
 /**
  * Merge command parameters. Check the builder definition below for more details.
  */
@@ -43,8 +42,8 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
     if (argv.id) {
       let spinner = ora({ text: "Retrieving application" }).start();
       const platform = await twake.run(services);
-      const service = platform.getProvider<ApplicationServiceAPI>("applications");
-      let app = await service.applications.get({ id: argv.id });
+      await gr.doInit(platform);
+      let app = await gr.services.applications.get({ id: argv.id });
       spinner.stop();
       if (!app) {
         console.error(`Application ${argv.id} not found`);
@@ -72,8 +71,8 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       }
 
       spinner = ora({ text: "Publishing application" }).start();
-      await service.applications.publish({ id: argv.id });
-      app = await service.applications.get({ id: argv.id });
+      await gr.services.applications.publish({ id: argv.id });
+      app = await gr.services.applications.get({ id: argv.id });
 
       spinner.stop();
       console.log("Application published");

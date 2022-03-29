@@ -1,15 +1,15 @@
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository, {
   FindFilter,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { PhpMessagesServiceAPI } from "./types";
 import { PhpMessage, PhpMessagePrimaryKey } from "./php-message-entity";
-import { ExecutionContext } from "../../../../core/platform/framework/api/crud-service";
+import gr from "../../../../services/global-resolver";
 
 export interface PhpMessageExecutionContext extends ExecutionContext {
   channel_id: string;
@@ -21,10 +21,8 @@ export class PhpMessagesService implements PhpMessagesServiceAPI {
   version: "1";
   public repository: Repository<PhpMessage>;
 
-  constructor(private database: DatabaseServiceAPI) {}
-
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository<PhpMessage>("message", PhpMessage);
+    this.repository = await gr.database.getRepository<PhpMessage>("message", PhpMessage);
     return this;
   }
 

@@ -2,19 +2,24 @@ import { Prefix, TwakeService } from "../../core/platform/framework";
 import { WorkspaceService } from "./api";
 
 import gr from "../global-resolver";
+import WebServerAPI from "../../core/platform/services/webserver/provider";
+import web from "./web";
 
 @Prefix("/internal/services/workspaces/v1")
 export default class Service extends TwakeService<WorkspaceService> {
   version = "1";
   name = "workspaces";
-  private service: WorkspaceService;
 
   public async doInit(): Promise<this> {
-    gr.registerEndpoint(this.context, this.prefix);
+    const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
+    fastify.register((instance, _opts, next) => {
+      web(instance, { prefix: this.prefix });
+      next();
+    });
     return this;
   }
 
   api(): WorkspaceService {
-    return this.service;
+    return null;
   }
 }

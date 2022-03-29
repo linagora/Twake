@@ -12,6 +12,7 @@ import Application, {
   ApplicationPublication,
   TYPE,
 } from "../../../services/applications/entities/application";
+import gr from "../../../services/global-resolver";
 
 type Options = {
   onlyApplication?: string;
@@ -85,6 +86,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   handler: async argv => {
     const spinner = ora({ text: "Migrating php applications - " }).start();
     const platform = await twake.run(services);
+    await gr.doInit(platform);
     const migrator = new ApplicationMigrator(platform);
 
     const onlyApplication = argv.onlyApplication as string | null;

@@ -7,6 +7,8 @@ import { DatabaseServiceAPI } from "../../../src/core/platform/services/database
 import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import { Workspace } from "../../../src/utils/types";
 import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import config from "config";
 import globalResolver from "../../../src/services/global-resolver";
 

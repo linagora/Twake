@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { MessageServiceAPI } from "../../api";
 import {
   ResourceCreateResponse,
   ResourceDeleteResponse,
@@ -10,7 +9,7 @@ import {
 import { handleError } from "../../../../utils/handleError";
 import { CompanyExecutionContext } from "../../types";
 import { ParticipantObject, Thread } from "../../entities/threads";
-
+import gr from "../../../global-resolver";
 export class ThreadsController
   implements
     CrudController<
@@ -20,8 +19,6 @@ export class ThreadsController
       ResourceDeleteResponse
     >
 {
-  constructor(protected service: MessageServiceAPI) {}
-
   async save(
     request: FastifyRequest<{
       Params: {
@@ -42,7 +39,7 @@ export class ThreadsController
   ): Promise<ResourceCreateResponse<Thread>> {
     const context = getCompanyExecutionContext(request);
     try {
-      const result = await this.service.threads.save(
+      const result = await gr.services.threads.save(
         {
           id: request.params.thread_id || undefined,
           participants: request.body.resource.participants || undefined,

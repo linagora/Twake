@@ -1,6 +1,6 @@
 import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
-import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
+import { TwakeServiceProvider, Initializable } from "../../core/platform/framework";
 import { CompanyExecutionContext } from "./web/types";
 import { File } from "./entities/file";
 import { PubsubHandler, PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
@@ -20,7 +20,6 @@ export type DeleteOptions = {
 };
 
 export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
-  pubsub: PubsubServiceAPI;
   /**
    * Save a file and returns its entity
    *

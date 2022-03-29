@@ -10,9 +10,9 @@ import {
 import Application, { PublicApplicationObject } from "../../entities/application";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import { CompanyExecutionContext } from "../types";
-import { ApplicationServiceAPI } from "../../api";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { getCompanyApplicationRooms } from "../../realtime";
+import gr from "../../../global-resolver";
 
 export class CompanyApplicationController
   implements
@@ -23,13 +23,11 @@ export class CompanyApplicationController
       ResourceDeleteResponse
     >
 {
-  constructor(protected realtime: RealtimeServiceAPI, protected service: ApplicationServiceAPI) {}
-
   async get(
     request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
   ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
-    const resource = await this.service.companyApplications.get(
+    const resource = await gr.services.companyApplications.get(
       { application_id: request.params.application_id, company_id: context.company.id },
       context,
     );
@@ -45,7 +43,7 @@ export class CompanyApplicationController
     }>,
   ): Promise<ResourceListResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
-    const resources = await this.service.companyApplications.list(
+    const resources = await gr.services.companyApplications.list(
       request.query,
       { search: request.query.search },
       context,
@@ -55,7 +53,7 @@ export class CompanyApplicationController
       resources: resources.getEntities().map(ca => ca.application),
       next_page_token: resources.nextPage.page_token,
       websockets:
-        this.realtime.sign(
+        gr.platformServices.realtime.sign(
           getCompanyApplicationRooms(request.params.company_id),
           context.user.id,
         ) || [],
@@ -70,7 +68,7 @@ export class CompanyApplicationController
   ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
 
-    const resource = await this.service.companyApplications.save(
+    const resource = await gr.services.companyApplications.save(
       { application_id: request.params.application_id, company_id: context.company.id },
       {},
       context,
@@ -85,7 +83,7 @@ export class CompanyApplicationController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getCompanyExecutionContext(request);
-    const resource = await this.service.companyApplications.delete(
+    const resource = await gr.services.companyApplications.delete(
       { application_id: request.params.application_id, company_id: context.company.id },
       context,
     );

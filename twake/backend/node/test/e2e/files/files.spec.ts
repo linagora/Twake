@@ -2,6 +2,8 @@ import "reflect-metadata";
 import { describe, it, beforeAll, afterAll, expect } from "@jest/globals";
 import { TestPlatform, init } from "../setup";
 import { ResourceUpdateResponse } from "../../../src/utils/types";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import fs from "fs";
 import { File } from "../../../src/services/files/entities/file";
 import { deserialize } from "class-transformer";
@@ -33,7 +35,7 @@ describe("The Files feature", () => {
     ].map(p => `${__dirname}/${p}`);
     const thumbnails = [1, 1, 2, 5, 0];
 
-    it(`should save file and generate previews`, async done => {
+    it("should save file and generate previews", async done => {
       for (const i in files) {
         const file = files[i];
 

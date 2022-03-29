@@ -1,10 +1,9 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
-import { NotificationServiceAPI } from "../../api";
 import { handleError } from "../../../../utils/handleError";
 import {
-  NotificationPreferenceListQueryParameters,
   CreateNotificationPreferencesBody,
+  NotificationPreferenceListQueryParameters,
 } from "../../types";
 import {
   ResourceCreateResponse,
@@ -13,6 +12,7 @@ import {
   ResourceListResponse,
 } from "../../../../utils/types";
 import { UserNotificationPreferences } from "../../entities";
+import gr from "../../../global-resolver";
 
 const ALL = "all";
 
@@ -25,14 +25,12 @@ export class NotificationPrerencesController
       ResourceDeleteResponse
     >
 {
-  constructor(protected service: NotificationServiceAPI) {}
-
   async list(
     request: FastifyRequest<{
       Querystring: NotificationPreferenceListQueryParameters;
     }>,
   ): Promise<ResourceListResponse<UserNotificationPreferences>> {
-    const list = await this.service.notificationPreferences.listPreferences(
+    const list = await gr.services.notificationPreferences.listPreferences(
       ALL,
       ALL,
       request.currentUser.id,
@@ -56,7 +54,7 @@ export class NotificationPrerencesController
     };
 
     try {
-      const result = await this.service.notificationPreferences.savePreferences(
+      const result = await gr.services.notificationPreferences.savePreferences(
         entity as UserNotificationPreferences,
       );
 

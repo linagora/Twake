@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import { AxiosInstance } from "axios";
 import { merge } from "lodash";
 
 import { ConsoleServiceClient } from "../client-interface";
@@ -6,8 +6,6 @@ import {
   ConsoleCompany,
   ConsoleHookCompany,
   ConsoleHookUser,
-  ConsoleOptions,
-  ConsoleUser,
   CreateConsoleCompany,
   CreateConsoleUser,
   CreatedConsoleCompany,
@@ -20,8 +18,8 @@ import { v1 as uuidv1 } from "uuid";
 import { ConsoleServiceAPI } from "../api";
 import User, { getInstance as getUserInstance } from "../../user/entities/user";
 import Company, { CompanySearchKey } from "../../user/entities/company";
-import { CompanyUserRole } from "../../user/web/types";
 import { logger } from "../../../core/platform/framework/logger";
+import gr from "../../global-resolver";
 
 export class ConsoleInternalClient implements ConsoleServiceClient {
   version: "1";
@@ -34,11 +32,7 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
     user: CreateConsoleUser,
   ): Promise<CreatedConsoleUser> {
     logger.info("Internal: addUserToCompany");
-    await this.consoleInstance.services.userService.companies.setUserRole(
-      company.id,
-      user.id,
-      user.role,
-    );
+    await gr.services.companies.setUserRole(company.id, user.id, user.role);
     return merge(user, { _id: user.id });
   }
 
@@ -57,7 +51,6 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
 
   async addUserToTwake(user: CreateConsoleUser): Promise<User> {
     logger.info("Internal: addUserToTwake");
-    const usersApi = this.consoleInstance.services.userService.users;
     const userToCreate = getUserInstance({
       id: uuidv1(),
       email_canonical: user.email,
@@ -65,9 +58,9 @@ export class ConsoleInternalClient implements ConsoleServiceClient {
       last_name: user.lastName,
     });
 
-    const createdUser = await usersApi.save(userToCreate).then(result => result.entity);
+    const createdUser = await gr.services.users.save(userToCreate).then(result => result.entity);
     if (user.password) {
-      await usersApi.setPassword({ id: createdUser.id }, user.password);
+      await gr.services.users.setPassword({ id: createdUser.id }, user.password);
     }
     return createdUser;
   }

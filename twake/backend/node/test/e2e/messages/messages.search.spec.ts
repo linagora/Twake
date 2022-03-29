@@ -8,14 +8,13 @@ import { ParticipantObject, Thread } from "../../../src/services/messages/entiti
 import { deserialize } from "class-transformer";
 import { Channel } from "../../../src/services/channels/entities";
 import { ChannelUtils, get as getChannelUtils } from "../channels/utils";
-import ChannelServiceAPI from "../../../src/services/channels/provider";
 import { MessageFile } from "../../../src/services/messages/entities/message-files";
+import gr from "../../../src/services/global-resolver";
 
 describe("The /messages API", () => {
   const url = "/internal/services/messages/v1";
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
-  let channelService;
 
   beforeAll(async ends => {
     platform = await init({
@@ -39,7 +38,6 @@ describe("The /messages API", () => {
 
     await platform.database.getConnector().drop();
     channelUtils = getChannelUtils(platform);
-    channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
 
     const testDbService = new TestDbService(platform);
     await testDbService.createCompany(platform.workspace.company_id);
@@ -189,7 +187,7 @@ describe("The /messages API", () => {
 
   async function createChannel(userId = platform.currentUser.id): Promise<Channel> {
     const channel = channelUtils.getChannel(userId);
-    const creationResult = await channelService.channels.save(
+    const creationResult = await gr.services.channels.save(
       channel,
       {},
       channelUtils.getContext({ id: userId }),
