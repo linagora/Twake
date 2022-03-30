@@ -137,6 +137,9 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   }
 
   // This will ensure we are still in the channels and if not, we'll remove the badge
+  // TODO: We need to also ensure more than that
+  // - Are we in the workspace?
+  // - Are we in the company?
   async ensureBadgesAreReachable(
     badges: ListResult<UserNotificationBadge>,
   ): Promise<ListResult<UserNotificationBadge>> {
