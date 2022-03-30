@@ -106,6 +106,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
         ...entityDefinition.options.search.source(entity),
       };
 
+      console.log("INDEXING BEFORE = ", JSON.stringify(body));
+
       Object.keys(entityDefinition.options?.search.mongoMapping?.text || []).forEach(
         (key: string) => {
           if (entityDefinition.options?.search.mongoMapping?.text[key] === "text") {
@@ -113,6 +115,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
           }
         },
       );
+
+      console.log("INDEXING AFTER = ", JSON.stringify(body));
 
       const record: Operation = {
         index: this.getIndex(entityDefinition),
