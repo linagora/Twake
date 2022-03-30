@@ -124,7 +124,7 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
 
       Object.keys(entityDefinition.options?.search.esMapping?.properties || []).forEach(
         (key: string) => {
-          const mapping: any = entityDefinition.options?.search?.esMapping[key];
+          const mapping: any = entityDefinition.options?.search?.esMapping?.properties[key];
           if (mapping.type === "text") {
             body[key] = _.lowerCase(asciiFold(body[key]));
           }
