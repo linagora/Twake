@@ -110,6 +110,9 @@ class UserAPIClientService {
       false,
       { disableJWTAuthentication },
     ).then(result => {
+      if (!result?.resource?.id) {
+        throw new Error('User not found');
+      }
       result.resource.id && this.realtime.set(result.resource.id, result.websocket);
       return result.resource;
     });
