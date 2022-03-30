@@ -4,6 +4,9 @@ import { ChannelType } from 'app/features/channels/types/channel';
 import { ChannelsState, ChannelSelector } from '../state/channels';
 import ChannelAPIClient from '../api/channel-api-client';
 
+//Keep the channels in a easy to use variable
+let channelsKeeper: ChannelType[] = [];
+
 export function useChannel(channelId: string) {
   const channel = useRecoilValue(ChannelSelector(channelId)) as ChannelType;
   const { set } = useSetChannel();
@@ -20,13 +23,16 @@ export function useChannel(channelId: string) {
   return { channel, save };
 }
 
+export function getChannel(channelId: string) {
+  return channelsKeeper.find(ch => ch.id === channelId);
+}
+
 export function useSetChannel() {
   const set = useRecoilCallback(({ set, snapshot }) => (channel: ChannelType) => {
     if (channel.id) {
-      let list = snapshot.getLoadable(ChannelsState).valueMaybe() || [];
-      list = list.filter(c => c.id !== channel.id);
-      list.push(channel);
-      set(ChannelsState, list);
+      channelsKeeper = channelsKeeper.filter(c => c.id !== channel.id);
+      channelsKeeper.push(channel);
+      set(ChannelsState, channelsKeeper);
     }
   });
   return { set };

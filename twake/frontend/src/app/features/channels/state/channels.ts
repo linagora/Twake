@@ -20,9 +20,9 @@ export const ChannelSelector = selectorFamily<ChannelType | undefined, string>({
     },
 });
 
-export const MineChannelsState = atomFamily<ChannelType[] | undefined, ChannelsListContextType>({
+export const MineChannelsState = atomFamily<ChannelType[], ChannelsListContextType>({
   key: 'MineChannelsState',
-  default: undefined,
+  default: [],
 });
 
 export const ReachableChannelsState = atomFamily<ChannelType[], ChannelsListContextType>({
