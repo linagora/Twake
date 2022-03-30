@@ -24,8 +24,6 @@ export function buildSearchQuery<Entity>(
     if (options?.$text?.$search)
       options.$text.$search = _.lowerCase(asciiFold(options.$text.$search || ""));
     query.$text = options.$text || undefined;
-
-    console.log("SEARCH $TEXT = ", JSON.stringify(options.$text));
   }
 
   //Build regexes
