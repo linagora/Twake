@@ -80,8 +80,7 @@ const ApplicationEditor = ({ application, companyId }: PropsType) => {
             disabled={isEqual(application, updatedApp)}
             onClick={() => AlertManager.confirm(onSave)}
           >
-            {/* TODO: Translation here */}
-            save
+            {Languages.t('general.save')}
           </Button>
         </Row>
       }
@@ -89,33 +88,21 @@ const ApplicationEditor = ({ application, companyId }: PropsType) => {
       <Divider style={{ margin: '16px 0 0 0' }} />
 
       <Tabs defaultActiveKey="1" tabPosition="left">
-        <TabPane
-          // TODO:Translation here
-          tab={'Identity'}
-          key={1}
-        >
+        <TabPane tab={Languages.t('scenes.apps.account.identity')} key={1}>
           <ApplicationIdentity
             application={application}
             onChangeApplicationIdentity={identity => setUpdatedApp({ ...updatedApp, identity })}
           />
         </TabPane>
 
-        <TabPane
-          // TODO:Translation here
-          tab="API"
-          key={2}
-        >
+        <TabPane tab="API" key={2}>
           <ApplicationAPI
             application={application}
             onChangeApplicationAPI={api => setUpdatedApp({ ...updatedApp, api })}
           />
         </TabPane>
 
-        <TabPane
-          // TODO:Translation here
-          tab="Display"
-          key={3}
-        >
+        <TabPane tab={Languages.t('scenes.app.popup.workspaceparameter.pages.show_button')} key={3}>
           <ApplicationHelp />
           <ApplicationDisplay
             application={application}
@@ -123,11 +110,7 @@ const ApplicationEditor = ({ application, companyId }: PropsType) => {
           />
         </TabPane>
 
-        <TabPane
-          // TODO: Translation here
-          tab="Access"
-          key={4}
-        >
+        <TabPane tab="Access" key={4}>
           <ApplicationAccess
             application={application}
             onChangeApplicationAccess={access => setUpdatedApp({ ...updatedApp, access })}

@@ -111,10 +111,9 @@ const ApplicationCreator = () => {
     <ObjectModal
       closable
       title={
-        /* TODO:translation here */
         <Row align="middle" justify="start">
           <Title level={3} style={{ margin: 0 }}>
-            New integration
+            {Languages.t('scenes.app.popup.appsparameters.pages.application_creator.title')}
           </Title>
         </Row>
       }
@@ -141,8 +140,9 @@ const ApplicationCreator = () => {
         )}
 
         <Row>
-          {/* TODO:translation here */}
-          <Title level={5}>Name</Title>
+          <Title level={5}>
+            {Languages.t('scenes.app.integrations_parameters.applications_table.name')}
+          </Title>
         </Row>
         <Row className="bottom-margin">
           <Input
@@ -155,9 +155,12 @@ const ApplicationCreator = () => {
         </Row>
 
         <Row wrap={false}>
-          {/* TODO:translation here */}
           <Col className="small-right-margin">
-            <Title level={5}>Description</Title>
+            <Title level={5}>
+              {Languages.t(
+                'scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.description_item',
+              )}
+            </Title>
           </Col>
           <Col>
             <Text type="secondary">Optionnal</Text>
@@ -165,8 +168,9 @@ const ApplicationCreator = () => {
         </Row>
         <Row className="bottom-margin">
           <Input.TextArea
-            // TODO: Translation here
-            placeholder={'Describe your application in a few words'}
+            placeholder={Languages.t(
+              'scenes.app.popup.appsparameters.pages.amazing_app_description',
+            )}
             disabled={loading}
             value={appDescription}
             onChange={e => setAppDescription(e.target.value)}
@@ -180,8 +184,7 @@ const ApplicationCreator = () => {
               checked={checked}
               onChange={_e => setChecked(!checked)}
             >
-              {/* TODO:translation here */}I understand that the owner and administrators of this
-              company will be able to modify and publish this application.
+              {Languages.t('scenes.app.popup.appsparameters.pages.application_creator.checkbox')}
             </Checkbox>
           </Text>
         </Row>

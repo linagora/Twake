@@ -871,5 +871,10 @@
     "components.locked_features_components.locked_invite_alert.message_link": "mettre à niveau votre entreprise",
     "components.locked_features_components.locked_invite_alert.message_part_2": " pour inviter davantage de membres.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " contacter le propriétaire ou l'administrateur de votre entreprise.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Voir tous les membres de mon entreprise sur la console"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Voir tous les membres de mon entreprise sur la console",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Décrivez votre application en quelques mots",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Nouvelle intégration",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Je comprends que le propriétaire et les administrateurs de cette entreprise pourront modifier et publier cette application.",
+    "twake.application.access.title": "Sélectionnez les portées adaptées à votre application.",
+    "twake.application.access.no_default_scopes_available'": "Cette intégration n'a pas d'accès {{$1}}."
 }

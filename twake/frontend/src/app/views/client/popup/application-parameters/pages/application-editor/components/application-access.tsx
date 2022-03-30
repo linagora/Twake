@@ -6,6 +6,7 @@ import { TagPicker } from './tag-picker';
 import { defaultApplicationScopes } from '../default-scopes';
 import { Application, ApplicationScopes } from 'app/features/applications/types/application';
 import { ApplicationHelp } from './application-help';
+import Languages from 'app/features/global/services/languages-service';
 
 const { Text, Title } = Typography;
 export const ApplicationAccess = ({
@@ -18,10 +19,7 @@ export const ApplicationAccess = ({
   return (
     <>
       <Row>
-        <Title level={3}>
-          {/*  TODO:Translation here */}
-          Select the right scopes for your application.
-        </Title>
+        <Title level={3}>{Languages.t('twake.application.access.title')}</Title>
       </Row>
       <Row className="small-bottom-margin">
         <ApplicationHelp />
@@ -42,8 +40,9 @@ export const ApplicationAccess = ({
                 }
               />
             ) : (
-              // TODO:Translation here
-              <Text type="secondary">This integration doesn't have any {key} access</Text>
+              <Text type="secondary">
+                {Languages.t('twake.application.access.no_default_scopes_available', [key])}
+              </Text>
             )}
           </div>
         );
