@@ -1,5 +1,4 @@
 import { Prefix, TwakeService } from "../../core/platform/framework";
-import { NotificationServiceAPI } from "./api";
 import WebServerAPI from "../../core/platform/services/webserver/provider";
 import web from "./web";
 
@@ -7,7 +6,6 @@ import web from "./web";
 export default class NotificationService extends TwakeService<undefined> {
   version = "1";
   name = "notifications";
-  service: NotificationServiceAPI;
 
   public async doInit(): Promise<this> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();

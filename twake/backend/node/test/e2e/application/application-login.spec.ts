@@ -3,9 +3,7 @@ import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { Api } from "../utils.api";
 import { logger as log } from "../../../src/core/platform/framework";
-import { randomBytes } from "crypto";
 import { ApplicationLoginResponse } from "../../../src/services/applicationsapi/web/types";
-import { cloneDeep } from "lodash";
 
 describe("Applications", () => {
   let platform: TestPlatform;

@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import _ from "lodash";
-import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 
 @Entity("files", {
   primaryKey: [["company_id"], "id"],

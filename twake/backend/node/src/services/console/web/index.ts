@@ -1,7 +1,5 @@
 import { FastifyInstance, FastifyRegisterOptions } from "fastify";
-import { ConsoleServiceAPI } from "../api";
 import routes from "./routes";
-import { ConsoleOptions } from "../types";
 
 export default (
   fastify: FastifyInstance,

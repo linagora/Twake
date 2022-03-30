@@ -62,7 +62,7 @@ export class ChannelCrudController
   ): Promise<ResourceGetResponse<ChannelObject>> {
     const context = getExecutionContext(request);
 
-    let channel = await gr.services.channels.get(
+    let channel = await gr.services.channels.channels.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );
@@ -72,7 +72,10 @@ export class ChannelCrudController
     }
 
     if (Channel.isDirectChannel(channel) || Channel.isPrivateChannel(channel)) {
-      const isMember = await gr.services.members.isChannelMember(request.currentUser, channel);
+      const isMember = await gr.services.channels.members.isChannelMember(
+        request.currentUser,
+        channel,
+      );
 
       if (!isMember) {
         throw CrudException.badRequest("User does not have enough rights to get channel");
@@ -80,12 +83,12 @@ export class ChannelCrudController
     }
 
     if (request.query.include_users)
-      channel = await gr.services.channels.includeUsersInDirectChannel(
+      channel = await gr.services.channels.channels.includeUsersInDirectChannel(
         channel,
         getExecutionContext(request),
       );
 
-    const member = await gr.services.members.get(
+    const member = await gr.services.channels.members.get(
       _.assign(new ChannelMember(), {
         channel_id: channel.id,
         workspace_id: channel.workspace_id,
@@ -114,7 +117,7 @@ export class ChannelCrudController
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<void> {
-    const channel = await gr.services.channels.get(
+    const channel = await gr.services.channels.channels.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );
@@ -146,11 +149,11 @@ export class ChannelCrudController
       } as ChannelSaveOptions;
 
       const context = getExecutionContext(request);
-      const channelResult = await gr.services.channels.save(entity, options, context);
+      const channelResult = await gr.services.channels.channels.save(entity, options, context);
 
       logger.debug("reqId: %s - save - Channel %s created", request.id, channelResult.entity.id);
 
-      const member = await gr.services.members.get(
+      const member = await gr.services.channels.members.get(
         _.assign(new ChannelMember(), {
           channel_id: channelResult.entity.id,
           workspace_id: channelResult.entity.workspace_id,
@@ -163,7 +166,7 @@ export class ChannelCrudController
       let entityWithUsers: Channel = channelResult.entity;
 
       if (request.query.include_users)
-        entityWithUsers = await gr.services.channels.includeUsersInDirectChannel(
+        entityWithUsers = await gr.services.channels.channels.includeUsersInDirectChannel(
           entityWithUsers,
           context,
         );
@@ -204,7 +207,7 @@ export class ChannelCrudController
 
     try {
       const context = getExecutionContext(request);
-      const result = await gr.services.channels.save(entity, {}, context);
+      const result = await gr.services.channels.channels.save(entity, {}, context);
 
       if (result.entity) {
         reply.code(201);
@@ -241,7 +244,7 @@ export class ChannelCrudController
       );
     }
 
-    const list = await gr.services.channels.list(
+    const list = await gr.services.channels.channels.list(
       new Pagination(request.query.page_token, request.query.limit),
       { ...request.query },
       context,
@@ -251,7 +254,7 @@ export class ChannelCrudController
     if (request.query.include_users) {
       entities = [];
       for (const e of list.getEntities()) {
-        entities.push(await gr.services.channels.includeUsersInDirectChannel(e, context));
+        entities.push(await gr.services.channels.channels.includeUsersInDirectChannel(e, context));
       }
     } else {
       entities = list.getEntities();
@@ -282,7 +285,7 @@ export class ChannelCrudController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     try {
-      const deleteResult = await gr.services.channels.delete(
+      const deleteResult = await gr.services.channels.channels.delete(
         this.getPrimaryKey(request),
         getExecutionContext(request),
       );
@@ -311,12 +314,12 @@ export class ChannelCrudController
 
     try {
       const result = read
-        ? await gr.services.channels.markAsRead(
+        ? await gr.services.channels.channels.markAsRead(
             this.getPrimaryKey(request),
             request.currentUser,
             getExecutionContext(request),
           )
-        : await gr.services.channels.markAsUnread(
+        : await gr.services.channels.channels.markAsUnread(
             this.getPrimaryKey(request),
             request.currentUser,
             getExecutionContext(request),
@@ -395,12 +398,12 @@ export class ChannelCrudController
   async completeWithStatistics(channels: ChannelObject[]) {
     await Promise.all(
       channels.map(async a => {
-        const members = await gr.services.members.getUsersCount({
+        const members = await gr.services.channels.members.getUsersCount({
           ..._.pick(a, "id", "company_id", "workspace_id"),
           counter_type: ChannelUserCounterType.MEMBERS,
         });
         //Fixme: even if it works strange to use "getUsersCount" to get messages count
-        const messages = await gr.services.members.getUsersCount({
+        const messages = await gr.services.channels.members.getUsersCount({
           ..._.pick(a, "id", "company_id", "workspace_id"),
           counter_type: ChannelUserCounterType.MESSAGES,
         });

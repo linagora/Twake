@@ -1,18 +1,17 @@
 import {
   ChannelMemberNotificationPreference,
   getNotificationPreferenceInstance,
-} from "../../../../entities";
-import { logger } from "../../../../../../core/platform/framework";
-import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { Channel, ChannelMember } from "../../../../../channels/entities";
+} from "../../../entities";
+import { logger } from "../../../../../core/platform/framework";
+import { NotificationPubsubHandler } from "../../../api";
+import { Channel, ChannelMember } from "../../../../channels/entities";
+import gr from "../../../../global-resolver";
 
 type JoinChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class JoinChannelMessageProcessor
   implements NotificationPubsubHandler<JoinChannelMessage, void>
 {
-  constructor(readonly service: NotificationServiceAPI) {}
-
   readonly topics = {
     in: "channel:member:created",
   };
@@ -38,7 +37,7 @@ export class JoinChannelMessageProcessor
 
       if (Channel.isDirectChannel(message.channel)) {
         // Check if the user already have preference for this channel in case he already joined it before
-        preference = await this.service.channelPreferences.get({
+        preference = await gr.services.notifications.channelPreferences.get({
           company_id: message.member.company_id,
           channel_id: message.member.channel_id,
           user_id: message.member.user_id,
@@ -61,7 +60,7 @@ export class JoinChannelMessageProcessor
         preferences: message.member.notification_level,
       });
 
-      await this.service.channelPreferences.save(preference);
+      await gr.services.notifications.channelPreferences.save(preference);
 
       logger.info(
         `${this.name} - Notification preference has been created for user ${message.member.user_id} in channel ${message.channel.id}`,

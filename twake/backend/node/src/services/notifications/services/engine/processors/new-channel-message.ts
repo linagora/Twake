@@ -1,22 +1,20 @@
-import { isDirectChannel } from "../../../../../channels/utils";
-import { logger } from "../../../../../../core/platform/framework";
-import { MessageNotification } from "../../../../../messages/types";
-import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
+import { isDirectChannel } from "../../../../channels/utils";
+import { logger } from "../../../../../core/platform/framework";
+import { MessageNotification } from "../../../../messages/types";
+import { NotificationPubsubHandler } from "../../../api";
 import {
   ChannelMemberNotificationPreference,
   ChannelThreadUsers,
   getChannelThreadUsersInstance,
-} from "../../../../entities";
-import { ChannelMemberNotificationLevel } from "../../../../../channels/types";
-import { MentionNotification } from "../../../../types";
-import { localEventBus } from "../../../../../../core/platform/framework/pubsub";
-import { ChannelType, ResourceEventsPayload } from "../../../../../../utils/types";
+} from "../../../entities";
+import { ChannelMemberNotificationLevel } from "../../../../channels/types";
+import { MentionNotification } from "../../../types";
+import { ChannelType } from "../../../../../utils/types";
+import gr from "../../../../global-resolver";
 
 export class NewChannelMessageProcessor
   implements NotificationPubsubHandler<MessageNotification, MentionNotification>
 {
-  constructor(readonly service: NotificationServiceAPI) {}
-
   readonly topics = {
     in: "message:created",
     out: "notification:mentions",
@@ -130,12 +128,12 @@ export class NewChannelMessageProcessor
         : []),
     ];
 
-    await this.service.channelThreads.bulkSave(users);
+    await gr.services.notifications.channelThreads.bulkSave(users);
 
     if (isNewThread || isDirect || isAllOrHereMention) {
       //get the channel level preferences
       channelPreferencesForUsers = (
-        await this.service.channelPreferences.getChannelPreferencesForUsers({
+        await gr.services.notifications.channelPreferences.getChannelPreferencesForUsers({
           company_id: message.company_id,
           channel_id: message.channel_id,
         })
@@ -218,12 +216,14 @@ export class NewChannelMessageProcessor
     channel_id: string;
     thread_id: string;
   }): Promise<ChannelMemberNotificationPreference[]> {
-    const usersIds: string[] = (await this.service.channelThreads.getUsersInThread(thread))
+    const usersIds: string[] = (
+      await gr.services.notifications.channelThreads.getUsersInThread(thread)
+    )
       .getEntities()
       .map(thread => thread.user_id);
 
     return (
-      await this.service.channelPreferences.getChannelPreferencesForUsers(
+      await gr.services.notifications.channelPreferences.getChannelPreferencesForUsers(
         { company_id: thread.company_id, channel_id: thread.channel_id },
         usersIds,
       )

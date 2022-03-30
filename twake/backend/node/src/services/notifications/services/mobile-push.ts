@@ -1,19 +1,16 @@
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { PushNotificationMessage } from "../types";
-import { PushServiceAPI } from "../../../core/platform/services/push/api";
 import User, { TYPE as UserType } from "../../user/entities/user";
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
+import gr from "../../global-resolver";
 
 export class MobilePushService {
   name: "MobilePushService";
   version: "1";
   userRepository: Repository<User>;
 
-  constructor(private database: DatabaseServiceAPI, private pushService: PushServiceAPI) {}
-
   async init(): Promise<this> {
-    this.userRepository = await this.database.getRepository<User>(UserType, User);
+    this.userRepository = await gr.database.getRepository<User>(UserType, User);
     return this;
   }
 
@@ -46,6 +43,6 @@ export class MobilePushService {
       collapse_key: message.channel_id,
     };
 
-    await this.pushService.push(user.devices, notification, options);
+    await gr.platformServices.push.push(user.devices, notification, options);
   }
 }

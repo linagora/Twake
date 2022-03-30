@@ -1,7 +1,7 @@
-import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { logger } from "../../../../../../core/platform/framework";
-import { PushNotificationMessage, PushNotificationMessageResult } from "../../../../types";
-import _ from "lodash";
+import { NotificationPubsubHandler } from "../../../api";
+import { logger } from "../../../../../core/platform/framework";
+import { PushNotificationMessage, PushNotificationMessageResult } from "../../../types";
+import gr from "../../../../global-resolver";
 
 /**
  * Push new message notification to a set of users
@@ -9,8 +9,6 @@ import _ from "lodash";
 export class PushNotificationMessageProcessor
   implements NotificationPubsubHandler<PushNotificationMessage, PushNotificationMessageResult>
 {
-  constructor(readonly service: NotificationServiceAPI) {}
-
   readonly topics = {
     in: "notification:push:mobile",
   };
@@ -39,7 +37,7 @@ export class PushNotificationMessageProcessor
       `${this.name} - Processing mobile push notification for channel ${message.channel_id}`,
     );
 
-    await this.service.mobilePush.push(message);
+    await gr.services.notifications.mobilePush.push(message);
 
     return message;
   }

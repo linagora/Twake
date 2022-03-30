@@ -1,14 +1,13 @@
 import _ from "lodash";
-import { UserNotificationBadge } from "../../../../entities";
-import { logger } from "../../../../../../core/platform/framework";
-import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { ChannelReadMessage } from "../../../../types";
+import { UserNotificationBadge } from "../../../entities";
+import { logger } from "../../../../../core/platform/framework";
+import { NotificationPubsubHandler } from "../../../api";
+import { ChannelReadMessage } from "../../../types";
+import gr from "../../../../global-resolver";
 
 export class MarkChannelAsReadMessageProcessor
   implements NotificationPubsubHandler<ChannelReadMessage, void>
 {
-  constructor(readonly service: NotificationServiceAPI) {}
-
   readonly topics = {
     in: "channel:read",
   };
@@ -53,7 +52,9 @@ export class MarkChannelAsReadMessageProcessor
         channel_id: message.channel.id,
         user_id: message.member.user_id,
       });
-      const removedBadges = await this.service.badges.removeUserChannelBadges(badgeEntity);
+      const removedBadges = await gr.services.notifications.badges.removeUserChannelBadges(
+        badgeEntity,
+      );
 
       logger.info(
         `${this.name} - Removed ${removedBadges} badges for user ${message.member.user_id} in channel ${message.channel.id}`,

@@ -3,8 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import io from "socket.io-client";
-import { Channel } from "../../../src/services/channels/entities";
-import { ChannelMember } from "../../../src/services/channels/entities";
+import { Channel, ChannelMember } from "../../../src/services/channels/entities";
 import { init, TestPlatform } from "../setup";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { getPublicRoomName } from "../../../src/services/channels/services/member/realtime";
@@ -53,7 +52,7 @@ describe.skip("The Channels Members Realtime feature", () => {
 
     beforeEach(async () => {
       channel = channelUtils.getChannel();
-      createdChannel = await gr.services.channels.save(
+      createdChannel = await gr.services.channels.channels.save(
         channel,
         {},
         channelUtils.getContext({ id: channel.owner }),
@@ -116,7 +115,7 @@ describe.skip("The Channels Members Realtime feature", () => {
 
       const channel = channelUtils.getChannel(platform.currentUser.id);
 
-      const creationResult = await gr.services.channels.save(
+      const creationResult = await gr.services.channels.channels.save(
         channel,
         {},
         channelUtils.getContext({ id: channel.owner }),
@@ -128,7 +127,7 @@ describe.skip("The Channels Members Realtime feature", () => {
         user_id: platform.currentUser.id,
       } as ChannelMember;
 
-      await gr.services.members.save(
+      await gr.services.channels.members.save(
         member,
         {},
         {

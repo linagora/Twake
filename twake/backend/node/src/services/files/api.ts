@@ -1,9 +1,9 @@
 import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
-import { TwakeServiceProvider, Initializable } from "../../core/platform/framework";
+import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
 import { CompanyExecutionContext } from "./web/types";
 import { File } from "./entities/file";
-import { PubsubHandler, PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
+import { PubsubHandler } from "../../core/platform/services/pubsub/api";
 import { DeleteResult } from "../../core/platform/framework/api/crud-service";
 
 export type UploadOptions = {

@@ -32,7 +32,7 @@ export class MessageToNotificationsProcessor {
           continue;
         }
 
-        const channel: Channel = await gr.services.channels.get(
+        const channel: Channel = await gr.services.channels.channels.get(
           {
             id: participant.id,
             company_id: participant.company_id,

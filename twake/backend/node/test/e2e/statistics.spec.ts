@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, afterAll, describe, expect, it } from "@jest/globals";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "./setup";
 
 import { v1 as uuidv1 } from "uuid";

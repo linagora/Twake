@@ -3,6 +3,7 @@ import { PubsubHandler } from "../../../../core/platform/services/pubsub/api";
 import { ChannelActivityNotification, ChannelVisibility } from "../../types";
 import { getInstance } from "../../../channels/entities/channel";
 import gr from "../../../global-resolver";
+
 const logger = getLogger("channel.pubsub.new-channel-activity");
 export class NewWorkspaceProcessor implements PubsubHandler<ChannelActivityNotification, void> {
   readonly topics = {
@@ -25,7 +26,7 @@ export class NewWorkspaceProcessor implements PubsubHandler<ChannelActivityNotif
     logger.info(`${this.name} - Processing new workspace created ${message.workspace_id}`);
 
     try {
-      await gr.services.channels.save(
+      await gr.services.channels.channels.save(
         getInstance({
           icon: "💬",
           name: "General",

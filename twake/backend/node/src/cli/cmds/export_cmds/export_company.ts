@@ -123,9 +123,12 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
 
     let pagination = new Pagination();
     do {
-      const page = await gr.services.channels.getDirectChannelsInCompany(pagination, company.id);
+      const page = await gr.services.channels.channels.getDirectChannelsInCompany(
+        pagination,
+        company.id,
+      );
       for (const channel of page.getEntities()) {
-        const channelDetail = await gr.services.channels.get(
+        const channelDetail = await gr.services.channels.channels.get(
           {
             company_id: channel.company_id,
             workspace_id: "direct",
@@ -147,7 +150,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       let publicChannels: Channel[] = [];
       pagination = new Pagination();
       do {
-        const page = await gr.services.channels.list(
+        const page = await gr.services.channels.channels.list(
           pagination,
           {},
           {
@@ -175,7 +178,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       let members: ChannelMember[] = [];
       let pagination = new Pagination();
       do {
-        const page = await gr.services.members.list(
+        const page = await gr.services.channels.members.list(
           pagination,
           {},
           {

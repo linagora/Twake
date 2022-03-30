@@ -1,21 +1,21 @@
-import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { logger } from "../../../../../../core/platform/framework";
-import { PubsubServiceAPI } from "../../../../../../core/platform/services/pubsub/api";
-import { MobilePushNotifier } from "../../../../../notifications/notifiers";
+import { NotificationPubsubHandler } from "../../../api";
+import { logger } from "../../../../../core/platform/framework";
+import { MobilePushNotifier } from "../../../notifiers";
 import {
-  PushNotificationMessage,
   MentionNotification,
   MentionNotificationResult,
-} from "../../../../types";
-import { ChannelMemberNotificationPreference } from "../../../../../../services/notifications/entities/channel-member-notification-preferences";
-import { UserNotificationBadge } from "../../../../../../services/notifications/entities/user-notification-badges";
+  PushNotificationMessage,
+} from "../../../types";
+import { ChannelMemberNotificationPreference } from "../../../entities";
+import { UserNotificationBadge } from "../../../entities";
 import _ from "lodash";
-import { eventBus } from "../../../../../../core/platform/services/realtime/bus";
+import { eventBus } from "../../../../../core/platform/services/realtime/bus";
 import {
   RealtimeEntityActionType,
   ResourcePath,
-} from "../../../../../../core/platform/services/realtime/types";
-import { getNotificationRoomName } from "../../../realtime";
+} from "../../../../../core/platform/services/realtime/types";
+import { getNotificationRoomName } from "../../realtime";
+import gr from "../../../../global-resolver";
 
 /**
  * Push new message notification to a set of users
@@ -23,8 +23,6 @@ import { getNotificationRoomName } from "../../../realtime";
 export class PushNotificationToUsersMessageProcessor
   implements NotificationPubsubHandler<MentionNotification, MentionNotificationResult>
 {
-  constructor(readonly service: NotificationServiceAPI, private pubsub: PubsubServiceAPI) {}
-
   readonly topics = {
     in: "notification:mentions",
   };
@@ -126,9 +124,13 @@ export class PushNotificationToUsersMessageProcessor
     }
 
     return (
-      await this.service.channelPreferences.getChannelPreferencesForUsers(channel, users, {
-        lessThan: timestamp,
-      })
+      await gr.services.notifications.channelPreferences.getChannelPreferencesForUsers(
+        channel,
+        users,
+        {
+          lessThan: timestamp,
+        },
+      )
     )
       .getEntities()
       .map((preference: ChannelMemberNotificationPreference) => preference.user_id);
@@ -162,7 +164,7 @@ export class PushNotificationToUsersMessageProcessor
   }
 
   private saveBadge(badge: UserNotificationBadge): Promise<UserNotificationBadge> {
-    return this.service.badges
+    return gr.services.notifications.badges
       .save(badge)
       .then(result => result.entity)
       .catch(err => {
@@ -172,7 +174,7 @@ export class PushNotificationToUsersMessageProcessor
   }
 
   sendPushNotification(user: string, pushNotification: PushNotificationMessage): void {
-    MobilePushNotifier.get(this.pubsub).notify(user, pushNotification);
+    MobilePushNotifier.get(gr.platformServices.pubsub).notify(user, pushNotification);
   }
 }
 

@@ -36,7 +36,6 @@ describe("The direct channels API", () => {
         "storage",
         "counter",
         "statistics",
-        "platform-services",
       ],
     });
     channelUtils = getChannelUtils(platform);
@@ -86,15 +85,15 @@ describe("The direct channels API", () => {
       };
 
       const creationResult = await Promise.all([
-        gr.services.channels.save(channel, {}, getContext()),
-        gr.services.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save(channel, {}, getContext()),
+        gr.services.channels.channels.save<ChannelSaveOptions>(
           directChannelIn,
           {
             members,
           },
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
-        gr.services.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1()],
@@ -166,10 +165,10 @@ describe("The direct channels API", () => {
 
       const creationResult = await Promise.all([
         //This channel will automatically contains the requester because it is added automatically in it
-        gr.services.channels.save(channel, {}, getContext()),
+        gr.services.channels.channels.save(channel, {}, getContext()),
 
         //It will contain the currentUser
-        gr.services.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save<ChannelSaveOptions>(
           directChannelIn,
           {
             members,
@@ -178,7 +177,7 @@ describe("The direct channels API", () => {
         ),
 
         //This channel will automatically contains the requester because it is added automatically in it
-        gr.services.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save<ChannelSaveOptions>(
           directChannelIn2,
           {
             members: [uuidv1(), uuidv1()],
@@ -187,7 +186,7 @@ describe("The direct channels API", () => {
         ),
 
         //This channel will not contain the currentUser
-        gr.services.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1()],
@@ -233,13 +232,13 @@ describe("The direct channels API", () => {
 
       await Promise.all([
         //This channel will automatically contains the requester because it is added automatically in it
-        gr.services.channels.save(channel, {}, getContext()),
+        gr.services.channels.channels.save(channel, {}, getContext()),
 
         //This channel will not contain currentUser
-        gr.services.channels.save(channel2, {}, getContext({ id: uuidv1() })),
+        gr.services.channels.channels.save(channel2, {}, getContext({ id: uuidv1() })),
 
         //This channel will automatically contains the requester because it is added automatically in it
-        gr.services.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save<ChannelSaveOptions>(
           directChannelIn,
           {
             members,
@@ -247,7 +246,7 @@ describe("The direct channels API", () => {
           { ...getContext(), ...{ workspace: directWorkspace } },
         ),
 
-        gr.services.channels.save<ChannelSaveOptions>(
+        gr.services.channels.channels.save<ChannelSaveOptions>(
           directChannelNotIn,
           {
             members: [uuidv1(), uuidv1(), uuidv1()],
@@ -312,21 +311,21 @@ describe("The direct channels API", () => {
 
       expect(channelCreateResult.resource).toBeDefined();
 
-      const createdChannel = await gr.services.channels.get({
+      const createdChannel = await gr.services.channels.channels.get({
         id: channelCreateResult.resource.id,
         company_id: channelCreateResult.resource.company_id,
         workspace_id: ChannelVisibility.DIRECT,
       });
       expect(createdChannel).toBeDefined();
 
-      const directChannelEntity = await gr.services.channels.getDirectChannel({
+      const directChannelEntity = await gr.services.channels.channels.getDirectChannel({
         channel_id: createdChannel.id,
         company_id: createdChannel.company_id,
         users: DirectChannel.getUsersAsString(members),
       });
       expect(directChannelEntity).toBeDefined();
 
-      const directChannelsInCompany = await gr.services.channels.getDirectChannelInCompany(
+      const directChannelsInCompany = await gr.services.channels.channels.getDirectChannelInCompany(
         createdChannel.company_id,
         members,
       );

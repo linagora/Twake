@@ -1,9 +1,7 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../../utils/types";
 import { UserObject } from "../user/web/types";
-import { MessageFileMetadata } from "./entities/message-files";
 import { Message, MessageWithUsers } from "./entities/messages";
-import { Thread } from "./entities/threads";
 
 export type specialMention = "all" | "here" | "everyone" | "channel";
 

@@ -64,7 +64,11 @@ describe("The notification for user mentions", () => {
 
   async function createChannel(): Promise<Channel> {
     const channel = channelUtils.getChannel(platform.currentUser.id);
-    const creationResult = await gr.services.channels.save(channel, {}, channelUtils.getContext());
+    const creationResult = await gr.services.channels.channels.save(
+      channel,
+      {},
+      channelUtils.getContext(),
+    );
 
     return creationResult.entity;
   }
@@ -79,7 +83,7 @@ describe("The notification for user mentions", () => {
 
     if (notificationLevel) member.notification_level = notificationLevel;
 
-    const memberCreationResult = await gr.services.members.save(
+    const memberCreationResult = await gr.services.channels.members.save(
       member,
       {},
       channelUtils.getChannelContext(channel, user),
@@ -93,7 +97,7 @@ describe("The notification for user mentions", () => {
     level: ChannelMemberNotificationLevel,
   ): Promise<void> {
     member.notification_level = level;
-    await gr.services.members.save(
+    await gr.services.channels.members.save(
       member,
       {},
       channelUtils.getChannelContext(channel, { id: member.user_id }),

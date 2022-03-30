@@ -20,7 +20,6 @@ import {
   CompanyCreatedStreamObject,
   CompanyReport,
   ConsoleOptions,
-  ConsoleType,
   CreatedConsoleCompany,
   CreatedConsoleUser,
   MergeProgress,
@@ -36,7 +35,6 @@ import { ConsoleRemoteClient } from "../clients/remote";
 import { ConsoleServiceClient } from "../client-interface";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { CompanyUserRole } from "../../user/web/types";
-import { ConsoleServiceAPI } from "../api";
 import gr from "../../global-resolver";
 import { ConsoleServiceImpl } from "../service";
 

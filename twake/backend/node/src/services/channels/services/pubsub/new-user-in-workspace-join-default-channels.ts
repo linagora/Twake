@@ -33,7 +33,7 @@ export class NewUserInWorkspaceJoinDefaultChannelsProcessor
     logger.debug("Processing notification for message %o", message);
 
     try {
-      const channelMembers = await gr.services.channels.addUserToDefaultChannels(
+      const channelMembers = await gr.services.channels.channels.addUserToDefaultChannels(
         { id: message.user_id },
         {
           company_id: message.company_id,

@@ -121,7 +121,7 @@ describe("The Messages Threads feature", () => {
 
     it("should update thread participants when add participant", async done => {
       //Create thread
-      const thread = await gr.services.threads.save(
+      const thread = await gr.services.messages.threads.save(
         {
           id: undefined,
           participants: [
@@ -178,7 +178,7 @@ describe("The Messages Threads feature", () => {
 
     it("should update thread participants when remove participant", async done => {
       //Create thread
-      const thread = await gr.services.threads.save(
+      const thread = await gr.services.messages.threads.save(
         {
           id: undefined,
           participants: [

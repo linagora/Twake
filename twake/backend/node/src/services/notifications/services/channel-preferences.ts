@@ -2,28 +2,26 @@ import _ from "lodash";
 import {
   DeleteResult,
   ListResult,
-  SaveResult,
   OperationType,
+  SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
 import {
   ChannelMemberNotificationPreference,
   ChannelMemberNotificationPreferencePrimaryKey,
 } from "../entities";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { ChannelMemberPreferencesServiceAPI } from "../api";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { logger } from "../../../core/platform/framework";
+import gr from "../../global-resolver";
 
 const TYPE = "channel_members_notification_preferences";
 
-export class ChannelMemberPreferencesService implements ChannelMemberPreferencesServiceAPI {
+export class ChannelMemberPreferencesServiceImpl implements ChannelMemberPreferencesServiceAPI {
   version: "1";
   repository: Repository<ChannelMemberNotificationPreference>;
 
-  constructor(private database: DatabaseServiceAPI) {}
-
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository<ChannelMemberNotificationPreference>(
+    this.repository = await gr.database.getRepository<ChannelMemberNotificationPreference>(
       TYPE,
       ChannelMemberNotificationPreference,
     );

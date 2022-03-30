@@ -51,7 +51,7 @@ export class ChannelMemberCrudController
       throw CrudException.badRequest("User does not have enough rights to get member");
     }
 
-    const resource = await gr.services.members.get(
+    const resource = await gr.services.channels.members.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );
@@ -79,7 +79,11 @@ export class ChannelMemberCrudController
     });
 
     try {
-      const result = await gr.services.members.save(entity, {}, getExecutionContext(request));
+      const result = await gr.services.channels.members.save(
+        entity,
+        {},
+        getExecutionContext(request),
+      );
 
       if (result.entity) {
         reply.code(201);
@@ -107,7 +111,11 @@ export class ChannelMemberCrudController
     }
 
     try {
-      const result = await gr.services.members.save(entity, {}, getExecutionContext(request));
+      const result = await gr.services.channels.members.save(
+        entity,
+        {},
+        getExecutionContext(request),
+      );
 
       if (result.entity) {
         reply.code(200);
@@ -126,7 +134,7 @@ export class ChannelMemberCrudController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     try {
-      const deleteResult = await gr.services.members.delete(
+      const deleteResult = await gr.services.channels.members.delete(
         this.getPrimaryKey(request),
         getExecutionContext(request),
       );
@@ -158,7 +166,7 @@ export class ChannelMemberCrudController
       Params: ChannelParameters;
     }>,
   ): Promise<ResourceListResponse<ChannelMember>> {
-    const list = await gr.services.members.list(
+    const list = await gr.services.channels.members.list(
       new Pagination(request.query.page_token, request.query.limit),
       { company_role: request.query.company_role },
       getExecutionContext(request),
@@ -189,7 +197,7 @@ export class ChannelMemberCrudController
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
     reply: FastifyReply,
   ): Promise<Response> {
-    const resource = await gr.services.members.get(
+    const resource = await gr.services.channels.members.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );

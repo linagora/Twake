@@ -77,7 +77,7 @@ describe.skip("The ChannelMembers REST API", () => {
 
     beforeEach(async () => {
       channel = getChannel();
-      createdChannel = await gr.services.channels.save(channel, {}, getWorkspaceContext());
+      createdChannel = await gr.services.channels.channels.save(channel, {}, getWorkspaceContext());
     });
 
     it("should 404 when channel does not exists", done => {
@@ -107,7 +107,11 @@ describe.skip("The ChannelMembers REST API", () => {
 
     it("should return list of members the user has access to", async done => {
       const member = getMember(createdChannel.entity, platform.currentUser);
-      const memberCreationResult = await gr.services.members.save(member, {}, getContext(channel));
+      const memberCreationResult = await gr.services.channels.members.save(
+        member,
+        {},
+        getContext(channel),
+      );
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -142,7 +146,7 @@ describe.skip("The ChannelMembers REST API", () => {
 
     beforeEach(async () => {
       channel = getChannel();
-      createdChannel = await gr.services.channels.save(channel, {}, getWorkspaceContext());
+      createdChannel = await gr.services.channels.channels.save(channel, {}, getWorkspaceContext());
     });
 
     it("should fail when user_id is not defined", async done => {
@@ -209,7 +213,7 @@ describe.skip("The ChannelMembers REST API", () => {
 
     beforeEach(async () => {
       channel = getChannel();
-      createdChannel = await gr.services.channels.save(channel, {}, getWorkspaceContext());
+      createdChannel = await gr.services.channels.channels.save(channel, {}, getWorkspaceContext());
     });
 
     it("should 404 when member does not exist", async done => {
@@ -230,7 +234,11 @@ describe.skip("The ChannelMembers REST API", () => {
 
     it("should send back member", async done => {
       const member = getMember(createdChannel.entity, platform.currentUser);
-      const memberCreationResult = await gr.services.members.save(member, {}, getContext(channel));
+      const memberCreationResult = await gr.services.channels.members.save(
+        member,
+        {},
+        getContext(channel),
+      );
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "GET",
@@ -264,12 +272,16 @@ describe.skip("The ChannelMembers REST API", () => {
 
     beforeEach(async () => {
       channel = getChannel();
-      createdChannel = await gr.services.channels.save(channel, {}, getWorkspaceContext());
+      createdChannel = await gr.services.channels.channels.save(channel, {}, getWorkspaceContext());
     });
 
     it("should not be able to update a member when current user is not the member", async done => {
       const member = getMember(createdChannel.entity, { id: uuidv4() });
-      const memberCreationResult = await gr.services.members.save(member, {}, getContext(channel));
+      const memberCreationResult = await gr.services.channels.members.save(
+        member,
+        {},
+        getContext(channel),
+      );
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
@@ -290,7 +302,11 @@ describe.skip("The ChannelMembers REST API", () => {
 
     it("should be able to update member when current user is the member", async done => {
       const member = getMember(createdChannel.entity, platform.currentUser);
-      const memberCreationResult = await gr.services.members.save(member, {}, getContext(channel));
+      const memberCreationResult = await gr.services.channels.members.save(
+        member,
+        {},
+        getContext(channel),
+      );
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "POST",
@@ -307,7 +323,7 @@ describe.skip("The ChannelMembers REST API", () => {
 
       expect(response.statusCode).toEqual(200);
 
-      const channelMember: ChannelMember = await gr.services.members.get(
+      const channelMember: ChannelMember = await gr.services.channels.members.get(
         member,
         getContext(channel),
       );
@@ -330,7 +346,7 @@ describe.skip("The ChannelMembers REST API", () => {
 
     beforeEach(async () => {
       channel = getChannel();
-      createdChannel = await gr.services.channels.save(channel, {}, getWorkspaceContext());
+      createdChannel = await gr.services.channels.channels.save(channel, {}, getWorkspaceContext());
     });
 
     it("should 404 when member does not exist", async done => {
@@ -356,7 +372,11 @@ describe.skip("The ChannelMembers REST API", () => {
 
     it("should not be able to remove the member when current user does not have enough rights", async done => {
       const member = getMember(createdChannel.entity, { id: uuidv4() });
-      const memberCreationResult = await gr.services.members.save(member, {}, getContext(channel));
+      const memberCreationResult = await gr.services.channels.members.save(
+        member,
+        {},
+        getContext(channel),
+      );
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "DELETE",
@@ -372,7 +392,11 @@ describe.skip("The ChannelMembers REST API", () => {
 
     it("should be able to remove the member when current user is the member", async done => {
       const member = getMember(createdChannel.entity, platform.currentUser);
-      const memberCreationResult = await gr.services.members.save(member, {}, getContext(channel));
+      const memberCreationResult = await gr.services.channels.members.save(
+        member,
+        {},
+        getContext(channel),
+      );
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
         method: "DELETE",

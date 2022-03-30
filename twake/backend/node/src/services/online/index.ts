@@ -1,5 +1,5 @@
 import { PubsubServiceAPI } from "../../core/platform/services/pubsub/api";
-import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
+import { Consumes, Prefix, TwakeService } from "../../core/platform/framework";
 import { CronAPI } from "../../core/platform/services/cron/api";
 import WebSocketAPI from "../../core/platform/services/websocket/provider";
 import Repository from "../../core/platform/services/database/services/orm/repository/repository";
@@ -9,7 +9,7 @@ import { OnlineGetRequest, OnlineGetResponse, OnlineServiceAPI } from "./api";
 import OnlineJob from "./cron";
 import { OnlinePubsubService } from "./pubsub";
 import { DISCONNECTED_DELAY } from "./constants";
-import UserOnline, { TYPE as ONLINE_TYPE, getInstance } from "./entities/user-online";
+import UserOnline, { getInstance, TYPE as ONLINE_TYPE } from "./entities/user-online";
 
 @Prefix("/internal/services/online/v1")
 @Consumes(["webserver", "websocket", "cron", "pubsub", "database"])

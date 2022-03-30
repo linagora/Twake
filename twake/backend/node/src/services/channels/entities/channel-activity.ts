@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { Channel } from ".";
-import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelType } from "../types";
 
 @Entity("channel_activity", {

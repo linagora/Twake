@@ -55,7 +55,7 @@ export class NewChannelActivityProcessor
     );
 
     try {
-      await gr.services.channels.updateLastActivity(
+      await gr.services.channels.channels.updateLastActivity(
         {
           date: message.date,
           channel: {

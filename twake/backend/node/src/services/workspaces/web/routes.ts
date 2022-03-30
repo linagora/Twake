@@ -23,7 +23,6 @@ import { WorkspaceUsersCrudController } from "./controllers/workspace-users";
 import { hasWorkspaceAdminLevel, hasWorkspaceMemberLevel } from "../../../utils/workspace";
 import { WorkspaceInviteTokensCrudController } from "./controllers/workspace-invite-tokens";
 import WorkspaceUser from "../entities/workspace_user";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import { hasCompanyMemberLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
 

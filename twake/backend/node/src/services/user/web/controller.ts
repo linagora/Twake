@@ -29,7 +29,6 @@ import {
 } from "./types";
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import coalesce from "../../../utils/coalesce";
 import { getCompanyRooms, getUserRooms } from "../realtime";
 import { formatCompany, getCompanyStats } from "../utils";

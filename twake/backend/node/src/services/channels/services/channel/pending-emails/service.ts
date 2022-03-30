@@ -135,7 +135,7 @@ export default class ChannelPendingEmailServiceImpl implements ChannelPendingEma
       .getEntities()
       .forEach(async ({ workspace_id, channel_id, company_id, email }) => {
         // Add user to channel
-        const list = await gr.services.members.addUserToChannels(userObj, [
+        const list = await gr.services.channels.members.addUserToChannels(userObj, [
           {
             workspace_id,
             company_id,

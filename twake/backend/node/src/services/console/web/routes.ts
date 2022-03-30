@@ -3,7 +3,7 @@ import { authenticationSchema, consoleHookSchema, tokenRenewalSchema } from "./s
 import crypto from "crypto";
 // import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { ConsoleController } from "./controller";
-import { ConsoleHookBody, ConsoleHookQueryString, ConsoleOptions } from "../types";
+import { ConsoleHookBody, ConsoleHookQueryString } from "../types";
 import gr from "../../global-resolver";
 
 const hookUrl = "/hook";

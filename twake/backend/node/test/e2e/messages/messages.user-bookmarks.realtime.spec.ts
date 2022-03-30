@@ -58,7 +58,7 @@ describe("The Bookmarks Realtime feature", () => {
           .on("authenticated", () => {
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
-              await gr.services.userBookmarks.save(
+              await gr.services.messages.userBookmarks.save(
                 {
                   company_id: platform.workspace.company_id,
                   user_id: platform.currentUser.id,
@@ -89,7 +89,7 @@ describe("The Bookmarks Realtime feature", () => {
 
   describe("On bookmark removal", () => {
     it("should notify the client", async done => {
-      const instance = await gr.services.userBookmarks.save(
+      const instance = await gr.services.messages.userBookmarks.save(
         {
           company_id: platform.workspace.company_id,
           user_id: platform.currentUser.id,
@@ -110,7 +110,7 @@ describe("The Bookmarks Realtime feature", () => {
           .on("authenticated", () => {
             socket.on("realtime:join:error", () => done(new Error("Should not occur")));
             socket.on("realtime:join:success", async () => {
-              await gr.services.userBookmarks.delete(
+              await gr.services.messages.userBookmarks.delete(
                 {
                   company_id: platform.workspace.company_id,
                   user_id: platform.currentUser.id,

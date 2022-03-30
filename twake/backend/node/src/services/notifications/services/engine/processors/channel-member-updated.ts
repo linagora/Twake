@@ -1,16 +1,15 @@
 import { merge } from "lodash";
-import { ChannelMemberNotificationPreference } from "../../../../entities";
-import { logger } from "../../../../../../core/platform/framework";
-import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { Channel, ChannelMember } from "../../../../../channels/entities";
+import { ChannelMemberNotificationPreference } from "../../../entities";
+import { logger } from "../../../../../core/platform/framework";
+import { NotificationPubsubHandler } from "../../../api";
+import { Channel, ChannelMember } from "../../../../channels/entities";
+import gr from "../../../../global-resolver";
 
 type UpdateChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class UpdateChannelMemberMessageProcessor
   implements NotificationPubsubHandler<UpdateChannelMessage, void>
 {
-  constructor(readonly service: NotificationServiceAPI) {}
-
   readonly topics = {
     in: "channel:member:updated",
   };
@@ -40,7 +39,7 @@ export class UpdateChannelMemberMessageProcessor
     });
 
     try {
-      await this.service.channelPreferences.save(preference);
+      await gr.services.notifications.channelPreferences.save(preference);
 
       logger.info(
         `${this.name} - Channel member notification preference has been updated for user ${message.member.user_id} in channel ${message.channel.id}`,

@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { PreviewServiceAPI } from "../api";
 import { PreviewController } from "./controllers/previews";
 
 const previewsUrl = "/previews";

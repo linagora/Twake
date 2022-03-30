@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { ObjectId } from "mongodb";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -10,9 +10,10 @@ import {
   getPublicRoomName,
 } from "../../../src/services/channels/services/channel/realtime";
 import { WorkspaceExecutionContext } from "../../../src/services/channels/types";
-import { TestPlatform, init } from "../setup";
+import { init, TestPlatform } from "../setup";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import gr from "../../../src/services/global-resolver";
+
 describe("The Channels Realtime feature", () => {
   const url = "/internal/services/channels/v1";
   let platform: TestPlatform;
@@ -117,7 +118,7 @@ describe("The Channels Realtime feature", () => {
       const channel = channelUtils.getChannel(platform.currentUser.id);
       channel.name = channelName;
 
-      const creationResult = await gr.services.channels.save(
+      const creationResult = await gr.services.channels.channels.save(
         channel,
         {},
         channelUtils.getContext({ id: channel.owner }),

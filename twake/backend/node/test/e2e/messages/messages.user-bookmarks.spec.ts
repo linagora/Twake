@@ -66,7 +66,7 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
-      const list = await gr.services.userBookmarks.list({}, {}, getContext(platform));
+      const list = await gr.services.messages.userBookmarks.list({}, {}, getContext(platform));
       expect(list.getEntities().length).toBe(1);
 
       done();
@@ -75,7 +75,7 @@ describe("The Messages User Bookmarks feature", () => {
     it("should prevent duplicated bookmark", async done => {
       const uuid = uuidv4();
 
-      await gr.services.userBookmarks.save(
+      await gr.services.messages.userBookmarks.save(
         {
           id: uuid,
           company_id: platform.workspace.company_id,
@@ -112,7 +112,7 @@ describe("The Messages User Bookmarks feature", () => {
         name: "mybookmark",
       });
 
-      const list = await gr.services.userBookmarks.list({}, {}, getContext(platform));
+      const list = await gr.services.messages.userBookmarks.list({}, {}, getContext(platform));
       expect(list.getEntities().length).toBe(1);
 
       done();
@@ -121,7 +121,7 @@ describe("The Messages User Bookmarks feature", () => {
     it("should remove bookmark", async done => {
       const id = uuidv4();
 
-      await gr.services.userBookmarks.save(
+      await gr.services.messages.userBookmarks.save(
         {
           id,
           company_id: platform.workspace.company_id,
@@ -132,7 +132,7 @@ describe("The Messages User Bookmarks feature", () => {
         getContext(platform),
       );
 
-      let list = await gr.services.userBookmarks.list({}, {}, getContext(platform));
+      let list = await gr.services.messages.userBookmarks.list({}, {}, getContext(platform));
       expect(list.getEntities().length).toBe(1);
 
       const jwtToken = await platform.auth.getJWTToken();
@@ -146,14 +146,14 @@ describe("The Messages User Bookmarks feature", () => {
 
       expect(response.statusCode).toBe(200);
 
-      list = await gr.services.userBookmarks.list({}, {}, getContext(platform));
+      list = await gr.services.messages.userBookmarks.list({}, {}, getContext(platform));
       expect(list.getEntities().length).toBe(0);
 
       done();
     });
 
     it("should list bookmarks", async done => {
-      await gr.services.userBookmarks.save(
+      await gr.services.messages.userBookmarks.save(
         {
           id: uuidv4(),
           company_id: platform.workspace.company_id,

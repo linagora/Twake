@@ -141,7 +141,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
       filter(wsUser => !wsUser.isExternal),
       mergeMap(wsUser =>
         from(
-          gr.services.members
+          gr.services.channels.members
             .addUserToChannels({ id: wsUser.userId }, [
               {
                 company_id: channel.company_id,
@@ -203,7 +203,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
 
       logger.info("Adding user %s to channels %s", user, JSON.stringify(channels));
 
-      return (await gr.services.members.addUserToChannels(user, channels)).getEntities();
+      return (await gr.services.channels.members.addUserToChannels(user, channels)).getEntities();
     } catch (err) {
       logger.error({ err }, "Error while adding user for default channels");
       throw new Error("Error while adding user for default channels");

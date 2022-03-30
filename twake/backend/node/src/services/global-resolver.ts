@@ -53,18 +53,31 @@ import { TabServiceImpl } from "./channels/services/tab";
 import AuthServiceAPI from "../core/platform/services/auth/provider";
 import { ConsoleServiceImpl } from "./console/service";
 import { StatisticsServiceImpl } from "./statistics/service";
-import { logger, TwakeServiceProvider } from "../core/platform/framework";
+import { logger } from "../core/platform/framework";
 import assert from "assert";
 import { NotificationEngine } from "./notifications/services/engine";
 import { MobilePushService } from "./notifications/services/mobile-push";
+import { ChannelMemberPreferencesServiceImpl } from "./notifications/services/channel-preferences";
+import { ChannelThreadUsersServiceImpl } from "./notifications/services/channel-thread-users";
+import { PushServiceAPI } from "../core/platform/services/push/api";
+import { PreviewProcessService } from "./previews/services/processing/service";
+import { PreviewServiceAPI } from "./previews/types";
+import { CronAPI } from "../core/platform/services/cron/api";
+import WebSocketAPI from "../core/platform/services/websocket/provider";
+import TrackerAPI from "../core/platform/services/tracker/provider";
 
 type PlatformServices = {
-  realtime: RealtimeServiceAPI;
   auth: AuthServiceAPI;
+  counter: CounterAPI;
+  cron: CronAPI;
+  pubsub: PubsubServiceAPI;
+  push: PushServiceAPI;
+  realtime: RealtimeServiceAPI;
   search: SearchServiceAPI;
   storage: StorageAPI;
-  pubsub: PubsubServiceAPI;
-  counter: CounterAPI;
+  tracker: TrackerAPI;
+  webserver: WebServerAPI;
+  websocket: WebSocketAPI;
 };
 
 type TwakeServices = {
@@ -82,6 +95,7 @@ type TwakeServices = {
     preferences: UserNotificationPreferencesAPI;
     mobilePush: MobilePushService;
   };
+  preview: PreviewServiceAPI;
   messages: {
     messages: MessageThreadMessagesServiceAPI;
     threads: MessageThreadsServiceAPI;
@@ -94,43 +108,49 @@ type TwakeServices = {
     companyApps: CompanyApplicationServiceAPI;
   };
   files: FileServiceAPI;
-  channels: ChannelService;
-  members: MemberService;
+  channels: {
+    channels: ChannelService;
+    members: MemberService;
+  };
   channelPendingEmail: ChannelPendingEmailService;
   tab: TabService;
 };
 
 class GlobalResolver {
-  public platform: TwakePlatform;
-  // public api: ApiContainer;
   public services: TwakeServices;
   public platformServices: PlatformServices;
   public database: DatabaseServiceAPI;
 
   public fastify: FastifyInstance<Server, IncomingMessage, ServerResponse>;
 
-  private alreadyInited = false;
+  private alreadyInitialized = false;
 
   async doInit(platform: TwakePlatform) {
-    if (this.alreadyInited) {
+    if (this.alreadyInitialized) {
       return;
     }
-    this.platform = platform;
     this.database = platform.getProvider<DatabaseServiceAPI>("database");
-    const webserver = platform.getProvider<WebServerAPI>("webserver");
-    const auth = platform.getProvider<AuthServiceAPI>("auth");
-    const realtime = platform.getProvider<RealtimeServiceAPI>("realtime");
-
-    this.fastify = webserver.getServer();
 
     this.platformServices = {
-      realtime,
-      auth,
+      auth: platform.getProvider<AuthServiceAPI>("auth"),
+      counter: platform.getProvider<CounterAPI>("counter"),
+      cron: platform.getProvider<CronAPI>("cron"),
+      pubsub: platform.getProvider<PubsubServiceAPI>("pubsub"),
+      push: platform.getProvider<PushServiceAPI>("push"),
+      realtime: platform.getProvider<RealtimeServiceAPI>("realtime"),
       search: platform.getProvider<SearchServiceAPI>("search"),
       storage: platform.getProvider<StorageAPI>("storage"),
-      pubsub: platform.getProvider<PubsubServiceAPI>("pubsub"),
-      counter: platform.getProvider<CounterAPI>("counter"),
+      tracker: platform.getProvider<TrackerAPI>("tracker"),
+      webserver: platform.getProvider<WebServerAPI>("webserver"),
+      websocket: platform.getProvider<WebSocketAPI>("websocket"),
     };
+
+    this.fastify = this.platformServices.webserver.getServer();
+
+    Object.keys(this.platformServices).forEach((key: keyof PlatformServices) => {
+      const service = this.platformServices[key];
+      assert(service, `Platform service ${key} was not initialized`);
+    });
 
     this.services = {
       workspaces: await new WorkspaceServiceImpl().init(),
@@ -141,12 +161,13 @@ class GlobalResolver {
       externalUser: await new UserExternalLinksServiceImpl().init(),
       notifications: {
         badges: await new UserNotificationBadgeService().init(platform),
-        channelPreferences: undefined,
-        channelThreads: undefined,
-        engine: undefined,
+        channelPreferences: await new ChannelMemberPreferencesServiceImpl().init(),
+        channelThreads: await new ChannelThreadUsersServiceImpl().init(),
+        engine: await new NotificationEngine().init(),
         preferences: await new NotificationPreferencesService().init(),
-        mobilePush: undefined,
+        mobilePush: await new MobilePushService().init(),
       },
+      preview: await new PreviewProcessService().init(),
       messages: {
         messages: await new ThreadMessagesService().init(platform),
         threads: await new ThreadsService().init(platform),
@@ -159,8 +180,10 @@ class GlobalResolver {
         companyApps: await new CompanyApplicationServiceImpl().init(),
       },
       files: await new FileServiceImpl().init(),
-      channels: await new ChannelServiceImpl().init(),
-      members: await new MemberServiceImpl().init(),
+      channels: {
+        channels: await new ChannelServiceImpl().init(),
+        members: await new MemberServiceImpl().init(),
+      },
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
     };
@@ -176,7 +199,7 @@ class GlobalResolver {
     });
 
     logger.info("Global resolver finished initializing services");
-    this.alreadyInited = true;
+    this.alreadyInitialized = true;
   }
 }
 

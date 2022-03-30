@@ -1,5 +1,5 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
-import { Workspace, Channel, uuid } from "../../utils/types";
+import { Channel, uuid, Workspace } from "../../utils/types";
 
 export interface WorkspaceExecutionContext extends ExecutionContext {
   workspace: Workspace;

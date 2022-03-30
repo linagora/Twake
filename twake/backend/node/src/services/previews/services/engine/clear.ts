@@ -1,8 +1,7 @@
-import { PreviewPubsubHandler, PreviewServiceAPI } from "../../api";
+import { PreviewPubsubHandler } from "../../api";
 import { logger, TwakeContext } from "../../../../core/platform/framework";
-import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
-import { PreviewPubsubCallback, PreviewClearPubsubRequest } from "../../types";
-import StorageAPI from "../../../../core/platform/services/storage/provider";
+import { PreviewClearPubsubRequest, PreviewPubsubCallback } from "../../types";
+import gr from "../../../global-resolver";
 
 /**
  * Clear thumbnails when the delete task is called
@@ -22,14 +21,6 @@ export class ClearProcessor
     ack: true,
   };
 
-  constructor(
-    service: PreviewServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    readonly storage: StorageAPI,
-  ) {
-    this.service = service;
-  }
-  service: PreviewServiceAPI;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   init?(context?: TwakeContext): Promise<this> {
     throw new Error("Method not implemented.");
@@ -47,7 +38,9 @@ export class ClearProcessor
     }
 
     for (let i = 0; i < message.document.thumbnails_number; i++) {
-      await this.storage.remove(`${message.document.path.replace(/\/$/, "")}/${i}.png`);
+      await gr.platformServices.storage.remove(
+        `${message.document.path.replace(/\/$/, "")}/${i}.png`,
+      );
     }
 
     return { document: message.document, thumbnails: [] };

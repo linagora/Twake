@@ -145,7 +145,7 @@ export class MemberServiceImpl implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     let memberToSave: ChannelMember;
-    const channel = await gr.services.channels.get(context.channel);
+    const channel = await gr.services.channels.channels.get(context.channel);
 
     if (!channel) {
       throw CrudException.notFound("Channel does not exists");
@@ -267,7 +267,7 @@ export class MemberServiceImpl implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelMember>> {
     const memberToDelete = await this.userChannelsRepository.findOne(pk);
-    const channel = await gr.services.channels.get(context.channel);
+    const channel = await gr.services.channels.channels.get(context.channel);
 
     if (!channel) {
       throw CrudException.notFound("Channel does not exists");
@@ -308,7 +308,7 @@ export class MemberServiceImpl implements MemberService {
     options: ChannelListOptions,
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
-    const channel = await gr.services.channels.get({
+    const channel = await gr.services.channels.channels.get({
       company_id: context.channel.company_id,
       workspace_id: context.channel.workspace_id,
       id: context.channel.id,

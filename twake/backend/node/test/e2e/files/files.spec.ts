@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { describe, it, beforeAll, afterAll, expect } from "@jest/globals";
-import { TestPlatform, init } from "../setup";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
 import { ResourceUpdateResponse } from "../../../src/utils/types";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

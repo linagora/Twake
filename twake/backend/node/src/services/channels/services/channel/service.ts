@@ -241,7 +241,7 @@ export class ChannelServiceImpl implements ChannelService {
 
     // Shortcut to invite members to a channel
     if (!isDirectChannel && options.members && options.members.length > 0) {
-      await gr.services.members.addUsersToChannel(
+      await gr.services.channels.members.addUsersToChannel(
         options.members.map(id => {
           return { id };
         }),
@@ -416,7 +416,7 @@ export class ChannelServiceImpl implements ChannelService {
     };
 
     if (options?.mine || isDirectWorkspace) {
-      const userChannels = await gr.services.members.listUserChannels(
+      const userChannels = await gr.services.channels.members.listUserChannels(
         context.user,
         pagination,
         context,
@@ -536,7 +536,7 @@ export class ChannelServiceImpl implements ChannelService {
       throw CrudException.notFound("Channel not found");
     }
 
-    const member = await gr.services.members.isChannelMember(user, channel);
+    const member = await gr.services.channels.members.isChannelMember(user, channel);
 
     if (!member) {
       throw CrudException.badRequest("User is not channel member");
@@ -547,7 +547,7 @@ export class ChannelServiceImpl implements ChannelService {
     // cf this.members.onUpdated
     member.last_access = now;
     const updatedMember = (
-      await gr.services.members.save(member, null, {
+      await gr.services.channels.members.save(member, null, {
         channel,
         user,
       })
@@ -565,7 +565,7 @@ export class ChannelServiceImpl implements ChannelService {
       throw CrudException.notFound("Channel not found");
     }
 
-    const member = await gr.services.members.isChannelMember(user, channel);
+    const member = await gr.services.channels.members.isChannelMember(user, channel);
 
     if (!member) {
       throw CrudException.badRequest("User is not channel member");
@@ -609,7 +609,9 @@ export class ChannelServiceImpl implements ChannelService {
     //Add requester as member
     if (context.user.id) {
       try {
-        await gr.services.members.addUserToChannels({ id: context.user.id }, [savedChannel]);
+        await gr.services.channels.members.addUserToChannels({ id: context.user.id }, [
+          savedChannel,
+        ]);
       } catch (err) {
         logger.warn({ err }, "Can not add requester as channel member");
       }
@@ -663,7 +665,9 @@ export class ChannelServiceImpl implements ChannelService {
       } else {
         if (options.addCreatorAsMember && savedChannel.owner) {
           try {
-            await gr.services.members.addUserToChannels({ id: savedChannel.owner }, [savedChannel]);
+            await gr.services.channels.members.addUserToChannels({ id: savedChannel.owner }, [
+              savedChannel,
+            ]);
           } catch (err) {
             logger.warn({ err }, "Can not add owner as channel member");
           }

@@ -145,7 +145,7 @@ export class ViewsController {
     const messages = [] as Message[];
 
     for await (const msg of getNextMessages()) {
-      const isChannelMember = await gr.services.members.isChannelMember(
+      const isChannelMember = await gr.services.channels.members.isChannelMember(
         { id: request.currentUser.id },
         {
           company_id: msg.cache.company_id,

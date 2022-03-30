@@ -105,7 +105,7 @@ class MessageMigrator {
     let pageDirectChannels: Pagination = { limitStr: "100" };
     // For each directChannels find messages
     do {
-      const directChannelsInCompanyResult = await gr.services.channels.list(
+      const directChannelsInCompanyResult = await gr.services.channels.channels.list(
         pageDirectChannels,
         {},
         {
@@ -155,7 +155,7 @@ class MessageMigrator {
       // Get all channels in workspace
       let pageChannels: Pagination = { limitStr: "1" };
       do {
-        const channelsInWorkspace = await gr.services.channels.list(
+        const channelsInWorkspace = await gr.services.channels.channels.list(
           pageChannels,
           {},
           {

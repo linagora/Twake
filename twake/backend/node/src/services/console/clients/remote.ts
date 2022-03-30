@@ -26,6 +26,7 @@ import { logger } from "../../../core/platform/framework/logger";
 import _ from "lodash";
 import { CompanyFeaturesEnum, CompanyLimitsEnum } from "../../user/web/types";
 import gr from "../../global-resolver";
+
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
   client: AxiosInstance;

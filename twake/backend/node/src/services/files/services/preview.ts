@@ -1,7 +1,5 @@
 import { FilePubsubHandler, FileServiceAPI } from "../api";
 import { logger, TwakeContext } from "../../../core/platform/framework";
-import _ from "lodash";
-import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { PreviewPubsubCallback } from "../../../../src/services/previews/types";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { File } from "../entities/file";

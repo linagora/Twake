@@ -26,8 +26,7 @@ import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
 import { NewUserInWorkspaceNotification } from "./services/channel/types";
-import { ChannelCounterPrimaryKey, ChannelUserCounterType } from "./entities/channel-counters";
-import CompanyUser from "../user/entities/company_user";
+import { ChannelCounterPrimaryKey } from "./entities/channel-counters";
 
 export type ChannelPrimaryKey = {
   id?: string;

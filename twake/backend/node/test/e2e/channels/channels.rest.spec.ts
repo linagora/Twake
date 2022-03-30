@@ -140,7 +140,7 @@ describe("The /internal/services/channels/v1 API", () => {
     it("should return list of workspace channels", async done => {
       const channel = new Channel();
       channel.name = "Test Channel";
-      const creationResult = await gr.services.channels.save(channel, {}, getContext());
+      const creationResult = await gr.services.channels.channels.save(channel, {}, getContext());
 
       const jwtToken = await platform.auth.getJWTToken();
       const response = await platform.app.inject({
@@ -185,11 +185,11 @@ describe("The /internal/services/channels/v1 API", () => {
       channel2.name = "Test Channel2";
 
       const creationResults = await Promise.all([
-        gr.services.channels.save(channel1, {}, getContext()),
-        gr.services.channels.save(channel2, {}, getContext()),
+        gr.services.channels.channels.save(channel1, {}, getContext()),
+        gr.services.channels.channels.save(channel2, {}, getContext()),
       ]);
 
-      await gr.services.members.save(
+      await gr.services.channels.members.save(
         {
           channel_id: channel1.id,
           workspace_id: channel1.workspace_id,
@@ -232,7 +232,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return gr.services.channels.save(channel, {}, getContext());
+          return gr.services.channels.channels.save(channel, {}, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -267,7 +267,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return gr.services.channels.save(channel, {}, getContext());
+          return gr.services.channels.channels.save(channel, {}, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -328,7 +328,7 @@ describe("The /internal/services/channels/v1 API", () => {
         "0123456789".split("").map(name => {
           const channel = new Channel();
           channel.name = name;
-          return gr.services.channels.save(channel, {}, getContext());
+          return gr.services.channels.channels.save(channel, {}, getContext());
         }),
       ).catch(() => done(new Error("Failed on creation")));
 
@@ -439,7 +439,7 @@ describe("The /internal/services/channels/v1 API", () => {
       channel.company_id = platform.workspace.company_id;
       channel.workspace_id = platform.workspace.workspace_id;
 
-      const creationResult = await gr.services.channels.save(channel, {}, getContext());
+      const creationResult = await gr.services.channels.channels.save(channel, {}, getContext());
       const response = await platform.app.inject({
         method: "GET",
         url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${creationResult.entity.id}`,
@@ -484,7 +484,7 @@ describe("The /internal/services/channels/v1 API", () => {
       channel.description = "test counters";
       channel.channel_group = "my channel group";
 
-      const creationResult = await gr.services.channels.save(channel, {}, getContext());
+      const creationResult = await gr.services.channels.channels.save(channel, {}, getContext());
 
       const channelId = creationResult.entity.id;
 
@@ -525,7 +525,7 @@ describe("The /internal/services/channels/v1 API", () => {
       });
 
       const anotherUserId = uuidv1();
-      await gr.services.members.addUsersToChannel(
+      await gr.services.channels.members.addUsersToChannel(
         [
           { id: anotherUserId },
           { id: uuidv1() },
@@ -543,7 +543,7 @@ describe("The /internal/services/channels/v1 API", () => {
         messages: 0,
       });
 
-      await gr.services.members.delete(
+      await gr.services.channels.members.delete(
         {
           ...platform.workspace,
           channel_id: channelId,
@@ -608,7 +608,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       const res = channelCreateResult.resource;
 
-      const createdChannel = await gr.services.channels.get({
+      const createdChannel = await gr.services.channels.channels.get({
         company_id: res.company_id,
         workspace_id: res.workspace_id,
         id: res.id,
@@ -664,7 +664,7 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(channelUpdateResult.resource).toBeDefined();
       expect(channelUpdateResult.websocket).toBeDefined();
 
-      return await gr.services.channels.get({ id });
+      return await gr.services.channels.channels.get({ id });
     }
 
     async function updateChannelFail(
@@ -712,7 +712,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -726,7 +726,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -753,7 +753,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -780,7 +780,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -806,7 +806,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -842,7 +842,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -870,7 +870,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -898,7 +898,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -925,7 +925,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel(platform.currentUser.id);
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -961,7 +961,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -983,7 +983,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -1005,7 +1005,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -1027,7 +1027,7 @@ describe("The /internal/services/channels/v1 API", () => {
         const jwtToken = await platform.auth.getJWTToken();
 
         const channel = getChannel();
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -1101,7 +1101,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
         const channel = getChannel();
 
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -1120,7 +1120,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
         const channel = getChannel();
 
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -1146,7 +1146,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
         const channel = getChannel(platform.currentUser.id);
 
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -1165,7 +1165,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
         const channel = getChannel(platform.currentUser.id);
 
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -1190,7 +1190,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
         const channel = getChannel();
 
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),
@@ -1210,7 +1210,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
         const channel = getChannel();
 
-        const creationResult = await gr.services.channels.save(
+        const creationResult = await gr.services.channels.channels.save(
           channel,
           {},
           getContext({ id: channel.owner }),

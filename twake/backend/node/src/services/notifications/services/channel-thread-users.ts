@@ -1,26 +1,24 @@
 import {
   DeleteResult,
   ListResult,
-  SaveResult,
   OperationType,
+  SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
 import {
   ChannelThreadUsers,
   ChannelThreadUsersPrimaryKey,
   ChannelThreadUsersType,
 } from "../entities";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
 import { ChannelThreadUsersServiceAPI } from "../api";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
+import gr from "../../global-resolver";
 
-export class ChannelThreadUsersService implements ChannelThreadUsersServiceAPI {
+export class ChannelThreadUsersServiceImpl implements ChannelThreadUsersServiceAPI {
   version: "1";
   repository: Repository<ChannelThreadUsers>;
 
-  constructor(private database: DatabaseServiceAPI) {}
-
   async init(): Promise<this> {
-    this.repository = await this.database.getRepository<ChannelThreadUsers>(
+    this.repository = await gr.database.getRepository<ChannelThreadUsers>(
       ChannelThreadUsersType,
       ChannelThreadUsers,
     );

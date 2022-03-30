@@ -2,23 +2,9 @@ import { beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { Api } from "../utils.api";
-import {
-  FastifyInstance,
-  FastifyRegisterOptions,
-  FastifyPluginCallback,
-  FastifyRequest,
-  FastifyReply,
-} from "fastify";
+import { FastifyInstance, FastifyPluginCallback, FastifyReply, FastifyRequest } from "fastify";
 
 import { logger as log } from "../../../src/core/platform/framework";
-import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
-import * as assert from "assert";
-import Application, {
-  ApplicationObject,
-  PublicApplicationObject,
-} from "../../../src/services/applications/entities/application";
-import { ResourceGetResponse } from "../../../src/utils/types";
-import { CrudException } from "../../../src/core/platform/framework/api/crud-service";
 import * as crypto from "crypto";
 
 let signingSecret = "";

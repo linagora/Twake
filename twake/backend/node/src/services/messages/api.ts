@@ -13,7 +13,6 @@ import {
   UserMessageBookmark,
   UserMessageBookmarkPrimaryKey,
 } from "./entities/user-message-bookmarks";
-import { MessagesEngine } from "./services/engine";
 
 import {
   ChannelViewExecutionContext,
@@ -28,7 +27,6 @@ import {
 
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
-import { StatisticsAPI } from "../statistics/types";
 import { uuid } from "../../utils/types";
 
 export interface MessageUserBookmarksServiceAPI

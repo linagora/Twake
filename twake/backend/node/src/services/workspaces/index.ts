@@ -1,7 +1,5 @@
 import { Prefix, TwakeService } from "../../core/platform/framework";
 import { WorkspaceService } from "./api";
-
-import gr from "../global-resolver";
 import WebServerAPI from "../../core/platform/services/webserver/provider";
 import web from "./web";
 

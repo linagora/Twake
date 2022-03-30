@@ -7,8 +7,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import Application, { PublicApplicationObject } from "../../entities/application";
-import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import { PublicApplicationObject } from "../../entities/application";
 import { CompanyExecutionContext } from "../types";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { getCompanyApplicationRooms } from "../../realtime";

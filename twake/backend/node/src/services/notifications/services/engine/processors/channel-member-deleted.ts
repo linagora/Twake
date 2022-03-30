@@ -1,17 +1,16 @@
 import { assign, merge } from "lodash";
-import { ChannelMemberNotificationPreference, UserNotificationBadge } from "../../../../entities";
-import { logger } from "../../../../../../core/platform/framework";
-import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { Channel, ChannelMember } from "../../../../../channels/entities";
-import { isDirectChannel } from "../../../../../channels/utils";
+import { ChannelMemberNotificationPreference, UserNotificationBadge } from "../../../entities";
+import { logger } from "../../../../../core/platform/framework";
+import { NotificationPubsubHandler } from "../../../api";
+import { Channel, ChannelMember } from "../../../../channels/entities";
+import { isDirectChannel } from "../../../../channels/utils";
+import gr from "../../../../global-resolver";
 
 type LeaveChannelMessage = { channel: Channel; member: ChannelMember };
 
 export class LeaveChannelMessageProcessor
   implements NotificationPubsubHandler<LeaveChannelMessage, void>
 {
-  constructor(readonly service: NotificationServiceAPI) {}
-
   readonly topics = {
     in: "channel:member:deleted",
   };
@@ -55,7 +54,9 @@ export class LeaveChannelMessageProcessor
         channel_id: message.channel.id,
         user_id: message.member.user_id,
       });
-      const removedBadges = await this.service.badges.removeUserChannelBadges(badgeEntity);
+      const removedBadges = await gr.services.notifications.badges.removeUserChannelBadges(
+        badgeEntity,
+      );
 
       logger.info(
         `${this.name} - Removed ${removedBadges} badges for user ${message.member.user_id} in channel ${message.channel.id}`,
@@ -83,7 +84,7 @@ export class LeaveChannelMessageProcessor
         user_id: message.member.user_id,
       });
 
-      await this.service.channelPreferences.delete(preference);
+      await gr.services.notifications.channelPreferences.delete(preference);
 
       logger.info(
         `${this.name} - Notification preference has been deleted for user ${message.member.user_id} in channel ${message.channel.id}`,

@@ -1,14 +1,13 @@
 import _ from "lodash";
-import { UserNotificationBadge } from "../../../../entities";
-import { logger } from "../../../../../../core/platform/framework";
-import { NotificationPubsubHandler, NotificationServiceAPI } from "../../../../api";
-import { ChannelUnreadMessage } from "../../../../types";
+import { UserNotificationBadge } from "../../../entities";
+import { logger } from "../../../../../core/platform/framework";
+import { NotificationPubsubHandler } from "../../../api";
+import { ChannelUnreadMessage } from "../../../types";
+import gr from "../../../../global-resolver";
 
 export class MarkChannelAsUnreadMessageProcessor
   implements NotificationPubsubHandler<ChannelUnreadMessage, void>
 {
-  constructor(readonly service: NotificationServiceAPI) {}
-
   readonly topics = {
     in: "channel:unread",
   };
@@ -53,7 +52,7 @@ export class MarkChannelAsUnreadMessageProcessor
         channel_id: message.channel.id,
         user_id: message.member.user_id,
       });
-      this.service.badges.save(badgeEntity);
+      gr.services.notifications.badges.save(badgeEntity);
 
       logger.info(
         `${this.name} - Created new badge for user ${message.member.user_id} in channel ${message.channel.id}`,

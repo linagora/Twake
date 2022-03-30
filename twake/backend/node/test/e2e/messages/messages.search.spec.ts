@@ -187,7 +187,7 @@ describe("The /messages API", () => {
 
   async function createChannel(userId = platform.currentUser.id): Promise<Channel> {
     const channel = channelUtils.getChannel(userId);
-    const creationResult = await gr.services.channels.save(
+    const creationResult = await gr.services.channels.channels.save(
       channel,
       {},
       channelUtils.getContext({ id: userId }),
