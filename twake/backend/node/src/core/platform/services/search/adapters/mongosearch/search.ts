@@ -22,7 +22,7 @@ export function buildSearchQuery<Entity>(
     project = { score: { $meta: "textScore" } };
     sort = { score: -1 };
     if (options?.$text?.$search)
-      options.$text.$search = _.lowerCase(asciiFold(options.$text.$search || ""));
+      options.$text.$search = asciiFold(options.$text.$search || "").toLocaleLowerCase();
     query.$text = options.$text || undefined;
   }
 

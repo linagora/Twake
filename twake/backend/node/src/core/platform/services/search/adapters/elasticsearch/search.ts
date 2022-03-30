@@ -53,7 +53,7 @@ export function buildSearchQuery<Entity>(
     esBody.query.bool.should = esBody.query.bool.should || [];
 
     if (options?.$text?.$search)
-      options.$text.$search = _.lowerCase(asciiFold(options.$text.$search || ""));
+      options.$text.$search = asciiFold(options.$text.$search || "").toLocaleLowerCase();
 
     console.log("SEARCH $SEARCG = ", options?.$text?.$search);
 

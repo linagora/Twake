@@ -109,7 +109,7 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       Object.keys(entityDefinition.options?.search.mongoMapping?.text || []).forEach(
         (key: string) => {
           if (entityDefinition.options?.search.mongoMapping?.text[key] === "text") {
-            body[key] = _.lowerCase(asciiFold(body[key]));
+            body[key] = asciiFold(body[key]).toLocaleLowerCase();
           }
         },
       );
