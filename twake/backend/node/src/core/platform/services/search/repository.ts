@@ -35,6 +35,9 @@ export default class SearchRepository<EntityType> {
         options,
       );
 
+      //TODO: REMOVE
+      await new Promise(r => setTimeout(r, 1000));
+
       //2. Get database original objects from theses primary keys
       for (const searchEntity of searchResults.getEntities().sort((a, b) => b.score - a.score)) {
         const sourceEntity = await repository.findOne(searchEntity.primaryKey);
