@@ -39,7 +39,7 @@ export class ThreadsController
   ): Promise<ResourceCreateResponse<Thread>> {
     const context = getCompanyExecutionContext(request);
     try {
-      const result = await gr.services.threads.save(
+      const result = await gr.services.messages.threads.save(
         {
           id: request.params.thread_id || undefined,
           participants: request.body.resource.participants || undefined,

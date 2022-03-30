@@ -36,13 +36,13 @@ export class ViewsController {
 
     try {
       if (request.query.filter === "files") {
-        resources = await gr.services.views.listChannelFiles(pagination, query, context);
+        resources = await gr.services.messages.views.listChannelFiles(pagination, query, context);
       } else if (request.query.filter === "thread") {
-        resources = await gr.services.views.listChannelThreads(pagination, query, context);
+        resources = await gr.services.messages.views.listChannelThreads(pagination, query, context);
       } else if (request.query.filter === "pinned") {
-        resources = await gr.services.views.listChannelPinned(pagination, query, context);
+        resources = await gr.services.messages.views.listChannelPinned(pagination, query, context);
       } else {
-        resources = await gr.services.views.listChannel(pagination, query, context);
+        resources = await gr.services.messages.views.listChannel(pagination, query, context);
       }
 
       if (!resources) {
@@ -53,7 +53,7 @@ export class ViewsController {
       if (request.query.include_users) {
         //Fixme, this takes a very long time
         for (const msg of resources.getEntities()) {
-          entities.push(await gr.services.messages.includeUsersInMessageWithReplies(msg));
+          entities.push(await gr.services.messages.messages.includeUsersInMessageWithReplies(msg));
         }
       } else {
         entities = resources.getEntities();
@@ -111,7 +111,7 @@ export class ViewsController {
       let messages: Message[] = [];
       let hasMoreMessages = true;
       do {
-        messages = await gr.services.views
+        messages = await gr.services.messages.views
           .search(
             new Pagination(lastPageToken, limit.toString()),
             {
@@ -163,7 +163,7 @@ export class ViewsController {
     }
 
     const firstMessagesMap = keyBy(
-      await gr.services.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
+      await gr.services.messages.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
       item => item.id,
     );
 

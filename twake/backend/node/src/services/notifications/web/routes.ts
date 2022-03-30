@@ -1,15 +1,13 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { NotificationController, NotificationPrerencesController } from "./controllers";
-import { NotificationServiceAPI } from "../api";
+import { NotificationController, NotificationPreferencesController } from "./controllers";
 import { createNotificationPreferencesSchema } from "./schemas";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 
 const badgesUrl = "/badges";
 const notificationPreferencesUrl = "/preferences";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
   const notificationController = new NotificationController();
-  const notificationPreferencesController = new NotificationPrerencesController();
+  const notificationPreferencesController = new NotificationPreferencesController();
 
   fastify.route({
     method: "GET",

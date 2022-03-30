@@ -36,7 +36,7 @@ export class ApplicationsApiController {
   ): Promise<ResourceGetResponse<ApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await gr.services.applications.get({
+    const entity = await gr.services.applications.marketplaceApps.get({
       id: context.application_id,
     });
     if (!entity) {
@@ -49,7 +49,7 @@ export class ApplicationsApiController {
   async configure(request: FastifyRequest<{ Body: ConfigureRequest }>, reply: FastifyReply) {
     const app_id = request.currentUser.application_id;
 
-    const application = await gr.services.applications.get({ id: app_id });
+    const application = await gr.services.applications.marketplaceApps.get({ id: app_id });
 
     if (!application) {
       throw CrudException.forbidden("Application not found");

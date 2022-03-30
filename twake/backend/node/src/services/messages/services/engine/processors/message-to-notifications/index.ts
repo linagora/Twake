@@ -149,7 +149,7 @@ export class MessageToNotificationsProcessor {
     message: MessageLocalEvent,
   ): Promise<boolean> {
     if (participant.company_id && participant.workspace_id && participant.id) {
-      const list = await gr.services.views.listChannel(
+      const list = await gr.services.messages.views.listChannel(
         new Pagination("", "1"),
         {
           include_users: false,

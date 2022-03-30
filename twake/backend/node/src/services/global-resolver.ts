@@ -13,6 +13,8 @@ import { WorkspaceServiceImpl } from "./workspaces/services/workspace";
 import { UserExternalLinksServiceImpl } from "./user/services/external_links";
 import { UserNotificationBadgeService } from "./notifications/services/bages";
 import {
+  ChannelMemberPreferencesServiceAPI,
+  ChannelThreadUsersServiceAPI,
   UserNotificationBadgeServiceAPI,
   UserNotificationPreferencesAPI,
 } from "./notifications/api";
@@ -53,6 +55,8 @@ import { ConsoleServiceImpl } from "./console/service";
 import { StatisticsServiceImpl } from "./statistics/service";
 import { logger, TwakeServiceProvider } from "../core/platform/framework";
 import assert from "assert";
+import { NotificationEngine } from "./notifications/services/engine";
+import { MobilePushService } from "./notifications/services/mobile-push";
 
 type PlatformServices = {
   realtime: RealtimeServiceAPI;
@@ -63,22 +67,32 @@ type PlatformServices = {
   counter: CounterAPI;
 };
 
-type CoreServices = {
+type TwakeServices = {
   workspaces: WorkspaceService;
   companies: CompaniesServiceAPI;
   users: UsersService;
   console: ConsoleServiceAPI;
   statistics: StatisticsAPI;
   externalUser: UserExternalLinksService;
-  notificationBadge: UserNotificationBadgeServiceAPI;
-  notificationPreferences: UserNotificationPreferencesAPI;
-  messages: MessageThreadMessagesServiceAPI;
-  threads: MessageThreadsServiceAPI;
-  userBookmarks: MessageUserBookmarksServiceAPI;
-  applications: MarketplaceApplicationServiceAPI;
-  companyApplications: CompanyApplicationServiceAPI;
-  views: MessageViewsServiceAPI;
-  messageEngine: MessagesEngine;
+  notifications: {
+    badges: UserNotificationBadgeServiceAPI;
+    channelPreferences: ChannelMemberPreferencesServiceAPI;
+    channelThreads: ChannelThreadUsersServiceAPI;
+    engine: NotificationEngine;
+    preferences: UserNotificationPreferencesAPI;
+    mobilePush: MobilePushService;
+  };
+  messages: {
+    messages: MessageThreadMessagesServiceAPI;
+    threads: MessageThreadsServiceAPI;
+    userBookmarks: MessageUserBookmarksServiceAPI;
+    views: MessageViewsServiceAPI;
+    engine: MessagesEngine;
+  };
+  applications: {
+    marketplaceApps: MarketplaceApplicationServiceAPI;
+    companyApps: CompanyApplicationServiceAPI;
+  };
   files: FileServiceAPI;
   channels: ChannelService;
   members: MemberService;
@@ -89,7 +103,7 @@ type CoreServices = {
 class GlobalResolver {
   public platform: TwakePlatform;
   // public api: ApiContainer;
-  public services: CoreServices;
+  public services: TwakeServices;
   public platformServices: PlatformServices;
   public database: DatabaseServiceAPI;
 
@@ -125,15 +139,25 @@ class GlobalResolver {
       console: await new ConsoleServiceImpl().init(),
       statistics: await new StatisticsServiceImpl().init(),
       externalUser: await new UserExternalLinksServiceImpl().init(),
-      notificationBadge: await new UserNotificationBadgeService().init(platform),
-      notificationPreferences: await new NotificationPreferencesService().init(),
-      messages: await new ThreadMessagesService().init(platform),
-      threads: await new ThreadsService().init(platform),
-      userBookmarks: await new UserBookmarksService().init(platform),
-      applications: await new ApplicationServiceImpl().init(),
-      companyApplications: await new CompanyApplicationServiceImpl().init(),
-      views: await new ViewsServiceImpl().init(platform),
-      messageEngine: await new MessagesEngine().init(),
+      notifications: {
+        badges: await new UserNotificationBadgeService().init(platform),
+        channelPreferences: undefined,
+        channelThreads: undefined,
+        engine: undefined,
+        preferences: await new NotificationPreferencesService().init(),
+        mobilePush: undefined,
+      },
+      messages: {
+        messages: await new ThreadMessagesService().init(platform),
+        threads: await new ThreadsService().init(platform),
+        userBookmarks: await new UserBookmarksService().init(platform),
+        views: await new ViewsServiceImpl().init(platform),
+        engine: await new MessagesEngine().init(),
+      },
+      applications: {
+        marketplaceApps: await new ApplicationServiceImpl().init(),
+        companyApps: await new CompanyApplicationServiceImpl().init(),
+      },
       files: await new FileServiceImpl().init(),
       channels: await new ChannelServiceImpl().init(),
       members: await new MemberServiceImpl().init(),
@@ -141,8 +165,14 @@ class GlobalResolver {
       tab: await new TabServiceImpl().init(),
     };
 
-    Object.keys(this.services).forEach((key: keyof CoreServices) => {
+    Object.keys(this.services).forEach((key: keyof TwakeServices) => {
       assert(this.services[key], `Service ${key} was not initialized`);
+      if (this.services[key].constructor.name == "Object") {
+        const subs = this.services[key] as any;
+        Object.keys(subs).forEach(sk => {
+          assert(subs[sk], `Service ${key}.${sk} was not initialized`);
+        });
+      }
     });
 
     logger.info("Global resolver finished initializing services");

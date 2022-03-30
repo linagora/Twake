@@ -65,7 +65,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     const threads: MessageWithReplies[] = [];
     for (const ref of refs.getEntities()) {
       const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
-      const extendedThread = await gr.services.messages.getThread(thread, {
+      const extendedThread = await gr.services.messages.messages.getThread(thread, {
         replies_per_thread: options.replies_per_thread || 1,
       });
 
@@ -100,7 +100,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     const threads: MessageWithReplies[] = [];
     for (const ref of refs.getEntities()) {
       const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
-      const extendedThread = await gr.services.messages.getThread(thread, {
+      const extendedThread = await gr.services.messages.messages.getThread(thread, {
         replies_per_thread: options.replies_per_thread || 1,
       });
 
@@ -172,7 +172,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     if (options.replies_per_thread !== 0) {
       await Promise.all(
         threads.map(async (thread: Thread) => {
-          const extendedThread = await gr.services.messages.getThread(thread, {
+          const extendedThread = await gr.services.messages.messages.getThread(thread, {
             replies_per_thread: options.replies_per_thread || 3,
           });
 
@@ -180,7 +180,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
             extendedThread?.last_replies?.length === 0 &&
             extendedThread.created_at > new Date().getTime() - 1000 * 60 //This is important to avoid removing thread if people loads a channel at the same time people create a thread
           ) {
-            await gr.services.threads.delete(
+            await gr.services.messages.threads.delete(
               { id: extendedThread.thread_id },
               { user: { id: null, server_request: true } },
             );

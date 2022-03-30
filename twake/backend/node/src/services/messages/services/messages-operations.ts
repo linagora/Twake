@@ -27,7 +27,10 @@ export class ThreadMessagesOperationsService {
     options: Record<string, unknown>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    if (!context?.user?.server_request && !gr.services.threads.checkAccessToThread(context)) {
+    if (
+      !context?.user?.server_request &&
+      !gr.services.messages.threads.checkAccessToThread(context)
+    ) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
     }
@@ -64,7 +67,10 @@ export class ThreadMessagesOperationsService {
     options: Record<string, unknown>,
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>> {
-    if (!context?.user?.server_request && !gr.services.threads.checkAccessToThread(context)) {
+    if (
+      !context?.user?.server_request &&
+      !gr.services.messages.threads.checkAccessToThread(context)
+    ) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
     }

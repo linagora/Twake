@@ -16,7 +16,7 @@ import gr from "../../../global-resolver";
 
 const ALL = "all";
 
-export class NotificationPrerencesController
+export class NotificationPreferencesController
   implements
     CrudController<
       ResourceGetResponse<UserNotificationPreferences>,
@@ -30,7 +30,7 @@ export class NotificationPrerencesController
       Querystring: NotificationPreferenceListQueryParameters;
     }>,
   ): Promise<ResourceListResponse<UserNotificationPreferences>> {
-    const list = await gr.services.notificationPreferences.listPreferences(
+    const list = await gr.services.notifications.preferences.listPreferences(
       ALL,
       ALL,
       request.currentUser.id,
@@ -54,7 +54,7 @@ export class NotificationPrerencesController
     };
 
     try {
-      const result = await gr.services.notificationPreferences.savePreferences(
+      const result = await gr.services.notifications.preferences.savePreferences(
         entity as UserNotificationPreferences,
       );
 

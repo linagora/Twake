@@ -47,7 +47,7 @@ export class MessagesController
     try {
       if (request.body.options?.previous_thread) {
         //First move the message to another thread, then edit it
-        await gr.services.messages.move(
+        await gr.services.messages.messages.move(
           { id: request.params.message_id || undefined },
           {
             previous_thread: request.body.options?.previous_thread,
@@ -56,13 +56,15 @@ export class MessagesController
         );
       }
 
-      const thread = await gr.services.threads.get({ id: context.thread.id } as ThreadPrimaryKey);
+      const thread = await gr.services.messages.threads.get({
+        id: context.thread.id,
+      } as ThreadPrimaryKey);
 
       if (!thread) {
         throw "Message must be in a thread";
       }
 
-      const result = await gr.services.messages.save(
+      const result = await gr.services.messages.messages.save(
         {
           id: request.params.message_id || undefined,
           ...request.body.resource,
@@ -74,7 +76,7 @@ export class MessagesController
       let entity = result.entity;
 
       if (request.query.include_users) {
-        entity = await gr.services.messages.includeUsersInMessage(entity);
+        entity = await gr.services.messages.messages.includeUsersInMessage(entity);
       }
 
       return {
@@ -97,7 +99,7 @@ export class MessagesController
   ) {
     const context = getThreadExecutionContext(request);
     try {
-      await gr.services.messages.forceDelete(
+      await gr.services.messages.messages.forceDelete(
         {
           thread_id: request.params.thread_id,
           id: request.params.message_id,
@@ -124,7 +126,7 @@ export class MessagesController
   ): Promise<ResourceDeleteResponse> {
     const context = getThreadExecutionContext(request);
     try {
-      await gr.services.messages.delete(
+      await gr.services.messages.messages.delete(
         {
           thread_id: request.params.thread_id,
           id: request.params.message_id,
@@ -152,7 +154,7 @@ export class MessagesController
   ): Promise<ResourceGetResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      let resource = await gr.services.messages.get(
+      let resource = await gr.services.messages.messages.get(
         {
           thread_id: request.params.thread_id,
           id: request.params.message_id,
@@ -161,7 +163,7 @@ export class MessagesController
       );
 
       if (request.query.include_users) {
-        resource = await gr.services.messages.includeUsersInMessage(resource);
+        resource = await gr.services.messages.messages.includeUsersInMessage(resource);
       }
 
       return {
@@ -184,7 +186,7 @@ export class MessagesController
   ): Promise<ResourceListResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      const resources = await gr.services.messages.list(
+      const resources = await gr.services.messages.messages.list(
         new Pagination(
           request.query.page_token,
           request.query.limit,
@@ -197,7 +199,7 @@ export class MessagesController
       let entities = [];
       if (request.query.include_users) {
         for (const msg of resources.getEntities()) {
-          entities.push(await gr.services.messages.includeUsersInMessage(msg));
+          entities.push(await gr.services.messages.messages.includeUsersInMessage(msg));
         }
       } else {
         entities = resources.getEntities();
@@ -235,7 +237,7 @@ export class MessagesController
   ): Promise<ResourceUpdateResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      const result = await gr.services.messages.reaction(
+      const result = await gr.services.messages.messages.reaction(
         {
           id: request.params.message_id,
           reactions: request.body.reactions,
@@ -267,7 +269,7 @@ export class MessagesController
   ): Promise<ResourceUpdateResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      const result = await gr.services.messages.bookmark(
+      const result = await gr.services.messages.messages.bookmark(
         {
           id: request.params.message_id,
           bookmark_id: request.body.bookmark_id,
@@ -299,7 +301,7 @@ export class MessagesController
   ): Promise<ResourceUpdateResponse<Message>> {
     const context = getThreadExecutionContext(request);
     try {
-      const result = await gr.services.messages.pin(
+      const result = await gr.services.messages.messages.pin(
         {
           id: request.params.message_id,
           pin: request.body.pin,

@@ -37,7 +37,7 @@ export class UserBookmarksController
   ): Promise<ResourceUpdateResponse<UserMessageBookmark>> {
     const context = getCompanyExecutionContext(request);
     try {
-      const result = await gr.services.userBookmarks.save(
+      const result = await gr.services.messages.userBookmarks.save(
         {
           user_id: context.user.id,
           company_id: request.params.company_id,
@@ -66,7 +66,7 @@ export class UserBookmarksController
   ): Promise<ResourceDeleteResponse> {
     const context = getCompanyExecutionContext(request);
     try {
-      const result = await gr.services.userBookmarks.delete(
+      const result = await gr.services.messages.userBookmarks.delete(
         {
           user_id: context.user.id,
           company_id: request.params.company_id,
@@ -92,7 +92,7 @@ export class UserBookmarksController
   ): Promise<ResourceListResponse<UserMessageBookmark>> {
     const context = getCompanyExecutionContext(request);
     try {
-      const list = await gr.services.userBookmarks.list(
+      const list = await gr.services.messages.userBookmarks.list(
         {},
         {
           user_id: context.user.id,

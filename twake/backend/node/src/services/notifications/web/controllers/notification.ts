@@ -30,14 +30,14 @@ export class NotificationController
 
     //Get one badge per company if requested
     if (request.query.all_companies) {
-      const list = await gr.services.notificationBadge.listForUserPerCompanies(
+      const list = await gr.services.notifications.badges.listForUserPerCompanies(
         request.currentUser.id,
       );
       resources = resources.concat(list.getEntities());
     }
 
     if (request.query.company_id) {
-      const list = await gr.services.notificationBadge.listForUser(
+      const list = await gr.services.notifications.badges.listForUser(
         request.query.company_id,
         request.currentUser.id,
         { ...request.query },

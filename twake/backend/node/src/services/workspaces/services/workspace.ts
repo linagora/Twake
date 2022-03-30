@@ -125,10 +125,13 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       { company_id: workspace.company_id, user: { id: userId, server_request: true } },
     );
 
-    await gr.services.companyApplications.initWithDefaultApplications(created.entity.company_id, {
-      company: { id: created.entity.company_id },
-      user: { id: userId, server_request: true },
-    });
+    await gr.services.applications.companyApps.initWithDefaultApplications(
+      created.entity.company_id,
+      {
+        company: { id: created.entity.company_id },
+        user: { id: userId, server_request: true },
+      },
+    );
 
     return new CreateResult<Workspace>(TYPE, created.entity);
   }

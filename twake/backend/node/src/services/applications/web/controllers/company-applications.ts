@@ -27,7 +27,7 @@ export class CompanyApplicationController
     request: FastifyRequest<{ Params: { company_id: string; application_id: string } }>,
   ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
-    const resource = await gr.services.companyApplications.get(
+    const resource = await gr.services.applications.companyApps.get(
       { application_id: request.params.application_id, company_id: context.company.id },
       context,
     );
@@ -43,7 +43,7 @@ export class CompanyApplicationController
     }>,
   ): Promise<ResourceListResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
-    const resources = await gr.services.companyApplications.list(
+    const resources = await gr.services.applications.companyApps.list(
       request.query,
       { search: request.query.search },
       context,
@@ -68,7 +68,7 @@ export class CompanyApplicationController
   ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
 
-    const resource = await gr.services.companyApplications.save(
+    const resource = await gr.services.applications.companyApps.save(
       { application_id: request.params.application_id, company_id: context.company.id },
       {},
       context,
@@ -83,7 +83,7 @@ export class CompanyApplicationController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getCompanyExecutionContext(request);
-    const resource = await gr.services.companyApplications.delete(
+    const resource = await gr.services.applications.companyApps.delete(
       { application_id: request.params.application_id, company_id: context.company.id },
       context,
     );

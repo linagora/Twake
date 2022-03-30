@@ -46,7 +46,7 @@ export class ChannelSystemActivityMessageProcessor
       },
     ];
 
-    gr.services.threads.save(
+    gr.services.messages.threads.save(
       {
         id: undefined,
         participants,

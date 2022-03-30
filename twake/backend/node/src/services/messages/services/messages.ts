@@ -85,7 +85,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let messageCreated = !pk.id;
 
-    if (!pk.thread_id || (!serverRequest && !gr.services.threads.checkAccessToThread(context))) {
+    if (
+      !pk.thread_id ||
+      (!serverRequest && !gr.services.messages.threads.checkAccessToThread(context))
+    ) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't write this message.");
     }
@@ -203,7 +206,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
               `Try to move reply ${reply.id} to message ${pk.id} from thread ${reply.thread_id} to thread ${context.thread.id}`,
             );
 
-            await gr.services.messages.move(
+            await gr.services.messages.messages.move(
               { id: reply.id || undefined },
               {
                 previous_thread: reply.thread_id,
@@ -228,14 +231,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     //Check new thread exists
-    let thread = await gr.services.threads.get({ id: context.thread.id });
+    let thread = await gr.services.messages.threads.get({ id: context.thread.id });
     if (!thread && `${context.thread.id}` === `${pk.id}`) {
       logger.info("Create empty thread for message moved out of thread");
-      const oldThread = await gr.services.threads.get({ id: options.previous_thread });
+      const oldThread = await gr.services.messages.threads.get({ id: options.previous_thread });
       const upgradedContext = _.cloneDeep(context);
       upgradedContext.user.server_request = true;
       thread = (
-        await gr.services.threads.save(
+        await gr.services.messages.threads.save(
           {
             id: messageInOldThread.id,
             participants: oldThread.participants,
@@ -257,7 +260,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     await this.onSaved(messageInNewThread, { created: true }, context);
 
     await this.repository.remove(messageInOldThread);
-    await gr.services.threads.addReply(messageInOldThread.thread_id, -1);
+    await gr.services.messages.threads.addReply(messageInOldThread.thread_id, -1);
 
     logger.info(
       `Moved message ${pk.id} from thread ${options.previous_thread} to thread ${context.thread.id}`,
@@ -275,7 +278,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     context?: ThreadExecutionContext,
     forceDelete: boolean = false,
   ): Promise<DeleteResult<Message>> {
-    if (!context?.user?.server_request && !gr.services.threads.checkAccessToThread(context)) {
+    if (
+      !context?.user?.server_request &&
+      !gr.services.messages.threads.checkAccessToThread(context)
+    ) {
       logger.error(`Unable to write in thread ${context.thread.id}`);
       throw Error("Can't edit this message.");
     }
@@ -349,7 +355,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
   ): Promise<Message> {
-    const thread = await gr.services.threads.get({ id: pk.id }, context);
+    const thread = await gr.services.messages.threads.get({ id: pk.id }, context);
     if (thread) {
       return await this.getThread(thread);
     } else {
@@ -444,7 +450,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let application = null;
     if (message.application_id) {
-      application = await gr.services.applications.get({ id: message.application_id });
+      application = await gr.services.applications.marketplaceApps.get({
+        id: message.application_id,
+      });
     }
 
     const messageWithUsers = { ...message, users, application };
@@ -475,11 +483,11 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   ])
   async onSaved(message: Message, options: { created?: boolean }, context: ThreadExecutionContext) {
     if (options.created && !message.ephemeral) {
-      await gr.services.threads.addReply(message.thread_id);
+      await gr.services.messages.threads.addReply(message.thread_id);
     }
 
     //Depreciated way of doing this was localEventBus.publish<MessageLocalEvent>("message:saved")
-    await gr.services.messageEngine.dispatchMessage({
+    await gr.services.messages.engine.dispatchMessage({
       resource: message,
       context: context,
       created: options.created,

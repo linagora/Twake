@@ -109,7 +109,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
 
     //Applications
     console.log("- Create applications json file");
-    const applications = await gr.services.companyApplications.list(
+    const applications = await gr.services.applications.companyApps.list(
       new Pagination(),
       {},
       { company: { id: company.id }, user: { id: "", server_request: true } },
@@ -209,7 +209,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       let pagination = new Pagination();
       try {
         do {
-          const page = await gr.services.views.listChannel(
+          const page = await gr.services.messages.views.listChannel(
             pagination,
             {
               include_users: false,

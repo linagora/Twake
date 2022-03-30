@@ -43,7 +43,9 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
       app_id: pk.application_id,
     });
 
-    const application = await gr.services.applications.get({ id: pk.application_id });
+    const application = await gr.services.applications.marketplaceApps.get({
+      id: pk.application_id,
+    });
 
     return {
       ...companyApplication,
@@ -93,7 +95,7 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
     companyId: string,
     context: CompanyExecutionContext,
   ): Promise<void> {
-    const defaultApps = await gr.services.applications.listDefaults();
+    const defaultApps = await gr.services.applications.marketplaceApps.listDefaults();
     for (const defaultApp of defaultApps.getEntities()) {
       await this.save({ company_id: companyId, application_id: defaultApp.id }, {}, context);
     }
@@ -141,7 +143,7 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
     const applications = [];
 
     for (const companyApplication of companyApplications.getEntities()) {
-      const application = await gr.services.applications.get({
+      const application = await gr.services.applications.marketplaceApps.get({
         id: companyApplication.application_id,
       });
       if (application)

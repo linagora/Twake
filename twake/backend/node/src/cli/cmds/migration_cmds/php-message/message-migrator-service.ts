@@ -233,7 +233,7 @@ class MessageMigrator {
     const threadId = message.parent_message_id || message.id;
 
     if (this.options.ignoreExisting) {
-      const msg = await gr.services.messages.get({
+      const msg = await gr.services.messages.messages.get({
         thread_id: threadId,
         id: message.id,
       });
@@ -401,7 +401,7 @@ class MessageMigrator {
     }
 
     // Create nodeThread
-    return await gr.services.threads.save(
+    return await gr.services.messages.threads.save(
       thread,
       {},
       { user: { id: null, server_request: true }, company },
@@ -538,7 +538,7 @@ class MessageMigrator {
     }
 
     // Create nodeMessage then add it to thread
-    return await gr.services.messages.save(
+    return await gr.services.messages.messages.save(
       nodeMessage,
       {
         enforceViewPropagation: true,

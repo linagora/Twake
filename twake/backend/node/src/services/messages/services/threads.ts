@@ -128,7 +128,7 @@ export class ThreadsService
     await this.repository.save(thread);
 
     if (message) {
-      await gr.services.messages.save(
+      await gr.services.messages.messages.save(
         message,
         {
           threadInitialMessage: true,
@@ -228,7 +228,7 @@ export class ThreadsService
     const thread = await this.get(pk);
     return {
       ...thread,
-      message: await gr.services.messages.get({ id: pk.id, thread_id: pk.id }, context),
+      message: await gr.services.messages.messages.get({ id: pk.id, thread_id: pk.id }, context),
     };
   }
 

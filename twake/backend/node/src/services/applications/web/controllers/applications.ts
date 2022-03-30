@@ -37,7 +37,7 @@ export class ApplicationController
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await gr.services.applications.get({
+    const entity = await gr.services.applications.marketplaceApps.get({
       id: request.params.application_id,
     });
 
@@ -59,7 +59,7 @@ export class ApplicationController
     }>,
   ): Promise<ResourceListResponse<PublicApplicationObject>> {
     const context = getExecutionContext(request);
-    const entities = await gr.services.applications.list(
+    const entities = await gr.services.applications.marketplaceApps.list(
       request.query,
       { search: request.query.search },
       context,
@@ -83,7 +83,7 @@ export class ApplicationController
       let entity: Application;
 
       if (request.params.application_id) {
-        entity = await gr.services.applications.get({
+        entity = await gr.services.applications.marketplaceApps.get({
           id: request.params.application_id,
         });
 
@@ -115,7 +115,7 @@ export class ApplicationController
         entity.stats.updated_at = now;
         entity.stats.version++;
 
-        const res = await gr.services.applications.save(entity);
+        const res = await gr.services.applications.marketplaceApps.save(entity);
         entity = res.entity;
       } else {
         // INSERT
@@ -130,7 +130,7 @@ export class ApplicationController
           version: 0,
         };
 
-        const res = await gr.services.applications.save(app);
+        const res = await gr.services.applications.marketplaceApps.save(app);
         entity = res.entity;
       }
 
@@ -174,7 +174,7 @@ export class ApplicationController
 
     const content = request.body.content;
 
-    const applicationEntity = await gr.services.applications.get({
+    const applicationEntity = await gr.services.applications.marketplaceApps.get({
       id: request.params.application_id,
     });
 
@@ -194,7 +194,7 @@ export class ApplicationController
     if (!companyUser || !hasCompanyAdminLevel(companyUser.role))
       throw CrudException.forbidden("You must be company admin");
 
-    const hookResponse = await gr.services.applications.notifyApp(
+    const hookResponse = await gr.services.applications.marketplaceApps.notifyApp(
       request.params.application_id,
       request.body.connection_id,
       context.user.id,

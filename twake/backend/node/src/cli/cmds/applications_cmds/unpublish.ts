@@ -35,7 +35,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       let spinner = ora({ text: "Retrieving application" }).start();
       const platform = await twake.run(services);
       await gr.doInit(platform);
-      let app = await gr.services.applications.get({ id: argv.id });
+      let app = await gr.services.applications.marketplaceApps.get({ id: argv.id });
       spinner.stop();
       if (!app) {
         console.error(`Application ${argv.id} not found`);
@@ -56,8 +56,8 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       }
 
       spinner = ora({ text: "Unpublishing application" }).start();
-      await gr.services.applications.unpublish({ id: argv.id });
-      app = await gr.services.applications.get({ id: argv.id });
+      await gr.services.applications.marketplaceApps.unpublish({ id: argv.id });
+      app = await gr.services.applications.marketplaceApps.get({ id: argv.id });
       spinner.stop();
       console.log("Application unpublished");
 
