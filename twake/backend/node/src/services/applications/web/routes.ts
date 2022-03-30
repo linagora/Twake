@@ -8,6 +8,7 @@ import Application from "../entities/application";
 import assert from "assert";
 import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
 import { logger as log } from "../../../core/platform/framework";
+import { hasCompanyAdminLevel } from "../../../utils/company";
 
 const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
@@ -22,9 +23,22 @@ const routes: FastifyPluginCallback<{
     options.service,
   );
 
-  const adminCheck = async (request: FastifyRequest<{ Body: Application }>) => {
+  const adminCheck = async (
+    request: FastifyRequest<{ Body: Application; Params: { application_id: string } }>,
+  ) => {
     try {
-      const companyId = request.body.company_id;
+      let companyId: string = request.body.company_id;
+
+      if (request.params.application_id) {
+        const application = await options.service.applications.get({
+          id: request.params.application_id,
+        });
+
+        assert(application, "application is not defined");
+
+        companyId = application.company_id;
+      }
+
       const userId = request.currentUser.id;
       assert(companyId, "company_id is not defined");
       const companyUser = await options.service.companies.getCompanyUser(
@@ -40,9 +54,7 @@ const routes: FastifyPluginCallback<{
         throw fastify.httpErrors.forbidden("User does not belong to this company");
       }
 
-      // FIX me owner should be allowed to create applications hasCompanyAdminLevel
-      // twake/backend/node/src/utils/company.ts
-      if (companyUser.role !== "admin") {
+      if (!hasCompanyAdminLevel(companyUser.role)) {
         throw fastify.httpErrors.forbidden("You must be an admin of this company");
       }
     } catch (e) {
@@ -92,6 +104,15 @@ const routes: FastifyPluginCallback<{
     preValidation: [fastify.authenticate],
     schema: applicationPostSchema,
     handler: applicationController.save.bind(applicationController),
+  });
+
+  // Delete application (must be my company application and I must be company admin)
+  fastify.route({
+    method: "DELETE",
+    url: `${applicationsUrl}/:application_id`,
+    preHandler: [adminCheck],
+    preValidation: [fastify.authenticate],
+    handler: applicationController.delete.bind(applicationController),
   });
 
   /**

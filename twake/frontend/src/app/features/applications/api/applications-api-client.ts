@@ -35,9 +35,9 @@ class ApplicationsAPIClientService {
     partialsToUpdate: Partial<Application>,
     callback?: (result: Application) => void,
   ): Promise<Application> {
-    return Api.post<Partial<Application>, Application>(
+    return Api.post<{ resource: Partial<Application> }, Application>(
       `${this.prefix}/${applicationId}`,
-      partialsToUpdate,
+      { resource: partialsToUpdate },
       callback,
     );
   }
@@ -47,9 +47,9 @@ class ApplicationsAPIClientService {
   }
 
   async createCustomApplication(application: Partial<Application>): Promise<Application> {
-    return Api.post<Partial<Application>, { resource: Application }>(this.prefix, application).then(
-      result => result.resource,
-    );
+    return Api.post<{ resource: Partial<Application> }, { resource: Application }>(this.prefix, {
+      resource: application,
+    }).then(result => result.resource);
   }
 }
 const ApplicationsAPIClient = new ApplicationsAPIClientService();

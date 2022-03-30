@@ -73,13 +73,16 @@ export class ApplicationController
   }
 
   async save(
-    request: FastifyRequest<{ Params: { application_id: string }; Body: Application }>,
+    request: FastifyRequest<{
+      Params: { application_id: string };
+      Body: { resource: Application };
+    }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     // const context = getExecutionContext(request);
 
     try {
-      const app = request.body;
+      const app = request.body.resource;
       const now = new Date().getTime();
 
       let entity: Application;
@@ -153,7 +156,12 @@ export class ApplicationController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
-    const deleteResult: any = {};
+    const deleteResult = await this.service.applications.delete(
+      {
+        id: request.params.application_id,
+      },
+      context,
+    );
 
     if (deleteResult.deleted) {
       reply.code(204);
