@@ -54,6 +54,7 @@ export function usePublicOrPrivateChannelsSetup() {
     ChannelsMineAPIClient.websockets(companyId, workspaceId)[0],
     'usePublicOrPrivateChannelsPublic',
     (_action, _resource) => {
+      //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
     },
   );
@@ -63,6 +64,7 @@ export function usePublicOrPrivateChannelsSetup() {
     ChannelsMineAPIClient.websockets(companyId, workspaceId)[1],
     'usePublicOrPrivateChannelsPrivate',
     (_action, _resource) => {
+      //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
     },
   );

@@ -26,7 +26,7 @@ export function useRefreshDirectChannels(): {
   const _setDirectChannels = useSetRecoilState(DirectChannelsState(companyId));
 
   const refresh = async () => {
-    const directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
+    const directChannels = await ChannelsMineAPIClient.get({ companyId, workspaceId: 'direct' });
 
     if (directChannels) _setDirectChannels(directChannels);
 
@@ -64,10 +64,13 @@ export function useDirectChannelsSetup() {
     [companyId],
   );
 
+  console.log(ChannelsMineAPIClient.websockets(companyId, 'direct')[0]);
+
   useRealtimeRoom<ChannelType[]>(
-    ChannelsMineAPIClient.websockets(companyId, workspaceId)[0],
-    'usePublicOrPrivateChannels',
+    ChannelsMineAPIClient.websockets(companyId, 'direct')[0],
+    'useDirectChannels',
     (_action, _resource) => {
+      //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
     },
   );
