@@ -55,8 +55,6 @@ export function buildSearchQuery<Entity>(
     if (options?.$text?.$search)
       options.$text.$search = asciiFold(options.$text.$search || "").toLocaleLowerCase();
 
-    console.log("SEARCH $SEARCG = ", options?.$text?.$search);
-
     for (const [key, value] of Object.entries(indexProperties)) {
       if ((value as any)["type"] === "text") {
         let match: any = {};
@@ -80,7 +78,6 @@ export function buildSearchQuery<Entity>(
   //TODO implement regex search
 
   logger.debug(`Elasticsearch query: ${JSON.stringify(esBody)}`);
-  console.log("SEARCH = ", JSON.stringify(esBody));
 
   const esParams: RequestParams.Search = {
     index: entityDefinition.options?.search?.index || entityDefinition.name,

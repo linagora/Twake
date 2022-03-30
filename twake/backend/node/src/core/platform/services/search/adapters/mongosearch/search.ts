@@ -39,8 +39,6 @@ export function buildSearchQuery<Entity>(
     });
   }
 
-  console.log("SEARCH QUERY = ", JSON.stringify(query));
-
   return {
     project,
     query,

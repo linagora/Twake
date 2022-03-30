@@ -51,14 +51,12 @@ srcFiles = srcFiles.filter(p => p.indexOf(".spec.ts") >= 0 || p.indexOf(".test.t
 
   let summary = "";
 
-  for (const path of ["test/e2e/users/users.search.spec.ts"] || srcFiles) {
+  for (const path of srcFiles) {
     const testName = `test/e2e/${path.split("test/e2e/")[1]}`;
     const args = `${testName} --forceExit --coverage --detectOpenHandles --runInBand --testTimeout=60000 --verbose=true`;
 
     try {
-      const out = await exec("jest", args.split(" "), true);
-      return; //TO REMOVE
-
+      const out = await exec("jest", args.split(" "));
       if (out.code !== 0) {
         //To get all the logs, we run it again
         console.log(`FAIL ${testName}`);

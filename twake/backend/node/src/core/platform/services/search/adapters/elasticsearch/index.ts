@@ -122,8 +122,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
         ...entityDefinition.options.search.source(entity),
       };
 
-      console.log("INDEXING BEFORE = ", JSON.stringify(body));
-
       Object.keys(entityDefinition.options?.search.esMapping?.properties || []).forEach(
         (key: string) => {
           const mapping: any = entityDefinition.options?.search?.esMapping?.properties[key];
@@ -132,8 +130,6 @@ export default class ElasticSearch extends SearchAdapter implements SearchAdapte
           }
         },
       );
-
-      console.log("INDEXING AFTER = ", JSON.stringify(body));
 
       const index = entityDefinition.options?.search?.index || entityDefinition.name;
 
