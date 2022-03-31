@@ -32,10 +32,6 @@ export type ChannelType = {
   users?: UserType[];
 };
 
-export class ChannelResource extends Resource<ChannelType> {
-  _type = 'channel';
-}
-
 export class ChannelMemberResource extends Resource<ChannelMemberType> {
   _type = 'channel_member';
   _resourcePrimaryKey = ['channel_id', 'user_id'];

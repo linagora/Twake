@@ -20,10 +20,12 @@ export const useUser = (userId: string): UserType | undefined => {
 
   const refresh = async () => {
     setLoading(true);
-    const updatedUser = (await UserAPIClient.list([userId]))?.[0];
-
-    if (updatedUser) setUserList([updatedUser]);
-    setLoading(false);
+    UserAPIClient.list([userId], undefined, {
+      bufferize: true,
+      callback: () => {
+        setLoading(false);
+      },
+    });
   };
 
   useGlobalEffect(

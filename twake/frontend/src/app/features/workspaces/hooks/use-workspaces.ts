@@ -18,6 +18,7 @@ import WorkspaceAPIClient from 'app/features/workspaces/api/workspace-api-client
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
 import { LoadingState } from '../../global/state/atoms/Loading';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
+import { useEffect } from 'react';
 
 const logger = Logger.getLogger('useWorkspaces');
 
@@ -84,8 +85,10 @@ export function useCurrentWorkspace() {
   const workspace = workspaces.find(w => w.id === routerWorkspaceId);
 
   //Retro compatibility
-  Workspaces.updateCurrentWorkspaceId(workspace?.id || '');
-  Workspaces.updateCurrentCompanyId(workspace?.company_id || '');
+  useEffect(() => {
+    Workspaces.updateCurrentWorkspaceId(workspace?.id || '');
+    Workspaces.updateCurrentCompanyId(workspace?.company_id || '');
+  }, [routerWorkspaceId, companyId]);
   //End
 
   return { workspace, refresh };

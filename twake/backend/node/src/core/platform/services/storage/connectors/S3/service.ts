@@ -31,8 +31,8 @@ export default class S3ConnectorService implements StorageConnectorAPI {
   }
 
   async read(path: string): Promise<Readable> {
-    // Test if file exists in S3 bucket 3 times until we find it
-    for (let i = 0; i <= 5; i++) {
+    // Test if file exists in S3 bucket 10 times until we find it
+    for (let i = 0; i <= 10; i++) {
       try {
         return this.client.getObject(this.minioConfiguration.bucket, path);
       } catch (err) {

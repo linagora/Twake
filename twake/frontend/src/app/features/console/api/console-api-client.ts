@@ -40,6 +40,9 @@ class ConsoleAPIClient {
   }
 
   getNewAccessToken(): Promise<JWTDataType> {
+    if (JWTStorage.isRefreshExpired() && JWTStorage.isAccessExpired()) {
+      throw new Error('Can not get access token as both access and refresh token are expired');
+    }
     return new Promise<JWTDataType>((resolve, reject) => {
       Api.post<
         undefined,

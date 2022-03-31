@@ -11,12 +11,16 @@ import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useCurrentCompanyRealtime } from '../../features/companies/hooks/use-companies';
 
 import './workspaces-bar/styles.scss';
+import { usePreloadSomeUsers } from 'app/features/users/hooks/use-user-list';
 
 export default () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const { loading } = useWorkspaceLoader(companyId);
   useCurrentCompanyRealtime();
+
+  // We call this hook here to be able to preload some users in user list state
+  usePreloadSomeUsers();
 
   if (loading) {
     return <LoadingSidebar />;

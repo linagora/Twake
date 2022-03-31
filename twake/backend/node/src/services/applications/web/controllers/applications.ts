@@ -94,6 +94,9 @@ export class ApplicationController
         }
 
         entity.publication.requested = app.publication.requested;
+        if (app.publication.requested === false) {
+          entity.publication.published = false;
+        }
 
         if (entity.publication.published) {
           if (

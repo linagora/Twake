@@ -41,9 +41,9 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     );
     setLoaded();
 
-    const nothingNew = newMessages?.filter(m => !isInWindow(m.thread_id)).length < limit;
+    const nothingNew = (newMessages?.filter(m => !isInWindow(m.thread_id)).length || 0) < limit;
 
-    addToChannel(newMessages, {
+    addToChannel(newMessages || [], {
       inWindow: true,
       ...(nothingNew && direction === 'future' ? { reachedEnd: true } : {}),
       ...(nothingNew && direction !== 'future' ? { reachedStart: true } : {}),

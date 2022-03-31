@@ -25,14 +25,15 @@ import CompanyUser, {
 } from "../../entities/company_user";
 import { ListUserOptions } from "../users/types";
 import { CompanyUserRole } from "../../web/types";
-import { uuid } from "../../../../utils/types";
+import { ResourceEventsPayload, uuid } from "../../../../utils/types";
 import ExternalGroup, {
   ExternalGroupPrimaryKey,
   getInstance as getExternalGroupInstance,
 } from "../../entities/external_company";
 import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
-import { RealtimeDeleted, RealtimeSaved } from "../../../../core/platform/framework";
+import { logger, RealtimeDeleted, RealtimeSaved } from "../../../../core/platform/framework";
 import { getCompanyRoom, getUserRoom } from "../../realtime";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class CompanyService implements CompaniesServiceAPI {
   version: "1";
@@ -197,6 +198,11 @@ export class CompanyService implements CompaniesServiceAPI {
           { user: { id: user.id, server_request: true } },
         );
       }
+
+      localEventBus.publish<ResourceEventsPayload>("company:user:deleted", {
+        user: user,
+        company: companyPk,
+      });
     }
 
     return new DeleteResult("company_user", entity, true);
@@ -298,5 +304,20 @@ export class CompanyService implements CompaniesServiceAPI {
       return "guest";
     }
     return companyUser.role;
+  }
+
+  async ensureDeletedUserNotInCompanies(userPk: UserPrimaryKey) {
+    const user = await this.userServiceAPI.users.get(userPk);
+    if (user.deleted) {
+      const companies = await this.getAllForUser(user.id);
+      for (const company of companies) {
+        logger.warn(`User ${userPk.id} is deleted so removed from company ${company.id}`);
+        await this.removeUserFromCompany(company, user);
+        await this.userServiceAPI.workspaces.ensureUserNotInCompanyIsNotInWorkspace(
+          userPk,
+          company.id,
+        );
+      }
+    }
   }
 }

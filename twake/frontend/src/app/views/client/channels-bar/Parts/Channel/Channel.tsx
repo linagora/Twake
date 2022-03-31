@@ -4,23 +4,14 @@ import { Calendar, CheckSquare, Folder, Star } from 'react-feather';
 
 import Icon from 'app/components/icon/icon';
 import { Application } from 'app/features/applications/types/application';
-import WindowState from 'app/features/global/utils/window';
 import Emojione from 'components/emojione/emojione';
-import { ChannelResource } from 'app/features/channels/types/channel';
-import AvatarComponent from 'app/components/avatar/avatar';
 import Beacon from 'app/components/scroll-hidden-components/beacon';
-import MainViewService from 'app/features/router/services/main-view-service';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
-import useRouterChannelSelected from 'app/features/router/hooks/use-router-channel-selected';
-
-import './Channel.scss';
-import useChannelWritingActivity, {
-  useChannelWritingActivityState,
-} from 'app/features/channels/hooks/use-channel-writing-activity';
+import RouterServices from 'app/features/router/services/router-service';
 import WritingLoader from 'app/components/writing-loader/writing-loader';
 
+import './Channel.scss';
+
 type Props = {
-  collection?: Collection<ChannelResource>;
   app?: Application;
   name: string;
   icon: string | JSX.Element;
@@ -36,35 +27,19 @@ type Props = {
   showTooltip?: boolean;
   active?: boolean;
   writingActivity?: boolean;
+  selected?: boolean;
 };
 
 export default (props: Props) => {
-  const selected = useRouterChannelSelected(props.id || '');
-  const writingActivity = useChannelWritingActivityState(props.id || '');
+  const selected = props.selected;
+  const writingActivity = props.writingActivity || false;
 
-  const onChannelChange = () => {
-    props.id &&
-      MainViewService.select(props.id, {
-        collection: props.collection,
-        app: props.app || {
-          identity: {
-            code: 'messages',
-            name: '',
-            icon: '',
-            description: '',
-            website: '',
-            categories: [],
-            compatibility: [],
-          },
-        },
-        context: null,
-        hasTabs: props.visibility !== 'direct' && !props.app,
-      });
-
-    WindowState.setSuffix(props.name);
+  const onClick = () => {
+    const url = RouterServices.generateRouteFromState({
+      channelId: props.id,
+    });
+    RouterServices.push(url);
   };
-
-  if (selected && props.id && MainViewService.getId() !== props.id) onChannelChange();
 
   const getDefaultApplicationIcon = (code: string) => {
     switch (code) {
@@ -85,7 +60,7 @@ export default (props: Props) => {
         className={`channel ${selected ? 'selected ' : ''} ${
           props.unreadMessages ? 'unread ' : ''
         } ${props.active ? 'menu-open' : ''}`}
-        onClick={onChannelChange}
+        onClick={onClick}
       >
         {!!props.favorite && (
           <div className="icon small-right-margin">
@@ -109,9 +84,7 @@ export default (props: Props) => {
           {props.name + ' '}
           {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
         </div>
-        <div className="writing_Activity">
-          {!selected && writingActivity.length > 0 && <WritingLoader />}
-        </div>
+        <div className="writing_Activity">{!selected && writingActivity && <WritingLoader />}</div>
         <div className="more">
           {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
           {props.notifications > 0 && (

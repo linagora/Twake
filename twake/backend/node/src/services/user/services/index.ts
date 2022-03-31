@@ -26,6 +26,8 @@ import { PlatformServicesAPI } from "../../../core/platform/services/platform-se
 import { ApplicationServiceAPI } from "../../applications/api";
 import { StatisticsAPI } from "../../statistics/types";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { ResourceEventsPayload } from "../../../utils/types";
 
 export function getService(
   platformServices: PlatformServicesAPI,
@@ -72,6 +74,12 @@ class Service implements UserServiceAPI {
     } catch (err) {
       console.error("Error while initializing user service", err);
     }
+
+    //If user deleted from Twake, remove it from all companies
+    localEventBus.subscribe<ResourceEventsPayload>("user:deleted", async data => {
+      if (data?.user?.id) this.companies.ensureDeletedUserNotInCompanies(data.user);
+    });
+
     return this;
   }
 

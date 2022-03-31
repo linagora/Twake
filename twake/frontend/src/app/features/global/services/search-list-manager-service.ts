@@ -54,7 +54,7 @@ class SearchListManager extends Observable {
     let usersSearched: UserType[] = opts?.userListState ? opts.userListState : [];
     if (companyId && workspaceId) {
       channels = await ChannelsReachableAPIClient.get(companyId, workspaceId);
-      directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
+      directChannels = await ChannelsMineAPIClient.get({ companyId, workspaceId: 'direct' });
       mineWorkspaceChannels = await ChannelsMineAPIClient.get({ companyId, workspaceId });
     }
 

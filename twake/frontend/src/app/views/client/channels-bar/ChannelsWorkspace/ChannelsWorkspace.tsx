@@ -1,12 +1,9 @@
 import React from 'react';
 
-import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
+import { ChannelType } from 'app/features/channels/types/channel';
 import RouterServices from 'app/features/router/services/router-service';
 import WorkspaceChannels from './WorkspaceChannel';
 import Languages from 'app/features/global/services/languages-service';
-import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
-import { getDirectChannels, getMine } from 'app/deprecated/channels/ChannelCollectionPath';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 import { usePublicOrPrivateChannels } from 'app/features/channels/hooks/use-public-or-private-channels';
 
@@ -25,19 +22,10 @@ export default () => {
     inGroup: [],
     direct: [],
   };
-  const channelsCollection = Collection.get(
-    getMine(companyId, workspaceId),
-    ChannelResource,
-  ).setOptions({ reloadStrategy: 'delayed', queryParameters: { mine: true } });
-  const directChannelsCollection = Collection.get(
-    getDirectChannels(companyId),
-    ChannelResource,
-  ).setOptions({ reloadStrategy: 'delayed' });
-  const { privateChannels, publicChannels } = usePublicOrPrivateChannels();
-  const { directChannels } = useDirectChannels();
+  let { privateChannels, publicChannels } = usePublicOrPrivateChannels();
+  let { directChannels } = useDirectChannels();
 
-  const channels: ChannelType[] = [...privateChannels, ...publicChannels];
-  ChannelsBarService.wait(companyId, workspaceId, channelsCollection);
+  let channels: ChannelType[] = [...privateChannels, ...publicChannels];
 
   channels
     .concat(directChannels)
@@ -60,8 +48,8 @@ export default () => {
     });
 
   const groupsName: string[] = [];
-  const groups: { name: string; channels: ChannelType[] }[] = [];
-  const hasNonGroupWorkspaceChannels = !(
+  let groups: { name: string; channels: ChannelType[] }[] = [];
+  let hasNonGroupWorkspaceChannels = !(
     channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0
   );
 
@@ -92,8 +80,6 @@ export default () => {
     <div className="workspace_channels">
       {channelCategory.favorite.length !== 0 && (
         <WorkspaceChannels
-          directCollection={directChannelsCollection}
-          collection={channelsCollection}
           key={'favoriteChannels'}
           sectionTitle={Languages.t(
             'scenes.app.channelsbar.channelsworkspace.channel_title.favorite',
@@ -104,8 +90,6 @@ export default () => {
       )}
       {hasNonGroupWorkspaceChannels && (
         <WorkspaceChannels
-          directCollection={directChannelsCollection}
-          collection={channelsCollection}
           key={'channels'}
           sectionTitle={Languages.t('scenes.app.channelsbar.channelsworkspace.channel_title')}
           channels={channelCategory.workspace}
@@ -113,8 +97,6 @@ export default () => {
       )}
       {groups.map((group, index) => (
         <WorkspaceChannels
-          directCollection={directChannelsCollection}
-          collection={channelsCollection}
           key={index}
           sectionTitle={group.name}
           channels={group.channels}

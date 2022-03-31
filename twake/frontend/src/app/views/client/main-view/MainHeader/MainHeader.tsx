@@ -3,15 +3,11 @@ import { Layout, Divider } from 'antd';
 import ChannelBar from './ChannelHeader/ChannelHeader';
 import MainViewService from 'app/features/router/services/main-view-service';
 import ApplicationBar from './ApplicationHeader/ApplicationHeader';
-import RouterServices from 'app/features/router/services/router-service';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 
 const MainHeader: FC<{}> = () => {
-  const { channelId } = RouterServices.getStateFromRoute();
+  const channelId = useRouterChannel();
   const channelType = MainViewService.useWatcher(() => MainViewService.getViewType());
-  const channelCollection = MainViewService.getViewCollection();
-  if (!channelCollection) {
-    return <></>;
-  }
 
   return (
     <Layout.Header className={'global-view-header'}>

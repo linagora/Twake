@@ -16,7 +16,7 @@ import {
 import { SearchAdapter } from "../abstract";
 import { ListResult, Paginable, Pagination } from "../../../../framework/api/crud-service";
 import { MongoConnector } from "../../../database/services/orm/connectors";
-import { parsePrimaryKey, stringifyPrimaryKey } from "../utils";
+import { asciiFold, parsePrimaryKey, stringifyPrimaryKey } from "../utils";
 import { buildSearchQuery } from "./search";
 
 const searchPrefix = "search__";
@@ -105,6 +105,14 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
         ..._.pick(entity, ...pkColumns),
         ...entityDefinition.options.search.source(entity),
       };
+
+      Object.keys(entityDefinition.options?.search.mongoMapping?.text || []).forEach(
+        (key: string) => {
+          if (entityDefinition.options?.search.mongoMapping?.text[key] === "text") {
+            body[key] = asciiFold(body[key]).toLocaleLowerCase();
+          }
+        },
+      );
 
       const record: Operation = {
         index: this.getIndex(entityDefinition),

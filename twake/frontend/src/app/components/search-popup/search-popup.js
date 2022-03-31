@@ -5,7 +5,6 @@ import UserService from 'app/features/users/services/current-user-service';
 import './search-popup.scss';
 import InputIcon from 'components/inputs/input-icon.js';
 import QuickResult from './parts/quick-result.js';
-import MessagesFilter from './parts/messages-filter.js';
 import Tabs from 'components/tabs/tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
@@ -389,17 +388,7 @@ export default class SearchPopup extends React.Component {
                   options={{ suppressScrollX: true }}
                   component="div"
                   className="filters"
-                >
-                  {this.state.filterType === 'message' && (
-                    <MessagesFilter
-                      options={Search.options}
-                      onSearch={options => {
-                        Search.setOptions(options);
-                        Search.search();
-                      }}
-                    />
-                  )}
-                </PerfectScrollbar>
+                ></PerfectScrollbar>
               )}
             </div>
           </div>
