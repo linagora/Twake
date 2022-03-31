@@ -175,14 +175,18 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
         userId,
       });
       if (!exists) {
-        await this.channelsService.members.ensureUserNotInWorkspaceIsNotInChannel(
-          { id: userId },
-          { id: workspaceId, company_id: companyId },
-        );
-        for (const badge of badges.getEntities()) {
-          if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge);
-        }
-        badges.filterEntities(b => b.workspace_id === workspaceId);
+        try {
+          if (workspaceId !== "direct") {
+            await this.channelsService.members.ensureUserNotInWorkspaceIsNotInChannel(
+              { id: userId },
+              { id: workspaceId, company_id: companyId },
+            );
+          }
+          for (const badge of badges.getEntities()) {
+            if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge);
+          }
+          badges.filterEntities(b => b.workspace_id === workspaceId);
+        } catch (e) {}
       }
     }
 
