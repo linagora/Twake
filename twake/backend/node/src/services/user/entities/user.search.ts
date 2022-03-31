@@ -14,7 +14,7 @@ export default {
           " " +
           entity.last_name +
           " " +
-          entity.email_canonical.split("@")[0] +
+          (entity.email_canonical || "").split("@")[0] +
           " " +
           entity.username_canonical,
       ),
