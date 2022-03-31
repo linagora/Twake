@@ -13,6 +13,8 @@ import { getService as getActivitiesService } from "./channel/activities";
 import UserServiceAPI from "../../user/api";
 import ChannelPendingEmailsService from "./channel/pending-emails/service";
 import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
+import { ResourceEventsPayload } from "../../../utils/types";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
 
 export function getService(
   platformServices: PlatformServicesAPI,
@@ -58,6 +60,12 @@ class Service implements ChannelServiceAPI {
     } catch (err) {
       console.error("Error while initializing channel", err);
     }
+
+    //If user deleted from a company, remove it from all workspace
+    localEventBus.subscribe<ResourceEventsPayload>("workspace:user:deleted", async data => {
+      if (data?.user?.id && data?.company?.id)
+        this.members.ensureUserNotInWorkspaceIsNotInChannel(data.user, data.workspace);
+    });
 
     return this;
   }

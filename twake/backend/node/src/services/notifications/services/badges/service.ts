@@ -137,20 +137,21 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   }
 
   // This will ensure we are still in the channels and if not, we'll remove the badge
-  // TODO: We need to also ensure more than that
+  // We need to also ensure more than that
   // - Are we in the workspace?
   // - Are we in the company?
   async ensureBadgesAreReachable(
     badges: ListResult<UserNotificationBadge>,
   ): Promise<ListResult<UserNotificationBadge>> {
-    const channels = uniq(badges.getEntities().map(r => r.channel_id));
+    const userId = badges.getEntities()[0].user_id;
 
+    const channels = uniq(badges.getEntities().map(r => r.channel_id));
     for (const channelId of channels) {
       const channelMemberPk = {
         company_id: badges.getEntities()[0].company_id,
         workspace_id: badges.getEntities()[0].workspace_id,
         channel_id: channelId,
-        user_id: badges.getEntities()[0].user_id,
+        user_id: userId,
       };
       const context = {
         user: { id: channelMemberPk.user_id, server_request: true },
@@ -162,6 +163,26 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
           if (badge.channel_id === channelId) this.removeUserChannelBadges(badge);
         }
         badges.filterEntities(b => b.channel_id !== channelId);
+      }
+    }
+
+    const badgePerWorkspace = _.uniqBy(badges.getEntities(), r => r.workspace_id);
+    for (const badge of badgePerWorkspace) {
+      const workspaceId = badge.workspace_id;
+      const companyId = badge.company_id;
+      const exists = await this.userService.workspaces.getUser({
+        workspaceId,
+        userId,
+      });
+      if (!exists) {
+        await this.channelsService.members.ensureUserNotInWorkspaceIsNotInChannel(
+          { id: userId },
+          { id: workspaceId, company_id: companyId },
+        );
+        for (const badge of badges.getEntities()) {
+          if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge);
+        }
+        badges.filterEntities(b => b.workspace_id === workspaceId);
       }
     }
 
