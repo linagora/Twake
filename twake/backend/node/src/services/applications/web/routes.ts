@@ -24,10 +24,13 @@ const routes: FastifyPluginCallback<{
   );
 
   const adminCheck = async (
-    request: FastifyRequest<{ Body: Application; Params: { application_id: string } }>,
+    request: FastifyRequest<{
+      Body: { resource: Application };
+      Params: { application_id: string };
+    }>,
   ) => {
     try {
-      let companyId: string = request.body.company_id;
+      let companyId: string = request.body.resource.company_id;
 
       if (request.params.application_id) {
         const application = await options.service.applications.get({
