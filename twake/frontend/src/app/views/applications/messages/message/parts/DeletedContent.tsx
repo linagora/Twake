@@ -3,17 +3,18 @@ import UsersService from 'app/features/users/services/current-user-service';
 import userAsyncGet from 'app/features/users/utils/async-get';
 import MenuManager from 'app/components/menus/menus-manager';
 import UserCard from 'app/components/user-card/user-card';
-import ChannelsService from 'app/deprecated/channels/channels';
 import Languages from 'app/features/global/services/languages-service';
 
 import '../message.scss';
 import { Typography } from 'antd';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 type PropsType = {
   userId: string;
 };
 
 export default ({ userId }: PropsType) => {
   const [fullName, setFullName] = useState<string>('');
+  const { openDiscussion } = useDirectChannels();
 
   const _setFullName = async () => {
     const user = await userAsyncGet(userId);
@@ -35,7 +36,7 @@ export default ({ userId }: PropsType) => {
         user && {
           type: 'react-element',
           reactElement: () => (
-            <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
+            <UserCard user={user} onClick={() => openDiscussion([user.id || ''])} />
           ),
         },
       ],

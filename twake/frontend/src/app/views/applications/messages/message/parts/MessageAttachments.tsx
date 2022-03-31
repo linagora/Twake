@@ -31,10 +31,11 @@ export default () => {
 
   return (
     <Row justify="start" align="middle" className="small-top-margin" wrap>
-      {files.map((file, i) =>
-        file.metadata ? (
+      {files
+        .filter(f => f.metadata)
+        .map((file, i) => (
           <PossiblyPendingAttachment
-            key={file.metadata.external_id || file.id}
+            key={file.metadata?.external_id || file.id}
             type={'message'}
             file={file}
             large={
@@ -49,10 +50,7 @@ export default () => {
             }
             onRemove={() => setFiles(files.filter(f => f.id !== file.id))}
           />
-        ) : (
-          <></>
-        ),
-      )}
+        ))}
     </Row>
   );
 };

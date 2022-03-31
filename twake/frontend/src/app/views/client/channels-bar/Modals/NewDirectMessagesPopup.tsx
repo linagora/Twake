@@ -4,20 +4,19 @@ import Languages from 'app/features/global/services/languages-service';
 import MediumPopupComponent from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
 import UserListManager from 'components/user-list-manager/user-list-manager';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 import ModalManager from 'app/components/modal/modal-manager';
 import { Button, Typography } from 'antd';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
-import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
 const NewDirectMessagesPopup: FC = () => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const companyId = useRouterCompany();
+  const { openDiscussion } = useDirectChannels();
 
   const upsertDirectMessage = async (): Promise<any> => {
     setLoading(true);
-    await ChannelsService.openDiscussion(newUserDiscussion, companyId);
+    await openDiscussion(newUserDiscussion);
     return MediumPopupComponent.closeAll();
   };
 

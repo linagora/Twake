@@ -35,7 +35,7 @@ import WorkspacePendingUser, {
   WorkspacePendingUserPrimaryKey,
 } from "../../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../../user/web/types";
-import { uuid } from "../../../../utils/types";
+import { ResourceEventsPayload, uuid } from "../../../../utils/types";
 import { CompaniesServiceAPI, UsersServiceAPI } from "../../../user/api";
 import { CounterProvider } from "../../../../core/platform/services/counter/provider";
 import {
@@ -60,6 +60,8 @@ import { randomBytes } from "crypto";
 import { Readable } from "stream";
 import { reduceUUID4 } from "../../../../utils/uuid-reducer";
 import { expandUUID4 } from "../../../../utils/uuid-reducer";
+import { logger } from "@sentry/utils";
+import { localEventBus } from "../../../../core/platform/framework/pubsub";
 
 export class WorkspaceService implements WorkspaceServiceAPI {
   version: "1";
@@ -359,6 +361,7 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
   async removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,
+    companyId: string,
   ): Promise<DeleteResult<WorkspaceUserPrimaryKey>> {
     const entity = await this.getUser(workspaceUserPk);
 
@@ -372,6 +375,12 @@ export class WorkspaceService implements WorkspaceServiceAPI {
 
     await this.workspaceUserRepository.remove(entity);
     await this.userCounterIncrease(workspaceUserPk.workspaceId, -1);
+
+    localEventBus.publish<ResourceEventsPayload>("workspace:user:deleted", {
+      user: entity,
+      workspace: { id: workspaceUserPk.workspaceId, company_id: companyId },
+    });
+
     return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
@@ -661,6 +670,19 @@ export class WorkspaceService implements WorkspaceServiceAPI {
       };
     } catch (e) {
       return null;
+    }
+  }
+
+  async ensureUserNotInCompanyIsNotInWorkspace(userPk: UserPrimaryKey, companyId: string) {
+    const workspaces = await this.getAllForCompany(companyId);
+    for (const workspace of workspaces) {
+      const companyUser = await this.companies.getCompanyUser({ id: workspace.company_id }, userPk);
+      if (!companyUser) {
+        logger.warn(
+          `User ${userPk.id} is not in company ${workspace.company_id} so removing from workspace ${workspace.id}`,
+        );
+        this.removeUser({ workspaceId: workspace.id, userId: userPk.id }, companyId);
+      }
     }
   }
 }

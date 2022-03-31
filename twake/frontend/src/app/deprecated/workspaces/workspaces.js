@@ -46,13 +46,11 @@ class Workspaces extends Observable {
   }
 
   updateCurrentWorkspaceId(workspaceId, notify = false) {
-    console.log('updateCurrentWorkspaceId', workspaceId, this.currentWorkspaceId);
     if (this.currentWorkspaceId !== workspaceId && workspaceId) {
       const workspace = DepreciatedCollections.get('workspaces').find(workspaceId);
       if (!workspace) {
         return;
       }
-      console.log('updateCurrentWorkspaceId B', workspaceId);
 
       this.currentWorkspaceId = workspaceId;
       this.currentWorkspaceIdByGroup[workspace.company_id] = workspaceId;

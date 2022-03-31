@@ -11,18 +11,22 @@ import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 import { UserType } from 'app/features/users/types/user';
+import { useSetChannel } from './use-channel';
+import ChannelAPIClient from '../api/channel-api-client';
+import MenusManager from 'app/components/menus/menus-manager.js';
+import RouterService from 'app/features/router/services/router-service';
 
 export function useRefreshDirectChannels(): {
   refresh: () => Promise<void>;
 } {
   const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace();
   const { set: setUserList } = useSetUserList('useRefreshDirectChannels');
+  const { set } = useSetChannel();
 
-  const _setDirectChannels = useSetRecoilState(DirectChannelsState({ companyId, workspaceId }));
+  const _setDirectChannels = useSetRecoilState(DirectChannelsState(companyId));
 
   const refresh = async () => {
-    const directChannels = await ChannelsMineAPIClient.get({ companyId }, { direct: true });
+    const directChannels = await ChannelsMineAPIClient.get({ companyId, workspaceId: 'direct' });
 
     if (directChannels) _setDirectChannels(directChannels);
 
@@ -32,44 +36,70 @@ export function useRefreshDirectChannels(): {
       if (c.users) users.push(...c.users);
     });
 
+    directChannels.forEach(c => set(c));
+
     if (users) setUserList(users);
   };
 
   return { refresh };
 }
 
-export function useDirectChannels(): {
-  directChannels: ChannelType[];
-  refresh: () => Promise<void>;
-} {
+export function useDirectChannelsSetup() {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const [directChannels, _setDirectChannels] = useRecoilState(
-    DirectChannelsState({ companyId, workspaceId }),
-  );
   const [, setLoading] = useRecoilState(LoadingState(`channels-direct-${companyId}`));
+  const [didLoad, setDidLoad] = useRecoilState(
+    LoadingState(`channels-direct-did-load-${companyId}`),
+  );
   const { refresh } = useRefreshDirectChannels();
 
   useGlobalEffect(
     'useDirectChannels',
     async () => {
-      if (!directChannels) setLoading(true);
+      if (!didLoad) setLoading(true);
       await refresh();
       setLoading(false);
+      setDidLoad(true);
     },
     [companyId],
   );
 
   useRealtimeRoom<ChannelType[]>(
-    ChannelsMineAPIClient.websockets(companyId, workspaceId)[0],
-    'usePublicOrPrivateChannels',
+    ChannelsMineAPIClient.websockets(companyId, 'direct')[0],
+    'useDirectChannels',
     (_action, _resource) => {
+      //TODO replace this to avoid calling backend every time
       if (_action === 'saved') refresh();
     },
   );
+}
+
+export function useDirectChannels(): {
+  directChannels: ChannelType[];
+  refresh: () => Promise<void>;
+  openDiscussion: (membersId: string[]) => Promise<void>;
+} {
+  const companyId = useRouterCompany();
+  const [directChannels, _setDirectChannels] = useRecoilState(DirectChannelsState(companyId));
+  const { refresh } = useRefreshDirectChannels();
+
+  const openDiscussion = async (membersIds: string[]) => {
+    const channel = await ChannelAPIClient.getDirect(companyId, membersIds);
+    await refresh();
+    if (channel) {
+      RouterService.push(
+        RouterService.generateRouteFromState({
+          channelId: channel.id,
+          companyId: channel.company_id,
+        }),
+      );
+    }
+    MenusManager.closeMenu();
+  };
 
   return {
     refresh,
     directChannels,
+    openDiscussion,
   };
 }

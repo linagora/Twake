@@ -14,6 +14,7 @@ import {
   RealtimeApplicationEvent,
   RealtimeBaseBusEvent,
 } from "../../../../core/platform/services/realtime/types";
+import { v4 } from "uuid";
 
 export class ApplicationsApiController {
   constructor(readonly service: ApplicationsApiServiceAPI) {}
@@ -68,6 +69,7 @@ export class ApplicationsApiController {
       form: body.form,
       connection_id: body.connection_id,
       hidden_data: {},
+      configurator_id: v4(),
     };
 
     localEventBus.publish("realtime:event", {

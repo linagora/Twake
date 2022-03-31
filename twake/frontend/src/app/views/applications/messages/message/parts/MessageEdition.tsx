@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import 'moment-timezone';
-import MessagesService from 'app/features/messages/services/messages-service';
 import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
 import MessageInput from '../../input/input';
 import Button from 'components/buttons/button.js';

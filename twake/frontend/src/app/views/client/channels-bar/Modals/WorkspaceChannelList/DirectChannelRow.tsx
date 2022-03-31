@@ -2,10 +2,10 @@ import React, { createRef, useEffect } from 'react';
 import { Col, Row, Typography } from 'antd';
 import { getUserParts } from 'app/components/member/user-parts';
 import './ChannelRow.scss';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 import RouterServices from 'app/features/router/services/router-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import UserServices from 'app/features/users/services/current-user-service';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
 type PropsType = {
   userIds: string[];
@@ -16,13 +16,14 @@ type PropsType = {
 
 const DirectChannelRow = ({ key, userIds, active }: PropsType) => {
   const { companyId } = RouterServices.getStateFromRoute();
+  const { openDiscussion } = useDirectChannels();
 
   const { avatar, name, companyRole, users } = getUserParts({
     usersIds: userIds,
   });
 
   const upsertDirectMessage = async (): Promise<any> => {
-    await ChannelsService.openDiscussion(userIds, companyId);
+    await openDiscussion(userIds);
     return ModalManager.closeAll();
   };
 

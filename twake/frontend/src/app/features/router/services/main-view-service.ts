@@ -3,12 +3,7 @@ import AppViewService, { ViewConfiguration } from './app-view-service';
 
 class MainViewService extends AppViewService {
   public getViewType(): 'application' | 'channel' | '' {
-    const col: any = this.getViewCollection();
-    return col ? (col.useWatcher ? 'channel' : 'application') : '';
-  }
-
-  public getViewCollection() {
-    return this.getConfiguration().collection;
+    return this.getConfiguration().context?.type === 'application' ? 'application' : 'channel';
   }
 
   public select(channelId: string, configuration?: ViewConfiguration) {

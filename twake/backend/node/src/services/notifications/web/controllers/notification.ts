@@ -11,6 +11,7 @@ import {
 import { UserNotificationBadge } from "../../entities";
 import { getWebsocketInformation } from "../../services/realtime";
 import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import { uniq } from "lodash";
 
 export class NotificationController
   implements

@@ -21,7 +21,10 @@ import {
   ThreadExecutionContext,
   MessageWithReplies,
   MessagesGetThreadOptions,
-  MessageWithRepliesWithUsers, SearchMessageOptions,
+  MessageWithRepliesWithUsers,
+  SearchMessageOptions,
+  FlatFileFromMessage,
+  FlatPinnedFromMessage,
 } from "./types";
 
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
@@ -125,7 +128,7 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     pagination: Paginable,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
-  ): Promise<ListResult<MessageWithReplies>>;
+  ): Promise<ListResult<MessageWithReplies | FlatFileFromMessage>>;
 
   listChannelThreads(
     pagination: Paginable,
@@ -137,7 +140,7 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     pagination: Paginable,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
-  ): Promise<ListResult<MessageWithReplies>>;
+  ): Promise<ListResult<MessageWithReplies | FlatPinnedFromMessage>>;
 
   search(
     pagination: Pagination,
@@ -147,4 +150,3 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
 
   getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]>;
 }
-

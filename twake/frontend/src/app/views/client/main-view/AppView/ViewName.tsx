@@ -1,8 +1,9 @@
 import React, { FC } from 'react';
 import AppViewService from 'app/features/router/services/app-view-service';
 import Languages from 'app/features/global/services/languages-service';
-import { ChannelResource } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { useWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 type PropsType = {
   id: string;
@@ -16,20 +17,13 @@ const ViewName: FC<PropsType> = props => {
     props.viewService.getConfiguration().context,
   ]);
 
-  const configuration = props.viewService.getConfiguration();
+  let { channel } = useChannel(props.id);
 
-  const channelCollection = configuration.collection;
-  let channel = null;
-  if (channelCollection?.findOne) {
-    channel = channelCollection.findOne({ id: props.id });
-  }
-
-  const { workspace } = useWorkspace((channel as ChannelResource)?.data?.workspace_id || '');
+  const { workspace } = useWorkspace(channel?.workspace_id || '');
 
   let text = '';
   if (channel && workspace) {
-    text =
-      (workspace ? workspace.name + ' • ' : '') + ((channel as ChannelResource).data.name || '');
+    text = (workspace ? workspace.name + ' • ' : '') + (channel.name || '');
   }
 
   return <span>{Languages.t('scenes.app.side_app.messages_thread_title', [text])}</span>;

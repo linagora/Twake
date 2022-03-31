@@ -36,4 +36,5 @@ export interface RealtimeApplicationEvent {
   application: unknown;
   form: unknown;
   hidden_data: unknown;
+  configurator_id: string;
 }

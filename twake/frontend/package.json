@@ -10,7 +10,7 @@
     "dev:prettier": "prettier --write src/",
     "dev:linter": "eslint src/",
     "start": "craco start",
-    "test": "CI=true craco test",
+    "test": "CI=true craco test --passWithNoTests",
     "build": "CI=false craco --max_old_space_size=4096 --optimize-for-size build"
   },
   "eslintConfig": {

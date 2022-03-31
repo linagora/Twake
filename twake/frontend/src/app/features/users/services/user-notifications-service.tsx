@@ -6,13 +6,12 @@ import Observable from 'app/deprecated/Observable/Observable';
 import ElectronService from 'app/features/global/framework/electron-service';
 import windowState from 'app/features/global/utils/window';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
-import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { Collection } from '../../../deprecated/CollectionsReact/Collections';
 import { NotificationResource } from 'app/features/users/types/notification-types';
 import WorkspacesService from 'app/deprecated/workspaces/workspaces';
 import popupManager from 'app/deprecated/popupManager/popupManager';
 import RouterService from '../../router/services/router-service';
-import ChannelsService from 'app/deprecated/channels/channels';
 import NotificationParameters from 'app/deprecated/user/notification_parameters';
 import UserService from 'app/features/users/services/current-user-service';
 import NotificationPreferences from '../../../deprecated/user/NotificationPreferences';
@@ -144,26 +143,7 @@ class Notifications extends Observable {
         ignore.push(notification.data.company_id);
         ignore.push(notification.data.workspace_id);
       } else {
-        //Detect if we don't know the channel and mark as read in this case (caution here!)
-        const collection: Collection<ChannelResource> = ChannelsService.getCollection(
-          notification.data.company_id,
-          notification.data.workspace_id,
-        );
-        const channel = collection.findOne(
-          { id: notification.data.channel_id },
-          { withoutBackend: true },
-        );
-
-        let channelExists = true;
-        if (!channel || !channel.data?.user_member?.user_id) {
-          channelExists = false;
-        }
-
-        if (channelExists) {
-          badgeCount++;
-        } else {
-          continue;
-        }
+        badgeCount++;
       }
     }
     this.updateAppBadge(badgeCount);
@@ -197,26 +177,8 @@ class Notifications extends Observable {
     //End Hack fix
 
     if (newNotification) {
-      let title = '';
-      let message = '';
-
-      const collection: Collection<ChannelResource> = ChannelsService.getCollection(
-        newNotification.company_id,
-        newNotification.workspace_id,
-      );
-      const channel = collection.findOne({ id: newNotification.channel_id });
-
-      if (channel && channel?.data?.name) {
-        let icon = '💬';
-        if (channel?.data?.icon) {
-          icon = emojione.shortnameToUnicode(channel?.data?.icon) || icon;
-        }
-        title = icon + ' ' + channel.data.name;
-        message = 'You have a new message';
-      }
-
-      title = newNotification.title || title;
-      message = newNotification.text || message;
+      const title = newNotification.title || '';
+      const message = newNotification.text || '';
 
       if (!title) {
         return;

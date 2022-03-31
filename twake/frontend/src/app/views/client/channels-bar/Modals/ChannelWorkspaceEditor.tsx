@@ -4,7 +4,7 @@ import ChannelTemplateEditor from 'app/views/client/channels-bar/Modals/ChannelT
 import ModalManager from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
 import Collections from 'app/deprecated/CollectionsReact/Collections';
-import { ChannelType, ChannelResource } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { Button } from 'antd';
 import ChannelMembersList from './ChannelMembersList';
 import RouterServices from 'app/features/router/services/router-service';
@@ -30,8 +30,6 @@ const ChannelWorkspaceEditor: FC<Props> = ({
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
 
-  const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const ChannelsCollections = Collections.get(collectionPath, ChannelResource);
   const [disabled, setDisabled] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
   let newChannel: ChannelType = {
@@ -90,8 +88,7 @@ const ChannelWorkspaceEditor: FC<Props> = ({
             compatibility: [],
           },
         },
-        collection: ChannelsCollections, // To remove
-        context: null,
+        context: { type: 'channel' },
         hasTabs: false,
       });
 

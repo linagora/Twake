@@ -1,5 +1,6 @@
 import _ from "lodash";
 import { getEntityDefinition, unwrapPrimarykey, EntityDefinition } from "../api";
+import ASCIIFolder from "./ascii-folder";
 
 export function stringifyPrimaryKey(entity: any): string {
   const { entityDefinition } = getEntityDefinition(entity);
@@ -31,4 +32,8 @@ export function expandStringForPrefix(
       expanded.push(w.slice(0, i));
   });
   return _.uniq(expanded).join(" ");
+}
+
+export function asciiFold(str: string) {
+  return ASCIIFolder.foldMaintaining(str);
 }

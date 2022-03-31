@@ -67,8 +67,8 @@ export default (props: Props) => {
           };
 
           if (
-            app?.identity?.code === 'twake_drive' ||
-            app.display?.twake?.chat?.input?.type === 'file'
+            app.display?.twake?.chat?.input?.type === 'file' &&
+            app?.identity?.code !== 'twake_drive'
           ) {
             addon_files.push(menu_item);
           } else if (
@@ -98,33 +98,53 @@ export default (props: Props) => {
   return (
     <div className="input-toolbar">
       <div className="input-options">
-        <Menu
-          className="option"
-          position="top"
-          toggle={true}
-          onOpen={() => setDisplayFileMenu(true)}
-          onClose={() => setDisplayFileMenu(false)}
-          menu={[
-            {
-              type: 'menu',
-              icon: 'desktop',
-              text: Languages.t('scenes.apps.messages.input.attach_file.from_computer'),
-              onClick: (evt: any) => {
-                MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
+        {addon_files.length > 0 && (
+          <Menu
+            className="option"
+            position="top"
+            toggle={true}
+            onOpen={() => setDisplayFileMenu(true)}
+            onClose={() => setDisplayFileMenu(false)}
+            menu={[
+              {
+                type: 'menu',
+                icon: 'desktop',
+                text: Languages.t('scenes.apps.messages.input.attach_file.from_computer'),
+                onClick: (evt: any) => {
+                  MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId);
+                },
               },
-            },
-            ...addon_files,
-          ]}
-        >
+              ...addon_files,
+            ]}
+          >
+            <Tooltip
+              placement="top"
+              title={Languages.t('scenes.apps.messages.input.attach_file', [], 'Attach file(s)')}
+            >
+              <Button type="text" size="small" className="ant-btn-icon-only">
+                <Paperclip size={16} />
+              </Button>
+            </Tooltip>
+          </Menu>
+        )}
+
+        {addon_files.length === 0 && (
           <Tooltip
             placement="top"
             title={Languages.t('scenes.apps.messages.input.attach_file', [], 'Attach file(s)')}
           >
-            <Button type="text" size="small" className="ant-btn-icon-only">
+            <Button
+              type="text"
+              size="small"
+              className="ant-btn-icon-only"
+              onClick={() =>
+                MessageEditorsManager.get(props.channelId).openFileSelector(props.threadId)
+              }
+            >
               <Paperclip size={16} />
             </Button>
           </Tooltip>
-        </Menu>
+        )}
 
         {props.onAddEmoji && (
           <Menu
