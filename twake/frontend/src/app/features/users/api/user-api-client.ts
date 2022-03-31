@@ -53,9 +53,18 @@ class UserAPIClientService {
       if (isFirst) {
         await new Promise(r => setTimeout(r, 100));
 
-        users = this.listBuffer.reduce((c, acc) => acc.concat(c.users), []);
-        companyIds = this.listBuffer.reduce((c, acc) => acc.concat(c.companies), []);
-        let callbacks = this.listBuffer.reduce((c, acc) => acc.push(c.callback), []);
+        users = this.listBuffer.reduce(
+          (c, acc) => (Array.isArray(c.users) ? acc.concat(c.users) : []),
+          [],
+        );
+        companyIds = this.listBuffer.reduce(
+          (c, acc) => (Array.isArray(c.companies) ? acc.concat(c.companies) : []),
+          [],
+        );
+        let callbacks = this.listBuffer.reduce(
+          (c, acc) => (Array.isArray(acc) ? acc.push(c.callback) : []),
+          [],
+        );
         this.listBuffer = [];
 
         this.list(users, companyIds, {
