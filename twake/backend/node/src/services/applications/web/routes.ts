@@ -30,20 +30,26 @@ const routes: FastifyPluginCallback<{
     }>,
   ) => {
     try {
-      let companyId: string = request.body.resource.company_id;
+      let companyId: string = request.body?.resource?.company_id;
 
       if (request.params.application_id) {
         const application = await options.service.applications.get({
           id: request.params.application_id,
         });
 
-        assert(application, "application is not defined");
+        if (!application) {
+          throw fastify.httpErrors.notFound(`Application is not defined`);
+        }
 
         companyId = application.company_id;
       }
 
       const userId = request.currentUser.id;
-      assert(companyId, "company_id is not defined");
+
+      if (!companyId) {
+        throw fastify.httpErrors.forbidden(`Company ${companyId} not found`);
+      }
+
       const companyUser = await options.service.companies.getCompanyUser(
         { id: companyId },
         { id: userId },
