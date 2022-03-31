@@ -170,20 +170,25 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     for (const badge of badgePerWorkspace) {
       const workspaceId = badge.workspace_id;
       const companyId = badge.company_id;
-      const exists = await this.userService.workspaces.getUser({
-        workspaceId,
-        userId,
-      });
-      if (!exists) {
-        await this.channelsService.members.ensureUserNotInWorkspaceIsNotInChannel(
-          { id: userId },
-          { id: workspaceId, company_id: companyId },
-        );
-        for (const badge of badges.getEntities()) {
-          if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge);
-        }
-        badges.filterEntities(b => b.workspace_id === workspaceId);
+      if (workspaceId === "direct") {
+        continue;
       }
+      try {
+        const exists = await this.userService.workspaces.getUser({
+          workspaceId,
+          userId,
+        });
+        if (!exists) {
+          await this.channelsService.members.ensureUserNotInWorkspaceIsNotInChannel(
+            { id: userId },
+            { id: workspaceId, company_id: companyId },
+          );
+          for (const badge of badges.getEntities()) {
+            if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge);
+          }
+          badges.filterEntities(b => b.workspace_id === workspaceId);
+        }
+      } catch (e) {}
     }
 
     return badges;
