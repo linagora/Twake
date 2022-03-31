@@ -870,5 +870,6 @@
     "components.locked_features_components.locked_invite_alert.message_part_1": "Via firmao atingis ĝian maksimuman limon de {{$1}} membroj. Bonvolu ",
     "components.locked_features_components.locked_invite_alert.message_link": "altgradigu vian kompanion",
     "components.locked_features_components.locked_invite_alert.message_part_2": " por inviti pliajn membrojn.",
-    "components.locked_features_components.locked_invite_alert.message_magic_link": " kontaktu la posedanton aŭ administranton de via kompanio."
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " kontaktu la posedanton aŭ administranton de via kompanio.",
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Vidu ĉiujn miajn firmaanojn sur la konzolo"
 }

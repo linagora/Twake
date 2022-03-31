@@ -870,5 +870,6 @@
     "components.locked_features_components.locked_invite_alert.message_part_1": "Yrityksesi on saavuttanut {{$1}} jäsenten enimmäisrajan. Ole kiltti ",
     "components.locked_features_components.locked_invite_alert.message_link": "päivittää yritystäsi",
     "components.locked_features_components.locked_invite_alert.message_part_2": " kutsua lisää jäseniä.",
-    "components.locked_features_components.locked_invite_alert.message_magic_link": " ota yhteyttä yrityksesi omistajaan tai ylläpitäjään."
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " ota yhteyttä yrityksesi omistajaan tai ylläpitäjään.",
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Katso kaikki yritykseni jäsenet konsolissa"
 }
