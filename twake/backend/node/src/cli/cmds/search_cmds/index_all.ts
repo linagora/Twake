@@ -76,6 +76,7 @@ class SearchIndexAll {
       const list = await repository.find({}, { pagination: page });
       page = list.nextPage as Pagination;
       await this.search.upsert(list.getEntities());
+      count += list.getEntities().length;
       await new Promise(r => setTimeout(r, 200));
     } while (page.page_token);
     console.log("Done!");

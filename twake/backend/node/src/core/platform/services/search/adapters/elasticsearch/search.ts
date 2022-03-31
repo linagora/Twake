@@ -3,6 +3,7 @@ import { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
 import _ from "lodash";
 import { logger } from "../../../../../../core/platform/framework/logger";
 import { EntityTarget, FindFilter, FindOptions, getEntityDefinition } from "../../api";
+import { asciiFold } from "../utils";
 
 export function buildSearchQuery<Entity>(
   entityType: EntityTarget<Entity>,
@@ -51,11 +52,14 @@ export function buildSearchQuery<Entity>(
     esBody.query.bool.minimum_should_match = 1;
     esBody.query.bool.should = esBody.query.bool.should || [];
 
+    if (options?.$text?.$search)
+      options.$text.$search = asciiFold(options.$text.$search || "").toLocaleLowerCase();
+
     for (const [key, value] of Object.entries(indexProperties)) {
       if ((value as any)["type"] === "text") {
         let match: any = {};
         match[key] = {
-          query: options.$text.$search,
+          query: (options.$text.$search || "").toLocaleLowerCase(),
         };
         esBody.query.bool.should.push({
           match,
@@ -64,7 +68,7 @@ export function buildSearchQuery<Entity>(
         //Allow prefix search
         if (indexProperties[key].index_prefixes !== undefined) {
           esBody.query.bool.should.push({
-            prefix: { [key]: { value: options.$text.$search } },
+            prefix: { [key]: { value: (options.$text.$search || "").toLocaleLowerCase() } },
           });
         }
       }

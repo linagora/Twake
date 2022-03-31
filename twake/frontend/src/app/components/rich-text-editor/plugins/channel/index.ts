@@ -1,14 +1,13 @@
 import { ContentBlock, ContentState, EditorState, Modifier } from 'draft-js';
 import { getSelectedBlock } from 'draftjs-utils';
 import { Channel } from './channel';
-import ChannelsService from 'app/deprecated/channels/channels';
-import { ChannelType, ChannelResource } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import ChannelSuggestion from './channel-suggestion';
 import { EditorSuggestionPlugin, SelectOrInsertOptions } from '../';
 
 export type ChannelSuggestionType = ChannelType & { autocomplete_id: number };
 
-export const ChannelResourceType = 'CHANNEL';
+export const ChannelTypeType = 'CHANNEL';
 const CHANNEL_CHAR = '#';
 
 const findChannelEntities = (
@@ -18,9 +17,7 @@ const findChannelEntities = (
 ) => {
   contentBlock.findEntityRanges((character: any) => {
     const entityKey = character.getEntity();
-    return (
-      entityKey !== null && contentState.getEntity(entityKey).getType() === ChannelResourceType
-    );
+    return entityKey !== null && contentState.getEntity(entityKey).getType() === ChannelTypeType;
   }, callback);
 };
 
@@ -29,16 +26,8 @@ const resolver = (
   max: number,
   callback: (channels: ChannelSuggestionType[]) => void,
 ) => {
-  ChannelsService.search(text, (channels: ChannelResource[]) => {
-    if (!channels || !channels.length) {
-      callback([]);
-      return;
-    }
-
-    return callback(
-      channels.map((channel, index) => ({ ...channel.data, ...{ autocomplete_id: index } })),
-    );
-  });
+  //TODO
+  callback([]);
 };
 
 const addChannel = (
@@ -52,7 +41,7 @@ const addChannel = (
     .replace(/[^a-z0-9_\-.\u00C0-\u017F]/g, '')}`;
   const entityKey = editorState
     .getCurrentContent()
-    .createEntity(ChannelResourceType, 'IMMUTABLE', channel)
+    .createEntity(ChannelTypeType, 'IMMUTABLE', channel)
     .getLastCreatedEntityKey();
   const selectedBlock = getSelectedBlock(editorState);
   const selectedBlockText = selectedBlock.getText();
@@ -110,7 +99,7 @@ export default (
     component: Channel,
   },
   trigger: /\B#([a-zA-Z\u00C0-\u017F]+)$/,
-  resourceType: ChannelResourceType,
+  resourceType: ChannelTypeType,
   onSelected: (
     channel: ChannelSuggestionType,
     editorState: EditorState,

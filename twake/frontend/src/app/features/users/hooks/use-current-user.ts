@@ -44,7 +44,12 @@ const applicationEventHandler = (event: RealtimeApplicationEvent) => {
   switch (event.action) {
     case 'configure':
       if (event.form) {
-        ConfiguratorsManager.openConfigurator(event.application, event.form, event.hidden_data);
+        ConfiguratorsManager.openConfigurator(
+          event.application,
+          event.form,
+          event.hidden_data,
+          event.configurator_id,
+        );
       } else {
         ConfiguratorsManager.closeConfigurator(event.application);
       }

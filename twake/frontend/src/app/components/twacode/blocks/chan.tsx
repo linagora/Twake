@@ -1,7 +1,7 @@
 import React from 'react';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import Emojione from 'components/emojione/emojione';
-import ChannelsService from 'app/deprecated/channels/channels';
+import MainViewService from 'app/features/router/services/main-view-service';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 type PropsType = {
   // channel id
@@ -11,15 +11,34 @@ type PropsType = {
 };
 
 export default (props: PropsType): JSX.Element => {
-  const channel = Collections.get('channels').find(props.id);
+  const { channel } = useChannel(props.id);
 
   if (!props.id || !channel) {
     return <span>#{props.name}</span>;
   }
 
   return (
-    <div className="channel_twacode" onClick={() => ChannelsService.select(channel)}>
-      <Emojione type={channel.icon} />
+    <div
+      className="channel_twacode"
+      onClick={() => {
+        MainViewService.select(props.id, {
+          app: {
+            identity: {
+              code: 'messages',
+              name: '',
+              icon: '',
+              description: '',
+              website: '',
+              categories: [],
+              compatibility: [],
+            },
+          },
+          context: { type: 'channel' },
+          hasTabs: channel.visibility !== 'direct',
+        });
+      }}
+    >
+      <Emojione type={channel.icon || ''} />
       {channel.name}
     </div>
   );

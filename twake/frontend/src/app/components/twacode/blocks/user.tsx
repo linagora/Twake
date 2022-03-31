@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import UserService from 'app/features/users/services/current-user-service';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import UserCard from 'app/components/user-card/user-card';
 import { UserType } from 'app/features/users/types/user';
 import { useUser, useUserByUsername } from 'app/features/users/hooks/use-user';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
 const globalMentions = ['channel', 'everyone', 'all', 'here'];
 
@@ -20,6 +20,7 @@ type PropsType = {
 };
 
 export default (props: PropsType): JSX.Element => {
+  const { openDiscussion } = useDirectChannels();
   const collection = Collections.get('users');
   const nodeRef = useRef<HTMLDivElement>(null);
   let user: UserType | undefined;
@@ -48,7 +49,7 @@ export default (props: PropsType): JSX.Element => {
         {
           type: 'react-element',
           reactElement: () => (
-            <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
+            <UserCard user={user} onClick={() => openDiscussion([user.id || ''])} />
           ),
         },
       ],

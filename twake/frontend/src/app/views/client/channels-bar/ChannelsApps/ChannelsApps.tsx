@@ -10,6 +10,7 @@ import {
   useCompanyApplicationsRealtime,
 } from 'app/features/applications/hooks/use-company-applications';
 import RouterService from 'app/features/router/services/router-service';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 
 // This should be deleted
 export default class ChannelsApps extends Component {
@@ -73,7 +74,6 @@ export default class ChannelsApps extends Component {
             return (
               <ChannelUI
                 key={id}
-                collection={Collections.get('channels')}
                 app={app}
                 name={name}
                 icon={icon}
@@ -100,7 +100,9 @@ type PropsType = {
 export const CompanyApplications = ({ companyId }: PropsType) => {
   const { applications: companyApplications } = useCompanyApplications(companyId);
   useCompanyApplicationsRealtime();
-  const { channelId } = RouterService.getStateFromRoute();
+
+  const channelId = useRouterChannel();
+
   return (
     <div className="applications_channels" style={{ marginTop: 8 }}>
       {companyApplications
@@ -109,6 +111,7 @@ export const CompanyApplications = ({ companyId }: PropsType) => {
           <ChannelUI
             key={app.id}
             id={app.id}
+            selected={app.id == channelId}
             channelId={channelId}
             app={app}
             name={app.identity.name}
@@ -118,7 +121,6 @@ export const CompanyApplications = ({ companyId }: PropsType) => {
             visibility={'public'}
             unreadMessages={false}
             notifications={0}
-            collection={Collections.get('channels')}
           />
         ))}
     </div>

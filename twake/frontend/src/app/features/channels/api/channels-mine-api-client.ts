@@ -42,20 +42,18 @@ class ChannelsMineAPIClient {
    * @param workspaceId
    * @return channels that user is already a member
    */
-  async get(
-    context: { companyId: string; workspaceId?: string },
-    options?: { direct: boolean },
-  ): Promise<ChannelType[]> {
+  async get(context: { companyId: string; workspaceId?: string }): Promise<ChannelType[]> {
+    context.workspaceId = context.workspaceId || 'direct';
+
     return Api.get<ChannelsMineGetResponse>(
       `${this.prefix}/${context.companyId}/workspaces/${
-        context.workspaceId && !options?.direct ? context.workspaceId : 'direct'
-      }/channels?mine=1&websockets=1${options?.direct ? '&include_users=1' : ''}`,
+        context.workspaceId
+      }/channels?mine=1&websockets=1${context.workspaceId == 'direct' ? '&include_users=1' : ''}`,
     ).then(result => {
-      context.workspaceId &&
-        this.realtime.set(
-          this.getRealtimeKey(context.companyId, context.workspaceId),
-          result.websockets,
-        );
+      this.realtime.set(
+        this.getRealtimeKey(context.companyId, context.workspaceId as string),
+        result.websockets,
+      );
       return result.resources;
     });
   }

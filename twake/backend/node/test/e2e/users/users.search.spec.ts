@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import { SearchServiceAPI } from "../../../src/core/platform/services/search/api";
 
 describe("The /users API", () => {
   const url = "/internal/services/users/v1";
@@ -94,6 +93,15 @@ describe("The /users API", () => {
       expect(resources.map(e => e.email).includes("bob@twake.app")).toBe(true);
 
       resources = await search("alexis");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
+      resources = await search("ALEXIS");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
+      resources = await search("AleXis");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
+      resources = await search("àlèXïs");
       expect(resources[0].email).toBe("alexis.goelans@twake.app");
 
       resources = await search("rbs");

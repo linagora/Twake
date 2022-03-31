@@ -41,7 +41,7 @@ export const FileProgress = ({ file, status, progress }: PropsType): JSX.Element
     return 'var(--success)';
   };
 
-  return status && !isPendingFileStatusSuccess(status) && progress ? (
+  return status && !isPendingFileStatusSuccess(status) && progress != undefined ? (
     <div className="file-progress-bar-container">
       <Progress
         type="line"

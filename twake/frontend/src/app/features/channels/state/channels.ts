@@ -1,18 +1,28 @@
-import { atom, atomFamily } from 'recoil';
+import { atom, atomFamily, selectorFamily } from 'recoil';
 import _ from 'lodash';
 
 import { ChannelType } from 'app/features/channels/types/channel';
 
-export const ChannelState = atomFamily<ChannelType, string>({
-  key: 'ChannelState',
-  default: id => ({ id } as ChannelType),
-});
-
 type ChannelsListContextType = { companyId: string; workspaceId: string };
 
-export const MineChannelsState = atomFamily<ChannelType[] | undefined, ChannelsListContextType>({
+export const ChannelsState = atom<ChannelType[]>({
+  key: 'ChannelsState',
+  default: [],
+});
+
+export const ChannelSelector = selectorFamily<ChannelType | undefined, string>({
+  key: 'ChannelSelector',
+  get:
+    channelId =>
+    ({ get }) => {
+      const channels = get(ChannelsState);
+      return _.find(channels, { id: channelId });
+    },
+});
+
+export const MineChannelsState = atomFamily<ChannelType[], ChannelsListContextType>({
   key: 'MineChannelsState',
-  default: undefined,
+  default: [],
 });
 
 export const ReachableChannelsState = atomFamily<ChannelType[], ChannelsListContextType>({
@@ -20,7 +30,7 @@ export const ReachableChannelsState = atomFamily<ChannelType[], ChannelsListCont
   default: [],
 });
 
-export const DirectChannelsState = atomFamily<ChannelType[], ChannelsListContextType>({
+export const DirectChannelsState = atomFamily<ChannelType[], string>({
   key: 'DirectChannelsState',
   default: [],
 });

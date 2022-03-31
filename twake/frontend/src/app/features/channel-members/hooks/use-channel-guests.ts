@@ -37,9 +37,7 @@ export const useChannelGuests = (
 
     // FIX ME Not sure about doing another call to backend here for userList
     const usersIdx = channelGuestsUpdated.map(guest => guest.user_id || '');
-    const users = await UserAPIClient.list(usersIdx, [companyId]);
-
-    if (users.length) setUserList(users);
+    UserAPIClient.list(usersIdx, [companyId], { bufferize: true });
   };
 
   useGlobalEffect(

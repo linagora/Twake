@@ -9,6 +9,8 @@ import { PlatformServicesAPI } from "../../../core/platform/services/platform-se
 import { ApplicationServiceAPI } from "../../applications/api";
 import AuthServiceAPI from "../../../core/platform/services/auth/provider";
 import { StatisticsAPI } from "../../../services/statistics/types";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { ResourceEventsPayload } from "../../../utils/types";
 
 export function getService(
   platformServices: PlatformServicesAPI,
@@ -65,6 +67,13 @@ class Service implements WorkspaceServicesAPI {
     } catch (err) {
       console.error("Error while initializing workspace service", err);
     }
+
+    //If user deleted from a company, remove it from all workspace
+    localEventBus.subscribe<ResourceEventsPayload>("company:user:deleted", async data => {
+      if (data?.user?.id && data?.company?.id)
+        this.workspaces.ensureUserNotInCompanyIsNotInWorkspace(data.user, data.company.id);
+    });
+
     return this;
   }
 }

@@ -32,7 +32,7 @@ describe("The NewChannelMessageProcessor class", () => {
     setPreferences();
     setUsersInThread();
 
-    service = ({
+    service = {
       channelThreads: {
         bulkSave: jest
           .fn()
@@ -44,7 +44,7 @@ describe("The NewChannelMessageProcessor class", () => {
       channelPreferences: {
         getChannelPreferencesForUsers,
       },
-    } as unknown) as NotificationServiceAPI;
+    } as unknown as NotificationServiceAPI;
 
     processor = new NewChannelMessageProcessor(service);
   });
