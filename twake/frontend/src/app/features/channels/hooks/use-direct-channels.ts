@@ -64,8 +64,6 @@ export function useDirectChannelsSetup() {
     [companyId],
   );
 
-  console.log(ChannelsMineAPIClient.websockets(companyId, 'direct')[0]);
-
   useRealtimeRoom<ChannelType[]>(
     ChannelsMineAPIClient.websockets(companyId, 'direct')[0],
     'useDirectChannels',

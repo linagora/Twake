@@ -61,7 +61,7 @@ class Service implements ChannelServiceAPI {
       console.error("Error while initializing channel", err);
     }
 
-    //If user deleted from a company, remove it from all workspace
+    //If user deleted from a workspace, remove it from all channels
     localEventBus.subscribe<ResourceEventsPayload>("workspace:user:deleted", async data => {
       if (data?.user?.id && data?.company?.id)
         this.members.ensureUserNotInWorkspaceIsNotInChannel(data.user, data.workspace);
