@@ -42,6 +42,7 @@ export type CompanyType = {
   logo: string;
   plan?: CompanyPlanObjectType;
   stats?: CompanyStatsObjectType;
+  identity_provider_id?: string;
 
   //If requested as a user
   role?: CompanyRoleType;

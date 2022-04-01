@@ -65,8 +65,6 @@ class Workspaces extends Observable {
               this.removeFromUser(workspaceId);
             }
             DepreciatedCollections.get('workspaces').updateObject(workspace);
-            // FIXME: Is it useful?
-            //DepreciatedCollections.get('groups').updateObject(res.data.group);
             notify && this.notify();
 
             // FIXME: What is this???
