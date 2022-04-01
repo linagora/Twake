@@ -158,7 +158,7 @@ export default (
     strategy: findMentionEntities,
     component: Mention,
   },
-  trigger: /\B@([a-zA-Z\u00C0-\u017F]+)$/,
+  trigger: /\B@([^\s.,)(@<>;:\/?!]+)$/, //We can't use \w because of accents
   resourceType: MENTION_TYPE,
   getTextDisplay: (mention: MentionSuggestionType) => mention.username,
   onSelected: (
