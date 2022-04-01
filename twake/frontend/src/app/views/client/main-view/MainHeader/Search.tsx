@@ -10,7 +10,7 @@ export default (): JSX.Element => {
   const { workspaceId, companyId } = RouterServices.getStateFromRoute();
 
   const disable =
-    true ||
+    true || //To remove to re-enable the search
     !(
       AccessRightsService.hasLevel(workspaceId, 'member') &&
       AccessRightsService.getCompanyLevel(companyId) !== 'guest'
