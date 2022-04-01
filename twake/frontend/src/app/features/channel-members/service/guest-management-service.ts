@@ -1,8 +1,8 @@
 import { PendingEmail } from 'app/features/pending-emails/types/pending-email';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 import UserServices from 'app/features/users/services/current-user-service';
-import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import { GenericMember } from '../types/guest-types';
+import { getUser } from 'app/features/users/hooks/use-user-list';
 
 class GuestManagementService {
   guests: GenericMember[] = [];
@@ -38,9 +38,7 @@ class GuestManagementService {
     return (this.guests = members.map((member: ChannelMemberType) => {
       return {
         type: 'guest',
-        filterString: UserServices.getFullName(
-          DepreciatedCollections.get('users').find(member.user_id || ''),
-        ),
+        filterString: UserServices.getFullName(getUser(member.user_id || '')),
         resource: member,
         key: member.user_id || '',
       };
