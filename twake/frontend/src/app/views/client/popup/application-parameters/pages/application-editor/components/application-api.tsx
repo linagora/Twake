@@ -26,11 +26,12 @@ export const ApplicationAPI = ({
       </Row>
       <Row align="middle" className="small-bottom-margin">
         <Title level={5} className="small-right-margin" style={{ marginBottom: 0 }}>
-          {/* TODO: Translation here */}Private key
+          {Languages.t('scenes.app.popup.appsparameters.pages.app.private_key')}
         </Title>{' '}
         <Link onClick={() => setShowApiPrivateKey(!showApiPrivateKey)}>
-          {/* TODO: Translation here */}
-          {showApiPrivateKey ? 'Hide' : 'Show'}
+          {showApiPrivateKey
+            ? 'Hide'
+            : Languages.t('scenes.app.popup.appsparameters.pages.show_button')}
         </Link>
       </Row>
       <Row className="bottom-margin">

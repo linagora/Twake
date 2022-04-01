@@ -2,16 +2,16 @@ import React from 'react';
 import { Row, Typography } from 'antd';
 
 import Emojione from 'app/components/emojione/emojione';
+import Languages from 'app/features/global/services/languages-service';
 
 const { Text, Link } = Typography;
 export const ApplicationHelp = () => (
   <Row align="middle" justify="start" className="bottom-margin">
     <Text type="secondary">
-      {/* TODO:Translation here */}
-      <Emojione type=":exploding_head:" /> If you do not know how to fill these, go to{' '}
+      <Emojione type=":exploding_head:" />{' '}
+      {Languages.t('scenes.app.popup.appsparameters.pages.application_editor.help_text')}
       <Link onClick={() => window.open('https://doc.twake.app', 'blank')}>
-        {/* TODO:Translation here */}
-        the Twake API documentation
+        {Languages.t('scenes.app.popup.appsparameters.pages.application_editor.help_link')}
       </Link>
     </Text>
   </Row>

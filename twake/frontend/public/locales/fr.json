@@ -417,7 +417,7 @@
     "scenes.app.popup.workspaceparameter.pages.company_name_description": "Modifiez le nom de cette entreprise",
     "scenes.app.popup.workspaceparameter.pages.company_name_label": "Nom de l'entreprise",
     "scenes.app.popup.workspaceparameter.pages.configuration_notif": "configuration",
-    "scenes.app.popup.workspaceparameter.pages.configure_button": "Configurer",
+    "scenes.app.popup.workspaceparameter.pages.configure_button": "Préférences ",
     "scenes.app.popup.workspaceparameter.pages.description": "Description",
     "scenes.app.popup.workspaceparameter.pages.developped_apps_small_text": "Applications développées par votre entreprise",
     "scenes.app.popup.workspaceparameter.pages.displayed_preferencies_subtitle": "Préférences d'affichage",
@@ -823,7 +823,7 @@
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.website_item": "Site web",
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.created_item": "Date de création",
     "scenes.app.integrations_parameters.company_application_popup.tab_info.descriptions.version_item": "Version",
-    "scenes.app.integrations_parameters.company_applications_table.more_menu.show_application": "Afficher",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.show_application": "Afficher détails",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.remove_application": "Retirer de l'entreprise",
     "scenes.app.integrations_parameters.company_applications_table.name": "Nom",
     "scenes.app.integrations_parameters.company_applications_table.title": "Installé dans votre entreprise",
@@ -876,5 +876,12 @@
     "scenes.app.popup.appsparameters.pages.application_creator.title": "Nouvelle intégration",
     "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Je comprends que le propriétaire et les administrateurs de cette entreprise pourront modifier et publier cette application.",
     "twake.application.access.title": "Sélectionnez les portées adaptées à votre application.",
-    "twake.application.access.no_default_scopes_available'": "Cette intégration n'a pas d'accès {{$1}}."
+    "twake.application.access.no_default_scopes_available'": "Cette intégration n'a pas d'accès {{$1}}.",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link":"la documentation de l'API Twake.",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text":"Si vous ne savez pas comment les remplir, consultez ", 
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Clé privée",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "L'application {{$1}} a été supprimée avec succès !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Erreur lors de la suppression de l'application {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Application {{$1}} réussie !",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Paramètres du développeur"
 }

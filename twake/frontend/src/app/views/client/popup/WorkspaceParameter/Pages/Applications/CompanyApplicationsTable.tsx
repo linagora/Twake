@@ -57,9 +57,7 @@ export default () => {
       {
         type: 'menu',
         text: Languages.t(
-          // TODO: Translations here "show details"
-          'Show details',
-          //'scenes.app.integrations_parameters.company_applications_table.more_menu.show_application',
+          'scenes.app.integrations_parameters.company_applications_table.more_menu.show_application',
         ),
         onClick: () =>
           ModalManager.open(
@@ -72,8 +70,9 @@ export default () => {
       },
       application.company_id === companyId && {
         type: 'menu',
-        // TODO: Translations here "modify"
-        text: 'Developer settings',
+        text: Languages.t(
+          'scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings',
+        ),
         onClick: () =>
           ModalManager.open(<ApplicationEditor application={application} companyId={companyId} />, {
             position: 'center',

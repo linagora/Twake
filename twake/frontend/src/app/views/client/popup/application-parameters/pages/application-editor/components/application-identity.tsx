@@ -15,8 +15,9 @@ export const ApplicationIdentity = ({
 }) => (
   <>
     <Row>
-      {/* TODO:translation here */}
-      <Title level={5}>Name</Title>
+      <Title level={5}>
+        {Languages.t('scenes.app.integrations_parameters.applications_table.name')}
+      </Title>
     </Row>
     <Row className="bottom-margin">
       <Input
@@ -33,8 +34,7 @@ export const ApplicationIdentity = ({
     </Row>
 
     <Row>
-      {/* TODO:translation here */}
-      <Title level={5}>Code</Title>
+      <Title level={5}>{Languages.t('components.richtexteditor.toolbar.code')}</Title>
     </Row>
     <Row className="bottom-margin">
       <Input
@@ -71,7 +71,6 @@ export const ApplicationIdentity = ({
     </Row>
 
     <Row>
-      {/* TODO:translation here */}
       <Title level={5}>{Languages.t('scenes.app.popup.appsparameters.pages.website_label')}</Title>
     </Row>
     <Row className="bottom-margin">
@@ -89,7 +88,6 @@ export const ApplicationIdentity = ({
     </Row>
 
     <Row>
-      {/* TODO:translation here */}
       <Title level={5}>
         {Languages.t('scenes.app.popup.appsparameters.pages.description_label')}
       </Title>

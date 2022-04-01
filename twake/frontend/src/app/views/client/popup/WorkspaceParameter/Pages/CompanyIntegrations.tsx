@@ -26,8 +26,7 @@ export default () => (
           })
         }
       >
-        {/* TODO: Translation here */}
-        New integration
+        {Languages.t('scenes.app.integrations_parameters.add_application')}
       </Button>
     </Row>
 

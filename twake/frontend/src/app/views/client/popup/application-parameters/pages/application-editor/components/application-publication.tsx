@@ -17,13 +17,17 @@ export const ApplicationPublication = ({ application }: { application: Applicati
 
     if (res.status === 'success')
       ToasterService.success(
-        // TODO: Translation here
-        `Successfully removed application ${application.identity.name} !`,
+        Languages.t(
+          'scenes.app.popup.appsparameters.pages.application_editor.application_removed',
+          [application.identity.name],
+        ),
       );
     else {
       ToasterService.error(
-        // TODO: Translation here
-        `Error while removing application ${application.identity.name} !`,
+        Languages.t(
+          'scenes.app.popup.appsparameters.pages.application_editor.application_removed_error',
+          [application.identity.name],
+        ),
       );
     }
   };
@@ -38,8 +42,10 @@ export const ApplicationPublication = ({ application }: { application: Applicati
 
     if (res)
       ToasterService.success(
-        // TODO: Translation here
-        `Successfully ${res.publication.published ? 'published' : 'unpublished'} application!`,
+        Languages.t(
+          'scenes.app.popup.appsparameters.pages.application_editor.application_published',
+          [res.publication.published ? 'published' : 'unpublished'],
+        ),
       );
   };
 
