@@ -6,6 +6,7 @@ import { ToasterService as Toaster } from 'app/features/global/services/toaster-
 import { ConsoleMemberRole } from 'app/features/console/types/types';
 import Logger from 'app/features/global/framework/logger-service';
 import { JWTDataType } from 'app/features/auth/jwt-storage-service';
+import { getCompany } from 'app/features/companies/state/companies';
 
 class ConsoleService {
   logger: Logger.Logger;
@@ -15,7 +16,7 @@ class ConsoleService {
 
   public getCompanyManagementUrl(companyId: string) {
     const identity_provider_id =
-      DepreciatedCollections.get('groups').find(companyId)?.identity_provider_id;
+      getCompany(companyId)?.identity_provider_id || getCompany(companyId)?.id;
     console.log(identity_provider_id);
     return (
       InitService.server_infos?.configuration?.accounts?.console?.company_management_url || ''
@@ -24,7 +25,7 @@ class ConsoleService {
 
   public getCompanyUsersManagementUrl(companyId: string) {
     const identity_provider_id =
-      DepreciatedCollections.get('groups').find(companyId)?.identity_provider_id;
+      getCompany(companyId)?.identity_provider_id || getCompany(companyId)?.id;
     return (
       InitService.server_infos?.configuration?.accounts?.console?.collaborators_management_url || ''
     ).replace('{company_id}', identity_provider_id);

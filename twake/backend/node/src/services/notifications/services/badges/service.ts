@@ -143,6 +143,10 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   async ensureBadgesAreReachable(
     badges: ListResult<UserNotificationBadge>,
   ): Promise<ListResult<UserNotificationBadge>> {
+    if (badges.getEntities().length === 0) {
+      return badges;
+    }
+
     const userId = badges.getEntities()[0].user_id;
 
     const channels = uniq(badges.getEntities().map(r => r.channel_id));
