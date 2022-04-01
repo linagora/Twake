@@ -9,7 +9,6 @@ import {
   useCompanyApplications,
   useCompanyApplicationsRealtime,
 } from 'app/features/applications/hooks/use-company-applications';
-import RouterService from 'app/features/router/services/router-service';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 
 // This should be deleted
@@ -115,7 +114,7 @@ export const CompanyApplications = ({ companyId }: PropsType) => {
             channelId={channelId}
             app={app}
             name={app.identity.name}
-            icon={app.identity.icon}
+            icon={app.identity.icon || <></>}
             muted={false}
             favorite={false}
             visibility={'public'}

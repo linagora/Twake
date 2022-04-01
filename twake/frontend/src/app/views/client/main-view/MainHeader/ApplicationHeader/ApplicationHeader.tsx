@@ -9,6 +9,9 @@ import Languages from 'app/features/global/services/languages-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import SearchInput from '../Search';
 import MainViewService from 'app/features/router/services/main-view-service';
+import { Calendar, CheckSquare, Folder } from 'react-feather';
+import AvatarComponent from 'app/components/avatar/avatar';
+import { Application } from 'app/features/applications/types/application';
 
 export default (): JSX.Element => {
   const application = MainViewService.getConfiguration().app;
@@ -31,6 +34,26 @@ export default (): JSX.Element => {
     icon = <IconType size={16} />;
   }
 
+  const getDefaultApplicationIcon = (app: Partial<Application>) => {
+    switch (app?.identity?.code) {
+      case 'twake_tasks':
+        return <CheckSquare size={16} color={'var(--black)'} />;
+      case 'twake_calendar':
+        return <Calendar size={16} color={'var(--black)'} />;
+      case 'twake_drive':
+        return <Folder size={16} color={'var(--black)'} />;
+
+      default:
+        return (
+          <AvatarComponent
+            url={app?.identity?.icon}
+            fallback={`${process.env.PUBLIC_URL}/public/img/hexagon.png`}
+            size={16}
+          />
+        );
+    }
+  };
+
   return (
     <Row
       justify="space-between"
@@ -40,7 +63,7 @@ export default (): JSX.Element => {
       <Col flex="auto">
         <span className="left-margin app-name" style={{ display: 'flex', alignItems: 'center' }}>
           <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>
-            {icon}
+            {getDefaultApplicationIcon(application)}
           </div>
           <Typography.Text className="small-right-margin" strong>
             {capitalize(channel.name)}

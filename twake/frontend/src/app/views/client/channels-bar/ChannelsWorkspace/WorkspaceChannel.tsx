@@ -40,7 +40,7 @@ export default (props: Props) => {
   const joinChannel = () => {
     return ModalManager.open(<WorkspaceChannelList />, {
       position: 'center',
-      size: { width: '500px' },
+      size: { width: '600px' },
     });
   };
 

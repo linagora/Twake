@@ -4,7 +4,7 @@ import Languages from 'app/features/global/services/languages-service';
 import AutoHeight from 'components/auto-height/auto-height.js';
 import Twacode from 'components/twacode/twacode';
 
-import './Pages.scss';
+import './pages.scss';
 
 export default class TwacodeTester extends Component {
   constructor(props) {

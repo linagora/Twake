@@ -871,5 +871,10 @@
     "components.locked_features_components.locked_invite_alert.message_link": "aktualisieren Sie Ihr Unternehmen",
     "components.locked_features_components.locked_invite_alert.message_part_2": ", um weitere Mitglieder einzuladen.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " wenden Sie sich an den Eigentümer oder Verwalter Ihres Unternehmens.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Alle Mitglieder meines Unternehmens auf der Konsole sehen"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Alle Mitglieder meines Unternehmens auf der Konsole sehen",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Beschreiben Sie Ihre Bewerbung in wenigen Worten",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Neue Integration",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Mir ist bekannt, dass der Inhaber und die Verwalter dieses Unternehmens diesen Antrag ändern und veröffentlichen können.",
+    "twake.application.access.title": "Wählen Sie die richtigen Bereiche für Ihre Anwendung.",
+    "twake.application.access.no_default_scopes_available'": "Diese Integration hat keinen Zugang zu {{$1}}"
 }

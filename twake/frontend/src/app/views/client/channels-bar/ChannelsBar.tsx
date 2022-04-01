@@ -60,7 +60,7 @@ export default () => {
 
         ModalManager.open(<WorkspaceChannelList />, {
           position: 'center',
-          size: { width: '500px' },
+          size: { width: '600px' },
         });
       },
     };

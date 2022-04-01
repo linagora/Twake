@@ -12,7 +12,7 @@ import {
 } from 'components/object-modal/deprecated-object-modal.js';
 import Api from 'app/features/global/framework/api-service';
 import Workspaces from 'app/deprecated/workspaces/workspaces.js';
-import './Pages.scss';
+import './pages.scss';
 
 export default class CreateCompanyAccount extends Component {
   constructor() {
