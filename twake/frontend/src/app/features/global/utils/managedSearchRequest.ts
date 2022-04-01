@@ -14,7 +14,6 @@ export const delayRequest = (
   request: Function,
   options: { timeout: number; doInitialCall: boolean } = { timeout: 1000, doInitialCall: true },
 ) => {
-  console.log(options);
   if (!delayedRequestsHasTimout.has(key)) {
     delayedRequestsHasTimout.set(key, true);
     if (options.doInitialCall) request();

@@ -25,13 +25,7 @@ const AppView: FC<PropsType> = props => {
 
   const configuration = props.viewService.getConfiguration();
 
-  const channelCollection = configuration.collection;
   let { channel } = useChannel(props.id);
-  if (!channel && channelCollection) {
-    if (channelCollection?.findOne) {
-      channel = channelCollection.findOne({ id: props.id }, { withoutBackend: true })?.data;
-    }
-  }
 
   const app = props.viewService.getConfiguration().app;
 
@@ -41,9 +35,9 @@ const AppView: FC<PropsType> = props => {
     case 'twake_calendar':
       return <Calendar options={configuration} />;
     case 'twake_tasks':
-      return <Tasks channel={{ data: channel } as any} options={configuration} />;
+      return <Tasks channel={channel} options={configuration} />;
     case 'messages':
-      return <Messages channel={{ data: channel } as any} options={configuration} />;
+      return <Messages channel={channel} options={configuration} />;
     default:
       return <NoApp />;
   }

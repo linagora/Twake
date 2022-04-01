@@ -5,6 +5,8 @@ import { handleError } from "../../../../utils/handleError";
 import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import {
   ChannelViewExecutionContext,
+  FlatFileFromMessage,
+  FlatPinnedFromMessage,
   MessageViewListOptions,
   MessageWithReplies,
   PaginationQueryParameters,
@@ -23,7 +25,9 @@ export class ViewsController {
       };
     }>,
     reply: FastifyReply,
-  ): Promise<ResourceListResponse<MessageWithReplies>> {
+  ): Promise<
+    ResourceListResponse<MessageWithReplies | FlatFileFromMessage | FlatPinnedFromMessage>
+  > {
     const pagination = new Pagination(
       request.query.page_token,
       request.query.limit,
@@ -32,7 +36,7 @@ export class ViewsController {
     const query = { ...request.query, include_users: request.query.include_users };
     const context = getChannelViewExecutionContext(request);
 
-    let resources: ListResult<MessageWithReplies>;
+    let resources: ListResult<MessageWithReplies | FlatFileFromMessage | FlatPinnedFromMessage>;
 
     try {
       if (request.query.filter === "files") {
@@ -50,10 +54,13 @@ export class ViewsController {
       }
 
       let entities = [];
-      if (request.query.include_users) {
-        //Fixme, this takes a very long time
+      if (request.query.include_users && !request.query.flat) {
         for (const msg of resources.getEntities()) {
-          entities.push(await gr.services.messages.messages.includeUsersInMessageWithReplies(msg));
+          entities.push(
+            await gr.services.messages.messages.includeUsersInMessageWithReplies(
+              msg as MessageWithReplies,
+            ),
+          );
         }
       } else {
         entities = resources.getEntities();

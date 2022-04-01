@@ -31,7 +31,15 @@ export default class S3ConnectorService implements StorageConnectorAPI {
   }
 
   async read(path: string): Promise<Readable> {
-    return this.client.getObject(this.minioConfiguration.bucket, path);
+    // Test if file exists in S3 bucket 10 times until we find it
+    for (let i = 0; i <= 10; i++) {
+      try {
+        return this.client.getObject(this.minioConfiguration.bucket, path);
+      } catch (err) {
+        if (i === 5) throw err;
+      }
+      await new Promise(r => setTimeout(r, 500));
+    }
   }
 
   async remove(path: string): Promise<boolean> {

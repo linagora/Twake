@@ -10,6 +10,8 @@ import { Message } from "../entities/messages";
 import { Thread } from "../entities/threads";
 import {
   ChannelViewExecutionContext,
+  FlatFileFromMessage,
+  FlatPinnedFromMessage,
   MessageViewListOptions,
   MessageWithReplies,
   SearchMessageOptions,
@@ -56,7 +58,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     pagination: Pagination,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
-  ): Promise<ListResult<MessageWithReplies>> {
+  ): Promise<ListResult<MessageWithReplies | FlatFileFromMessage>> {
     const refs = await this.repositoryFilesRef.find(
       { target_type: "channel", target_id: context.channel.id },
       buildMessageListPagination(pagination, "id"),
@@ -79,6 +81,21 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       }
     }
 
+    if (options.flat) {
+      const files: FlatFileFromMessage[] = [];
+      for (const thread of threads) {
+        for (const reply of thread.highlighted_replies) {
+          for (const file of reply.files || []) {
+            files.push({
+              file,
+              thread,
+            });
+          }
+        }
+      }
+      return new ListResult("file", files, refs.nextPage);
+    }
+
     return new ListResult("thread", threads, refs.nextPage);
   }
 
@@ -86,7 +103,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     pagination: Pagination,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
-  ): Promise<ListResult<MessageWithReplies>> {
+  ): Promise<ListResult<MessageWithReplies | FlatPinnedFromMessage>> {
     const refs = await this.repositoryMarkedRef.find(
       {
         company_id: context.channel.company_id,
@@ -98,15 +115,39 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     );
 
     const threads: MessageWithReplies[] = [];
-    for (const ref of refs.getEntities()) {
+    for (const ref of uniqBy(refs.getEntities(), "thread_id")) {
       const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
       const extendedThread = await gr.services.messages.messages.getThread(thread, {
         replies_per_thread: options.replies_per_thread || 1,
       });
-
       if (extendedThread) {
         threads.push(extendedThread);
       }
+    }
+
+    for (const ref of refs.getEntities()) {
+      const extendedThread = threads.find(th => th.id === ref.thread_id);
+      if (extendedThread) {
+        extendedThread.highlighted_replies ||= [];
+        const message = await this.repository.findOne({
+          thread_id: ref.thread_id,
+          id: ref.message_id,
+        });
+        extendedThread.highlighted_replies.push(message);
+      }
+    }
+
+    if (options.flat) {
+      const files: FlatPinnedFromMessage[] = [];
+      for (const thread of threads) {
+        for (const message of thread.highlighted_replies) {
+          files.push({
+            message,
+            thread,
+          });
+        }
+      }
+      return new ListResult("message", files, refs.nextPage);
     }
 
     return new ListResult("thread", threads, null);

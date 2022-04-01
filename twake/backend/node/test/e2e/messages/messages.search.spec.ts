@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, afterAll, beforeAll } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
@@ -167,7 +167,7 @@ describe("The /messages API", () => {
     expect(resources.length).toEqual(9);
 
     // check for the empty result set
-    const resources2 = await search("Filtered2", { limit: 10 });
+    const resources2 = await search("Nothing", { limit: 10 });
     expect(resources2.length).toEqual(0);
 
     // check for the user

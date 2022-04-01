@@ -69,7 +69,7 @@ class SearchIndexAll {
     }
 
     console.log("Start indexing...");
-    const count = 0;
+    let count = 0;
     // Get all items
     let page: Pagination = { limitStr: "100" };
     do {
@@ -77,8 +77,13 @@ class SearchIndexAll {
       const list = await repository.find({}, { pagination: page });
       page = list.nextPage as Pagination;
       await this.search.upsert(list.getEntities());
+      count += list.getEntities().length;
       await new Promise(r => setTimeout(r, 200));
     } while (page.page_token);
+
+    console.log("Emptying flush (10s)...");
+    await new Promise(r => setTimeout(r, 10000));
+
     console.log("Done!");
   }
 }

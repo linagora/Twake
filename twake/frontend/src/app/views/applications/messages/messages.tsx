@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { ChannelResource } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import { ViewConfiguration } from 'app/features/router/services/app-view-service';
 import NewThread from './input/new-thread';
 import MessagesList from './messages-list';
@@ -7,7 +7,7 @@ import ThreadMessagesList from './thread-messages-list';
 import IsWriting from './input/parts/IsWriting';
 
 type Props = {
-  channel: ChannelResource;
+  channel: ChannelType;
   tab?: any;
   options: ViewConfiguration;
 };
@@ -17,10 +17,10 @@ export default (props: Props) => {
     return <></>;
   }
 
-  const companyId = props.channel.data.company_id || '';
-  const workspaceId = props.channel.data.workspace_id || '';
-  const channelId = props.channel.data.id || '';
-  const isDirectChannel = props.channel.data.visibility !== 'direct';
+  const companyId = props.channel.company_id || '';
+  const workspaceId = props.channel.workspace_id || '';
+  const channelId = props.channel.id || '';
+  const isDirectChannel = props.channel.visibility !== 'direct';
   const threadId = props.options.context?.threadId || '';
 
   return (

@@ -47,11 +47,15 @@ class WorkspacesApps extends Observable {
       type: type,
       event: event,
       data: data,
-      content: { },
+      content: {},
       connection_id: connection_id,
     };
 
-    Api.post(`/internal/services/applications/v1/applications/${app_id}/event`, data, res => {}).then()
+    Api.post(
+      `/internal/services/applications/v1/applications/${app_id}/event`,
+      data,
+      res => {},
+    ).then();
   }
 
   unload(workspace_id) {

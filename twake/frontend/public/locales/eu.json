@@ -863,5 +863,12 @@
     "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Idatzi gutxienez hiru letra erabiltzaileak erakusteko",
     "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "Ez da erabiltzailerik aurkitu",
     "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Ez da emojirik aurkitu",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Ez da komandorik aurkitu"
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Ez da komandorik aurkitu",
+    "scenes.app.messages.input.parts.is_writing.message.user_is_writing": "{{$1}} idazten ari da...",
+    "scenes.app.messages.input.parts.is_writing.message.users_are_writing": "{{$1}} eta {{$2}} idazten ari dira...",
+    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} eta {{$3}} erabiltzaile gehiago idazten ari dira...",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "Zure enpresak {{$1}} kideen gehienezko mugara iritsi da. Mesedez ",
+    "components.locked_features_components.locked_invite_alert.message_link": "berritu zure enpresa",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " kide gehiago gonbidatzeko.",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " jarri harremanetan zure enpresaren jabearekin edo administratzailearekin."
 }

@@ -6,14 +6,17 @@ import { PendingFileRecoilType } from 'app/features/files/types/file';
 import _ from 'lodash';
 import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 import { MessageFileType } from 'app/features/messages/types/message';
+import consoleLogin from 'app/views/login/console/console-login';
+import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 type PropsType = {
   file: MessageFileType;
   onRemove?: Function;
   type: 'input' | 'message';
+  large?: boolean;
 };
 
-export default ({ file, onRemove, type }: PropsType) => {
+export default ({ file, onRemove, type, large }: PropsType) => {
   const { getOnePendingFile } = useUpload();
 
   const id =
@@ -34,6 +37,8 @@ export default ({ file, onRemove, type }: PropsType) => {
     name: file.metadata?.name || '',
     size: file.metadata?.size || 0,
     thumbnail: FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file) || '',
+    thumbnail_ratio:
+      (file.metadata?.thumbnails?.[0]?.width || 1) / (file.metadata?.thumbnails?.[0]?.height || 1),
     type: FileUploadAPIClient.mimeToType(file.metadata?.mime || ''),
   };
 
@@ -43,12 +48,14 @@ export default ({ file, onRemove, type }: PropsType) => {
       if (onRemove) onRemove();
       return <></>;
     }
+
     formatedFile = {
       id: pendingFile?.backendFile?.id || '',
       company_id: pendingFile?.backendFile?.company_id || '',
       name: pendingFile.originalFile.name,
       size: pendingFile.originalFile.size,
       thumbnail: URL.createObjectURL(pendingFile.originalFile),
+      thumbnail_ratio: 1,
       type: FileUploadAPIClient.mimeToType(pendingFile.originalFile.type || ''),
     };
     status = pendingFile.status || undefined;
@@ -62,6 +69,7 @@ export default ({ file, onRemove, type }: PropsType) => {
       source={file.metadata?.source || 'internal'}
       externalId={file.metadata?.external_id}
       file={formatedFile}
+      large={large}
       status={status}
       progress={progress}
       onRemove={onRemove}

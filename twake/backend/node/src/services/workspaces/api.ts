@@ -43,6 +43,7 @@ export interface WorkspaceService
 
   removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,
+    companyId: string,
   ): Promise<DeleteResult<WorkspaceUserPrimaryKey>>;
 
   /**
@@ -128,4 +129,6 @@ export interface WorkspaceService
 
   encodeInviteToken(companyId: string, workspaceId: string, userId: string, token: string): string;
   decodeInviteToken(encodedToken: string): InviteTokenObject;
+
+  ensureUserNotInCompanyIsNotInWorkspace(userPk: UserPrimaryKey, companyId: string): Promise<void>;
 }

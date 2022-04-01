@@ -86,6 +86,7 @@ export class NewChannelMessageProcessor
         },
 
         //Temp: should not be used like this when migrating messages to node
+        //But we don't remember why, so keeping this like this as it works well
         text: message.text,
         title: message.title,
       } as MentionNotification;

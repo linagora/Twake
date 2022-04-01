@@ -45,6 +45,8 @@ import {
 import { CounterProvider } from "../../../../core/platform/services/counter/provider";
 import { countRepositoryItems } from "../../../../utils/counters";
 import NodeCache from "node-cache";
+import { UserPrimaryKey } from "../../../user/entities/user";
+import { WorkspacePrimaryKey } from "../../../workspaces/entities/workspace";
 
 import gr from "../../../global-resolver";
 
@@ -666,5 +668,29 @@ export class MemberServiceImpl implements MemberService {
     const channelMember = getMemberOfChannelInstance(pick(memberToSave, ...CHANNEL_MEMBERS_KEYS));
     await this.userChannelsRepository.save(userChannel);
     await this.channelMembersRepository.save(channelMember);
+  }
+
+  async ensureUserNotInWorkspaceIsNotInChannel(
+    userPk: UserPrimaryKey,
+    workspacePk: WorkspacePrimaryKey,
+  ) {
+    const workspace = await gr.services.workspaces.get(workspacePk);
+    const member = await gr.services.workspaces.getUser({
+      workspaceId: workspace.id,
+      userId: userPk.id,
+    });
+    if (!member) {
+      const result = await this.userChannelsRepository.find({
+        company_id: workspace.company_id,
+        workspace_id: workspace.id,
+        user_id: userPk.id,
+      });
+      for (const channel of result.getEntities()) {
+        logger.warn(
+          `User ${userPk.id} is not in workspace ${workspace.id} so it will be removed from channel ${channel.id}`,
+        );
+        await this.delete(channel, { user: { id: userPk.id }, channel });
+      }
+    }
   }
 }

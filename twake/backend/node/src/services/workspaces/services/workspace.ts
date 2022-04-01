@@ -35,7 +35,7 @@ import WorkspacePendingUser, {
   WorkspacePendingUserPrimaryKey,
 } from "../entities/workspace_pending_users";
 import { CompanyUserRole } from "../../user/web/types";
-import { uuid } from "../../../utils/types";
+import { ResourceEventsPayload, uuid } from "../../../utils/types";
 import { CounterProvider } from "../../../core/platform/services/counter/provider";
 import {
   TYPE as WorkspaceCounterEntityType,
@@ -56,6 +56,8 @@ import { randomBytes } from "crypto";
 import { Readable } from "stream";
 import { expandUUID4, reduceUUID4 } from "../../../utils/uuid-reducer";
 import gr from "../../global-resolver";
+import { logger } from "@sentry/utils";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
 
 export class WorkspaceServiceImpl implements WorkspaceService {
   version: "1";
@@ -98,6 +100,12 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       WorkspaceInviteTokensType,
       WorkspaceInviteTokens,
     );
+
+    //If user deleted from a company, remove it from all workspace
+    localEventBus.subscribe<ResourceEventsPayload>("company:user:deleted", async data => {
+      if (data?.user?.id && data?.company?.id)
+        gr.services.workspaces.ensureUserNotInCompanyIsNotInWorkspace(data.user, data.company.id);
+    });
 
     return this;
   }
@@ -340,6 +348,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
 
   async removeUser(
     workspaceUserPk: WorkspaceUserPrimaryKey,
+    companyId: string,
   ): Promise<DeleteResult<WorkspaceUserPrimaryKey>> {
     const entity = await this.getUser(workspaceUserPk);
 
@@ -353,6 +362,12 @@ export class WorkspaceServiceImpl implements WorkspaceService {
 
     await this.workspaceUserRepository.remove(entity);
     await this.userCounterIncrease(workspaceUserPk.workspaceId, -1);
+
+    localEventBus.publish<ResourceEventsPayload>("workspace:user:deleted", {
+      user: entity,
+      workspace: { id: workspaceUserPk.workspaceId, company_id: companyId },
+    });
+
     return new DeleteResult(WorkspaceUserType, workspaceUserPk, true);
   }
 
@@ -643,6 +658,22 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       };
     } catch (e) {
       return null;
+    }
+  }
+
+  async ensureUserNotInCompanyIsNotInWorkspace(userPk: UserPrimaryKey, companyId: string) {
+    const workspaces = await this.getAllForCompany(companyId);
+    for (const workspace of workspaces) {
+      const companyUser = await gr.services.companies.getCompanyUser(
+        { id: workspace.company_id },
+        userPk,
+      );
+      if (!companyUser) {
+        logger.warn(
+          `User ${userPk.id} is not in company ${workspace.company_id} so removing from workspace ${workspace.id}`,
+        );
+        this.removeUser({ workspaceId: workspace.id, userId: userPk.id }, companyId);
+      }
     }
   }
 }

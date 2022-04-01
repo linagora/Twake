@@ -59,6 +59,11 @@ export class UserServiceImpl implements UsersService {
 
     this.cache = new NodeCache({ stdTTL: 0.2, checkperiod: 120 });
 
+    //If user deleted from Twake, remove it from all companies
+    localEventBus.subscribe<ResourceEventsPayload>("user:deleted", async data => {
+      if (data?.user?.id) gr.services.companies.ensureDeletedUserNotInCompanies(data.user);
+    });
+
     return this;
   }
 

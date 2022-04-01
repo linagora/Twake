@@ -50,7 +50,9 @@ export default ({ channelId, threadId }: PropsType): JSX.Element => {
 
   return writtingInfo.length > 0 ? (
     <div className="user-writing-info-message-view">
-      <WritingLoader /> <div className="small-left-margin">{writtingInfo}</div>
+      <div className="user-writing-info-message-view-inner">
+        <WritingLoader /> <div className="small-left-margin">{writtingInfo}</div>
+      </div>
     </div>
   ) : (
     <></>

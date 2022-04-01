@@ -28,7 +28,7 @@ export default async (id: string): Promise<UserType | null> => {
     return usersCollection.known_objects_by_id[id];
   } else {
     const userPromise = new Promise<UserType | null>(async resolve => {
-      const users = await UserAPIClient.list([id]);
+      const users = await UserAPIClient.list([id], undefined, { bufferize: true });
       const user = users.length ? users[0] : null;
       user && usersCollection.updateObject(user);
       if (!user || !user?.id) doNotRetry.set(id, true);

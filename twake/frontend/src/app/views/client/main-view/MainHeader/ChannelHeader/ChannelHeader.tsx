@@ -27,13 +27,9 @@ export default (): JSX.Element => {
     return RouterServices.push(url);
   };
 
-  if (!channelId) {
-    return <Col></Col>;
-  }
+  const { channel } = useChannel(channelId || '');
 
-  const { channel } = useChannel(channelId);
-
-  const members = channel.members;
+  const members = channel?.members || [];
 
   useUsersListener(members);
 

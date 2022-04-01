@@ -82,6 +82,14 @@ export class ChannelServiceImpl implements ChannelService {
       logger.warn("Can not initialize default channel service", err);
     }
 
+    localEventBus.subscribe<ResourceEventsPayload>("workspace:user:deleted", async data => {
+      if (data?.user?.id && data?.company?.id)
+        gr.services.channels.members.ensureUserNotInWorkspaceIsNotInChannel(
+          data.user,
+          data.workspace,
+        );
+    });
+
     return this;
   }
 

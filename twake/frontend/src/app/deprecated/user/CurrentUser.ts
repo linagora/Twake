@@ -20,7 +20,6 @@ class CurrentUser extends Observable {
   errorUnkown: boolean;
   errorBadImage: boolean;
   unique_connection_id: string;
-  updates_connection!: SecuredConnection;
   badNewPassword: boolean;
   error_identity_badimage: boolean;
   badOldPassword: boolean;
@@ -46,25 +45,7 @@ class CurrentUser extends Observable {
     (Globals.window as any).currentUser = this;
   }
 
-  start() {
-    //This connexion will be used for crypted personnal events like apps configurators
-    this.updates_connection = new SecuredConnection(
-      'updates/' + Login.currentUserId,
-      { type: 'updates' },
-      (type: string, data: any) => {
-        if (type === 'event' && data.action === 'configure') {
-          if (data.connection_id === this.unique_connection_id) {
-            ConfiguratorsManager.openConfigurator(data.application, data.form, data.hidden_data);
-          }
-        }
-        if (type === 'event' && data.action === 'close_configure') {
-          if (data.connection_id === this.unique_connection_id) {
-            ConfiguratorsManager.closeConfigurator(data.application);
-          }
-        }
-      },
-    );
-  }
+  start() {}
 
   get() {
     return Collections.get('users').find(Login.currentUserId);

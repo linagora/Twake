@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ChannelResource, ChannelType } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 
 import Languages from 'app/features/global/services/languages-service';
 import ModalManager from 'app/components/modal/modal-manager';
@@ -18,8 +18,6 @@ import AccessRightsService from 'app/features/workspace-members/services/workspa
 import RouterServices from 'app/features/router/services/router-service';
 
 type Props = {
-  collection: Collection<ChannelResource>;
-  directCollection: Collection<ChannelResource>;
   sectionTitle: string;
   channels: ChannelType[];
   favorite?: boolean;
@@ -82,15 +80,7 @@ export default (props: Props) => {
       )}
       {props.channels.length > 0 &&
         props.channels.map((data, key) => {
-          return (
-            <ChannelIntermediate
-              key={key}
-              collection={
-                data.workspace_id === 'direct' ? props.directCollection : props.collection
-              }
-              channel={data || ''}
-            />
-          );
+          return <ChannelIntermediate key={key} channel={data || ''} />;
         })}
     </>
   );

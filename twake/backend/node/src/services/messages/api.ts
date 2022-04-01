@@ -17,6 +17,8 @@ import {
 import {
   ChannelViewExecutionContext,
   CompanyExecutionContext,
+  FlatFileFromMessage,
+  FlatPinnedFromMessage,
   MessagesGetThreadOptions,
   MessageViewListOptions,
   MessageWithReplies,
@@ -115,7 +117,7 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     pagination: Paginable,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
-  ): Promise<ListResult<MessageWithReplies>>;
+  ): Promise<ListResult<MessageWithReplies | FlatFileFromMessage>>;
 
   listChannelThreads(
     pagination: Paginable,
@@ -127,7 +129,7 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     pagination: Paginable,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
-  ): Promise<ListResult<MessageWithReplies>>;
+  ): Promise<ListResult<MessageWithReplies | FlatPinnedFromMessage>>;
 
   search(
     pagination: Pagination,

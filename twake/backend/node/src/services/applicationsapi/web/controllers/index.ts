@@ -14,6 +14,7 @@ import {
   RealtimeBaseBusEvent,
 } from "../../../../core/platform/services/realtime/types";
 import gr from "../../../global-resolver";
+import { v4 } from "uuid";
 
 export class ApplicationsApiController {
   async token(
@@ -66,6 +67,7 @@ export class ApplicationsApiController {
       form: body.form,
       connection_id: body.connection_id,
       hidden_data: {},
+      configurator_id: v4(),
     };
 
     localEventBus.publish("realtime:event", {

@@ -27,6 +27,8 @@ import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
 import { NewUserInWorkspaceNotification } from "./services/channel/types";
 import { ChannelCounterPrimaryKey } from "./entities/channel-counters";
+import { UserPrimaryKey } from "../user/entities/user";
+import { WorkspacePrimaryKey } from "../workspaces/entities/workspace";
 
 export type ChannelPrimaryKey = {
   id?: string;
@@ -200,6 +202,11 @@ export interface MemberService
   ): Promise<ListResult<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 
   getUsersCount(counterPk: ChannelCounterPrimaryKey): Promise<number>;
+
+  ensureUserNotInWorkspaceIsNotInChannel(
+    userPk: UserPrimaryKey,
+    workspacePk: WorkspacePrimaryKey,
+  ): Promise<void>;
 }
 
 export interface TabService

@@ -12,6 +12,7 @@ import { useCurrentCompany } from '../../companies/hooks/use-companies';
 import _ from 'lodash';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { Application } from 'app/features/applications/types/application';
+import { LoadingState } from 'app/features/global/state/atoms/Loading';
 
 const logger = Logger.getLogger('useApplications');
 /**
@@ -24,7 +25,7 @@ export function useCompanyApplications(companyId: string = '') {
   companyId = companyId || company?.id || '';
 
   const [applications, setApplications] = useRecoilState(CompanyApplicationsStateFamily(companyId));
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useRecoilState(LoadingState(`applications-${companyId}`));
 
   useEffect(() => {
     onChangeCompanyApplications(companyId, applications);

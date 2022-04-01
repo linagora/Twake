@@ -1,28 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import UserService from 'app/features/users/services/current-user-service';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import UserCard from 'app/components/user-card/user-card';
 import { UserType } from 'app/features/users/types/user';
-import { useUser } from 'app/features/users/hooks/use-user';
+import { useUser, useUserByUsername } from 'app/features/users/hooks/use-user';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
-const channelMentions = ['channel', 'everyone', 'all', 'here'];
+const globalMentions = ['channel', 'everyone', 'all', 'here'];
 
 type PropsType = {
   // User id
-  id: string;
+  id?: string;
   // user username
-  username: string;
+  username?: string;
   // should we hide the user image?
   hideUserImage: boolean;
 };
 
 export default (props: PropsType): JSX.Element => {
+  const { openDiscussion } = useDirectChannels();
   const collection = Collections.get('users');
   const nodeRef = useRef<HTMLDivElement>(null);
-  const user = useUser(props.id);
+  let user: UserType | undefined;
+  if (props.id) {
+    user = useUser(props.id || '');
+  } else {
+    user = useUserByUsername(props.username || '');
+  }
 
   useEffect(() => {
     const listener = collection.addListener(useState, [user]);
@@ -43,7 +49,7 @@ export default (props: PropsType): JSX.Element => {
         {
           type: 'react-element',
           reactElement: () => (
-            <UserCard user={user} onClick={() => ChannelsService.openDiscussion([user.id])} />
+            <UserCard user={user} onClick={() => openDiscussion([user.id || ''])} />
           ),
         },
       ],
@@ -54,11 +60,8 @@ export default (props: PropsType): JSX.Element => {
   };
 
   const highlighted =
-    props.id === UserService.getCurrentUserId() || channelMentions.includes(props.username);
-
-  if (!props.id) {
-    return <span className={classNames('user_twacode', { highlighted })}>@{props.username}</span>;
-  }
+    user?.id === UserService.getCurrentUserId() ||
+    globalMentions.includes(props.username || props.id || '');
 
   if (user) {
     return (
@@ -67,7 +70,7 @@ export default (props: PropsType): JSX.Element => {
         className={classNames('user_twacode with_user', {
           highlighted: highlighted && !props.hideUserImage,
         })}
-        onClick={() => displayUserCard(user)}
+        onClick={() => displayUserCard(user as UserType)}
         style={{
           paddingLeft: props.hideUserImage ? 5 : 0,
           backgroundColor: props.hideUserImage ? 'var(--grey-background)' : '',
@@ -83,6 +86,10 @@ export default (props: PropsType): JSX.Element => {
       </div>
     );
   } else {
-    return <span className={classNames('user_twacode', { highlighted })}>@{props.username}</span>;
+    return (
+      <span className={classNames('user_twacode', { highlighted })}>
+        @{props.username || 'unknown'}
+      </span>
+    );
   }
 };

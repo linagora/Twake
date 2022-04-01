@@ -314,10 +314,13 @@ export class WorkspaceUsersCrudController
       throw CrudException.notFound("Default channel has not been found");
     }
 
-    await gr.services.workspaces.removeUser({
-      workspaceId: context.workspace_id,
-      userId: request.params.user_id,
-    });
+    await gr.services.workspaces.removeUser(
+      {
+        workspaceId: context.workspace_id,
+        userId: request.params.user_id,
+      },
+      request.params.company_id,
+    );
 
     reply.status(204);
     return {

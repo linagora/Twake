@@ -9,13 +9,10 @@ import WorkspaceUserAPIClient from 'app/features/workspace-members/api/workspace
 import { UserListState } from '../state/atoms/user-list';
 import Logger from 'app/features/global/framework/logger-service';
 
-export const useUserList = (): {
-  userList?: UserType[];
-} => {
+export const usePreloadSomeUsers = () => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
   const { set: setUserList } = useSetUserList('useUserList');
-  const userList = useRecoilValueLoadable(UserListState).valueMaybe();
 
   const preloadSomeUsers = async () => {
     const updatedData = (await WorkspaceUserAPIClient.list(companyId, workspaceId)).map(
@@ -30,7 +27,12 @@ export const useUserList = (): {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [companyId, workspaceId]);
+};
 
+export const useUserList = (): {
+  userList?: UserType[];
+} => {
+  const userList = useRecoilValueLoadable(UserListState).valueMaybe();
   return { userList };
 };
 
@@ -81,8 +83,6 @@ export function useSetUserList(key: string) {
       newList.sort();
 
       if (currentList && newList && !isEqual(currentList, newList)) {
-        // TO REMOVE
-        logger.debug(`UserListState is updated to`, cloneDeep(currentList), newList);
         set(UserListState, newList);
         currentUserList = newList;
       }

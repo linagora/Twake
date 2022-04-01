@@ -144,4 +144,6 @@ export interface CompaniesServiceAPI extends TwakeServiceProvider, Initializable
   removeCompany(searchKey: CompanySearchKey): Promise<void>;
 
   getUsersCount(workspaceId: string): Promise<number>;
+
+  ensureDeletedUserNotInCompanies(userPk: UserPrimaryKey): Promise<void>;
 }

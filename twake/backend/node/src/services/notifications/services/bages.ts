@@ -19,8 +19,9 @@ import {
 import { NotificationExecutionContext } from "../types";
 import { getNotificationRoomName } from "./realtime";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import _, { pick } from "lodash";
 import gr from "../../global-resolver";
+import { pick, uniq } from "lodash";
+import _ from "lodash";
 
 export class UserNotificationBadgeService implements UserNotificationBadgeServiceAPI {
   version: "1";
@@ -98,10 +99,13 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
       result = result.concat(find.getEntities());
     }
 
-    return new ListResult(type, result);
+    const badges = new ListResult(type, result);
+    await this.ensureBadgesAreReachable(badges);
+
+    return badges;
   }
 
-  listForUser(
+  async listForUser(
     company_id: string,
     user_id: string,
     filter: Pick<UserNotificationBadgePrimaryKey, "workspace_id" | "channel_id" | "thread_id">,
@@ -110,13 +114,75 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
       throw CrudException.badRequest("company_id and user_id are required");
     }
 
-    return this.repository.find({
+    const badges = await this.repository.find({
       ...{
         company_id,
         user_id,
       },
       ...pick(filter, ["workspace_id", "channel_id", "thread_id"]),
     });
+
+    await this.ensureBadgesAreReachable(badges);
+
+    return badges;
+  }
+
+  // This will ensure we are still in the channels and if not, we'll remove the badge
+  // We need to also ensure more than that
+  // - Are we in the workspace?
+  // - Are we in the company?
+  async ensureBadgesAreReachable(
+    badges: ListResult<UserNotificationBadge>,
+  ): Promise<ListResult<UserNotificationBadge>> {
+    const userId = badges.getEntities()[0].user_id;
+
+    const channels = uniq(badges.getEntities().map(r => r.channel_id));
+    for (const channelId of channels) {
+      const channelMemberPk = {
+        company_id: badges.getEntities()[0].company_id,
+        workspace_id: badges.getEntities()[0].workspace_id,
+        channel_id: channelId,
+        user_id: userId,
+      };
+      const context = {
+        user: { id: channelMemberPk.user_id, server_request: true },
+        channel: { id: channelId, ...channelMemberPk },
+      };
+      const exists = await gr.services.channels.members.get(channelMemberPk, context);
+      if (!exists) {
+        for (const badge of badges.getEntities()) {
+          if (badge.channel_id === channelId) this.removeUserChannelBadges(badge);
+        }
+        badges.filterEntities(b => b.channel_id !== channelId);
+      }
+    }
+
+    const badgePerWorkspace = _.uniqBy(badges.getEntities(), r => r.workspace_id);
+    for (const badge of badgePerWorkspace) {
+      const workspaceId = badge.workspace_id;
+      const companyId = badge.company_id;
+      if (workspaceId === "direct") {
+        continue;
+      }
+      try {
+        const exists = await gr.services.workspaces.getUser({
+          workspaceId,
+          userId,
+        });
+        if (!exists) {
+          await gr.services.channels.members.ensureUserNotInWorkspaceIsNotInChannel(
+            { id: userId },
+            { id: workspaceId, company_id: companyId },
+          );
+          for (const badge of badges.getEntities()) {
+            if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge);
+          }
+          badges.filterEntities(b => b.workspace_id === workspaceId);
+        }
+      } catch (e) {}
+    }
+
+    return badges;
   }
 
   /**

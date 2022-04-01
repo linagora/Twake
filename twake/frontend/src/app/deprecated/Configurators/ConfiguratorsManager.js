@@ -12,11 +12,12 @@ class ConfiguratorsManager extends Observable {
     this.configurator_order = [];
   }
 
-  openConfigurator(app, form, hidden_data) {
+  openConfigurator(app, form, hidden_data, id) {
     this.currentConfigurators[app.id] = {
       app: app,
       form: form,
       hidden_data: hidden_data,
+      id: id,
     };
 
     var _new_order = [];

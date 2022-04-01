@@ -7,6 +7,13 @@ const PREFIX = '/internal/services/channels/v1/companies';
 
 @TwakeService('ChannelAPIClientService')
 class ChannelAPIClientService {
+  async getDirect(companyId: string, membersId: string[]) {
+    return Api.post<{ options: { members: string[] }; resource: any }, { resource: ChannelType }>(
+      `${PREFIX}/${companyId}/workspaces/direct/channels`,
+      { options: { members: membersId }, resource: {} },
+    ).then(result => result.resource);
+  }
+
   async get(companyId: string, workspaceId: string, channelId: string): Promise<ChannelType> {
     return Api.get<{ resource: ChannelType }>(
       `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,

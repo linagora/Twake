@@ -26,6 +26,10 @@ class MessageViewAPIClient {
     channelId: string,
     { repliesPerThread = 5, limit = 25, pageToken = '', direction = 'future' } = {},
   ) {
+    if (!companyId || !workspaceId || !channelId) {
+      return;
+    }
+
     const response = await Api.get<{
       resources: MessageWithReplies[];
       websockets: WebsocketRoom[];
