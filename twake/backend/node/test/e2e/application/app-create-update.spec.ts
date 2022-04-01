@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "@jest/globals";
+import { beforeAll, describe, expect, it, afterAll } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { Api } from "../utils.api";
@@ -30,7 +30,7 @@ describe("Applications", () => {
   });
 
   afterAll(done => {
-    platform.tearDown().then(done);
+    platform.tearDown().then(() => done());
   });
 
   const publishApp = async id => {
@@ -42,7 +42,7 @@ describe("Applications", () => {
 
   describe("Create application", function () {
     it("should 403 if creator is not a company admin", async done => {
-      const payload = cloneDeep(postPayload);
+      const payload = { resource: cloneDeep(postPayload) };
 
       const user = await testDbService.createUser([testDbService.defaultWorkspace()], {
         companyRole: "member",
@@ -54,18 +54,18 @@ describe("Applications", () => {
     });
 
     it("should 200 on application create", async done => {
-      const payload = cloneDeep(postPayload);
+      const payload = { resource: cloneDeep(postPayload) };
       const response = await api.post(`${url}/applications`, payload);
       expect(response.statusCode).toBe(200);
 
       const r = response.resource;
 
-      expect(r.company_id).toBe(payload.company_id);
+      expect(r.company_id).toBe(payload.resource.company_id);
       expect(!!r.is_default).toBe(false);
-      expect(r.identity).toMatchObject(payload.identity);
-      expect(r.access).toMatchObject(payload.access);
-      expect(r.display).toMatchObject(payload.display);
-      expect(r.publication).toMatchObject(payload.publication);
+      expect(r.identity).toMatchObject(payload.resource.identity);
+      expect(r.access).toMatchObject(payload.resource.access);
+      expect(r.display).toMatchObject(payload.resource.display);
+      expect(r.publication).toMatchObject(payload.resource.publication);
       expect(r.stats).toMatchObject({
         created_at: expect.any(Number),
         updated_at: expect.any(Number),
@@ -73,8 +73,8 @@ describe("Applications", () => {
       });
 
       expect(r.api).toMatchObject({
-        hooks_url: payload.api.hooks_url,
-        allowed_ips: payload.api.allowed_ips,
+        hooks_url: payload.resource.api.hooks_url,
+        allowed_ips: payload.resource.api.allowed_ips,
         private_key: expect.any(String),
       });
 
@@ -83,8 +83,8 @@ describe("Applications", () => {
       const dbData = await appRepo.findOne({ id: response.resource.id });
 
       expect(dbData.api).toMatchObject({
-        allowed_ips: payload.api.allowed_ips,
-        hooks_url: payload.api.hooks_url,
+        allowed_ips: payload.resource.api.allowed_ips,
+        hooks_url: payload.resource.api.hooks_url,
         private_key: expect.any(String),
       });
 
@@ -95,7 +95,7 @@ describe("Applications", () => {
     let createdApp: PublicApplicationObject;
 
     beforeAll(async done => {
-      const payload = cloneDeep(postPayload);
+      const payload = { resource: cloneDeep(postPayload) };
       const response = await api.post(`${url}/applications`, payload);
       createdApp = response.resource;
 
@@ -116,33 +116,33 @@ describe("Applications", () => {
     });
 
     it("should 404 if application not found", async done => {
-      const response = await api.post(`${url}/applications/${uuidv1()}`, postPayload);
+      const response = await api.post(`${url}/applications/${uuidv1()}`, { resource: postPayload });
       expect(response.statusCode).toBe(404);
       done();
     });
 
     describe("Unpublished application", () => {
       it("should 200 on application update", async done => {
-        const payload = cloneDeep(postPayload);
+        const payload = { resource: cloneDeep(postPayload) };
 
-        payload.is_default = true;
-        payload.identity.name = "test2";
-        payload.api.hooks_url = "123123";
-        payload.access.read = [];
-        payload.publication.requested = true;
+        payload.resource.is_default = true;
+        payload.resource.identity.name = "test2";
+        payload.resource.api.hooks_url = "123123";
+        payload.resource.access.read = [];
+        payload.resource.publication.requested = true;
 
         const response = await api.post(`${url}/applications/${createdApp.id}`, payload);
         expect(response.statusCode).toBe(200);
 
         const r = response.resource;
 
-        expect(r.company_id).toBe(payload.company_id);
+        expect(r.company_id).toBe(payload.resource.company_id);
         expect(!!r.is_default).toBe(false);
-        expect(r.identity).toMatchObject(payload.identity);
+        expect(r.identity).toMatchObject(payload.resource.identity);
 
-        expect(r.access).toMatchObject(payload.access);
-        expect(r.display).toMatchObject(payload.display);
-        expect(r.publication).toMatchObject(payload.publication);
+        expect(r.access).toMatchObject(payload.resource.access);
+        expect(r.display).toMatchObject(payload.resource.display);
+        expect(r.publication).toMatchObject(payload.resource.publication);
         expect(r.stats).toMatchObject({
           created_at: expect.any(Number),
           updated_at: expect.any(Number),
@@ -154,8 +154,8 @@ describe("Applications", () => {
         const dbData = await appRepo.findOne({ id: response.resource.id });
 
         expect(dbData.api).toMatchObject({
-          allowed_ips: payload.api.allowed_ips,
-          hooks_url: payload.api.hooks_url,
+          allowed_ips: payload.resource.api.allowed_ips,
+          hooks_url: payload.resource.api.hooks_url,
           private_key: expect.any(String),
         });
 
@@ -165,7 +165,7 @@ describe("Applications", () => {
 
     describe.skip("Published application", () => {
       beforeAll(async done => {
-        const payload = cloneDeep(postPayload);
+        const payload = { resource: cloneDeep(postPayload) };
         const response = await api.post(`${url}/applications`, payload);
         createdApp = response.resource;
         await publishApp(createdApp.id);
@@ -173,10 +173,10 @@ describe("Applications", () => {
       });
 
       it("should 200 on update if allowed fields changed", async done => {
-        const payload = cloneDeep(createdApp) as Application;
+        const payload = { resource: cloneDeep(createdApp) as Application };
         const entity = await appRepo.findOne({ id: createdApp.id });
-        payload.api = cloneDeep(entity.api);
-        payload.publication.requested = true;
+        payload.resource.api = cloneDeep(entity.api);
+        payload.resource.publication.requested = true;
         const response = await api.post(`${url}/applications/${createdApp.id}`, payload);
         expect(response.statusCode).toBe(200);
 
@@ -188,9 +188,9 @@ describe("Applications", () => {
       });
 
       it("should 400 on update if not allowed fields changed", async done => {
-        const payload = cloneDeep(createdApp) as Application;
+        const payload = { resource: cloneDeep(createdApp) as Application };
         const entity = await appRepo.findOne({ id: createdApp.id });
-        payload.api = cloneDeep(entity.api);
+        payload.resource.api = cloneDeep(entity.api);
         const response = await api.post(`${url}/applications/${createdApp.id}`, payload);
         expect(response.statusCode).toBe(400);
         done();
@@ -202,7 +202,7 @@ describe("Applications", () => {
     let secondApp: PublicApplicationObject;
     let thirdApp: PublicApplicationObject;
     beforeAll(async done => {
-      const payload = cloneDeep(postPayload);
+      const payload = { resource: cloneDeep(postPayload) };
       firstApp = (await api.post(`${url}/applications`, payload)).resource;
       secondApp = (await api.post(`${url}/applications`, payload)).resource;
       thirdApp = (await api.post(`${url}/applications`, payload)).resource;

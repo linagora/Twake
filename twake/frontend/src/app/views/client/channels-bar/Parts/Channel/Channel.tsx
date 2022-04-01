@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Tooltip } from 'antd';
-import { Calendar, CheckSquare, Folder, Star } from 'react-feather';
+import { Calendar, CheckSquare, Folder, Hexagon, Star } from 'react-feather';
 
+import { useChannelWritingActivityState } from 'app/features/channels/hooks/use-channel-writing-activity';
+import WritingLoader from 'app/components/writing-loader/writing-loader';
 import Icon from 'app/components/icon/icon';
 import { Application } from 'app/features/applications/types/application';
 import Emojione from 'components/emojione/emojione';
 import Beacon from 'app/components/scroll-hidden-components/beacon';
 import RouterServices from 'app/features/router/services/router-service';
-import WritingLoader from 'app/components/writing-loader/writing-loader';
 
 import './Channel.scss';
+import AvatarComponent from 'app/components/avatar/avatar';
 
 type Props = {
   app?: Application;
@@ -41,16 +43,21 @@ export default (props: Props) => {
     RouterServices.push(url);
   };
 
-  const getDefaultApplicationIcon = (code: string) => {
-    switch (code) {
+  const getDefaultApplicationIcon = (app: Application) => {
+    switch (app.identity.code) {
       case 'twake_tasks':
         return <CheckSquare size={16} color={selected ? 'var(--white)' : 'var(--black)'} />;
       case 'twake_calendar':
         return <Calendar size={16} color={selected ? 'var(--white)' : 'var(--black)'} />;
       case 'twake_drive':
         return <Folder size={16} color={selected ? 'var(--white)' : 'var(--black)'} />;
+
       default:
-        return <></>;
+        return props.app?.identity.icon ? (
+          <AvatarComponent url={props.app?.identity.icon} size={16} />
+        ) : (
+          <Hexagon size={16} color={selected ? 'var(--white)' : 'var(--black)'} />
+        );
     }
   };
 
@@ -77,9 +84,7 @@ export default (props: Props) => {
         {!props.app && props.visibility === 'direct' && typeof props.icon === 'object' && (
           <div className="direct-channel-avatars"> {props.icon}</div>
         )}
-        {!!props.app && (
-          <div className="icon">{getDefaultApplicationIcon(props.app.identity.code)}</div>
-        )}
+        {!!props.app && <div className="icon">{getDefaultApplicationIcon(props.app)}</div>}
         <div className="text" style={{ textTransform: 'capitalize' }}>
           {props.name + ' '}
           {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
