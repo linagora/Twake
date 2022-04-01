@@ -158,7 +158,7 @@ export default (
     strategy: findMentionEntities,
     component: Mention,
   },
-  trigger: /\B@(\w+)$/,
+  trigger: /\B@([a-zA-Z\u00C0-\u017F]+)$/,
   resourceType: MENTION_TYPE,
   getTextDisplay: (mention: MentionSuggestionType) => mention.username,
   onSelected: (
