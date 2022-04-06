@@ -191,18 +191,24 @@ export class WorkspacesCrudController
     }
 
     const r = request.body.resource;
-    const entity = plainToClass(Workspace, {
-      ...{
-        name: r.name,
-        logo: r.logo,
-        isDefault: r.default,
-        isArchived: r.archived,
-      },
-      ...{
-        group_id: request.params.company_id,
-        id: request.params.id,
-      },
+
+    let entity = await this.workspaceService.get({
+      company_id: request.params.company_id,
+      id: request.params.id,
     });
+
+    if (!entity) {
+      entity = plainToClass(Workspace, {
+        ...{
+          group_id: request.params.company_id,
+          id: request.params.id,
+        },
+      });
+    }
+
+    entity.name = r.name;
+    entity.isDefault = r.default;
+    entity.isArchived = r.archived;
 
     const workspaceEntity = await this.workspaceService
       .save(entity, request.body.options || {}, context)
