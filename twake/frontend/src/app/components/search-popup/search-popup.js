@@ -11,6 +11,7 @@ import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown
 import moment from 'moment';
 import Languages from 'app/features/global/services/languages-service';
 import userAsyncGet from 'app/features/users/utils/async-get';
+import MessagesFilter from './parts/messages-filter.js';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -388,7 +389,17 @@ export default class SearchPopup extends React.Component {
                   options={{ suppressScrollX: true }}
                   component="div"
                   className="filters"
-                ></PerfectScrollbar>
+                >
+                  {this.state.filterType === 'message' && (
+                    <MessagesFilter
+                      options={Search.options}
+                      onSearch={options => {
+                        Search.setOptions(options);
+                        Search.search();
+                      }}
+                    />
+                  )}
+                </PerfectScrollbar>
               )}
             </div>
           </div>
