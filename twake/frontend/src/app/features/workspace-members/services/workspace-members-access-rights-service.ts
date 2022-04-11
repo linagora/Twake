@@ -9,6 +9,7 @@ const rightLevels = {
   member: 10,
   moderator: 40,
   admin: 50,
+  owner: 60,
 };
 
 class AccessRightsService extends Observable {

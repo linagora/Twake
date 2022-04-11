@@ -156,6 +156,17 @@ export class ApplicationController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
+
+    const application = await this.service.applications.get({ id: request.params.application_id });
+
+    const compUser = await this.service.companies.getCompanyUser(
+      { id: application.company_id },
+      { id: context.user.id },
+    );
+    if (!compUser || !hasCompanyAdminLevel(compUser.role)) {
+      throw CrudException.forbidden("You don't have the rights to delete this application");
+    }
+
     const deleteResult = await this.service.applications.delete(
       {
         id: request.params.application_id,
