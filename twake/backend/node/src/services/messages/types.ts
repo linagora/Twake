@@ -30,6 +30,7 @@ export type MessageNotification = {
 
 export type MessageWithReplies = Message & {
   last_replies: Message[];
+  thread?: MessageWithReplies;
   highlighted_replies?: Message[];
   stats: {
     last_activity: number;
@@ -39,6 +40,8 @@ export type MessageWithReplies = Message & {
 
 export type MessageWithRepliesWithUsers = MessageWithReplies & {
   last_replies: MessageWithUsers[];
+  thread?: MessageWithRepliesWithUsers;
+  highlighted_replies?: MessageWithUsers[];
   users: UserObject[];
 };
 

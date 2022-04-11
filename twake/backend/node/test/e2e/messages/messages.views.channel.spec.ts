@@ -100,7 +100,7 @@ describe("The Messages feature", () => {
       const jwtToken = await platform.auth.getJWTToken();
       const listResponse = await platform.app.inject({
         method: "GET",
-        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}/feed?replies_per_thread=3`,
+        url: `${url}/companies/${platform.workspace.company_id}/workspaces/${platform.workspace.workspace_id}/channels/${channelId}/feed?replies_per_thread=3&include_users=1`,
         headers: {
           authorization: `Bearer ${jwtToken}`,
         },
@@ -110,6 +110,8 @@ describe("The Messages feature", () => {
         ResourceListResponse,
         listResponse.body,
       );
+
+      await new Promise(resolve => setTimeout(resolve, 5000));
 
       expect(listResponse.statusCode).toBe(200);
       expect(listResult.resources.length).toBe(3);

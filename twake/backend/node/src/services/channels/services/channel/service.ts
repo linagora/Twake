@@ -634,8 +634,10 @@ export class ChannelServiceImpl implements ChannelService {
     if (isDirectChannel(channel)) {
       const users = [];
       for (const user of channel.members) {
-        const e = await formatUser(await gr.services.users.getCached({ id: user }));
-        users.push(e);
+        if (user) {
+          const e = await formatUser(await gr.services.users.getCached({ id: user }));
+          users.push(e);
+        }
       }
       channelWithUsers.users = users;
       channelWithUsers.name = users
