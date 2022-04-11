@@ -189,6 +189,13 @@ class PseudoMarkdownCompiler {
       simple_object: (child: any) => '',
       text_transform: (PseudoMarkdownDictionary.render_block.file as any).text_transform,
     },
+    iframe: {
+      view: true,
+      apps_only: true,
+      object: PseudoMarkdownDictionary.render_block.iframe.object,
+      simple_object: (child: any) => '',
+      text_transform: (PseudoMarkdownDictionary.render_block.iframe as any).text_transform,
+    },
     image: {
       view: true,
       apps_only: true,

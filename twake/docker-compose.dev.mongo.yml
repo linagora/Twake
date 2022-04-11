@@ -8,6 +8,18 @@ services:
       - ./docker-data/mongo:/data/db
     ports:
       - 27017:27017
+
+  plugins:
+    image: twaketech/twake-plugins
+    build:
+      context: .
+      dockerfile: ./docker/twake-plugins/Dockerfile
+      target: development
+    ports:
+      - 3100:3100
+    volumes:
+      - ./plugins:/usr/src/app
+
   node:
     image: twaketech/twake-node
     ports:
@@ -17,6 +29,7 @@ services:
       - SEARCH_DRIVER=mongodb
       - DB_DRIVER=mongodb
       - PUBSUB_TYPE=local
+      - PLUGINS_SERVER=plugins:3100
     build:
       context: .
       dockerfile: ./docker/twake-node/Dockerfile

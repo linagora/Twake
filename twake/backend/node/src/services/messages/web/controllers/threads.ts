@@ -18,7 +18,8 @@ export class ThreadsController
       ResourceCreateResponse<Thread>,
       ResourceListResponse<Thread>,
       ResourceDeleteResponse
-    > {
+    >
+{
   constructor(protected service: MessageServiceAPI) {}
 
   async save(

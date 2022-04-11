@@ -19,6 +19,7 @@ import ChannelServiceAPI from "../../../channels/provider";
 import _ from "lodash";
 import { StatisticsMessageProcessor } from "../../../statistics/pubsub/messages";
 import { StatisticsAPI } from "../../../statistics/types";
+import { MessageToHooksProcessor } from "./processors/message-to-hooks";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -27,6 +28,7 @@ export class MessagesEngine implements Initializable {
   private userInboxViewProcessor: UserInboxViewProcessor;
   private filesViewProcessor: FilesViewProcessor;
   private messageToNotifications: MessageToNotificationsProcessor;
+  private messageToHooks: MessageToHooksProcessor;
 
   private threadRepository: Repository<Thread>;
 
@@ -50,6 +52,13 @@ export class MessagesEngine implements Initializable {
       this.channel,
       this.service,
     );
+    this.messageToHooks = new MessageToHooksProcessor(
+      this.database,
+      this.pubsub,
+      this.user,
+      this.channel,
+      this.service,
+    );
   }
 
   async dispatchMessage(e: MessageLocalEvent) {
@@ -63,6 +72,7 @@ export class MessagesEngine implements Initializable {
     await this.userMarkedViewProcessor.process(thread, e);
     await this.filesViewProcessor.process(thread, e);
     await this.messageToNotifications.process(thread, e);
+    await this.messageToHooks.process(thread, e);
 
     if (e.created) {
       for (const workspaceId of _.uniq(
@@ -88,6 +98,8 @@ export class MessagesEngine implements Initializable {
     await this.userInboxViewProcessor.init();
     await this.userMarkedViewProcessor.init();
     await this.filesViewProcessor.init();
+    await this.messageToNotifications.init();
+    await this.messageToHooks.init();
     this.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor(this.service));
     this.pubsub.processor.addHandler(new StatisticsMessageProcessor(this.statistics));
 

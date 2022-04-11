@@ -5,6 +5,8 @@ import { ApplicationsApiServiceAPI } from "./api";
 import { ApplicationServiceAPI } from "../applications/api";
 import { getService } from "./services";
 import AuthServiceAPI from "../../core/platform/services/auth/provider";
+import config from "../../core/config";
+import FastProxy from "fast-proxy";
 
 @Prefix("/api")
 @Consumes(["platform-services", "applications"])
@@ -29,6 +31,15 @@ export default class ApplicationsApiService extends TwakeService<ApplicationsApi
     fastify.register((instance, _opts, next) => {
       web(instance, { prefix: this.prefix, service: this.service });
       next();
+    });
+
+    //Redirect requests from /plugins/* to the plugin server (if installed)
+    const { proxy, close } = FastProxy({
+      base: this.configuration.get("plugins.server"),
+    });
+    fastify.addHook("onClose", close);
+    fastify.all("/plugins/*", (req, rep) => {
+      proxy(req.raw, rep.raw, req.url, {});
     });
 
     return this;

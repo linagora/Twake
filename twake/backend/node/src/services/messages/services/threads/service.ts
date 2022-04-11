@@ -102,7 +102,7 @@ export class ThreadsService
 
     //Enforce current user in the participants list and add the created_by information
     const participants: ParticipantObject[] = [
-      { type: "user", id: context.user.id },
+      context.user.application_id ? {} : { type: "user", id: context.user.id },
       ...item.participants,
     ].map(p => {
       return {
