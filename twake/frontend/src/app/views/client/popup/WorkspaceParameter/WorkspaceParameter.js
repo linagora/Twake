@@ -6,7 +6,6 @@ import LoginService from 'app/features/auth/login-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import userService from 'app/features/users/services/current-user-service';
 import currentUserService from 'app/deprecated/user/CurrentUser';
-import WorkspaceIdentity from './Pages/Workspace/WorkspaceIdentity';
 import CompanyIntegration from './Pages/CompanyIntegrations';
 import WorkspacePartner from './Pages/WorkspacePartner';
 import CompanyIdendity from './Pages/CompanyIdendity.js';
@@ -16,7 +15,9 @@ import MenuList from 'components/menus/menu-component.js';
 import InitService from 'app/features/global/services/init-service';
 import ConsoleService from 'app/features/console/services/console-service';
 
+import WorkspaceAppsEditor from '../application-parameters/pages/WorkspaceAppsEditor.js';
 import './WorkspaceParameter.scss';
+import WorkspaceIdentity from './Pages/Workspace/WorkspaceIdentity';
 
 export default class WorkspaceParameter extends Component {
   constructor(props) {

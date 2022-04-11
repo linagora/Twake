@@ -10,7 +10,7 @@ type Options = {
   text?: string;
 };
 @TwakeService('Alert')
-class AlertService {
+class AlertServiceService {
   alert(onClose: () => void, options?: Options) {
     info({
       title: options?.title || options?.text || '',
@@ -29,5 +29,6 @@ class AlertService {
     });
   }
 }
+const AlertManager = new AlertServiceService();
 
-export default new AlertService();
+export default AlertManager;

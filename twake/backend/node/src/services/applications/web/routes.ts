@@ -6,6 +6,7 @@ import Application from "../entities/application";
 import assert from "assert";
 import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
 import { logger as log } from "../../../core/platform/framework";
+import { hasCompanyAdminLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
 
 const applicationsUrl = "/applications";
@@ -15,12 +16,34 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
   const applicationController = new ApplicationController();
   const companyApplicationController = new CompanyApplicationController();
 
-  const adminCheck = async (request: FastifyRequest<{ Body: Application }>) => {
+  const adminCheck = async (
+    request: FastifyRequest<{
+      Body: { resource: Application };
+      Params: { application_id: string };
+    }>,
+  ) => {
     try {
-      const companyId = request.body.company_id;
+      let companyId: string = request.body?.resource?.company_id;
+
+      if (request.params.application_id) {
+        const application = await options.service.applications.get({
+          id: request.params.application_id,
+        });
+
+        if (!application) {
+          throw fastify.httpErrors.notFound(`Application is not defined`);
+        }
+
+        companyId = application.company_id;
+      }
+
       const userId = request.currentUser.id;
-      assert(companyId, "company_id is not defined");
-      const companyUser = await gr.services.companies.getCompanyUser(
+
+      if (!companyId) {
+        throw fastify.httpErrors.forbidden(`Company ${companyId} not found`);
+      }
+
+      const companyUser = await options.service.companies.getCompanyUser(
         { id: companyId },
         { id: userId },
       );
@@ -32,7 +55,8 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
         }
         throw fastify.httpErrors.forbidden("User does not belong to this company");
       }
-      if (companyUser.role !== "admin") {
+
+      if (!hasCompanyAdminLevel(companyUser.role)) {
         throw fastify.httpErrors.forbidden("You must be an admin of this company");
       }
     } catch (e) {
@@ -82,6 +106,15 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     preValidation: [fastify.authenticate],
     schema: applicationPostSchema,
     handler: applicationController.save.bind(applicationController),
+  });
+
+  // Delete application (must be my company application and I must be company admin)
+  fastify.route({
+    method: "DELETE",
+    url: `${applicationsUrl}/:application_id`,
+    preHandler: [adminCheck],
+    preValidation: [fastify.authenticate],
+    handler: applicationController.delete.bind(applicationController),
   });
 
   /**

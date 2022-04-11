@@ -20,7 +20,7 @@ const { Text, Title, Link } = Typography;
 const MAX_LOGO_FILE_SIZE = 5000000;
 const ALLOWED_LOGO_FORMATS = ['image/gif', 'image/jpeg', 'image/png'];
 
-export default () => {
+const WorkspaceIdentity = () => {
   const uploadInputRef = useRef<HTMLInputElement>();
   const { workspace, refresh } = useCurrentWorkspace();
   const [workspaceName, setWorkspaceName] = useState<string | undefined>(workspace?.name);
@@ -272,3 +272,5 @@ export default () => {
     </>
   );
 };
+
+export default WorkspaceIdentity;

@@ -106,7 +106,7 @@ const responseApplicationObject = {
 };
 
 export const applicationPostSchema = {
-  body: requestApplicationObject,
+  body: { type: "object", properties: { resource: requestApplicationObject } },
   response: {
     "2xx": {
       resource: responseApplicationObject,

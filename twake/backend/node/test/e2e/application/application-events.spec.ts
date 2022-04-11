@@ -1,4 +1,7 @@
-import { beforeAll, describe, expect, it } from "@jest/globals";
+import * as crypto from "crypto";
+import { beforeAll, describe, expect, it, afterAll } from "@jest/globals";
+import { FastifyInstance, FastifyPluginCallback, FastifyRequest, FastifyReply } from "fastify";
+
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { Api } from "../utils.api";
@@ -26,10 +29,9 @@ describe("Application events", () => {
 
     postPayload.company_id = platform.workspace.company_id;
 
-    const createdApplication = await api.post(
-      "/internal/services/applications/v1/applications",
-      postPayload,
-    );
+    const createdApplication = await api.post("/internal/services/applications/v1/applications", {
+      resource: postPayload,
+    });
 
     appId = createdApplication.resource.id;
     signingSecret = createdApplication.resource.api.private_key;
@@ -37,7 +39,7 @@ describe("Application events", () => {
     ends();
 
     afterAll(done => {
-      platform.tearDown().then(done);
+      platform.tearDown().then(() => done());
     });
   });
 

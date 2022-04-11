@@ -87,7 +87,7 @@ export default () => {
             className="applications-table-actions-btn"
             onClick={() => onClickButton(application)}
           >
-            Install
+            {Languages.t('scenes.app.popup.workspaceparameter.pages.install_button')}
           </Button>
         );
       },

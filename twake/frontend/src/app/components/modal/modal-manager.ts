@@ -1,14 +1,18 @@
 import Observable from 'app/deprecated/Observable/Observable';
 import MenusManager from 'app/components/menus/menus-manager.js';
 
-class ModalManager extends Observable {
-  static service: ModalManager = new ModalManager();
+class ModalManagerService extends Observable {
+  static service: ModalManagerService = new ModalManagerService();
   private component: any[] = [];
   private popupStates: any = {};
   private position: any = null;
   private mountedComponent: any = null;
   private closing: boolean = false;
   private creationTimeout: any = null;
+
+  getPosition() {
+    return this.position;
+  }
 
   updateHighlight(highlight: any) {
     if (this.position) this.position.highlight = highlight;
@@ -73,4 +77,5 @@ class ModalManager extends Observable {
   }
 }
 
-export default ModalManager.service;
+const ModalManager = ModalManagerService.service;
+export default ModalManager;

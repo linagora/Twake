@@ -52,6 +52,8 @@ export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, 
     name: string,
     content: any,
   ): Promise<void>;
+
+  delete(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Application>>;
 }
 
 export interface CompanyApplicationServiceAPI

@@ -5,7 +5,7 @@ import { Avatar, AvatarProps, Image } from 'antd';
 import './avatar.scss';
 
 type PropsType = {
-  url: string;
+  url?: string;
   size?: number;
   shape?: AvatarProps['shape'];
   borderRadius?: React.CSSProperties['borderRadius'];
@@ -22,7 +22,7 @@ const AvatarComponent = ({ url, shape, size, borderRadius, fallback, onClick }: 
       style={{ width: size || 24, height: size || 24 }}
       src={
         <Image
-          src={url.length ? url : fallback}
+          src={url?.length ? url : fallback}
           style={{ width: size || 24, borderRadius: borderRadius || 4 }}
           preview={false}
         />
