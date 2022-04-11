@@ -117,6 +117,8 @@ describe("The Messages feature", () => {
         listResponse.body,
       );
 
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
       expect(listResponse.statusCode).toBe(200);
       expect(listResult.resources.length).toBe(3);
 

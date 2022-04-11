@@ -473,19 +473,19 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   async includeUsersInMessageWithReplies(
     message: MessageWithReplies,
   ): Promise<MessageWithRepliesWithUsers> {
-    let last_replies;
+    let last_replies = undefined;
     for (const reply of message.last_replies || []) {
       if (!last_replies) last_replies = [];
       last_replies.push(await this.includeUsersInMessage(reply));
     }
 
-    let highlighted_replies;
+    let highlighted_replies = undefined;
     for (const reply of message.highlighted_replies || []) {
       if (!highlighted_replies) highlighted_replies = [];
       highlighted_replies.push(await this.includeUsersInMessage(reply));
     }
 
-    let thread;
+    let thread: MessageWithRepliesWithUsers = undefined;
     if (message.thread) {
       thread = await this.includeUsersInMessageWithReplies(message.thread);
     }
@@ -494,9 +494,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       ...message,
       users: (await this.includeUsersInMessage(message)).users,
       last_replies,
-      highlighted_replies,
-      thread,
-    };
+      ...(highlighted_replies ? { highlighted_replies } : {}),
+      ...(thread ? { thread } : {}),
+    } as MessageWithRepliesWithUsers;
 
     return messageWithUsers;
   }
