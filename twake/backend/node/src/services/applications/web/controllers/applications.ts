@@ -185,7 +185,7 @@ export class ApplicationController
   ): Promise<ResourceCreateResponse<any>> {
     const context = getExecutionContext(request);
 
-    const content = request.body.content;
+    const content = request.body.data;
 
     const applicationEntity = await this.service.applications.get({
       id: request.params.application_id,
@@ -214,6 +214,8 @@ export class ApplicationController
       request.body.type,
       request.body.name,
       content,
+      request.body.company_id,
+      request.body.workspace_id,
     );
 
     return {

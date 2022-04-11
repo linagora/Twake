@@ -69,7 +69,6 @@ export class CompanyApplicationController
     }>,
   ): Promise<ResourceGetResponse<PublicApplicationObject>> {
     const context = getCompanyExecutionContext(request);
-
     const resource = await this.service.companyApplications.save(
       { application_id: request.params.application_id, company_id: context.company.id },
       {},

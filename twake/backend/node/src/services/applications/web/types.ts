@@ -11,4 +11,5 @@ export interface ApplicationEventRequestBody {
   type: string;
   name?: string;
   content: any;
+  data: any;
 }

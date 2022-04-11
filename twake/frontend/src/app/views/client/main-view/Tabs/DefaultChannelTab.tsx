@@ -35,7 +35,10 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
 
   const current = () => {
     return (
-      isArray(channel.connectors) && channel.connectors.map((id: string) => getApplication(id))
+      isArray(channel.connectors) &&
+      channel.connectors
+        .map((id: string) => getApplication(id))
+        .filter(application => application !== undefined)
     );
   };
 

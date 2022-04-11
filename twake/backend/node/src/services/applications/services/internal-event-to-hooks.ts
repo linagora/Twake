@@ -57,6 +57,8 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
       "hook",
       null,
       { message },
+      null,
+      null,
     );
   }
 }

@@ -38,7 +38,6 @@ class Service {
     await this.applications.init();
     await this.companyApplications.init();
     await this.companies.init();
-    await this.hooks.init();
 
     this.platformService.pubsub.processor.addHandler(
       new InternalToHooksProcessor(this.platformService, this),

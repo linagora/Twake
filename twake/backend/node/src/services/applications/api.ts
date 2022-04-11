@@ -64,6 +64,8 @@ export interface ApplicationHooksServiceAPI extends TwakeServiceProvider, Initia
     type: string,
     name: string,
     content: any,
+    company_id: string,
+    workspace_id: string,
   ): Promise<void>;
 }
 

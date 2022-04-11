@@ -25,6 +25,7 @@ import SideViewService from 'app/features/router/services/side-view-service';
 import MainViewService from 'app/features/router/services/main-view-service';
 import Emojione from 'app/components/emojione/emojione';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
+import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
 
 type Props = {
   onOpen?: () => void;
@@ -43,7 +44,11 @@ export default (props: Props) => {
     threadId: message.thread_id,
     id: message.thread_id,
   });
-
+  const { remove: removeLastEphemeral } = useEphemeralMessages({
+    companyId: context.companyId,
+    workspaceId: workspaceId || '',
+    channelId: channelId,
+  });
   const location = `message-${message.id}`;
   const subLocation = useContext(ViewContext).type;
   const { active: editorIsActive, set: setVisibleEditor } = useVisibleMessagesEditorLocation(
@@ -74,7 +79,7 @@ export default (props: Props) => {
       text: Languages.t('scenes.apps.messages.message.remove_button', [], 'Delete'),
       className: 'error',
       onClick: () => {
-        remove();
+        removeLastEphemeral();
       },
     });
   } else {
@@ -93,26 +98,28 @@ export default (props: Props) => {
       },
     });
 
-    //Fixme put back when jump to message is working
-    if (false)
-      menu.push({
-        type: 'menu',
-        icon: 'link',
-        text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
-        onClick: () => {
-          const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-            workspaceId: workspaceId,
-            channelId: channelId,
-            messageId: message.thread_id || message.id,
-          })}`;
-          const el = document.createElement('textarea');
-          el.value = url;
-          document.body.appendChild(el);
-          el.select();
-          document.execCommand('copy');
-          document.body.removeChild(el);
-        },
-      });
+    if (message.thread_id === message.id) {
+      if (!message.context?.disable_pin && false) {
+        menu.push({
+          type: 'menu',
+          icon: 'link',
+          text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
+          onClick: () => {
+            const url = `${document.location.origin}${RouterServices.generateRouteFromState({
+              workspaceId: workspaceId,
+              channelId: channelId,
+              messageId: message.thread_id || message.id,
+            })}`;
+            const el = document.createElement('textarea');
+            el.value = url;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+          },
+        });
+      }
+    }
 
     if (!message.context?.disable_pin)
       menu.push({
@@ -203,7 +210,7 @@ export default (props: Props) => {
         <div
           className="option"
           onClick={() => {
-            remove();
+            removeLastEphemeral();
           }}
         >
           <Trash2 size={16} />
