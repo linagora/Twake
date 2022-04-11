@@ -42,8 +42,8 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
 
   //Get myself as an application
   fastify.route({
-    method: "POST",
-    url: "/*", //Fixme probably not working that way
+    method: ["POST", "GET", "DELETE", "PUT"],
+    url: "/:service/:version/companies/:company_id/*",
     preValidation: [fastify.authenticate],
     handler: (request, reply) => controller.proxy.bind(controller)(request, reply, fastify),
   });

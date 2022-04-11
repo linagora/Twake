@@ -128,7 +128,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     for (const ref of refs.getEntities()) {
       const extendedThread = threads.find(th => th.id === ref.thread_id);
       if (extendedThread) {
-        extendedThread.highlighted_replies ||= [];
+        extendedThread.highlighted_replies = [];
         const message = await this.repository.findOne({
           thread_id: ref.thread_id,
           id: ref.message_id,

@@ -13,6 +13,7 @@ import { MessageToNotificationsProcessor } from "./processors/message-to-notific
 import { ResourceEventsPayload } from "../../../../utils/types";
 import _ from "lodash";
 import { StatisticsMessageProcessor } from "../../../statistics/pubsub/messages";
+import { MessageToHooksProcessor } from "./processors/message-to-hooks";
 import gr from "../../../global-resolver";
 
 export class MessagesEngine implements Initializable {
@@ -22,6 +23,7 @@ export class MessagesEngine implements Initializable {
   private userInboxViewProcessor: UserInboxViewProcessor;
   private filesViewProcessor: FilesViewProcessor;
   private messageToNotifications: MessageToNotificationsProcessor;
+  private messageToHooks: MessageToHooksProcessor;
 
   private threadRepository: Repository<Thread>;
 
@@ -45,6 +47,7 @@ export class MessagesEngine implements Initializable {
     await this.userMarkedViewProcessor.process(thread, e);
     await this.filesViewProcessor.process(thread, e);
     await this.messageToNotifications.process(thread, e);
+    await this.messageToHooks.process(thread, e);
 
     if (e.created) {
       for (const workspaceId of _.uniq(
@@ -70,6 +73,7 @@ export class MessagesEngine implements Initializable {
     await this.userInboxViewProcessor.init();
     await this.userMarkedViewProcessor.init();
     await this.filesViewProcessor.init();
+
     gr.platformServices.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor());
     gr.platformServices.pubsub.processor.addHandler(new StatisticsMessageProcessor());
 

@@ -1,6 +1,10 @@
 import { TwakePlatform } from "../core/platform/platform";
 import { ConsoleServiceAPI } from "./console/api";
-import { CompanyApplicationServiceAPI, MarketplaceApplicationServiceAPI } from "./applications/api";
+import {
+  ApplicationHooksServiceAPI,
+  CompanyApplicationServiceAPI,
+  MarketplaceApplicationServiceAPI,
+} from "./applications/api";
 import { StatisticsAPI } from "./statistics/types";
 import { CompaniesServiceAPI, UserExternalLinksService, UsersService } from "./user/api";
 import { CompanyServiceImpl } from "./user/services/companies";
@@ -65,6 +69,9 @@ import { PreviewServiceAPI } from "./previews/types";
 import { CronAPI } from "../core/platform/services/cron/api";
 import WebSocketAPI from "../core/platform/services/websocket/provider";
 import TrackerAPI from "../core/platform/services/tracker/provider";
+import { ApplicationHooksService } from "./applications/services/hooks";
+import { OnlineServiceAPI } from "./online/api";
+import OnlineServiceImpl from "./online/service";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -106,6 +113,7 @@ type TwakeServices = {
   applications: {
     marketplaceApps: MarketplaceApplicationServiceAPI;
     companyApps: CompanyApplicationServiceAPI;
+    hooks: ApplicationHooksServiceAPI;
   };
   files: FileServiceAPI;
   channels: {
@@ -114,6 +122,7 @@ type TwakeServices = {
   };
   channelPendingEmail: ChannelPendingEmailService;
   tab: TabService;
+  online: OnlineServiceAPI;
 };
 
 class GlobalResolver {
@@ -178,6 +187,7 @@ class GlobalResolver {
       applications: {
         marketplaceApps: await new ApplicationServiceImpl().init(),
         companyApps: await new CompanyApplicationServiceImpl().init(),
+        hooks: await new ApplicationHooksService().init(),
       },
       files: await new FileServiceImpl().init(),
       channels: {
@@ -186,6 +196,7 @@ class GlobalResolver {
       },
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
+      online: await new OnlineServiceImpl().init(),
     };
 
     Object.keys(this.services).forEach((key: keyof TwakeServices) => {

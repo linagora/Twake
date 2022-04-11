@@ -169,13 +169,11 @@ export default (props: Props) => {
       let data = {
         command: content.split(' ').slice(1).join(' '),
         channel: channel,
-        parent_message: parentMessage || null,
+        thread: parentMessage?.id ? parentMessage : null,
       };
 
       WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
-
       setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
-
       return;
     }
 
@@ -253,9 +251,10 @@ export default (props: Props) => {
 
     let data = {
       channel,
-      parent_message: (threadId ? parentMessage : null) || null,
+      parent_message: parentMessage?.id ? parentMessage : null,
       from_icon: from_icon,
     };
+
     WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
   };
 

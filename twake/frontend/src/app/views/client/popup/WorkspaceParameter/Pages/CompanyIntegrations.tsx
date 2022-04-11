@@ -12,13 +12,13 @@ import './Pages.scss';
 
 export default () => (
   <>
-    <Row wrap={false} align="middle" justify="space-between">
-      <Typography.Title level={1}>
+    <Row wrap={false} align="middle" justify="start">
+      <Typography.Title level={1} style={{ marginBottom: 0, marginRight: 16 }}>
         {Languages.t('scenes.app.integrations_parameters.title')}
       </Typography.Title>
 
       <Button
-        type="primary"
+        type="ghost"
         onClick={() =>
           ModalManager.open(<ApplicationCreator />, {
             position: 'center',

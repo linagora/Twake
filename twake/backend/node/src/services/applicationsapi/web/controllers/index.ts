@@ -14,12 +14,25 @@ import {
   RealtimeBaseBusEvent,
 } from "../../../../core/platform/services/realtime/types";
 import gr from "../../../global-resolver";
+import _ from "lodash";
 import { v4 } from "uuid";
 
 export class ApplicationsApiController {
   async token(
     request: FastifyRequest<{ Body: ApplicationLoginRequest }>,
   ): Promise<ResourceGetResponse<ApplicationLoginResponse>> {
+    const app = await gr.services.applications.marketplaceApps.get({
+      id: request.body.id,
+    });
+
+    if (!app) {
+      throw CrudException.forbidden("Application not found");
+    }
+
+    if (app.api.private_key !== request.body.secret) {
+      throw CrudException.forbidden("Secret key is not valid");
+    }
+
     return {
       resource: {
         access_token: gr.platformServices.auth.generateJWT(request.body.id, null, {
@@ -79,10 +92,46 @@ export class ApplicationsApiController {
     return { status: "ok" };
   }
 
-  async proxy(request: FastifyRequest, reply: FastifyReply, fastify: FastifyInstance) {
-    //TODO Check application access rights (write, read, remove for each micro services)
+  async proxy(
+    request: FastifyRequest<{ Params: { company_id: string; service: string; version: string } }>,
+    reply: FastifyReply,
+    fastify: FastifyInstance,
+  ) {
+    // Check the application has access to this company
+    const company_id = request.params.company_id;
+    const companyApplication = gr.services.applications.companyApps.get({
+      company_id,
+      application_id: request.currentUser.application_id,
+    });
+    if (!companyApplication) {
+      throw CrudException.forbidden("This application is not installed in the requested company");
+    }
 
-    //TODO save some statistics about API usage
+    const app = await gr.services.applications.marketplaceApps.get({
+      id: request.currentUser.application_id,
+    });
+
+    // Check call can be done from this IP
+    if (
+      app.api.allowed_ips.trim() &&
+      app.api.allowed_ips !== "*" &&
+      !_.includes(
+        app.api.allowed_ips
+          .split(",")
+          .map(a => a.trim())
+          .filter(a => a),
+        request.ip,
+      )
+    ) {
+      throw CrudException.forbidden(
+        `This application is not allowed to access from this IP (${request.ip})`,
+      );
+    }
+
+    //TODO Check application access rights (write, read, remove for each micro services)
+    const access = app.access;
+
+    //TODO save some statistics about API usage for application and per companies
 
     const route = request.url.replace("/api/", "/internal/services/");
 
@@ -90,6 +139,8 @@ export class ApplicationsApiController {
       {
         method: request.method as HTTPMethods,
         url: route,
+        payload: request.body as any,
+        headers: _.pick(request.headers, "authorization"),
       },
       (err, response) => {
         reply.headers(response.headers);

@@ -81,7 +81,7 @@ describe("Statistics implementation", () => {
   describe("On user use messages in channel view", () => {
     it("should create a message and retrieve it in channel view", async () => {
       const channel = channelUtils.getChannel();
-      await gr.services.channels.save(channel, {}, getContext());
+      await gr.services.channels.channels.save(channel, {}, getContext());
       const channelId = channel.id;
 
       //Reset global value because messages could have been created somewhere else

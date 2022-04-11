@@ -142,6 +142,9 @@
       "path": "/storage/"
     }
   },
+  "plugins": {
+    "server": "plugins:3100"
+  },
   "services": [
     "auth",
     "push",

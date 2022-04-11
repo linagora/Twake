@@ -129,6 +129,15 @@ export const DynamicComponent = ({
       </div>
     );
   }
+  if (type === 'iframe') {
+    return (
+      <iframe
+        src={data.src || ''}
+        title={'twacode-iframe-' + data.src}
+        style={{ height: data.height }}
+      />
+    );
+  }
   if (type === 'image') {
     return <img src={data.src} alt={data.alt || ''} className={'image twacode'} />;
   }
@@ -320,6 +329,9 @@ class PseudoMarkdownDictionary {
     },
     file: {
       object: (_child: any, object: any) => <DynamicComponent type="file" data={object} />,
+    },
+    iframe: {
+      object: (_child: any, object: any) => <DynamicComponent type="iframe" data={object} />,
     },
     image: {
       object: (_child: any, object: any, _eventContainer: any) => (

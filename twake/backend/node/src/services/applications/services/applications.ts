@@ -6,9 +6,8 @@ import Application, {
   TYPE,
 } from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger, logger as log } from "../../../core/platform/framework";
+import { logger } from "../../../core/platform/framework";
 import {
-  CrudException,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -18,11 +17,9 @@ import {
 } from "../../../core/platform/framework/api/crud-service";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import assert from "assert";
-import axios from "axios";
-import * as crypto from "crypto";
-import { isObject } from "lodash";
 
 import gr from "../../global-resolver";
+import { InternalToHooksProcessor } from "./internal-event-to-hooks";
 
 export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI {
   version: "1";
@@ -40,6 +37,9 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
       console.log(err);
       logger.error("Error while initializing applications service");
     }
+
+    gr.platformServices.pubsub.processor.addHandler(new InternalToHooksProcessor());
+
     return this;
   }
 
@@ -142,73 +142,5 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
     }
     entity.publication.published = false;
     await this.repository.save(entity);
-  }
-
-  async notifyApp(
-    application_id: string,
-    connection_id: string,
-    user_id: string,
-    type: string,
-    name: string,
-    content: any,
-  ): Promise<void> {
-    const app = await this.get({ id: application_id });
-    if (!app) {
-      throw CrudException.notFound("Application not found");
-    }
-
-    if (!app.api.hooks_url) {
-      throw CrudException.badRequest("Application hooks_url is not defined");
-    }
-
-    const payload = {
-      type,
-      name,
-      content,
-      connection_id: connection_id,
-      user_id: user_id,
-    };
-
-    const signature = crypto
-      .createHmac("sha256", app.api.private_key)
-      .update(JSON.stringify(payload))
-      .digest("hex");
-
-    return await axios
-      .post(app.api.hooks_url, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-Twake-Signature": signature,
-        },
-      })
-
-      .then(({ data }) => data)
-      .catch(e => {
-        log.error(e.message);
-        const r = e.response;
-
-        if (!r) {
-          throw CrudException.badGateway("Can't connect remote application");
-        }
-
-        let msg = r.data;
-
-        if (isObject(msg)) {
-          // parse typical responses
-          if (r.data.message) {
-            msg = r.data.message;
-          } else if (r.data.error) {
-            msg = r.data.error;
-          } else {
-            msg = JSON.stringify(r.data);
-          }
-        }
-
-        if (r.status == 403) {
-          throw CrudException.forbidden(msg);
-        } else {
-          throw CrudException.badRequest(msg);
-        }
-      });
   }
 }

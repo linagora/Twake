@@ -1,7 +1,10 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../../utils/types";
+import { HookType } from "../applicationsapi/types";
+import { Channel } from "../channels/entities";
 import { UserObject } from "../user/web/types";
 import { Message, MessageWithUsers } from "./entities/messages";
+import { Thread } from "./entities/threads";
 
 export type specialMention = "all" | "here" | "everyone" | "channel";
 
@@ -26,6 +29,12 @@ export type MessageNotification = {
 
   title: string;
   text: string;
+};
+
+export type MessageHook = HookType & {
+  channel: Channel;
+  thread: Thread;
+  message: Message;
 };
 
 export type MessageWithReplies = Message & {

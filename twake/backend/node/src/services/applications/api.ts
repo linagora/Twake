@@ -17,6 +17,14 @@ import {
   CompanyApplicationPrimaryKey,
   CompanyApplicationWithApplication,
 } from "./entities/company-application";
+import { CompaniesServiceAPI } from "../user/api";
+
+export interface ApplicationServiceAPI extends TwakeServiceProvider, Initializable {
+  applications: MarketplaceApplicationServiceAPI;
+  companyApplications: CompanyApplicationServiceAPI;
+  companies: CompaniesServiceAPI;
+  hooks: ApplicationHooksServiceAPI;
+}
 
 export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, Initializable {
   get(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<Application>;
@@ -44,6 +52,10 @@ export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, 
   publish(pk: ApplicationPrimaryKey): Promise<void>;
   unpublish(pk: ApplicationPrimaryKey): Promise<void>;
 
+  delete(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Application>>;
+}
+
+export interface ApplicationHooksServiceAPI extends TwakeServiceProvider, Initializable {
   notifyApp(
     application_id: string,
     connection_id: string,
@@ -51,9 +63,9 @@ export interface MarketplaceApplicationServiceAPI extends TwakeServiceProvider, 
     type: string,
     name: string,
     content: any,
+    company_id: string,
+    workspace_id: string,
   ): Promise<void>;
-
-  delete(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Application>>;
 }
 
 export interface CompanyApplicationServiceAPI
