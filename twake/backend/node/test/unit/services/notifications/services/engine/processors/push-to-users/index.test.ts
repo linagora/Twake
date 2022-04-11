@@ -19,7 +19,6 @@ import { MentionNotification } from "../../../../../../../../src/services/notifi
 import { uniqueId } from "lodash";
 import { PushNotificationToUsersMessageProcessor } from "../../../../../../../../src/services/notifications/services/engine/processors/push-to-users";
 import gr from "../../../../../../../../src/services/global-resolver";
-import { init, TestPlatform } from "../../../../../../../e2e/setup";
 
 describe("The PushNotificationToUsersMessageProcessor class", () => {
   let channel_id, company_id, workspace_id, thread_id;
