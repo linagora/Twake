@@ -10,12 +10,11 @@ import UsersService from 'app/features/users/services/current-user-service';
 import MemberChannelRow from 'app/views/client/channels-bar/Parts/Header/MemberChannelRow';
 
 import ObjectModal from 'components/object-modal/object-modal';
-import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { useChannelMembers } from 'app/features/channel-members/hooks/use-channel-members';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
-import { useSetUserList } from 'app/features/users/hooks/use-user-list';
+import { getUser, useSetUserList } from 'app/features/users/hooks/use-user-list';
 import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
 
 type PropsType = {
@@ -73,8 +72,8 @@ const ChannelMembersList = (props: PropsType) => {
     let userB = b;
 
     if (isMemberType) {
-      userA = DepreciatedCollections.get('users').find((a as ChannelMemberType).user_id);
-      userB = DepreciatedCollections.get('users').find((b as ChannelMemberType).user_id);
+      userA = getUser((a as ChannelMemberType).user_id || '');
+      userB = getUser((b as ChannelMemberType).user_id || '');
     }
 
     return UsersService.getFullName(userA as UserType).localeCompare(

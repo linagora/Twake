@@ -11,7 +11,6 @@ import Checkbox from 'components/inputs/checkbox.js';
 import Select from 'components/select/select.js';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Languages from 'app/features/global/services/languages-service';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 
 export default class EventsFilter extends React.Component {
   constructor(props) {
@@ -23,8 +22,7 @@ export default class EventsFilter extends React.Component {
   }
 
   render() {
-    const currentChannel =
-      Collections.get('channels').findByFrontId(ChannelsService.currentChannelFrontId) || {};
+    const currentChannel = {};
     return (
       <div className="search_filters">
         {!currentChannel.app_id && (

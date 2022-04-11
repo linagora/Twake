@@ -1,11 +1,22 @@
-# Twake 2022.Q1.899
+# Twake 2022.Q2.910
+
+### Messages
+
+- Copy paste images to message editor fixed
+- Large files preview is now available
+- Mentions are back in messages
+
+### General
+
+- New workspaces parameters page view
+
+# Twake 2022.Q1.890
 
 ### Messages
 
 - Shows that the last message was deleted on mobile channel list view
 - Now we can cancel failed file uploads
-- Add spell check to message editor, fix autocompletion for emojis
-- Copy paste images to message editor fixed
+- Add spell check to message editor
 
 ### General
 

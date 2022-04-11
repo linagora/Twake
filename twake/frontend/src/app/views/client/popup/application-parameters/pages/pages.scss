@@ -139,11 +139,12 @@
   }
 
   .app_editor {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    //box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
     margin: 15px;
     margin-top: 0px;
     border-radius: var(--border-radius-large);
     padding: 15px;
+    color: #000;
   }
 
   .application_search,
@@ -179,4 +180,18 @@
     width: auto;
     height: auto;
   }
+}
+
+.error-button {
+  color: var(--error);
+  border: 1px solid var(--error);
+  &:hover {
+    color: var(--error);
+
+    border: 1px solid var(--error);
+  }
+}
+
+.ant-switch:not(.ant-switch-checked) {
+  background-color: var(--grey-dark) !important;
 }

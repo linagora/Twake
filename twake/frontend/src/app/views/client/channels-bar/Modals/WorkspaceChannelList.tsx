@@ -9,7 +9,6 @@ import Languages from 'app/features/global/services/languages-service';
 import Icon from 'app/components/icon/icon';
 import ObjectModal from 'components/object-modal/object-modal';
 import SearchListContainer from './WorkspaceChannelList/SearchListContainer';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 import RouterServices from 'app/features/router/services/router-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import { UserType } from 'app/features/users/types/user';
@@ -22,18 +21,19 @@ import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-ch
 import { useSetUserList, useUserList } from 'app/features/users/hooks/use-user-list';
 import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
 export default () => {
   const [search, setSearch] = useState<string>('');
   const [limit, setLimit] = useState(10);
   const [cursor, setCursor] = useState<number>(-1);
-  const companyId = useRouterCompany();
   const list = listService.useWatcher(() => listService.list);
   const currentUserId: string = UsersService.getCurrentUserId();
   const inputRef = useRef<InputRef>(null);
   const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
   const { set: setUserList } = useSetUserList('WorkspaceChannelList');
   const { userList } = useUserList();
+  const { openDiscussion } = useDirectChannels();
 
   const { search: searchUserList, result: searchedUserList } = useSearchUserList({
     scope: 'company',
@@ -79,7 +79,7 @@ export default () => {
   };
 
   const upsertDirectMessage = async (userIds: string[]): Promise<void> => {
-    await ChannelsService.openDiscussion(userIds, companyId);
+    await openDiscussion(userIds);
     return ModalManager.closeAll();
   };
 

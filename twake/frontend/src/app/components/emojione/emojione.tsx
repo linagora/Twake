@@ -48,7 +48,7 @@ class EmojioneFallback extends Component<Props> {
   }
 }
 
-export default React.memo((props: Props) => {
+const Emojione = React.memo((props: Props) => {
   if (typeof props.type != 'string') {
     return <></>;
   }
@@ -108,3 +108,5 @@ export default React.memo((props: Props) => {
     </span>
   );
 });
+
+export default Emojione;

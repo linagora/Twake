@@ -6,7 +6,6 @@ import MentionSuggestion from './mention-suggestion';
 import { EditorSuggestionPlugin, SelectOrInsertOptions } from '../';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import WorkspaceService from 'app/deprecated/workspaces/workspaces';
-import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections';
 import { UserType } from 'app/features/users/types/user';
 import UserService from 'app/features/users/services/current-user-service';
 import RouterService from 'app/features/router/services/router-service';
@@ -15,6 +14,7 @@ import { ChannelMemberType } from 'app/features/channel-members/types/channel-me
 import { searchBackend, searchFrontend } from 'app/features/users/hooks/use-search-user-list';
 
 import './style.scss';
+import { getUser } from 'app/features/users/hooks/use-user-list';
 
 export const MENTION_TYPE = 'MENTION';
 const MENTION_CHAR = '@';
@@ -43,17 +43,18 @@ const resolver = async (
   const { companyId, workspaceId, channelId } = RouterService.getStateFromRoute();
 
   if (AccessRightsService.getCompanyLevel(WorkspaceService.currentGroupId) === 'guest') {
-    const users =
+    const users = (
       companyId && workspaceId && channelId
         ? await ChannelMembersAPIClient.list({ companyId, workspaceId, channelId })
         : ([] as ChannelMemberType[])
-            .map(member => DepreciatedCollections.get('users').find(member.user_id))
-            .filter(
-              (user: UserType) =>
-                `${user.username} ${user.first_name} ${user.last_name} ${user.email}`
-                  .toLocaleLowerCase()
-                  .indexOf(text.toLocaleLowerCase()) >= 0,
-            );
+    )
+      .map(member => getUser(member.user_id || ''))
+      .filter(
+        (user: UserType) =>
+          `${user.username} ${user.first_name} ${user.last_name} ${user.email}`
+            .toLocaleLowerCase()
+            .indexOf(text.toLocaleLowerCase()) >= 0,
+      );
 
     for (let j = 0; j < Math.min(max, users.length); j++) {
       result[j] = { ...users[j], ...{ autocomplete_id: j } };
@@ -62,32 +63,30 @@ const resolver = async (
     callback(result);
   } else {
     if (companyId && workspaceId) {
-      const resultFrontend = searchFrontend(text, {
-        companyId,
-        workspaceId,
-        scope: 'workspace',
-      });
+      const fn = () => {
+        const resultFrontend = searchFrontend(text, {
+          companyId,
+          workspaceId,
+          scope: 'workspace',
+        });
+
+        for (let j = 0; j < Math.min(max, resultFrontend.length); j++) {
+          result[j] = { ...resultFrontend[j], ...{ autocomplete_id: j } };
+        }
+
+        callback(result);
+      };
 
       searchBackend(text, {
         companyId,
         workspaceId,
         scope: 'workspace',
         callback: () => {
-          const resultFrontend = searchFrontend(text, {
-            companyId,
-            workspaceId,
-            scope: 'workspace',
-          });
-
-          callback([...resultFrontend]);
+          setTimeout(() => fn(), 500);
         },
       });
 
-      for (let j = 0; j < Math.min(max, resultFrontend.length); j++) {
-        result[j] = { ...resultFrontend[j], ...{ autocomplete_id: j } };
-      }
-
-      callback(result);
+      fn();
     }
   }
 };
@@ -159,7 +158,7 @@ export default (
     strategy: findMentionEntities,
     component: Mention,
   },
-  trigger: /\B@([^\B]+)$/,
+  trigger: /\B@([^\s.,)(@<>;:\/?!]+)$/, //We can't use \w because of accents
   resourceType: MENTION_TYPE,
   getTextDisplay: (mention: MentionSuggestionType) => mention.username,
   onSelected: (

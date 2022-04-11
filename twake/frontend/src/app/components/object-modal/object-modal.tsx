@@ -26,6 +26,7 @@ type PropsType = {
   titleTypographyStyle?: React.CSSProperties;
   className?: string;
   footerDividerStyle?: React.CSSProperties;
+  onClose?: () => void;
 };
 
 const { Header, Content, Footer } = Layout;
@@ -61,7 +62,7 @@ const ObjectModal: FC<PropsType> = (props: PropsType) => {
                 className={`m-icon-small square-button ${
                   props.headerStyle?.backgroundColor ? 'red' : ''
                 }`}
-                onClick={() => ModalManager.closeAll()}
+                onClick={() => (props?.onClose ? props.onClose() : ModalManager.closeAll())}
               />
             </Col>
           )) || <Col style={{ width: 32 }}></Col>}

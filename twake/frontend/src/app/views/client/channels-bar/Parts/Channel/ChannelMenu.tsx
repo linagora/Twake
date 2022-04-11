@@ -37,10 +37,26 @@ type PropsType = {
 };
 
 export default (props: PropsType): JSX.Element => {
+  const [showMenu, setShowMenu] = React.useState(false);
+
+  if (showMenu) {
+    return <FullMenu onClose={props.onClose} onClick={props.onClick} channel={props.channel} />;
+  }
+
+  return (
+    <>
+      <div className="more-icon" onMouseOver={() => setShowMenu(true)}>
+        <Icon type="ellipsis-h more-icon grey-icon" />
+      </div>
+    </>
+  );
+};
+
+const FullMenu = (props: PropsType): JSX.Element => {
   const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
+  const companyId = props.channel.company_id;
   const workspaceId = useRouterWorkspace();
   const { user: currentUser } = useCurrentUser();
-  const companyId = props.channel.company_id;
   const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
   const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
   const { Feature, FeatureNames } = useFeatureToggles();
@@ -316,13 +332,11 @@ export default (props: PropsType): JSX.Element => {
 
   return (
     <>
-      {!!menu.length && (
-        <div className="more-icon">
-          <Menu menu={menu} className="options" onClose={props.onClose}>
-            <Icon type="ellipsis-h more-icon grey-icon" onClick={props.onClick} />
-          </Menu>
-        </div>
-      )}
+      <div className="more-icon">
+        <Menu menu={menu} className="options" onClose={props.onClose}>
+          <Icon type="ellipsis-h more-icon grey-icon" onClick={props.onClick} />
+        </Menu>
+      </div>
     </>
   );
 };

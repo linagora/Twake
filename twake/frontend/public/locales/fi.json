@@ -863,5 +863,12 @@
     "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Kirjoita vähintään kolme kirjainta näyttäville käyttäjille",
     "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "Käyttäjiä ei löytynyt",
     "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Emojia ei löytynyt",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Komentoa ei löytynyt"
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Komentoa ei löytynyt",
+    "scenes.app.messages.input.parts.is_writing.message.user_is_writing": "{{$1}} kirjoittaa...",
+    "scenes.app.messages.input.parts.is_writing.message.users_are_writing": "{{$1}} ja {{$2}} kirjoittavat...",
+    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} ja {{$3}} lisää käyttäjiä kirjoittaa...",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "Yrityksesi on saavuttanut {{$1}} jäsenten enimmäisrajan. Ole kiltti ",
+    "components.locked_features_components.locked_invite_alert.message_link": "päivittää yritystäsi",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " kutsua lisää jäseniä.",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " ota yhteyttä yrityksesi omistajaan tai ylläpitäjään."
 }

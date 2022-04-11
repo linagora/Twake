@@ -132,6 +132,7 @@ class JWTStorage {
           LoginService.updateUser(callback);
         })
         .catch(async () => {
+          this.clear();
           if (await LoginService.pingServer()) (window as any).document.location.reload();
         });
       return;

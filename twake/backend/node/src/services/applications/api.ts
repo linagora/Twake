@@ -63,6 +63,8 @@ export interface ApplicationHooksServiceAPI extends TwakeServiceProvider, Initia
     name: string,
     content: any,
   ): Promise<void>;
+
+  delete(pk: ApplicationPrimaryKey, context?: ExecutionContext): Promise<DeleteResult<Application>>;
 }
 
 export interface CompanyApplicationServiceAPI

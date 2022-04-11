@@ -863,5 +863,12 @@
     "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Viết ít nhất ba chữ cái để hiển thị người dùng",
     "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "Không tìm thấy người dùng",
     "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Không tìm thấy biểu tượng cảm xúc",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Không tìm thấy lệnh"
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "Không tìm thấy lệnh",
+    "scenes.app.messages.input.parts.is_writing.message.user_is_writing": "{{$1}} đang viết ...",
+    "scenes.app.messages.input.parts.is_writing.message.users_are_writing": "{{$1}} và {{$2}} đang viết ...",
+    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} và {{$3}} người dùng khác đang viết ...",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "Công ty của bạn đã đạt đến giới hạn tối đa là {{$1}} thành viên. Xin vui lòng ",
+    "components.locked_features_components.locked_invite_alert.message_link": "nâng cấp công ty của bạn",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " để mời thêm thành viên.",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " liên hệ với chủ sở hữu hoặc quản trị viên của công ty bạn."
 }

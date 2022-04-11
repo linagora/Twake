@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import 'moment-timezone';
 import { MoreHorizontal, Smile, ArrowUpRight, Trash2 } from 'react-feather';
 
-import MessagesService from 'app/features/messages/services/messages-service';
 import EmojiPicker from 'components/emoji-picker/emoji-picker.js';
 import Menu from 'components/menus/menu.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
@@ -11,8 +10,6 @@ import AlertManager from 'app/features/global/services/alert-manager-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import WorkspaceUserRights from 'app/features/workspaces/services/workspace-user-rights-service';
 import User from 'app/features/users/services/current-user-service';
-import DragIndicator from '@material-ui/icons/DragIndicator';
-import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
 import RouterServices from 'app/features/router/services/router-service';
 import { Application } from 'app/features/applications/types/application';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
@@ -86,48 +83,53 @@ export default (props: Props) => {
       icon: 'arrow-up-right',
       text: Languages.t('scenes.apps.messages.message.show_button', [], 'Display'),
       onClick: () => {
-        MessagesService.showMessage(message.thread_id);
+        SideViewService.select(channel?.id || '', {
+          app: { identity: { code: 'messages' } } as Application,
+          context: {
+            viewType: 'channel_thread',
+            threadId: message.thread_id,
+          },
+        });
       },
     });
 
-    if (message.thread_id == message.id) {
-      if (!message.context?.disable_pin) {
-        menu.push({
-          type: 'menu',
-          icon: 'link',
-          text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
-          onClick: () => {
-            const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-              workspaceId: workspaceId,
-              channelId: channelId,
-              messageId: message.thread_id || message.id,
-            })}`;
-            const el = document.createElement('textarea');
-            el.value = url;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-          },
-        });
+    //Fixme put back when jump to message is working
+    if (false)
+      menu.push({
+        type: 'menu',
+        icon: 'link',
+        text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
+        onClick: () => {
+          const url = `${document.location.origin}${RouterServices.generateRouteFromState({
+            workspaceId: workspaceId,
+            channelId: channelId,
+            messageId: message.thread_id || message.id,
+          })}`;
+          const el = document.createElement('textarea');
+          el.value = url;
+          document.body.appendChild(el);
+          el.select();
+          document.execCommand('copy');
+          document.body.removeChild(el);
+        },
+      });
 
-        menu.push({
-          type: 'menu',
-          icon: 'map-pin',
-          text: Languages.t(
-            !message.pinned_info?.pinned_at
-              ? 'scenes.apps.messages.message.pin_button'
-              : 'scenes.apps.messages.message.unpin_button',
-            [],
-            'Pin message',
-          ),
-          className: 'option_button',
-          onClick: () => {
-            pin(!message.pinned_info?.pinned_at);
-          },
-        });
-      }
-    }
+    if (!message.context?.disable_pin)
+      menu.push({
+        type: 'menu',
+        icon: 'map-pin',
+        text: Languages.t(
+          !message.pinned_info?.pinned_at
+            ? 'scenes.apps.messages.message.pin_button'
+            : 'scenes.apps.messages.message.unpin_button',
+          [],
+          'Pin message',
+        ),
+        className: 'option_button',
+        onClick: () => {
+          pin(!message.pinned_info?.pinned_at);
+        },
+      });
 
     const apps =
       getCompanyApplications(Groups.currentGroupId).filter(
@@ -272,7 +274,6 @@ export default (props: Props) => {
               className="option"
               onClick={() => {
                 SideViewService.select(channelId, {
-                  collection: MainViewService.getViewCollection(),
                   app: { identity: { code: 'messages' } } as Application,
                   context: {
                     viewType: 'channel_thread',

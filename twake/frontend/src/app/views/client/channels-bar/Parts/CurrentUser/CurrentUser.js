@@ -84,7 +84,7 @@ export default class CurrentUser extends Component {
   }
 
   onClickUser(evt) {
-    this.state.showingMenu ? this.hideMenu() : this.showMenu();
+    this.showMenu();
     this.setState({ showingMenu: !this.state.showingMenu });
   }
 

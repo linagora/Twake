@@ -1,25 +1,11 @@
-import { beforeAll, describe, expect, it } from "@jest/globals";
+import * as crypto from "crypto";
+import { beforeAll, describe, expect, it, afterAll } from "@jest/globals";
+import { FastifyInstance, FastifyPluginCallback, FastifyRequest, FastifyReply } from "fastify";
+
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { Api } from "../utils.api";
-import {
-  FastifyInstance,
-  FastifyRegisterOptions,
-  FastifyPluginCallback,
-  FastifyRequest,
-  FastifyReply,
-} from "fastify";
-
 import { logger as log } from "../../../src/core/platform/framework";
-import WebServerAPI from "../../../src/core/platform/services/webserver/provider";
-import * as assert from "assert";
-import Application, {
-  ApplicationObject,
-  PublicApplicationObject,
-} from "../../../src/services/applications/entities/application";
-import { ResourceGetResponse } from "../../../src/utils/types";
-import { CrudException } from "../../../src/core/platform/framework/api/crud-service";
-import * as crypto from "crypto";
 
 let signingSecret = "";
 
@@ -40,10 +26,9 @@ describe("Application events", () => {
 
     postPayload.company_id = platform.workspace.company_id;
 
-    const createdApplication = await api.post(
-      "/internal/services/applications/v1/applications",
-      postPayload,
-    );
+    const createdApplication = await api.post("/internal/services/applications/v1/applications", {
+      resource: postPayload,
+    });
 
     appId = createdApplication.resource.id;
     signingSecret = createdApplication.resource.api.private_key;
@@ -51,7 +36,7 @@ describe("Application events", () => {
     ends();
 
     afterAll(done => {
-      platform.tearDown().then(done);
+      platform.tearDown().then(() => done());
     });
   });
 

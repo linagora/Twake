@@ -866,5 +866,9 @@
     "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "Neniu emoji trovita",
     "scenes.app.messages.input.parts.is_writing.message.user_is_writing": "{{$1}} skribas...",
     "scenes.app.messages.input.parts.is_writing.message.users_are_writing": "{{$1}} kaj {{$2}} skribas...",
-    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} kaj {{$3}} pliaj uzantoj skribas..."
+    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}, {{$2}} kaj {{$3}} pliaj uzantoj skribas...",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "Via firmao atingis ĝian maksimuman limon de {{$1}} membroj. Bonvolu ",
+    "components.locked_features_components.locked_invite_alert.message_link": "altgradigu vian kompanion",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " por inviti pliajn membrojn.",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " kontaktu la posedanton aŭ administranton de via kompanio."
 }

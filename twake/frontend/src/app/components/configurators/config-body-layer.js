@@ -1,10 +1,11 @@
-import React from "react";
+import React from 'react';
 
-import ConfiguratorsManager from "app/deprecated/Configurators/ConfiguratorsManager.js";
-import Twacode from "components/twacode/twacode";
-import WorkspacesApps from "app/deprecated/workspaces/workspaces_apps.js";
-import CloseIcon from "@material-ui/icons/CloseOutlined";
-import "./configurators.scss";
+import ConfiguratorsManager from 'app/deprecated/Configurators/ConfiguratorsManager.js';
+import Twacode from 'components/twacode/twacode';
+import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
+import CloseIcon from '@material-ui/icons/CloseOutlined';
+import './configurators.scss';
+import Blocks from '../../views/applications/messages/message/parts/Blocks';
 
 /*
   Where the configurators will be displayed, this component should be in app.js (menus should be over all elements of the page)
@@ -40,7 +41,7 @@ export default class ConfigBodyLayer extends React.Component {
     this.configurator =
       ConfiguratorsManager.currentConfigurators[
         ConfiguratorsManager.configurator_order[ConfiguratorsManager.configurator_order.length - 1]
-        ];
+      ];
   }
   onAction(type, id, context, passives, evt) {
     if (type == 'interactive_action') {
@@ -56,6 +57,7 @@ export default class ConfigBodyLayer extends React.Component {
         interactive_context: context,
         form: passives,
         hidden_data: this.configurator.hidden_data,
+        configurator_id: this.configurator.id,
       };
       WorkspacesApps.notifyApp(app_id, type, event, data);
     }
@@ -86,15 +88,10 @@ export default class ConfigBodyLayer extends React.Component {
                 <div
                   className="app_logo"
                   style={{
-                    backgroundImage:
-                      'url(' +
-                      (this.configurator.app.identity?.icon) +
-                      ')',
+                    backgroundImage: 'url(' + this.configurator.app.identity?.icon + ')',
                   }}
                 />
-                <div className="app_name">
-                  { this.configurator.app.identity?.name}
-                </div>
+                <div className="app_name">{this.configurator.app.identity?.name}</div>
 
                 <CloseIcon
                   className="m-icon-medium close"
@@ -104,14 +101,14 @@ export default class ConfigBodyLayer extends React.Component {
                 />
               </div>
               <div className="content">
-                <Twacode
+                <Blocks
                   className="allow_selection"
-                  id={'configurator'}
-                  content={this.configurator.form}
-                  isApp={true}
+                  blocks={this.configurator.form}
+                  fallback={''}
                   onAction={(type, id, context, passives, evt) =>
                     this.onAction(type, id, context, passives, evt)
                   }
+                  allowAdvancedBlocks={true}
                 />
               </div>
             </div>

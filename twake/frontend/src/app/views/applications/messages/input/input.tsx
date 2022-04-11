@@ -4,10 +4,11 @@ import { Send } from 'react-feather';
 import { EditorState } from 'draft-js';
 import { Tooltip } from 'antd';
 
+import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 import InputOptions from './parts/InputOptions';
 import EphemeralMessages from './parts/EphemeralMessages';
 import MessageEditorsManager from 'app/features/messages/services/message-editor-service-factory';
-import MessagesService from 'app/features/messages/services/messages-service';
+import MenusManager from 'app/components/menus/menus-manager.js';
 import PendingAttachments from './parts/PendingAttachments';
 import RichTextEditorStateService from 'app/components/rich-text-editor/editor-state-service';
 import { EditorView } from 'app/components/rich-text-editor';
@@ -25,12 +26,20 @@ import {
   useChannelWritingActivityEmit,
   useWritingDetector,
 } from 'app/features/channels/hooks/use-channel-writing-activity';
-import { getCompanyApplications } from 'app/features/applications/state/company-applications';
+import {
+  getCompanyApplication,
+  getCompanyApplications,
+} from 'app/features/applications/state/company-applications';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 
 import './input.scss';
+import { Application } from 'app/features/applications/types/application';
+import MessageExternalFilePicker from './parts/MessageExternalFilePicker';
+import FilePicker from 'app/components/drive/file-picker/file-picker';
+import { MessageFileType } from 'app/features/messages/types/message';
+import { ChannelType } from 'app/features/channels/types/channel';
 
 type Props = {
   messageId?: string;
@@ -64,7 +73,7 @@ export default (props: Props) => {
     key: editorId,
   } = useMessageEditor({
     companyId,
-    workspaceId: channel.workspace_id || '',
+    workspaceId: channel?.workspace_id || '',
     channelId: props.channelId,
     threadId: props.threadId,
     messageId: props.messageId,
@@ -165,6 +174,8 @@ export default (props: Props) => {
 
       WorkspacesApps.notifyApp(app.id, 'action', 'command', data);
 
+      setEditorState(RichTextEditorStateService.clear(editorId).get(editorId));
+
       return;
     }
 
@@ -180,7 +191,73 @@ export default (props: Props) => {
       return;
     }
     disable_app[app.id] = new Date().getTime();
-    MessagesService.triggerApp(channel, parentMessage, app, from_icon, evt);
+
+    const threadId = parentMessage.id;
+
+    if (app?.identity?.code === 'twake_drive') {
+      let menu = [];
+      let has_drive_app = getCompanyApplication(app.id);
+
+      if (has_drive_app) {
+        menu.push({
+          type: 'react-element',
+          reactElement: () => {
+            let fileHandler: (file: MessageFileType) => void;
+            return (
+              <MessageExternalFilePicker
+                channel={channel as ChannelType}
+                threadId={threadId}
+                setHandler={handler => (fileHandler = handler)}
+              >
+                <FilePicker
+                  mode="select_file"
+                  onChoose={(file: any) => {
+                    if (fileHandler)
+                      fileHandler({
+                        metadata: {
+                          external_id: {
+                            id: file.id,
+                            workspace_id: file.workspace_id,
+                            parent_id: file.parent_id,
+                            company_id: channel?.company_id || '',
+                          },
+                          source: 'drive',
+                          name: file.name,
+                          size: parseInt(file.size),
+                          mime: FileUploadAPIClient.extensionToMime(file.extension),
+                          thumbnails: file.preview_has_been_generated
+                            ? [
+                                {
+                                  mime: 'image/png',
+                                  url: file.preview_link,
+                                },
+                              ]
+                            : [],
+                        },
+                      });
+                  }}
+                />
+              </MessageExternalFilePicker>
+            );
+          },
+        });
+      }
+
+      MenusManager.openMenu(menu, { x: evt.clientX, y: evt.clientY }, 'center', {});
+      return;
+    }
+
+    if ((app as Application).display?.twake?.chat?.input) {
+      WorkspacesApps.openAppPopup(app.id);
+    }
+
+    let data = {
+      channel,
+      parent_message: parentMessage?.id ? parentMessage : null,
+      from_icon: from_icon,
+    };
+
+    WorkspacesApps.notifyApp(app.id, 'action', 'open', data);
   };
 
   const focus = () => {
@@ -204,10 +281,7 @@ export default (props: Props) => {
 
   const onUpArrow = (e: any): void => {
     if (isEmpty()) {
-      MessagesService.startEditingLastMessage({
-        channel_id: props.channelId,
-        parent_message_id: props.threadId,
-      });
+      //TODO
     }
   };
 
@@ -291,7 +365,7 @@ export default (props: Props) => {
       >
         <EphemeralMessages
           channelId={props.channelId || ''}
-          workspaceId={channel.workspace_id || ''}
+          workspaceId={channel?.workspace_id || ''}
           threadId={props.threadId}
           onHasEphemeralMessage={() => {
             if (!hasEphemeralMessage) {

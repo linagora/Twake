@@ -40,6 +40,7 @@ export type MessageHook = HookType & {
 
 export type MessageWithReplies = Message & {
   last_replies: Message[];
+  thread?: MessageWithReplies;
   highlighted_replies?: Message[];
   stats: {
     last_activity: number;
@@ -49,6 +50,8 @@ export type MessageWithReplies = Message & {
 
 export type MessageWithRepliesWithUsers = MessageWithReplies & {
   last_replies: MessageWithUsers[];
+  thread?: MessageWithRepliesWithUsers;
+  highlighted_replies?: MessageWithUsers[];
   users: UserObject[];
 };
 
@@ -82,9 +85,10 @@ export interface PaginationQueryParameters {
   direction?: "history" | "future";
 }
 export interface MessageViewListOptions {
-  include_users: boolean;
-  replies_per_thread: number;
-  emojis: boolean;
+  include_users?: boolean;
+  replies_per_thread?: number;
+  flat?: boolean;
+  emojis?: boolean;
 }
 
 export interface MessageListQueryParameters extends PaginationQueryParameters {
@@ -124,4 +128,14 @@ export type SearchMessageOptions = {
   channelId?: string;
   hasFiles?: boolean;
   sender?: string;
+};
+
+export type FlatFileFromMessage = {
+  file: any;
+  thread: any;
+};
+
+export type FlatPinnedFromMessage = {
+  message: any;
+  thread: any;
 };

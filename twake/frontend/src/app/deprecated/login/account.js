@@ -2,6 +2,7 @@ import Api from 'app/features/global/framework/api-service';
 import Languages from 'app/features/global/services/languages-service';
 import DepreciatedCollections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import Login from '../../features/auth/login-service';
+import { getUser } from '../../features/users/hooks/use-user-list';
 
 /**
  * This service is depreciated as Twake will exclusively use Console in the future
@@ -217,29 +218,7 @@ class Account {
   }
 
   verifySecondMail(mail, code, cb, thot) {
-    var that = this;
-    that.loading = true;
-    that.error_secondary_mail_already = false;
-    that.error_code = false;
-    that.notify();
-    Api.post(
-      '/ajax/users/account/addmailverify',
-      { code: code, token: this.addmail_token },
-      function (res) {
-        that.loading = false;
-        if (res.errors.length > 0) {
-          that.error_code = true;
-          that.notify();
-        } else {
-          var user = DepreciatedCollections.get('users').find(that.currentUserId);
-          user.mails.push({ email: mail, main: false, id: res.data.idMail });
-          DepreciatedCollections.get('users').updateObject(user);
-          that.error_code = false;
-          cb(thot);
-          that.notify();
-        }
-      },
-    );
+    //unimplemented
   }
 }
 

@@ -14,6 +14,8 @@ type ScrollerRef = {
 
 type InstanceType = { [key: string]: HiddenNotificationService };
 
+let executionTimeout: any = 0;
+
 class HiddenNotificationService extends Observable {
   beacons: BeaconRef[] = [];
   scroller: ScrollerRef = { node: undefined, top: undefined };
@@ -59,7 +61,8 @@ class HiddenNotificationService extends Observable {
   private detectHiddenBeacons(evt: any = null) {
     if (!this.scroller.node) return;
 
-    setTimeout(() => {
+    clearTimeout(executionTimeout);
+    executionTimeout = setTimeout(() => {
       if (!this.scroller.node) {
         return;
       }

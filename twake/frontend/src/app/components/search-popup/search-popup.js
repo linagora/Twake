@@ -5,13 +5,13 @@ import UserService from 'app/features/users/services/current-user-service';
 import './search-popup.scss';
 import InputIcon from 'components/inputs/input-icon.js';
 import QuickResult from './parts/quick-result.js';
-import MessagesFilter from './parts/messages-filter.js';
 import Tabs from 'components/tabs/tabs.js';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import moment from 'moment';
 import Languages from 'app/features/global/services/languages-service';
 import userAsyncGet from 'app/features/users/utils/async-get';
+import MessagesFilter from './parts/messages-filter.js';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {

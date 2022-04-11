@@ -33,11 +33,11 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
 
   if (selected && tab) {
     MainViewService.select(MainViewService.getId(), {
-      collection: MainViewService.getConfiguration().collection,
       context: {
         tabId: tab.id,
         configuration: tab.configuration || {},
         name: tab.name,
+        type: 'application',
       },
       app: getApplication(tab.application_id || ''),
       hasTabs: MainViewService.getConfiguration().hasTabs,
@@ -74,7 +74,7 @@ export default ({ selected, tabId, currentUserId }: PropsType): JSX.Element => {
                     <TabsTemplateEditor tab={tab} onChangeTabs={(item: TabType) => save(item)} />,
                     {
                       position: 'center',
-                      size: { width: '500px', minHeight: '329px' },
+                      size: { width: '600px', minHeight: '329px' },
                     },
                   ),
               },

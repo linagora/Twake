@@ -9,7 +9,6 @@ import { AlertTriangle } from 'react-feather';
 import { useRecoilState } from 'recoil';
 
 import User from 'app/features/users/services/current-user-service';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import UserCard from 'app/components/user-card/user-card';
 import Emojione from 'components/emojione/emojione';
@@ -24,6 +23,7 @@ import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import { useUser } from 'app/features/users/hooks/use-user';
 import { UserType } from 'app/features/users/types/user';
 import { CompanyApplicationsStateFamily } from 'app/features/applications/state/company-applications';
+import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
 type Props = {
   linkToThread?: boolean;
@@ -35,6 +35,7 @@ export default (props: Props) => {
   const channelId = useRouterChannel();
   const workspaceId = useRouterWorkspace();
   const [messageLink, setMessageLink] = useState('');
+  const { openDiscussion } = useDirectChannels();
 
   const context = useContext(MessageContext);
   let { message } = useMessage(context);
@@ -72,7 +73,7 @@ export default (props: Props) => {
             reactElement: () => (
               <UserCard
                 user={user as UserType}
-                onClick={() => ChannelsService.openDiscussion([(user as UserType).id])}
+                onClick={() => openDiscussion([(user as UserType).id || ''])}
               />
             ),
           },

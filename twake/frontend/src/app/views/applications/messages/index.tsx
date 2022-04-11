@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { ChannelResource } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import Messages from './messages';
 import { ViewConfiguration } from 'app/features/router/services/app-view-service';
 
 import './messages.scss';
 
 type Props = {
-  channel: ChannelResource;
+  channel: ChannelType;
   tab?: any;
   options: ViewConfiguration;
 };

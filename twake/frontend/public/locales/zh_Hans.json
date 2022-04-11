@@ -863,5 +863,12 @@
     "components.rich_text_editor.plugins.suggestions.default_message.display_results": "至少写三个字母来显示用户",
     "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "未找到用户",
     "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "未找到表情符号",
-    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "未找到命令"
+    "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "未找到命令",
+    "scenes.app.messages.input.parts.is_writing.message.users_and_more_are_writing": "{{$1}}、{{$2}} 和 {{$3}} 更多用户正在写...",
+    "scenes.app.messages.input.parts.is_writing.message.user_is_writing": "{{$1}} 正在写...",
+    "scenes.app.messages.input.parts.is_writing.message.users_are_writing": "{{$1}} 和 {{$2}} 正在写入...",
+    "components.locked_features_components.locked_invite_alert.message_link": "升级您的公司",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " 联系您公司的所有者或管理员。",
+    "components.locked_features_components.locked_invite_alert.message_part_1": "贵公司已达到 {{$1}} 成员的最大限制。请 ",
+    "components.locked_features_components.locked_invite_alert.message_part_2": " 邀请更多成员。"
 }

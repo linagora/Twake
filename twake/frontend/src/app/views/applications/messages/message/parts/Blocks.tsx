@@ -2,6 +2,9 @@ import Twacode from 'app/components/twacode/twacode';
 import React, { ReactNode, Suspense } from 'react';
 import Markdown from 'markdown-to-jsx';
 import HighlightedCode from 'app/components/highlighted-code/highlighted-code';
+import { preparse, preunparse } from './Blocks.utils';
+import User from 'components/twacode/blocks/user';
+import Chan from 'components/twacode/blocks/chan';
 
 type Props = {
   blocks: any;
@@ -11,6 +14,7 @@ type Props = {
 };
 
 const Code = ({ className, children }: { className: string; children: string }) => {
+  children = preunparse(children);
   if (children.split('\n').length === 1) {
     return <code>{children}</code>;
   }
@@ -31,13 +35,26 @@ export default React.memo((props: Props) => {
       <div className="markdown">
         <Markdown
           options={{
-            disableParsingRawHTML: true,
             overrides: {
               code: {
                 component: Code,
               },
               a: {
                 component: Link,
+              },
+              user: {
+                component: ({ id }) => (
+                  <>
+                    <User hideUserImage={false} username={id} />{' '}
+                  </>
+                ),
+              },
+              channel: {
+                component: ({ id }) => (
+                  <>
+                    <Chan id={id} name={id} />{' '}
+                  </>
+                ),
               },
               h1: ({ children }) => children,
               h2: ({ children }) => children,
@@ -48,9 +65,7 @@ export default React.memo((props: Props) => {
             },
           }}
         >
-          {(props.fallback || '')
-            //Fix markdown simple line break
-            .replace(/\n/g, '  \n')}
+          {preparse(props.fallback || '')}
         </Markdown>
       </div>
     ) : (

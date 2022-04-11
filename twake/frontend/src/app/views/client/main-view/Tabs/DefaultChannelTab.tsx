@@ -8,7 +8,7 @@ import Languages from 'app/features/global/services/languages-service';
 import popupManager from 'app/deprecated/popupManager/popupManager.js';
 import WorkspaceParameter from '../../popup/WorkspaceParameter/WorkspaceParameter';
 import { Application } from 'app/features/applications/types/application';
-import { ChannelResource } from 'app/features/channels/types/channel';
+import { ChannelType } from 'app/features/channels/types/channel';
 import Collections from 'app/deprecated/CollectionsReact/Collections';
 import ConnectorsListManager from 'app/components/connectors-list-manager/connectors-list-manager';
 import MainViewService from 'app/features/router/services/main-view-service';
@@ -17,35 +17,30 @@ import AccessRightsService from 'app/features/workspace-members/services/workspa
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 import { getCompanyApplications } from 'app/features/applications/state/company-applications';
 import Groups from 'app/deprecated/workspaces/groups.js';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 export default ({ selected }: { selected: boolean }): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
-
-  const collectionPath = `/channels/v1/companies/${companyId}/workspaces/${workspaceId}/channels/::mine`;
-  const channelsCollections = Collections.get(collectionPath, ChannelResource);
-  const channelResource: ChannelResource = channelsCollections.useWatcher({ id: channelId })[0];
+  const { channel, save: saveChannel } = useChannel(channelId || '');
 
   const configureChannelConnector = (app: Application): void => {
     return WorkspacesApps.notifyApp(app.id, 'configuration', 'channel', {
-      channel: channelResource.data,
+      channel: channel,
     });
   };
 
   const onChange = (ids: string[]): void => {
-    channelResource.data.connectors = ids;
-    channelsCollections.upsert(channelResource);
+    saveChannel({ ...channel, connectors: ids });
   };
 
   const current = () => {
     return (
-      isArray(channelResource.data.connectors) &&
-      channelResource.data.connectors.map((id: string) => getApplication(id))
+      isArray(channel.connectors) && channel.connectors.map((id: string) => getApplication(id))
     );
   };
 
   if (selected) {
     MainViewService.select(MainViewService.getId(), {
-      collection: MainViewService.getConfiguration().collection,
       app: {
         identity: {
           code: 'messages',
@@ -57,7 +52,7 @@ export default ({ selected }: { selected: boolean }): JSX.Element => {
           compatibility: [],
         },
       },
-      context: null,
+      context: { type: 'channel' },
       hasTabs: MainViewService.getConfiguration().hasTabs,
     });
   }

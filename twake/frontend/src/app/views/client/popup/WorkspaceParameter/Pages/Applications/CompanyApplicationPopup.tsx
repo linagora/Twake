@@ -5,7 +5,7 @@ import { capitalize } from 'lodash';
 import { Check } from 'react-feather';
 import { Tabs, Button, Typography, Col, Tag, Descriptions, Row, Divider } from 'antd';
 
-import { Application, ApplicationAccess } from 'app/features/applications/types/application';
+import { Application } from 'app/features/applications/types/application';
 import Languages from 'app/features/global/services/languages-service';
 import AvatarComponent from 'app/components/avatar/avatar';
 import ObjectModal from 'app/components/object-modal/object-modal';
@@ -24,7 +24,7 @@ const { Text, Link, Title } = Typography;
 const { Item } = Descriptions;
 
 const InformationsDescriptions = ({ application }: { application: Application }) => {
-  const createdDate = moment(application.stats.createdAt).format('L');
+  const createdDate = moment(application.stats.created_at).format('L');
 
   return (
     <Descriptions layout="vertical" bordered>
@@ -76,7 +76,7 @@ const AccessDescriptions = ({ application }: { application: Application }) => (
       const values: string[] = (application.access as any)[key];
 
       return (
-        <Item label={capitalize(key === 'hooks' ? 'listened events' : key)} span={3}>
+        <Item key={key} label={capitalize(key === 'hooks' ? 'listened events' : key)} span={3}>
           {values?.length > 0 ? (
             values.map(v => <Tag color="var(--success)">{v}</Tag>)
           ) : (

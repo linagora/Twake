@@ -11,7 +11,6 @@ import NewFolderIcon from '@material-ui/icons/CreateNewFolderOutlined';
 import Menu from 'components/menus/menu.js';
 import Button from 'components/buttons/button.js';
 import Input from 'components/inputs/input.js';
-import ChannelsService from 'app/deprecated/channels/channels.js';
 import './file-picker.scss';
 
 export default class FilePicker extends React.Component {
@@ -98,10 +97,7 @@ export default class FilePicker extends React.Component {
       .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
     var allow_go_parent = true;
-    var drive_channel = ChannelsService.getChannelForApp(
-      (Collections.get('applications').findBy({ code: 'twake_drive' })[0] || {}).id,
-      Workspaces.currentWorkspaceId,
-    );
+    var drive_channel = null;
     if (!drive_channel && (this.props.initialDirectory || {}).id == directory_id) {
       allow_go_parent = false;
     }

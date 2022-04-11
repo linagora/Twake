@@ -1,11 +1,10 @@
-import { beforeAll, describe, expect, it } from "@jest/globals";
+import { beforeAll, describe, expect, it, afterAll } from "@jest/globals";
+
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { Api } from "../utils.api";
 import { logger as log } from "../../../src/core/platform/framework";
-import { randomBytes } from "crypto";
 import { ApplicationLoginResponse } from "../../../src/services/applicationsapi/web/types";
-import { cloneDeep } from "lodash";
 
 describe("Applications", () => {
   let platform: TestPlatform;
@@ -23,10 +22,9 @@ describe("Applications", () => {
 
     postPayload.company_id = platform.workspace.company_id;
 
-    const createdApplication = await api.post(
-      "/internal/services/applications/v1/applications",
-      postPayload,
-    );
+    const createdApplication = await api.post("/internal/services/applications/v1/applications", {
+      resource: postPayload,
+    });
 
     appId = createdApplication.resource.id;
     private_key = createdApplication.resource.api.private_key;
@@ -35,7 +33,7 @@ describe("Applications", () => {
   });
 
   afterAll(done => {
-    platform.tearDown().then(done);
+    platform.tearDown().then(() => done());
   });
 
   describe("Login", function () {

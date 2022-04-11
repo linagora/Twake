@@ -5,18 +5,6 @@
   }
 
   .main {
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    padding-left: calc(50vw - 520px);
-    box-sizing: border-box;
-
-    .sideBar {
-      width: 220px;
-      padding-top: 20vh;
-      margin-left: 15px;
-    }
     .content {
       flex: 1;
       margin-left: 20px;
@@ -26,11 +14,6 @@
       overflow: auto;
       padding-bottom: 40px;
       box-sizing: border-box;
-      padding-top: 20vh;
-
-      & > * {
-        max-width: 600px;
-      }
 
       .title {
         margin-bottom: 10px;

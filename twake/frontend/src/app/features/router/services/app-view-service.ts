@@ -12,9 +12,9 @@ export type ViewTypes =
 
 export type ViewConfiguration = {
   app?: Partial<Application>; //In depreciated app is used
-  collection?: any;
   context:
     | {
+        type: 'application' | 'channel';
         tabId?: string;
         configuration?: object;
       }
@@ -35,7 +35,6 @@ const defaultConfiguration: ViewConfiguration = {
       compatibility: [],
     },
   },
-  collection: null,
   context: null,
   hasTabs: false,
 };
