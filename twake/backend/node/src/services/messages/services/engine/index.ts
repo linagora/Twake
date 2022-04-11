@@ -34,6 +34,7 @@ export class MessagesEngine implements Initializable {
     this.userInboxViewProcessor = new UserInboxViewProcessor();
     this.filesViewProcessor = new FilesViewProcessor();
     this.messageToNotifications = new MessageToNotificationsProcessor();
+    this.messageToHooks = new MessageToHooksProcessor();
   }
 
   async dispatchMessage(e: MessageLocalEvent) {
