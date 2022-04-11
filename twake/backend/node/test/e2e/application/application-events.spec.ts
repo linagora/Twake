@@ -1,14 +1,12 @@
 import * as crypto from "crypto";
-import { beforeAll, describe, expect, it, afterAll } from "@jest/globals";
-import { FastifyInstance, FastifyPluginCallback, FastifyRequest, FastifyReply } from "fastify";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
+import { FastifyInstance, FastifyPluginCallback, FastifyReply, FastifyRequest } from "fastify";
 
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { Api } from "../utils.api";
-import { FastifyInstance, FastifyPluginCallback, FastifyReply, FastifyRequest } from "fastify";
 
 import { logger as log } from "../../../src/core/platform/framework";
-import * as crypto from "crypto";
 
 let signingSecret = "";
 

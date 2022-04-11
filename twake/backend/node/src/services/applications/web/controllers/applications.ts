@@ -154,7 +154,7 @@ export class ApplicationController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
-    const deleteResult = await this.service.applications.delete(
+    const deleteResult = await gr.services.applications.marketplaceApps.delete(
       {
         id: request.params.application_id,
       },

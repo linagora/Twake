@@ -3,7 +3,6 @@ import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
 
 import Application from "../entities/application";
-import assert from "assert";
 import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
 import { logger as log } from "../../../core/platform/framework";
 import { hasCompanyAdminLevel } from "../../../utils/company";
@@ -26,12 +25,12 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
       let companyId: string = request.body?.resource?.company_id;
 
       if (request.params.application_id) {
-        const application = await options.service.applications.get({
+        const application = await gr.services.applications.marketplaceApps.get({
           id: request.params.application_id,
         });
 
         if (!application) {
-          throw fastify.httpErrors.notFound(`Application is not defined`);
+          throw fastify.httpErrors.notFound("Application is not defined");
         }
 
         companyId = application.company_id;
@@ -43,7 +42,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
         throw fastify.httpErrors.forbidden(`Company ${companyId} not found`);
       }
 
-      const companyUser = await options.service.companies.getCompanyUser(
+      const companyUser = await gr.services.companies.getCompanyUser(
         { id: companyId },
         { id: userId },
       );
