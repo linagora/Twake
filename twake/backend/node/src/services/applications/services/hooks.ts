@@ -37,6 +37,10 @@ export class ApplicationHooksService implements ApplicationHooksServiceAPI {
     readonly applicationService: MarketplaceApplicationServiceAPI,
   ) {}
 
+  async init() {
+    return this;
+  }
+
   async notifyApp(
     application_id: string,
     connection_id: string,
