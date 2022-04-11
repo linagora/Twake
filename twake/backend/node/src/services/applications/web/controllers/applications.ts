@@ -185,7 +185,7 @@ export class ApplicationController
   ): Promise<ResourceCreateResponse<any>> {
     const context = getExecutionContext(request);
 
-    const content = request.body.content;
+    const content = request.body.data;
 
     const applicationEntity = await this.service.applications.get({
       id: request.params.application_id,
@@ -207,13 +207,15 @@ export class ApplicationController
     if (!companyUser || !hasCompanyAdminLevel(companyUser.role))
       throw CrudException.forbidden("You must be company admin");
 
-    const hookResponse = await this.service.applications.notifyApp(
+    const hookResponse = await this.service.hooks.notifyApp(
       request.params.application_id,
       request.body.connection_id,
       context.user.id,
       request.body.type,
       request.body.name,
       content,
+      request.body.company_id,
+      request.body.workspace_id,
     );
 
     return {

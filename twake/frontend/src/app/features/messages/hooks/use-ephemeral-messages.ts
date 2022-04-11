@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { atomFamily, useRecoilCallback, useRecoilState } from 'recoil';
 import { AtomChannelKey } from '../state/atoms/messages';
 import { useSetMessage } from './use-message';
-
+import { v4 as uuidv4 } from 'uuid';
 const EphemeralMessageState = atomFamily<NodeMessage | null, AtomChannelKey>({
   key: 'EphemeralMessageState',
   default: key => null,
@@ -28,6 +28,8 @@ export const useEphemeralMessages = (key: AtomChannelKey) => {
         const message = event as NodeMessage;
         const lastEphemeral = getLastEphemeral(key);
         if (message.ephemeral) {
+          message.id = uuidv4();
+          console.log('MESSAGE INS USE EPHEMERAL : ', message);
           if (
             message.subtype === 'deleted' &&
             (message.id === lastEphemeral?.id ||

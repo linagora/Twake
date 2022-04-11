@@ -24,7 +24,11 @@ export default interface AuthServiceAPI extends TwakeServiceProvider {
   generateJWT(
     userId: uuid,
     email: string,
-    options: { track: boolean; provider_id: string; application_id?: string },
+    options: {
+      track: boolean;
+      provider_id: string;
+      application_id?: string;
+    } & any,
   ): AccessToken;
 }
 

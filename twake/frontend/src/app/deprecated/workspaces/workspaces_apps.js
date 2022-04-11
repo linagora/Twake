@@ -8,6 +8,8 @@ import Groups from './groups.js';
 import Workspaces from './workspaces.js';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import Icon from 'app/components/icon/icon';
+import { getUser } from 'app/features/users/hooks/use-user-list';
+import Login from 'app/features/auth/login-service';
 import { Folder, Calendar, CheckSquare, Hexagon } from 'react-feather';
 import { getCompanyApplication as getApplication } from 'app/features/applications/state/company-applications';
 
@@ -45,8 +47,8 @@ class WorkspacesApps extends Observable {
       company_id: group_id,
       app_id: app_id,
       type: type,
-      event: event,
-      data: data,
+      name: event,
+      data: { user: Collections.get('users').find(Login.currentUserId), ...data },
       content: {},
       connection_id: connection_id,
     };
