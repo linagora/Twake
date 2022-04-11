@@ -64,7 +64,7 @@ export class ViewsController {
       }
 
       let entities = [];
-      if (request.query.include_users && !request.query.flat) {
+      if (request.query.include_users) {
         for (const msg of resources.getEntities()) {
           entities.push(
             await this.service.messages.includeUsersInMessageWithReplies(msg as MessageWithReplies),
