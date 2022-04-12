@@ -35,21 +35,22 @@ export default (props: Props) => {
     }
   }, [lastEphemeral]);
 
-  if (!lastEphemeral) {
+  if (!lastEphemeral || (props.threadId && lastEphemeral.thread_id !== props.threadId)) {
     return <div />;
   }
 
-  console.log(lastEphemeral);
+  const updatedKey =
+    lastEphemeral.id + lastEphemeral.ephemeral?.version + lastEphemeral.ephemeral?.id;
 
   return (
-    <div className="ephemerals" key={lastEphemeral.ephemeral?.id}>
+    <div className="ephemerals" key={updatedKey}>
       <div className="ephemerals_text">
         {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
       </div>
 
       <MessageContext.Provider value={messageKey}>
         <ThreadSection withAvatar head>
-          <MessageContent key={lastEphemeral.ephemeral?.id} />
+          <MessageContent key={updatedKey} />
         </ThreadSection>
       </MessageContext.Provider>
     </div>
