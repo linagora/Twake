@@ -18,6 +18,7 @@ import WorkspacesApps from 'app/deprecated/workspaces/workspaces_apps.js';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import ApplicationEditor from '../../../application-parameters/pages/application-editor';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 
 import './ApplicationsStyles.scss';
 
@@ -68,17 +69,21 @@ export default () => {
             },
           ),
       },
-      application.company_id === companyId && {
-        type: 'menu',
-        text: Languages.t(
-          'scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings',
-        ),
-        onClick: () =>
-          ModalManager.open(<ApplicationEditor application={application} companyId={companyId} />, {
-            position: 'center',
-            size: { width: 700 },
-          }),
-      },
+      application.company_id === companyId &&
+        AccessRightsService.hasCompanyLevel(companyId, 'admin') && {
+          type: 'menu',
+          text: Languages.t(
+            'scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings',
+          ),
+          onClick: () =>
+            ModalManager.open(
+              <ApplicationEditor application={application} companyId={companyId} />,
+              {
+                position: 'center',
+                size: { width: 700 },
+              },
+            ),
+        },
       application.company_id !== companyId && {
         type: 'menu',
         className: 'error',

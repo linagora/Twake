@@ -5,19 +5,21 @@ import CurrentUser from 'app/deprecated/user/CurrentUser';
 import _ from 'lodash';
 import { useState } from 'react';
 import { atomFamily, useRecoilCallback, useRecoilState } from 'recoil';
-import { AtomChannelKey } from '../state/atoms/messages';
 import { useSetMessage } from './use-message';
 import { v4 as uuidv4 } from 'uuid';
-const EphemeralMessageState = atomFamily<NodeMessage | null, AtomChannelKey>({
+const EphemeralMessageState = atomFamily<NodeMessage | null, string>({
   key: 'EphemeralMessageState',
   default: key => null,
 });
 
-export const useEphemeralMessages = (key: AtomChannelKey) => {
-  const [lastEphemeral, setLastEphemeral] = useRecoilState(EphemeralMessageState(key));
-  const getLastEphemeral = useRecoilCallback(({ snapshot }) => (key: AtomChannelKey) => {
-    return snapshot.getLoadable(EphemeralMessageState(key)).valueMaybe();
-  });
+export const useEphemeralMessages = (key: { companyId: string; channelId: string }) => {
+  const [lastEphemeral, setLastEphemeral] = useRecoilState(EphemeralMessageState(key.channelId));
+  const getLastEphemeral = useRecoilCallback(
+    ({ snapshot }) =>
+      (key: { companyId: string; channelId: string }) => {
+        return snapshot.getLoadable(EphemeralMessageState(key.channelId)).valueMaybe();
+      },
+  );
   const setMessage = useSetMessage(key.companyId);
 
   useRealtimeRoom<MessageWithReplies>(
@@ -29,7 +31,6 @@ export const useEphemeralMessages = (key: AtomChannelKey) => {
         const lastEphemeral = getLastEphemeral(key);
         if (message.ephemeral) {
           message.id = uuidv4();
-          console.log('MESSAGE INS USE EPHEMERAL : ', message);
           if (
             message.subtype === 'deleted' &&
             (message.id === lastEphemeral?.id ||
