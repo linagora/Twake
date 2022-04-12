@@ -46,7 +46,6 @@ export default (props: Props) => {
   });
   const { remove: removeLastEphemeral } = useEphemeralMessages({
     companyId: context.companyId,
-    workspaceId: workspaceId || '',
     channelId: channelId,
   });
   const location = `message-${message.id}`;
