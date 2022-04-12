@@ -72,6 +72,7 @@ import TrackerAPI from "../core/platform/services/tracker/provider";
 import { ApplicationHooksService } from "./applications/services/hooks";
 import { OnlineServiceAPI } from "./online/api";
 import OnlineServiceImpl from "./online/service";
+import { PreviewEngine } from "./previews/services/engine";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -160,6 +161,8 @@ class GlobalResolver {
       const service = this.platformServices[key];
       assert(service, `Platform service ${key} was not initialized`);
     });
+
+    await new PreviewEngine().init();
 
     this.services = {
       workspaces: await new WorkspaceServiceImpl().init(),
