@@ -171,6 +171,8 @@
     "previews",
     "counter",
     "statistics",
-    "online"
+    "cron",
+    "online",
+    "knowledge-graph"
   ]
 }
