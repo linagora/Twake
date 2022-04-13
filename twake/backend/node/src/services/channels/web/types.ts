@@ -51,6 +51,7 @@ export class ChannelListOptions {
   channels?: string[];
   mine?: boolean;
   company_role?: string;
+  user_id?: string;
 }
 
 export class UpdateChannelBody {
