@@ -435,7 +435,7 @@ export class Service implements ChannelService {
       user_id ||= options.user_id;
     }
 
-    if (options?.mine || isDirectWorkspace) {
+    if ((options?.mine || isDirectWorkspace) && user_id) {
       const userChannels = await this.channelService.members.listUserChannels(
         { id: user_id },
         pagination,
