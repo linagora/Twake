@@ -25,6 +25,8 @@ export class ApplicationHooksService implements ApplicationHooksServiceAPI {
     type: string,
     name: string,
     content: any,
+    company_id: string,
+    workspace_id: string,
   ): Promise<void> {
     const app = await gr.services.applications.marketplaceApps.get({ id: application_id });
     if (!app) {
@@ -41,6 +43,8 @@ export class ApplicationHooksService implements ApplicationHooksServiceAPI {
       content,
       connection_id: connection_id,
       user_id: user_id,
+      company_id,
+      workspace_id,
     };
 
     const signature = crypto

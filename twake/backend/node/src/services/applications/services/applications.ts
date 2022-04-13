@@ -119,11 +119,14 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
       throw e;
     }
   }
-  delete(
+
+  async delete(
     pk: ApplicationPrimaryKey,
     context?: ExecutionContext,
   ): Promise<DeleteResult<Application>> {
-    throw new Error("Method not implemented.");
+    const entity = await this.get(pk);
+    await this.repository.remove(entity);
+    return new DeleteResult<Application>("application", entity, true);
   }
 
   async publish(pk: ApplicationPrimaryKey): Promise<void> {

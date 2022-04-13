@@ -56,11 +56,31 @@ export class ViewsController {
       let entities = [];
       if (request.query.include_users) {
         for (const msg of resources.getEntities()) {
-          entities.push(
-            await gr.services.messages.messages.includeUsersInMessageWithReplies(
-              msg as MessageWithReplies,
-            ),
-          );
+          if (request.query.flat) {
+            entities.push({
+              ...msg,
+              ...((msg as any).message
+                ? {
+                    message: await gr.services.messages.messages.includeUsersInMessageWithReplies(
+                      (msg as any).message,
+                    ),
+                  }
+                : {}),
+              ...((msg as any).thread
+                ? {
+                    thread: await gr.services.messages.messages.includeUsersInMessageWithReplies(
+                      (msg as any).thread,
+                    ),
+                  }
+                : {}),
+            } as FlatFileFromMessage | FlatPinnedFromMessage);
+          } else {
+            entities.push(
+              await gr.services.messages.messages.includeUsersInMessageWithReplies(
+                msg as MessageWithReplies,
+              ),
+            );
+          }
         }
       } else {
         entities = resources.getEntities();
