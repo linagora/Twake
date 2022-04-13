@@ -13,6 +13,7 @@ import _ from 'lodash';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import { Application } from 'app/features/applications/types/application';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 const logger = Logger.getLogger('useApplications');
 /**
@@ -23,13 +24,10 @@ const logger = Logger.getLogger('useApplications');
 export function useCompanyApplications(companyId: string = '') {
   const { company } = useCurrentCompany();
   companyId = companyId || company?.id || '';
+  const workspaceId = useRouterWorkspace();
 
   const [applications, setApplications] = useRecoilState(CompanyApplicationsStateFamily(companyId));
   const [loading, setLoading] = useRecoilState(LoadingState(`applications-${companyId}`));
-
-  useEffect(() => {
-    onChangeCompanyApplications(companyId, applications);
-  }, [applications]);
 
   const refresh = async () => {
     try {
@@ -40,6 +38,14 @@ export function useCompanyApplications(companyId: string = '') {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    onChangeCompanyApplications(companyId, applications);
+  }, [applications]);
+
+  useEffect(() => {
+    refresh();
+  }, [workspaceId]);
 
   const get = (applicationId: string) => {
     return applications.find(a => a.id === applicationId);

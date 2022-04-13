@@ -430,9 +430,14 @@ export class Service implements ChannelService {
       workspace_id: context.workspace.workspace_id,
     };
 
+    let user_id = context.user.id;
+    if (context.user.application_id) {
+      user_id ||= options.user_id;
+    }
+
     if (options?.mine || isDirectWorkspace) {
       const userChannels = await this.channelService.members.listUserChannels(
-        context.user,
+        { id: user_id },
         pagination,
         context,
       );
@@ -477,12 +482,14 @@ export class Service implements ChannelService {
         });
       }
 
-      localEventBus.publish<ResourceEventsPayload>("channel:list", {
-        user: context.user,
-        company: {
-          id: context.workspace.company_id,
-        },
-      });
+      if (!context.user.application_id && !context.user.server_request) {
+        localEventBus.publish<ResourceEventsPayload>("channel:list", {
+          user: context.user,
+          company: {
+            id: context.workspace.company_id,
+          },
+        });
+      }
 
       return new ListResult(channels.type, channels.getEntities(), userChannels.nextPage);
     }
