@@ -8,7 +8,7 @@ export function getSubtype(
 ): null | "application" | "deleted" | "system" {
   //Application request
   if (context?.user?.application_id) {
-    return item.subtype === "application" ? "application" : null;
+    return item.subtype === "application" || item.subtype === "deleted" ? item.subtype : null;
   }
   //System request
   else if (context?.user?.server_request) {
@@ -59,7 +59,9 @@ export function getDefaultMessageInstance(item: Partial<Message>, context: Threa
     type: context?.user?.server_request && item.type === "event" ? "event" : "message",
     subtype: getSubtype({ subtype: item?.subtype || null }, context),
     created_at: (context?.user?.server_request ? item.created_at : null) || new Date().getTime(),
-    user_id: (context?.user?.server_request ? item.user_id : null) || context.user.id,
+    user_id:
+      (context?.user?.server_request || context?.user?.application_id ? item.user_id : null) ||
+      context.user.id,
     application_id:
       (context?.user?.server_request ? item.application_id : null) ||
       context?.user?.application_id ||

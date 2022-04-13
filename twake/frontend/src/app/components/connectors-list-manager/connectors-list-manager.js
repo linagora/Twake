@@ -14,7 +14,7 @@ export default class ConnectorsListManager extends React.Component {
     super();
     this.props = props;
     this.state = {
-      connectors_ids: props.current.map(item => item.id),
+      connectors_ids: props.current.map(item => item.id || ''),
       filtered: [],
       input: '',
     };

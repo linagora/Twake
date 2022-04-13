@@ -1,5 +1,7 @@
 import { ExecutionContext } from "../../core/platform/framework/api/crud-service";
 import { uuid } from "../../utils/types";
+import { HookType } from "../applicationsapi/types";
+import { Channel } from "../channels/entities";
 import { UserObject } from "../user/web/types";
 import { MessageFileMetadata } from "./entities/message-files";
 import { Message, MessageWithUsers } from "./entities/messages";
@@ -30,8 +32,15 @@ export type MessageNotification = {
   text: string;
 };
 
+export type MessageHook = HookType & {
+  channel: Channel;
+  thread: Thread;
+  message: Message;
+};
+
 export type MessageWithReplies = Message & {
   last_replies: Message[];
+  thread?: MessageWithReplies;
   highlighted_replies?: Message[];
   stats: {
     last_activity: number;
@@ -41,6 +50,8 @@ export type MessageWithReplies = Message & {
 
 export type MessageWithRepliesWithUsers = MessageWithReplies & {
   last_replies: MessageWithUsers[];
+  thread?: MessageWithRepliesWithUsers;
+  highlighted_replies?: MessageWithUsers[];
   users: UserObject[];
 };
 

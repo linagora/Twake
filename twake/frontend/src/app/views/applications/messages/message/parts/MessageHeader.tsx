@@ -103,7 +103,7 @@ export default (props: Props) => {
             (!!user && User.getFullName(user)) ||
             (message.application_id && application?.identity?.name)}
         </span>
-        {!message.application_id && !!user && (
+        {!!user && (
           <div className="sender-status">
             {!!icon && <Emojione size={12} type={icon} />} {!!status && status}
           </div>
