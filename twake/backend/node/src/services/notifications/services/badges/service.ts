@@ -174,7 +174,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
     for (const badge of badgePerWorkspace) {
       const workspaceId = badge.workspace_id;
       const companyId = badge.company_id;
-      if (workspaceId === "direct") {
+      if (!workspaceId || workspaceId === "direct") {
         continue;
       }
       try {
@@ -190,7 +190,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
           for (const badge of badges.getEntities()) {
             if (badge.workspace_id === workspaceId) this.removeUserChannelBadges(badge);
           }
-          badges.filterEntities(b => b.workspace_id === workspaceId);
+          badges.filterEntities(b => b.workspace_id !== workspaceId);
         }
       } catch (e) {}
     }
