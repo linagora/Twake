@@ -39,7 +39,7 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
     context?: CompanyExecutionContext,
   ): Promise<CompanyApplicationWithApplication> {
     const companyApplication = await this.repository.findOne({
-      group_id: context.company.id,
+      group_id: context ? context.company.id : pk.company_id,
       app_id: pk.application_id,
     });
 

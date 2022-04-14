@@ -206,17 +206,25 @@ export class ApplicationController
       throw CrudException.notFound("Application not found");
     }
 
-    if (applicationEntity.company_id != request.body.company_id) {
-      throw CrudException.badRequest("You can't manage application of another company");
-    }
-
-    const companyUser = await gr.services.companies.getCompanyUser(
-      { id: applicationEntity.company_id },
+    const companyUser = gr.services.companies.getCompanyUser(
+      { id: request.body.company_id },
       { id: context.user.id },
     );
 
-    if (!companyUser || !hasCompanyAdminLevel(companyUser.role))
-      throw CrudException.forbidden("You must be company admin");
+    if (!companyUser) {
+      throw CrudException.badRequest(
+        "You cannot send event to an application from another company",
+      );
+    }
+
+    const applicationInCompany = await gr.services.applications.companyApps.get({
+      company_id: request.body.company_id,
+      application_id: request.params.application_id,
+    });
+
+    if (!applicationInCompany) {
+      throw CrudException.badRequest("Application isn't installed in this company");
+    }
 
     const hookResponse = await gr.services.applications.hooks.notifyApp(
       request.params.application_id,
