@@ -19,7 +19,6 @@ import gr from "../../src/services/global-resolver";
 describe("Statistics implementation", () => {
   let platform: TestPlatform;
   // let database: DatabaseServiceAPI;
-  let statisticsAPI: StatisticsAPI;
   let channelUtils: ChannelUtils;
 
   beforeAll(async ends => {
@@ -27,8 +26,7 @@ describe("Statistics implementation", () => {
       services: ["database", "statistics", "webserver", "auth"],
     });
 
-    statisticsAPI = platform.platform.getProvider<StatisticsAPI>("statistics");
-    expect(statisticsAPI).toBeTruthy();
+    expect(gr.services.statistics).toBeTruthy();
 
     ends();
     channelUtils = getChannelUtils(platform);
@@ -45,24 +43,28 @@ describe("Statistics implementation", () => {
   });
 
   it("Check statistics counters", async done => {
-    console.log(await statisticsAPI.get(undefined, "counter-test"));
+    console.log(await gr.services.statistics.get(undefined, "counter-test"));
 
-    expect(await statisticsAPI.get(undefined, "counter-test")).toEqual(0);
+    expect(await gr.services.statistics.get(undefined, "counter-test")).toEqual(0);
 
-    await statisticsAPI.increase(platform.workspace.company_id, "counter-test");
-    await statisticsAPI.increase(platform.workspace.company_id, "counter-test");
+    await gr.services.statistics.increase(platform.workspace.company_id, "counter-test");
+    await gr.services.statistics.increase(platform.workspace.company_id, "counter-test");
     const secondCompanyId = uuidv1();
-    await statisticsAPI.increase(secondCompanyId, "counter-test");
-    await statisticsAPI.increase(secondCompanyId, "counter-test");
-    await statisticsAPI.increase(platform.workspace.company_id, "counter-test2");
+    await gr.services.statistics.increase(secondCompanyId, "counter-test");
+    await gr.services.statistics.increase(secondCompanyId, "counter-test");
+    await gr.services.statistics.increase(platform.workspace.company_id, "counter-test2");
 
-    expect(await statisticsAPI.get(platform.workspace.company_id, "counter-test")).toEqual(2);
-    expect(await statisticsAPI.get(secondCompanyId, "counter-test")).toEqual(2);
-    expect(await statisticsAPI.get(undefined, "counter-test")).toEqual(4);
+    expect(await gr.services.statistics.get(platform.workspace.company_id, "counter-test")).toEqual(
+      2,
+    );
+    expect(await gr.services.statistics.get(secondCompanyId, "counter-test")).toEqual(2);
+    expect(await gr.services.statistics.get(undefined, "counter-test")).toEqual(4);
 
-    expect(await statisticsAPI.get(platform.workspace.company_id, "counter-test2")).toEqual(1);
-    expect(await statisticsAPI.get(secondCompanyId, "counter-test2")).toEqual(0);
-    expect(await statisticsAPI.get(undefined, "counter-test2")).toEqual(1);
+    expect(
+      await gr.services.statistics.get(platform.workspace.company_id, "counter-test2"),
+    ).toEqual(1);
+    expect(await gr.services.statistics.get(secondCompanyId, "counter-test2")).toEqual(0);
+    expect(await gr.services.statistics.get(undefined, "counter-test2")).toEqual(1);
 
     done();
   });
@@ -85,8 +87,8 @@ describe("Statistics implementation", () => {
       const channelId = channel.id;
 
       //Reset global value because messages could have been created somewhere else
-      const value = await statisticsAPI.get(undefined, "messages");
-      await statisticsAPI.increase(undefined, "messages", -value);
+      const value = await gr.services.statistics.get(undefined, "messages");
+      await gr.services.statistics.increase(undefined, "messages", -value);
 
       const response = await e2e_createThread(
         platform,
@@ -145,8 +147,10 @@ describe("Statistics implementation", () => {
 
       await new Promise(r => setTimeout(r, 5000));
 
-      expect(await statisticsAPI.get(undefined, "messages")).toEqual(6);
-      expect(await statisticsAPI.get(platform.workspace.company_id, "messages")).toEqual(6);
+      expect(await gr.services.statistics.get(undefined, "messages")).toEqual(6);
+      expect(await gr.services.statistics.get(platform.workspace.company_id, "messages")).toEqual(
+        6,
+      );
     });
   });
 });
