@@ -8,26 +8,25 @@ import {
   ConsoleHookPreferenceContent,
   ConsoleHookResponse,
   ConsoleHookUser,
-  ConsoleOptions,
+  ConsoleType,
 } from "../types";
 import Company from "../../user/entities/company";
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import PasswordEncoder from "../../../utils/password-encoder";
 import { AccessToken } from "../../../utils/types";
 import assert from "assert";
-import { logger } from "../../../core/platform/framework/logger";
-import { getInstance } from "../../../services/user/entities/user";
+import { logger } from "../../../core/platform/framework";
+import { getInstance } from "../../user/entities/user";
 import { getInstance as getCompanyInstance } from "../../../services/user/entities/company";
 import Workspace from "../../../services/workspaces/entities/workspace";
 import gr from "../../global-resolver";
+import { Configuration } from "../../../core/platform/framework";
 
 export class ConsoleController {
   private passwordEncoder: PasswordEncoder;
-  private options: ConsoleOptions;
 
   constructor() {
     this.passwordEncoder = new PasswordEncoder();
-    this.options = undefined; // TODO  //FIXME
   }
 
   async auth(request: FastifyRequest<{ Body: AuthRequest }>): Promise<AuthResponse> {
@@ -45,15 +44,18 @@ export class ConsoleController {
       Body: { email: string; password: string; first_name: string; last_name: string };
     }>,
   ): Promise<AuthResponse> {
+    const configuration = new Configuration("console");
+    const type = configuration.get("type") as ConsoleType;
+
     try {
       //Allow only if no console is set up in this case everyone will be in the same company
       //Console is set up
-      if (this.options.type !== "internal") {
+      if (type !== "internal") {
         throw new Error("Unable to signup in console mode");
       }
 
       //Allow only if signup isn't disabled
-      if (this.options.disable_account_creation) {
+      if (configuration.get("disable_account_creation")) {
         throw new Error("Account creation is disabled");
       }
 
