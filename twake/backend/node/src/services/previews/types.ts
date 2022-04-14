@@ -1,3 +1,13 @@
+import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
+
+export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
+  generateThumbnails(
+    document: Pick<PreviewPubsubRequest["document"], "filename" | "mime" | "path">,
+    options: PreviewPubsubRequest["output"],
+    deleteTmpFile: boolean,
+  ): Promise<ThumbnailResult[]>;
+}
+
 export type PreviewPubsubRequest = {
   document: {
     id: string;

@@ -2,7 +2,6 @@
 // @ts-nocheck
 import { beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "./setup";
-import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
 import { v1 as uuidv1 } from "uuid";
 import { CounterAPI } from "../../src/core/platform/services/counter/types";
 import {
@@ -25,10 +24,11 @@ import {
 } from "../../src/services/channels/entities/channel-counters";
 import { ChannelMemberType } from "../../src/services/channels/types";
 import { getMemberOfChannelInstance, MemberOfChannel } from "../../src/services/channels/entities";
+import gr from "../../src/services/global-resolver";
 
 describe("Counters implementation", () => {
   let platform: TestPlatform;
-  let database: DatabaseServiceAPI;
+  // let database: DatabaseServiceAPI;
   let counterApi: CounterAPI;
   let testDbService: TestDbService;
 
@@ -37,8 +37,7 @@ describe("Counters implementation", () => {
 
     testDbService = new TestDbService(platform);
 
-    database = platform.platform.getProvider<DatabaseServiceAPI>("database");
-    await platform.database.getConnector().drop();
+    await gr.database.getConnector().drop();
 
     counterApi = platform.platform.getProvider<CounterAPI>("counter");
     expect(counterApi).toBeTruthy();

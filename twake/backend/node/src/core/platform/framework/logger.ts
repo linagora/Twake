@@ -7,7 +7,7 @@ export type TwakeLogger = pino.Logger;
 
 export const logger = pino({
   name: "TwakeApp",
-  level: config.get("level", "info"),
+  level: config.get("level", "info") || "info",
   prettyPrint:
     process.env.NODE_ENV?.indexOf("test") > -1
       ? {

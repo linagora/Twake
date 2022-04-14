@@ -8,6 +8,7 @@ import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Device, { TYPE, getInstance } from "../../../services/user/entities/device";
 import User, { TYPE as userTYPE } from "../../../services/user/entities/user";
 import _ from "lodash";
+import gr from "../../../services/global-resolver";
 
 type Options = {
   replaceExisting?: boolean;
@@ -83,6 +84,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   handler: async argv => {
     const spinner = ora({ text: "Migrating php devices - " }).start();
     const platform = await twake.run(services);
+    await gr.doInit(platform);
     const migrator = new DeviceMigrator(platform);
 
     const replaceExisting = (argv.replaceExisting || false) as boolean;

@@ -1,7 +1,5 @@
 import { FilePubsubHandler, FileServiceAPI } from "../api";
 import { logger, TwakeContext } from "../../../core/platform/framework";
-import _ from "lodash";
-import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { PreviewPubsubCallback } from "../../../../src/services/previews/types";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { File } from "../entities/file";
@@ -10,11 +8,7 @@ import { File } from "../entities/file";
  * Update the file metadata and upload the thumbnails in storage
  */
 export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsubCallback, string> {
-  constructor(
-    readonly service: FileServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    private repository: Repository<File>,
-  ) {}
+  constructor(readonly service: FileServiceAPI, private repository: Repository<File>) {}
 
   async init(context?: TwakeContext): Promise<this> {
     return this;

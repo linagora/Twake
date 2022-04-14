@@ -1,3 +1,3 @@
-import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
+import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 
 export interface GeneralServiceAPI extends TwakeServiceProvider, Initializable {}

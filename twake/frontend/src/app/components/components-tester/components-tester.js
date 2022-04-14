@@ -298,7 +298,7 @@ export default class ComponentsTester extends React.Component {
               <Menu
                 menu={[
                   { type: 'menu', text: 'Nouveau dossier', icon: 'plus' },
-                  { type: 'menu', text: 'Service externe', icon: 'grid' },
+                  { type: 'menu', text: 'ChannelServiceImpl externe', icon: 'grid' },
                 ]}
               >
                 <Rounded />

@@ -3,8 +3,8 @@ import twake from "../../../twake";
 import ora from "ora";
 import { TwakePlatform } from "../../../core/platform/platform";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import { ListResult, Pagination } from "../../../core/platform/framework/api/crud-service";
-import _ from "lodash";
+import { Pagination } from "../../../core/platform/framework/api/crud-service";
+
 import User, { TYPE as UserTYPE } from "../../../services/user/entities/user";
 import Application, {
   TYPE as ApplicationTYPE,
@@ -13,6 +13,7 @@ import Repository from "../../../core/platform/services/database/services/orm/re
 import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 import CompanyUser, { TYPE as CompanyUserTYPE } from "../../../services/user/entities/company_user";
 import { Message, TYPE as MessageTYPE } from "../../../services/messages/entities/messages";
+import gr from "../../../services/global-resolver";
 
 type Options = {
   repository?: string;
@@ -39,7 +40,7 @@ class SearchIndexAll {
 
     const repository = repositories.get(options.repository);
     if (!repository) {
-      throw `No such repository ready for indexation, available are: users, applications`;
+      throw "No such repository ready for indexation, available are: users, applications";
     }
 
     // Complete user with companies in cache
@@ -108,6 +109,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   handler: async argv => {
     const spinner = ora({ text: "Reindex repository - " }).start();
     const platform = await twake.run(services);
+    await gr.doInit(platform);
     const migrator = new SearchIndexAll(platform);
 
     const repository = (argv.repository || "") as string;

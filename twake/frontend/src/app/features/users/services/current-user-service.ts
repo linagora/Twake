@@ -13,7 +13,7 @@ type SearchQueryType = {
   timeout_search?: ReturnType<typeof setTimeout>;
 };
 
-@TwakeService('UserService')
+@TwakeService('UserServiceImpl')
 class User {
   private users_repository: Collection;
   private searchQueries: SearchQueryType;

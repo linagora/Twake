@@ -1,60 +1,30 @@
 import { randomBytes } from "crypto";
 import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
-import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { FileServiceAPI, UploadOptions } from "../api";
-import StorageAPI from "../../../core/platform/services/storage/provider";
 import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
-import {
-  PreviewClearPubsubRequest,
-  PreviewPubsubRequest,
-} from "../../../../src/services/previews/types";
+import { PreviewClearPubsubRequest, PreviewPubsubRequest } from "../../previews/types";
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
-import { DeleteResult, CrudException } from "../../../core/platform/framework/api/crud-service";
+import { CrudException, DeleteResult } from "../../../core/platform/framework/api/crud-service";
+import gr from "../../global-resolver";
 
-export function getService(
-  databaseService: DatabaseServiceAPI,
-  pubsub: PubsubServiceAPI,
-  storage: StorageAPI,
-): FileServiceAPI {
-  return getServiceInstance(databaseService, pubsub, storage);
-}
-
-function getServiceInstance(
-  databaseService: DatabaseServiceAPI,
-  pubsub: PubsubServiceAPI,
-  storage: StorageAPI,
-): FileServiceAPI {
-  return new Service(databaseService, pubsub, storage);
-}
-
-class Service implements FileServiceAPI {
+export class FileServiceImpl implements FileServiceAPI {
   version: "1";
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";
   private max_preview_file_size = 50000000;
-  pubsub: PubsubServiceAPI;
-
-  constructor(
-    readonly database: DatabaseServiceAPI,
-    pubsub: PubsubServiceAPI,
-    readonly storage: StorageAPI,
-  ) {
-    this.pubsub = pubsub;
-  }
 
   async init(): Promise<this> {
     try {
       await Promise.all([
-        (this.repository = await this.database.getRepository<File>("files", File)),
-        this.pubsub.processor.addHandler(
-          new PreviewFinishedProcessor(this, this.pubsub, this.repository),
+        (this.repository = await gr.database.getRepository<File>("files", File)),
+        gr.platformServices.pubsub.processor.addHandler(
+          new PreviewFinishedProcessor(this, this.repository),
         ),
       ]);
     } catch (err) {
@@ -127,7 +97,7 @@ class Service implements FileServiceAPI {
       file.file.on("data", function (chunk) {
         totalUploadedSize += chunk.length;
       });
-      await this.storage.write(getFilePath(entity), file.file, {
+      await gr.platformServices.storage.write(getFilePath(entity), file.file, {
         chunkNumber: options.chunkNumber,
         encryptionAlgo: this.algorithm,
         encryptionKey: entity.encryption_key,
@@ -144,7 +114,7 @@ class Service implements FileServiceAPI {
         if (entity.upload_data.size < this.max_preview_file_size) {
           const document: PreviewPubsubRequest["document"] = {
             id: JSON.stringify(_.pick(entity, "id", "company_id")),
-            provider: this.storage.getConnectorType(),
+            provider: gr.platformServices.storage.getConnectorType(),
 
             path: getFilePath(entity),
             encryption_algo: this.algorithm,
@@ -155,7 +125,7 @@ class Service implements FileServiceAPI {
             mime: entity.metadata.mime,
           };
           const output = {
-            provider: this.storage.getConnectorType(),
+            provider: gr.platformServices.storage.getConnectorType(),
             path: `${getFilePath(entity)}/thumbnails/`,
             encryption_algo: this.algorithm,
             encryption_key: entity.encryption_key,
@@ -166,7 +136,7 @@ class Service implements FileServiceAPI {
           await this.repository.save(entity);
 
           try {
-            await this.pubsub.publish<PreviewPubsubRequest>("services:preview", {
+            await gr.platformServices.pubsub.publish<PreviewPubsubRequest>("services:preview", {
               data: { document, output },
             });
 
@@ -206,7 +176,7 @@ class Service implements FileServiceAPI {
       throw "File not found";
     }
 
-    const readable = await this.storage.read(getFilePath(entity), {
+    const readable = await gr.platformServices.storage.read(getFilePath(entity), {
       totalChunks: entity.upload_data.chunks,
       encryptionAlgo: this.algorithm,
       encryptionKey: entity.encryption_key,
@@ -238,7 +208,7 @@ class Service implements FileServiceAPI {
 
     const thumbnailPath = `${getFilePath(entity)}/thumbnails/${thumbnail.id}`;
 
-    const readable = await this.storage.read(thumbnailPath, {
+    const readable = await gr.platformServices.storage.read(thumbnailPath, {
       encryptionAlgo: this.algorithm,
       encryptionKey: entity.encryption_key,
     });
@@ -276,21 +246,24 @@ class Service implements FileServiceAPI {
 
     const path = getFilePath(fileToDelete);
 
-    await this.storage.remove(path, {
+    await gr.platformServices.storage.remove(path, {
       totalChunks: fileToDelete.upload_data.chunks,
     });
 
     if (fileToDelete.thumbnails.length > 0) {
-      await this.pubsub.publish<PreviewClearPubsubRequest>("services:preview:clear", {
-        data: {
-          document: {
-            id: JSON.stringify(_.pick(fileToDelete, "id", "company_id")),
-            provider: this.storage.getConnectorType(),
-            path: `${path}/thumbnails/`,
-            thumbnails_number: fileToDelete.thumbnails.length,
+      await gr.platformServices.pubsub.publish<PreviewClearPubsubRequest>(
+        "services:preview:clear",
+        {
+          data: {
+            document: {
+              id: JSON.stringify(_.pick(fileToDelete, "id", "company_id")),
+              provider: gr.platformServices.storage.getConnectorType(),
+              path: `${path}/thumbnails/`,
+              thumbnails_number: fileToDelete.thumbnails.length,
+            },
           },
         },
-      });
+      );
     }
 
     return new DeleteResult("files", fileToDelete, true);

@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { merge } from "lodash";
-import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelMemberNotificationLevel, ChannelMemberType } from "../types";
 
 /**

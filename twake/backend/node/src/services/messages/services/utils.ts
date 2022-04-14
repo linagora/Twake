@@ -21,7 +21,7 @@ export const getMentions = async (
   messageResource: Message,
   findByUsername: (username: string) => Promise<User>,
 ) => {
-  let idsFromUsernames = [];
+  const idsFromUsernames = [];
   try {
     const usersNoIdOutput = (messageResource.text || "").match(/( |^)@[a-zA-Z0-9-_.]+/gm);
     const usernames = (usersNoIdOutput || []).map(u => (u || "").trim().split("@").pop());

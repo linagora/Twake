@@ -1,27 +1,19 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
-import { ApplicationServiceAPI } from "../api";
 import { ApplicationController } from "./controllers/applications";
 import { CompanyApplicationController } from "./controllers/company-applications";
 
 import Application from "../entities/application";
-import assert from "assert";
 import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
 import { logger as log } from "../../../core/platform/framework";
 import { hasCompanyAdminLevel } from "../../../utils/company";
+import gr from "../../global-resolver";
 
 const applicationsUrl = "/applications";
 const companyApplicationsUrl = "/companies/:company_id/applications";
 
-const routes: FastifyPluginCallback<{
-  service: ApplicationServiceAPI;
-  realtime: RealtimeServiceAPI;
-}> = (fastify: FastifyInstance, options, next) => {
-  const applicationController = new ApplicationController(options.service);
-  const companyApplicationController = new CompanyApplicationController(
-    options.realtime,
-    options.service,
-  );
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const applicationController = new ApplicationController();
+  const companyApplicationController = new CompanyApplicationController();
 
   const adminCheck = async (
     request: FastifyRequest<{
@@ -33,12 +25,12 @@ const routes: FastifyPluginCallback<{
       let companyId: string = request.body?.resource?.company_id;
 
       if (request.params.application_id) {
-        const application = await options.service.applications.get({
+        const application = await gr.services.applications.marketplaceApps.get({
           id: request.params.application_id,
         });
 
         if (!application) {
-          throw fastify.httpErrors.notFound(`Application is not defined`);
+          throw fastify.httpErrors.notFound("Application is not defined");
         }
 
         companyId = application.company_id;
@@ -50,13 +42,13 @@ const routes: FastifyPluginCallback<{
         throw fastify.httpErrors.forbidden(`Company ${companyId} not found`);
       }
 
-      const companyUser = await options.service.companies.getCompanyUser(
+      const companyUser = await gr.services.companies.getCompanyUser(
         { id: companyId },
         { id: userId },
       );
 
       if (!companyUser) {
-        const company = await options.service.companies.getCompany({ id: companyId });
+        const company = await gr.services.companies.getCompany({ id: companyId });
         if (!company) {
           throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
         }

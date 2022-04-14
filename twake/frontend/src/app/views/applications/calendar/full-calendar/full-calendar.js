@@ -118,7 +118,7 @@ export default class FullCalendar extends Component {
           that.props.onClickEvent(that.fcToCollection(event), _event.jsEvent, _event.el);
         }
 
-        //if(!event.private_content){ViewsService.open();that.state.calendar.selectEvent(event);}
+        //if(!event.private_content){ViewsServiceImpl.open();that.state.calendar.selectEvent(event);}
       },
       eventRender: function (event) {
         if (event.event && event.event.id && event.isStart && !event.isMirror) {

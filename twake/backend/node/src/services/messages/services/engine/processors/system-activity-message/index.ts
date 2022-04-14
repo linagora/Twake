@@ -1,14 +1,13 @@
-import { MessageServiceAPI } from "../../../../api";
 import { PubsubHandler } from "../../../../../../core/platform/services/pubsub/api";
 import { ActivityPublishedType } from "../../../../../channels/services/channel/activities/types";
 import { ParticipantObject } from "../../../../entities/threads";
 import { getInstance } from "../../../../entities/messages";
 import { logger } from "../../../../../../core/platform/framework";
+import gr from "../../../../../global-resolver";
 
 export class ChannelSystemActivityMessageProcessor
-  implements PubsubHandler<ActivityPublishedType, void> {
-  constructor(readonly service: MessageServiceAPI) {}
-
+  implements PubsubHandler<ActivityPublishedType, void>
+{
   readonly topics = {
     in: "channel:activity_message",
   };
@@ -47,7 +46,7 @@ export class ChannelSystemActivityMessageProcessor
       },
     ];
 
-    this.service.threads.save(
+    gr.services.messages.threads.save(
       {
         id: undefined,
         participants,

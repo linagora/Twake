@@ -1,4 +1,4 @@
-import { User, Workspace, WebsocketMetadata } from "../../../../utils/types";
+import { User, WebsocketMetadata, Workspace } from "../../../../utils/types";
 import { Channel } from "../../entities";
 import { WorkspaceExecutionContext } from "../../types";
 import { isDirectChannel } from "../../utils";

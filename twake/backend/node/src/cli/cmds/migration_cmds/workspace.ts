@@ -8,6 +8,7 @@ import { Pagination } from "../../../core/platform/framework/api/crud-service";
 import Workspace, { TYPE, getInstance } from "../../../services/workspaces/entities/workspace";
 import _ from "lodash";
 import { logger } from "../../../core/platform/framework";
+import gr from "../../../services/global-resolver";
 
 type Options = {
   from?: string;
@@ -122,6 +123,7 @@ const command: yargs.CommandModule<unknown, unknown> = {
   handler: async argv => {
     const spinner = ora({ text: "Migrating php worskpaces - " }).start();
     const platform = await twake.run(services);
+    await gr.doInit(platform);
     const migrator = new WorkspaceMigrator(platform);
 
     const from = argv.from as string | null;

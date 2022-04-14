@@ -2,14 +2,11 @@ import { afterAll, beforeAll, describe, expect, it as _it, it } from "@jest/glob
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import { ConsoleServiceAPI } from "../../../src/services/console/api";
-import { ConsoleOptions, ConsoleType } from "../../../src/services/console/types";
-
-let consoleType: ConsoleType = null;
+import gr from "../../../src/services/global-resolver";
 
 export const itRemote = (name: string, cb: (a: any) => void) => {
   _it(name, async done => {
-    if (consoleType === "remote") {
+    if (gr.services.console.consoleType === "remote") {
       cb(done);
     } else {
       console.warn(`[skipped]: ${name} (console-mode only)`);
@@ -30,8 +27,6 @@ describe("The console API auth", () => {
   const firstEmail = "superman@email.com";
 
   const firstUserPassword = "superPassw0rd";
-
-  let consoleOptions: ConsoleOptions = null;
 
   beforeAll(async ends => {
     platform = await init({
@@ -68,10 +63,6 @@ describe("The console API auth", () => {
     });
     // await testDbService.createUser([ws0pk], "member", "member");
     // await testDbService.createUser([ws1pk], "member", "member", emailForExistedUser);
-
-    const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
-    consoleOptions = console.consoleOptions;
-    consoleType = console.consoleType;
 
     await new Promise(r => setTimeout(r, 1000));
 

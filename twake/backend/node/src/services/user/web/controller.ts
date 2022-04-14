@@ -13,7 +13,6 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../utils/types";
-import UserServiceAPI from "../api";
 
 import User from "../entities/user";
 import {
@@ -30,10 +29,11 @@ import {
 } from "./types";
 import Company from "../entities/company";
 import CompanyUser from "../entities/company_user";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import coalesce from "../../../utils/coalesce";
 import { getCompanyRooms, getUserRooms } from "../realtime";
 import { formatCompany, getCompanyStats } from "../utils";
+import { formatUser } from "../../../utils/users";
+import gr from "../../global-resolver";
 
 export class UsersCrudController
   implements
@@ -44,8 +44,6 @@ export class UsersCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(protected realtime: RealtimeServiceAPI, protected service: UserServiceAPI) {}
-
   async get(
     request: FastifyRequest<{ Params: UserParameters }>,
     reply: FastifyReply,
@@ -57,20 +55,20 @@ export class UsersCrudController
       id = context.user.id;
     }
 
-    const user = await this.service.users.get({ id: id }, getExecutionContext(request));
+    const user = await gr.services.users.get({ id: id }, getExecutionContext(request));
 
     if (!user) {
       throw CrudException.notFound(`User ${id} not found`);
     }
 
-    const userObject = await this.service.formatUser(user, {
+    const userObject = await formatUser(user, {
       includeCompanies: context.user.id === id,
     });
 
     return {
       resource: userObject,
       websocket: context.user.id
-        ? this.realtime.sign(getUserRooms(user), context.user.id)[0]
+        ? gr.platformServices.realtime.sign(getUserRooms(user), context.user.id)[0]
         : undefined,
     };
   }
@@ -81,10 +79,7 @@ export class UsersCrudController
   ): Promise<ResourceCreateResponse<UserObject>> {
     const context = getExecutionContext(request);
 
-    const user = await this.service.users.get(
-      { id: context.user.id },
-      getExecutionContext(request),
-    );
+    const user = await gr.services.users.get({ id: context.user.id }, getExecutionContext(request));
     if (!user) {
       reply.notFound(`User ${context.user.id} not found`);
       return;
@@ -92,17 +87,17 @@ export class UsersCrudController
 
     user.status_icon = coalesce(request.body.resource, user.status_icon);
 
-    await this.service.users.save(user, {}, context);
+    await gr.services.users.save(user, {}, context);
 
     return {
-      resource: await this.service.formatUser(user),
+      resource: await formatUser(user),
     };
   }
 
   async setPreferences(
     request: FastifyRequest<{ Body: User["preferences"] }>,
   ): Promise<User["preferences"]> {
-    const preferences = await this.service.users.setPreferences(
+    const preferences = await gr.services.users.setPreferences(
       { id: request.currentUser.id },
       request.body,
     );
@@ -118,7 +113,7 @@ export class UsersCrudController
 
     let users: ListResult<User>;
     if (request.query.search) {
-      users = await this.service.users.search(
+      users = await gr.services.users.search(
         new Pagination(request.query.page_token, request.query.limit),
         {
           search: request.query.search,
@@ -127,7 +122,7 @@ export class UsersCrudController
         context,
       );
     } else {
-      users = await this.service.users.list(
+      users = await gr.services.users.list(
         new Pagination(request.query.page_token, request.query.limit),
         { userIds },
         context,
@@ -136,7 +131,7 @@ export class UsersCrudController
 
     const resUsers = await Promise.all(
       users.getEntities().map(user =>
-        this.service.formatUser(user, {
+        formatUser(user, {
           includeCompanies: request.query.include_companies,
         }),
       ),
@@ -145,7 +140,7 @@ export class UsersCrudController
     // return users;
     return {
       resources: resUsers,
-      websockets: this.realtime.sign([], context.user.id), // empty for now
+      websockets: gr.platformServices.realtime.sign([], context.user.id), // empty for now
     };
   }
 
@@ -155,7 +150,7 @@ export class UsersCrudController
   ): Promise<ResourceListResponse<CompanyObject>> {
     const context = getExecutionContext(request);
 
-    const user = await this.service.users.get({ id: request.params.id }, context);
+    const user = await gr.services.users.get({ id: request.params.id }, context);
 
     if (!user) {
       throw CrudException.notFound(`User ${request.params.id} not found`);
@@ -163,7 +158,7 @@ export class UsersCrudController
 
     const [currentUserCompanies, requestedUserCompanies] = await Promise.all(
       [context.user.id, request.params.id].map(userId =>
-        this.service.users.getUserCompanies({ id: userId }),
+        gr.services.users.getUserCompanies({ id: userId }),
       ),
     );
 
@@ -173,7 +168,7 @@ export class UsersCrudController
     const retrieveCompanyCached = async (companyId: string): Promise<Company> => {
       const company =
         companiesCache.get(companyId) ||
-        (await this.service.companies.getCompany({ id: companyId }));
+        (await gr.services.companies.getCompany({ id: companyId }));
       companiesCache.set(companyId, company);
       return company;
     };
@@ -185,14 +180,14 @@ export class UsersCrudController
           retrieveCompanyCached(uc.group_id).then(async (c: Company) => [
             c,
             uc,
-            getCompanyStats(c, await this.service.statistics.get(c.id, "messages")),
+            getCompanyStats(c, await gr.services.statistics.get(c.id, "messages")),
           ]),
         ),
     )) as [Company, CompanyUserObject, CompanyStatsObject][];
 
     return {
       resources: combos.map(combo => formatCompany(...combo)),
-      websockets: this.realtime.sign([], context.user.id),
+      websockets: gr.platformServices.realtime.sign([], context.user.id),
     };
   }
 
@@ -200,7 +195,7 @@ export class UsersCrudController
     request: FastifyRequest<{ Params: CompanyParameters }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<CompanyObject>> {
-    const company = await this.service.companies.getCompany({ id: request.params.id });
+    const company = await gr.services.companies.getCompany({ id: request.params.id });
     const context = getExecutionContext(request);
 
     if (!company) {
@@ -209,7 +204,7 @@ export class UsersCrudController
 
     let companyUserObj: CompanyUserObject | null = null;
     if (context?.user?.id) {
-      const companyUser = await this.service.companies.getCompanyUser(company, {
+      const companyUser = await gr.services.companies.getCompanyUser(company, {
         id: context.user.id,
       });
       companyUserObj = {
@@ -223,10 +218,10 @@ export class UsersCrudController
       resource: formatCompany(
         company,
         companyUserObj,
-        getCompanyStats(company, await this.service.statistics.get(company.id, "messages")),
+        getCompanyStats(company, await gr.services.statistics.get(company.id, "messages")),
       ),
       websocket: context.user?.id
-        ? this.realtime.sign(getCompanyRooms(company), context.user.id)[0]
+        ? gr.platformServices.realtime.sign(getCompanyRooms(company), context.user.id)[0]
         : undefined,
     };
   }
@@ -241,7 +236,7 @@ export class UsersCrudController
     }
     const context = getExecutionContext(request);
 
-    await this.service.users.registerUserDevice(
+    await gr.services.users.registerUserDevice(
       { id: context.user.id },
       resource.value,
       resource.type,
@@ -259,7 +254,7 @@ export class UsersCrudController
   ): Promise<ResourceListResponse<RegisterDeviceParams>> {
     const context = getExecutionContext(request);
 
-    const userDevices = await this.service.users.getUserDevices({ id: context.user.id });
+    const userDevices = await gr.services.users.getUserDevices({ id: context.user.id });
 
     return {
       resources: userDevices.map(
@@ -273,10 +268,10 @@ export class UsersCrudController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
-    const userDevices = await this.service.users.getUserDevices({ id: context.user.id });
+    const userDevices = await gr.services.users.getUserDevices({ id: context.user.id });
     const device = await userDevices.find(ud => ud.id == request.params.value);
     if (device) {
-      await this.service.users.deregisterUserDevice(device.id);
+      await gr.services.users.deregisterUserDevice(device.id);
     }
     reply.status(204);
     return {

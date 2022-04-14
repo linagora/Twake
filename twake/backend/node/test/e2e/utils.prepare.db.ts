@@ -1,5 +1,4 @@
 import { TestPlatform } from "./setup";
-import UserServiceAPI from "./../../src/services/user/api";
 import User from "./../../src/services/user/entities/user";
 import Company, {
   getInstance as getCompanyInstance,
@@ -14,14 +13,13 @@ import CompanyUser from "../../src/services/user/entities/company_user";
 import { DatabaseServiceAPI } from "../../src/core/platform/services/database/api";
 import Repository from "../../src/core/platform/services/database/services/orm/repository/repository";
 import Device from "../../src/services/user/entities/device";
-import WorkspaceServicesAPI from "../../src/services/workspaces/api";
-import PlatformService from "../../src/core/platform/services/platform-services";
+
+import gr from "../../src/services/global-resolver";
 
 export type uuid = string;
 
 export class TestDbService {
   private deviceRepository: Repository<Device>;
-  private workspaceService: WorkspaceServicesAPI;
 
   public static async getInstance(
     testPlatform: TestPlatform,
@@ -47,9 +45,6 @@ export class TestDbService {
   private userRepository: Repository<User>;
 
   constructor(protected testPlatform: TestPlatform) {
-    this.userService = this.testPlatform.platform.getProvider<UserServiceAPI>("user");
-    this.workspaceService =
-      this.testPlatform.platform.getProvider<WorkspaceServicesAPI>("workspaces");
     this.database = this.testPlatform.platform.getProvider<DatabaseServiceAPI>("database");
     this.users = [];
     this.workspacesMap = new Map<string, { workspace: Workspace; users: User[] }>();
@@ -73,7 +68,7 @@ export class TestDbService {
     if (!name) {
       name = `TwakeAutotests-test-company-${this.rand()}`;
     }
-    this.company = await this.userService.companies.createCompany(
+    this.company = await gr.services.companies.createCompany(
       getCompanyInstance({
         id: id || uuidv1(),
         name: name,
@@ -90,7 +85,7 @@ export class TestDbService {
   ): Promise<Workspace> {
     if (!workspacePk.company_id) throw new Error("company_id is not defined for workspace");
 
-    const workspace = await this.workspaceService.workspaces.create(
+    const workspace = await gr.services.workspaces.create(
       getWorkspaceInstance({
         id: workspacePk.id,
         name: name,
@@ -100,7 +95,7 @@ export class TestDbService {
       { user: { id: "", server_request: true } },
     );
 
-    const createdWorkspace = await this.workspaceService.workspaces.get({
+    const createdWorkspace = await gr.services.workspaces.get({
       id: workspacePk.id,
       company_id: workspacePk.company_id,
     });
@@ -149,14 +144,14 @@ export class TestDbService {
     if (options.email) {
       user.email_canonical = options.email;
     }
-    const createdUser = (await this.userService.users.create(user)).entity;
+    const createdUser = (await gr.services.users.create(user)).entity;
 
     if (options.password) {
-      await this.userService.users.setPassword({ id: createdUser.id }, options.password);
+      await gr.services.users.setPassword({ id: createdUser.id }, options.password);
     }
 
     this.users.push(createdUser);
-    await this.userService.companies.setUserRole(
+    await gr.services.companies.setUserRole(
       this.company ? this.company.id : workspacesPk[0].company_id,
       createdUser.id,
       options.companyRole ? options.companyRole : "member",
@@ -164,7 +159,7 @@ export class TestDbService {
 
     if (workspacesPk && workspacesPk.length) {
       for (const workspacePk of workspacesPk) {
-        await this.workspaceService.workspaces.addUser(
+        await gr.services.workspaces.addUser(
           workspacePk,
           { id: createdUser.id },
           options.workspaceRole ? options.workspaceRole : "member",
@@ -179,9 +174,9 @@ export class TestDbService {
 
   async getUserFromDb(user: Partial<Pick<User, "id" | "identity_provider_id">>): Promise<User> {
     if (user.id) {
-      return this.userService.users.get({ id: user.id });
+      return gr.services.users.get({ id: user.id });
     } else if (user.identity_provider_id) {
-      return this.userService.users.getByConsoleId(user.identity_provider_id);
+      return gr.services.users.getByConsoleId(user.identity_provider_id);
     } else {
       throw new Error("getUserFromDb: Id not provided");
     }
@@ -192,11 +187,11 @@ export class TestDbService {
   }
 
   getCompanyFromDb(companyId: uuid) {
-    return this.userService.companies.getCompany({ id: companyId });
+    return gr.services.companies.getCompany({ id: companyId });
   }
 
   getCompanyFromDbByCode(code: uuid) {
-    return this.userService.companies.getCompany({ identity_provider_id: code });
+    return gr.services.companies.getCompany({ identity_provider_id: code });
   }
 
   async getCompanyUsers(companyId: uuid): Promise<User[]> {
@@ -217,15 +212,15 @@ export class TestDbService {
   }
 
   getCompanyUser(companyId: uuid, userId: uuid): Promise<CompanyUser> {
-    return this.userService.companies.getCompanyUser({ id: companyId }, { id: userId });
+    return gr.services.companies.getCompanyUser({ id: companyId }, { id: userId });
   }
 
   getWorkspaceUsersCountFromDb(workspaceId: string) {
-    return this.workspaceService.workspaces.getUsersCount(workspaceId);
+    return gr.services.workspaces.getUsersCount(workspaceId);
   }
 
   async getCompanyUsersCountFromDb(companyId: string) {
-    return this.userService.companies.getUsersCount(companyId);
+    return gr.services.companies.getUsersCount(companyId);
   }
 
   async createDefault(

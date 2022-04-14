@@ -1,6 +1,4 @@
 import { MessageLocalEvent, ThreadExecutionContext } from "../../../../types";
-import { MessageServiceAPI } from "../../../../api";
-import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
 import { Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import { getInstance, MessageChannelRef } from "../../../../entities/message-channel-refs";
@@ -20,22 +18,18 @@ import {
   UpdateResult,
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { getThreadMessagePath } from "../../../../web/realtime";
-import fetch from "node-fetch";
-import config from "config";
-import { logger } from "../../../../../../core/platform/framework";
+import gr from "../../../../../global-resolver";
 
 export class ChannelViewProcessor {
   repository: Repository<MessageChannelRef>;
   repositoryReversed: Repository<MessageChannelRefReversed>;
 
-  constructor(readonly database: DatabaseServiceAPI, readonly service: MessageServiceAPI) {}
-
   async init() {
-    this.repository = await this.database.getRepository<MessageChannelRef>(
+    this.repository = await gr.database.getRepository<MessageChannelRef>(
       "message_channel_refs",
       MessageChannelRef,
     );
-    this.repositoryReversed = await this.database.getRepository<MessageChannelRefReversed>(
+    this.repositoryReversed = await gr.database.getRepository<MessageChannelRefReversed>(
       "message_channel_refs_reversed",
       MessageChannelRefReversed,
     );

@@ -1,24 +1,15 @@
-import StorageAPI from "../../../../../src/core/platform/services/storage/provider";
 import { Initializable } from "../../../../core/platform/framework";
-import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
-import { PreviewServiceAPI } from "../../api";
 import { ClearProcessor } from "./clear";
 import { PreviewProcessor } from "./service";
+import gr from "../../../global-resolver";
 
 /**
  * The notification engine is in charge of processing data and delivering user notifications on the right place
  */
 export class PreviewEngine implements Initializable {
-  constructor(
-    private service: PreviewServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    private storage: StorageAPI,
-  ) {}
-
   async init(): Promise<this> {
-    this.pubsub.processor.addHandler(new PreviewProcessor(this.service, this.pubsub, this.storage));
-    this.pubsub.processor.addHandler(new ClearProcessor(this.service, this.pubsub, this.storage));
-
+    gr.platformServices.pubsub.processor.addHandler(new PreviewProcessor());
+    gr.platformServices.pubsub.processor.addHandler(new ClearProcessor());
     return this;
   }
 }

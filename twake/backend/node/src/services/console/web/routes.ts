@@ -1,44 +1,31 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { authenticationSchema, consoleHookSchema, tokenRenewalSchema } from "./schemas";
 import crypto from "crypto";
-
-import { ConsoleServiceAPI } from "../api";
 // import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { ConsoleController } from "./controller";
-import { ConsoleHookBody, ConsoleHookQueryString, ConsoleOptions } from "../types";
-import UserServiceAPI from "../../user/api";
-import AuthServiceAPI from "../../../core/platform/services/auth/provider";
+import { ConsoleHookBody, ConsoleHookQueryString } from "../types";
+import gr from "../../global-resolver";
 
 const hookUrl = "/hook";
 
-const routes: FastifyPluginCallback<{
-  service: ConsoleServiceAPI;
-  authService: AuthServiceAPI;
-  userService: UserServiceAPI;
-  options: ConsoleOptions;
-}> = (fastify: FastifyInstance, options, next) => {
-  const controller = new ConsoleController(
-    options.service,
-    options.authService,
-    options.userService,
-    options.options,
-  );
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const controller = new ConsoleController();
 
   const accessControl = async (
     request: FastifyRequest<{ Body: ConsoleHookBody; Querystring: ConsoleHookQueryString }>,
   ) => {
-    if (options.service.consoleType != "remote") {
+    if (gr.services.console.consoleType != "remote") {
       throw fastify.httpErrors.notImplemented("Hook service is only for the remote console");
     }
 
     if (
       (request.body.secret_key || request.query.secret_key) !==
-      options.service.consoleOptions.hook.token
+      gr.services.console.consoleOptions.hook.token
     ) {
       throw fastify.httpErrors.forbidden("Wrong secret");
     }
 
-    const publicKey = options.service.consoleOptions.hook.public_key;
+    const publicKey = gr.services.console.consoleOptions.hook.public_key;
 
     if (publicKey) {
       const input = JSON.stringify({ content: request.body.content, type: request.body.type });

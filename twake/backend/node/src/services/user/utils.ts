@@ -1,10 +1,10 @@
 import Company from "./entities/company";
 import {
-  CompanyUserObject,
-  CompanyStatsObject,
-  CompanyObject,
-  CompanyLimitsEnum,
   CompanyFeaturesEnum,
+  CompanyLimitsEnum,
+  CompanyObject,
+  CompanyStatsObject,
+  CompanyUserObject,
 } from "./web/types";
 
 export function formatCompany(

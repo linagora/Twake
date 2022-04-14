@@ -1,5 +1,5 @@
 import WebServerAPI from "../../core/platform/services/webserver/provider";
-import { TwakeService, Prefix, Consumes } from "../../core/platform/framework";
+import { Consumes, Prefix, TwakeService } from "../../core/platform/framework";
 import { GeneralServiceAPI } from "./api";
 import web from "./web/index";
 import { ServerConfiguration } from "./types";

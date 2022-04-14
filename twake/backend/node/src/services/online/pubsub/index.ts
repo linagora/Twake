@@ -3,15 +3,16 @@ import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
 import { UsersOnlineMessage } from "../api";
 import { ONLINE_TOPIC } from "../constants";
 import { UserOnlineProcessor } from "./processor";
+import gr from "../../global-resolver";
 
 export class OnlinePubsubService implements Initializable {
   private logger: TwakeLogger;
-  constructor(private pubsub: PubsubServiceAPI) {
+  constructor() {
     this.logger = getLogger("online.pubsub.OnlinePubsubService");
   }
 
   async init(): Promise<this> {
-    this.pubsub.processor.addHandler(new UserOnlineProcessor());
+    gr.platformServices.pubsub.processor.addHandler(new UserOnlineProcessor());
     return this;
   }
 
@@ -22,7 +23,7 @@ export class OnlinePubsubService implements Initializable {
 
     this.logger.debug(`Publishing online users ${online.map(u => u[0]).join(",")}`);
 
-    return this.pubsub.publish<UsersOnlineMessage>(ONLINE_TOPIC, {
+    return gr.platformServices.pubsub.publish<UsersOnlineMessage>(ONLINE_TOPIC, {
       data: online,
     });
   }

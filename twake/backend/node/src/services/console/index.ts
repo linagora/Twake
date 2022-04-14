@@ -1,56 +1,23 @@
-import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import { Consumes, Prefix, TwakeService } from "../../core/platform/framework";
-import UserServiceAPI from "../user/api";
-import { ConsoleServiceAPI } from "./api";
-import { getService } from "./service";
-import { ConsoleOptions, ConsoleType } from "./types";
-import web from "./web/index";
+import { Prefix, TwakeService } from "../../core/platform/framework";
 import WebServerAPI from "../../core/platform/services/webserver/provider";
-import AuthServiceAPI from "../../core/platform/services/auth/provider";
+import web from "./web";
 
 @Prefix("/internal/services/console/v1")
-@Consumes(["user", "database", "auth"])
-export default class ConsoleService extends TwakeService<ConsoleServiceAPI> {
+export default class ConsoleService extends TwakeService<undefined> {
   version = "1";
   name = "console";
-  private service: ConsoleServiceAPI;
 
-  async doInit(): Promise<this> {
-    const type = this.configuration.get<ConsoleType>("type");
-    const options: ConsoleOptions = { ...this.configuration.get<ConsoleOptions>(type), type };
-
-    this.service = getService(
-      this.context.getProvider<DatabaseServiceAPI>("database"),
-      this.context.getProvider<UserServiceAPI>("user"),
-      type,
-      options,
-    );
-
+  public async doInit(): Promise<this> {
     const fastify = this.context.getProvider<WebServerAPI>("webserver").getServer();
-
-    const authService = this.context.getProvider<AuthServiceAPI>("auth");
-    const userService = this.context.getProvider<UserServiceAPI>("user");
-    this.service.services.userService = userService;
-
     fastify.register((instance, _opts, next) => {
-      web(instance, {
-        prefix: this.prefix,
-        service: this.service,
-        authService: authService,
-        userService: userService,
-        options,
-      });
+      web(instance, { prefix: this.prefix });
       next();
     });
-
     return this;
   }
 
-  async doStart(): Promise<this> {
-    return this;
-  }
-
-  api(): ConsoleServiceAPI {
-    return this.service;
+  // TODO: remove
+  api(): undefined {
+    return undefined;
   }
 }

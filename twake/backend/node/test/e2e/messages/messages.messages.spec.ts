@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import { describe, expect, it, beforeEach, afterEach } from "@jest/globals";
-import { TestPlatform, init } from "../setup";
+import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
 import { ResourceListResponse, ResourceUpdateResponse } from "../../../src/utils/types";
 import { deserialize } from "class-transformer";
 import { Thread } from "../../../src/services/messages/entities/threads";

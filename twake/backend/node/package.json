@@ -20,6 +20,7 @@
     "serve:debug": "nodemon --inspect dist/server.js | pino-pretty",
     "start": "npm run serve",
     "test": "jest --forceExit --coverage --detectOpenHandles --runInBand --verbose false | pino-pretty",
+    "test:local": "jest --forceExit --detectOpenHandles --runInBand mock.spec.ts",
     "test:watch": "npm run test -- --watchAll --verbose false | pino-pretty",
     "test:e2e": "node ./test/e2e/run-all.js",
     "test:unit": "jest test/unit --forceExit --coverage --detectOpenHandles --maxWorkers=1 --testTimeout=30000 --verbose false",

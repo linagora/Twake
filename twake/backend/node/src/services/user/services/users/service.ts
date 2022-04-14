@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/ban-ts-comment */
 import {
   CreateResult,
   CrudException,
@@ -14,8 +14,8 @@ import Repository, {
   FindFilter,
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
-import User, { getInstance, UserPrimaryKey } from "../../entities/user";
-import { UsersServiceAPI } from "../../api";
+import User, { UserPrimaryKey } from "../../entities/user";
+import { UsersService } from "../../api";
 import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
 import SearchRepository from "../../../../core/platform/services/search/repository";
@@ -28,13 +28,13 @@ import PasswordEncoder from "../../../../utils/password-encoder";
 import assert from "assert";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
-import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { isNumber } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";
 import { getUserRoom } from "../../realtime";
 import NodeCache from "node-cache";
+import gr from "../../../global-resolver";
 
-export class UserService implements UsersServiceAPI {
+export class UserServiceImpl implements UsersService {
   version: "1";
   repository: Repository<User>;
   searchRepository: SearchRepository<User>;
@@ -43,26 +43,26 @@ export class UserService implements UsersServiceAPI {
   private deviceRepository: Repository<Device>;
   private cache: NodeCache;
 
-  constructor(private platformServices: PlatformServicesAPI) {}
-
   async init(): Promise<this> {
-    this.searchRepository = this.platformServices.search.getRepository<User>("user", User);
-    this.repository = await this.platformServices.database.getRepository<User>("user", User);
-    this.companyUserRepository = await this.platformServices.database.getRepository<CompanyUser>(
+    this.searchRepository = gr.platformServices.search.getRepository<User>("user", User);
+    this.repository = await gr.database.getRepository<User>("user", User);
+    this.companyUserRepository = await gr.database.getRepository<CompanyUser>(
       "group_user",
       CompanyUser,
     );
-    this.extUserRepository = await this.platformServices.database.getRepository<ExternalUser>(
+    this.extUserRepository = await gr.database.getRepository<ExternalUser>(
       "external_user_repository",
       ExternalUser,
     );
 
-    this.deviceRepository = await this.platformServices.database.getRepository<Device>(
-      DeviceType,
-      Device,
-    );
+    this.deviceRepository = await gr.database.getRepository<Device>(DeviceType, Device);
 
     this.cache = new NodeCache({ stdTTL: 0.2, checkperiod: 120 });
+
+    //If user deleted from Twake, remove it from all companies
+    localEventBus.subscribe<ResourceEventsPayload>("user:deleted", async data => {
+      if (data?.user?.id) gr.services.companies.ensureDeletedUserNotInCompanies(data.user);
+    });
 
     return this;
   }

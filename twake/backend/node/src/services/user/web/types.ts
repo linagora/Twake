@@ -1,5 +1,4 @@
 import { PaginationQueryParameters } from "../../../utils/types";
-import { ChannelMember } from "../../channels/entities";
 import User from "../entities/user";
 
 export interface UserListQueryParameters extends PaginationQueryParameters {

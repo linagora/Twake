@@ -78,6 +78,7 @@ export default class Segment implements AnalyticsAbtract {
           },
           req,
         )
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         .then(() => () => {})
         .catch(err => {
           if (err.response) {

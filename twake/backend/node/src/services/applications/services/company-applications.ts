@@ -1,12 +1,11 @@
-import { CompanyApplicationServiceAPI, MarketplaceApplicationServiceAPI } from "../api";
+import { CompanyApplicationServiceAPI } from "../api";
 import CompanyApplication, {
-  TYPE,
   CompanyApplicationPrimaryKey,
   CompanyApplicationWithApplication,
+  TYPE,
 } from "../entities/company-application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { logger, RealtimeDeleted, RealtimeSaved } from "../../../core/platform/framework";
-import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import {
   DeleteResult,
   ListResult,
@@ -16,26 +15,15 @@ import {
 } from "../../../core/platform/framework/api/crud-service";
 import { CompanyExecutionContext } from "../web/types";
 import { getCompanyApplicationRoom } from "../realtime";
+import gr from "../../global-resolver";
 
-export function getService(
-  platformService: PlatformServicesAPI,
-  applicationService: MarketplaceApplicationServiceAPI,
-): CompanyApplicationServiceAPI {
-  return new CompanyApplicationService(platformService, applicationService);
-}
-
-class CompanyApplicationService implements CompanyApplicationServiceAPI {
+export class CompanyApplicationServiceImpl implements CompanyApplicationServiceAPI {
   version: "1";
   repository: Repository<CompanyApplication>;
 
-  constructor(
-    readonly platformService: PlatformServicesAPI,
-    readonly applicationService: MarketplaceApplicationServiceAPI,
-  ) {}
-
   async init(): Promise<this> {
     try {
-      this.repository = await this.platformService.database.getRepository<CompanyApplication>(
+      this.repository = await gr.database.getRepository<CompanyApplication>(
         TYPE,
         CompanyApplication,
       );
@@ -55,7 +43,9 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
       app_id: pk.application_id,
     });
 
-    const application = await this.applicationService.get({ id: pk.application_id });
+    const application = await gr.services.applications.marketplaceApps.get({
+      id: pk.application_id,
+    });
 
     return {
       ...companyApplication,
@@ -105,7 +95,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     companyId: string,
     context: CompanyExecutionContext,
   ): Promise<void> {
-    const defaultApps = await this.applicationService.listDefaults();
+    const defaultApps = await gr.services.applications.marketplaceApps.listDefaults();
     for (const defaultApp of defaultApps.getEntities()) {
       await this.save({ company_id: companyId, application_id: defaultApp.id }, {}, context);
     }
@@ -153,7 +143,7 @@ class CompanyApplicationService implements CompanyApplicationServiceAPI {
     const applications = [];
 
     for (const companyApplication of companyApplications.getEntities()) {
-      const application = await this.applicationService.get({
+      const application = await gr.services.applications.marketplaceApps.get({
         id: companyApplication.application_id,
       });
       if (application)

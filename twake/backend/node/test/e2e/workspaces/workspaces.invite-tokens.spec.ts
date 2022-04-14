@@ -2,17 +2,16 @@ import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import WorkspaceServicesAPI from "../../../src/services/workspaces/api";
-import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
+import AuthService from "../../../src/core/platform/services/auth/provider";
 import { InviteTokenObject } from "../../../src/services/workspaces/web/types";
+import gr from "../../../src/services/global-resolver";
 
 describe("The /workspaces API (invite tokens)", () => {
   const url = "/internal/services/workspaces/v1";
   let platform: TestPlatform;
 
   let testDbService: TestDbService;
-  let workspaceServicesAPI: WorkspaceServicesAPI;
-  let authServiceApi: AuthServiceAPI;
+  let authServiceApi: AuthService;
 
   let companyId = uuidv1();
 
@@ -37,8 +36,7 @@ describe("The /workspaces API (invite tokens)", () => {
 
     companyId = platform.workspace.company_id;
 
-    workspaceServicesAPI = await platform.platform.getProvider<WorkspaceServicesAPI>("workspaces");
-    authServiceApi = await platform.platform.getProvider<AuthServiceAPI>("auth");
+    authServiceApi = await platform.platform.getProvider<AuthService>("auth");
     testDbService = new TestDbService(platform);
     await resetDatabase();
   };
@@ -64,7 +62,7 @@ describe("The /workspaces API (invite tokens)", () => {
   };
 
   const decodeToken = (token: string): InviteTokenObject => {
-    return workspaceServicesAPI.workspaces.decodeInviteToken(token);
+    return gr.services.workspaces.decodeInviteToken(token);
   };
 
   describe("The GET /tokens/ route", () => {
@@ -123,7 +121,7 @@ describe("The /workspaces API (invite tokens)", () => {
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
 
-      await workspaceServicesAPI.workspaces.createInviteToken(companyId, workspaceId, userId);
+      await gr.services.workspaces.createInviteToken(companyId, workspaceId, userId);
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -340,7 +338,7 @@ describe("The /workspaces API (invite tokens)", () => {
       const userId = testDbService.workspaces[0].users[0].id;
       const companyId = testDbService.company.id;
 
-      await workspaceServicesAPI.workspaces.createInviteToken(companyId, workspaceId, userId);
+      await gr.services.workspaces.createInviteToken(companyId, workspaceId, userId);
 
       const jwtToken = await platform.auth.getJWTToken({ sub: userId });
 
@@ -403,11 +401,7 @@ describe("The /workspaces API (invite tokens)", () => {
       companyId = testDbService.company.id;
       workspaceId = testDbService.workspaces[0].workspace.id;
       userId = testDbService.workspaces[2].users[0].id;
-      inviteToken = await workspaceServicesAPI.workspaces.createInviteToken(
-        companyId,
-        workspaceId,
-        userId,
-      );
+      inviteToken = await gr.services.workspaces.createInviteToken(companyId, workspaceId, userId);
     });
     afterAll(shutdown);
 

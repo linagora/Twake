@@ -4,6 +4,8 @@ import {
   fromMongoDbOrderable,
   toMongoDbOrderable,
 } from "../../../../../../src/core/platform/services/database/services/orm/utils";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import _ from "lodash";
 import { v1 as uuidv1 } from "uuid";
 

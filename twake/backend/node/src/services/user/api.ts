@@ -13,29 +13,11 @@ import Company, { CompanyPrimaryKey, CompanySearchKey } from "./entities/company
 import ExternalUser from "./entities/external_user";
 import ExternalGroup from "./entities/external_company";
 import { ListUserOptions } from "./services/users/types";
-import {
-  CompanyObject,
-  CompanyStatsObject,
-  CompanyUserObject,
-  CompanyUserRole,
-  UserObject,
-} from "./web/types";
-import { WorkspaceServiceAPI } from "../workspaces/api";
+import { CompanyUserRole } from "./web/types";
 import { uuid } from "../../utils/types";
 import Device from "./entities/device";
-import { StatisticsAPI } from "../statistics/types";
 
-export default interface UserServiceAPI extends TwakeServiceProvider, Initializable {
-  users: UsersServiceAPI;
-  companies: CompaniesServiceAPI;
-  workspaces: WorkspaceServiceAPI;
-  external: UserExternalLinksServiceAPI;
-  statistics: StatisticsAPI;
-
-  formatUser(user: User, options?: { includeCompanies?: boolean }): Promise<UserObject>;
-}
-
-export interface UsersServiceAPI
+export interface UsersService
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<User, UserPrimaryKey, ExecutionContext> {
@@ -72,9 +54,9 @@ export interface UsersServiceAPI
 }
 
 /**
- * Service to manage links between external and internal users/companies.
+ * ChannelServiceImpl to manage links between external and internal users/companies.
  */
-export interface UserExternalLinksServiceAPI extends TwakeServiceProvider, Initializable {
+export interface UserExternalLinksService extends TwakeServiceProvider, Initializable {
   /**
    * Create a external user link
    *

@@ -17,12 +17,14 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
   name = "webserver";
   version = "1";
   private server: FastifyInstance<Server, IncomingMessage, ServerResponse>;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private onReadyHandlers: Function[] = [];
 
   getServer(): FastifyInstance {
     return this.server;
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   onReady(handler: Function): void {
     this.onReadyHandlers.push(handler);
   }

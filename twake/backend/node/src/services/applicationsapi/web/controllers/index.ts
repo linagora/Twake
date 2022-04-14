@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from "fastify";
-import { ApplicationsApiServiceAPI } from "../../api";
 import { ApplicationObject } from "../../../applications/entities/application";
 import {
   ApplicationApiExecutionContext,
@@ -14,16 +13,15 @@ import {
   RealtimeApplicationEvent,
   RealtimeBaseBusEvent,
 } from "../../../../core/platform/services/realtime/types";
+import gr from "../../../global-resolver";
 import _ from "lodash";
 import { v4 } from "uuid";
 
 export class ApplicationsApiController {
-  constructor(readonly service: ApplicationsApiServiceAPI) {}
-
   async token(
     request: FastifyRequest<{ Body: ApplicationLoginRequest }>,
   ): Promise<ResourceGetResponse<ApplicationLoginResponse>> {
-    const app = await this.service.applicationService.applications.get({
+    const app = await gr.services.applications.marketplaceApps.get({
       id: request.body.id,
     });
 
@@ -37,7 +35,7 @@ export class ApplicationsApiController {
 
     return {
       resource: {
-        access_token: this.service.authService.generateJWT(null, null, {
+        access_token: gr.platformServices.auth.generateJWT(request.body.id, null, {
           track: false,
           provider_id: "",
           application_id: request.body.id,
@@ -52,7 +50,7 @@ export class ApplicationsApiController {
   ): Promise<ResourceGetResponse<ApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await this.service.applicationService.applications.get({
+    const entity = await gr.services.applications.marketplaceApps.get({
       id: context.application_id,
     });
     if (!entity) {
@@ -65,7 +63,7 @@ export class ApplicationsApiController {
   async configure(request: FastifyRequest<{ Body: ConfigureRequest }>, reply: FastifyReply) {
     const app_id = request.currentUser.application_id;
 
-    const application = await this.service.applicationService.applications.get({ id: app_id });
+    const application = await gr.services.applications.marketplaceApps.get({ id: app_id });
 
     if (!application) {
       throw CrudException.forbidden("Application not found");
@@ -101,7 +99,7 @@ export class ApplicationsApiController {
   ) {
     // Check the application has access to this company
     const company_id = request.params.company_id;
-    const companyApplication = this.service.applicationService.companyApplications.get({
+    const companyApplication = gr.services.applications.companyApps.get({
       company_id,
       application_id: request.currentUser.application_id,
     });
@@ -109,7 +107,7 @@ export class ApplicationsApiController {
       throw CrudException.forbidden("This application is not installed in the requested company");
     }
 
-    const app = await this.service.applicationService.applications.get({
+    const app = await gr.services.applications.marketplaceApps.get({
       id: request.currentUser.application_id,
     });
 

@@ -1,5 +1,4 @@
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
-import { Type } from "class-transformer";
 import { merge } from "lodash";
 
 export const TYPE = "user_notification_preferences";

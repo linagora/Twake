@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
-import { Entity, Column } from "../../../core/platform/services/database/services/orm/decorators";
-import { ChannelVisibility, ChannelType } from "../types";
+import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
+import { ChannelType, ChannelVisibility } from "../types";
 import { ChannelMember } from "./channel-member";
 import { UserObject } from "../../user/web/types";
 import { merge } from "lodash";

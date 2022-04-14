@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyRegisterOptions } from "fastify";
-import { GeneralServiceAPI } from "../api";
 import { ServerConfiguration } from "../types";
 import routes from "./routes";
 

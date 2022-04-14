@@ -1,16 +1,11 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { FileServiceAPI } from "../api";
 import { FileController } from "./controllers/files";
 import { File } from "../entities/file";
 
 const filesUrl = "/companies/:company_id/files";
 
-const routes: FastifyPluginCallback<{ service: FileServiceAPI }> = (
-  fastify: FastifyInstance,
-  options,
-  next,
-) => {
-  const fileController = new FileController(options.service);
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const fileController = new FileController();
 
   fastify.route({
     method: "POST",
