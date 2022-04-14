@@ -151,9 +151,10 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
 
     const channels = uniq(badges.getEntities().map(r => r.channel_id));
     for (const channelId of channels) {
+      const someBadge = badges.getEntities().find(b => b.channel_id === channelId);
       const channelMemberPk = {
-        company_id: badges.getEntities()[0].company_id,
-        workspace_id: badges.getEntities()[0].workspace_id,
+        company_id: someBadge.company_id,
+        workspace_id: someBadge.workspace_id,
         channel_id: channelId,
         user_id: userId,
       };
