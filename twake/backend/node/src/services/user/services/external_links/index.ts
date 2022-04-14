@@ -1,31 +1,29 @@
-import { DatabaseServiceAPI } from "../../../../core/platform/services/database/api";
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import ExternalUser from "../../entities/external_user";
 import ExternalGroup from "../../entities/external_company";
-import { UserExternalLinksServiceAPI } from "../../api";
+import { UserExternalLinksService } from "../../api";
 import Company from "../../entities/company";
 import User from "../../entities/user";
+import gr from "../../../global-resolver";
 
-export class UserExternalLinksService implements UserExternalLinksServiceAPI {
+export class UserExternalLinksServiceImpl implements UserExternalLinksService {
   version: "1";
   private externalUserRepository: Repository<ExternalUser>;
   private externalGroupRepository: Repository<ExternalGroup>;
   private companyRepository: Repository<Company>;
   private userRepository: Repository<User>;
 
-  constructor(private database: DatabaseServiceAPI) {}
-
   async init(): Promise<this> {
-    this.externalUserRepository = await this.database.getRepository<ExternalUser>(
+    this.externalUserRepository = await gr.database.getRepository<ExternalUser>(
       "external_user_repository",
       ExternalUser,
     );
-    this.externalGroupRepository = await this.database.getRepository<ExternalGroup>(
+    this.externalGroupRepository = await gr.database.getRepository<ExternalGroup>(
       "external_group_repository",
       ExternalGroup,
     );
-    this.companyRepository = await this.database.getRepository<Company>("group_entity", Company);
-    this.userRepository = await this.database.getRepository<User>("user", User);
+    this.companyRepository = await gr.database.getRepository<Company>("group_entity", Company);
+    this.userRepository = await gr.database.getRepository<User>("user", User);
 
     return this;
   }
@@ -57,8 +55,4 @@ export class UserExternalLinksService implements UserExternalLinksServiceAPI {
 
     return group;
   }
-}
-
-export function getService(databaseService: DatabaseServiceAPI): UserExternalLinksServiceAPI {
-  return new UserExternalLinksService(databaseService);
 }

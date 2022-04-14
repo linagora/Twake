@@ -5,7 +5,7 @@ import { TwakeServiceState } from "./service-state";
 import { TwakeServiceConfiguration } from "./service-configuration";
 import { TwakeContext } from "./context";
 import { TwakeServiceOptions } from "./service-options";
-import { PREFIX_METADATA, CONSUMES_METADATA } from "./constants";
+import { CONSUMES_METADATA, PREFIX_METADATA } from "./constants";
 import { getLogger, logger } from "../logger";
 import { TwakeLogger } from "..";
 

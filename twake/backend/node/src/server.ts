@@ -12,4 +12,5 @@ if (config.get("sentry.dsn")) {
 
 const launch = async (): Promise<TwakePlatform> => twake.run(config.get("services"));
 
+// noinspection JSIgnoredPromiseFromCall
 launch();

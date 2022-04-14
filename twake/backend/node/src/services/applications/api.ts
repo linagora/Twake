@@ -1,4 +1,5 @@
 import {
+  CRUDService,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -6,8 +7,7 @@ import {
   Pagination,
   SaveResult,
 } from "../../core/platform/framework/api/crud-service";
-import { CRUDService } from "../../core/platform/framework/api/crud-service";
-import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
+import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import Application, {
   ApplicationPrimaryKey,
   PublicApplicationObject,
@@ -18,7 +18,6 @@ import {
   CompanyApplicationWithApplication,
 } from "./entities/company-application";
 import { CompaniesServiceAPI } from "../user/api";
-import { uuid } from "../../utils/types";
 
 export interface ApplicationServiceAPI extends TwakeServiceProvider, Initializable {
   applications: MarketplaceApplicationServiceAPI;

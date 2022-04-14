@@ -10,6 +10,8 @@ describe("The RealtimeCreated decorator", () => {
 
     class TestMe {
       @RealtimeCreated({ room: "/foo/bar" })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       reverseMeBaby(input: string): Promise<string> {
         return Promise.resolve(input.split("").reverse().join(""));
       }
@@ -33,6 +35,8 @@ describe("The RealtimeCreated decorator", () => {
 
     class TestMe {
       @RealtimeCreated({ room: "/foo/bar", path: "/foo/bar/baz" })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       async reverseMeBaby(input: string): Promise<CreateResult<string>> {
         return new CreateResult<string>("string", input.split("").reverse().join(""));
       }
@@ -74,6 +78,8 @@ describe("The RealtimeCreated decorator", () => {
       @RealtimeCreated<string>(input => [
         { room: ResourcePath.get(`/foo/bar/${input}`), path: "/foo/bar/baz" },
       ])
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       async reverseMeBaby(input: string): Promise<CreateResult<string>> {
         return new CreateResult<string>("string", input.split("").reverse().join(""));
       }

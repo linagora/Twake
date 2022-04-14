@@ -1,8 +1,9 @@
-import AuthServiceAPI, { JwtConfiguration } from "./provider";
+import { JwtConfiguration } from "./provider";
 import jwt from "jsonwebtoken";
 import { AccessToken, JWTObject, uuid } from "../../../../utils/types";
 import assert from "assert";
 import { JwtType } from "../types";
+import AuthServiceAPI from "./provider";
 
 export class AuthService implements AuthServiceAPI {
   version: "1";

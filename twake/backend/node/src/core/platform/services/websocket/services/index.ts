@@ -1,4 +1,5 @@
 import socketIO, { Server } from "socket.io";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { createClient } = require("redis");
 import SocketIORedis from "@socket.io/redis-adapter";
 import jwt from "jsonwebtoken";

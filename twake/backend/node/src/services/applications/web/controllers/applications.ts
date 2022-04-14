@@ -1,5 +1,4 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { ApplicationServiceAPI } from "../../api";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   PaginationQueryParameters,
@@ -22,6 +21,7 @@ import { randomBytes } from "crypto";
 import { ApplicationEventRequestBody } from "../types";
 import { logger as log } from "../../../../core/platform/framework";
 import { hasCompanyAdminLevel } from "../../../../utils/company";
+import gr from "../../../global-resolver";
 
 export class ApplicationController
   implements
@@ -32,18 +32,16 @@ export class ApplicationController
       ResourceDeleteResponse
     >
 {
-  constructor(protected service: ApplicationServiceAPI) {}
-
   async get(
     request: FastifyRequest<{ Params: { application_id: string } }>,
   ): Promise<ResourceGetResponse<ApplicationObject | PublicApplicationObject>> {
     const context = getExecutionContext(request);
 
-    const entity = await this.service.applications.get({
+    const entity = await gr.services.applications.marketplaceApps.get({
       id: request.params.application_id,
     });
 
-    const companyUser = await this.service.companies.getCompanyUser(
+    const companyUser = await gr.services.companies.getCompanyUser(
       { id: entity.company_id },
       { id: context.user.id },
     );
@@ -61,7 +59,7 @@ export class ApplicationController
     }>,
   ): Promise<ResourceListResponse<PublicApplicationObject>> {
     const context = getExecutionContext(request);
-    const entities = await this.service.applications.list(
+    const entities = await gr.services.applications.marketplaceApps.list(
       request.query,
       { search: request.query.search },
       context,
@@ -88,7 +86,7 @@ export class ApplicationController
       let entity: Application;
 
       if (request.params.application_id) {
-        entity = await this.service.applications.get({
+        entity = await gr.services.applications.marketplaceApps.get({
           id: request.params.application_id,
         });
 
@@ -123,7 +121,7 @@ export class ApplicationController
         entity.stats.updated_at = now;
         entity.stats.version++;
 
-        const res = await this.service.applications.save(entity);
+        const res = await gr.services.applications.marketplaceApps.save(entity);
         entity = res.entity;
       } else {
         // INSERT
@@ -138,7 +136,7 @@ export class ApplicationController
           version: 0,
         };
 
-        const res = await this.service.applications.save(app);
+        const res = await gr.services.applications.marketplaceApps.save(app);
         entity = res.entity;
       }
 
@@ -157,9 +155,11 @@ export class ApplicationController
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
-    const application = await this.service.applications.get({ id: request.params.application_id });
+    const application = await gr.services.applications.marketplaceApps.get({
+      id: request.params.application_id,
+    });
 
-    const compUser = await this.service.companies.getCompanyUser(
+    const compUser = await gr.services.companies.getCompanyUser(
       { id: application.company_id },
       { id: context.user.id },
     );
@@ -167,7 +167,7 @@ export class ApplicationController
       throw CrudException.forbidden("You don't have the rights to delete this application");
     }
 
-    const deleteResult = await this.service.applications.delete(
+    const deleteResult = await gr.services.applications.marketplaceApps.delete(
       {
         id: request.params.application_id,
       },
@@ -198,7 +198,7 @@ export class ApplicationController
 
     const content = request.body.data;
 
-    const applicationEntity = await this.service.applications.get({
+    const applicationEntity = await gr.services.applications.marketplaceApps.get({
       id: request.params.application_id,
     });
 
@@ -206,7 +206,7 @@ export class ApplicationController
       throw CrudException.notFound("Application not found");
     }
 
-    const companyUser = await this.service.companies.getCompanyUser(
+    const companyUser = gr.services.companies.getCompanyUser(
       { id: request.body.company_id },
       { id: context.user.id },
     );
@@ -217,7 +217,7 @@ export class ApplicationController
       );
     }
 
-    const applicationInCompany = await this.service.companyApplications.get({
+    const applicationInCompany = await gr.services.applications.companyApps.get({
       company_id: request.body.company_id,
       application_id: request.params.application_id,
     });
@@ -226,7 +226,7 @@ export class ApplicationController
       throw CrudException.badRequest("Application isn't installed in this company");
     }
 
-    const hookResponse = await this.service.hooks.notifyApp(
+    const hookResponse = await gr.services.applications.hooks.notifyApp(
       request.params.application_id,
       request.body.connection_id,
       context.user.id,

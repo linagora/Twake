@@ -7,7 +7,6 @@ import {
   Paginable,
 } from "../../core/platform/framework/api/crud-service";
 import Workspace, { WorkspacePrimaryKey } from "./entities/workspace";
-import { CompaniesServiceAPI, UsersServiceAPI } from "../user/api";
 import WorkspaceUser, { WorkspaceUserPrimaryKey } from "../workspaces/entities/workspace_user";
 import { Observable } from "rxjs";
 import User, { UserPrimaryKey } from "../user/entities/user";
@@ -18,21 +17,11 @@ import WorkspacePendingUser, {
 } from "./entities/workspace_pending_users";
 import { CompanyUserRole } from "../user/web/types";
 import { uuid } from "../../utils/types";
-import { ConsoleServiceAPI } from "../console/api";
 import { InviteTokenObject, WorkspaceInviteTokenObject } from "./web/types";
 import WorkspaceInviteTokens from "./entities/workspace_invite_tokens";
 import { Readable } from "stream";
-import { StatisticsAPI } from "../statistics/types";
 
-export default interface WorkspaceServicesAPI extends TwakeServiceProvider, Initializable {
-  workspaces: WorkspaceServiceAPI;
-  companies: CompaniesServiceAPI;
-  users: UsersServiceAPI;
-  console: ConsoleServiceAPI;
-  statistics: StatisticsAPI;
-}
-
-export interface WorkspaceServiceAPI
+export interface WorkspaceService
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<Workspace, WorkspacePrimaryKey, ExecutionContext> {

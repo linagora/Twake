@@ -1,5 +1,3 @@
-import { webSocketSchema } from "../../../utils/types";
-
 export const applicationsSchema = {
   type: "object",
   properties: {},

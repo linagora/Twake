@@ -1,6 +1,5 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
 import { UsersCrudController } from "./controller";
-import UserServiceAPI from "../api";
 import {
   deleteDeviceSchema,
   getCompanySchema,
@@ -11,15 +10,11 @@ import {
   postDevicesSchema,
   setUserPreferencesSchema,
 } from "./schemas";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 
 const usersUrl = "/users";
 
-const routes: FastifyPluginCallback<{
-  service: UserServiceAPI;
-  realtime: RealtimeServiceAPI;
-}> = (fastify: FastifyInstance, options, next) => {
-  const usersController = new UsersCrudController(options.realtime, options.service);
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const usersController = new UsersCrudController();
   const accessControl = async (request: FastifyRequest) => {
     // TODO
     const authorized = true;

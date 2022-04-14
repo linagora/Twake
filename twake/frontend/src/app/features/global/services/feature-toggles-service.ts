@@ -23,7 +23,7 @@ availableFeaturesWithDefaults.set(FeatureNames.UNLIMITED_STORAGE, true);
 availableFeaturesWithDefaults.set(FeatureNames.COMPANY_INVITE_MEMBER, true);
 
 /**
- * Service that allow you to manage feature flipping in Twake using react feature toggles
+ * ChannelServiceImpl that allow you to manage feature flipping in Twake using react feature toggles
  */
 class FeatureTogglesService {
   public activeFeatureNames: FeatureNames[];

@@ -1,9 +1,8 @@
-import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
-import { ApplicationServiceAPI } from "../api";
 import { logger } from "../../../core/platform/framework";
 import { HookType } from "../../applicationsapi/types";
 import { PubsubHandler } from "../../../core/platform/services/pubsub/api";
 import { MessageHook } from "../../messages/types";
+import gr from "../../global-resolver";
 
 export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void> {
   readonly topics = {
@@ -18,11 +17,6 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
 
   readonly name = "Application::InternalToHooksProcessor";
 
-  constructor(
-    readonly platformService: PlatformServicesAPI,
-    readonly applicationService: ApplicationServiceAPI,
-  ) {}
-
   validate(_: HookType): boolean {
     return true;
   }
@@ -30,7 +24,7 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
   async process(message: HookType): Promise<void> {
     logger.debug(`${this.name} - Receive hook of type ${message.type}`);
 
-    const application = await this.applicationService.applications.get({
+    const application = await gr.services.applications.marketplaceApps.get({
       id: message.application_id,
     });
 
@@ -39,7 +33,7 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
 
     // Check application still exists in the company
     if (
-      !(await this.applicationService.companyApplications.get({
+      !(await gr.services.applications.companyApps.get({
         company_id: message.company_id,
         application_id: message.application_id,
       }))
@@ -50,7 +44,7 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
       return;
     }
 
-    await this.applicationService.hooks.notifyApp(
+    await gr.services.applications.hooks.notifyApp(
       message.application_id,
       null,
       null,

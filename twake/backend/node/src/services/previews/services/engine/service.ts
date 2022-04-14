@@ -1,11 +1,9 @@
-import fs from "fs";
-import { promises as fsPromise } from "fs";
-import { PreviewPubsubHandler, PreviewServiceAPI } from "../../api";
+import fs, { promises as fsPromise } from "fs";
+import { PreviewPubsubHandler } from "../../api";
 import { logger, TwakeContext } from "../../../../core/platform/framework";
-import { PubsubServiceAPI } from "../../../../core/platform/services/pubsub/api";
 import { PreviewPubsubCallback, PreviewPubsubRequest, ThumbnailResult } from "../../types";
 import { getTmpFile } from "../../utils";
-import StorageAPI from "../../../../core/platform/services/storage/provider";
+import gr from "../../../global-resolver";
 
 const { unlink } = fsPromise;
 /**
@@ -15,12 +13,6 @@ export class PreviewProcessor
   implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback>
 {
   readonly name = "PreviewProcessor";
-
-  constructor(
-    readonly service: PreviewServiceAPI,
-    private pubsub: PubsubServiceAPI,
-    readonly storage: StorageAPI,
-  ) {}
 
   init?(context?: TwakeContext): Promise<this> {
     throw new Error("Method not implemented.");
@@ -61,7 +53,7 @@ export class PreviewProcessor
 
   async generate(message: PreviewPubsubRequest): Promise<PreviewPubsubCallback> {
     //Download original file
-    const readable = await this.storage.read(message.document.path, {
+    const readable = await gr.platformServices.storage.read(message.document.path, {
       totalChunks: message.document.chunks,
       encryptionAlgo: message.document.encryption_algo,
       encryptionKey: message.document.encryption_key,
@@ -85,7 +77,7 @@ export class PreviewProcessor
     let localThumbnails: ThumbnailResult[] = [];
 
     try {
-      localThumbnails = await this.service.previewProcess.generateThumbnails(
+      localThumbnails = await gr.services.preview.generateThumbnails(
         { path: inputPath, mime: message.document.mime, filename: message.document.filename },
         message.output,
         true,
@@ -102,7 +94,7 @@ export class PreviewProcessor
       const uploadThumbnailPath = `${message.output.path.replace(/\/$/, "")}/${i}.png`;
       const uploadThumbnail = fs.createReadStream(localThumbnails[i].path);
 
-      await this.storage.write(uploadThumbnailPath, uploadThumbnail, {
+      await gr.platformServices.storage.write(uploadThumbnailPath, uploadThumbnail, {
         encryptionAlgo: message.output.encryption_algo,
         encryptionKey: message.output.encryption_key,
       });

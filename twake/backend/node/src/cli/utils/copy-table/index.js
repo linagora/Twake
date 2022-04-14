@@ -1,3 +1,4 @@
+/* eslint-disable */
 var cassandra = require("cassandra-driver");
 
 var authProvider = new cassandra.auth.PlainTextAuthProvider("", "");

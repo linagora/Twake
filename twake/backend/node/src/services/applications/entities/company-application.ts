@@ -1,6 +1,6 @@
 import { Type } from "class-transformer";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
-import Application, { PublicApplicationObject } from "./application";
+import { PublicApplicationObject } from "./application";
 
 export const TYPE = "group_app";
 

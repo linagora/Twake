@@ -22,7 +22,7 @@ export class UserMessageBookmark {
 
   @Type(() => String)
   @Column("name", "encoded_string")
-  name: string = "";
+  name = "";
 }
 
 export type UserMessageBookmarkPrimaryKey = Pick<

@@ -1,7 +1,6 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
-import { MemberService } from "../../provider";
 import {
   ChannelMemberParameters,
   ChannelParameters,
@@ -22,7 +21,7 @@ import {
   ResourceUpdateResponse,
   User,
 } from "../../../../utils/types";
-import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
+import gr from "../../../global-resolver";
 
 export class ChannelMemberCrudController
   implements
@@ -33,8 +32,6 @@ export class ChannelMemberCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(protected websockets: RealtimeServiceAPI, protected service: MemberService) {}
-
   getPrimaryKey(
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
   ): ChannelMemberPrimaryKey {
@@ -54,7 +51,7 @@ export class ChannelMemberCrudController
       throw CrudException.badRequest("User does not have enough rights to get member");
     }
 
-    const resource = await this.service.get(
+    const resource = await gr.services.channels.members.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );
@@ -82,7 +79,11 @@ export class ChannelMemberCrudController
     });
 
     try {
-      const result = await this.service.save(entity, {}, getExecutionContext(request));
+      const result = await gr.services.channels.members.save(
+        entity,
+        {},
+        getExecutionContext(request),
+      );
 
       if (result.entity) {
         reply.code(201);
@@ -110,7 +111,11 @@ export class ChannelMemberCrudController
     }
 
     try {
-      const result = await this.service.save(entity, {}, getExecutionContext(request));
+      const result = await gr.services.channels.members.save(
+        entity,
+        {},
+        getExecutionContext(request),
+      );
 
       if (result.entity) {
         reply.code(200);
@@ -129,7 +134,7 @@ export class ChannelMemberCrudController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     try {
-      const deleteResult = await this.service.delete(
+      const deleteResult = await gr.services.channels.members.delete(
         this.getPrimaryKey(request),
         getExecutionContext(request),
       );
@@ -161,7 +166,7 @@ export class ChannelMemberCrudController
       Params: ChannelParameters;
     }>,
   ): Promise<ResourceListResponse<ChannelMember>> {
-    const list = await this.service.list(
+    const list = await gr.services.channels.members.list(
       new Pagination(request.query.page_token, request.query.limit),
       { company_role: request.query.company_role },
       getExecutionContext(request),
@@ -172,7 +177,7 @@ export class ChannelMemberCrudController
         resources: list.getEntities(),
       },
       ...(request.query.websockets && {
-        websockets: this.websockets.sign(
+        websockets: gr.platformServices.realtime.sign(
           getChannelRooms(request.params, request.currentUser),
           request.currentUser.id,
         ),
@@ -192,7 +197,7 @@ export class ChannelMemberCrudController
     request: FastifyRequest<{ Params: ChannelMemberParameters }>,
     reply: FastifyReply,
   ): Promise<Response> {
-    const resource = await this.service.get(
+    const resource = await gr.services.channels.members.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );

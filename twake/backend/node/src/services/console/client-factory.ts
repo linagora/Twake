@@ -1,6 +1,6 @@
 import { ConsoleRemoteClient } from "./clients/remote";
 import { ConsoleServiceClient } from "./client-interface";
-import { ConsoleOptions, ConsoleType } from "./types";
+import { ConsoleType } from "./types";
 import { ConsoleInternalClient } from "./clients/internal";
 import { ConsoleServiceAPI } from "./api";
 

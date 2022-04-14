@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-unused-vars */
 import { ListResult } from "../../../framework/api/crud-service";
 import { FindFilter } from "../../database/services/orm/repository/repository";
 import {
@@ -9,13 +10,15 @@ import {
   SearchAdapterInterface,
 } from "../api";
 
+type indexColumns = { [name: string]: ColumnDefinition };
+
 export class SearchAdapter implements SearchAdapterInterface {
   private createdIndexes: string[] = [];
 
   protected async ensureIndex(
     entityDefinition: EntityDefinition,
-    columns: { [name: string]: ColumnDefinition },
-    createIndex: Function,
+    columns: indexColumns,
+    createIndex: (arg0: EntityDefinition, arg1: indexColumns) => any,
   ) {
     const index = entityDefinition.name;
     if (!this.createdIndexes.includes(index)) {

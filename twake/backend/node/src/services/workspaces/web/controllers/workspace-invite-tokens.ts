@@ -5,7 +5,6 @@ import {
   ResourceGetResponse,
   ResourceListResponse,
 } from "../../../../utils/types";
-import WorkspaceServicesAPI from "../../api";
 import {
   WorkspaceInviteTokenDeleteRequest,
   WorkspaceInviteTokenGetRequest,
@@ -20,6 +19,7 @@ import { CrudException } from "../../../../core/platform/framework/api/crud-serv
 import { pick } from "lodash";
 import { ConsoleCompany } from "../../../console/types";
 import { formatCompany, getCompanyStats } from "../../../../services/user/utils";
+import gr from "../../../global-resolver";
 
 export class WorkspaceInviteTokensCrudController
   implements
@@ -30,17 +30,13 @@ export class WorkspaceInviteTokensCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(protected services: WorkspaceServicesAPI) {
-    this.services = services;
-  }
-
   async list(
     request: FastifyRequest<{ Params: WorkspaceInviteTokenGetRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<WorkspaceInviteTokenObject>> {
     const context = getExecutionContext(request);
 
-    const res = await this.services.workspaces.getInviteToken(
+    const res = await gr.services.workspaces.getInviteToken(
       context.company_id,
       context.workspace_id,
       context.user.id,
@@ -61,7 +57,7 @@ export class WorkspaceInviteTokensCrudController
   ): Promise<ResourceGetResponse<WorkspaceInviteTokenObject>> {
     const context = getExecutionContext(request);
 
-    const res = await this.services.workspaces.createInviteToken(
+    const res = await gr.services.workspaces.createInviteToken(
       context.company_id,
       context.workspace_id,
       context.user.id,
@@ -78,13 +74,13 @@ export class WorkspaceInviteTokensCrudController
   ): Promise<ResourceDeleteResponse> {
     const context = getExecutionContext(request);
 
-    const tokenInfo = this.services.workspaces.decodeInviteToken(request.params.token);
+    const tokenInfo = gr.services.workspaces.decodeInviteToken(request.params.token);
 
     if (!tokenInfo) {
       throw CrudException.notFound("Invite token malformed");
     }
 
-    const deleted = await this.services.workspaces.deleteInviteToken(
+    const deleted = await gr.services.workspaces.deleteInviteToken(
       context.company_id,
       context.workspace_id,
       context.user.id,
@@ -105,7 +101,7 @@ export class WorkspaceInviteTokensCrudController
     request: FastifyRequest<{ Body: WorkspaceJoinByTokenRequest }>,
     reply: FastifyReply,
   ): Promise<ResourceGetResponse<WorkspaceJoinByTokenResponse>> {
-    const entity = await this.services.workspaces.getInviteTokenInfo(request.body.token);
+    const entity = await gr.services.workspaces.getInviteTokenInfo(request.body.token);
 
     if (!entity) {
       throw CrudException.notFound("Token not found");
@@ -114,13 +110,13 @@ export class WorkspaceInviteTokensCrudController
     const { company_id, workspace_id } = entity;
 
     const [company, workspace] = await Promise.all([
-      this.services.companies.getCompany({ id: company_id }),
-      this.services.workspaces.get({
+      gr.services.companies.getCompany({ id: company_id }),
+      gr.services.workspaces.get({
         company_id: company_id,
         id: workspace_id,
       }),
     ]);
-    const total_messages = await this.services.statistics.get(company.id, "messages");
+    const total_messages = await gr.services.statistics.get(company.id, "messages");
 
     const resource: WorkspaceJoinByTokenResponse = {
       company: {
@@ -137,16 +133,18 @@ export class WorkspaceInviteTokensCrudController
     } else {
       if (request.body.join) {
         const userId = request.currentUser.id;
-        const user = await this.services.users.get({ id: userId });
+        const user = await gr.services.users.get({ id: userId });
 
-        let companyUser = await this.services.companies.getCompanyUser(
+        let companyUser = await gr.services.companies.getCompanyUser(
           { id: company_id },
           { id: userId },
         );
         if (!companyUser) {
-          const inviter = await this.services.users.get({ id: entity.user_id });
+          const inviter = await gr.services.users.get({
+            id: entity.user_id,
+          });
 
-          await this.services.console
+          await gr.services.console
             .getClient()
             .addUserToCompany(
               { id: company.id, code: company.identity_provider_id } as ConsoleCompany,
@@ -167,10 +165,10 @@ export class WorkspaceInviteTokensCrudController
               },
             );
 
-          await this.services.console
+          await gr.services.console
             .getClient()
             .updateLocalUserFromConsole(user.identity_provider_id);
-          companyUser = await this.services.companies.getCompanyUser(
+          companyUser = await gr.services.companies.getCompanyUser(
             { id: company_id },
             { id: userId },
           );
@@ -179,12 +177,12 @@ export class WorkspaceInviteTokensCrudController
           throw CrudException.badRequest("Unable to add user to the company");
         }
 
-        const workspaceUser = await this.services.workspaces.getUser({
+        const workspaceUser = await gr.services.workspaces.getUser({
           workspaceId: workspace.id,
           userId: userId,
         });
         if (!workspaceUser) {
-          await this.services.workspaces.addUser(
+          await gr.services.workspaces.addUser(
             pick(workspace, ["company_id", "id"]),
             { id: userId },
             "member",

@@ -1,5 +1,4 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { MessageServiceAPI } from "../../api";
 import { ResourceListResponse } from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { handleError } from "../../../../utils/handleError";
@@ -13,18 +12,9 @@ import {
   PaginationQueryParameters,
 } from "../../types";
 import { keyBy } from "lodash";
-import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
-import ChannelServiceAPI from "../../../channels/provider";
-import WorkspaceServicesAPI from "../../../workspaces/api";
+import gr from "../../../global-resolver";
 
 export class ViewsController {
-  constructor(
-    protected realtime: RealtimeServiceAPI,
-    protected service: MessageServiceAPI,
-    protected workspaceService: WorkspaceServicesAPI,
-    protected channelService: ChannelServiceAPI,
-  ) {}
-
   async feed(
     request: FastifyRequest<{
       Querystring: MessageViewListQueryParameters;
@@ -50,13 +40,13 @@ export class ViewsController {
 
     try {
       if (request.query.filter === "files") {
-        resources = await this.service.views.listChannelFiles(pagination, query, context);
+        resources = await gr.services.messages.views.listChannelFiles(pagination, query, context);
       } else if (request.query.filter === "thread") {
-        resources = await this.service.views.listChannelThreads(pagination, query, context);
+        resources = await gr.services.messages.views.listChannelThreads(pagination, query, context);
       } else if (request.query.filter === "pinned") {
-        resources = await this.service.views.listChannelPinned(pagination, query, context);
+        resources = await gr.services.messages.views.listChannelPinned(pagination, query, context);
       } else {
-        resources = await this.service.views.listChannel(pagination, query, context);
+        resources = await gr.services.messages.views.listChannel(pagination, query, context);
       }
 
       if (!resources) {
@@ -71,14 +61,14 @@ export class ViewsController {
               ...msg,
               ...((msg as any).message
                 ? {
-                    message: await this.service.messages.includeUsersInMessageWithReplies(
+                    message: await gr.services.messages.messages.includeUsersInMessageWithReplies(
                       (msg as any).message,
                     ),
                   }
                 : {}),
               ...((msg as any).thread
                 ? {
-                    thread: await this.service.messages.includeUsersInMessageWithReplies(
+                    thread: await gr.services.messages.messages.includeUsersInMessageWithReplies(
                       (msg as any).thread,
                     ),
                   }
@@ -86,7 +76,7 @@ export class ViewsController {
             } as FlatFileFromMessage | FlatPinnedFromMessage);
           } else {
             entities.push(
-              await this.service.messages.includeUsersInMessageWithReplies(
+              await gr.services.messages.messages.includeUsersInMessageWithReplies(
                 msg as MessageWithReplies,
               ),
             );
@@ -99,7 +89,7 @@ export class ViewsController {
       return {
         resources: entities,
         ...(request.query.websockets && {
-          websockets: this.realtime.sign(
+          websockets: gr.platformServices.realtime.sign(
             [
               {
                 room: `/companies/${context.channel.company_id}/workspaces/${context.channel.workspace_id}/channels/${context.channel.id}/feed`,
@@ -143,12 +133,12 @@ export class ViewsController {
   ): Promise<ResourceListResponse<MessageWithReplies>> {
     const limit = +request.query.limit || 100;
 
-    async function* getNextMessages(service: MessageServiceAPI): AsyncIterableIterator<Message> {
+    async function* getNextMessages(): AsyncIterableIterator<Message> {
       let lastPageToken = null;
       let messages: Message[] = [];
       let hasMoreMessages = true;
       do {
-        messages = await service.views
+        messages = await gr.services.messages.views
           .search(
             new Pagination(lastPageToken, limit.toString()),
             {
@@ -181,8 +171,8 @@ export class ViewsController {
 
     const messages = [] as Message[];
 
-    for await (const msg of getNextMessages(this.service)) {
-      const isChannelMember = await this.channelService.members.isChannelMember(
+    for await (const msg of getNextMessages()) {
+      const isChannelMember = await gr.services.channels.members.isChannelMember(
         { id: request.currentUser.id },
         {
           company_id: msg.cache.company_id,
@@ -200,7 +190,7 @@ export class ViewsController {
     }
 
     const firstMessagesMap = keyBy(
-      await this.service.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
+      await gr.services.messages.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
       item => item.id,
     );
 

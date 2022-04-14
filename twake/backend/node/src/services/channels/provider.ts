@@ -26,8 +26,7 @@ import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
 import { NewUserInWorkspaceNotification } from "./services/channel/types";
-import { ChannelCounterPrimaryKey, ChannelUserCounterType } from "./entities/channel-counters";
-import CompanyUser from "../user/entities/company_user";
+import { ChannelCounterPrimaryKey } from "./entities/channel-counters";
 import { UserPrimaryKey } from "../user/entities/user";
 import { WorkspacePrimaryKey } from "../workspaces/entities/workspace";
 
@@ -214,13 +213,6 @@ export interface TabService
   extends TwakeServiceProvider,
     Initializable,
     CRUDService<ChannelTab, ChannelTabPrimaryKey, ChannelExecutionContext> {}
-
-export default interface ChannelServiceAPI extends TwakeServiceProvider, Initializable {
-  channels: ChannelService;
-  pendingEmails: ChannelPendingEmailService;
-  members: MemberService;
-  tabs: TabService;
-}
 
 /**
  * Manage default channels entities

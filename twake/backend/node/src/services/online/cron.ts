@@ -1,35 +1,29 @@
-import WebSocketAPI from "../../core/platform/services/websocket/provider";
-import { getLogger, TwakeLogger } from "../../core/platform/framework/logger";
-import { CronAPI } from "../../core/platform/services/cron/api";
+import { getLogger, TwakeLogger } from "../../core/platform/framework";
 import { WebSocket } from "../../core/platform/services/websocket/types";
 import { Initializable } from "../../core/platform/framework";
 import { JOB_CRON_EXPRESSION } from "./constants";
 import { filter } from "lodash";
-import { OnlineServiceAPI } from "./api";
+import gr from "../global-resolver";
 
 export default class OnlineJob implements Initializable {
   private logger: TwakeLogger;
-  constructor(
-    private cron: CronAPI,
-    private websocket: WebSocketAPI,
-    private onlineService: OnlineServiceAPI,
-  ) {
+  constructor() {
     this.logger = getLogger("OnlineJob");
   }
 
   async init(): Promise<this> {
-    const task = this.cron.schedule(JOB_CRON_EXPRESSION, async () => {
+    const task = gr.platformServices.cron.schedule(JOB_CRON_EXPRESSION, async () => {
       this.logger.info("Running online job");
 
       const connectedWebsockets: WebSocket[] = filter(
-        this.websocket.getIo().sockets.sockets,
+        gr.platformServices.websocket.getIo().sockets.sockets,
         "connected",
       ) as unknown as WebSocket[];
 
-      await this.onlineService.setLastSeenOnline(
+      await gr.services.online.setLastSeenOnline(
         connectedWebsockets
           .filter(ws => ws?.decoded_token)
-          .map(ws => this.websocket.getUser(ws))
+          .map(ws => gr.platformServices.websocket.getUser(ws))
           .map(user => user.id),
         Date.now(),
       );

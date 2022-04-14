@@ -121,7 +121,7 @@ export type ProcessReport = {
 export type ConsoleType = "remote" | "internal";
 
 export type ConsoleOptions = {
-  type: "remote" | "internal";
+  type: ConsoleType;
   username: string;
   password: string;
   url: string;

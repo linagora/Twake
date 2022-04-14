@@ -3,7 +3,7 @@ import {
   ListResult,
   SaveResult,
 } from "../../core/platform/framework/api/crud-service";
-import { TwakeServiceProvider, Initializable } from "../../core/platform/framework/api";
+import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
 import {
   ChannelMemberNotificationPreference,
   ChannelMemberNotificationPreferencePrimaryKey,
@@ -16,18 +16,6 @@ import {
 } from "./entities";
 import { NotificationExecutionContext } from "./types";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
-import { NotificationEngine } from "./services/engine";
-import { NotificationPreferencesService } from "./services/preferences/service";
-import { MobilePushService } from "./services/mobile-push/service";
-
-export interface NotificationServiceAPI extends TwakeServiceProvider, Initializable {
-  badges: UserNotificationBadgeServiceAPI;
-  channelPreferences: ChannelMemberPreferencesServiceAPI;
-  channelThreads: ChannelThreadUsersServiceAPI;
-  engine: NotificationEngine;
-  notificationPreferences: NotificationPreferencesService;
-  mobilePush: MobilePushService;
-}
 
 export interface UserNotificationBadgeServiceAPI
   extends TwakeServiceProvider,
@@ -159,7 +147,7 @@ export interface UserNotificationPreferencesAPI
 /**
  * A notification hander is in charge of processing a notification from the pubsub layer and then optionally produces something to be consumed by another handler somewhere in the platform.
  */
-export interface NotificationPubsubHandler<InputMessage, OutputMessage>
-  extends PubsubHandler<InputMessage, OutputMessage> {
-  readonly service: NotificationServiceAPI;
-}
+export type NotificationPubsubHandler<InputMessage, OutputMessage> = PubsubHandler<
+  InputMessage,
+  OutputMessage
+>;

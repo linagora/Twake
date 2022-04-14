@@ -1,20 +1,17 @@
 import { MessageLocalEvent } from "../../../../types";
-import { MessageServiceAPI } from "../../../../api";
-import { DatabaseServiceAPI } from "../../../../../../core/platform/services/database/api";
 import { Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import {
-  MessageChannelMarkedRef,
   getInstance,
+  MessageChannelMarkedRef,
 } from "../../../../entities/message-channel-marked-refs";
+import gr from "../../../../../global-resolver";
 
 export class ChannelMarkedViewProcessor {
   repository: Repository<MessageChannelMarkedRef>;
 
-  constructor(readonly database: DatabaseServiceAPI, readonly service: MessageServiceAPI) {}
-
   async init() {
-    this.repository = await this.database.getRepository<MessageChannelMarkedRef>(
+    this.repository = await gr.database.getRepository<MessageChannelMarkedRef>(
       "message_channel_marked_refs",
       MessageChannelMarkedRef,
     );

@@ -10,6 +10,8 @@ describe("The RealtimeDeleted decorator", () => {
 
     class TestMe {
       @RealtimeDeleted({ room: "/foo/bar" })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       reverseMeBaby(input: string): Promise<string> {
         return Promise.resolve(input.split("").reverse().join(""));
       }
@@ -33,6 +35,8 @@ describe("The RealtimeDeleted decorator", () => {
 
     class TestMe {
       @RealtimeDeleted({ room: "/foo/bar", path: "/foo/bar/baz" })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       async reverseMeBaby(input: string): Promise<DeleteResult<string>> {
         return new DeleteResult<string>("string", input.split("").reverse().join(""), true);
       }
@@ -74,6 +78,8 @@ describe("The RealtimeDeleted decorator", () => {
       @RealtimeDeleted(result => [
         { room: ResourcePath.get(`/foo/bar/${result}`), path: "/foo/bar/baz" },
       ])
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       async reverseMeBaby(input: string): Promise<DeleteResult<string>> {
         return new DeleteResult<string>("string", input.split("").reverse().join(""), true);
       }

@@ -3,7 +3,6 @@ import { uuid } from "../../utils/types";
 import { HookType } from "../applicationsapi/types";
 import { Channel } from "../channels/entities";
 import { UserObject } from "../user/web/types";
-import { MessageFileMetadata } from "./entities/message-files";
 import { Message, MessageWithUsers } from "./entities/messages";
 import { Thread } from "./entities/threads";
 

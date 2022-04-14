@@ -8,5 +8,6 @@ export default interface WebServerAPI extends TwakeServiceProvider {
    */
   getServer(): FastifyInstance<Server, IncomingMessage, ServerResponse>;
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   onReady(handler: Function): void;
 }

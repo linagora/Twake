@@ -15,7 +15,7 @@ export async function generatePreview(
   const output: ThumbnailResult[] = [];
 
   for (const inputPath of inputPaths) {
-    var result: sharp.OutputInfo;
+    let result: sharp.OutputInfo;
     const outputPath = getTmpFile();
     try {
       const inputMetadata = await sharp(inputPath).metadata();

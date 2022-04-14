@@ -76,7 +76,7 @@ class ListenUsers {
       ws.subscribe(
         `users/${idUser}`,
         (_uri: string, data: any) => {
-          /*if (idUser == UserService.getCurrentUserId()) {
+          /*if (idUser == UserServiceImpl.getCurrentUserId()) {
           if (data.ping) {
             that.pong();
           }
@@ -105,7 +105,7 @@ class ListenUsers {
 
       if (idUser !== UserService.getCurrentUserId()) {
         /*setTimeout(() => {
-          if (idUser != UserService.getCurrentUserId()) {
+          if (idUser != UserServiceImpl.getCurrentUserId()) {
             this.setUserPingTimeout(idUser);
             this.ping(idUser);
           }

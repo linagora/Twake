@@ -18,39 +18,23 @@ import {
   updateWorkspaceSchema,
   updateWorkspaceUserSchema,
 } from "./schemas";
-
-import WorkspaceServicesAPI from "../api";
 import { WorkspaceBaseRequest, WorkspaceUsersBaseRequest, WorkspaceUsersRequest } from "./types";
 import { WorkspaceUsersCrudController } from "./controllers/workspace-users";
 import { hasWorkspaceAdminLevel, hasWorkspaceMemberLevel } from "../../../utils/workspace";
 import { WorkspaceInviteTokensCrudController } from "./controllers/workspace-invite-tokens";
 import WorkspaceUser from "../entities/workspace_user";
-import { RealtimeServiceAPI } from "../../../core/platform/services/realtime/api";
 import { hasCompanyMemberLevel } from "../../../utils/company";
+import gr from "../../global-resolver";
 
 const workspacesUrl = "/companies/:company_id/workspaces";
 const workspacePendingUsersUrl = "/companies/:company_id/workspaces/:workspace_id/pending";
 const workspaceUsersUrl = "/companies/:company_id/workspaces/:workspace_id/users";
 const workspaceInviteTokensUrl = "/companies/:company_id/workspaces/:workspace_id/users/tokens";
 
-const routes: FastifyPluginCallback<{
-  service: WorkspaceServicesAPI;
-  realtime: RealtimeServiceAPI;
-}> = (fastify: FastifyInstance, options, next) => {
-  const workspacesController = new WorkspacesCrudController(
-    options.realtime,
-    options.service.workspaces,
-    options.service.companies,
-  );
-
-  const workspaceUsersController = new WorkspaceUsersCrudController(
-    options.service.workspaces,
-    options.service.companies,
-    options.service.users,
-    options.service.console,
-  );
-
-  const workspaceInviteTokensController = new WorkspaceInviteTokensCrudController(options.service);
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const workspacesController = new WorkspacesCrudController();
+  const workspaceUsersController = new WorkspaceUsersCrudController();
+  const workspaceInviteTokensController = new WorkspaceInviteTokensCrudController();
 
   const accessControl = async () => {
     // TODO
@@ -65,13 +49,13 @@ const routes: FastifyPluginCallback<{
     const companyId = request.params.company_id;
     const userId = request.currentUser.id;
 
-    const companyUser = await options.service.companies.getCompanyUser(
+    const companyUser = await gr.services.companies.getCompanyUser(
       { id: companyId },
       { id: userId },
     );
 
     if (!companyUser) {
-      const company = await options.service.companies.getCompany({ id: companyId });
+      const company = await gr.services.companies.getCompany({ id: companyId });
       if (!company) {
         throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
       }
@@ -80,7 +64,7 @@ const routes: FastifyPluginCallback<{
   };
 
   const checkWorkspace = async (request: FastifyRequest<{ Params: WorkspaceUsersBaseRequest }>) => {
-    const workspace = await options.service.workspaces.get({
+    const workspace = await gr.services.workspaces.get({
       company_id: request.params.company_id,
       id: request.params.workspace_id,
     });
@@ -95,10 +79,13 @@ const routes: FastifyPluginCallback<{
     const companyId = request.params.workspace_id;
     const workspaceId = request.params.workspace_id;
     const userId = request.currentUser.id;
-    const workspaceUser = await options.service.workspaces.getUser({ workspaceId, userId });
+    const workspaceUser = await gr.services.workspaces.getUser({
+      workspaceId,
+      userId,
+    });
 
     if (!workspaceUser) {
-      const workspace = await options.service.workspaces.get({
+      const workspace = await gr.services.workspaces.get({
         company_id: companyId,
         id: workspaceId,
       });
@@ -117,7 +104,7 @@ const routes: FastifyPluginCallback<{
     if (!request.currentUser.id) {
       throw fastify.httpErrors.forbidden("You must be authenticated");
     }
-    const companyUser = await options.service.companies.getCompanyUser(
+    const companyUser = await gr.services.companies.getCompanyUser(
       { id: request.params.company_id },
       { id: request.currentUser.id },
     );
@@ -134,7 +121,7 @@ const routes: FastifyPluginCallback<{
       throw fastify.httpErrors.forbidden("You must be authenticated");
     }
     const workspaceUser = await checkUserWorkspace(request);
-    const companyUser = await options.service.companies.getCompanyUser(
+    const companyUser = await gr.services.companies.getCompanyUser(
       { id: request.params.company_id },
       { id: request.currentUser.id },
     );
@@ -150,7 +137,7 @@ const routes: FastifyPluginCallback<{
       throw fastify.httpErrors.forbidden("You must be authenticated");
     }
     const workspaceUser = await checkUserWorkspace(request);
-    const companyUser = await options.service.companies.getCompanyUser(
+    const companyUser = await gr.services.companies.getCompanyUser(
       { id: request.params.company_id },
       { id: request.currentUser.id },
     );

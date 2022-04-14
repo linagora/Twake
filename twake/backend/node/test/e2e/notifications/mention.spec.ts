@@ -1,15 +1,14 @@
-import { describe, expect, it, beforeAll, afterAll } from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 import { v1 as uuidv1 } from "uuid";
-import { TestPlatform, init } from "../setup";
-import ChannelServiceAPI from "../../../src/services/channels/provider";
+import { init, TestPlatform } from "../setup";
 import { Channel } from "../../../src/services/channels/entities/channel";
 import { ChannelMemberNotificationLevel } from "../../../src/services/channels/types";
 import { User } from "../../../src/utils/types";
 import {
+  ChannelMemberUtils,
   ChannelUtils,
   get as getChannelUtils,
   getMemberUtils,
-  ChannelMemberUtils,
 } from "../channels/utils";
 import { MessageNotification } from "../../../src/services/messages/types";
 import {
@@ -18,14 +17,14 @@ import {
 } from "../../../src/core/platform/services/pubsub/api";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { MentionNotification } from "../../../src/services/notifications/types";
-import { threadId } from "worker_threads";
+import gr from "../../../src/services/global-resolver";
 
 describe("The notification for user mentions", () => {
   let platform: TestPlatform;
   let channelUtils: ChannelUtils;
   let channelMemberUtils: ChannelMemberUtils;
-  let channelService: ChannelServiceAPI;
   let pubsubService: PubsubServiceAPI;
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   let pubsubHandler: (message: IncomingPubsubMessage<MentionNotification>) => void = _ => {};
 
   beforeAll(async () => {
@@ -52,7 +51,6 @@ describe("The notification for user mentions", () => {
     });
     channelUtils = getChannelUtils(platform);
     channelMemberUtils = getMemberUtils(platform);
-    channelService = platform.platform.getProvider<ChannelServiceAPI>("channels");
     pubsubService = platform.platform.getProvider<PubsubServiceAPI>("pubsub");
     pubsubService.subscribe<MentionNotification>("notification:mentions", message => {
       pubsubHandler(message);
@@ -66,7 +64,7 @@ describe("The notification for user mentions", () => {
 
   async function createChannel(): Promise<Channel> {
     const channel = channelUtils.getChannel(platform.currentUser.id);
-    const creationResult = await channelService.channels.save(
+    const creationResult = await gr.services.channels.channels.save(
       channel,
       {},
       channelUtils.getContext(),
@@ -85,7 +83,7 @@ describe("The notification for user mentions", () => {
 
     if (notificationLevel) member.notification_level = notificationLevel;
 
-    const memberCreationResult = await channelService.members.save(
+    const memberCreationResult = await gr.services.channels.members.save(
       member,
       {},
       channelUtils.getChannelContext(channel, user),
@@ -99,7 +97,7 @@ describe("The notification for user mentions", () => {
     level: ChannelMemberNotificationLevel,
   ): Promise<void> {
     member.notification_level = level;
-    await channelService.members.save(
+    await gr.services.channels.members.save(
       member,
       {},
       channelUtils.getChannelContext(channel, { id: member.user_id }),

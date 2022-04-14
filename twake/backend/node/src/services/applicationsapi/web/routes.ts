@@ -1,16 +1,12 @@
 import { FastifyInstance, FastifyPluginCallback, FastifyRequest } from "fastify";
-import { ApplicationsApiServiceAPI } from "../api";
+
 import { ApplicationsApiController } from "./controllers";
 import { ApplicationApiBaseRequest } from "./types";
 import { logger as log } from "../../../core/platform/framework";
 import { configureRequestSchema } from "./schemas";
 
-const routes: FastifyPluginCallback<{ service: ApplicationsApiServiceAPI }> = (
-  fastify: FastifyInstance,
-  options,
-  next,
-) => {
-  const controller = new ApplicationsApiController(options.service);
+const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
+  const controller = new ApplicationsApiController();
 
   const checkApplication = async (request: FastifyRequest<{ Body: ApplicationApiBaseRequest }>) => {
     if (!request.currentUser.application_id) {

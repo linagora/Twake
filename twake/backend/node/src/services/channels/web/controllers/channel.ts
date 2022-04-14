@@ -1,10 +1,6 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import {
-  CreateResult,
-  CrudException,
-  Pagination,
-} from "../../../../core/platform/framework/api/crud-service";
+import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   Channel,
@@ -14,12 +10,7 @@ import {
   getChannelPendingEmailsInstance,
   UserChannel,
 } from "../../entities";
-import {
-  ChannelPendingEmailService,
-  ChannelPrimaryKey,
-  ChannelService,
-  MemberService,
-} from "../../provider";
+import { ChannelPrimaryKey } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
   BaseChannelsParameters,
@@ -40,11 +31,11 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { RealtimeServiceAPI } from "../../../../core/platform/services/realtime/api";
 import { getLogger } from "../../../../core/platform/framework/logger";
 import _ from "lodash";
 import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
 import { ChannelUserCounterType } from "../../entities/channel-counters";
+import gr from "../../../global-resolver";
 
 const logger = getLogger("channel.controller");
 
@@ -57,13 +48,6 @@ export class ChannelCrudController
       ResourceDeleteResponse
     >
 {
-  constructor(
-    protected websockets: RealtimeServiceAPI,
-    protected service: ChannelService,
-    protected membersService: MemberService,
-    protected pendingEmails: ChannelPendingEmailService,
-  ) {}
-
   getPrimaryKey(request: FastifyRequest<{ Params: ChannelParameters }>): ChannelPrimaryKey {
     return {
       id: request.params.id,
@@ -78,14 +62,20 @@ export class ChannelCrudController
   ): Promise<ResourceGetResponse<ChannelObject>> {
     const context = getExecutionContext(request);
 
-    let channel = await this.service.get(this.getPrimaryKey(request), getExecutionContext(request));
+    let channel = await gr.services.channels.channels.get(
+      this.getPrimaryKey(request),
+      getExecutionContext(request),
+    );
 
     if (!channel) {
       throw CrudException.notFound(`Channel ${request.params.id} not found`);
     }
 
     if (Channel.isDirectChannel(channel) || Channel.isPrivateChannel(channel)) {
-      const isMember = await this.membersService.isChannelMember(request.currentUser, channel);
+      const isMember = await gr.services.channels.members.isChannelMember(
+        request.currentUser,
+        channel,
+      );
 
       if (!isMember) {
         throw CrudException.badRequest("User does not have enough rights to get channel");
@@ -93,12 +83,12 @@ export class ChannelCrudController
     }
 
     if (request.query.include_users)
-      channel = await this.service.includeUsersInDirectChannel(
+      channel = await gr.services.channels.channels.includeUsersInDirectChannel(
         channel,
         getExecutionContext(request),
       );
 
-    const member = await this.membersService.get(
+    const member = await gr.services.channels.members.get(
       _.assign(new ChannelMember(), {
         channel_id: channel.id,
         workspace_id: channel.workspace_id,
@@ -115,7 +105,10 @@ export class ChannelCrudController
     await this.completeWithStatistics([channelObject]);
 
     return {
-      websocket: this.websockets.sign([getWebsocketInformation(channel)], context.user.id)[0],
+      websocket: gr.platformServices.realtime.sign(
+        [getWebsocketInformation(channel)],
+        context.user.id,
+      )[0],
       resource: channelObject,
     };
   }
@@ -124,7 +117,7 @@ export class ChannelCrudController
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<void> {
-    const channel = await this.service.get(
+    const channel = await gr.services.channels.channels.get(
       this.getPrimaryKey(request),
       getExecutionContext(request),
     );
@@ -156,11 +149,11 @@ export class ChannelCrudController
       } as ChannelSaveOptions;
 
       const context = getExecutionContext(request);
-      const channelResult = await this.service.save(entity, options, context);
+      const channelResult = await gr.services.channels.channels.save(entity, options, context);
 
       logger.debug("reqId: %s - save - Channel %s created", request.id, channelResult.entity.id);
 
-      const member = await this.membersService.get(
+      const member = await gr.services.channels.members.get(
         _.assign(new ChannelMember(), {
           channel_id: channelResult.entity.id,
           workspace_id: channelResult.entity.workspace_id,
@@ -173,7 +166,10 @@ export class ChannelCrudController
       let entityWithUsers: Channel = channelResult.entity;
 
       if (request.query.include_users)
-        entityWithUsers = await this.service.includeUsersInDirectChannel(entityWithUsers, context);
+        entityWithUsers = await gr.services.channels.channels.includeUsersInDirectChannel(
+          entityWithUsers,
+          context,
+        );
 
       const resultEntity = {
         ...entityWithUsers,
@@ -185,7 +181,7 @@ export class ChannelCrudController
       }
 
       return {
-        websocket: this.websockets.sign(
+        websocket: gr.platformServices.realtime.sign(
           [getWebsocketInformation(channelResult.entity)],
           context.user.id,
         )[0],
@@ -211,14 +207,14 @@ export class ChannelCrudController
 
     try {
       const context = getExecutionContext(request);
-      const result = await this.service.save(entity, {}, context);
+      const result = await gr.services.channels.channels.save(entity, {}, context);
 
       if (result.entity) {
         reply.code(201);
       }
 
       return {
-        websocket: this.websockets.sign(
+        websocket: gr.platformServices.realtime.sign(
           [getWebsocketInformation(result.entity)],
           context.user.id,
         )[0],
@@ -239,7 +235,7 @@ export class ChannelCrudController
 
     //Fixme: this slow down the channel get operation. Once we stabilize the workspace:member:added event we can remove this
     if (context.workspace.workspace_id !== ChannelVisibility.DIRECT) {
-      await this.pendingEmails.proccessPendingEmails(
+      await gr.services.channelPendingEmail.proccessPendingEmails(
         {
           user_id: context.user.id,
           ...context.workspace,
@@ -248,7 +244,7 @@ export class ChannelCrudController
       );
     }
 
-    const list = await this.service.list(
+    const list = await gr.services.channels.channels.list(
       new Pagination(request.query.page_token, request.query.limit),
       { ...request.query },
       context,
@@ -258,7 +254,7 @@ export class ChannelCrudController
     if (request.query.include_users) {
       entities = [];
       for (const e of list.getEntities()) {
-        entities.push(await this.service.includeUsersInDirectChannel(e, context));
+        entities.push(await gr.services.channels.channels.includeUsersInDirectChannel(e, context));
       }
     } else {
       entities = list.getEntities();
@@ -273,7 +269,7 @@ export class ChannelCrudController
         resources: resources,
       },
       ...(request.query.websockets && {
-        websockets: this.websockets.sign(
+        websockets: gr.platformServices.realtime.sign(
           getWorkspaceRooms(request.params, request.currentUser),
           request.currentUser.id,
         ),
@@ -289,7 +285,7 @@ export class ChannelCrudController
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
     try {
-      const deleteResult = await this.service.delete(
+      const deleteResult = await gr.services.channels.channels.delete(
         this.getPrimaryKey(request),
         getExecutionContext(request),
       );
@@ -318,12 +314,12 @@ export class ChannelCrudController
 
     try {
       const result = read
-        ? await this.service.markAsRead(
+        ? await gr.services.channels.channels.markAsRead(
             this.getPrimaryKey(request),
             request.currentUser,
             getExecutionContext(request),
           )
-        : await this.service.markAsUnread(
+        : await gr.services.channels.channels.markAsUnread(
             this.getPrimaryKey(request),
             request.currentUser,
             getExecutionContext(request),
@@ -343,7 +339,7 @@ export class ChannelCrudController
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reply: FastifyReply,
   ): Promise<ResourceListResponse<ChannelPendingEmails>> {
-    const list = await this.pendingEmails.list(
+    const list = await gr.services.channelPendingEmail.list(
       new Pagination(request.query.page_token, request.query.limit),
       { ...request.query },
       getChannelPendingEmailsExecutionContext(request),
@@ -352,7 +348,7 @@ export class ChannelCrudController
     return {
       resources: list.getEntities(),
       ...(request.query.websockets && {
-        websockets: this.websockets.sign(
+        websockets: gr.platformServices.realtime.sign(
           getWorkspaceRooms(request.params, request.currentUser),
           request.currentUser.id,
         ),
@@ -372,7 +368,7 @@ export class ChannelCrudController
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reply: FastifyReply,
   ): Promise<ResourceCreateResponse<ChannelPendingEmails>> {
-    const pendingEmail = await this.pendingEmails.create(
+    const pendingEmail = await gr.services.channelPendingEmail.create(
       getChannelPendingEmailsInstance(request.body.resource),
       getChannelPendingEmailsExecutionContext(request),
     );
@@ -386,7 +382,7 @@ export class ChannelCrudController
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     reply: FastifyReply,
   ): Promise<ResourceDeleteResponse> {
-    const pendingEmail = await this.pendingEmails.delete(
+    const pendingEmail = await gr.services.channelPendingEmail.delete(
       getChannelPendingEmailsInstance({
         channel_id: request.params.channel_id,
         company_id: request.params.company_id,
@@ -402,12 +398,12 @@ export class ChannelCrudController
   async completeWithStatistics(channels: ChannelObject[]) {
     await Promise.all(
       channels.map(async a => {
-        const members = await this.membersService.getUsersCount({
+        const members = await gr.services.channels.members.getUsersCount({
           ..._.pick(a, "id", "company_id", "workspace_id"),
           counter_type: ChannelUserCounterType.MEMBERS,
         });
         //Fixme: even if it works strange to use "getUsersCount" to get messages count
-        const messages = await this.membersService.getUsersCount({
+        const messages = await gr.services.channels.members.getUsersCount({
           ..._.pick(a, "id", "company_id", "workspace_id"),
           counter_type: ChannelUserCounterType.MESSAGES,
         });

@@ -1,41 +1,18 @@
-import { ApplicationHooksServiceAPI, MarketplaceApplicationServiceAPI } from "../api";
-import Application, {
-  ApplicationPrimaryKey,
-  getInstance as getApplicationInstance,
-  PublicApplicationObject,
-  TYPE,
-} from "../entities/application";
+import { ApplicationHooksServiceAPI } from "../api";
+import Application from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger } from "../../../core/platform/framework";
-import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
-import {
-  CreateResult,
-  CrudException,
-  DeleteResult,
-  EntityOperationResult,
-  ExecutionContext,
-  ListResult,
-  OperationType,
-  Pagination,
-  SaveResult,
-  UpdateResult,
-} from "../../../core/platform/framework/api/crud-service";
-import SearchRepository from "../../../core/platform/services/search/repository";
-import assert from "assert";
 import { logger as log } from "../../../core/platform/framework";
-import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { CrudException } from "../../../core/platform/framework/api/crud-service";
+import SearchRepository from "../../../core/platform/services/search/repository";
+import axios from "axios";
 import * as crypto from "crypto";
 import { isObject } from "lodash";
+import gr from "../../global-resolver";
 
 export class ApplicationHooksService implements ApplicationHooksServiceAPI {
   version: "1";
   repository: Repository<Application>;
   searchRepository: SearchRepository<Application>;
-
-  constructor(
-    readonly platformService: PlatformServicesAPI,
-    readonly applicationService: MarketplaceApplicationServiceAPI,
-  ) {}
 
   async init() {
     return this;
@@ -51,7 +28,7 @@ export class ApplicationHooksService implements ApplicationHooksServiceAPI {
     company_id: string,
     workspace_id: string,
   ): Promise<void> {
-    const app = await this.applicationService.get({ id: application_id });
+    const app = await gr.services.applications.marketplaceApps.get({ id: application_id });
     if (!app) {
       throw CrudException.notFound("Application not found");
     }

@@ -12,10 +12,6 @@ const logger = getLogger("channel.activities");
 export default class Activities implements Initializable {
   pubsub: PubsubServiceAPI;
 
-  constructor(pubsub: PubsubServiceAPI) {
-    this.pubsub = pubsub;
-  }
-
   async init(): Promise<this> {
     const channelConnectorCreatedEvent = "channel:connector:created";
     const channelConnectorDeletedEvent = "channel:connector:deleted";

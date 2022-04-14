@@ -1,19 +1,15 @@
 import { afterAll, beforeAll, describe, expect, it as _it } from "@jest/globals";
 import { init, TestPlatform } from "../setup";
-import { TestDbService, uuid } from "../utils.prepare.db";
+import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
-import { ConsoleServiceAPI } from "../../../src/services/console/api";
-import { ConsoleType } from "../../../src/services/console/types";
-
+import gr from "../../../src/services/global-resolver";
 /*
  THIS TESTS RUNS ONLY FOR THE CONSOLE-MODE (CONSOLE TYPE: INTERNAL)
 */
 
-let consoleType: ConsoleType = null;
-
 export const it = (name: string, cb: (a: any) => void) => {
   _it(name, async done => {
-    if (consoleType === "internal") {
+    if (gr.services.console.consoleType === "internal") {
       cb(done);
     } else {
       console.warn(`[skipped]: ${name} (no-console mode only)`);
@@ -38,7 +34,7 @@ describe("The /workspace/pending users API", () => {
   const emailForExistedUser = "exist@email.com";
 
   async function doTheTest() {
-    return Promise.resolve(consoleType === "remote");
+    return Promise.resolve(gr.services.console.consoleType === "remote");
   }
 
   beforeAll(async ends => {
@@ -82,9 +78,6 @@ describe("The /workspace/pending users API", () => {
       workspaceRole: "member",
       email: fourthUser,
     });
-
-    const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
-    consoleType = console.consoleType;
 
     ends();
   });

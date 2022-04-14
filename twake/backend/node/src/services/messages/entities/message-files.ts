@@ -32,6 +32,7 @@ export type MessageFileMetadata = {
   mime?: string; //Original file mime
   size?: number; //Original file weight
   thumbnails?: Thumbnail[]; //Url to thumbnail (or set it to undefined if no relevant)
+  type?: string;
 };
 
 export type MessageFilePrimaryKey = Pick<MessageFile, "message_id" | "id">;

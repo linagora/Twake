@@ -1,5 +1,7 @@
-import { describe, it, beforeEach, afterEach } from "@jest/globals";
-import { TestPlatform, init } from "../setup";
+import { afterEach, beforeEach, describe, it } from "@jest/globals";
+import { init, TestPlatform } from "../setup";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import io from "socket.io-client";
 
 describe("The Websocket authentication", () => {

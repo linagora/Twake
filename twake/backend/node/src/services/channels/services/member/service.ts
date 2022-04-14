@@ -10,7 +10,7 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import ChannelServiceAPI, { MemberService } from "../../provider";
+import { MemberService } from "../../provider";
 
 import {
   Channel as ChannelEntity,
@@ -36,7 +36,6 @@ import { ResourcePath } from "../../../../core/platform/services/realtime/types"
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { plainToClass } from "class-transformer";
-import UserServiceAPI, { CompaniesServiceAPI } from "../../../user/api";
 import {
   ChannelCounterEntity,
   ChannelCounterPrimaryKey,
@@ -44,12 +43,12 @@ import {
   TYPE as ChannelCounterEntityType,
 } from "../../entities/channel-counters";
 import { CounterProvider } from "../../../../core/platform/services/counter/provider";
-import { PlatformServicesAPI } from "../../../../core/platform/services/platform-services";
 import { countRepositoryItems } from "../../../../utils/counters";
-import { getService as getCompanyService } from "../../../user/services/companies";
 import NodeCache from "node-cache";
 import { UserPrimaryKey } from "../../../user/entities/user";
 import { WorkspacePrimaryKey } from "../../../workspaces/entities/workspace";
+
+import gr from "../../../global-resolver";
 
 const USER_CHANNEL_KEYS = [
   "id",
@@ -75,29 +74,17 @@ const CHANNEL_MEMBERS_KEYS = [
 
 const logger = getLogger("channel.member");
 
-export class Service implements MemberService {
+export class MemberServiceImpl implements MemberService {
   version: "1";
   userChannelsRepository: Repository<ChannelMember>;
   channelMembersRepository: Repository<MemberOfChannel>;
   private channelCounter: CounterProvider<ChannelCounterEntity>;
-  private companies: CompaniesServiceAPI;
   private cache: NodeCache;
-
-  constructor(
-    private platformServices: PlatformServicesAPI,
-    private channelService: ChannelServiceAPI,
-    protected userService: UserServiceAPI,
-  ) {
-    this.companies = this.userService.companies;
-  }
 
   async init(): Promise<this> {
     try {
-      this.userChannelsRepository = await this.platformServices.database.getRepository(
-        "user_channels",
-        ChannelMember,
-      );
-      this.channelMembersRepository = await this.platformServices.database.getRepository(
+      this.userChannelsRepository = await gr.database.getRepository("user_channels", ChannelMember);
+      this.channelMembersRepository = await gr.database.getRepository(
         "channel_members",
         MemberOfChannel,
       );
@@ -105,13 +92,12 @@ export class Service implements MemberService {
       logger.error({ err }, "Can not initialize channel member service");
     }
 
-    const channelCountersRepository =
-      await this.platformServices.database.getRepository<ChannelCounterEntity>(
-        ChannelCounterEntityType,
-        ChannelCounterEntity,
-      );
+    const channelCountersRepository = await gr.database.getRepository<ChannelCounterEntity>(
+      ChannelCounterEntityType,
+      ChannelCounterEntity,
+    );
 
-    this.channelCounter = await this.platformServices.counter.getCounter<ChannelCounterEntity>(
+    this.channelCounter = await gr.platformServices.counter.getCounter<ChannelCounterEntity>(
       channelCountersRepository,
     );
 
@@ -161,7 +147,7 @@ export class Service implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     let memberToSave: ChannelMember;
-    const channel = await this.channelService.channels.get(context.channel);
+    const channel = await gr.services.channels.channels.get(context.channel);
 
     if (!channel) {
       throw CrudException.notFound("Channel does not exists");
@@ -283,7 +269,7 @@ export class Service implements MemberService {
     context: ChannelExecutionContext,
   ): Promise<DeleteResult<ChannelMember>> {
     const memberToDelete = await this.userChannelsRepository.findOne(pk);
-    const channel = await this.channelService.channels.get(context.channel);
+    const channel = await gr.services.channels.channels.get(context.channel);
 
     if (!channel) {
       throw CrudException.notFound("Channel does not exists");
@@ -324,7 +310,7 @@ export class Service implements MemberService {
     options: ChannelListOptions,
     context: ChannelExecutionContext,
   ): Promise<ListResult<ChannelMember>> {
-    const channel = await this.channelService.channels.get({
+    const channel = await gr.services.channels.channels.get({
       company_id: context.channel.company_id,
       workspace_id: context.channel.workspace_id,
       id: context.channel.id,
@@ -351,7 +337,7 @@ export class Service implements MemberService {
       { pagination },
     );
 
-    const companyUsers = await this.userService.companies.getUsers(
+    const companyUsers = await gr.services.companies.getUsers(
       {
         group_id: context.channel.company_id,
       },
@@ -562,7 +548,7 @@ export class Service implements MemberService {
   ): void {
     logger.debug("Member updated %o", member);
 
-    this.platformServices.pubsub.publish("channel:member:updated", {
+    gr.platformServices.pubsub.publish("channel:member:updated", {
       data: {
         channel,
         member,
@@ -579,7 +565,7 @@ export class Service implements MemberService {
   ): void {
     logger.debug("Member created %o", member);
 
-    this.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:created", {
+    gr.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:created", {
       data: {
         channel,
         user,
@@ -599,7 +585,7 @@ export class Service implements MemberService {
   onDeleted(member: ChannelMember, user: User, channel: ChannelEntity): void {
     logger.debug("Member deleted %o", member);
 
-    this.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:deleted", {
+    gr.platformServices.pubsub.publish<ResourceEventsPayload>("channel:member:deleted", {
       data: {
         channel,
         user,
@@ -674,7 +660,7 @@ export class Service implements MemberService {
   }
 
   async isCompanyMember(companyId: string, userId: string): Promise<boolean> {
-    return (await this.companies.getUserRole(companyId, userId)) != "guest";
+    return (await gr.services.companies.getUserRole(companyId, userId)) != "guest";
   }
 
   private async saveChannelMember(memberToSave: ChannelMember & Channel) {
@@ -688,8 +674,8 @@ export class Service implements MemberService {
     userPk: UserPrimaryKey,
     workspacePk: WorkspacePrimaryKey,
   ) {
-    const workspace = await this.userService.workspaces.get(workspacePk);
-    const member = await this.userService.workspaces.getUser({
+    const workspace = await gr.services.workspaces.get(workspacePk);
+    const member = await gr.services.workspaces.getUser({
       workspaceId: workspace.id,
       userId: userPk.id,
     });

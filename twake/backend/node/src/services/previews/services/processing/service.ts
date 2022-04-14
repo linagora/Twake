@@ -2,15 +2,17 @@ import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
 import { cleanFiles, isFileType } from "../../utils";
-import { pdfExtensions, officeExtensions, imageExtensions } from "./mime";
+import { imageExtensions, officeExtensions, pdfExtensions } from "./mime";
 import StorageAPI from "../../../../core/platform/services/storage/provider";
-import { PreviewPubsubRequest, ThumbnailResult } from "../../types";
+import { PreviewPubsubRequest, PreviewServiceAPI, ThumbnailResult } from "../../types";
 
-export class PreviewProcessService {
+export class PreviewProcessService implements PreviewServiceAPI {
   name: "PreviewProcessService";
   version: "1";
 
-  constructor(readonly storage: StorageAPI) {}
+  async init() {
+    return this;
+  }
 
   async generateThumbnails(
     document: Pick<PreviewPubsubRequest["document"], "filename" | "mime" | "path">,

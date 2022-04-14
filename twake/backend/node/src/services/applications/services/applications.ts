@@ -7,47 +7,39 @@ import Application, {
 } from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { logger } from "../../../core/platform/framework";
-import { PlatformServicesAPI } from "../../../core/platform/services/platform-services";
 import {
-  CreateResult,
-  CrudException,
   DeleteResult,
-  EntityOperationResult,
   ExecutionContext,
   ListResult,
   OperationType,
   Pagination,
   SaveResult,
-  UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import assert from "assert";
 
-export function getService(platformService: PlatformServicesAPI): MarketplaceApplicationServiceAPI {
-  return new ApplicationService(platformService);
-}
+import gr from "../../global-resolver";
+import { InternalToHooksProcessor } from "./internal-event-to-hooks";
 
-class ApplicationService implements MarketplaceApplicationServiceAPI {
+export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI {
   version: "1";
   repository: Repository<Application>;
   searchRepository: SearchRepository<Application>;
 
-  constructor(readonly platformService: PlatformServicesAPI) {}
-
   async init(): Promise<this> {
     try {
-      this.searchRepository = this.platformService.search.getRepository<Application>(
+      this.searchRepository = gr.platformServices.search.getRepository<Application>(
         TYPE,
         Application,
       );
-      this.repository = await this.platformService.database.getRepository<Application>(
-        TYPE,
-        Application,
-      );
+      this.repository = await gr.database.getRepository<Application>(TYPE, Application);
     } catch (err) {
       console.log(err);
       logger.error("Error while initializing applications service");
     }
+
+    gr.platformServices.pubsub.processor.addHandler(new InternalToHooksProcessor());
+
     return this;
   }
 

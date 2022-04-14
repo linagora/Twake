@@ -7,7 +7,10 @@ import { DatabaseServiceAPI } from "../../../src/core/platform/services/database
 import AuthServiceAPI from "../../../src/core/platform/services/auth/provider";
 import { Workspace } from "../../../src/utils/types";
 import { PubsubServiceAPI } from "../../../src/core/platform/services/pubsub/api";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import config from "config";
+import globalResolver from "../../../src/services/global-resolver";
 
 type TokenPayload = {
   sub: string;
@@ -53,8 +56,8 @@ export async function init(
       servicesPath: pathResolve(__dirname, "../../../src/services/"),
     };
     const platform = new TwakePlatform(configuration);
-
     await platform.init();
+    await globalResolver.doInit(platform);
 
     const app = platform.getProvider<WebServerAPI>("webserver").getServer();
 

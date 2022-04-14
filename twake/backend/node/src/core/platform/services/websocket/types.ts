@@ -1,5 +1,3 @@
-import { Server as HttpServer } from "http";
-import { Server as HttpsServer } from "https";
 import socketIO, { Socket } from "socket.io";
 import { RedisAdapterOptions } from "@socket.io/redis-adapter";
 import { User } from "../../../../utils/types";
@@ -13,6 +11,7 @@ export interface AdaptersConfiguration {
 
 export interface WebSocketServiceConfiguration {
   server: FastifyInstance;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   ready: Function;
   options?: socketIO.ServerOptions | { path: string };
   adapters?: AdaptersConfiguration;

@@ -1,6 +1,6 @@
 import ServiceRegistry from 'app/features/global/framework/registry-service';
 
-const SERVICE_SUFFIX = 'Service';
+const SERVICE_SUFFIX = 'ChannelServiceImpl';
 
 export function TwakeService(name: string): ClassDecorator {
   return function DecoratedTwakeService(target: any): any {
