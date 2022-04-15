@@ -18,11 +18,13 @@ import { Message } from "../../../../services/messages/entities/messages";
 export default class KnowledgeGraphAPIClient {
   protected readonly version = "1.0.0";
   protected readonly axiosInstance: AxiosInstance = axios.create();
+  readonly apiUrl: string;
 
-  // FIXME:  This shouldn't be hardcoded, add this url to the config ?
-  protected readonly apiUrl = "http://127.0.0.1:8888";
+  constructor(apiUrl: string) {
+    this.apiUrl = apiUrl;
+  }
 
-  public onCompanyCreated(company: Company): void {
+  public onCompanyCreated(company: Partial<Company>): void {
     this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateCompanyObjectData[]>
     >(`${this.apiUrl}/graph/create/company`, {
@@ -41,7 +43,7 @@ export default class KnowledgeGraphAPIClient {
     });
   }
 
-  public onWorkspaceCreated(workspace: Workspace): void {
+  public onWorkspaceCreated(workspace: Partial<Workspace>): void {
     this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateWorkspaceObjectData[]>
     >(`${this.apiUrl}/graph/create/workspace`, {
@@ -61,7 +63,7 @@ export default class KnowledgeGraphAPIClient {
     });
   }
 
-  public onUserCreated(companyId: string, user: User): void {
+  public onUserCreated(companyId: string, user: Partial<User>): void {
     this.axiosInstance.post<KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateUserObjectData[]>>(
       `${this.apiUrl}/graph/create/user`,
       {
@@ -87,7 +89,9 @@ export default class KnowledgeGraphAPIClient {
     );
   }
 
-  public onChannelCreated(channel: Channel): void {
+  public onChannelCreated(channel: Partial<Channel>): void {
+    console.log("onChannelCreated BEFORE");
+
     this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateChannelObjectData[]>
     >(`${this.apiUrl}/graph/create/channel`, {
@@ -108,7 +112,7 @@ export default class KnowledgeGraphAPIClient {
     });
   }
 
-  public onMessageCreated(channelId: string, message: Message): void {
+  public onMessageCreated(channelId: string, message: Partial<Message>): void {
     this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateMessageObjectData[]>
     >(`${this.apiUrl}/graph/create/message`, {

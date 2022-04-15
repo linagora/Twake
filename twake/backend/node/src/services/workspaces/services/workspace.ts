@@ -58,6 +58,10 @@ import { expandUUID4, reduceUUID4 } from "../../../utils/uuid-reducer";
 import gr from "../../global-resolver";
 import { logger } from "@sentry/utils";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
+import {
+  KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
+} from "../../../core/platform/services/knowledge-graph/types";
 
 export class WorkspaceServiceImpl implements WorkspaceService {
   version: "1";
@@ -224,6 +228,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
       );
     }
 
+    // On created
     if (!item.id) {
       gr.platformServices.pubsub.publish("workspace:added", {
         data: {
@@ -231,6 +236,15 @@ export class WorkspaceServiceImpl implements WorkspaceService {
           workspace_id: workspace.id,
         },
       });
+
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<Workspace>>(
+        KnowledgeGraphEvents.WORKSPACE_CREATED,
+        {
+          id: workspace.id,
+          resource: workspace,
+          links: [{ relation: "parent", type: "company", id: workspace.company_id }],
+        },
+      );
     }
 
     return new SaveResult<Workspace>(

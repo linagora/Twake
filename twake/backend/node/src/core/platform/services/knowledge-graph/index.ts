@@ -1,4 +1,4 @@
-import { Consumes, TwakeService } from "../../framework";
+import { Configuration, Consumes, TwakeService } from "../../framework";
 import { localEventBus } from "../../framework/pubsub";
 import KnowledgeGraphAPI from "./provider";
 import Workspace from "../../../../services/workspaces/entities/workspace";
@@ -7,6 +7,7 @@ import User from "../../../../services/user/entities/user";
 import { Channel } from "../../../../services/channels/entities";
 import { Message } from "../../../../services/messages/entities/messages";
 import { KnowledgeGraphGenericEventPayload, KnowledgeGraphEvents } from "./types";
+import KnowledgeGraphAPIClient from "./api-client";
 
 @Consumes([])
 export default class KnowledgeGraphService
@@ -14,46 +15,81 @@ export default class KnowledgeGraphService
   implements KnowledgeGraphAPI
 {
   readonly name = "knowledge-graph";
-
   readonly version = "1.0.0";
+  protected kgAPIClient: KnowledgeGraphAPIClient = this.getKnowledgeGraphApiClient();
 
   async doInit(): Promise<this> {
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Company>>(
       KnowledgeGraphEvents.COMPANY_CREATED,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      _data => {},
+      this.onCompanyCreated.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Workspace>>(
       KnowledgeGraphEvents.WORKSPACE_CREATED,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      _data => {},
+      this.onWorkspaceCreated.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Channel>>(
       KnowledgeGraphEvents.CHANNEL_CREATED,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      this.onChannelCreated,
+      this.onChannelCreated.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Message>>(
       KnowledgeGraphEvents.MESSAGE_CREATED,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      _data => {},
+      this.onMessageCreated.bind(this),
     );
 
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<User>>(
       KnowledgeGraphEvents.USER_CREATED,
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      _data => {},
+      this.onUserCreated.bind(this),
     );
 
     return this;
   }
 
-  onChannelCreated(data: KnowledgeGraphGenericEventPayload<Channel>): void {
-    console.log(KnowledgeGraphEvents.CHANNEL_CREATED, data);
-    // TODO: Send data to the knowledge graph api
+  async onCompanyCreated(data: KnowledgeGraphGenericEventPayload<Company>): Promise<void> {
+    this.logger.info(KnowledgeGraphEvents.COMPANY_CREATED, { data });
+
+    if (this.kgAPIClient) this.kgAPIClient.onCompanyCreated(data.resource);
+  }
+
+  async onWorkspaceCreated(data: KnowledgeGraphGenericEventPayload<Workspace>): Promise<void> {
+    this.logger.info(KnowledgeGraphEvents.WORKSPACE_CREATED, { data });
+
+    if (this.kgAPIClient) this.kgAPIClient.onWorkspaceCreated(data.resource);
+  }
+
+  async onChannelCreated(data: KnowledgeGraphGenericEventPayload<Channel>): Promise<void> {
+    this.logger.info(KnowledgeGraphEvents.CHANNEL_CREATED, { data });
+
+    if (this.kgAPIClient) this.kgAPIClient.onChannelCreated(data.resource);
+  }
+
+  async onMessageCreated(data: KnowledgeGraphGenericEventPayload<Message>): Promise<void> {
+    this.logger.info(KnowledgeGraphEvents.MESSAGE_CREATED, { data });
+
+    // FIXME: The first parameter should be the channel id
+    if (this.kgAPIClient) this.kgAPIClient.onMessageCreated("", data.resource);
+  }
+
+  async onUserCreated(data: KnowledgeGraphGenericEventPayload<User>): Promise<void> {
+    this.logger.info(KnowledgeGraphEvents.USER_CREATED, { data });
+
+    // FIXME: The first parameter should be the company id
+    if (this.kgAPIClient) this.kgAPIClient.onUserCreated("", data.resource);
+  }
+
+  private getKnowledgeGraphApiClient(): KnowledgeGraphAPIClient {
+    const configuration = new Configuration("knowledge-graph");
+    const endpoint = configuration.get<string>("endpoint");
+
+    if (endpoint && endpoint.length) {
+      this.kgAPIClient = new KnowledgeGraphAPIClient(endpoint);
+    } else {
+      this.logger.info("KnowledgeGraph - No endpoint defined in default.json");
+    }
+
+    return this.kgAPIClient;
   }
 
   api(): KnowledgeGraphAPI {

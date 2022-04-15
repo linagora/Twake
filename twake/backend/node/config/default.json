@@ -145,6 +145,9 @@
   "plugins": {
     "server": "plugins:3100"
   },
+  "knowledge-graph": {
+    "endpoint": "http://localhost:8888"
+  },
   "services": [
     "auth",
     "push",
