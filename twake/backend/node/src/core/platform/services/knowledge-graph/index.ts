@@ -48,32 +48,37 @@ export default class KnowledgeGraphService
   }
 
   async onCompanyCreated(data: KnowledgeGraphGenericEventPayload<Company>): Promise<void> {
-    this.logger.info(KnowledgeGraphEvents.COMPANY_CREATED, { data });
+    this.logger.info(`${KnowledgeGraphEvents.COMPANY_CREATED} %o`, data);
 
     if (this.kgAPIClient) this.kgAPIClient.onCompanyCreated(data.resource);
   }
 
   async onWorkspaceCreated(data: KnowledgeGraphGenericEventPayload<Workspace>): Promise<void> {
-    this.logger.info(KnowledgeGraphEvents.WORKSPACE_CREATED, { data });
+    this.logger.info(`${KnowledgeGraphEvents.WORKSPACE_CREATED} %o`, data);
 
     if (this.kgAPIClient) this.kgAPIClient.onWorkspaceCreated(data.resource);
   }
 
   async onChannelCreated(data: KnowledgeGraphGenericEventPayload<Channel>): Promise<void> {
-    this.logger.info(KnowledgeGraphEvents.CHANNEL_CREATED, { data });
+    this.logger.info(`${KnowledgeGraphEvents.CHANNEL_CREATED} %o`, data);
 
     if (this.kgAPIClient) this.kgAPIClient.onChannelCreated(data.resource);
   }
 
   async onMessageCreated(data: KnowledgeGraphGenericEventPayload<Message>): Promise<void> {
-    this.logger.info(KnowledgeGraphEvents.MESSAGE_CREATED, { data });
+    this.logger.debug(`${KnowledgeGraphEvents.MESSAGE_CREATED} %o`, data);
 
-    // FIXME: The first parameter should be the channel id
-    if (this.kgAPIClient) this.kgAPIClient.onMessageCreated("", data.resource);
+    const companyId = data.links.reduce<string>(
+      (acc, link) => (link.type === "channel" ? (acc = link.id) : ""),
+      "",
+    );
+
+    if (this.kgAPIClient && companyId.length)
+      this.kgAPIClient.onMessageCreated(companyId, data.resource);
   }
 
   async onUserCreated(data: KnowledgeGraphGenericEventPayload<User>): Promise<void> {
-    this.logger.info(KnowledgeGraphEvents.USER_CREATED, { data });
+    this.logger.info(`${KnowledgeGraphEvents.USER_CREATED} %o`, data);
 
     // FIXME: The first parameter should be the company id
     if (this.kgAPIClient) this.kgAPIClient.onUserCreated("", data.resource);

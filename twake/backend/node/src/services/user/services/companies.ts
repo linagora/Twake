@@ -34,6 +34,10 @@ import { logger, RealtimeSaved } from "../../../core/platform/framework";
 import { getCompanyRoom, getUserRoom } from "../realtime";
 import gr from "../../global-resolver";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
+import {
+  KnowledgeGraphGenericEventPayload,
+  KnowledgeGraphEvents,
+} from "../../../core/platform/services/knowledge-graph/types";
 
 export class CompanyServiceImpl implements CompaniesServiceAPI {
   version: "1";
@@ -108,6 +112,15 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     });
 
     const result = await this.updateCompany(companyToCreate);
+
+    localEventBus.publish<KnowledgeGraphGenericEventPayload<Company>>(
+      KnowledgeGraphEvents.COMPANY_CREATED,
+      {
+        id: result.entity.id,
+        resource: result.entity,
+        links: [{ relation: "owner", type: "user", id: result.context.user.id }],
+      },
+    );
     return result.entity;
   }
 

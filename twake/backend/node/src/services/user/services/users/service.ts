@@ -33,6 +33,10 @@ import { RealtimeSaved } from "../../../../core/platform/framework";
 import { getUserRoom } from "../../realtime";
 import NodeCache from "node-cache";
 import gr from "../../../global-resolver";
+import {
+  KnowledgeGraphGenericEventPayload,
+  KnowledgeGraphEvents,
+} from "../../../../core/platform/services/knowledge-graph/types";
 
 export class UserServiceImpl implements UsersService {
   version: "1";
@@ -88,9 +92,22 @@ export class UserServiceImpl implements UsersService {
 
   async create(user: User): Promise<CreateResult<User>> {
     this.assignDefaults(user);
+
     await this.repository.save(user);
     await this.updateExtRepository(user);
-    return new CreateResult("user", user);
+    const result = new CreateResult("user", user);
+
+    if (result) {
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<User>>(
+        KnowledgeGraphEvents.USER_CREATED,
+        {
+          id: result.entity.id,
+          resource: result.entity,
+          links: [],
+        },
+      );
+    }
+    return result;
   }
 
   update(pk: Partial<User>, item: User, context?: ExecutionContext): Promise<UpdateResult<User>> {

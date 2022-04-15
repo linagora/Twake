@@ -72,7 +72,7 @@ export type KnowledgeGraphCreateBodyRequest<T> = {
 };
 
 export type KnowledgeGraphRelationLinkObject = {
-  relation: "mention" | "sender" | "parent" | "children";
+  relation: "mention" | "sender" | "parent" | "children" | "owner";
   type: "user" | "channel" | "workspace" | "company" | "message";
   id: string;
 };
