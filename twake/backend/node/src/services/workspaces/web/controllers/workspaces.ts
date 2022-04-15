@@ -22,6 +22,7 @@ import { getWorkspaceRooms } from "../../realtime";
 import { CrudException } from "../../../../core/platform/framework/api/crud-service";
 import CompanyUser from "../../../user/entities/company_user";
 import gr from "../../../global-resolver";
+import { getLogger, TwakeLogger } from "../../../../core/platform/framework";
 
 export class WorkspacesCrudController
   implements
@@ -32,6 +33,7 @@ export class WorkspacesCrudController
       ResourceDeleteResponse
     >
 {
+  private logger: TwakeLogger;
   private getCompanyUserRole(context: WorkspaceExecutionContext) {
     return gr.services.companies
       .getCompanyUser({ id: context.company_id }, { id: context.user.id })
@@ -183,12 +185,18 @@ export class WorkspacesCrudController
     }
 
     const r = request.body.resource;
+
+    const existedEntity = await gr.services.workspaces.get({
+      company_id: request.params.company_id,
+      id: request.params.id,
+    });
+
     const entity = plainToClass(Workspace, {
       ...{
-        name: r.name,
-        logo: r.logo,
-        isDefault: r.default,
-        isArchived: r.archived,
+        name: r.name || existedEntity?.name,
+        logo: r.logo || existedEntity?.logo,
+        isDefault: r.default || existedEntity?.isDefault,
+        isArchived: r.archived || existedEntity?.isArchived,
       },
       ...{
         group_id: request.params.company_id,
@@ -243,6 +251,10 @@ export class WorkspacesCrudController
     return {
       status: "error",
     };
+  }
+
+  constructor() {
+    this.logger = getLogger("Workspaces controller");
   }
 }
 
