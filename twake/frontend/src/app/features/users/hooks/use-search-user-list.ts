@@ -7,6 +7,7 @@ import UserAPIClient, { SearchContextType } from '../api/user-api-client';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import Strings from 'app/features/global/utils/strings';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import _ from 'lodash';
 
 export const searchBackend = async (
   query: string | undefined,
@@ -102,16 +103,19 @@ export const useSearchUserList = ({
 }: {
   scope: SearchContextType['scope'];
 }): {
-  search: (str?: string) => void;
+  search: (str?: string) => UserType[];
   result: UserType[];
 } => {
   const { set: setUserList } = useSetUserList('use-search-user-list');
   const [query, setQuery] = useState<string | undefined>();
-  const { userList } = useUserList();
+  let { userList } = useUserList();
+  userList = _.uniqBy(userList, 'id');
+
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
-  const search = async (str?: string) => {
+  const search = (str?: string) => {
     setQuery(str);
+    return searchFrontend(str, { workspaceId, scope, companyId, userList: userList || [] });
   };
 
   useEffect(() => {

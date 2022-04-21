@@ -27,12 +27,22 @@ const EmailRow = ({ email }: { email: string }): JSX.Element => {
 const UserRow = ({ id }: { id: string }): JSX.Element => {
   const user = useUser(id);
 
+  if (user) {
+    console.log(UsersService.getFullName(user));
+  } else {
+    console.log('user not found');
+  }
+
   return user ? (
     <>
       <Col className="icon">
         <Avatar size={20} src={UsersService.getThumbnail(user)} />
       </Col>
-      <Col className="text" flex="auto">
+      <Col
+        className="text"
+        flex="auto"
+        style={{ overflow: 'auto', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}
+      >
         <Text strong>{UsersService.getFullName(user)}</Text>
         <Text>{user.email ? `, ${user.email}` : ''}</Text>
       </Col>

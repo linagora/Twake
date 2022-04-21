@@ -13,6 +13,7 @@ import JWTStorage from 'app/features/auth/jwt-storage-service';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import UserAPIClient from '../../features/users/api/user-api-client';
+import { getUser } from 'app/features/users/hooks/use-user-list';
 
 class CurrentUser extends Observable {
   loading: boolean;
@@ -48,7 +49,7 @@ class CurrentUser extends Observable {
   start() {}
 
   get() {
-    return Collections.get('users').find(Login.currentUserId);
+    return getUser(Login.currentUserId);
   }
 
   updateUserStatus = (newStatus: string[]) => {

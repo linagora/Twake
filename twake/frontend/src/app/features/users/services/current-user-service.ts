@@ -5,6 +5,7 @@ import Languages from 'app/features/global/services/languages-service';
 import { UserType } from 'app/features/users/types/user';
 import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
 import { addApiUrlIfNeeded, getAsFrontUrl } from 'app/features/global/utils/URLUtils';
+import { getUser } from '../hooks/use-user-list';
 
 type SearchQueryType = {
   searching: boolean;
@@ -29,7 +30,7 @@ class User {
   }
 
   getCurrentUser(): UserType & { id: string } {
-    return Collections.get('users').find(Login.currentUserId);
+    return getUser(Login.currentUserId) as UserType & { id: string };
   }
 
   getCurrentUserId(): string {
@@ -45,14 +46,9 @@ class User {
 
     if (user.deleted) {
       name = Languages.t('general.user.deleted');
-    }
-
-    if (user.first_name?.length) {
-      name = user.first_name;
-    }
-
-    if (user.first_name?.length && user.last_name?.length) {
-      name = `${user.first_name} ${user.last_name}`;
+    } else {
+      name = [user.first_name, user.last_name].filter(a => a).join(' ');
+      name = name || user.username;
     }
 
     return name.charAt(0).toUpperCase() + name.slice(1);

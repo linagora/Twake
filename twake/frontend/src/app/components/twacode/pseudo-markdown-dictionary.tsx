@@ -215,7 +215,7 @@ export const DynamicComponent = ({
           (data.full_width ? 'full_width ' : '')
         }
         defaultValue={data.content || ''}
-        placeholder={data.placeholder}
+        placeholder={data.placeholder || 'Write something...'}
         onChange={(evt: any) => {
           eventContainer.onAction(
             'interactive_change',

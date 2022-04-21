@@ -5,9 +5,7 @@ import { useRecoilCallback, useRecoilState } from 'recoil';
 import { AtomMessageKey, MessageState } from '../state/atoms/messages';
 import { NodeMessage, NodeMessageSubType, ReactionType } from 'app/features/messages/types/message';
 import { messageToMessageWithReplies } from '../utils/message-with-replies';
-import { UserState } from 'app/features/users/state/atoms/user';
-import { setUserList, useSetUserList } from 'app/features/users/hooks/use-user-list';
-import { UserListState } from 'app/features/users/state/atoms/user-list';
+import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 
 export const useMessage = (partialKey: AtomMessageKey) => {
   const key = {
