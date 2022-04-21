@@ -9,6 +9,7 @@ import classNames from 'classnames';
 import { MessageContext } from '../message-with-replies';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import _ from 'lodash';
+import { getUser } from 'app/features/users/hooks/use-user-list';
 
 export default () => {
   const context = useContext(MessageContext);
@@ -64,7 +65,7 @@ const Reaction = ({
 const ReactionTooltip = ({ users }: { users: ReactionType['users'] }): JSX.Element => (
   <>
     {users.map(id => {
-      const user = Collections.get('users').find(id);
+      const user = getUser(id);
 
       if (!user) return <></>;
 

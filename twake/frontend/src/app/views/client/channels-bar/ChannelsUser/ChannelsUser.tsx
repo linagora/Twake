@@ -17,6 +17,7 @@ import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channe
 export default () => {
   const { companyId } = RouterServices.getStateFromRoute();
   let { directChannels } = useDirectChannels();
+  let [max, setMax] = useState(20);
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {
@@ -36,6 +37,10 @@ export default () => {
     return <></>;
   }
 
+  const nonfavoriteDirectChannels = directChannels.filter(
+    channel => !channel.user_member?.favorite,
+  );
+
   return (
     <div className="users_channels">
       <ChannelCategory
@@ -50,16 +55,24 @@ export default () => {
         )}
         onAdd={AccessRightsService.hasCompanyLevel(companyId, 'member') ? () => openConv() : null}
       />
-      {directChannels
-        .filter(channel => !channel.user_member?.favorite)
+      {nonfavoriteDirectChannels
         .sort(
           (a, b) =>
             (parseInt(b.last_activity?.toString() || '') || 0) -
             (parseInt(a.last_activity?.toString() || '') || 0),
         )
+        .slice(0, max)
         .map(channel => {
           return <ChannelIntermediate key={channel.id} channel={channel} />;
         })}
+
+      {max < nonfavoriteDirectChannels.length && (
+        <div style={{ textAlign: 'center' }}>
+          <a href="#" onClick={() => setMax(max + 20)}>
+            Load more...
+          </a>
+        </div>
+      )}
 
       {directChannels.length === 0 && (
         <div className="channel_small_text">

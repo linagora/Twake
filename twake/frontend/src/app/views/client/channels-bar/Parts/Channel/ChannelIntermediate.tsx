@@ -36,8 +36,10 @@ export default (props: Props): JSX.Element => {
     : { avatar: '', name: '' };
 
   const unreadMessages =
+    (channel.last_activity || 0) !== 0 &&
     (channel.last_activity || 0) > (channel?.user_member?.last_access || 0) &&
-    channel.last_message?.sender !== channel.user_member?.user_id;
+    channel.last_message?.sender !== channel.user_member?.user_id &&
+    !(isDirectChannel && notifications.length === 0);
 
   const channelIcon = isDirectChannel ? avatar : channel.icon || '';
   const channelName = isDirectChannel ? name : channel.name || '';
