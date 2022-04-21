@@ -80,7 +80,7 @@ export default () => {
           onClick={async () => {
             setLoading(true);
             await WorkspaceAPIClient.delete(workspace.company_id, workspace.id);
-            (window as any).location.reload();
+            (window as any).location.replace('/');
             setLoading(false);
             ModalManager.close();
           }}
