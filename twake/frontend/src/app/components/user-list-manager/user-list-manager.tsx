@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button, Col, Row, Typography } from 'antd';
 import classNames from 'classnames';
 import TrashIcon from '@material-ui/icons/DeleteOutlined';
@@ -30,12 +30,17 @@ const UserListManager = (props: PropsType) => {
   const [input, setInput] = useState<string>('');
   const [editing, setEditing] = useState<boolean>(props.autoFocus ? props.autoFocus : false);
   const [usersIds, setUsersIds] = useState<string[]>([...props.users]);
+  const callback = useRef<Function>(() => {});
   let savedUserProps: string;
 
   useEffect(() => {
     updateStateFromProps(props, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    callback.current(result.map(u => u.id));
+  }, [result]);
 
   const updateStateFromProps = (props: PropsType, force?: boolean) => {
     let anti_duplicates: string[] = [];
@@ -54,7 +59,7 @@ const UserListManager = (props: PropsType) => {
     }
   };
 
-  const filter = (text: string, callback: (arr: any[]) => any) => {
+  const filter = (text: string, cb: (arr: any[]) => any) => {
     setInput(text);
     if ((text || '').indexOf('@') > 0) {
       if (
@@ -62,15 +67,17 @@ const UserListManager = (props: PropsType) => {
         Strings.verifyMail(text) &&
         usersIds.indexOf(text.toLocaleLowerCase()) < 0
       ) {
-        callback([{ email: text.toLocaleLowerCase() }]);
+        cb([{ email: text.toLocaleLowerCase() }]);
         return;
       }
-      callback([]);
+      cb([]);
       return;
     }
 
-    search(text);
-    callback([...result.map(u => u.id)]);
+    const tmp = search(text);
+    cb([...tmp.map(u => u.id)]);
+
+    callback.current = cb;
   };
 
   const renderLine = (item: any, added?: boolean): JSX.Element => {
@@ -139,7 +146,7 @@ const UserListManager = (props: PropsType) => {
         <div className={'users-list no-background'}>
           {usersIds.map((item: string, index: number) => (
             <div key={index} style={props.collapsed ? { display: 'inline-block' } : {}}>
-              <Row align="middle" gutter={[8, 8]}>
+              <Row align="middle" gutter={[8, 8]} style={{ flexFlow: 'nowrap' }}>
                 {renderLine(item, true)}
               </Row>
             </div>
@@ -182,7 +189,7 @@ const UserListManager = (props: PropsType) => {
               }
               render={(user: UserType) => (
                 <React.Suspense fallback={<></>}>
-                  <Row align="middle" gutter={[8, 8]}>
+                  <Row align="middle" gutter={[8, 8]} style={{ flexFlow: 'nowrap' }}>
                     <UserOrMail item={user} />
                   </Row>
                 </React.Suspense>

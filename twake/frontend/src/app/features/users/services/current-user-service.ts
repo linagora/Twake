@@ -46,14 +46,9 @@ class User {
 
     if (user.deleted) {
       name = Languages.t('general.user.deleted');
-    }
-
-    if (user.first_name?.length) {
-      name = user.first_name;
-    }
-
-    if (user.first_name?.length && user.last_name?.length) {
-      name = `${user.first_name} ${user.last_name}`;
+    } else {
+      name = [user.first_name, user.last_name].filter(a => a).join(' ');
+      name = name || user.username;
     }
 
     return name.charAt(0).toUpperCase() + name.slice(1);
