@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { cloneDeep, concat, isEqual, uniqBy } from 'lodash';
-import { RecoilState, useRecoilCallback, useRecoilValueLoadable } from 'recoil';
+import { useRecoilCallback, useRecoilValueLoadable } from 'recoil';
 
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
@@ -8,6 +8,8 @@ import { UserCompanyType, UserType, UserWorkspaceType } from 'app/features/users
 import WorkspaceUserAPIClient from 'app/features/workspace-members/api/workspace-members-api-client';
 import { UserListState } from '../state/atoms/user-list';
 import Logger from 'app/features/global/framework/logger-service';
+import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
+import _ from 'lodash';
 
 export const usePreloadSomeUsers = () => {
   const companyId = useRouterCompany();
@@ -84,6 +86,7 @@ export function useSetUserList(key: string) {
 
       if (currentList && newList && !isEqual(currentList, newList)) {
         set(UserListState, newList);
+        newList.forEach(user => Collections.get('users').completeObject(_.cloneDeep(user)));
         currentUserList = newList;
       }
     }
