@@ -153,7 +153,11 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
         user: { id: channelMemberPk.user_id, server_request: true },
         channel: { id: channelId, ...channelMemberPk },
       };
-      const exists = await gr.services.channels.members.get(channelMemberPk, context);
+      const exists =
+        (await gr.services.channels.channels.get({
+          id: channelId,
+          ..._.pick(channelMemberPk, "company_id", "workspace_id"),
+        })) && (await gr.services.channels.members.get(channelMemberPk, context));
       if (!exists) {
         for (const badge of badges.getEntities()) {
           if (badge.channel_id === channelId) this.removeUserChannelBadges(badge);
@@ -170,10 +174,15 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
         continue;
       }
       try {
-        const exists = await gr.services.workspaces.getUser({
-          workspaceId,
-          userId,
-        });
+        const exists =
+          (await gr.services.workspaces.get({
+            id: workspaceId,
+            company_id: companyId,
+          })) &&
+          (await gr.services.workspaces.getUser({
+            workspaceId,
+            userId,
+          }));
         if (!exists) {
           await gr.services.channels.members.ensureUserNotInWorkspaceIsNotInChannel(
             { id: userId },
