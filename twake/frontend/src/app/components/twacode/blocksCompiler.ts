@@ -39,7 +39,6 @@ export const formatData = (
 
 export const blocksToTwacode = (event: Block[]) => {
   const blocks: any[] = [];
-  console.log('TOTOTOTOTOTOTOTTO2222222', event);
 
   event.forEach((obj: Block) => {
     let object = obj;
@@ -119,7 +118,6 @@ export const blocksToTwacode = (event: Block[]) => {
       // TODO
     }
   });
-  console.log('TOTOTOTOTOTOTOTTO', blocks);
   return [{ type: 'twacode', elements: blocks }];
 };
 
