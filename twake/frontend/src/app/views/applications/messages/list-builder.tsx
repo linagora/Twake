@@ -65,6 +65,8 @@ export default React.memo(
       );
     }
 
+    console.log('items', items);
+
     return (
       <>
         <Suspense fallback={<div style={{ flex: 1 }}></div>}>

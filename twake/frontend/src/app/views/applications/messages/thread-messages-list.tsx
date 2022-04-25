@@ -5,6 +5,7 @@ import MessageWithReplies from './message/message-with-replies';
 import FirstThreadMessage from './message/parts/FirstMessage/FirstThreadMessage';
 import { MessagesListContext } from './messages-list';
 import { useThreadMessages } from 'app/features/messages/hooks/use-thread-messages';
+import { withNonMessagesComponents } from './with-non-messages-components';
 
 type Props = {
   companyId: string;
@@ -14,37 +15,39 @@ type Props = {
 };
 
 export default ({ companyId, threadId }: Props) => {
-  const { messages, loadMore, window } = useThreadMessages({
+  let { messages, loadMore, window } = useThreadMessages({
     companyId,
     threadId: threadId || '',
   });
+  messages = withNonMessagesComponents(messages, window.reachedStart);
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: true, withBlock: false }}>
       <ListBuilder
         key={threadId}
         items={messages}
-        itemId={m => m.id}
+        itemId={m => m.type + m.id}
         window={window}
         emptyListComponent={<FirstThreadMessage noReplies />}
         itemContent={(index, m) => {
-          const currentIndex = messages.map(m => m.id).indexOf(m.id);
-          const previous = messages[currentIndex - 1];
+          if (m.type === 'timeseparator') {
+            return (
+              <div key={m.type + m.id}>
+                <TimeSeparator date={m.date || 0} />
+              </div>
+            );
+          }
 
-          let head = <></>;
-          if (window.reachedStart && currentIndex === 0) {
-            head = <FirstThreadMessage />;
+          if (m.type === 'header') {
+            return (
+              <div key={m.type + m.threadId}>
+                <FirstThreadMessage />
+              </div>
+            );
           }
 
           return (
-            <div key={m.id}>
-              {head}
-              <TimeSeparator
-                key={previous?.id || m?.id}
-                messageId={m}
-                previousMessageId={previous}
-                unreadAfter={0}
-              />
+            <div key={m.type + m.id}>
               <MessageWithReplies companyId={m.companyId} threadId={m.threadId} id={m.id} />
             </div>
           );
