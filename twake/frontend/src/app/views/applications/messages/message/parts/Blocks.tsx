@@ -81,7 +81,7 @@ export default React.memo((props: Props) => {
   return (
     <Suspense fallback={<></>}>
       <Twacode
-        content={blocks[0].elements}
+        content={blocks}
         isApp={props.allowAdvancedBlocks}
         onAction={(type: string, id: string, context: any, passives: any, evt: any) =>
           props.onAction(type, id, context, passives, evt)

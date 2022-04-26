@@ -118,7 +118,7 @@ export const blocksToTwacode = (event: Block[]) => {
       // TODO
     }
   });
-  return [{ type: 'twacode', elements: blocks }];
+  return blocks;
 };
 
 const createTwacodeElements = (object: any, blocks: any[], type?: any) => {
