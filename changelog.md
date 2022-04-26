@@ -1,3 +1,13 @@
+# Twake 2022.Q2.930
+
+### Backend
+
+- Refactoring of how we get services in our backend
+
+### Bug fixed
+
+- https://github.com/linagora/Twake/pull/2092
+
 # Twake 2022.Q2.910
 
 ### Messages
@@ -5,10 +15,28 @@
 - Copy paste images to message editor fixed
 - Large files preview is now available
 - Mentions are back in messages
+- Giphy, n8n and Jitsi are back
 
 ### General
 
 - New workspaces parameters page view
+- Ability to create and manage plugins from Twake
+
+### Backend
+
+- New backend routes to get files and pinned messages of a channel
+- New search messages routes
+
+### Bug fixed
+
+- Fixed thumbnail generation
+- https://github.com/linagora/Twake/issues/2083
+- https://github.com/linagora/Twake/issues/2091
+- https://github.com/linagora/Twake/issues/2095
+- https://github.com/linagora/Twake/issues/2037
+- https://github.com/linagora/Twake/issues/2036
+- https://github.com/linagora/Twake/issues/1918
+- https://github.com/linagora/Twake/issues/2102
 
 # Twake 2022.Q1.890
 
