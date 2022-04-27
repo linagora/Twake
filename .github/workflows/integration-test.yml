@@ -1,0 +1,15 @@
+name: integration-test
+
+on:
+  pull_request:
+    branches: [main, develop, qa, canary]
+    paths:
+      - "twake/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: integration-test
+        run: cd twake && docker-compose -f docker-compose.dev.mongo.yml up -d && sleep 60 && docker build -t integration-test -f docker/integration-test/Dockerfile . && docker run --network host -e SERVER=http://localhost:8000 integration-test
