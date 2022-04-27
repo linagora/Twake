@@ -4,7 +4,7 @@ import Languages from 'app/features/global/services/languages-service';
 import Emojione from 'components/emojione/emojione';
 import './FirstMessage.scss';
 
-export default () => {
+export default React.memo(() => {
   return (
     <div className="first_message">
       <div className="content">
@@ -17,4 +17,4 @@ export default () => {
       </div>
     </div>
   );
-};
+});

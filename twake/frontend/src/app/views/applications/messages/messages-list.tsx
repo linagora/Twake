@@ -42,6 +42,41 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
       ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', { status: true });
   }, [messages.length > 0]);
 
+  const row = React.useMemo(
+    () => (_: number, m: MessagesAndComponentsType) => {
+      if (m.type === 'timeseparator') {
+        return (
+          <div key={m.type + m.threadId}>
+            <TimeSeparator date={m.date || 0} />
+          </div>
+        );
+      }
+
+      if (m.type === 'header') {
+        return (
+          <div key={m.type + m.threadId}>
+            <FirstMessage />
+          </div>
+        );
+      }
+
+      if (m.type === 'locked') {
+        return (
+          <div key={m.type + m.threadId}>
+            <LockedHistoryBanner />
+          </div>
+        );
+      }
+
+      return (
+        <div key={m.type + m.threadId}>
+          <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
+        </div>
+      );
+    },
+    [],
+  );
+
   return (
     <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
       <ListBuilder
@@ -49,37 +84,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
         itemId={m => m.type + m.threadId}
         emptyListComponent={<FirstMessage />}
         window={window}
-        itemContent={(index, m: MessagesAndComponentsType) => {
-          if (m.type === 'timeseparator') {
-            return (
-              <div key={m.type + m.threadId}>
-                <TimeSeparator date={m.date || 0} />
-              </div>
-            );
-          }
-
-          if (m.type === 'header') {
-            return (
-              <div key={m.type + m.threadId}>
-                <FirstMessage />
-              </div>
-            );
-          }
-
-          if (m.type === 'locked') {
-            return (
-              <div key={m.type + m.threadId}>
-                <LockedHistoryBanner />
-              </div>
-            );
-          }
-
-          return (
-            <div key={m.type + m.threadId}>
-              <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
-            </div>
-          );
-        }}
+        itemContent={row}
         loadMore={loadMore}
         atBottomStateChange={(atBottom: boolean) => {
           if (atBottom && window.reachedEnd)

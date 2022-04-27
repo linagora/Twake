@@ -43,6 +43,13 @@ export const useChannelMessages = (key: AtomChannelKey) => {
 
     const nothingNew = (newMessages?.filter(m => !isInWindow(m.thread_id)).length || 0) < limit;
 
+    newMessages?.forEach(m => {
+      setMessage(m);
+      m.last_replies.forEach(m2 => {
+        setMessage(m2);
+      });
+    });
+
     addToChannel(newMessages || [], {
       inWindow: true,
       ...(nothingNew && direction === 'future' ? { reachedEnd: true } : {}),
@@ -50,14 +57,10 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     });
 
     newMessages?.forEach(m => {
-      setMessage(m);
       addToThread(m.last_replies, {
         threadId: m.thread_id,
         atBottom: true,
         reachedStart: m.last_replies.length >= m.stats.replies,
-      });
-      m.last_replies.forEach(m2 => {
-        setMessage(m2);
       });
     });
   };

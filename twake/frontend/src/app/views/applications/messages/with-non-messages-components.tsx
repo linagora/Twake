@@ -47,7 +47,5 @@ export const withNonMessagesComponents = (
     }
   }
 
-  console.log('newList', newList);
-
   return newList;
 };

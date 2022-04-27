@@ -35,15 +35,15 @@ export const useThreadMessages = (key: AtomThreadKey) => {
 
     const nothingNew = newMessages.filter(m => !isInWindow(m.id)).length < limit;
 
+    newMessages.forEach(m => {
+      setMessage(m);
+    });
+
     addToThread(newMessages, {
       threadId: key.threadId,
       inWindow: true,
       ...(nothingNew && direction === 'future' ? { reachedEnd: true } : {}),
       ...(nothingNew && direction !== 'future' ? { reachedStart: true } : {}),
-    });
-
-    newMessages.forEach(m => {
-      setMessage(m);
     });
   };
 
