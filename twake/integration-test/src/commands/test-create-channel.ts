@@ -2,7 +2,7 @@ import puppeteer from "puppeteer";
 
 import config from "../config";
 
-import { signIn } from "../steps/signin";
+import { createChannel } from "../steps/create-channel";
 
 async function init() {
   const { headless, slowMo, executablePath, args } = config;
@@ -13,7 +13,7 @@ async function init() {
     args,
   });
 
-  await signIn(config.twake_url, browser, config.accounts_for_sign_in[0], {
+  await createChannel(config.twake_url, browser, config.accounts_for_login[0], {
     withConsole: config.console,
   });
 }

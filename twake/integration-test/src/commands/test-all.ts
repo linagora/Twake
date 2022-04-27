@@ -2,23 +2,32 @@ import puppeteer from "puppeteer";
 
 import config from "../config";
 
-import { login } from "../tests/login";
-import { signIn } from "../tests/create-account";
+import { createChannel } from "../steps/create-channel";
+import { login } from "../steps/login";
+import { signIn } from "../steps/signin";
 
 // This is the entry point for the integration tests.
 async function init() {
-  const { headless, slowMo } = config;
-  const browser = await puppeteer.launch({ headless, slowMo });
+  const { headless, slowMo, executablePath, args } = config;
+  const browser = await puppeteer.launch({
+    headless,
+    slowMo,
+    executablePath,
+    args,
+  });
 
   await Promise.all([
-    login(config.twake_url, browser, config.accounts_for_login[0], {
-      withConsole: config.console,
-    }),
-
     signIn(config.twake_url, browser, config.accounts_for_sign_in[0], {
       withConsole: config.console,
     }),
 
+    login(config.twake_url, browser, config.accounts_for_login[0], {
+      withConsole: config.console,
+    }),
+
+    createChannel(config.twake_url, browser, config.accounts_for_login[0], {
+      withConsole: config.console,
+    }),
     // Do other tests here
   ]);
 }
