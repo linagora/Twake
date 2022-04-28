@@ -81,7 +81,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
             index: index,
           });
         setTimeout(() => reachedHighlight(), 1000);
-      });
+      }, 1000);
     }
   }, [highlight, messages.length]);
 
