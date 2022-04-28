@@ -8,6 +8,7 @@ import ThreadSection from '../parts/thread-section';
 import Thread from '../parts/thread';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import ActivityMessage, { ActivityType } from './parts/ChannelActivity/ActivityMessage';
+import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
 
 export const MessageContext = React.createContext({ companyId: '', threadId: '', id: '' });
 
@@ -17,18 +18,20 @@ type Props = {
   id?: string;
 };
 
-export default ({ threadId, companyId, id }: Props) => {
+export default React.memo(({ threadId, companyId, id }: Props) => {
   return (
     <MessageContext.Provider value={{ companyId, threadId, id: id || threadId }}>
       <MessageType />
     </MessageContext.Provider>
   );
-};
+});
 
 const MessageType = () => {
   const listContext = useContext(MessagesListContext);
   const context = useContext(MessageContext);
   const { message } = useMessage(context);
+  const { highlight } = useHighlightMessage();
+  const highlighted = (highlight && highlight.threadId === context.id) || false;
 
   if (message.subtype === 'system') {
     const activity = message?.context?.activity as ActivityType;
@@ -36,7 +39,7 @@ const MessageType = () => {
   }
 
   return (
-    <Thread withBlock={listContext.withBlock}>
+    <Thread withBlock={listContext.withBlock} highlighted={highlighted}>
       <HeadMessage />
       {!listContext.hideReplies && (
         <>

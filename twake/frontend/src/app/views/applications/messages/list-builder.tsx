@@ -1,8 +1,12 @@
 import React, { ReactNode, Suspense, useEffect, useRef, useState } from 'react';
-import { ItemContent, LogLevel, Virtuoso } from 'react-virtuoso';
+import { ItemContent, LogLevel, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import Logger from 'app/features/global/framework/logger-service';
 import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
 import { MessagesPlaceHolder } from './placeholder';
+import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
+
+//@ts-ignore
+globalThis.VIRTUOSO_LOG_LEVEL = LogLevel.DEBUG;
 
 const logger = Logger.getLogger(`ListBuilder`);
 const START_INDEX = 1000000;
@@ -11,24 +15,27 @@ const IDENTIFIER = 'threadId';
 type Props = {
   items: any[];
   loadMore: (direction: 'history' | 'future') => Promise<void>;
-  itemContent: ItemContent<any>;
+  itemContent: ItemContent<any, any>;
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
   atBottomStateChange?: (atBottom: boolean) => void;
   window: WindowType;
+  onScroll: Function;
+  refVirtuoso: React.Ref<VirtuosoHandle>;
 };
 
 export default React.memo(
   ({
+    refVirtuoso: virtuosoRef,
     emptyListComponent,
     itemId,
     loadMore,
+    onScroll,
     items,
     itemContent,
     atBottomStateChange,
     window,
   }: Props) => {
-    const virtuosoRef = useRef(null);
     const [initiated, setInitiated] = useState(false);
 
     const more = async (direction: 'future' | 'history') => {
@@ -65,8 +72,6 @@ export default React.memo(
       );
     }
 
-    console.log('items', items);
-
     return (
       <>
         <Suspense fallback={<div style={{ flex: 1 }}></div>}>
@@ -87,6 +92,7 @@ export default React.memo(
             atBottomStateChange={atBottomStateChange}
             atTopStateChange={atTop => {}}
             computeItemKey={(_index, item) => itemId(item)}
+            onScroll={() => onScroll()}
           />
         </Suspense>
       </>

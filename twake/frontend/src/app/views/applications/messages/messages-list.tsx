@@ -13,6 +13,8 @@ import {
   MessagesAndComponentsType,
   withNonMessagesComponents,
 } from './with-non-messages-components';
+import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
+import { VirtuosoHandle } from 'react-virtuoso';
 
 type Props = {
   companyId: string;
@@ -24,6 +26,27 @@ type Props = {
 export const MessagesListContext = React.createContext({ hideReplies: false, withBlock: false });
 
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
+  const listBuilderRef = useRef<VirtuosoHandle>(null);
+  const { highlight, cancelHighlight, reachedHighlight, updateHighlight } = useHighlightMessage();
+
+  //@ts-ignore
+  (document as any).updateHighlight = updateHighlight;
+  (document as any).cancelHighlight = cancelHighlight;
+  (document as any).reachedHighlight = reachedHighlight;
+  (document as any).highlight = highlight;
+
+  useEffect(() => {
+    //Manage scroll to highlight
+    if (listBuilderRef.current && highlight && !highlight.reached) {
+      //TODO find the correct index of required message
+      listBuilderRef.current.scrollToIndex({
+        align: 'center',
+        index: 30,
+      });
+      setTimeout(() => reachedHighlight(), 1000);
+    }
+  }, [highlight]);
+
   let { messages, loadMore, window } = useChannelMessages({
     companyId,
     workspaceId: workspaceId || '',
@@ -80,6 +103,8 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   return (
     <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
       <ListBuilder
+        refVirtuoso={listBuilderRef}
+        onScroll={() => cancelHighlight()}
         items={messages}
         itemId={m => m.type + m.threadId}
         emptyListComponent={<FirstMessage />}

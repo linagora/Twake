@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import ListBuilder from './list-builder';
 import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
@@ -6,6 +6,7 @@ import FirstThreadMessage from './message/parts/FirstMessage/FirstThreadMessage'
 import { MessagesListContext } from './messages-list';
 import { useThreadMessages } from 'app/features/messages/hooks/use-thread-messages';
 import { withNonMessagesComponents } from './with-non-messages-components';
+import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
 
 type Props = {
   companyId: string;
@@ -15,6 +16,8 @@ type Props = {
 };
 
 export default ({ companyId, threadId }: Props) => {
+  const listBuilderRef = useRef(null);
+  const { cancelHighlight } = useHighlightMessage();
   let { messages, loadMore, window } = useThreadMessages({
     companyId,
     threadId: threadId || '',
@@ -25,6 +28,8 @@ export default ({ companyId, threadId }: Props) => {
     <MessagesListContext.Provider value={{ hideReplies: true, withBlock: false }}>
       <ListBuilder
         key={threadId}
+        refVirtuoso={listBuilderRef}
+        onScroll={() => cancelHighlight()}
         items={messages}
         itemId={m => m.type + m.id}
         window={window}
