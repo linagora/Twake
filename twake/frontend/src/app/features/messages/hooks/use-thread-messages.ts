@@ -13,7 +13,7 @@ import {
 } from './use-add-to-windowed-list';
 
 export const useThreadMessages = (key: AtomThreadKey) => {
-  const { window, isInWindow, setLoaded } = getListWindow(key.threadId);
+  const { window, isInWindow, setLoaded, setWindow } = getListWindow(key.threadId);
   let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
 
   messages = messages.filter(message => isInWindow(message.id || ''));
@@ -25,7 +25,7 @@ export const useThreadMessages = (key: AtomThreadKey) => {
   const loadMore = async (direction: 'future' | 'history' = 'future') => {
     if (window.reachedStart && direction === 'history') return;
 
-    const limit = 100;
+    const limit = 50;
     const newMessages = await MessageAPIClient.list(key.companyId, key.threadId, {
       direction,
       limit,
@@ -33,7 +33,8 @@ export const useThreadMessages = (key: AtomThreadKey) => {
     });
     setLoaded();
 
-    const nothingNew = newMessages.filter(m => !isInWindow(m.id)).length < limit;
+    const nothingNew =
+      newMessages.filter(m => !isInWindow(m.id)).length < limit && window.start && window.end;
 
     newMessages.forEach(m => {
       setMessage(m);
@@ -47,11 +48,24 @@ export const useThreadMessages = (key: AtomThreadKey) => {
     });
   };
 
+  const jumpTo = async (id: string) => {
+    setWindow({
+      start: id,
+      end: id,
+      reachedStart: false,
+      reachedEnd: false,
+      loaded: false,
+    });
+    setMessages([]);
+    await loadMore('future');
+    await loadMore('history');
+  };
+
   return {
     messages,
     window,
     loadMore,
-    jumpTo: () => {},
+    jumpTo,
   };
 };
 

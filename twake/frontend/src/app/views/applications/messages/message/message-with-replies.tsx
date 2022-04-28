@@ -31,7 +31,8 @@ const MessageType = () => {
   const context = useContext(MessageContext);
   const { message } = useMessage(context);
   const { highlight } = useHighlightMessage();
-  const highlighted = (highlight && highlight.threadId === context.id) || false;
+  const highlighted =
+    (highlight && (highlight.threadId === context.id || highlight.id === context.id)) || false;
 
   if (message.subtype === 'system') {
     const activity = message?.context?.activity as ActivityType;

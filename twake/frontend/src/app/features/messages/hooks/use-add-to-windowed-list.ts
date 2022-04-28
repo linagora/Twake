@@ -64,6 +64,8 @@ export const getListWindow = (key: string) => {
     reachEdge,
     isInWindow,
     setLoaded,
+    setWindow: (window: WindowType) => windows.set(key, window),
+    getWindow: () => windows.get(key) as WindowType,
   };
 };
 

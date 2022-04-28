@@ -15,6 +15,9 @@ import {
 } from './with-non-messages-components';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
 import { VirtuosoHandle } from 'react-virtuoso';
+import SideViewService from 'app/features/router/services/side-view-service';
+import { Application } from 'app/features/applications/types/application';
+import RouterServices from 'app/features/router/services/router-service';
 
 type Props = {
   companyId: string;
@@ -27,27 +30,8 @@ export const MessagesListContext = React.createContext({ hideReplies: false, wit
 
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const listBuilderRef = useRef<VirtuosoHandle>(null);
-  const { highlight, cancelHighlight, reachedHighlight, updateHighlight } = useHighlightMessage();
 
-  //@ts-ignore
-  (document as any).updateHighlight = updateHighlight;
-  (document as any).cancelHighlight = cancelHighlight;
-  (document as any).reachedHighlight = reachedHighlight;
-  (document as any).highlight = highlight;
-
-  useEffect(() => {
-    //Manage scroll to highlight
-    if (listBuilderRef.current && highlight && !highlight.reached) {
-      //TODO find the correct index of required message
-      listBuilderRef.current.scrollToIndex({
-        align: 'center',
-        index: 30,
-      });
-      setTimeout(() => reachedHighlight(), 1000);
-    }
-  }, [highlight]);
-
-  let { messages, loadMore, window } = useChannelMessages({
+  let { messages, loadMore, window, jumpTo } = useChannelMessages({
     companyId,
     workspaceId: workspaceId || '',
     channelId: channelId || '',
@@ -59,6 +43,47 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     messages.length,
   );
   messages = withNonMessagesComponents(messages, window.reachedStart, shouldLimit);
+
+  const { highlight, cancelHighlight, reachedHighlight, updateHighlight } = useHighlightMessage();
+
+  useEffect(() => {
+    const { threadId, messageId } = RouterServices.getStateFromRoute();
+    console.log('vir', { id: '', threadId });
+    if (threadId) {
+      updateHighlight({ id: messageId || threadId, threadId });
+    }
+  }, []);
+
+  useEffect(() => {
+    //Manage scroll to highlight
+    if (listBuilderRef.current && highlight && !highlight.reached) {
+      if (highlight.id !== highlight.threadId) {
+        SideViewService.select(channelId || '', {
+          app: { identity: { code: 'messages' } } as Application,
+          context: {
+            viewType: 'channel_thread',
+            threadId: highlight.threadId,
+          },
+        });
+      }
+
+      // Find the correct index of required message
+      const index = messages.findIndex(m => m.id === highlight.threadId);
+      if (index < 0) {
+        // Load the right portion of messages
+        jumpTo(highlight.threadId);
+        return;
+      }
+      setTimeout(() => {
+        if (listBuilderRef.current)
+          listBuilderRef.current.scrollToIndex({
+            align: 'start',
+            index: index,
+          });
+        setTimeout(() => reachedHighlight(), 1000);
+      });
+    }
+  }, [highlight, messages.length]);
 
   useEffect(() => {
     if (messages.length)

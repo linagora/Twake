@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ListBuilder from './list-builder';
 import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
@@ -7,6 +7,7 @@ import { MessagesListContext } from './messages-list';
 import { useThreadMessages } from 'app/features/messages/hooks/use-thread-messages';
 import { withNonMessagesComponents } from './with-non-messages-components';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
+import { VirtuosoHandle } from 'react-virtuoso';
 
 type Props = {
   companyId: string;
@@ -16,13 +17,39 @@ type Props = {
 };
 
 export default ({ companyId, threadId }: Props) => {
-  const listBuilderRef = useRef(null);
-  const { cancelHighlight } = useHighlightMessage();
-  let { messages, loadMore, window } = useThreadMessages({
+  const listBuilderRef = useRef<VirtuosoHandle>(null);
+  const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
+  let { messages, loadMore, window, jumpTo } = useThreadMessages({
     companyId,
     threadId: threadId || '',
   });
   messages = withNonMessagesComponents(messages, window.reachedStart);
+
+  useEffect(() => {
+    //Manage scroll to highlight
+    if (
+      listBuilderRef.current &&
+      highlight &&
+      !highlight.reached &&
+      highlight.threadId === threadId
+    ) {
+      // Find the correct index of required message
+      const index = messages.findIndex(m => m.id === highlight.id);
+      if (index < 0) {
+        // Load the right portion of messages
+        jumpTo(highlight.id);
+        return;
+      }
+      setTimeout(() => {
+        if (listBuilderRef.current)
+          listBuilderRef.current.scrollToIndex({
+            align: 'start',
+            index: index,
+          });
+        setTimeout(() => reachedHighlight(), 1000);
+      });
+    }
+  }, [highlight, messages.length]);
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: true, withBlock: false }}>

@@ -251,9 +251,6 @@ class RouterServices extends Observable {
     }
 
     const searchParameters = new URLSearchParams(search ? search.substring(1) : '');
-    if (state.messageId) {
-      searchParameters.append('m', state.messageId);
-    }
     search = searchParameters.toString() ? `?${searchParameters.toString()}` : '';
 
     return (
@@ -262,6 +259,7 @@ class RouterServices extends Observable {
       (state.workspaceId ? `/w/${state.workspaceId}` : '') +
       (state.channelId ? `/c/${state.channelId}` : '') +
       (state.threadId ? `/t/${state.threadId}` : '') +
+      (state.messageId ? `/m/${state.messageId}` : '') +
       search
     );
   }

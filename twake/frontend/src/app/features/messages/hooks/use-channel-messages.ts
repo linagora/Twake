@@ -19,7 +19,7 @@ import {
 //TODO make this more easy to duplicate for other views
 export const useChannelMessages = (key: AtomChannelKey) => {
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
-  const { window, isInWindow, setLoaded } = getListWindow(key.channelId);
+  const { window, isInWindow, setLoaded, setWindow, getWindow } = getListWindow(key.channelId);
   let currentWindowedMessages = messages.filter(message => isInWindow(message.threadId));
   currentWindowedMessages = currentWindowedMessages.sort((a, b) =>
     Numbers.compareTimeuuid(a.sortId, b.sortId),
@@ -30,9 +30,11 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   const addToChannel = useAddMessageToChannel(key);
 
   const loadMore = async (direction: 'future' | 'history' = 'future') => {
+    const window = getWindow();
+
     if (window.reachedStart && direction === 'history') return;
 
-    const limit = 100;
+    const limit = 20;
     let newMessages = await MessageViewAPIClient.feed(
       key.companyId,
       key.workspaceId,
@@ -41,7 +43,10 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     );
     setLoaded();
 
-    const nothingNew = (newMessages?.filter(m => !isInWindow(m.thread_id)).length || 0) < limit;
+    const nothingNew =
+      (newMessages?.filter(m => !isInWindow(m.thread_id)).length || 0) <= 1 &&
+      !!window.start &&
+      !!window.end;
 
     newMessages?.forEach(m => {
       setMessage(m);
@@ -98,12 +103,24 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     },
   );
 
+  const jumpTo = async (threadId: string) => {
+    setWindow({
+      start: threadId,
+      end: threadId,
+      reachedStart: false,
+      reachedEnd: false,
+      loaded: false,
+    });
+    setMessages([]);
+    await loadMore('future');
+    await loadMore('history');
+  };
+
   return {
     messages: currentWindowedMessages,
     window,
     loadMore,
-    send: () => {},
-    jumpTo: () => {},
+    jumpTo,
   };
 };
 
