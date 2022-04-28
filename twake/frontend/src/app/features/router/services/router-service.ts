@@ -214,7 +214,13 @@ class RouterServices extends Observable {
     params: ClientStateType = {},
     options: { replace?: boolean; keepSearch?: boolean } = {},
   ): string {
-    const currentState = this.getStateFromRoute();
+    const currentState = { ...this.getStateFromRoute() };
+
+    if (params.channelId && params.channelId !== currentState.channelId) {
+      currentState.threadId = undefined;
+      currentState.messageId = undefined;
+    }
+
     const expandedState: any = options?.replace ? params : Object.assign(currentState, params);
     const state: any = {};
     Object.keys(expandedState).forEach(key => {
