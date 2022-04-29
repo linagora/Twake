@@ -28,6 +28,10 @@ export interface ChannelListQueryParameters extends PaginationQueryParameters {
   mine?: boolean;
 }
 
+export interface ChannelSearchQueryParameters extends PaginationQueryParameters {
+  q: string;
+}
+
 export class CreateChannelBody {
   options?: ChannelCreateOptions;
   resource: ChannelCreateResource;

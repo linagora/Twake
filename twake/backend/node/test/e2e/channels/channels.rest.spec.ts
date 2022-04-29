@@ -1225,4 +1225,52 @@ describe("The /internal/services/channels/v1 API", () => {
       });
     });
   });
+
+  describe("Channels search", () => {
+    it("Should find channels by name", async done => {
+      const ws0pk = { id: uuidv1(), company_id: platform.workspace.company_id };
+      await testDbService.createWorkspace(ws0pk);
+      const newUser = await testDbService.createUser([ws0pk]);
+
+      for (let i = 0; i < 10; i++) {
+        const channel = getChannel();
+        channel.name = `Test channel ${i}`;
+        await gr.services.channels.channels.save(channel, {}, getContext());
+
+        if (i == 0) continue;
+        await gr.services.channels.members.save(
+          {
+            channel_id: channel.id,
+            workspace_id: channel.workspace_id,
+            company_id: channel.company_id,
+            user_id: newUser.id,
+          } as ChannelMember,
+          {},
+          channelUtils.getChannelContext(channel, platform.currentUser),
+        );
+      }
+
+      const jwtToken = await platform.auth.getJWTToken({ sub: newUser.id });
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${platform.workspace.company_id}/search`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+        query: {
+          q: "test",
+        },
+      });
+
+      console.log(response.body);
+      const result: ResourceListResponse<Channel> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
+
+      expect(response.statusCode).toBe(200);
+      expect(result.resources.length).toEqual(9);
+      done();
+    });
+  });
 });

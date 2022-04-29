@@ -1,7 +1,7 @@
 import { Channel } from "./channel";
 
 export default {
-  index: "user",
+  index: "channel",
   source: (entity: Channel) => {
     return {
       workspace_id: entity.workspace_id,

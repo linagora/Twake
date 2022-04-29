@@ -21,7 +21,7 @@ import {
   ChannelService,
   DefaultChannelService,
 } from "../../provider";
-import { ChannelObject } from "./types";
+import { ChannelObject, SearchChannelOptions } from "./types";
 import {
   Channel,
   ChannelMember,
@@ -49,6 +49,7 @@ import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
 import { formatUser } from "../../../../utils/users";
 import gr from "../../../global-resolver";
+import { SearchMessageOptions } from "../../../messages/types";
 
 const logger = getLogger("channel.service");
 
@@ -753,5 +754,22 @@ export class ChannelServiceImpl implements ChannelService {
         member,
       },
     });
+  }
+
+  async search(
+    pagination: Pagination,
+    options: SearchChannelOptions,
+  ): Promise<ListResult<Channel>> {
+    const rep = gr.platformServices.search.getRepository<Channel>("channel", Channel);
+    return rep.search(
+      {},
+      {
+        pagination,
+        ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
+        $text: {
+          $search: options.search,
+        },
+      },
+    );
   }
 }
