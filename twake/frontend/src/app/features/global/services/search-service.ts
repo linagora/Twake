@@ -38,7 +38,6 @@ class SearchService extends Observable {
 
     open() {
         this._isOpen = true;
-        console.log('!!!', 'opening');
         this.notify();
     }
 
