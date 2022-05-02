@@ -10,14 +10,18 @@ export const useHighlightMessage = () => {
     }
   };
 
-  const reachedHighlight = () => {
+  const reachedHighlight = (answer?: boolean) => {
     if (highlight) {
-      setHighlight({ ...highlight, reached: true });
+      setHighlight({
+        ...highlight,
+        reached: answer === true ? false : true,
+        reachedAnswer: answer || false,
+      });
     }
   };
 
   const updateHighlight = (highlight: { id: string; threadId: string }) => {
-    setHighlight({ ...highlight, reached: false });
+    setHighlight({ ...highlight, reached: false, reachedAnswer: false });
   };
 
   return {

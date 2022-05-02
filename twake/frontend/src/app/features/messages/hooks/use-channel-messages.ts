@@ -23,10 +23,11 @@ export const useChannelMessages = (
   key: AtomChannelKey,
   options?: { onMessages: (msgs: MessageWithReplies[]) => void },
 ) => {
-  const { window, isInWindow, setWindow, getWindow, updateWindowFromIds } = getListWindow(
-    key.channelId,
-  );
+  const { window, isInWindow, setWindow, getWindow, setLoaded, updateWindowFromIds } =
+    getListWindow(key.channelId);
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
+  if (messages.length > 0 && !window.loaded) setLoaded(true);
+
   const setMessage = useSetMessage(key.companyId);
   const addToThread = useAddMessageToThread(key.companyId);
 
@@ -64,6 +65,7 @@ export const useChannelMessages = (
 
     setWindow({
       ...updateWindowFromIds(newList.map(message => message.threadId)),
+      loaded: true,
       reachedEnd: newMessages.length <= 1 && direction === 'future',
       reachedStart: newMessages.length <= 1 && direction === 'history',
     });

@@ -11,44 +11,103 @@ import {
   useAddToWindowedList,
   useRemoveFromWindowedList,
 } from './use-add-to-windowed-list';
+import AwaitLock from 'await-lock';
 
-export const useThreadMessages = (key: AtomThreadKey) => {
-  const { window, isInWindow, setLoaded, setWindow } = getListWindow(key.threadId);
+const lock = new AwaitLock();
+
+export const useThreadMessages = (
+  key: AtomThreadKey,
+  options?: { onMessages: (msgs: NodeMessage[]) => void },
+) => {
+  const { window, getWindow, isInWindow, setLoaded, setWindow, updateWindowFromIds } =
+    getListWindow(key.threadId);
   let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
+
+  if (messages.length > 0 && !window.loaded) setLoaded(true);
 
   messages = messages.filter(message => isInWindow(message.id || ''));
   messages = messages.sort((a, b) => Numbers.compareTimeuuid(a.sortId, b.sortId));
 
   const setMessage = useSetMessage(key.companyId);
-  const addToThread = useAddMessageToThread(key.companyId);
 
-  const loadMore = async (direction: 'future' | 'history' = 'future') => {
-    if (window.reachedStart && direction === 'history') return;
-
-    const limit = 50;
-    const newMessages = await MessageAPIClient.list(key.companyId, key.threadId, {
-      direction,
-      limit,
-      pageToken: direction === 'future' ? window.end : window.start,
-    });
-    setLoaded();
-
-    const nothingNew =
-      newMessages.filter(m => !isInWindow(m.id)).length < limit && window.start && window.end;
-
-    newMessages.forEach(m => {
+  const addMore = async (
+    direction: 'future' | 'history' | 'replace' = 'future',
+    newMessages: NodeMessage[],
+  ) => {
+    newMessages?.forEach(m => {
       setMessage(m);
     });
 
-    addToThread(newMessages, {
-      threadId: key.threadId,
-      inWindow: true,
-      ...(nothingNew && direction === 'future' ? { reachedEnd: true } : {}),
-      ...(nothingNew && direction !== 'future' ? { reachedStart: true } : {}),
+    let newMessagesKeys = convertToKeys(key.companyId, newMessages);
+
+    let newList = messages;
+    if (direction === 'future') {
+      newList = [...messages, ...newMessagesKeys];
+    }
+    if (direction === 'history') {
+      newList = [...newMessagesKeys, ...messages];
+    }
+    if (direction === 'replace') {
+      newList = newMessagesKeys;
+    }
+
+    setWindow({
+      ...updateWindowFromIds(newList.map(message => message.threadId)),
+      loaded: true,
+      reachedEnd: newMessages.length <= 1 && direction === 'future',
+      reachedStart: newMessages.length <= 1 && direction === 'history',
     });
+
+    setMessages(_.uniqBy(newList, 'id'));
+  };
+
+  const loadMore = async (
+    direction: 'future' | 'history' = 'future',
+    limit?: number,
+    offset?: string,
+    options?: { ignoreStateUpdate?: boolean },
+  ) => {
+    console.log('loadMoreloadMore', direction, limit, offset);
+
+    await lock.acquireAsync();
+    try {
+      const window = getWindow();
+
+      if (window.reachedStart && direction === 'history') {
+        lock.release();
+        return [];
+      }
+
+      if (offset && !isInWindow(offset)) {
+        lock.release();
+        return [];
+      }
+
+      limit = limit || 50;
+      const newMessages = await MessageAPIClient.list(key.companyId, key.threadId, {
+        direction,
+        limit,
+        pageToken: direction === 'future' ? window.end : window.start,
+      });
+      setLoaded();
+
+      addMore(direction, newMessages);
+
+      if (!options?.ignoreStateUpdate) {
+        addMore(direction, newMessages);
+      }
+
+      lock.release();
+      return newMessages;
+    } catch (err) {
+      console.error(err);
+      lock.release();
+      return [];
+    }
   };
 
   const jumpTo = async (id: string) => {
+    await lock.acquireAsync();
     setWindow({
       start: id,
       end: id,
@@ -56,9 +115,14 @@ export const useThreadMessages = (key: AtomThreadKey) => {
       reachedEnd: false,
       loaded: false,
     });
+    lock.release();
     setMessages([]);
-    await loadMore('future');
-    await loadMore('history');
+    let messages: NodeMessage[] = [];
+    if (id) {
+      messages = await loadMore('future', 20, id, { ignoreStateUpdate: true });
+    }
+    messages = [...(await loadMore('history', 20, id, { ignoreStateUpdate: true })), ...messages];
+    addMore('replace', messages);
   };
 
   return {
@@ -66,6 +130,7 @@ export const useThreadMessages = (key: AtomThreadKey) => {
     window,
     loadMore,
     jumpTo,
+    convertToKeys,
   };
 };
 
@@ -79,17 +144,12 @@ export const useAddMessageToThread = (companyId: string) => {
       threadId,
       companyId: companyId,
     });
-    updater<AtomMessageKey>(
-      messages.map(m => {
-        return {
-          id: m.id,
-          threadId: m.thread_id,
-          companyId: companyId,
-          sortId: m.id,
-        };
-      }),
-      { ...options, windowKey, atom, getId: m => m.id || '' },
-    );
+    updater<AtomMessageKey>(convertToKeys(companyId, messages), {
+      ...options,
+      windowKey,
+      atom,
+      getId: m => m.id || '',
+    });
   };
 };
 
@@ -102,16 +162,17 @@ export const useRemoveMessageFromThread = (companyId: string) => {
       threadId,
       companyId: companyId,
     });
-    remover<AtomMessageKey>(
-      messages.map(m => {
-        return {
-          id: m.id,
-          threadId: m.thread_id,
-          companyId: companyId,
-          sortId: m.id,
-        };
-      }),
-      { atom, getId: m => m.id || '' },
-    );
+    remover<AtomMessageKey>(convertToKeys(companyId, messages), { atom, getId: m => m.id || '' });
   };
+};
+
+const convertToKeys = (companyId: string, msgs: NodeMessage[]) => {
+  return msgs.map(m => {
+    return {
+      id: m.id,
+      threadId: m.thread_id,
+      companyId: companyId,
+      sortId: m.id,
+    };
+  });
 };

@@ -19,6 +19,7 @@ import SideViewService from 'app/features/router/services/side-view-service';
 import { Application } from 'app/features/applications/types/application';
 import RouterServices from 'app/features/router/services/router-service';
 import GoToBottom from './parts/go-to-bottom';
+import { MessagesPlaceholder } from './placeholder';
 
 type Props = {
   companyId: string;
@@ -31,6 +32,7 @@ export const MessagesListContext = React.createContext({ hideReplies: false, wit
 
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const listBuilderRef = useRef<VirtuosoHandle>(null);
+  const [atBottom, setAtBottom] = useState(true);
 
   let { messages, loadMore, window, jumpTo, convertToKeys } = useChannelMessages(
     {
@@ -52,14 +54,11 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   );
   messages = withNonMessagesComponents(messages, window.reachedStart, shouldLimit);
 
-  console.log('vir messages: ', messages);
-
   const loadMoreMessages = async (
     direction: 'history' | 'future',
     limit?: number,
     offsetItem?: MessagesAndComponentsType,
   ) => {
-    console.log('vir loadMoreMessages', direction, limit, offsetItem);
     let messages = await loadMore(direction, limit, offsetItem?.threadId);
     return withNonMessagesComponents(
       convertToKeys(company.id, messages),
@@ -69,17 +68,13 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   };
 
   useEffect(() => {
-    if (messages.length === 0) {
-      console.log('vir loadMoreMessages from useEffect', 'history');
-      loadMore('history');
-    }
+    if (messages.length === 0) loadMore('history');
   }, []);
 
   const { highlight, cancelHighlight, reachedHighlight, updateHighlight } = useHighlightMessage();
 
   useEffect(() => {
     const { threadId, messageId } = RouterServices.getStateFromRoute();
-    console.log('vir', { id: '', threadId });
     if (threadId) {
       updateHighlight({ id: messageId || threadId, threadId });
     }
@@ -111,7 +106,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
             align: 'start',
             index: index,
           });
-        setTimeout(() => reachedHighlight(), 1000);
+        reachedHighlight();
       }, 1000);
     }
   }, [highlight, messages.length]);
@@ -156,13 +151,23 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     [],
   );
 
+  //This hide virtuoso but it start to work in backend
+  const virtuosoLoading = highlight && !highlight?.reached;
+
   return (
     <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
-      {messages.length == 0 && <div style={{ flex: 1 }}></div>}
-      {messages.length > 0 && (
+      {(!window.loaded || virtuosoLoading) && <MessagesPlaceholder />}
+      {!window.loaded && <div style={{ flex: 1 }}></div>}
+      {window.loaded && (
         <ListBuilder
+          style={virtuosoLoading ? { opacity: 0 } : {}}
           refVirtuoso={listBuilderRef}
-          onScroll={() => cancelHighlight()}
+          onScroll={(e: any) => {
+            const scrollBottom = e.target.scrollTop + e.target.clientHeight - e.target.scrollHeight;
+            const closeToBottom = scrollBottom < 100 && window.reachedEnd;
+            if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
+            cancelHighlight();
+          }}
           initialItems={messages}
           itemId={m => m.type + m.threadId}
           emptyListComponent={<FirstMessage />}
@@ -170,6 +175,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           itemContent={row}
           loadMore={loadMoreMessages}
           atBottomStateChange={(atBottom: boolean) => {
+            setAtBottom(atBottom && window.reachedEnd);
             if (atBottom && window.reachedEnd)
               ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
                 status: true,
@@ -177,18 +183,9 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           }}
         />
       )}
-      {(!window.reachedEnd || true) && (
+      {!atBottom && (
         <GoToBottom
           onClick={() => {
-            /*RouterServices.push(
-              RouterServices.generateRouteFromState({
-                companyId: RouterServices.translator.toUUID('bDxmFx1KPWhhJeetsVj12J'),
-                workspaceId: RouterServices.translator.toUUID('w31iupjuCFvvbf8ewYcYg7'), //Workspace id or the "direct" string
-                channelId: RouterServices.translator.toUUID('d5eXg34uZ5gW2oK3umoRKQ'),
-                threadId: RouterServices.translator.toUUID('e8ekvtUq1DtFHhKHjxzMCo'),
-                messageId: RouterServices.translator.toUUID('uBNKdN9KUiM7u2TTfmoaJS'), //Optional, only if this must be redirected in the reply of a thread
-              }),
-            );*/
             jumpTo('');
           }}
         />

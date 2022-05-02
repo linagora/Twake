@@ -5,6 +5,20 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow: hidden;
+
+  .loading-blink {
+    @keyframes loading-blink {
+      50% {
+        opacity: 0.5;
+      }
+      20%,
+      80% {
+        opacity: 1;
+      }
+    }
+    animation: loading-blink 1s infinite;
+  }
 
   .go-to-bottom {
     position: relative;
@@ -216,6 +230,7 @@
           font-weight: 700;
           background: var(--white);
           color: var(--primary);
+          border-radius: 8px;
         }
       }
     }
@@ -226,6 +241,7 @@
       background: var(--white);
       top: -15px;
       position: relative;
+      border-radius: 8px;
 
       .time {
         color: var(--grey-dark);

@@ -2,7 +2,6 @@ import React, { ReactNode, Suspense, useCallback, useEffect, useRef, useState } 
 import { ItemContent, LogLevel, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import Logger from 'app/features/global/framework/logger-service';
 import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
-import { MessagesPlaceHolder } from './placeholder';
 import _ from 'lodash';
 
 //@ts-ignore
@@ -22,6 +21,7 @@ type Props = {
   window: WindowType;
   onScroll: Function;
   refVirtuoso: React.Ref<VirtuosoHandle>;
+  style?: any;
 };
 
 let prependMoreLock = false;
@@ -38,6 +38,7 @@ export default React.memo(
     itemContent,
     atBottomStateChange,
     window,
+    style,
   }: Props) => {
     const START_INDEX = 10000000;
     const INITIAL_ITEM_COUNT = (initialItems || []).length;
@@ -82,6 +83,7 @@ export default React.memo(
     return (
       <Virtuoso
         ref={virtuosoRef}
+        style={style}
         alignToBottom={true}
         firstItemIndex={firstItemIndex}
         initialTopMostItemIndex={INITIAL_ITEM_COUNT - 1}
@@ -89,7 +91,7 @@ export default React.memo(
         startReached={prependItems}
         endReached={appendItems}
         itemContent={itemContent}
-        onScroll={() => onScroll()}
+        onScroll={e => onScroll()}
         atBottomStateChange={atBottomStateChange}
         computeItemKey={(_index, item) => itemId(item)}
       />
