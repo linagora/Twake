@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import ListBuilder from './list-builder';
+import ListBuilder from './list-builder-depreciated';
 import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
 import FirstThreadMessage from './message/parts/FirstMessage/FirstThreadMessage';
@@ -8,6 +8,7 @@ import { useThreadMessages } from 'app/features/messages/hooks/use-thread-messag
 import { withNonMessagesComponents } from './with-non-messages-components';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
 import { VirtuosoHandle } from 'react-virtuoso';
+import GoToBottom from './parts/go-to-bottom';
 
 type Props = {
   companyId: string;
@@ -86,6 +87,13 @@ export default ({ companyId, threadId }: Props) => {
         }}
         loadMore={loadMore}
       />
+      {!window.reachedEnd && (
+        <GoToBottom
+          onClick={() => {
+            jumpTo('');
+          }}
+        />
+      )}
     </MessagesListContext.Provider>
   );
 };

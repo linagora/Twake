@@ -21,6 +21,7 @@ export const getListWindow = (key: string) => {
   let window = windows.get(key) as WindowType;
 
   const updateWindowFromIds = (ids: string[]) => {
+    let window = windows.get(key) as WindowType;
     const min = ids.reduce((a, b) => Numbers.minTimeuuid(a, b), ids[0]);
     const max = ids.reduce((a, b) => Numbers.maxTimeuuid(a, b), ids[0]);
     if (max !== window.end || min !== window.start) {
@@ -45,6 +46,7 @@ export const getListWindow = (key: string) => {
   };
 
   const isInWindow = (id: string) => {
+    const window = windows.get(key) as WindowType;
     return (
       (Numbers.compareTimeuuid(id, window.start) >= 0 || !window.start) &&
       (Numbers.compareTimeuuid(id, window.end) <= 0 || !window.end)

@@ -18,6 +18,7 @@ import { VirtuosoHandle } from 'react-virtuoso';
 import SideViewService from 'app/features/router/services/side-view-service';
 import { Application } from 'app/features/applications/types/application';
 import RouterServices from 'app/features/router/services/router-service';
+import GoToBottom from './parts/go-to-bottom';
 
 type Props = {
   companyId: string;
@@ -31,11 +32,18 @@ export const MessagesListContext = React.createContext({ hideReplies: false, wit
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const listBuilderRef = useRef<VirtuosoHandle>(null);
 
-  let { messages, loadMore, window, jumpTo } = useChannelMessages({
-    companyId,
-    workspaceId: workspaceId || '',
-    channelId: channelId || '',
-  });
+  let { messages, loadMore, window, jumpTo, convertToKeys } = useChannelMessages(
+    {
+      companyId,
+      workspaceId: workspaceId || '',
+      channelId: channelId || '',
+    },
+    {
+      onMessages: messages => {
+        console.log('vir new messages: ', messages);
+      },
+    },
+  );
   const { company } = useCurrentCompany();
   const shouldLimit = MessageHistoryService.shouldLimitMessages(
     company,
@@ -43,6 +51,29 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     messages.length,
   );
   messages = withNonMessagesComponents(messages, window.reachedStart, shouldLimit);
+
+  console.log('vir messages: ', messages);
+
+  const loadMoreMessages = async (
+    direction: 'history' | 'future',
+    limit?: number,
+    offsetItem?: MessagesAndComponentsType,
+  ) => {
+    console.log('vir loadMoreMessages', direction, limit, offsetItem);
+    let messages = await loadMore(direction, limit, offsetItem?.threadId);
+    return withNonMessagesComponents(
+      convertToKeys(company.id, messages),
+      window.reachedStart,
+      shouldLimit,
+    );
+  };
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      console.log('vir loadMoreMessages from useEffect', 'history');
+      loadMore('history');
+    }
+  }, []);
 
   const { highlight, cancelHighlight, reachedHighlight, updateHighlight } = useHighlightMessage();
 
@@ -127,22 +158,41 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
-      <ListBuilder
-        refVirtuoso={listBuilderRef}
-        onScroll={() => cancelHighlight()}
-        items={messages}
-        itemId={m => m.type + m.threadId}
-        emptyListComponent={<FirstMessage />}
-        window={window}
-        itemContent={row}
-        loadMore={loadMore}
-        atBottomStateChange={(atBottom: boolean) => {
-          if (atBottom && window.reachedEnd)
-            ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
-              status: true,
-            });
-        }}
-      />
+      {messages.length == 0 && <div style={{ flex: 1 }}></div>}
+      {messages.length > 0 && (
+        <ListBuilder
+          refVirtuoso={listBuilderRef}
+          onScroll={() => cancelHighlight()}
+          initialItems={messages}
+          itemId={m => m.type + m.threadId}
+          emptyListComponent={<FirstMessage />}
+          window={window}
+          itemContent={row}
+          loadMore={loadMoreMessages}
+          atBottomStateChange={(atBottom: boolean) => {
+            if (atBottom && window.reachedEnd)
+              ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
+                status: true,
+              });
+          }}
+        />
+      )}
+      {(!window.reachedEnd || true) && (
+        <GoToBottom
+          onClick={() => {
+            /*RouterServices.push(
+              RouterServices.generateRouteFromState({
+                companyId: RouterServices.translator.toUUID('bDxmFx1KPWhhJeetsVj12J'),
+                workspaceId: RouterServices.translator.toUUID('w31iupjuCFvvbf8ewYcYg7'), //Workspace id or the "direct" string
+                channelId: RouterServices.translator.toUUID('d5eXg34uZ5gW2oK3umoRKQ'),
+                threadId: RouterServices.translator.toUUID('e8ekvtUq1DtFHhKHjxzMCo'),
+                messageId: RouterServices.translator.toUUID('uBNKdN9KUiM7u2TTfmoaJS'), //Optional, only if this must be redirected in the reply of a thread
+              }),
+            );*/
+            jumpTo('');
+          }}
+        />
+      )}
     </MessagesListContext.Provider>
   );
 };

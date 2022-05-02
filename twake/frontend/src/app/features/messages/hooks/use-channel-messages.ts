@@ -1,9 +1,9 @@
-import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+import { Message, MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageViewAPIClient from 'app/features/messages/api/message-view-api-client';
 import LoginService from 'app/features/auth/login-service';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import Numbers from 'app/features/global/utils/Numbers';
-import _ from 'lodash';
+import _, { some } from 'lodash';
 import { useRecoilState } from 'recoil';
 import { AtomChannelKey, AtomMessageKey, ChannelMessagesState } from '../state/atoms/messages';
 import { useSetMessage } from './use-message';
@@ -15,50 +15,30 @@ import {
   useAddToWindowedList,
   useRemoveFromWindowedList,
 } from './use-add-to-windowed-list';
+import AwaitLock from 'await-lock';
 
-//TODO make this more easy to duplicate for other views
-export const useChannelMessages = (key: AtomChannelKey) => {
-  const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
-  const { window, isInWindow, setLoaded, setWindow, getWindow } = getListWindow(key.channelId);
-  let currentWindowedMessages = messages.filter(message => isInWindow(message.threadId));
-  currentWindowedMessages = currentWindowedMessages.sort((a, b) =>
-    Numbers.compareTimeuuid(a.sortId, b.sortId),
+const lock = new AwaitLock();
+
+export const useChannelMessages = (
+  key: AtomChannelKey,
+  options?: { onMessages: (msgs: MessageWithReplies[]) => void },
+) => {
+  const { window, isInWindow, setWindow, getWindow, updateWindowFromIds } = getListWindow(
+    key.channelId,
   );
-
+  const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
   const setMessage = useSetMessage(key.companyId);
   const addToThread = useAddMessageToThread(key.companyId);
-  const addToChannel = useAddMessageToChannel(key);
 
-  const loadMore = async (direction: 'future' | 'history' = 'future') => {
-    const window = getWindow();
-
-    if (window.reachedStart && direction === 'history') return;
-
-    const limit = 20;
-    let newMessages = await MessageViewAPIClient.feed(
-      key.companyId,
-      key.workspaceId,
-      key.channelId,
-      { direction, limit, pageToken: direction === 'future' ? window.end : window.start },
-    );
-    setLoaded();
-
-    const nothingNew =
-      (newMessages?.filter(m => !isInWindow(m.thread_id)).length || 0) <= 1 &&
-      !!window.start &&
-      !!window.end;
-
+  const addMore = async (
+    direction: 'future' | 'history' | 'replace' = 'future',
+    newMessages: MessageWithReplies[],
+  ) => {
     newMessages?.forEach(m => {
       setMessage(m);
       m.last_replies.forEach(m2 => {
         setMessage(m2);
       });
-    });
-
-    addToChannel(newMessages || [], {
-      inWindow: true,
-      ...(nothingNew && direction === 'future' ? { reachedEnd: true } : {}),
-      ...(nothingNew && direction !== 'future' ? { reachedStart: true } : {}),
     });
 
     newMessages?.forEach(m => {
@@ -68,6 +48,90 @@ export const useChannelMessages = (key: AtomChannelKey) => {
         reachedStart: m.last_replies.length >= m.stats.replies,
       });
     });
+
+    let newMessagesKeys = convertToKeys(key.companyId, newMessages);
+
+    let newList = messages;
+    if (direction === 'future') {
+      newList = [...messages, ...newMessagesKeys];
+    }
+    if (direction === 'history') {
+      newList = [...newMessagesKeys, ...messages];
+    }
+    if (direction === 'replace') {
+      newList = newMessagesKeys;
+    }
+
+    setWindow({
+      ...updateWindowFromIds(newList.map(message => message.threadId)),
+      reachedEnd: newMessages.length <= 1 && direction === 'future',
+      reachedStart: newMessages.length <= 1 && direction === 'history',
+    });
+
+    setMessages(_.uniqBy(newList, 'threadId'));
+  };
+
+  const loadMore = async (
+    direction: 'future' | 'history' = 'future',
+    limit?: number,
+    offset?: string,
+    options?: { ignoreStateUpdate?: boolean },
+  ): Promise<MessageWithReplies[]> => {
+    await lock.acquireAsync();
+    try {
+      const window = getWindow();
+
+      if (window.reachedStart && direction === 'history') {
+        lock.release();
+        return [];
+      }
+
+      if (offset && !isInWindow(offset)) {
+        lock.release();
+        return [];
+      }
+
+      const messages =
+        (await MessageViewAPIClient.feed(key.companyId, key.workspaceId, key.channelId, {
+          direction,
+          limit,
+          pageToken:
+            offset !== undefined ? offset : direction === 'future' ? window.end : window.start,
+        })) || [];
+
+      if (!options?.ignoreStateUpdate) {
+        addMore(direction, messages);
+      }
+
+      lock.release();
+      return messages;
+    } catch (err) {
+      console.error(err);
+      lock.release();
+      return [];
+    }
+  };
+
+  const jumpTo = async (threadId: string) => {
+    await lock.acquireAsync();
+    setWindow({
+      start: threadId,
+      end: threadId,
+      reachedStart: false,
+      reachedEnd: false,
+      loaded: false,
+    });
+    lock.release();
+    setMessages([]);
+    let messages: MessageWithReplies[] = [];
+    if (threadId) {
+      messages = await loadMore('future', 20, threadId, { ignoreStateUpdate: true });
+    }
+    messages = [
+      ...(await loadMore('history', 20, threadId, { ignoreStateUpdate: true })),
+      ...messages,
+    ];
+    addMore('replace', messages);
   };
 
   useRealtimeRoom<MessageWithReplies>(
@@ -76,24 +140,20 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     async (action: string, event: any) => {
       if (action === 'created' || action === 'updated') {
         const message = event as NodeMessage;
-        if (message.ephemeral) {
-          console.log('received ephemeral !');
-          return;
-        }
-      }
+        if (message.ephemeral) return;
 
-      //This will make sure the realtime event doesn't arrive before the server response
-      if (event?.user_id === LoginService.currentUserId && action === 'created') {
-        await new Promise(r => setTimeout(r, 1000));
-      }
-      if (action === 'created' || action === 'updated') {
-        const message = event as NodeMessage;
+        //This will make sure the realtime event doesn't arrive before the server response
+        if (event?.user_id === LoginService.currentUserId && action === 'created')
+          await new Promise(r => setTimeout(r, 1000));
+
+        if (action === 'created') {
+          if (getWindow().reachedEnd) {
+            options?.onMessages(await loadMore('future'));
+          }
+        }
+
         setMessage(message);
-        if (message.thread_id === message.id) {
-          addToChannel([message], {
-            atBottom: true,
-          });
-        } else {
+        if (message.thread_id !== message.id) {
           addToThread([message], {
             threadId: message.thread_id,
             atBottom: true,
@@ -103,25 +163,25 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     },
   );
 
-  const jumpTo = async (threadId: string) => {
-    setWindow({
-      start: threadId,
-      end: threadId,
-      reachedStart: false,
-      reachedEnd: false,
-      loaded: false,
-    });
-    setMessages([]);
-    await loadMore('future');
-    await loadMore('history');
-  };
-
   return {
-    messages: currentWindowedMessages,
+    messages,
     window,
     loadMore,
     jumpTo,
+    convertToKeys,
   };
+};
+
+const convertToKeys = (companyId: string, msgs: MessageWithReplies[] | NodeMessage[]) => {
+  return msgs.map(m => {
+    const lastReplies = (m as MessageWithReplies).last_replies || [];
+    return {
+      id: m.id,
+      threadId: m.thread_id,
+      companyId: companyId,
+      sortId: lastReplies[lastReplies.length - 1]?.id || m.thread_id,
+    };
+  });
 };
 
 export const useAddMessageToChannel = (key: AtomChannelKey) => {
@@ -129,18 +189,12 @@ export const useAddMessageToChannel = (key: AtomChannelKey) => {
   return (messages: NodeMessage[], options?: AddToWindowOptions) => {
     const windowKey = key.channelId;
     const atom = ChannelMessagesState(key);
-    updater<AtomMessageKey>(
-      messages?.map(m => {
-        const lastReplies = (m as MessageWithReplies).last_replies || [];
-        return {
-          id: m.id,
-          threadId: m.thread_id,
-          companyId: key.companyId,
-          sortId: lastReplies[lastReplies.length - 1]?.id || m.thread_id,
-        };
-      }),
-      { ...options, windowKey, atom, getId: m => m.threadId || '' },
-    );
+    updater<AtomMessageKey>(convertToKeys(key.companyId, messages), {
+      ...options,
+      windowKey,
+      atom,
+      getId: m => m.threadId || '',
+    });
   };
 };
 
@@ -148,17 +202,9 @@ export const useRemoveMessageFromChannel = (key: AtomChannelKey) => {
   const remover = useRemoveFromWindowedList(key.companyId);
   return (messages: NodeMessage[]) => {
     const atom = ChannelMessagesState(key);
-    remover<AtomMessageKey>(
-      messages.map(m => {
-        const lastReplies = (m as MessageWithReplies).last_replies || [];
-        return {
-          id: m.id,
-          threadId: m.thread_id,
-          companyId: key.companyId,
-          sortId: lastReplies[lastReplies.length - 1]?.id || m.thread_id,
-        };
-      }),
-      { atom, getId: m => m.threadId || '' },
-    );
+    remover<AtomMessageKey>(convertToKeys(key.companyId, messages), {
+      atom,
+      getId: m => m.threadId || '',
+    });
   };
 };
