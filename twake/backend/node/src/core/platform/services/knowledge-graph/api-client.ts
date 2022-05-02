@@ -30,9 +30,9 @@ export default class KnowledgeGraphAPIClient {
     >(`${this.apiUrl}/graph/create/company`, {
       records: [
         {
-          key: company.id,
+          key: "null",
           value: {
-            id: company.id,
+            id: "Company",
             properties: {
               company_id: company.id,
               company_name: company.name,
@@ -49,9 +49,9 @@ export default class KnowledgeGraphAPIClient {
     >(`${this.apiUrl}/graph/create/workspace`, {
       records: [
         {
-          key: workspace.id,
+          key: "null",
           value: {
-            id: workspace.id,
+            id: "Workspace",
             properties: {
               company_id: workspace.company_id,
               workspace_name: workspace.name,
@@ -69,9 +69,9 @@ export default class KnowledgeGraphAPIClient {
       {
         records: [
           {
-            key: user.id,
+            key: "null",
             value: {
-              id: user.id,
+              id: "User",
               properties: {
                 user_id: user.id,
                 email: user.email_canonical,
@@ -90,16 +90,14 @@ export default class KnowledgeGraphAPIClient {
   }
 
   public onChannelCreated(channel: Partial<Channel>): void {
-    console.log("onChannelCreated BEFORE");
-
     this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateChannelObjectData[]>
     >(`${this.apiUrl}/graph/create/channel`, {
       records: [
         {
-          key: channel.id,
+          key: "null",
           value: {
-            id: channel.id,
+            id: "Channel",
             properties: {
               channel_id: channel.id,
               channel_name: channel.name,
@@ -118,13 +116,13 @@ export default class KnowledgeGraphAPIClient {
     >(`${this.apiUrl}/graph/create/message`, {
       records: [
         {
-          key: message.id,
+          key: "null",
           value: {
-            id: message.id,
+            id: "Message",
             properties: {
               message_thread_id: message.thread_id,
               message_created_at: message.created_at.toLocaleString(),
-              message_content: message.text,
+              message_content: "secret", // For now we don't send private data
               type_message: message.type,
               message_updated_at: message.updated_at.toLocaleString(),
               user_id: message.user_id,

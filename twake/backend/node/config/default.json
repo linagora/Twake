@@ -146,7 +146,8 @@
     "server": "plugins:3100"
   },
   "knowledge-graph": {
-    "endpoint": "http://localhost:8888"
+    "endpoint": "http://host-gateway:8888",
+    "active": false
   },
   "services": [
     "auth",

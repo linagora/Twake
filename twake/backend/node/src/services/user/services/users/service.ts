@@ -103,7 +103,14 @@ export class UserServiceImpl implements UsersService {
         {
           id: result.entity.id,
           resource: result.entity,
-          links: [],
+          links: [
+            {
+              // FIXME: We should provide the company id here
+              id: "",
+              relation: "parent",
+              type: "company",
+            },
+          ],
         },
       );
     }

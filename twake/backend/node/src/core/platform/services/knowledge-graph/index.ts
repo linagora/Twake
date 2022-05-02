@@ -1,4 +1,4 @@
-import { Configuration, Consumes, TwakeService } from "../../framework";
+import { Configuration, Consumes, getLogger, TwakeLogger, TwakeService } from "../../framework";
 import { localEventBus } from "../../framework/pubsub";
 import KnowledgeGraphAPI from "./provider";
 import Workspace from "../../../../services/workspaces/entities/workspace";
@@ -17,8 +17,18 @@ export default class KnowledgeGraphService
   readonly name = "knowledge-graph";
   readonly version = "1.0.0";
   protected kgAPIClient: KnowledgeGraphAPIClient = this.getKnowledgeGraphApiClient();
+  logger: TwakeLogger = getLogger("knowledge-graph-service");
 
   async doInit(): Promise<this> {
+    const configuration = new Configuration("knowledge-graph");
+    const active = configuration.get<boolean>("active");
+
+    if (!active) {
+      this.logger.warn("Knowledge graph is not active in default.json");
+
+      return this;
+    }
+
     localEventBus.subscribe<KnowledgeGraphGenericEventPayload<Company>>(
       KnowledgeGraphEvents.COMPANY_CREATED,
       this.onCompanyCreated.bind(this),
@@ -80,8 +90,11 @@ export default class KnowledgeGraphService
   async onUserCreated(data: KnowledgeGraphGenericEventPayload<User>): Promise<void> {
     this.logger.info(`${KnowledgeGraphEvents.USER_CREATED} %o`, data);
 
-    // FIXME: The first parameter should be the company id
-    if (this.kgAPIClient) this.kgAPIClient.onUserCreated("", data.resource);
+    const companyId = data.links.reduce<string>(
+      (acc, link) => (link.type === "company" ? (acc = link.id) : ""),
+      "",
+    );
+    if (this.kgAPIClient) this.kgAPIClient.onUserCreated(companyId, data.resource);
   }
 
   private getKnowledgeGraphApiClient(): KnowledgeGraphAPIClient {
