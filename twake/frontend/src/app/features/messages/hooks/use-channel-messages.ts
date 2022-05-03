@@ -125,15 +125,15 @@ export const useChannelMessages = (
     });
     lock.release();
     setMessages([]);
-    let messages: MessageWithReplies[] = [];
+    let newMessages: MessageWithReplies[] = [];
     if (threadId) {
-      messages = await loadMore('future', 20, threadId, { ignoreStateUpdate: true });
+      newMessages = await loadMore('future', 20, threadId, { ignoreStateUpdate: true });
     }
-    messages = [
+    newMessages = [
       ...(await loadMore('history', 20, threadId, { ignoreStateUpdate: true })),
-      ...messages,
+      ...newMessages,
     ];
-    addMore('replace', messages);
+    addMore('replace', newMessages);
   };
 
   useRealtimeRoom<MessageWithReplies>(

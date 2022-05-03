@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ListBuilder from './list-builder';
 import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
@@ -23,6 +23,8 @@ type Props = {
 
 export default ({ companyId, threadId }: Props) => {
   const listBuilderRef = useRef<VirtuosoHandle>(null);
+  const [atBottom, setAtBottom] = useState(true);
+
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
   let { messages, loadMore, window, jumpTo, convertToKeys } = useThreadMessages(
     {
@@ -47,7 +49,10 @@ export default ({ companyId, threadId }: Props) => {
     offsetItem?: MessagesAndComponentsType,
   ) => {
     let messages = await loadMore(direction, limit, offsetItem?.id);
-    return withNonMessagesComponents(convertToKeys(companyId, messages), window.reachedStart);
+    return withNonMessagesComponents(
+      convertToKeys(companyId, messages),
+      window.reachedStart && direction === 'history',
+    );
   };
 
   useEffect(() => {
@@ -76,6 +81,15 @@ export default ({ companyId, threadId }: Props) => {
     }
   }, [highlight, messages.length]);
 
+  const jumpToBottom = () => {
+    if (window.reachedEnd) {
+      listBuilderRef.current?.scrollTo({ top: 10000000, behavior: 'smooth' });
+    } else {
+      // Load the right portion of messages
+      jumpTo('');
+    }
+  };
+
   //This hide virtuoso but it start to work in backend
   const virtuosoLoading =
     highlight && highlight.threadId !== highlight.id && !highlight?.reachedAnswer;
@@ -88,7 +102,12 @@ export default ({ companyId, threadId }: Props) => {
         <ListBuilder
           key={threadId}
           refVirtuoso={listBuilderRef}
-          onScroll={() => cancelHighlight()}
+          onScroll={(e: any) => {
+            const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
+            const closeToBottom = scrollBottom < 100;
+            if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
+            cancelHighlight();
+          }}
           initialItems={messages}
           itemId={m => m.type + m.id}
           window={window}
@@ -119,11 +138,13 @@ export default ({ companyId, threadId }: Props) => {
           loadMore={loadMoreMessages}
         />
       )}
-      <GoToBottom
-        onClick={() => {
-          jumpTo('');
-        }}
-      />
+      {!(atBottom && window.reachedEnd) && window.loaded && (
+        <GoToBottom
+          onClick={() => {
+            jumpToBottom();
+          }}
+        />
+      )}
     </MessagesListContext.Provider>
   );
 };

@@ -91,7 +91,7 @@ export default React.memo(
         startReached={prependItems}
         endReached={appendItems}
         itemContent={itemContent}
-        onScroll={e => onScroll()}
+        onScroll={e => onScroll(e)}
         atBottomStateChange={atBottomStateChange}
         computeItemKey={(_index, item) => itemId(item)}
       />

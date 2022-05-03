@@ -23,6 +23,8 @@ export const useThreadMessages = (
     getListWindow(key.threadId);
   let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
 
+  console.log('threadMessages', key, messages);
+
   if (messages.length > 0 && !window.loaded) setLoaded(true);
 
   messages = messages.filter(message => isInWindow(message.id || ''));
@@ -52,7 +54,7 @@ export const useThreadMessages = (
     }
 
     setWindow({
-      ...updateWindowFromIds(newList.map(message => message.threadId)),
+      ...updateWindowFromIds(newList.map(message => message.id || message.threadId)),
       loaded: true,
       reachedEnd: newMessages.length <= 1 && direction === 'future',
       reachedStart: newMessages.length <= 1 && direction === 'history',
@@ -117,12 +119,15 @@ export const useThreadMessages = (
     });
     lock.release();
     setMessages([]);
-    let messages: NodeMessage[] = [];
+    let newMessages: NodeMessage[] = [];
     if (id) {
-      messages = await loadMore('future', 20, id, { ignoreStateUpdate: true });
+      newMessages = await loadMore('future', 20, id, { ignoreStateUpdate: true });
     }
-    messages = [...(await loadMore('history', 20, id, { ignoreStateUpdate: true })), ...messages];
-    addMore('replace', messages);
+    newMessages = [
+      ...(await loadMore('history', 20, id, { ignoreStateUpdate: true })),
+      ...newMessages,
+    ];
+    addMore('replace', newMessages);
   };
 
   return {

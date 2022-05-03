@@ -1,8 +1,15 @@
+import useRouteState from 'app/features/router/hooks/use-route-state';
+import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { HighlightMessageState } from '../state/atoms/message-highlight';
 
 export const useHighlightMessage = () => {
   const [highlight, setHighlight] = useRecoilState(HighlightMessageState);
+  const { threadId, messageId } = useRouteState();
+
+  useEffect(() => {
+    if (threadId) updateHighlight({ id: messageId || threadId, threadId });
+  }, [threadId, messageId]);
 
   const cancelHighlight = () => {
     if (highlight?.reached) {

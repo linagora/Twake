@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useChannelMessages } from 'app/features/messages/hooks/use-channel-messages';
 import ListBuilder from './list-builder';
 import TimeSeparator from './message/time-separator';
@@ -6,9 +6,8 @@ import MessageWithReplies from './message/message-with-replies';
 import FirstMessage from './message/parts/FirstMessage/FirstMessage';
 import LockedHistoryBanner from 'app/components/locked-features-components/locked-history-banner/locked-history-banner';
 import MessageHistoryService from 'app/features/messages/services/message-history-service';
-import { useCompany, useCurrentCompany } from 'app/features/companies/hooks/use-companies';
+import { useCurrentCompany } from 'app/features/companies/hooks/use-companies';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
-import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import {
   MessagesAndComponentsType,
   withNonMessagesComponents,
@@ -62,8 +61,8 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     let messages = await loadMore(direction, limit, offsetItem?.threadId);
     return withNonMessagesComponents(
       convertToKeys(company.id, messages),
-      window.reachedStart,
-      shouldLimit,
+      window.reachedStart && direction === 'history',
+      shouldLimit && direction === 'history',
     );
   };
 
@@ -71,14 +70,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     if (messages.length === 0) loadMore('history');
   }, []);
 
-  const { highlight, cancelHighlight, reachedHighlight, updateHighlight } = useHighlightMessage();
-
-  useEffect(() => {
-    const { threadId, messageId } = RouterServices.getStateFromRoute();
-    if (threadId) {
-      updateHighlight({ id: messageId || threadId, threadId });
-    }
-  }, []);
+  const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
 
   useEffect(() => {
     //Manage scroll to highlight
@@ -151,6 +143,15 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     [],
   );
 
+  const jumpToBottom = () => {
+    if (window.reachedEnd) {
+      listBuilderRef.current?.scrollTo({ top: 10000000, behavior: 'smooth' });
+    } else {
+      // Load the right portion of messages
+      jumpTo('');
+    }
+  };
+
   //This hide virtuoso but it start to work in backend
   const virtuosoLoading = highlight && !highlight?.reached;
 
@@ -163,8 +164,8 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           style={virtuosoLoading ? { opacity: 0 } : {}}
           refVirtuoso={listBuilderRef}
           onScroll={(e: any) => {
-            const scrollBottom = e.target.scrollTop + e.target.clientHeight - e.target.scrollHeight;
-            const closeToBottom = scrollBottom < 100 && window.reachedEnd;
+            const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
+            const closeToBottom = scrollBottom < 100;
             if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
             cancelHighlight();
           }}
@@ -175,18 +176,19 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           itemContent={row}
           loadMore={loadMoreMessages}
           atBottomStateChange={(atBottom: boolean) => {
-            setAtBottom(atBottom && window.reachedEnd);
-            if (atBottom && window.reachedEnd)
+            if (atBottom && window.reachedEnd) {
+              setAtBottom(true);
               ChannelAPIClient.read(companyId, workspaceId || '', channelId || '', {
                 status: true,
               });
+            }
           }}
         />
       )}
-      {!atBottom && (
+      {!(atBottom && window.reachedEnd) && window.loaded && (
         <GoToBottom
           onClick={() => {
-            jumpTo('');
+            jumpToBottom();
           }}
         />
       )}
