@@ -86,14 +86,17 @@ export const useThreadMessages = (
       }
 
       limit = limit || 50;
-      const newMessages = await MessageAPIClient.list(key.companyId, key.threadId, {
+      offset = offset !== undefined ? offset : direction === 'future' ? window.end : window.start;
+      let newMessages = await MessageAPIClient.list(key.companyId, key.threadId, {
         direction,
         limit,
-        pageToken: direction === 'future' ? window.end : window.start,
+        pageToken: offset,
       });
       setLoaded();
 
-      addMore(direction, newMessages);
+      newMessages = newMessages.filter(
+        message => message.id !== message.thread_id && message.id !== offset,
+      );
 
       if (!options?.ignoreStateUpdate) {
         addMore(direction, newMessages);

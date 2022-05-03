@@ -93,13 +93,15 @@ export const useChannelMessages = (
         return [];
       }
 
-      const messages =
+      offset = offset !== undefined ? offset : direction === 'future' ? window.end : window.start;
+      let messages =
         (await MessageViewAPIClient.feed(key.companyId, key.workspaceId, key.channelId, {
           direction,
           limit,
-          pageToken:
-            offset !== undefined ? offset : direction === 'future' ? window.end : window.start,
+          pageToken: offset,
         })) || [];
+
+      messages = messages.filter(message => message.thread_id !== offset);
 
       if (!options?.ignoreStateUpdate) {
         addMore(direction, messages);
