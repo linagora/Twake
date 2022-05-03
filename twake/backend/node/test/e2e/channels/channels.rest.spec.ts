@@ -8,7 +8,7 @@ import {
   ResourceUpdateResponse,
   User,
 } from "../../../src/utils/types";
-import { Channel } from "../../../src/services/channels/entities/channel";
+import { Channel } from "../../../src/services/channels/entities";
 import {
   ChannelExecutionContext,
   ChannelVisibility,
@@ -1262,7 +1262,6 @@ describe("The /internal/services/channels/v1 API", () => {
         },
       });
 
-      console.log(response.body);
       const result: ResourceListResponse<Channel> = deserialize(
         ResourceListResponse,
         response.body,
