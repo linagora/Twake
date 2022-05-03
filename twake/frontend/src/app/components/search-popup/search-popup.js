@@ -5,6 +5,7 @@ import './search-popup.scss';
 import InputIcon from 'components/inputs/input-icon.js';
 import MessagesResult from './parts/messages-result'
 import ChannelsResult from './parts/channels-result'
+import UsersResult from './parts/users-result'
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import Languages from 'app/features/global/services/languages-service';
 
@@ -209,34 +210,6 @@ export default class SearchPopup extends React.Component {
                 </div>
               </div>
 
-
-{/*              <div className="tab-item-wrapper">
-                <div>
-                  <div className="tab-item-title">Files</div>
-                  <div className="tab-item-indicator">
-                  </div>
-                </div>
-              </div>
-
-
-              <div className="tab-item-wrapper">
-                <div>
-                  <div className="tab-item-title">Links</div>
-                  <div className="tab-item-indicator">
-                  </div>
-                </div>
-              </div>
-
-              <div className="tab-item-wrapper">
-                <div>
-                  <div className="tab-item-title">Contacts</div>
-                  <div className="tab-item-indicator">
-                  </div>
-                </div>
-              </div>*/}
-
-
-
             </div>
             <div className="tab-horizontal-separator"></div>
           </div>
@@ -247,71 +220,32 @@ export default class SearchPopup extends React.Component {
           className="search-results"
           containerRef={node => { this.scroller = node; }}>
 
-            {Boolean(Search.results.channels.length) && (<div>
+            {(Boolean(Search.results.channels.length) || Boolean(Search.results.users.length)) && (<div>
             <div className="results-group-title ">Channels and contacts</div>
-              <div className="result-items">
-              {Search.results.channels.map(channel => {
-                return (
-                <ChannelsResult channel={channel} highlight={Search.value} onClick={() => {
-                  console.log("clicked", channel);
-                  // Search.select(message);
 
-                }}/>
-                );
-              })}
-              </div>
+              {Boolean(Search.results.channels.length) && (<div className="result-items">
+              {Search.results.channels.map(channel =>
+                <ChannelsResult channel={channel} highlight={Search.value} onClick={()=>Search.close()}/>
+              )}
+              </div>)}
 
+              {Boolean(Search.results.users.length) && (<div className="result-items">
+                {Search.results.users.map(user =>
+                  <UsersResult user={user} highlight={Search.value} onClick={()=>Search.close()}/>
+                )}
+              </div>)}
 
             </div>)}
 
             {Boolean(Search.results.messages.length) && (<div>
               <div className="results-group-title ">Discussions</div>
               <div className="result-items">
-              {Search.results.messages.map(message => {
-                return (
-                <MessagesResult message={message} highlight={Search.value} onClick={() => {
-                  console.log("clicked", message);
-                  // Search.select(message);
-
-                }}/>
-                );
-              })}
+              {Search.results.messages.map(message =>
+                <MessagesResult message={message} highlight={Search.value} onClick={()=>Search.close()}/>
+              )}
               </div>
 
             </div>)}
-
-
-         {/*   {!Search.value && (
-            <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-              {Languages.t(
-              'components.searchpopup.enter_text',
-              [],
-              'Enter some text to search Twake.',
-              )}
-            </div>
-            )}
-            {Search.search_http_loading && Search.value && (
-            <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-              {Languages.t('components.searchpopup.loading', [], 'Loading more results...')}
-            </div>
-            )}
-            {Search.value && this.state.total === 0 && !Search.search_http_loading && (
-            <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-              {Languages.t('components.user_picker.modal_no_result', [], 'No results found.')}
-            </div>
-            )}
-            {this.state.total > 0 && Search.scroll_id && !Search.search_http_loading && (
-            <div className="smalltext" style={{ textAlign: 'center', padding: 32 }}>
-              <a
-              onClick={() => {
-                Search.loadMore();
-              }}
-              >
-                {Languages.t('components.searchpopup.load_more', [], 'Load more results...')}
-              </a>
-            </div>
-            )}*/}
-
 
 
           </PerfectScrollbar>

@@ -4,10 +4,15 @@ import Workspace from 'app/deprecated/workspaces/workspaces.js';
 import Api from 'app/features/global/framework/api-service';
 import {Message} from "features/messages/types/message";
 import {ChannelType} from "features/channels/types/channel";
+import UserAPIClient from 'app/features/users/api/user-api-client';
+import {UserType} from "features/users/types/user";
+import Strings from "features/global/utils/strings";
+import Workspaces from "deprecated/workspaces/workspaces";
 
 type ResultTypes = {
     messages: Message[]
     channels: ChannelType[]
+    users: UserType[];
 }
 
 class SearchService extends Observable {
@@ -33,6 +38,7 @@ class SearchService extends Observable {
         this.setValue('');
         this.results.messages= [];
         this.results.channels= [];
+        this.results.users = [];
         this.notify();
     }
 
@@ -71,14 +77,26 @@ class SearchService extends Observable {
         this.results.channels= [];
         Api.get<{ resources: ChannelType[] }>(`/internal/services/channels/v1/companies/${Workspace.currentGroupId}/search?q=${this.value}`).then(res=>{
             this.results.channels = res.resources;
+            this.notify();
 
         });
 
     }
 
+    private searchUsers(){
+        UserAPIClient.search<UserType>(this.value, {
+            scope: 'company',
+            companyId: Workspaces.currentGroupId,
+        }).then(users=>{
+            this.results.users = users;
+            this.notify();
+        });
+    }
+
     search() {
         this.searchMessages();
         this.searchChannels();
+        this.searchUsers();
     }
 
 
