@@ -54,9 +54,11 @@ export const useChannelMessages = (
 
     let newList = messages;
     if (direction === 'future') {
+      newMessagesKeys = _.differenceBy(newMessagesKeys, messages, 'id');
       newList = [...messages, ...newMessagesKeys];
     }
     if (direction === 'history') {
+      newMessagesKeys = _.differenceBy(newMessagesKeys, messages, 'id');
       newList = [...newMessagesKeys, ...messages];
     }
     if (direction === 'replace') {
@@ -66,8 +68,8 @@ export const useChannelMessages = (
     setWindow({
       ...updateWindowFromIds(newList.map(message => message.threadId)),
       loaded: true,
-      reachedEnd: newMessages.length <= 1 && direction === 'future',
-      reachedStart: newMessages.length <= 1 && direction === 'history',
+      reachedEnd: window.reachedEnd || (newMessages.length <= 1 && direction === 'future'),
+      reachedStart: window.reachedStart || (newMessages.length <= 1 && direction === 'history'),
     });
 
     setMessages(_.uniqBy(newList, 'threadId'));
@@ -126,7 +128,7 @@ export const useChannelMessages = (
       loaded: false,
     });
     lock.release();
-    setMessages([]);
+    setLoaded(false);
     let newMessages: MessageWithReplies[] = [];
     if (threadId) {
       newMessages = await loadMore('future', 20, threadId, { ignoreStateUpdate: true });

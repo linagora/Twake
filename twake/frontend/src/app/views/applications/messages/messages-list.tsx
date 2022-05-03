@@ -75,16 +75,6 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   useEffect(() => {
     //Manage scroll to highlight
     if (listBuilderRef.current && highlight && !highlight.reached) {
-      if (highlight.id !== highlight.threadId) {
-        SideViewService.select(channelId || '', {
-          app: { identity: { code: 'messages' } } as Application,
-          context: {
-            viewType: 'channel_thread',
-            threadId: highlight.threadId,
-          },
-        });
-      }
-
       // Find the correct index of required message
       const index = messages.findIndex(m => m.id === highlight.threadId);
       if (index < 0) {
@@ -99,6 +89,16 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
             index: index,
           });
         reachedHighlight();
+
+        if (highlight.id !== highlight.threadId) {
+          SideViewService.select(channelId || '', {
+            app: { identity: { code: 'messages' } } as Application,
+            context: {
+              viewType: 'channel_thread',
+              threadId: highlight.threadId,
+            },
+          });
+        }
       }, 1000);
     }
   }, [highlight, messages.length]);
@@ -161,8 +161,8 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
       {!window.loaded && <div style={{ flex: 1 }}></div>}
       {window.loaded && (
         <ListBuilder
-          style={virtuosoLoading ? { opacity: 0 } : {}}
           refVirtuoso={listBuilderRef}
+          style={virtuosoLoading ? { opacity: 0 } : {}}
           onScroll={(e: any) => {
             const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
             const closeToBottom = scrollBottom < 100;

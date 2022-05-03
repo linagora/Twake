@@ -44,9 +44,11 @@ export const useThreadMessages = (
 
     let newList = messages;
     if (direction === 'future') {
+      newMessagesKeys = _.differenceBy(newMessagesKeys, messages, 'id');
       newList = [...messages, ...newMessagesKeys];
     }
     if (direction === 'history') {
+      newMessagesKeys = _.differenceBy(newMessagesKeys, messages, 'id');
       newList = [...newMessagesKeys, ...messages];
     }
     if (direction === 'replace') {
@@ -56,8 +58,8 @@ export const useThreadMessages = (
     setWindow({
       ...updateWindowFromIds(newList.map(message => message.id || message.threadId)),
       loaded: true,
-      reachedEnd: newMessages.length <= 1 && direction === 'future',
-      reachedStart: newMessages.length <= 1 && direction === 'history',
+      reachedEnd: window.reachedEnd || (newMessages.length <= 1 && direction === 'future'),
+      reachedStart: window.reachedStart || (newMessages.length <= 1 && direction === 'history'),
     });
 
     setMessages(_.uniqBy(newList, 'id'));
@@ -69,13 +71,13 @@ export const useThreadMessages = (
     offset?: string,
     options?: { ignoreStateUpdate?: boolean },
   ) => {
-    console.log('loadMoreloadMore', direction, limit, offset);
+    console.log('loadMoreloadMore', window, direction, limit, offset);
 
     await lock.acquireAsync();
     try {
       const window = getWindow();
 
-      if (window.reachedStart && direction === 'history') {
+      if (window.reachedStart && direction === 'history' && !(offset && offset !== window.start)) {
         lock.release();
         return [];
       }
@@ -85,7 +87,7 @@ export const useThreadMessages = (
         return [];
       }
 
-      limit = limit || 50;
+      limit = limit || 20;
       offset = offset !== undefined ? offset : direction === 'future' ? window.end : window.start;
       let newMessages = await MessageAPIClient.list(key.companyId, key.threadId, {
         direction,
@@ -121,7 +123,7 @@ export const useThreadMessages = (
       loaded: false,
     });
     lock.release();
-    setMessages([]);
+    setLoaded(false);
     let newMessages: NodeMessage[] = [];
     if (id) {
       newMessages = await loadMore('future', 20, id, { ignoreStateUpdate: true });

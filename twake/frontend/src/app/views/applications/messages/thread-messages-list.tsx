@@ -48,6 +48,7 @@ export default ({ companyId, threadId }: Props) => {
     limit?: number,
     offsetItem?: MessagesAndComponentsType,
   ) => {
+    console.log('loadMoremessages offset', offsetItem);
     let messages = await loadMore(direction, limit, offsetItem?.id);
     return withNonMessagesComponents(
       convertToKeys(companyId, messages),
@@ -60,7 +61,8 @@ export default ({ companyId, threadId }: Props) => {
     if (
       listBuilderRef.current &&
       highlight &&
-      !highlight.reached &&
+      highlight.reached &&
+      !highlight.reachedAnswer &&
       highlight.threadId === threadId
     ) {
       // Find the correct index of required message
@@ -102,6 +104,7 @@ export default ({ companyId, threadId }: Props) => {
         <ListBuilder
           key={threadId}
           refVirtuoso={listBuilderRef}
+          style={virtuosoLoading ? { opacity: 0 } : {}}
           onScroll={(e: any) => {
             const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
             const closeToBottom = scrollBottom < 100;

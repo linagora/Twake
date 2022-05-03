@@ -9,6 +9,7 @@ import Thread from '../parts/thread';
 import { useMessage } from 'app/features/messages/hooks/use-message';
 import ActivityMessage, { ActivityType } from './parts/ChannelActivity/ActivityMessage';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
+import { NodeMessage } from 'app/features/messages/types/message';
 
 export const MessageContext = React.createContext({ companyId: '', threadId: '', id: '' });
 
@@ -33,6 +34,9 @@ const MessageType = () => {
   const { highlight } = useHighlightMessage();
   const highlighted =
     (highlight && (highlight.threadId === context.id || highlight.id === context.id)) || false;
+  const [firstMessageId, setFirstMessageId] = useState(
+    message.last_replies[0]?.id || message.thread_id,
+  );
 
   if (message.subtype === 'system') {
     const activity = message?.context?.activity as ActivityType;
@@ -44,8 +48,17 @@ const MessageType = () => {
       <HeadMessage />
       {!listContext.hideReplies && (
         <>
-          <LoadMoreReplies />
-          <Responses companyId={context.companyId} threadId={context.threadId} />
+          <LoadMoreReplies
+            firstMessageId={firstMessageId}
+            onFirstMessageChanged={(firstMessage: NodeMessage) => {
+              if (firstMessage) setFirstMessageId(firstMessage.id);
+            }}
+          />
+          <Responses
+            companyId={context.companyId}
+            threadId={context.threadId}
+            firstMessageId={firstMessageId}
+          />
           <ReplyBlock />
         </>
       )}

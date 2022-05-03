@@ -47,13 +47,18 @@ export default React.memo(
     const [items, setItems] = useState(initialItems || []);
 
     const appendItems = useCallback(() => {
-      console.log('vir append items');
+      console.log('loadMore append items');
       if (appendMoreLock) return;
       appendMoreLock = true;
 
       setTimeout(async () => {
-        const newItems = await loadMore('future', 20, items[items.length - 1]);
-        const newList = _.uniqBy([...items, ...newItems], itemId);
+        const newItems = _.differenceBy(
+          await loadMore('future', 20, items[items.length - 1]),
+          items,
+          itemId,
+        );
+        console.log('newItems append received', newItems);
+        const newList = [...items, ...newItems];
         setItems(() => newList);
         appendMoreLock = false;
       }, 10);
@@ -62,12 +67,13 @@ export default React.memo(
     }, [firstItemIndex, items, setItems]);
 
     const prependItems = useCallback(() => {
-      console.log('vir prepend items');
+      console.log('loadMore prepend items', items);
       if (prependMoreLock) return;
       prependMoreLock = true;
 
       setTimeout(async () => {
-        const newItems = await loadMore('history', 20, items[0]);
+        const newItems = _.differenceBy(await loadMore('history', 20, items[0]), items, itemId);
+        console.log('newItems prepend received', newItems);
         const newList = _.uniqBy([...newItems, ...items], itemId);
         const nextFirstItemIndex = firstItemIndex - (newList.length - items.length);
         setFirstItemIndex(() => nextFirstItemIndex);
@@ -84,6 +90,7 @@ export default React.memo(
       <Virtuoso
         ref={virtuosoRef}
         style={style}
+        followOutput={'auto'}
         alignToBottom={true}
         firstItemIndex={firstItemIndex}
         initialTopMostItemIndex={INITIAL_ITEM_COUNT - 1}
