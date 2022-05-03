@@ -26,7 +26,7 @@ export default class KnowledgeGraphService
   protected kgAPIClient: KnowledgeGraphAPIClient = this.getKnowledgeGraphApiClient();
   logger: TwakeLogger = getLogger("knowledge-graph-service");
   configuration: TwakeServiceConfiguration = new Configuration("knowledge-graph");
-  companyIdx = this.configuration.get<string[]>("company_idx");
+  forwardedCompanies = this.configuration.get<string[]>("forwarded_companies");
 
   async doInit(): Promise<this> {
     const use = this.configuration.get<boolean>("use");
@@ -68,7 +68,7 @@ export default class KnowledgeGraphService
   async onCompanyCreated(data: KnowledgeGraphGenericEventPayload<Company>): Promise<void> {
     this.logger.info(`${KnowledgeGraphEvents.COMPANY_CREATED} %o`, data);
 
-    if (this.kgAPIClient && this.companyIdx.includes(data.resource.id)) {
+    if (this.kgAPIClient && this.forwardedCompanies.includes(data.resource.id)) {
       this.kgAPIClient.onCompanyCreated(data.resource);
     }
   }
@@ -76,7 +76,7 @@ export default class KnowledgeGraphService
   async onWorkspaceCreated(data: KnowledgeGraphGenericEventPayload<Workspace>): Promise<void> {
     this.logger.info(`${KnowledgeGraphEvents.WORKSPACE_CREATED} %o`, data);
 
-    if (this.kgAPIClient && this.companyIdx.includes(data.resource.company_id)) {
+    if (this.kgAPIClient && this.forwardedCompanies.includes(data.resource.company_id)) {
       this.kgAPIClient.onWorkspaceCreated(data.resource);
     }
   }
@@ -84,7 +84,7 @@ export default class KnowledgeGraphService
   async onChannelCreated(data: KnowledgeGraphGenericEventPayload<Channel>): Promise<void> {
     this.logger.info(`${KnowledgeGraphEvents.CHANNEL_CREATED} %o`, data);
 
-    if (this.kgAPIClient && this.companyIdx.includes(data.resource.company_id)) {
+    if (this.kgAPIClient && this.forwardedCompanies.includes(data.resource.company_id)) {
       this.kgAPIClient.onChannelCreated(data.resource);
     }
   }
@@ -92,7 +92,7 @@ export default class KnowledgeGraphService
   async onMessageCreated(data: KnowledgeGraphGenericEventPayload<Message>): Promise<void> {
     this.logger.debug(`${KnowledgeGraphEvents.MESSAGE_CREATED} %o`, data);
 
-    if (this.kgAPIClient && this.companyIdx.includes(data.resource.cache.company_id)) {
+    if (this.kgAPIClient && this.forwardedCompanies.includes(data.resource.cache.company_id)) {
       this.kgAPIClient.onMessageCreated(data.resource.cache.company_id, data.resource);
     }
   }
@@ -100,7 +100,7 @@ export default class KnowledgeGraphService
   async onUserCreated(data: KnowledgeGraphGenericEventPayload<User>): Promise<void> {
     this.logger.info(`${KnowledgeGraphEvents.USER_CREATED} %o`, data);
 
-    const companyId = data.resource.cache.companies.find(v => this.companyIdx.includes(v));
+    const companyId = data.resource.cache.companies.find(v => this.forwardedCompanies.includes(v));
 
     if (this.kgAPIClient && companyId) {
       this.kgAPIClient.onUserCreated(companyId, data.resource);
@@ -108,8 +108,7 @@ export default class KnowledgeGraphService
   }
 
   private getKnowledgeGraphApiClient(): KnowledgeGraphAPIClient {
-    const configuration = new Configuration("knowledge-graph");
-    const endpoint = configuration.get<string>("endpoint");
+    const endpoint = this.configuration.get<string>("endpoint");
 
     if (endpoint && endpoint.length) {
       this.kgAPIClient = new KnowledgeGraphAPIClient(endpoint);
