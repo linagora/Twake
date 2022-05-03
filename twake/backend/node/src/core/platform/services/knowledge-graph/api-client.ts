@@ -14,11 +14,13 @@ import Company from "../../../../services/user/entities/company";
 import User from "../../../../services/user/entities/user";
 import { Channel } from "../../../../services/channels/entities";
 import { Message } from "../../../../services/messages/entities/messages";
+import { getLogger, TwakeLogger } from "../../framework";
 
 export default class KnowledgeGraphAPIClient {
   protected readonly version = "1.0.0";
   protected readonly axiosInstance: AxiosInstance = axios.create();
   readonly apiUrl: string;
+  readonly logger: TwakeLogger = getLogger("knowledge-graph-api-client");
 
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl;
@@ -43,8 +45,8 @@ export default class KnowledgeGraphAPIClient {
     });
   }
 
-  public onWorkspaceCreated(workspace: Partial<Workspace>): void {
-    this.axiosInstance.post<
+  public async onWorkspaceCreated(workspace: Partial<Workspace>): Promise<void> {
+    const response = await this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateWorkspaceObjectData[]>
     >(`${this.apiUrl}/graph/create/workspace`, {
       records: [
@@ -61,36 +63,43 @@ export default class KnowledgeGraphAPIClient {
         },
       ],
     });
+
+    if (response.statusText === "OK") {
+      this.logger.info("onWorkspaceCreated %o", response.config.data);
+    }
   }
 
-  public onUserCreated(companyId: string, user: Partial<User>): void {
-    this.axiosInstance.post<KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateUserObjectData[]>>(
-      `${this.apiUrl}/graph/create/user`,
-      {
-        records: [
-          {
-            key: "null",
-            value: {
-              id: "User",
-              properties: {
-                user_id: user.id,
-                email: user.email_canonical,
-                username: user.username_canonical,
-                user_last_activity: user.last_activity.toLocaleString(),
-                first_name: user.first_name,
-                user_created_at: user.creation_date.toLocaleString(),
-                last_name: user.last_name,
-                company_id: companyId,
-              },
+  public async onUserCreated(companyId: string, user: Partial<User>): Promise<void> {
+    const response = await this.axiosInstance.post<
+      KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateUserObjectData[]>
+    >(`${this.apiUrl}/graph/create/user`, {
+      records: [
+        {
+          key: "null",
+          value: {
+            id: "User",
+            properties: {
+              user_id: user.id,
+              email: user.email_canonical,
+              username: user.username_canonical,
+              user_last_activity: user.last_activity.toLocaleString(),
+              first_name: user.first_name,
+              user_created_at: user.creation_date.toLocaleString(),
+              last_name: user.last_name,
+              company_id: companyId,
             },
           },
-        ],
-      },
-    );
+        },
+      ],
+    });
+
+    if (response.statusText === "OK") {
+      this.logger.info("onUserCreated %o", response.config.data);
+    }
   }
 
-  public onChannelCreated(channel: Partial<Channel>): void {
-    this.axiosInstance.post<
+  public async onChannelCreated(channel: Partial<Channel>): Promise<void> {
+    const response = await this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateChannelObjectData[]>
     >(`${this.apiUrl}/graph/create/channel`, {
       records: [
@@ -108,10 +117,14 @@ export default class KnowledgeGraphAPIClient {
         },
       ],
     });
+
+    if (response.statusText === "OK") {
+      this.logger.info("onChannelCreated %o", response.config.data);
+    }
   }
 
-  public onMessageCreated(channelId: string, message: Partial<Message>): void {
-    this.axiosInstance.post<
+  public async onMessageCreated(channelId: string, message: Partial<Message>): Promise<void> {
+    const response = await this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateMessageObjectData[]>
     >(`${this.apiUrl}/graph/create/message`, {
       records: [
@@ -132,5 +145,9 @@ export default class KnowledgeGraphAPIClient {
         },
       ],
     });
+
+    if (response.statusText === "OK") {
+      this.logger.info("onMessageCreated %o", response.config.data);
+    }
   }
 }
