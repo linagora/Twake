@@ -16,4 +16,4 @@ jobs:
       - name: integration-test-twake-instance
         run: cd twake && docker-compose -f docker-compose.dev.mongo.yml up -d
       - name: integration-test-run
-        run: cd twake && sleep 60 && docker-compose.dev.mongo.yml logs -f & docker run --network host -e SERVER=http://localhost:8000 integration-test
+        run: cd twake && sleep 60 && docker-compose.dev.mongo.yml logs -f & docker run --network host -e SERVER=http://localhost:3000 integration-test

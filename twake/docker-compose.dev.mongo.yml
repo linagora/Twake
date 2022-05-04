@@ -12,7 +12,6 @@ services:
     image: twaketech/twake-node
     ports:
       - 3000:3000
-      - 8000:3000
     environment:
       - DEV=dev
       - SEARCH_DRIVER=mongodb
