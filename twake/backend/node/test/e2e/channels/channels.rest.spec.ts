@@ -534,6 +534,9 @@ describe("The /internal/services/channels/v1 API", () => {
           { id: uuidv1() },
         ],
         creationResult.entity,
+        {
+          user: { id: platform.currentUser.id },
+        },
       );
 
       resource = await getChannelREST(channelId);

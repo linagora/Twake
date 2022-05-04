@@ -36,6 +36,11 @@ import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
 import { getDefaultMessageInstance } from "../../../utils/messages";
 import { buildMessageListPagination, getMentions } from "./utils";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
+import {
+  KnowledgeGraphGenericEventPayload,
+  KnowledgeGraphEvents,
+} from "../../../core/platform/services/knowledge-graph/types";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -157,6 +162,17 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     await this.onSaved(message, { created: messageCreated }, context);
+
+    if (messageCreated && context.channel) {
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<Message>>(
+        KnowledgeGraphEvents.MESSAGE_CREATED,
+        {
+          id: message.id,
+          resource: message,
+          links: [{ relation: "parent", type: "channel", id: context.channel.id }],
+        },
+      );
+    }
 
     return new SaveResult<Message>(
       "message",
