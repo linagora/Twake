@@ -1,3 +1,4 @@
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import useRouteState from 'app/features/router/hooks/use-route-state';
 import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -6,10 +7,6 @@ import { HighlightMessageState } from '../state/atoms/message-highlight';
 export const useHighlightMessage = () => {
   const [highlight, setHighlight] = useRecoilState(HighlightMessageState);
   const { threadId, messageId } = useRouteState();
-
-  useEffect(() => {
-    if (threadId) updateHighlight({ id: messageId || threadId, threadId });
-  }, [threadId, messageId]);
 
   const cancelHighlight = () => {
     if (highlight?.reached) {
@@ -30,6 +27,14 @@ export const useHighlightMessage = () => {
   const updateHighlight = (highlight: { id: string; threadId: string }) => {
     setHighlight({ ...highlight, reached: false, reachedAnswer: false });
   };
+
+  useGlobalEffect(
+    'useHighlightMessage',
+    () => {
+      if (threadId) updateHighlight({ id: messageId || threadId, threadId });
+    },
+    [threadId, messageId],
+  );
 
   return {
     highlight,
