@@ -163,7 +163,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     await this.onSaved(message, { created: messageCreated }, context);
 
-    if (messageCreated) {
+    if (messageCreated && context.channel) {
       localEventBus.publish<KnowledgeGraphGenericEventPayload<Message>>(
         KnowledgeGraphEvents.MESSAGE_CREATED,
         {

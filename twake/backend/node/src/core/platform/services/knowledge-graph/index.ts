@@ -1,11 +1,4 @@
-import {
-  Configuration,
-  Consumes,
-  getLogger,
-  TwakeLogger,
-  TwakeService,
-  TwakeServiceConfiguration,
-} from "../../framework";
+import { Configuration, Consumes, getLogger, TwakeLogger, TwakeService } from "../../framework";
 import { localEventBus } from "../../framework/pubsub";
 import KnowledgeGraphAPI from "./provider";
 import Workspace from "../../../../services/workspaces/entities/workspace";
@@ -25,11 +18,9 @@ export default class KnowledgeGraphService
   readonly version = "1.0.0";
   protected kgAPIClient: KnowledgeGraphAPIClient = this.getKnowledgeGraphApiClient();
   logger: TwakeLogger = getLogger("knowledge-graph-service");
-  configuration: TwakeServiceConfiguration = new Configuration("knowledge-graph");
-  forwardedCompanies = this.configuration.get<string[]>("forwarded_companies");
 
   async doInit(): Promise<this> {
-    const use = this.configuration.get<boolean>("use");
+    const use = this.getConfigurationEntry<boolean>("use");
 
     if (!use) {
       this.logger.warn("Knowledge graph is not used");
@@ -66,49 +57,78 @@ export default class KnowledgeGraphService
   }
 
   async onCompanyCreated(data: KnowledgeGraphGenericEventPayload<Company>): Promise<void> {
+    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
     this.logger.info(`${KnowledgeGraphEvents.COMPANY_CREATED} %o`, data);
 
-    if (this.kgAPIClient && this.forwardedCompanies.includes(data.resource.id)) {
+    if (
+      this.kgAPIClient &&
+      (forwardedCompanies.includes(data.resource.id) || forwardedCompanies.length === 0)
+    ) {
       this.kgAPIClient.onCompanyCreated(data.resource);
     }
   }
 
   async onWorkspaceCreated(data: KnowledgeGraphGenericEventPayload<Workspace>): Promise<void> {
+    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
     this.logger.info(`${KnowledgeGraphEvents.WORKSPACE_CREATED} %o`, data);
 
-    if (this.kgAPIClient && this.forwardedCompanies.includes(data.resource.company_id)) {
+    if (
+      this.kgAPIClient &&
+      (forwardedCompanies.includes(data.resource.company_id) || forwardedCompanies.length === 0)
+    ) {
       this.kgAPIClient.onWorkspaceCreated(data.resource);
     }
   }
 
   async onChannelCreated(data: KnowledgeGraphGenericEventPayload<Channel>): Promise<void> {
+    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
     this.logger.info(`${KnowledgeGraphEvents.CHANNEL_CREATED} %o`, data);
 
-    if (this.kgAPIClient && this.forwardedCompanies.includes(data.resource.company_id)) {
+    if (
+      this.kgAPIClient &&
+      (forwardedCompanies.includes(data.resource.company_id) || forwardedCompanies.length === 0)
+    ) {
       this.kgAPIClient.onChannelCreated(data.resource);
     }
   }
 
   async onMessageCreated(data: KnowledgeGraphGenericEventPayload<Message>): Promise<void> {
+    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
+    const sensitiveData = this.getConfigurationEntry<boolean>("sensitive_data");
+
     this.logger.debug(`${KnowledgeGraphEvents.MESSAGE_CREATED} %o`, data);
 
-    if (this.kgAPIClient && this.forwardedCompanies.includes(data.resource.cache.company_id)) {
-      this.kgAPIClient.onMessageCreated(data.resource.cache.company_id, data.resource);
+    if (
+      this.kgAPIClient &&
+      (forwardedCompanies.includes(data.resource.cache.company_id) ||
+        forwardedCompanies.length === 0)
+    ) {
+      this.kgAPIClient.onMessageCreated(
+        data.resource.cache.company_id,
+        data.resource,
+        sensitiveData,
+      );
     }
   }
 
   async onUserCreated(data: KnowledgeGraphGenericEventPayload<User>): Promise<void> {
+    const forwardedCompanies = this.getConfigurationEntry<string[]>("forwarded_companies");
     this.logger.info(`${KnowledgeGraphEvents.USER_CREATED} %o`, data);
 
-    const companyId = data.resource.cache.companies.find(v => this.forwardedCompanies.includes(v));
+    const companyId = data.resource.cache.companies.find(v => forwardedCompanies.includes(v));
 
-    if (this.kgAPIClient && companyId) {
+    if (this.kgAPIClient && (companyId || forwardedCompanies.length === 0)) {
       this.kgAPIClient.onUserCreated(companyId, data.resource);
     }
   }
 
+  private getConfigurationEntry<T>(key: string): T {
+    const configuration = new Configuration("knowledge-graph");
+    return configuration.get(key);
+  }
+
   private getKnowledgeGraphApiClient(): KnowledgeGraphAPIClient {
-    const endpoint = this.configuration.get<string>("endpoint");
+    const endpoint = this.getConfigurationEntry<string>("endpoint");
 
     if (endpoint && endpoint.length) {
       this.kgAPIClient = new KnowledgeGraphAPIClient(endpoint);

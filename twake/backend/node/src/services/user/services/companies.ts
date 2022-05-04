@@ -118,7 +118,7 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
       {
         id: result.entity.id,
         resource: result.entity,
-        links: [{ relation: "owner", type: "user", id: result.context.user.id }],
+        links: [{ relation: "owner", type: "user", id: result.context?.user.id }],
       },
     );
     return result.entity;

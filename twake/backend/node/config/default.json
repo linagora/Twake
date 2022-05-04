@@ -148,6 +148,7 @@
   "knowledge-graph": {
     "endpoint": "http://host-gateway:8888",
     "use": false,
+    "sensitive_data": false,
     "forwarded_companies": []
   },
   "services": [

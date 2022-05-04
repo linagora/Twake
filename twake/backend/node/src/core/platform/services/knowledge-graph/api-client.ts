@@ -123,7 +123,11 @@ export default class KnowledgeGraphAPIClient {
     }
   }
 
-  public async onMessageCreated(channelId: string, message: Partial<Message>): Promise<void> {
+  public async onMessageCreated(
+    channelId: string,
+    message: Partial<Message>,
+    sensitiveData: boolean,
+  ): Promise<void> {
     const response = await this.axiosInstance.post<
       KnowledgeGraphCreateBodyRequest<KnowledgeGraphCreateMessageObjectData[]>
     >(`${this.apiUrl}/graph/create/message`, {
@@ -135,7 +139,7 @@ export default class KnowledgeGraphAPIClient {
             properties: {
               message_thread_id: message.thread_id,
               message_created_at: message.created_at.toLocaleString(),
-              message_content: "secret", // For now we don't send private data
+              message_content: sensitiveData ? message.text : "secret",
               type_message: message.type,
               message_updated_at: message.updated_at.toLocaleString(),
               user_id: message.user_id,
