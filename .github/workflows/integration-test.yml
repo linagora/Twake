@@ -16,6 +16,6 @@ jobs:
       - name: run-twake-instance
         run: cd twake && docker-compose -f docker-compose.dev.mongo.yml run node yarn install --unsafe-perm && docker-compose -f docker-compose.dev.mongo.yml up -d && sleep 60
       - name: get-logs
-        run: cd twake && docker-compose -f docker-compose.dev.mongo.yml logs && curl https://localhost:3000
+        run: cd twake && docker-compose -f docker-compose.dev.mongo.yml logs && curl http://localhost:3000
       - name: run
         run: cd twake && docker run --network host -e SERVER=http://localhost:3000 integration-test
