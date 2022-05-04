@@ -35,7 +35,7 @@ const MessageType = () => {
   const highlighted =
     (highlight && (highlight.threadId === context.id || highlight.id === context.id)) || false;
   const [firstMessageId, setFirstMessageId] = useState(
-    message.last_replies[0]?.id || message.thread_id,
+    message.last_replies?.[0]?.id || message.thread_id,
   );
 
   if (message.subtype === 'system') {

@@ -157,14 +157,6 @@ export const useChannelMessages = (
             options?.onMessages(await loadMore('future'));
           }
         }
-
-        setMessage(message);
-        if (message.thread_id !== message.id) {
-          addToThread([message], {
-            threadId: message.thread_id,
-            atBottom: true,
-          });
-        }
       }
     },
   );

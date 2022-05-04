@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ListBuilder from './list-builder';
+import ListBuilder, { ListBuilderHandle } from './list-builder';
 import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
 import FirstThreadMessage from './message/parts/FirstMessage/FirstThreadMessage';
@@ -22,7 +22,7 @@ type Props = {
 };
 
 export default ({ companyId, threadId }: Props) => {
-  const listBuilderRef = useRef<VirtuosoHandle>(null);
+  const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
@@ -33,7 +33,7 @@ export default ({ companyId, threadId }: Props) => {
     },
     {
       onMessages: messages => {
-        console.log('vir new messages: ', messages);
+        if (window.reachedEnd) listBuilderRef.current?.append(messages);
       },
     },
   );
@@ -103,7 +103,7 @@ export default ({ companyId, threadId }: Props) => {
       {window.loaded && (
         <ListBuilder
           key={threadId}
-          refVirtuoso={listBuilderRef}
+          ref={listBuilderRef}
           style={virtuosoLoading ? { opacity: 0 } : {}}
           onScroll={(e: any) => {
             const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;

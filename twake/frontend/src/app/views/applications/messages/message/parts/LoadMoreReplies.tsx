@@ -20,16 +20,18 @@ export default (props: { firstMessageId: string; onFirstMessageChanged: Function
 
   return (
     <>
-      {!(window.reachedStart && window.start === props.firstMessageId) && window.end && (
-        <ThreadSection gradient>
-          <div className="message-content">
-            <span onClick={() => loadMoreMessages('history')} className="link">
-              {Languages.t('scenes.apps.messages.message.show_responses_button')} (
-              {Math.max(message.stats.replies, messages.length)})
-            </span>
-          </div>
-        </ThreadSection>
-      )}
+      {!(window.reachedStart && window.start === props.firstMessageId) &&
+        window.end &&
+        messages.length < message.stats.replies && (
+          <ThreadSection gradient>
+            <div className="message-content">
+              <span onClick={() => loadMoreMessages('history')} className="link">
+                {Languages.t('scenes.apps.messages.message.show_responses_button')} (
+                {Math.max(message.stats.replies, messages.length)})
+              </span>
+            </div>
+          </ThreadSection>
+        )}
     </>
   );
 };

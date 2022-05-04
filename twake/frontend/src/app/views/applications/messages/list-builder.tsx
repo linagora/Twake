@@ -1,15 +1,20 @@
-import React, { ReactNode, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  forwardRef,
+  ReactNode,
+  Suspense,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import { ItemContent, LogLevel, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
-import Logger from 'app/features/global/framework/logger-service';
 import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
 import _ from 'lodash';
 
-//@ts-ignore
-globalThis.VIRTUOSO_LOG_LEVEL = LogLevel.DEBUG;
-
-const logger = Logger.getLogger(`ListBuilder`);
-const START_INDEX = 1000000;
-const IDENTIFIER = 'threadId';
+export type ListBuilderHandle = VirtuosoHandle & {
+  append: (messages: any[]) => void;
+};
 
 type Props = {
   initialItems: any[];
@@ -20,7 +25,6 @@ type Props = {
   atBottomStateChange?: (atBottom: boolean) => void;
   window: WindowType;
   onScroll: Function;
-  refVirtuoso: React.Ref<VirtuosoHandle>;
   style?: any;
 };
 
@@ -28,80 +32,100 @@ let prependMoreLock = false;
 let appendMoreLock = false;
 
 export default React.memo(
-  ({
-    refVirtuoso: virtuosoRef,
-    emptyListComponent,
-    itemId,
-    loadMore,
-    onScroll,
-    initialItems,
-    itemContent,
-    atBottomStateChange,
-    window,
-    style,
-  }: Props) => {
-    const START_INDEX = 10000000;
-    const INITIAL_ITEM_COUNT = (initialItems || []).length;
+  forwardRef(
+    (
+      {
+        emptyListComponent,
+        itemId,
+        loadMore,
+        onScroll,
+        initialItems,
+        itemContent,
+        atBottomStateChange,
+        window,
+        style,
+      }: Props,
+      ref,
+    ) => {
+      const START_INDEX = 10000000;
+      const INITIAL_ITEM_COUNT = (initialItems || []).length;
 
-    const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
-    const [items, setItems] = useState(initialItems || []);
+      const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
+      const [items, setItems] = useState(initialItems || []);
+      const refVirtuoso = useRef<VirtuosoHandle>(null);
 
-    const appendItems = useCallback(() => {
-      console.log('loadMore append items');
-      if (appendMoreLock) return;
-      appendMoreLock = true;
+      useImperativeHandle(
+        ref,
+        () =>
+          ({
+            ...refVirtuoso.current,
+            append(messages: any[]) {
+              console.log('append from parent', messages);
+              const newItems = _.differenceBy(messages, items, itemId);
+              console.log('newItems transactional append received', newItems);
+              const newList = [...items, ...newItems];
+              setItems(() => newList);
+            },
+          } as ListBuilderHandle),
+      );
 
-      setTimeout(async () => {
-        const newItems = _.differenceBy(
-          await loadMore('future', 20, items[items.length - 1]),
-          items,
-          itemId,
-        );
-        console.log('newItems append received', newItems);
-        const newList = [...items, ...newItems];
-        setItems(() => newList);
-        appendMoreLock = false;
-      }, 10);
+      const appendItems = useCallback(() => {
+        console.log('loadMore append items');
+        if (appendMoreLock) return;
+        appendMoreLock = true;
 
-      return false;
-    }, [firstItemIndex, items, setItems]);
+        setTimeout(async () => {
+          const newItems = _.differenceBy(
+            await loadMore('future', 20, items[items.length - 1]),
+            items,
+            itemId,
+          );
+          console.log('newItems append received', newItems);
+          const newList = [...items, ...newItems];
+          setItems(() => newList);
+          appendMoreLock = false;
+        }, 10);
 
-    const prependItems = useCallback(() => {
-      console.log('loadMore prepend items', items);
-      if (prependMoreLock) return;
-      prependMoreLock = true;
+        return false;
+      }, [firstItemIndex, items, setItems]);
 
-      setTimeout(async () => {
-        const newItems = _.differenceBy(await loadMore('history', 20, items[0]), items, itemId);
-        console.log('newItems prepend received', newItems);
-        const newList = _.uniqBy([...newItems, ...items], itemId);
-        const nextFirstItemIndex = firstItemIndex - (newList.length - items.length);
-        setFirstItemIndex(() => nextFirstItemIndex);
-        setItems(() => newList);
-        prependMoreLock = false;
-      }, 10);
+      const prependItems = useCallback(() => {
+        console.log('loadMore prepend items', items);
+        if (prependMoreLock) return;
+        prependMoreLock = true;
 
-      return false;
-    }, [firstItemIndex, items, setItems]);
+        setTimeout(async () => {
+          const newItems = _.differenceBy(await loadMore('history', 20, items[0]), items, itemId);
+          console.log('newItems prepend received', newItems);
+          const newList = _.uniqBy([...newItems, ...items], itemId);
+          const nextFirstItemIndex = firstItemIndex - (newList.length - items.length);
+          setFirstItemIndex(() => nextFirstItemIndex);
+          setItems(() => newList);
+          prependMoreLock = false;
+        }, 10);
 
-    console.log('vir items:', items);
+        return false;
+      }, [firstItemIndex, items, setItems]);
 
-    return (
-      <Virtuoso
-        ref={virtuosoRef}
-        style={style}
-        followOutput={'auto'}
-        alignToBottom={true}
-        firstItemIndex={firstItemIndex}
-        initialTopMostItemIndex={INITIAL_ITEM_COUNT - 1}
-        data={items}
-        startReached={prependItems}
-        endReached={appendItems}
-        itemContent={itemContent}
-        onScroll={e => onScroll(e)}
-        atBottomStateChange={atBottomStateChange}
-        computeItemKey={(_index, item) => itemId(item)}
-      />
-    );
-  },
+      console.log('vir items:', items);
+
+      return (
+        <Virtuoso
+          ref={refVirtuoso}
+          style={style}
+          followOutput={'smooth'}
+          alignToBottom={true}
+          firstItemIndex={firstItemIndex}
+          initialTopMostItemIndex={INITIAL_ITEM_COUNT - 1}
+          data={items}
+          startReached={prependItems}
+          endReached={appendItems}
+          itemContent={itemContent}
+          onScroll={e => onScroll(e)}
+          atBottomStateChange={atBottomStateChange}
+          computeItemKey={(_index, item) => itemId(item)}
+        />
+      );
+    },
+  ),
 );

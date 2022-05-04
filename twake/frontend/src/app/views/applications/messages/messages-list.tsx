@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useChannelMessages } from 'app/features/messages/hooks/use-channel-messages';
-import ListBuilder from './list-builder';
+import ListBuilder, { ListBuilderHandle } from './list-builder';
 import TimeSeparator from './message/time-separator';
 import MessageWithReplies from './message/message-with-replies';
 import FirstMessage from './message/parts/FirstMessage/FirstMessage';
@@ -30,7 +30,7 @@ type Props = {
 export const MessagesListContext = React.createContext({ hideReplies: false, withBlock: false });
 
 export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
-  const listBuilderRef = useRef<VirtuosoHandle>(null);
+  const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
 
   let { messages, loadMore, window, jumpTo, convertToKeys } = useChannelMessages(
@@ -41,7 +41,10 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     },
     {
       onMessages: messages => {
-        console.log('vir new messages: ', messages);
+        if (window.reachedEnd)
+          listBuilderRef.current?.append(
+            withNonMessagesComponents(convertToKeys(company.id, messages)),
+          );
       },
     },
   );
@@ -161,7 +164,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
       {!window.loaded && <div style={{ flex: 1 }}></div>}
       {window.loaded && (
         <ListBuilder
-          refVirtuoso={listBuilderRef}
+          ref={listBuilderRef}
           style={virtuosoLoading ? { opacity: 0 } : {}}
           onScroll={(e: any) => {
             const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
