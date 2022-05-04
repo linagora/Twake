@@ -62,7 +62,7 @@ FROM production as development
 ENV NODE_ENV=development
 RUN npm install -g pino-pretty
 RUN npm install -g tsc-watch
-RUN npm install
+RUN yarn install
 RUN ls
 RUN ls node_modules
 
