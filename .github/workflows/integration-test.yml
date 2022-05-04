@@ -11,9 +11,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: integration-test-build
+      - name: build
         run: cd twake && docker build -t integration-test -f docker/integration-test/Dockerfile .
-      - name: integration-test-twake-instance
+      - name: run-twake-instance
         run: cd twake && docker-compose -f docker-compose.dev.mongo.yml up -d && sleep 60
-      - name: integration-test-run
-        run: cd twake && docker-compose.dev.mongo.yml logs && curl https://localhost:3000 && docker run --network host -e SERVER=http://localhost:3000 integration-test
+      - name: get-logs
+        run: cd twake && docker-compose -f docker-compose.dev.mongo.yml logs && curl https://localhost:3000
+      - name: run
+        run: cd twake && docker run --network host -e SERVER=http://localhost:3000 integration-test
