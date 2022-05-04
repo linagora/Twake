@@ -44,6 +44,7 @@ export class ConsoleServiceImpl implements ConsoleServiceAPI {
     };
 
     this.consoleOptions.type = type;
+    this.consoleType = type;
 
     return this;
   }

@@ -15,42 +15,42 @@ export type Block = { block_id?: string } & (
   | BlockTwacode
 );
 
-type BlockTwacode = {
+export type BlockTwacode = {
   type: "twacode";
   elements: any;
 };
 
-type BlockActions = {
+export type BlockActions = {
   type: "actions";
   elements: BlockElement[];
 };
 
-type BlockContext = {
+export type BlockContext = {
   type: "context";
-  elements: (BlockElementImage | CompositionTextObject)[];
+  elements: (BlockElementImage | CompositionTextObject | BlockElementProgressBar)[];
 };
 
-type BlockHeader = {
+export type BlockHeader = {
   type: "header";
   text: CompositionPlainTextObject;
 };
 
-type BlockDivider = {
+export type BlockDivider = {
   type: "divider";
 };
 
-type BlockFile = {
+export type BlockFile = {
   type: "file";
   external_id: string;
   source: string;
   metadata?: MessageFileMetadata;
 };
 
-type BlockImage = BlockElementImage & {
+export type BlockImage = BlockElementImage & {
   title?: CompositionPlainTextObject;
 };
 
-type BlockInput = {
+export type BlockInput = {
   type: "input";
   label: string;
   element: BlockElement;
@@ -59,14 +59,14 @@ type BlockInput = {
   optional?: boolean;
 };
 
-type BlockSection = {
+export type BlockSection = {
   type: "section";
   text?: CompositionTextObject;
   fields?: CompositionTextObject[];
   accessory?: BlockElement;
 };
 
-type BlockIframe = {
+export type BlockIframe = {
   type: "iframe";
   iframe_url: string;
   width: number;
@@ -77,6 +77,7 @@ type BlockIframe = {
 
 export type BlockElement =
   | BlockElementImage
+  | BlockElementProgressBar
   | BlockElementButton
   | BlockElementCheckboxes
   | BlockElementDatePicker
@@ -87,14 +88,21 @@ export type BlockElement =
   | BlockElementOverflowMenus
   | BlockElementTimePicker;
 
-type BlockElementImage = {
+export type BlockElementImage = {
   type: "image";
   image_url: string;
   alt_text: string;
+  title?: any;
   metadata?: MessageFileMetadata;
 };
 
-type BlockElementButton = {
+export type BlockElementProgressBar = {
+  type: "progress_bar";
+  value: number; //Between 0 and 100
+  title: string;
+};
+
+export type BlockElementButton = {
   type: "button";
   text: CompositionPlainTextObject;
   action_id: string;
@@ -104,7 +112,7 @@ type BlockElementButton = {
   confirm?: CompositionConfirmationDialog;
 };
 
-type BlockElementCheckboxes = {
+export type BlockElementCheckboxes = {
   type: "checkboxes";
   action_id: string;
   options: CompositionOption[];
@@ -121,9 +129,11 @@ type BlockElementPlaintextInput = {
   min_length?: number;
   max_length?: number;
   dispatch_action_config?: DispatchActionConfiguration;
+  readonly?: boolean;
+  copiable?: boolean;
 };
 
-type BlockElementRadioButtonInput = {
+export type BlockElementRadioButtonInput = {
   type: "radio_buttons";
   action_id: string;
   options: CompositionOption[];
@@ -131,7 +141,7 @@ type BlockElementRadioButtonInput = {
   confirm?: CompositionConfirmationDialog;
 };
 
-type BlockElementDatePicker = {
+export type BlockElementDatePicker = {
   type: "datepicker";
   action_id: string;
   placeholder?: CompositionPlainTextObject;
@@ -139,7 +149,7 @@ type BlockElementDatePicker = {
   confirm?: CompositionConfirmationDialog;
 };
 
-type BlockElementTimePicker = {
+export type BlockElementTimePicker = {
   type: "timepicker";
   action_id: string;
   placeholder?: CompositionPlainTextObject;
@@ -147,19 +157,19 @@ type BlockElementTimePicker = {
   confirm?: CompositionConfirmationDialog;
 };
 
-type BlockElementOverflowMenus = {
+export type BlockElementOverflowMenus = {
   type: "overflow";
   action_id: string;
   options: CompositionOption[];
   confirm?: CompositionConfirmationDialog;
 };
 
-type BlockElementSelectMenus = {
+export type BlockElementSelectMenus = {
   type: "";
 }; //TODO
 
-type BlockElementMultiselectMenu = {
-  type: "";
+export type BlockElementMultiselectMenu = {
+  type: any;
 }; //TODO
 
 /* Composition objects */
@@ -169,6 +179,8 @@ type CompositionTextObject = CompositionPlainTextObject | CompositionMarkdownTex
 type CompositionPlainTextObject = {
   type: "plain_text";
   text: string;
+  emoji?: boolean;
+  verbatim?: boolean;
 };
 
 type CompositionMarkdownTextObject = {
