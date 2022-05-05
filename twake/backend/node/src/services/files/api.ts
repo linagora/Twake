@@ -4,7 +4,11 @@ import { Initializable, TwakeServiceProvider } from "../../core/platform/framewo
 import { CompanyExecutionContext } from "./web/types";
 import { File } from "./entities/file";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
-import { DeleteResult } from "../../core/platform/framework/api/crud-service";
+import {
+  DeleteResult,
+  ListResult,
+  Pagination,
+} from "../../core/platform/framework/api/crud-service";
 
 export type UploadOptions = {
   filename: string;
@@ -76,6 +80,12 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
 
   getThumbnailRoute(file: File, index: string): string;
   getDownloadRoute(file: File): string;
+
+  listUserUploadedFiles(
+    userId: string,
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<File>>;
 }
 
 export interface FilePubsubHandler<InputMessage, OutputMessage>
