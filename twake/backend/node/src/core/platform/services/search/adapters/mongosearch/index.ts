@@ -163,6 +163,9 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
 
   private async proceed(operation: Operation) {
     const collection = this.mongodb.collection(`${searchPrefix}${operation.index}`);
+    logger.info(
+      `Process all buffered operations on searchable entity ${searchPrefix}${operation.index}`,
+    );
     if (operation.action === "remove") {
       await collection.deleteOne({ _docId: operation.id });
     }
@@ -182,10 +185,14 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
     options: FindOptions = {},
   ) {
     const instance = new (entityType as any)();
-    const { entityDefinition } = getEntityDefinition(instance);
+    const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
     const index = this.getIndex(entityDefinition);
 
+    await this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
+
     const collection = this.mongodb.collection(`${searchPrefix}${index}`);
+
+    logger.info(`Run search on entity ${searchPrefix}${index}`);
 
     const { query, sort, project } = buildSearchQuery<EntityType>(entityType, filters, options);
 
