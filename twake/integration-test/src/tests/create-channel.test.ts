@@ -4,7 +4,9 @@ import config from "../config";
 
 import { createChannel } from "../steps/create-channel";
 
-describe("Sign in", () => {
+import { createSomeFakeUsers } from "../utils/create-some-fake-users";
+
+describe("Create channel", () => {
   it("should be defined after creating a channel", async () => {
     const { headless, slowMo, executablePath, args } = config;
     const browser = await puppeteer.launch({
@@ -17,7 +19,7 @@ describe("Sign in", () => {
     const page = await createChannel(
       config.twake_url,
       browser,
-      config.accounts_for_login[0],
+      createSomeFakeUsers(1)[0],
       {
         withConsole: config.console,
       }

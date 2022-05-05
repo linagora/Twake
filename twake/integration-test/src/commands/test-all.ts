@@ -25,7 +25,7 @@ async function init() {
       withConsole: config.console,
     }),
 
-    createChannel(config.twake_url, browser, config.accounts_for_login[0], {
+    createChannel(config.twake_url, browser, undefined, {
       withConsole: config.console,
     }),
     // Do other tests here

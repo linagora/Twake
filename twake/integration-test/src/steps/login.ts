@@ -7,7 +7,7 @@ const loginButtonSelector = { console: "#sign_in_button", local: "#login_btn" };
 export async function login(
   url: string,
   browser: Browser,
-  credentials: { username: string; password: string },
+  credentials: { email: string; password: string },
   opts: { withConsole: boolean } = { withConsole: false }
 ): Promise<Page> {
   const context = await browser.createIncognitoBrowserContext();
@@ -28,7 +28,7 @@ export async function login(
         ? usernameInputSelector.console
         : usernameInputSelector.local
     ),
-    await page.keyboard.type(credentials.username ?? ""),
+    await page.keyboard.type(credentials.email ?? ""),
 
     // Password
     await page.waitForSelector(

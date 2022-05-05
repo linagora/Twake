@@ -19,5 +19,5 @@ jobs:
         run: cd twake && docker-compose -f docker-compose.onpremise.mongo.yml up -d && sleep 60
       - name: get-logs
         run: cd twake && docker-compose -f docker-compose.onpremise.mongo.yml logs && curl http://localhost:3000
-      - name: run
+      - name: run integration-test
         run: cd twake && docker run --network host -e SERVER=http://localhost:3000 integration-test

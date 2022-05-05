@@ -4,7 +4,7 @@
   "repository": "https://github.com/Twake/Twake",
   "license": "AGPL-3.0",
   "scripts": {
-    "test:all": "curl $SERVER && jest --detectOpenHandles",
+    "test:all": "curl $SERVER && jest --detectOpenHandles --forceExit --coverage --runInBand --verbose false",
     "test:login": "tsc && node ./dist/commands/test-login.js",
     "test:signin": "tsc && node ./dist/commands/test-signin.js",
     "test:create-channel": "tsc && node ./dist/commands/test-create-channel.js"

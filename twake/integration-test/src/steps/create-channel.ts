@@ -2,7 +2,7 @@ import { Browser, Page } from "puppeteer";
 
 import config from "../config";
 
-import { login } from "./login";
+import { signIn } from "./signin";
 
 const popupSelector = "div.ant-modal-wrap.ant-modal-centered";
 const hamburgerIconBtnSelector = "span.ant-layout-sider-zero-width-trigger";
@@ -22,22 +22,31 @@ const createButtonSelector =
 export async function createChannel(
   url: string,
   browser: Browser,
-  credentials: { username: string; password: string },
-  _opts: { withConsole: boolean } = { withConsole: false }
+  credentials: { email: string; password: string },
+  opts: { withConsole: boolean } = { withConsole: false }
 ): Promise<Page> {
-  const page = await login(url, browser, credentials, _opts);
+  const page = await signIn(url, browser, credentials, {
+    withConsole: opts.withConsole,
+  });
+
+  await page.setViewport({ width: 1920, height: 1080 });
+
+  // TODO: REMOVE THIS WHEN THE PAGE SIZE IS FIXED
+  console.log("this is the page size", page.viewport());
 
   await Promise.all([
-    // Click on the hamburger icon
-    await page.waitForSelector(hamburgerIconBtnSelector),
-    await page.click(hamburgerIconBtnSelector),
+    // Click on the hamburger icon (depend the screensize)
+    //await page.waitForSelector(hamburgerIconBtnSelector),
+    //await page.click(hamburgerIconBtnSelector),
 
     // Click on the plus icon
     await page.waitForSelector(plusIconBtnSelector),
+    await page.hover(plusIconBtnSelector),
     await page.click(plusIconBtnSelector),
 
     // Click on the create channel menu item
     await page.waitForSelector(createChannelMenuItemSelector),
+    await page.hover(createChannelMenuItemSelector),
     await page.click(createChannelMenuItemSelector),
 
     // Wait for the popup to appear
