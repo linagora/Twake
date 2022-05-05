@@ -53,7 +53,7 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       return;
     }
 
-    logger.info(`${this.name} - Start compute index ${entityDefinition}`);
+    logger.info(`${this.name} - Start compute index ${JSON.stringify(entityDefinition)}`);
 
     const index = this.getIndex(entityDefinition);
     const collection = this.mongodb.collection(`${searchPrefix}${index}`);
@@ -75,7 +75,9 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
     }
 
     logger.info(
-      `${this.name} - Create indexes ${indexedFields} for ${entityDefinition.name} (${searchPrefix}${index})`,
+      `${this.name} - Create indexes ${JSON.stringify(indexedFields)} for ${
+        entityDefinition.name
+      } (${searchPrefix}${index})`,
     );
 
     //Create one index for each type of indexes ["text"]
