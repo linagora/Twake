@@ -295,7 +295,6 @@ export class FileServiceImpl implements FileServiceAPI {
         },
       )
       .then(a => {
-        // console.log(a);
         nextPage = a.nextPage;
         return a.getEntities();
       });
