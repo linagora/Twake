@@ -15,15 +15,10 @@ import AwaitLock from 'await-lock';
 
 const lock = new AwaitLock();
 
-export const useThreadMessages = (
-  key: AtomThreadKey,
-  options?: { onMessages: (msgs: NodeMessage[]) => void },
-) => {
+export const useThreadMessages = (key: AtomThreadKey) => {
   const { window, getWindow, isInWindow, setLoaded, setWindow, updateWindowFromIds } =
     getListWindow(key.threadId);
   let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
-
-  console.log('threadMessages', key, messages);
 
   if (messages.length > 0 && !window.loaded) setLoaded(true);
 
@@ -69,7 +64,7 @@ export const useThreadMessages = (
     direction: 'future' | 'history' = 'future',
     limit?: number,
     offset?: string,
-    options?: { ignoreStateUpdate?: boolean },
+    options?: { ignoreStateUpdate?: boolean; keepOffsetMessage?: boolean },
   ) => {
     console.log('loadMoreloadMore', window, direction, limit, offset);
 
@@ -96,13 +91,12 @@ export const useThreadMessages = (
       });
       setLoaded();
 
-      newMessages = newMessages.filter(
-        message => message.id !== message.thread_id && message.id !== offset,
-      );
+      if (!options?.keepOffsetMessage)
+        newMessages = newMessages.filter(
+          message => message.id !== message.thread_id && message.id !== offset,
+        );
 
-      if (!options?.ignoreStateUpdate) {
-        addMore(direction, newMessages);
-      }
+      if (!options?.ignoreStateUpdate) addMore(direction, newMessages);
 
       lock.release();
       return newMessages;
@@ -129,7 +123,7 @@ export const useThreadMessages = (
       newMessages = await loadMore('future', 20, id, { ignoreStateUpdate: true });
     }
     newMessages = [
-      ...(await loadMore('history', 20, id, { ignoreStateUpdate: true })),
+      ...(await loadMore('history', 20, id, { ignoreStateUpdate: true, keepOffsetMessage: true })),
       ...newMessages,
     ];
     addMore('replace', newMessages);

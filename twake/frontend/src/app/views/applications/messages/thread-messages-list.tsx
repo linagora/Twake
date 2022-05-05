@@ -26,17 +26,10 @@ export default ({ companyId, threadId }: Props) => {
   const [atBottom, setAtBottom] = useState(true);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
-  let { messages, loadMore, window, jumpTo, convertToKeys } = useThreadMessages(
-    {
-      companyId,
-      threadId: threadId || '',
-    },
-    {
-      onMessages: messages => {
-        if (window.reachedEnd) listBuilderRef.current?.append(messages);
-      },
-    },
-  );
+  let { messages, loadMore, window, jumpTo, convertToKeys } = useThreadMessages({
+    companyId,
+    threadId: threadId || '',
+  });
   messages = withNonMessagesComponents(messages, window.reachedStart);
 
   useEffect(() => {
@@ -61,15 +54,15 @@ export default ({ companyId, threadId }: Props) => {
     if (
       listBuilderRef.current &&
       highlight &&
-      highlight.reached &&
-      !highlight.reachedAnswer &&
-      highlight.threadId === threadId
+      highlight.answerId &&
+      highlight.reachedThread &&
+      !highlight.reachedAnswer
     ) {
       // Find the correct index of required message
-      const index = messages.findIndex(m => m.id === highlight.id);
+      const index = messages.findIndex(m => m.id === highlight.answerId);
       if (index < 0) {
         // Load the right portion of messages
-        jumpTo(highlight.id);
+        jumpTo(highlight.answerId);
         return;
       }
       setTimeout(() => {
@@ -78,7 +71,7 @@ export default ({ companyId, threadId }: Props) => {
             align: 'start',
             index: index,
           });
-        setTimeout(() => reachedHighlight(true), 1000);
+        setTimeout(() => reachedHighlight('answer'), 1000);
       }, 1000);
     }
   }, [highlight, messages.length]);
@@ -93,8 +86,7 @@ export default ({ companyId, threadId }: Props) => {
   };
 
   //This hide virtuoso but it start to work in backend
-  const virtuosoLoading =
-    highlight && highlight.threadId !== highlight.id && !highlight?.reachedAnswer;
+  const virtuosoLoading = highlight && highlight.answerId && !highlight?.reachedAnswer;
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: true, withBlock: false }}>
@@ -103,6 +95,7 @@ export default ({ companyId, threadId }: Props) => {
       {window.loaded && (
         <ListBuilder
           key={threadId}
+          followOutput={!!window.reachedEnd && 'smooth'}
           ref={listBuilderRef}
           style={virtuosoLoading ? { opacity: 0 } : {}}
           onScroll={(e: any) => {
@@ -111,9 +104,8 @@ export default ({ companyId, threadId }: Props) => {
             if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
             cancelHighlight();
           }}
-          initialItems={messages}
+          items={messages}
           itemId={m => m.type + m.id}
-          window={window}
           emptyListComponent={<FirstThreadMessage noReplies />}
           itemContent={(index, m) => {
             if (m.type === 'timeseparator') {

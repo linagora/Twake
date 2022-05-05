@@ -9,29 +9,30 @@ export const useHighlightMessage = () => {
   const { threadId, messageId } = useRouteState();
 
   const cancelHighlight = () => {
-    if (highlight?.reached) {
+    if (highlight?.reachedThread && (!highlight.answerId || highlight.reachedAnswer)) {
       setHighlight(null);
     }
   };
 
-  const reachedHighlight = (answer?: boolean) => {
+  const reachedHighlight = (type: 'thread' | 'answer' = 'thread') => {
     if (highlight) {
       setHighlight({
         ...highlight,
-        reached: answer === true ? false : true,
-        reachedAnswer: answer || false,
+        ...(type === 'thread' ? { reachedThread: true } : {}),
+        ...(type === 'answer' ? { reachedAnswer: true } : {}),
       });
     }
   };
 
-  const updateHighlight = (highlight: { id: string; threadId: string }) => {
-    setHighlight({ ...highlight, reached: false, reachedAnswer: false });
+  const updateHighlight = (highlight: { answerId: string | null; threadId: string }) => {
+    if (highlight.answerId === highlight.threadId) highlight.answerId = null;
+    setHighlight({ ...highlight, reachedThread: false, reachedAnswer: false });
   };
 
   useGlobalEffect(
     'useHighlightMessage',
     () => {
-      if (threadId) updateHighlight({ id: messageId || threadId, threadId });
+      if (threadId) updateHighlight({ answerId: messageId || null, threadId });
     },
     [threadId, messageId],
   );

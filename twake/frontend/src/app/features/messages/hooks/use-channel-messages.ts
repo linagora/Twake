@@ -19,10 +19,7 @@ import AwaitLock from 'await-lock';
 
 const lock = new AwaitLock();
 
-export const useChannelMessages = (
-  key: AtomChannelKey,
-  options?: { onMessages: (msgs: MessageWithReplies[]) => void },
-) => {
+export const useChannelMessages = (key: AtomChannelKey) => {
   const { window, isInWindow, setWindow, getWindow, setLoaded, updateWindowFromIds } =
     getListWindow(key.channelId);
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
@@ -65,6 +62,8 @@ export const useChannelMessages = (
       newList = newMessagesKeys;
     }
 
+    console.log('setWindow from addMore');
+
     setWindow({
       ...updateWindowFromIds(newList.map(message => message.threadId)),
       loaded: true,
@@ -79,18 +78,20 @@ export const useChannelMessages = (
     direction: 'future' | 'history' = 'future',
     limit?: number,
     offset?: string,
-    options?: { ignoreStateUpdate?: boolean },
+    options?: { ignoreStateUpdate?: boolean; keepOffsetMessage?: boolean },
   ): Promise<MessageWithReplies[]> => {
     await lock.acquireAsync();
     try {
       const window = getWindow();
 
-      if (window.reachedStart && direction === 'history') {
+      if (window.reachedStart && direction === 'history' && !options?.ignoreStateUpdate) {
+        console.log('Cancelled because reached start');
         lock.release();
         return [];
       }
 
-      if (offset && !isInWindow(offset)) {
+      if (offset && !isInWindow(offset) && !options?.ignoreStateUpdate) {
+        console.log('Cancelled because isInWindow', window);
         lock.release();
         return [];
       }
@@ -103,11 +104,14 @@ export const useChannelMessages = (
           pageToken: offset,
         })) || [];
 
-      messages = messages.filter(message => message.thread_id !== offset);
-
-      if (!options?.ignoreStateUpdate) {
-        addMore(direction, messages);
+      if (window.end !== getWindow().end || window.start !== getWindow().start) {
+        console.log('Cancelled because window changed');
+        lock.release();
       }
+
+      if (!options?.keepOffsetMessage)
+        messages = messages.filter(message => message.thread_id !== offset);
+      if (!options?.ignoreStateUpdate) addMore(direction, messages);
 
       lock.release();
       return messages;
@@ -127,17 +131,28 @@ export const useChannelMessages = (
       reachedEnd: false,
       loaded: false,
     });
-    lock.release();
+    console.log('before aroundoffset1', getWindow());
     setLoaded(false);
+    lock.release();
     let newMessages: MessageWithReplies[] = [];
+    console.log('before aroundoffset', getWindow());
     if (threadId) {
-      newMessages = await loadMore('future', 20, threadId, { ignoreStateUpdate: true });
+      newMessages = await loadMore('future', 20, threadId, {
+        ignoreStateUpdate: true,
+        keepOffsetMessage: true,
+      });
     }
     newMessages = [
-      ...(await loadMore('history', 20, threadId, { ignoreStateUpdate: true })),
+      ...(await loadMore('history', 20, threadId, {
+        ignoreStateUpdate: true,
+        keepOffsetMessage: true,
+      })),
       ...newMessages,
     ];
+    console.log('aroundoffset', getWindow(), threadId, newMessages);
     addMore('replace', newMessages);
+    setLoaded(false);
+    setLoaded(true);
   };
 
   useRealtimeRoom<MessageWithReplies>(
@@ -154,7 +169,7 @@ export const useChannelMessages = (
 
         if (action === 'created') {
           if (getWindow().reachedEnd) {
-            options?.onMessages(await loadMore('future'));
+            await loadMore('future');
           }
         }
       }

@@ -12,18 +12,16 @@ import { ItemContent, LogLevel, Virtuoso, VirtuosoHandle } from 'react-virtuoso'
 import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
 import _ from 'lodash';
 
-export type ListBuilderHandle = VirtuosoHandle & {
-  append: (messages: any[]) => void;
-};
+export type ListBuilderHandle = VirtuosoHandle & {};
 
 type Props = {
-  initialItems: any[];
+  items: any[];
+  followOutput: false | 'smooth' | 'auto';
   loadMore: (direction: 'history' | 'future', limit: number, offset?: any) => Promise<any[]>;
   itemContent: ItemContent<any, any>;
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
   atBottomStateChange?: (atBottom: boolean) => void;
-  window: WindowType;
   onScroll: Function;
   style?: any;
 };
@@ -36,38 +34,53 @@ export default React.memo(
     (
       {
         emptyListComponent,
+        followOutput,
         itemId,
         loadMore,
         onScroll,
-        initialItems,
+        items: _items,
         itemContent,
         atBottomStateChange,
-        window,
         style,
       }: Props,
       ref,
     ) => {
       const START_INDEX = 10000000;
-      const INITIAL_ITEM_COUNT = (initialItems || []).length;
+      const INITIAL_ITEM_COUNT = (_items || []).length;
 
       const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
-      const [items, setItems] = useState(initialItems || []);
+      const [items, setItems] = useState(_items || []);
       const refVirtuoso = useRef<VirtuosoHandle>(null);
 
-      useImperativeHandle(
-        ref,
-        () =>
-          ({
-            ...refVirtuoso.current,
-            append(messages: any[]) {
-              console.log('append from parent', messages);
-              const newItems = _.differenceBy(messages, items, itemId);
-              console.log('newItems transactional append received', newItems);
-              const newList = [...items, ...newItems];
-              setItems(() => newList);
-            },
-          } as ListBuilderHandle),
-      );
+      useImperativeHandle(ref, () => ({
+        ...refVirtuoso.current,
+      }));
+
+      useEffect(() => {
+        // Detect append or prepend or full replace items
+        const ids = items.map(i => itemId(i));
+        const first = _items.findIndex(i => ids.includes(itemId(i)));
+        const last =
+          _items.length -
+          1 -
+          _items.findIndex((_, i) => ids.includes(itemId(_items[_items.length - 1 - i])));
+        if (first == -1) {
+          //Replacement
+          setFirstItemIndex(START_INDEX);
+          setItems(_items);
+        } else if (first === 0 && last !== _items.length - 1) {
+          //Append
+          setItems([...items, ..._items.slice(last + 1)]);
+        } else if (last === _items.length - 1 && first !== 0) {
+          //Prepend
+          const newItems = _items.slice(0, first);
+          const nextFirstItemIndex = firstItemIndex - (newItems.length - items.length);
+          setFirstItemIndex(() => nextFirstItemIndex);
+          setItems([...newItems, ...items]);
+        } else {
+          //Nothing changed
+        }
+      }, [_items]);
 
       const appendItems = useCallback(() => {
         console.log('loadMore append items');
@@ -75,19 +88,12 @@ export default React.memo(
         appendMoreLock = true;
 
         setTimeout(async () => {
-          const newItems = _.differenceBy(
-            await loadMore('future', 20, items[items.length - 1]),
-            items,
-            itemId,
-          );
-          console.log('newItems append received', newItems);
-          const newList = [...items, ...newItems];
-          setItems(() => newList);
+          await loadMore('future', 20, items[items.length - 1]);
           appendMoreLock = false;
         }, 10);
 
         return false;
-      }, [firstItemIndex, items, setItems]);
+      }, [items]);
 
       const prependItems = useCallback(() => {
         console.log('loadMore prepend items', items);
@@ -95,25 +101,18 @@ export default React.memo(
         prependMoreLock = true;
 
         setTimeout(async () => {
-          const newItems = _.differenceBy(await loadMore('history', 20, items[0]), items, itemId);
-          console.log('newItems prepend received', newItems);
-          const newList = _.uniqBy([...newItems, ...items], itemId);
-          const nextFirstItemIndex = firstItemIndex - (newList.length - items.length);
-          setFirstItemIndex(() => nextFirstItemIndex);
-          setItems(() => newList);
+          await loadMore('history', 20, items[0]);
           prependMoreLock = false;
         }, 10);
 
         return false;
-      }, [firstItemIndex, items, setItems]);
-
-      console.log('vir items:', items);
+      }, [items]);
 
       return (
         <Virtuoso
           ref={refVirtuoso}
           style={style}
-          followOutput={'smooth'}
+          followOutput={followOutput}
           alignToBottom={true}
           firstItemIndex={firstItemIndex}
           initialTopMostItemIndex={INITIAL_ITEM_COUNT - 1}

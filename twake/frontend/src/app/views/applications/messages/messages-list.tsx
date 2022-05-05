@@ -33,21 +33,11 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
 
-  let { messages, loadMore, window, jumpTo, convertToKeys } = useChannelMessages(
-    {
-      companyId,
-      workspaceId: workspaceId || '',
-      channelId: channelId || '',
-    },
-    {
-      onMessages: messages => {
-        if (window.reachedEnd)
-          listBuilderRef.current?.append(
-            withNonMessagesComponents(convertToKeys(company.id, messages)),
-          );
-      },
-    },
-  );
+  let { messages, loadMore, window, jumpTo, convertToKeys } = useChannelMessages({
+    companyId,
+    workspaceId: workspaceId || '',
+    channelId: channelId || '',
+  });
   const { company } = useCurrentCompany();
   const shouldLimit = MessageHistoryService.shouldLimitMessages(
     company,
@@ -77,7 +67,17 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
   useEffect(() => {
     //Manage scroll to highlight
-    if (listBuilderRef.current && highlight && !highlight.reached) {
+    if (listBuilderRef.current && highlight && !highlight.reachedThread) {
+      if (highlight.answerId) {
+        SideViewService.select(channelId || '', {
+          app: { identity: { code: 'messages' } } as Application,
+          context: {
+            viewType: 'channel_thread',
+            threadId: highlight.threadId,
+          },
+        });
+      }
+
       // Find the correct index of required message
       const index = messages.findIndex(m => m.id === highlight.threadId);
       if (index < 0) {
@@ -91,17 +91,10 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
             align: 'start',
             index: index,
           });
-        reachedHighlight();
-
-        if (highlight.id !== highlight.threadId) {
-          SideViewService.select(channelId || '', {
-            app: { identity: { code: 'messages' } } as Application,
-            context: {
-              viewType: 'channel_thread',
-              threadId: highlight.threadId,
-            },
-          });
-        }
+        setTimeout(() => {
+          //Need to wait a bit for the scroll to ends
+          reachedHighlight('thread');
+        }, 1000);
       }, 1000);
     }
   }, [highlight, messages.length]);
@@ -156,7 +149,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   };
 
   //This hide virtuoso but it start to work in backend
-  const virtuosoLoading = highlight && !highlight?.reached;
+  const virtuosoLoading = highlight && !highlight?.reachedThread;
 
   return (
     <MessagesListContext.Provider value={{ hideReplies: false, withBlock: true }}>
@@ -172,11 +165,11 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
             if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
             cancelHighlight();
           }}
-          initialItems={messages}
+          items={messages}
           itemId={m => m.type + m.threadId}
           emptyListComponent={<FirstMessage />}
-          window={window}
           itemContent={row}
+          followOutput={!!window.reachedEnd && 'smooth'}
           loadMore={loadMoreMessages}
           atBottomStateChange={(atBottom: boolean) => {
             if (atBottom && window.reachedEnd) {

@@ -54,6 +54,7 @@ export const getListWindow = (key: string) => {
   };
 
   const setLoaded = (loaded: boolean = true) => {
+    const window = windows.get(key) as WindowType;
     windows.set(key, {
       ...window,
       loaded,

@@ -2,8 +2,8 @@ import { atom } from 'recoil';
 
 export type AtomHighlightKey = {
   threadId: string;
-  id: string;
-  reached: boolean;
+  answerId: string | null;
+  reachedThread: boolean;
   reachedAnswer: boolean;
 };
 
