@@ -14,7 +14,7 @@ jobs:
       - name: build
         run: cd twake && docker build -t integration-test -f docker/integration-test/Dockerfile .
       - name: build-node
-        run: cd twake && docker build -t twaketech/twake-node -f docker/twake-node/Dockerfile
+        run: cd twake && docker build -t twaketech/twake-node -f docker/twake-node/Dockerfile .
       - name: run-twake-instance
         run: cd twake && docker-compose -f docker-compose.onpremise.mongo.yml up -d && sleep 60
       - name: get-logs
