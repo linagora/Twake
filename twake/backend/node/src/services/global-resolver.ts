@@ -73,6 +73,7 @@ import { ApplicationHooksService } from "./applications/services/hooks";
 import { OnlineServiceAPI } from "./online/api";
 import OnlineServiceImpl from "./online/service";
 import { PreviewEngine } from "./previews/services/engine";
+import KnowledgeGraphService from "../core/platform/services/knowledge-graph";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -124,6 +125,7 @@ type TwakeServices = {
   channelPendingEmail: ChannelPendingEmailService;
   tab: TabService;
   online: OnlineServiceAPI;
+  knowledgeGraph: KnowledgeGraphService;
 };
 
 class GlobalResolver {
@@ -200,6 +202,7 @@ class GlobalResolver {
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
       online: await new OnlineServiceImpl().init(),
+      knowledgeGraph: await new KnowledgeGraphService().init(),
     };
 
     Object.keys(this.services).forEach((key: keyof TwakeServices) => {

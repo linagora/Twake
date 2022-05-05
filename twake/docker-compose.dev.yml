@@ -11,17 +11,6 @@ services:
   rabbitmq:
     image: rabbitmq:3
 
-  plugins:
-    image: twaketech/twake-plugins
-    build:
-      context: .
-      dockerfile: ./docker/twake-plugins/Dockerfile
-      target: development
-    ports:
-      - 3100:3100
-    volumes:
-      - ./plugins:/usr/src/app
-
   node:
     image: twaketech/twake-node
     ports:
@@ -32,7 +21,6 @@ services:
       - DB_CASSANDRA_URI=scylladb:9042
       - DB_CASSANDRA_KEYSPACE=twake
       - PUBSUB_URLS=amqp://guest:guest@rabbitmq:5672
-      - PLUGINS_SERVER=plugins:3100
     build:
       context: .
       dockerfile: ./docker/twake-node/Dockerfile
@@ -46,6 +34,8 @@ services:
       - elasticsearch
     links:
       - scylladb
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   php:
     image: twaketech/twake-php
     environment:
