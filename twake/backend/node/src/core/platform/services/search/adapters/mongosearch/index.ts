@@ -188,11 +188,11 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
     const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
     const index = this.getIndex(entityDefinition);
 
+    logger.info(`Run search on entity ${searchPrefix}${index}`);
+
     await this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
 
     const collection = this.mongodb.collection(`${searchPrefix}${index}`);
-
-    logger.info(`Run search on entity ${searchPrefix}${index}`);
 
     const { query, sort, project } = buildSearchQuery<EntityType>(entityType, filters, options);
 
@@ -226,6 +226,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       entities.length === parseInt(options.pagination.limitStr) &&
       (parseInt(options.pagination.page_token) + 1).toString(10);
     const nextPage: Paginable = new Pagination(nextToken, options.pagination.limitStr || "100");
+
+    logger.info(`Found ${entities.length} results on entity ${searchPrefix}${index}`);
 
     return new ListResult(entityDefinition.type, entities, nextPage);
   }

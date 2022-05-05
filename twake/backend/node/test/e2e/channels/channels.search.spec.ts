@@ -123,7 +123,7 @@ describe("The /internal/services/channels/v1 API", () => {
         );
       }
 
-      await new Promise(r => setTimeout(() => r, 1000));
+      await new Promise(r => setTimeout(() => r(true), 1000));
 
       const jwtToken = await platform.auth.getJWTToken({ sub: newUser.id });
       const response = await platform.app.inject({
