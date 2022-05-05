@@ -13,9 +13,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: build
         run: cd twake && docker build -t integration-test -f docker/integration-test/Dockerfile .
+      - name: build-node
+        run: cd twake && docker build -t twaketech/twake-node -f docker/twake-node/Dockerfile
       - name: run-twake-instance
-        run: cd twake && docker-compose -f docker-compose.dev.mongo.yml run node yarn install --unsafe-perm && docker-compose -f docker-compose.dev.mongo.yml up -d && sleep 60
+        run: cd twake && docker-compose -f docker-compose.onpremise.mongo.yml up -d && sleep 60
       - name: get-logs
-        run: cd twake && docker-compose -f docker-compose.dev.mongo.yml logs && curl http://localhost:3000
+        run: cd twake && docker-compose -f docker-compose.onpremise.mongo.yml logs && curl http://localhost:3000
       - name: run
         run: cd twake && docker run --network host -e SERVER=http://localhost:3000 integration-test

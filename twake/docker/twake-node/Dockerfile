@@ -64,7 +64,7 @@ RUN npm install -g pino-pretty
 RUN npm install -g tsc-watch
 RUN yarn install
 RUN ls
-RUN ls node_modules
+RUN ls public
 
 CMD ["npm", "run", "dev"]
 
