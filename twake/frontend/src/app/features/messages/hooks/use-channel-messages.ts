@@ -23,6 +23,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   const { window, isInWindow, setWindow, getWindow, setLoaded, updateWindowFromIds } =
     getListWindow(key.channelId);
   const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
+  const addToChannel = useAddMessageToChannel(key);
   if (messages.length > 0 && !window.loaded) setLoaded(true);
 
   const setMessage = useSetMessage(key.companyId);
@@ -167,10 +168,16 @@ export const useChannelMessages = (key: AtomChannelKey) => {
         if (event?.user_id === LoginService.currentUserId && action === 'created')
           await new Promise(r => setTimeout(r, 1000));
 
-        if (action === 'created') {
-          if (getWindow().reachedEnd) {
-            await loadMore('future');
-          }
+        setMessage(message);
+        if (message.thread_id === message.id) {
+          addToChannel([message], {
+            atBottom: true,
+          });
+        } else {
+          addToThread([message], {
+            threadId: message.thread_id,
+            atBottom: true,
+          });
         }
       }
     },

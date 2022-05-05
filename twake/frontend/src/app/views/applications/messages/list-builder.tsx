@@ -74,7 +74,7 @@ export default React.memo(
         } else if (last === _items.length - 1 && first !== 0) {
           //Prepend
           const newItems = _items.slice(0, first);
-          const nextFirstItemIndex = firstItemIndex - (newItems.length - items.length);
+          const nextFirstItemIndex = firstItemIndex - newItems.length;
           setFirstItemIndex(() => nextFirstItemIndex);
           setItems([...newItems, ...items]);
         } else {
