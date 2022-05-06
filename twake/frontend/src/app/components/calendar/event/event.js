@@ -4,7 +4,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js
 import Icon from 'components/icon/icon.js';
 import CalendarService from 'app/deprecated/Apps/Calendar/Calendar.js';
 import Languages from 'app/features/global/services/languages-service';
-import UserListManager from 'components/user-list-manager/user-list-manager';
+import UserListManager from 'components/user-list-manager-depreciated/user-list-manager';
 
 import moment from 'moment';
 
