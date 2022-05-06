@@ -16,13 +16,14 @@ import {
   useRemoveFromWindowedList,
 } from './use-add-to-windowed-list';
 import AwaitLock from 'await-lock';
+import { cleanFrontMessagesFromListOfMessages } from './use-message-editor';
 
 const lock = new AwaitLock();
 
 export const useChannelMessages = (key: AtomChannelKey) => {
   const { window, isInWindow, setWindow, getWindow, setLoaded, updateWindowFromIds } =
     getListWindow(key.channelId);
-  const [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
+  let [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
   const addToChannel = useAddMessageToChannel(key);
   if (messages.length > 0 && !window.loaded) setLoaded(true);
 
@@ -41,7 +42,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     });
 
     newMessages?.forEach(m => {
-      addToThread(m.last_replies, {
+      addToThread([m, ...m.last_replies], {
         threadId: m.thread_id,
         atBottom: true,
         reachedStart: m.last_replies.length >= m.stats.replies,
@@ -182,6 +183,8 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       }
     },
   );
+
+  messages = cleanFrontMessagesFromListOfMessages(messages);
 
   return {
     messages,

@@ -11,6 +11,7 @@ import React, {
 import { ItemContent, LogLevel, Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { WindowType } from 'app/features/messages/hooks/use-add-to-windowed-list';
 import _ from 'lodash';
+import { getMessage } from 'app/features/messages/hooks/use-message';
 
 export type ListBuilderHandle = VirtuosoHandle & {};
 
@@ -21,9 +22,11 @@ type Props = {
   itemContent: ItemContent<any, any>;
   itemId: (item: any) => string;
   emptyListComponent: ReactNode;
-  atBottomStateChange?: (atBottom: boolean) => void;
   onScroll: Function;
   style?: any;
+  atBottomStateChange?: (atBottom: boolean) => void;
+  //Will be called just before to finish append messages for a final filtering
+  filterOnAppend?: (item: any[]) => any[];
 };
 
 let prependMoreLock = false;
@@ -34,6 +37,7 @@ export default React.memo(
     (
       {
         emptyListComponent,
+        filterOnAppend,
         followOutput,
         itemId,
         loadMore,
@@ -49,7 +53,7 @@ export default React.memo(
       const INITIAL_ITEM_COUNT = (_items || []).length;
 
       const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
-      const [items, setItems] = useState(_items || []);
+      let [items, setItems] = useState(_items || []);
       const refVirtuoso = useRef<VirtuosoHandle>(null);
 
       useImperativeHandle(ref, () => ({
@@ -70,7 +74,9 @@ export default React.memo(
           setItems(_items);
         } else if (first === 0 && last !== _items.length - 1) {
           //Append
-          setItems([...items, ..._items.slice(last + 1)]);
+          let newList = [...items, ..._items.slice(last + 1)];
+          if (filterOnAppend) newList = filterOnAppend(newList);
+          setItems(newList);
         } else if (last === _items.length - 1 && first !== 0) {
           //Prepend
           const newItems = _items.slice(0, first);

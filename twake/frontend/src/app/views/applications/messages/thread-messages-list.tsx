@@ -8,11 +8,12 @@ import { useThreadMessages } from 'app/features/messages/hooks/use-thread-messag
 import {
   MessagesAndComponentsType,
   withNonMessagesComponents,
-} from './with-non-messages-components';
+} from '../../../features/messages/hooks/with-non-messages-components';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
 import { VirtuosoHandle } from 'react-virtuoso';
 import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
+import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
 
 type Props = {
   companyId: string;
@@ -33,7 +34,7 @@ export default ({ companyId, threadId }: Props) => {
   messages = withNonMessagesComponents(messages, window.reachedStart);
 
   useEffect(() => {
-    if (messages.length === 0) loadMore('history');
+    loadMore('history');
   }, []);
 
   const loadMoreMessages = async (
@@ -107,6 +108,9 @@ export default ({ companyId, threadId }: Props) => {
           items={messages}
           itemId={m => m.type + m.id}
           emptyListComponent={<FirstThreadMessage noReplies />}
+          filterOnAppend={messages => {
+            return cleanFrontMessagesFromListOfMessages(messages);
+          }}
           itemContent={(index, m) => {
             if (m.type === 'timeseparator') {
               return (

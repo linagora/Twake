@@ -11,7 +11,7 @@ import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import {
   MessagesAndComponentsType,
   withNonMessagesComponents,
-} from './with-non-messages-components';
+} from '../../../features/messages/hooks/with-non-messages-components';
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
 import { VirtuosoHandle } from 'react-virtuoso';
 import SideViewService from 'app/features/router/services/side-view-service';
@@ -19,6 +19,7 @@ import { Application } from 'app/features/applications/types/application';
 import RouterServices from 'app/features/router/services/router-service';
 import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
+import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
 
 type Props = {
   companyId: string;
@@ -166,6 +167,9 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
             cancelHighlight();
           }}
           items={messages}
+          filterOnAppend={messages => {
+            return cleanFrontMessagesFromListOfMessages(messages);
+          }}
           itemId={m => m.type + m.threadId}
           emptyListComponent={<FirstMessage />}
           itemContent={row}

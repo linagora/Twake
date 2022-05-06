@@ -4,7 +4,7 @@ import Numbers from 'app/features/global/utils/Numbers';
 import _ from 'lodash';
 import { useRecoilState } from 'recoil';
 import { AtomMessageKey, AtomThreadKey, ThreadMessagesState } from '../state/atoms/messages';
-import { useSetMessage } from './use-message';
+import { getMessage, useSetMessage } from './use-message';
 import {
   AddToWindowOptions,
   getListWindow,
@@ -12,6 +12,7 @@ import {
   useRemoveFromWindowedList,
 } from './use-add-to-windowed-list';
 import AwaitLock from 'await-lock';
+import { cleanFrontMessagesFromListOfMessages } from './use-message-editor';
 
 const lock = new AwaitLock();
 
@@ -126,6 +127,8 @@ export const useThreadMessages = (key: AtomThreadKey) => {
     addMore('replace', newMessages);
   };
 
+  messages = cleanFrontMessagesFromListOfMessages(messages);
+
   return {
     messages,
     window,
@@ -138,7 +141,6 @@ export const useThreadMessages = (key: AtomThreadKey) => {
 export const useAddMessageToThread = (companyId: string) => {
   const updater = useAddToWindowedList(companyId);
   return (messages: NodeMessage[], options: AddToWindowOptions & { threadId: string }) => {
-    messages = messages.filter(m => m.id !== m.thread_id);
     const threadId = options?.threadId;
     const windowKey = threadId;
     const atom = ThreadMessagesState({

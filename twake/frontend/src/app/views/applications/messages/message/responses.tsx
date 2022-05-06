@@ -19,6 +19,7 @@ export default ({ threadId, companyId, firstMessageId }: Props) => {
     <>
       {messages
         .filter(m => !firstMessageId || Numbers.compareTimeuuid(m.id, firstMessageId) >= 0)
+        .filter(m => m.threadId !== m.id)
         .map(m => {
           return (
             <MessageContext.Provider key={m.id} value={{ ...m, id: m.id || '' }}>

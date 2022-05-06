@@ -154,7 +154,7 @@ export type NodeMessage = {
    * @type JSON
    * Hidden custom data for message
    */
-  context: any; //Hidden custom data for message
+  context: any & { _front_id: string }; //Hidden custom data for message
 
   /**
    * @type JSON
