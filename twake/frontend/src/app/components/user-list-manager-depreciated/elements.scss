@@ -1,0 +1,53 @@
+.user_bloc {
+  padding-top: 1px;
+  display: inline-block;
+  box-sizing: border-box;
+  color: #000;
+  height: 18px;
+  line-height: 16px;
+  font-size: 12px;
+  text-transform: capitalize;
+  border-radius: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+  &.mini {
+    padding-right: 0px;
+    margin-right: 0px;
+  }
+
+  .userimage {
+    width: 18px;
+    height: 18px;
+    margin-top: -1px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: top;
+    background: #eee;
+    margin-right: 5px;
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+.connexion_dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--border-radius-base);
+  background: #29ce42;
+  margin-right: 2px;
+  vertical-align: top;
+  position: relative;
+  top: 7px;
+  display: inline-block;
+  margin-left: 2px;
+
+  &.grey {
+    background: #ccc;
+  }
+
+  &.red {
+    background: #f00;
+  }
+}
