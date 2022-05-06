@@ -89,12 +89,9 @@ export const useThreadMessages = (key: AtomThreadKey) => {
         limit,
         pageToken: offset,
       });
-      setLoaded();
 
       if (!options?.keepOffsetMessage)
-        newMessages = newMessages.filter(
-          message => message.id !== message.thread_id && message.id !== offset,
-        );
+        newMessages = newMessages.filter(message => message.id !== offset);
 
       if (!options?.ignoreStateUpdate) addMore(direction, newMessages);
 
