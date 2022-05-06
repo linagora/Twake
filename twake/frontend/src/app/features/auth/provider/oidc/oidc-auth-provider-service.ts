@@ -79,6 +79,7 @@ export default class OIDCAuthProviderService
               'OIDC user loaded listener, error while getting the JWT from OIDC token',
               err,
             );
+            this.signinRedirect();
             // FIXME: Should we return?
             //return;
           }

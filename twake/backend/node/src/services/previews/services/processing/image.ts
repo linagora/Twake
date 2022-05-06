@@ -21,7 +21,7 @@ export async function generatePreview(
       const inputMetadata = await sharp(inputPath).metadata();
       const outputFormat = computeNewFormat(inputMetadata, options);
 
-      result = await sharp(inputPath).resize(outputFormat).toFile(outputPath);
+      result = await sharp(inputPath).rotate().resize(outputFormat).toFile(outputPath);
       output.push({
         path: outputPath,
         width: result.width,

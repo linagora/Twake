@@ -4,6 +4,7 @@ import MessageViewAPIClient from './message-view-api-client';
 import MessageThreadAPIClient from './message-thread-api-client';
 import Api from 'app/features/global/framework/api-service';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
+import Numbers from 'app/features/global/utils/Numbers';
 
 /**
  * This service is to get, update, create, list messages in a thread
@@ -32,7 +33,7 @@ class MessageAPIClient {
       `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages?limit=${limit}&include_users=1&page_token=${pageToken}&direction=${direction}`,
     );
     this.realtime.set(threadId, response.websockets);
-    return response.resources;
+    return (response.resources || []).sort((a, b) => Numbers.compareTimeuuid(a.id, b.id));
   }
 
   async get(companyId: string, threadId: string, messageId: string) {

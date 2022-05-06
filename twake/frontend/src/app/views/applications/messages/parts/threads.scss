@@ -51,8 +51,11 @@
   padding-bottom: 8px;
 
   &.highlighted {
-    background-color: var(--primary-background);
-    box-shadow: 0 0 0 8px var(--primary-background);
+    background-color: #fff892;
+    box-shadow: 0 0 0 8px #fff892;
+    .thread-section .message {
+      border-radius: var(--border-radius-base);
+    }
   }
   opacity: 1;
   transition: background-color 0.2s, box-shadow 0.2s;
