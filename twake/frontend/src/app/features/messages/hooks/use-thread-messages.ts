@@ -67,8 +67,6 @@ export const useThreadMessages = (key: AtomThreadKey) => {
     offset?: string,
     options?: { ignoreStateUpdate?: boolean; keepOffsetMessage?: boolean },
   ) => {
-    console.log('loadMoreloadMore', window, direction, limit, offset);
-
     await lock.acquireAsync();
     try {
       const window = getWindow();

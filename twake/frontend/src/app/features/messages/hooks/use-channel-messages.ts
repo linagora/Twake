@@ -64,8 +64,6 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       newList = newMessagesKeys;
     }
 
-    console.log('setWindow from addMore');
-
     setWindow({
       ...updateWindowFromIds(newList.map(message => message.threadId)),
       loaded: true,
@@ -87,13 +85,11 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       const window = getWindow();
 
       if (window.reachedStart && direction === 'history' && !options?.ignoreStateUpdate) {
-        console.log('Cancelled because reached start');
         lock.release();
         return [];
       }
 
       if (offset && !isInWindow(offset) && !options?.ignoreStateUpdate) {
-        console.log('Cancelled because isInWindow', window);
         lock.release();
         return [];
       }
@@ -107,7 +103,6 @@ export const useChannelMessages = (key: AtomChannelKey) => {
         })) || [];
 
       if (window.end !== getWindow().end || window.start !== getWindow().start) {
-        console.log('Cancelled because window changed');
         lock.release();
       }
 
@@ -133,11 +128,9 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       reachedEnd: false,
       loaded: false,
     });
-    console.log('before aroundoffset1', getWindow());
     setLoaded(false);
     lock.release();
     let newMessages: MessageWithReplies[] = [];
-    console.log('before aroundoffset', getWindow());
     if (threadId) {
       newMessages = await loadMore('future', 20, threadId, {
         ignoreStateUpdate: true,
@@ -151,7 +144,6 @@ export const useChannelMessages = (key: AtomChannelKey) => {
       })),
       ...newMessages,
     ];
-    console.log('aroundoffset', getWindow(), threadId, newMessages);
     addMore('replace', newMessages);
     setLoaded(false);
     setLoaded(true);

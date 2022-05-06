@@ -89,7 +89,6 @@ export default React.memo(
       }, [_items]);
 
       const appendItems = useCallback(() => {
-        console.log('loadMore append items');
         if (appendMoreLock) return;
         appendMoreLock = true;
 
@@ -102,7 +101,6 @@ export default React.memo(
       }, [items]);
 
       const prependItems = useCallback(() => {
-        console.log('loadMore prepend items', items);
         if (prependMoreLock) return;
         prependMoreLock = true;
 

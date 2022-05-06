@@ -42,7 +42,6 @@ export default ({ companyId, threadId }: Props) => {
     limit?: number,
     offsetItem?: MessagesAndComponentsType,
   ) => {
-    console.log('loadMoremessages offset', offsetItem);
     let messages = await loadMore(direction, limit, offsetItem?.id);
     return withNonMessagesComponents(
       convertToKeys(companyId, messages),
