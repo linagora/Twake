@@ -21,6 +21,7 @@ export async function signIn(
 ): Promise<Page> {
   const context = await browser.createIncognitoBrowserContext();
   const page = await context.newPage();
+  await page.setViewport({ width: 1920, height: 1080 });
 
   await Promise.all([
     // Click on the sign in button

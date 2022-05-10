@@ -6,7 +6,8 @@ import { signIn } from "./signin";
 
 const popupSelector = "div.ant-modal-wrap.ant-modal-centered";
 const hamburgerIconBtnSelector = "span.ant-layout-sider-zero-width-trigger";
-const plusIconBtnSelector = "div.add.channel-menu";
+const plusIconBtnSelector =
+  "div.workspace_channels div.channel_category div.add";
 const createChannelMenuItemSelector = "div.menu.add-channel";
 const inputChannelNameSelector = 'input[placeholder="Channel name"]';
 const inputChannelDescriptionSelector =
@@ -28,10 +29,6 @@ export async function createChannel(
   const page = await signIn(url, browser, credentials, {
     withConsole: opts.withConsole,
   });
-
-  // TODO: REMOVE THIS WHEN THE PAGE SIZE IS FIXED
-  console.log("this is the page size", page.viewport());
-  console.log("this is the page url", page.url());
 
   await Promise.all([
     // Click on the hamburger icon (depend the screensize)
