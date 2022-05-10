@@ -31,6 +31,7 @@ export async function createChannel(
 
   // TODO: REMOVE THIS WHEN THE PAGE SIZE IS FIXED
   console.log("this is the page size", page.viewport());
+  console.log("this is the page url", page.url());
 
   const daa = await page.content();
   process.stdout.write(daa + "\n");
