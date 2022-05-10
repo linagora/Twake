@@ -12,6 +12,7 @@ import jwtPlugin from "../auth/web/jwt";
 import path from "path";
 import swaggerPlugin from "fastify-swagger";
 import { SkipCLI } from "../../framework/decorators/skip";
+import fs from "fs";
 // import { throws } from "assert";
 export default class WebServerService extends TwakeService<WebServerAPI> implements WebServerAPI {
   name = "webserver";
@@ -124,7 +125,10 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
             error: "Not found",
           });
         }
-        res.sendFile(root.replace(/\/$/, "") + "/index.html");
+
+        const path = root.replace(/\/$/, "") + "/index.html";
+        const stream = fs.createReadStream(path);
+        res.type("text/html").send(stream);
       });
 
       await this.server.listen(this.configuration.get<number>("port", 3000), "0.0.0.0");
