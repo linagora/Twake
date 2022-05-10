@@ -32,7 +32,8 @@ export async function createChannel(
   // TODO: REMOVE THIS WHEN THE PAGE SIZE IS FIXED
   console.log("this is the page size", page.viewport());
 
-  process.stdout.write(JSON.stringify(await page.content()) + "\n");
+  const daa = await page.content();
+  process.stdout.write(daa + "\n");
 
   await Promise.all([
     // Click on the hamburger icon (depend the screensize)
@@ -73,6 +74,8 @@ export async function createChannel(
     // Click the create button
     await page.waitForSelector(createButtonSelector),
     await page.click(createButtonSelector),
+
+    await page.waitForSelector(createButtonSelector),
   ]);
 
   return page;

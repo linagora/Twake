@@ -6,6 +6,7 @@ const lastNameInputSelector = { local: "#last_name_create" };
 const emailInputSelector = { local: "#email_create" };
 const passwordInputSelector = { local: "#password_create" };
 const signInContinueBtnSelector = { local: "#continue_btn" };
+const signedInSelector = { local: ".channels_view" };
 
 export async function signIn(
   url: string,
@@ -50,6 +51,8 @@ export async function signIn(
     // Continue
     await page.waitForSelector(signInContinueBtnSelector.local),
     await page.click(signInContinueBtnSelector.local),
+
+    await page.waitForSelector(signedInSelector.local),
   ]);
 
   return page;
