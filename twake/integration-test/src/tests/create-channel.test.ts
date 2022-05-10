@@ -9,6 +9,7 @@ import { createSomeFakeUsers } from "../utils/create-some-fake-users";
 describe("Create channel", () => {
   it("should be defined after creating a channel", async () => {
     const { headless, slowMo, executablePath, args } = config;
+    console.log(args);
     const browser = await puppeteer.launch({
       headless,
       slowMo,
