@@ -33,9 +33,6 @@ export async function createChannel(
   console.log("this is the page size", page.viewport());
   console.log("this is the page url", page.url());
 
-  const daa = await page.content();
-  process.stdout.write(daa + "\n");
-
   await Promise.all([
     // Click on the hamburger icon (depend the screensize)
     //await page.waitForSelector(hamburgerIconBtnSelector),
@@ -45,6 +42,11 @@ export async function createChannel(
     await page.waitForSelector(plusIconBtnSelector),
     await page.hover(plusIconBtnSelector),
     await page.click(plusIconBtnSelector),
+
+    await (async () => {
+      const daa = await page.content();
+      process.stdout.write(daa + "\n");
+    })(),
 
     // Click on the create channel menu item
     await page.waitForSelector(createChannelMenuItemSelector),
