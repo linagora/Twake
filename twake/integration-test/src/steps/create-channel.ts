@@ -29,10 +29,10 @@ export async function createChannel(
     withConsole: opts.withConsole,
   });
 
-  await page.setViewport({ width: 1920, height: 1080 });
-
   // TODO: REMOVE THIS WHEN THE PAGE SIZE IS FIXED
   console.log("this is the page size", page.viewport());
+
+  console.log(await page.content());
 
   await Promise.all([
     // Click on the hamburger icon (depend the screensize)
