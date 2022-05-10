@@ -6,7 +6,7 @@ import { signIn } from "./signin";
 
 const popupSelector = "div.ant-modal-wrap.ant-modal-centered";
 const hamburgerIconBtnSelector = "span.ant-layout-sider-zero-width-trigger";
-const plusIconBtnSelector = "i.icon-unicon.uil-plus.m-icon-small";
+const plusIconBtnSelector = "div.add.channel-menu";
 const createChannelMenuItemSelector = "div.menu.add-channel";
 const inputChannelNameSelector = 'input[placeholder="Channel name"]';
 const inputChannelDescriptionSelector =

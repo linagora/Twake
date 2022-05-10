@@ -54,7 +54,7 @@ export default (props: Props) => {
           AccessRightsService.hasLevel(workspaceId, 'member') &&
           AccessRightsService.getCompanyLevel(companyId) !== 'guest' && (
             <Menu
-              className="add"
+              className="add channel-menu"
               menu={[
                 {
                   type: 'menu',
