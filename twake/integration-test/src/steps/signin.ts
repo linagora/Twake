@@ -52,7 +52,7 @@ export async function signIn(
     await page.waitForSelector(signInContinueBtnSelector.local),
     await page.click(signInContinueBtnSelector.local),
 
-    await page.waitForSelector(signedInSelector.local),
+    await new Promise((resolve) => setTimeout(resolve, 5000)),
   ]);
 
   return page;
