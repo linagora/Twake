@@ -54,15 +54,19 @@ export default (props: Props) => {
           AccessRightsService.hasLevel(workspaceId, 'member') &&
           AccessRightsService.getCompanyLevel(companyId) !== 'guest' && (
             <Menu
-              className="add"
+              className="add channel-menu"
               menu={[
                 {
                   type: 'menu',
                   text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_1'),
+                  // Don't remove this className, we need it for integration tests
+                  className: 'add-channel',
                   onClick: () => addChannel(),
                 },
                 {
                   type: 'menu',
+                  // Don't remove this className, we need it for integration tests
+                  className: 'join-channel',
                   text: Languages.t('components.leftbar.channel.workspaceschannels.menu.option_2'),
                   onClick: () => joinChannel(),
                 },
