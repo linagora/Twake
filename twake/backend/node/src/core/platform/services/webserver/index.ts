@@ -3,8 +3,8 @@ import { Server, IncomingMessage, ServerResponse } from "http";
 import { FastifyInstance, fastify } from "fastify";
 import sensible from "fastify-sensible";
 import multipart from "fastify-multipart";
-import formbody from "fastify-formbody";
-import fastifyStatic from "fastify-static";
+import formbody from "@fastify/formbody";
+import fastifyStatic from "@fastify/static";
 import corsPlugin, { FastifyCorsOptions } from "fastify-cors";
 import { serverErrorHandler } from "./error";
 import WebServerAPI from "./provider";
@@ -12,6 +12,7 @@ import jwtPlugin from "../auth/web/jwt";
 import path from "path";
 import swaggerPlugin from "fastify-swagger";
 import { SkipCLI } from "../../framework/decorators/skip";
+import fs from "fs";
 // import { throws } from "assert";
 export default class WebServerService extends TwakeService<WebServerAPI> implements WebServerAPI {
   name = "webserver";
@@ -101,25 +102,35 @@ export default class WebServerService extends TwakeService<WebServerAPI> impleme
     this.server.register(formbody);
     this.server.register(corsPlugin, this.configuration.get<FastifyCorsOptions>("cors", {}));
 
-    let root = this.configuration.get<{ root: string }>("static", { root: "./public" }).root;
-    root = root.indexOf("/") === 0 ? root : path.join(__dirname + "/../../../../../", root);
-    this.server.register(fastifyStatic, {
-      root,
-    });
-    this.server.setNotFoundHandler((request, reply) => {
-      if (request.url.indexOf("/api") !== 0 && request.url.indexOf("/internal") !== 0) {
-        reply.sendFile(root + "/index.html");
-      } else {
-        reply.status(404).send({});
-      }
-    });
-
     return this;
   }
 
   @SkipCLI()
   async doStart(): Promise<this> {
     try {
+      let root = this.configuration.get<{ root: string }>("static", { root: "./public" }).root;
+      root = root.indexOf("/") === 0 ? root : path.join(__dirname + "/../../../../../", root);
+      this.server.register(fastifyStatic, {
+        root,
+      });
+      this.server.setNotFoundHandler((req, res) => {
+        if (
+          req.raw.url &&
+          (req.raw.url.startsWith("/internal") ||
+            req.raw.url.startsWith("/api") ||
+            req.raw.url.startsWith("/plugins") ||
+            req.raw.url.startsWith("/admin"))
+        ) {
+          return res.status(404).send({
+            error: "Not found",
+          });
+        }
+
+        const path = root.replace(/\/$/, "") + "/index.html";
+        const stream = fs.createReadStream(path);
+        res.type("text/html").send(stream);
+      });
+
       await this.server.listen(this.configuration.get<number>("port", 3000), "0.0.0.0");
 
       this.server.ready(err => {

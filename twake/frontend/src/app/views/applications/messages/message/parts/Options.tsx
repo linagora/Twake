@@ -97,28 +97,25 @@ export default (props: Props) => {
       },
     });
 
-    if (message.thread_id === message.id) {
-      if (!message.context?.disable_pin && false) {
-        menu.push({
-          type: 'menu',
-          icon: 'link',
-          text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
-          onClick: () => {
-            const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-              workspaceId: workspaceId,
-              channelId: channelId,
-              messageId: message.thread_id || message.id,
-            })}`;
-            const el = document.createElement('textarea');
-            el.value = url;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-          },
-        });
-      }
-    }
+    menu.push({
+      type: 'menu',
+      icon: 'link',
+      text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
+      onClick: () => {
+        const url = `${document.location.origin}${RouterServices.generateRouteFromState({
+          workspaceId: workspaceId,
+          channelId: channelId,
+          threadId: message.thread_id,
+          messageId: message.id,
+        })}`;
+        const el = document.createElement('textarea');
+        el.value = url;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      },
+    });
 
     if (!message.context?.disable_pin)
       menu.push({

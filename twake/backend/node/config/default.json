@@ -145,6 +145,12 @@
   "plugins": {
     "server": "plugins:3100"
   },
+  "knowledge-graph": {
+    "endpoint": "http://host-gateway:8888",
+    "use": false,
+    "sensitive_data": false,
+    "forwarded_companies": []
+  },
   "services": [
     "auth",
     "push",
@@ -171,6 +177,8 @@
     "previews",
     "counter",
     "statistics",
-    "online"
+    "cron",
+    "online",
+    "knowledge-graph"
   ]
 }

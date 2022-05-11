@@ -3175,14 +3175,14 @@
     "@typescript-eslint/types" "4.33.0"
     eslint-visitor-keys "^2.0.0"
 
-"@virtuoso.dev/react-urx@^0.2.5":
+"@virtuoso.dev/react-urx@^0.2.12":
   version "0.2.13"
   resolved "https://registry.yarnpkg.com/@virtuoso.dev/react-urx/-/react-urx-0.2.13.tgz#e2cfc42d259d2a002695e7517d34cb97b64ee9c4"
   integrity sha512-MY0ugBDjFb5Xt8v2HY7MKcRGqw/3gTpMlLXId2EwQvYJoC8sP7nnXjAxcBtTB50KTZhO0SbzsFimaZ7pSdApwA==
   dependencies:
     "@virtuoso.dev/urx" "^0.2.13"
 
-"@virtuoso.dev/urx@^0.2.13", "@virtuoso.dev/urx@^0.2.5":
+"@virtuoso.dev/urx@^0.2.12", "@virtuoso.dev/urx@^0.2.13":
   version "0.2.13"
   resolved "https://registry.yarnpkg.com/@virtuoso.dev/urx/-/urx-0.2.13.tgz#a65e7e8d923cb03397ac876bfdd45c7f71c8edf1"
   integrity sha512-iirJNv92A1ZWxoOHHDYW/1KPoi83939o83iUBQHIim0i3tMeSKEh+bxhJdTHQ86Mr4uXx9xGUTq69cp52ZP8Xw==
@@ -3907,6 +3907,11 @@ autoprefixer@^9.6.1:
     picocolors "^0.2.1"
     postcss "^7.0.32"
     postcss-value-parser "^4.1.0"
+
+await-lock@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/await-lock/-/await-lock-2.2.2.tgz#a95a9b269bfd2f69d22b17a321686f551152bcef"
+  integrity sha512-aDczADvlvTGajTDjcjpJMqRkOF6Qdz3YbPZm/PyW6tKPkx2hlYBzxMhEywM/tU72HrVZjgl5VCdRuMlA7pZ8Gw==
 
 aws-sign2@~0.7.0:
   version "0.7.0"
@@ -13960,14 +13965,13 @@ react-virtualized@^9.22.2:
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.4"
 
-react-virtuoso@1.11.1:
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-1.11.1.tgz#350dc88866b3f42cb396bf8f40b90efc6daaadde"
-  integrity sha512-NH8eLLmoowdq0x7/AEfXxOY9OY4PDpLuPPmCc8F2IoBQLvIcMait3A2TnR0fT9UT+gl8n7GHoORzeGqF5Ka0MA==
+react-virtuoso@2.10.2:
+  version "2.10.2"
+  resolved "https://registry.yarnpkg.com/react-virtuoso/-/react-virtuoso-2.10.2.tgz#a4002f05019a07c69fca342c5b745451e2baa2ce"
+  integrity sha512-nQ8Wt/q64q6walcXo4y9SXkvZqjwuLiNUv7aKW3poKoZno8agTgeqcX1GMq3GPlaJ8wR5XMGwBxX4HONBMAGfg==
   dependencies:
-    "@virtuoso.dev/react-urx" "^0.2.5"
-    "@virtuoso.dev/urx" "^0.2.5"
-    resize-observer-polyfill "^1.5.1"
+    "@virtuoso.dev/react-urx" "^0.2.12"
+    "@virtuoso.dev/urx" "^0.2.12"
 
 "react@>=15.0.0 <17.0.0", react@^16.13.0:
   version "16.14.0"

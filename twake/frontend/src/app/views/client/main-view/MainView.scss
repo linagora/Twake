@@ -40,6 +40,7 @@
   .global-side-view {
     background-color: var(--white);
     border-left: 1px solid var(--grey-background);
+    transition-duration: 0s !important;
 
     .side-header {
       height: 40px;

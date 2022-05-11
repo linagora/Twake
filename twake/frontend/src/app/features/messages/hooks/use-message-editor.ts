@@ -8,7 +8,7 @@ import {
   VisibleMessagesEditorLocationActiveSelector,
   VisibleMessagesEditorLocationState,
 } from '../state/atoms/messages-editor';
-import { useMessage, useSetMessage } from './use-message';
+import { getMessage, useMessage, useSetMessage } from './use-message';
 import { v1 as uuidv1 } from 'uuid';
 import MessageThreadAPIClient from 'app/features/messages/api/message-thread-api-client';
 import Login from 'app/features/auth/login-service';
@@ -16,6 +16,8 @@ import { messageToMessageWithReplies } from '../utils/message-with-replies';
 import { useAddMessageToChannel, useRemoveMessageFromChannel } from './use-channel-messages';
 import { useAddMessageToThread, useRemoveMessageFromThread } from './use-thread-messages';
 import { useRef } from 'react';
+import { AtomMessageKey } from '../state/atoms/messages';
+import { MessagesAndComponentsType } from 'app/features/messages/hooks/with-non-messages-components';
 
 export type EditorKey = {
   companyId: string;
@@ -59,6 +61,9 @@ export const useMessageEditor = (key: EditorKey) => {
       thread_id: key.threadId || uuidv1(),
       created_at: new Date().getTime(),
       user_id: Login.currentUserId,
+      context: {
+        _front_id: uuidv1(),
+      },
       ...message,
     } as NodeMessage;
 
@@ -122,6 +127,27 @@ export const useMessageEditor = (key: EditorKey) => {
     setValue: (value: string) => setEditorRef({ ...editor, value }),
     setFiles: (files: any[]) => setEditorRef({ ...editor, files }),
   };
+};
+
+/**
+ * Remove sent messages from the list
+ * as we have a duplication between frontend message and server message
+ */
+export const cleanFrontMessagesFromListOfMessages = (
+  messages: (AtomMessageKey | MessagesAndComponentsType)[],
+) => {
+  messages = messages.filter(
+    i =>
+      (i as MessagesAndComponentsType)?.type !== 'message' ||
+      getMessage(i.id || '')?._status !== 'sent',
+  );
+  messages = _.uniqBy(
+    messages,
+    a =>
+      (a as MessagesAndComponentsType)?.type +
+      (getMessage(a.id || '')?.context?._front_id || a?.id),
+  );
+  return messages;
 };
 
 export const useVisibleMessagesEditorLocation = (location: string, subLocation: string = '') => {

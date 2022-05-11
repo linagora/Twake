@@ -12,7 +12,8 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     ..._.pick(partialKey, 'threadId', 'companyId'),
     id: partialKey.id || partialKey.threadId,
   };
-  const [message, setValue] = useRecoilState(MessageState(key));
+  const setValue = useSetMessage(key.companyId);
+  const [message, _setValue] = useRecoilState(MessageState(key));
 
   const get = async () => {
     const message = await MessageAPIClient.get(
@@ -173,12 +174,20 @@ const recomputeReactions = (reactions: ReactionType[], selected: string[]) => {
   return reactions;
 };
 
+let messagesStore: { [key: string]: NodeMessage } = {};
+
+export const getMessage = (id: string) => {
+  return messagesStore[id];
+};
+
 export const useSetMessage = (companyId: string) => {
   const { set: setUserList } = useSetUserList('useSetMessage');
 
   return useRecoilCallback(
     ({ set }) =>
       async (message: NodeMessage) => {
+        messagesStore[message.id] = message;
+
         set(
           MessageState({ threadId: message.thread_id, id: message.id, companyId: companyId }),
           messageToMessageWithReplies(message),

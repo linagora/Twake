@@ -22,6 +22,7 @@ export abstract class TwakeService<T extends TwakeServiceProvider>
 
   constructor(protected options?: TwakeServiceOptions<TwakeServiceConfiguration>) {
     this.state = new BehaviorSubject<TwakeServiceState>(TwakeServiceState.Ready);
+    // REMOVE ME, we should import config from framework folder instead
     this.configuration = options?.configuration;
     this.logger = getLogger(`core.platform.services.${this.name}Service`);
   }
