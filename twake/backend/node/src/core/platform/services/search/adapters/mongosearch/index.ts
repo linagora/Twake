@@ -53,6 +53,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       return;
     }
 
+    logger.info(`${this.name} - Start compute index ${JSON.stringify(entityDefinition)}`);
+
     const index = this.getIndex(entityDefinition);
     const collection = this.mongodb.collection(`${searchPrefix}${index}`);
 
@@ -71,6 +73,12 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
         }
       });
     }
+
+    logger.info(
+      `${this.name} - Create indexes ${JSON.stringify(indexedFields)} for ${
+        entityDefinition.name
+      } (${searchPrefix}${index})`,
+    );
 
     //Create one index for each type of indexes ["text"]
     Object.keys(indexedFields).forEach(k => {
@@ -155,6 +163,9 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
 
   private async proceed(operation: Operation) {
     const collection = this.mongodb.collection(`${searchPrefix}${operation.index}`);
+    logger.info(
+      `Process all buffered operations on searchable entity ${searchPrefix}${operation.index}`,
+    );
     if (operation.action === "remove") {
       await collection.deleteOne({ _docId: operation.id });
     }
@@ -174,8 +185,12 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
     options: FindOptions = {},
   ) {
     const instance = new (entityType as any)();
-    const { entityDefinition } = getEntityDefinition(instance);
+    const { entityDefinition, columnsDefinition } = getEntityDefinition(instance);
     const index = this.getIndex(entityDefinition);
+
+    logger.info(`Run search on entity ${searchPrefix}${index}`);
+
+    await this.ensureIndex(entityDefinition, columnsDefinition, this.createIndex.bind(this));
 
     const collection = this.mongodb.collection(`${searchPrefix}${index}`);
 
@@ -211,6 +226,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       entities.length === parseInt(options.pagination.limitStr) &&
       (parseInt(options.pagination.page_token) + 1).toString(10);
     const nextPage: Paginable = new Pagination(nextToken, options.pagination.limitStr || "100");
+
+    logger.info(`Found ${entities.length} results on entity ${searchPrefix}${index}`);
 
     return new ListResult(entityDefinition.type, entities, nextPage);
   }
