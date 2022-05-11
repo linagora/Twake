@@ -40,15 +40,17 @@ export async function createChannel(
     await page.hover(plusIconBtnSelector),
     await page.click(plusIconBtnSelector),
 
-    await (async () => {
-      const daa = await page.content();
-      process.stdout.write(daa + "\n");
-    })(),
-
     // Click on the create channel menu item
     await page.waitForSelector(createChannelMenuItemSelector),
     await page.hover(createChannelMenuItemSelector),
     await page.click(createChannelMenuItemSelector),
+
+    await new Promise((resolve) => setTimeout(resolve, 1000)),
+
+    await (async () => {
+      const daa = await page.content();
+      process.stdout.write(daa + "\n");
+    })(),
 
     // Wait for the popup to appear
     await page.waitForSelector(popupSelector),
