@@ -299,9 +299,9 @@ export class FileServiceImpl implements FileServiceAPI {
         return a.getEntities();
       });
 
-    const filePromises: Promise<File>[] = refs.map(ref =>
-      this.repository.findOne({ company_id: context.company.id, id: ref.file_id }),
-    );
+    const filePromises: Promise<File>[] = refs
+      .map(ref => this.repository.findOne({ company_id: context.company.id, id: ref.file_id }))
+      .filter(a => a);
     return new ListResult<File>("file", await Promise.all(filePromises), nextPage);
   }
 }
