@@ -26,16 +26,6 @@ FROM node-base as test
 RUN npm install
 COPY backend/node/ .
 
-# Development Stage
-FROM node-base as development
-
-RUN npm install -g pino-pretty
-RUN npm install -g tsc-watch
-RUN npm install
-COPY backend/node/ .
-
-CMD ["npm", "run", "dev"]
-
 # Production Stage
 FROM node-base as production
 
@@ -65,4 +55,16 @@ EXPOSE 3000
 
 CMD ["npm", "run", "serve"]
 
+
+# Development Stage
+FROM production as development
+
+ENV NODE_ENV=development
+RUN npm install -g pino-pretty
+RUN npm install -g tsc-watch
+RUN yarn install
+RUN ls
+RUN ls public
+
+CMD ["npm", "run", "dev"]
 
