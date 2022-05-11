@@ -10,19 +10,30 @@ import { PreviewClearPubsubRequest, PreviewPubsubRequest } from "../../previews/
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
-import { CrudException, DeleteResult } from "../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  DeleteResult,
+  ListResult,
+  Pagination,
+} from "../../../core/platform/framework/api/crud-service";
 import gr from "../../global-resolver";
+import { MessageFileRef } from "../../messages/entities/message-file-refs";
 
 export class FileServiceImpl implements FileServiceAPI {
   version: "1";
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";
   private max_preview_file_size = 50000000;
+  private messageFileRefsRepository: Repository<MessageFileRef>;
 
   async init(): Promise<this> {
     try {
       await Promise.all([
         (this.repository = await gr.database.getRepository<File>("files", File)),
+        (this.messageFileRefsRepository = await gr.database.getRepository<MessageFileRef>(
+          "message_file_refs",
+          MessageFileRef,
+        )),
         gr.platformServices.pubsub.processor.addHandler(
           new PreviewFinishedProcessor(this, this.repository),
         ),
@@ -267,6 +278,31 @@ export class FileServiceImpl implements FileServiceAPI {
     }
 
     return new DeleteResult("files", fileToDelete, true);
+  }
+
+  async listUserUploadedFiles(
+    userId: string,
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<File>> {
+    let nextPage = null;
+
+    const refs = await this.messageFileRefsRepository
+      .find(
+        { target_type: "user_upload", target_id: userId },
+        {
+          pagination,
+        },
+      )
+      .then(a => {
+        nextPage = a.nextPage;
+        return a.getEntities();
+      });
+
+    const filePromises: Promise<File>[] = refs
+      .map(ref => this.repository.findOne({ company_id: context.company.id, id: ref.file_id }))
+      .filter(a => a);
+    return new ListResult<File>("file", await Promise.all(filePromises), nextPage);
   }
 }
 
