@@ -3,6 +3,7 @@ import { Thread } from "../../../../entities/threads";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import { getInstance, MessageFileRef } from "../../../../entities/message-file-refs";
 import gr from "../../../../../global-resolver";
+import uuid from "node-uuid";
 
 export class FilesViewProcessor {
   repository: Repository<MessageFileRef>;
@@ -22,7 +23,7 @@ export class FilesViewProcessor {
           const fileRef = getInstance({
             target_type: "channel",
             target_id: participant.id,
-            id: file.id,
+            id: uuid.v1(),
             created_at: message.resource.created_at,
             workspace_id: participant.workspace_id,
             channel_id: participant.id,
@@ -37,7 +38,7 @@ export class FilesViewProcessor {
         const fileRef = getInstance({
           target_type: "user_upload",
           target_id: message.resource.user_id,
-          id: file.id,
+          id: uuid.v1(),
           created_at: message.resource.created_at,
           workspace_id: "",
           channel_id: "",
