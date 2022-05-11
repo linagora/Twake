@@ -2,6 +2,7 @@ import { MessageWithReplies } from 'app/features/messages/types/message';
 import { TwakeService } from 'app/features/global/framework/registry-decorator-service';
 import Api from 'app/features/global/framework/api-service';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
+import Numbers from 'app/features/global/utils/Numbers';
 
 /**
  * This service is to get messages using views.
@@ -37,7 +38,9 @@ class MessageViewAPIClient {
       `${this.prefixUrl}/companies/${companyId}/workspaces/${workspaceId}/channels/${channelId}/feed?replies_per_thread=${repliesPerThread}&limit=${limit}&include_users=1&page_token=${pageToken}&direction=${direction}&websockets=1`,
     );
     this.realtime.set('feed-' + channelId, response.websockets);
-    return response.resources;
+    return (response.resources || []).sort((a, b) =>
+      Numbers.compareTimeuuid(a.thread_id, b.thread_id),
+    );
   }
 }
 

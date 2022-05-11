@@ -49,6 +49,10 @@ import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
 import { formatUser } from "../../../../utils/users";
 import gr from "../../../global-resolver";
+import {
+  KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
+} from "../../../../core/platform/services/knowledge-graph/types";
 
 const logger = getLogger("channel.service");
 
@@ -704,6 +708,15 @@ export class ChannelServiceImpl implements ChannelService {
         channel,
         user: context.user,
       });
+
+      localEventBus.publish<KnowledgeGraphGenericEventPayload<Channel>>(
+        KnowledgeGraphEvents.CHANNEL_CREATED,
+        {
+          id: channel.id,
+          resource: channel,
+          links: [],
+        },
+      );
     }
   }
 

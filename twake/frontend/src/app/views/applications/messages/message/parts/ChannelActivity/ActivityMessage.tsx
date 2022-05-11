@@ -255,14 +255,10 @@ export default (props: PropsType): JSX.Element => {
   };
 
   return (
-    <Row
-      className="markdown"
-      style={{ paddingBottom: 16 }}
-      align="middle"
-      justify="center"
-      ref={props.refDom}
-    >
-      {compute()}
-    </Row>
+    <div style={{ height: 40, paddingTop: 8 }}>
+      <Row className="markdown" align="middle" justify="center" ref={props.refDom}>
+        {compute()}
+      </Row>
+    </div>
   );
 };

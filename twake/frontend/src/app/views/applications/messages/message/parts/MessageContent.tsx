@@ -124,7 +124,7 @@ export default (props: Props) => {
                 )}
               </div>
 
-              {message?.files && message?.files?.length > 0 && <MessageAttachments />}
+              {message?.files && (message?.files?.length || 0) > 0 && <MessageAttachments />}
 
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}

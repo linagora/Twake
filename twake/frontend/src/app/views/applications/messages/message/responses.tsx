@@ -4,24 +4,29 @@ import Message from './message';
 import { MessageContext } from './message-with-replies';
 import ThreadSection from '../parts/thread-section';
 import { useMessage } from 'app/features/messages/hooks/use-message';
+import Numbers from 'app/features/global/utils/Numbers';
 
 type Props = {
   companyId: string;
   threadId: string;
+  firstMessageId: string;
 };
 
-export default ({ threadId, companyId }: Props) => {
+export default ({ threadId, companyId, firstMessageId }: Props) => {
   let { messages } = useThreadMessages({ companyId, threadId });
 
   return (
     <>
-      {messages.map(m => {
-        return (
-          <MessageContext.Provider key={m.id} value={{ ...m, id: m.id || '' }}>
-            <Reply />
-          </MessageContext.Provider>
-        );
-      })}
+      {messages
+        .filter(m => !firstMessageId || Numbers.compareTimeuuid(m.id, firstMessageId) >= 0)
+        .filter(m => m.threadId !== m.id)
+        .map(m => {
+          return (
+            <MessageContext.Provider key={m.id} value={{ ...m, id: m.id || '' }}>
+              <Reply />
+            </MessageContext.Provider>
+          );
+        })}
     </>
   );
 };
