@@ -47,11 +47,6 @@ export async function createChannel(
 
     await new Promise((resolve) => setTimeout(resolve, 1000)),
 
-    await (async () => {
-      const daa = await page.content();
-      process.stdout.write(daa + "\n");
-    })(),
-
     // Wait for the popup to appear
     await page.waitForSelector(popupSelector),
 
