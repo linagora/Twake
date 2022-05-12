@@ -861,6 +861,7 @@
     "scenes.join.join_the_team_button": "Join the team",
     "scenes.app.channelsbar.currentuser.reset": "Reset",
     "components.rich_text_editor.plugins.suggestions.default_message.display_results": "Write at least three letters to display users",
+    "components.rich_text_editor.plugins.suggestions.loading": "Looking for more",
     "components.rich_text_editor.plugins.suggestions.default_message.no_user_found": "No user found",
     "components.rich_text_editor.plugins.suggestions.default_message.no_emoji_found": "No emoji found",
     "components.rich_text_editor.plugins.suggestions.default_message.no_command_found": "No command found",

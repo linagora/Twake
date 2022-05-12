@@ -157,25 +157,42 @@ export const SuggestionList = <T,>(props: Props<T>): JSX.Element => {
           fade_in: isFocused && props.list?.length,
         })}
       >
-        {props?.list && props.list.length > 0
-          ? props.list.map((item, index) => {
-              return (
-                <div
-                  key={index}
-                  className={classNames('menu', {
-                    is_selected:
-                      !props.disableNavigationKey && item.autocomplete_id === props.selectedIndex,
-                  })}
-                  onClick={() => select(item)}
-                  onMouseDown={() => select(item)}
-                  onFocus={() => console.log('FOCUS', item)}
-                >
-                  {item && props.renderItem(item)}
-                </div>
-              );
-            })
-          : buildSuggestionDefaultMessage()}
-        {props.loading && <LoadingOutlined style={{ marginBottom: 8, opacity: 0.5 }} />}
+        {props?.list && props.list.length > 0 ? (
+          props.list.map((item, index) => {
+            return (
+              <div
+                key={index}
+                className={classNames('menu', {
+                  is_selected:
+                    !props.disableNavigationKey && item.autocomplete_id === props.selectedIndex,
+                })}
+                onClick={() => select(item)}
+                onMouseDown={() => select(item)}
+                onFocus={() => console.log('FOCUS', item)}
+              >
+                {item && props.renderItem(item)}
+              </div>
+            );
+          })
+        ) : props.loading ? (
+          <></>
+        ) : (
+          buildSuggestionDefaultMessage()
+        )}
+        {props.loading && (
+          <div
+            style={{
+              textAlign: 'center',
+              fontSize: '12px',
+              width: '100%',
+              marginBottom: !!(props?.list && props.list.length > 0) ? 8 : 0,
+              opacity: 0.5,
+            }}
+          >
+            <LoadingOutlined />
+            &nbsp; Looking for more
+          </div>
+        )}
       </div>
     </div>
   );
