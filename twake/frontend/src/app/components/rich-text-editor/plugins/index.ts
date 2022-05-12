@@ -1,8 +1,8 @@
-import { DraftDecorator, EditorState, Entity, RawDraftContentBlock } from "draft-js";
-import mentionPlugin, { MentionSuggestionType } from "./mentions";
-import emojiPlugin, { EmojiSuggestionType } from "./emoji";
-import channelPlugin, { ChannelSuggestionType } from "./channel";
-import commandPlugin, { CommandSuggestionType } from "./commands";
+import { DraftDecorator, EditorState, Entity, RawDraftContentBlock } from 'draft-js';
+import mentionPlugin, { MentionSuggestionType } from './mentions';
+import emojiPlugin, { EmojiSuggestionType } from './emoji';
+import channelPlugin, { ChannelSuggestionType } from './channel';
+import commandPlugin, { CommandSuggestionType } from './commands';
 
 export type SupportedSuggestionTypes =
   | MentionSuggestionType
@@ -24,7 +24,7 @@ export type DataSerializer = {
 };
 
 export type EditorSuggestionPlugin<T extends SupportedSuggestionTypes> = {
-  resolver: (text: string, callback: (items: T[]) => void) => void;
+  resolver: (text: string, callback: (args: { items: T[]; loading?: boolean }) => void) => void;
   decorator: DraftDecorator;
   trigger: string | RegExp;
   resourceType: string;
@@ -34,14 +34,14 @@ export type EditorSuggestionPlugin<T extends SupportedSuggestionTypes> = {
   renderSuggestion?: (item: T) => JSX.Element;
   serializer?: DataSerializer;
   returnFullTextForSuggestion?: boolean;
-  skipSuggestionForTypes?: Array<EditorSuggestionPlugin<any>["resourceType"]>;
+  skipSuggestionForTypes?: Array<EditorSuggestionPlugin<any>['resourceType']>;
 };
 
-const plugins = new Map<EditorSuggestionPlugin<any>["resourceType"], EditorSuggestionPlugin<any>>();
+const plugins = new Map<EditorSuggestionPlugin<any>['resourceType'], EditorSuggestionPlugin<any>>();
 
 addPlugin(emojiPlugin());
 addPlugin(mentionPlugin());
-addPlugin(channelPlugin());
+//addPlugin(channelPlugin());
 addPlugin(commandPlugin());
 
 function addPlugin(plugin: EditorSuggestionPlugin<any>): void {

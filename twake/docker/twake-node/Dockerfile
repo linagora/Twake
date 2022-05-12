@@ -27,7 +27,7 @@ RUN npm install
 COPY backend/node/ .
 
 # Add frontend Stage
-FROM node-base as with-frontent
+FROM node-base as with-frontend
 
 ARG NODE_ENV=production
 
@@ -51,9 +51,8 @@ RUN cd ../public_build && yarn build
 RUN cd ../public_build && rm -R node_modules
 RUN mv ../public_build/build/* public/; rm -R ../public_build
 
-
 # Development Stage
-FROM with-frontent as development
+FROM with-frontend as development
 
 ENV NODE_ENV=development
 RUN npm install -g pino-pretty
@@ -65,8 +64,9 @@ RUN ls public
 CMD ["npm", "run", "dev"]
 
 
+
 # Production Stage
-FROM with-frontent as production
+FROM with-frontend as production
 
 EXPOSE 3000
 CMD ["npm", "run", "serve"]

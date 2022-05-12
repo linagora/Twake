@@ -1,16 +1,16 @@
 export default class Strings {
-  static verifyMail(email) {
+  static verifyMail(email: string) {
     var re =
       // eslint-disable-next-line no-useless-escape
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email.toLowerCase());
   }
 
-  static removeAccents(str) {
+  static removeAccents(str: string) {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
 
-  static autoSpaces(element, separator, size, max) {
+  static autoSpaces(element: any, separator: any, size: any, max: any) {
     if (element.textAreaRef) {
       element = element.textAreaRef;
     }
@@ -28,25 +28,9 @@ export default class Strings {
       size = (5 + 1) * 4;
     }
     return;
-    /*element.addEventListener('keyup', function (e) {
-      var target = e.target,
-        position = target.selectionEnd,
-        length = target.value.length;
-      if (e.which == 8) {
-        return;
-      }
-      if (target.value[target.value.length] == separator) {
-        target.value = target.value.substr(0, target.value.length - 1);
-      }
-      target.value = target.value
-        .replace(new RegExp('[^A-Za-z0-9]', 'g'), '')
-        .replace(new RegExp('([A-Za-z0-9]{' + size + '})', 'g'), '$1' + separator)
-        .trim();
-      target.value = target.value.substr(0, max);
-    });*/
   }
 
-  static convertBase(src, srctable, desttable) {
+  static convertBase(src: any, srctable: any, desttable: any) {
     var srclen = srctable.length;
     var destlen = desttable.length;
     // first convert to base 10
@@ -70,3 +54,20 @@ export default class Strings {
     return res;
   }
 }
+
+export const distanceFromQuery = (candidate: string, query: string) => {
+  let score = 1000;
+  query.split(' ').forEach(word => {
+    candidate.split(' ').map(field => {
+      if (field?.trim()) {
+        const dist = Strings.removeAccents(field)
+          .toLocaleLowerCase()
+          .replace(Strings.removeAccents(word).toLocaleLowerCase(), '').length;
+        console.log(field, word, dist);
+        if (dist < score) score = dist;
+      }
+    });
+  });
+
+  return score;
+};

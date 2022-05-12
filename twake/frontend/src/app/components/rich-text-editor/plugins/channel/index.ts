@@ -24,10 +24,10 @@ const findChannelEntities = (
 const resolver = (
   text: string,
   max: number,
-  callback: (channels: ChannelSuggestionType[]) => void,
+  callback: (args: { items: ChannelSuggestionType[] }) => void,
 ) => {
   //TODO
-  callback([]);
+  callback({ items: [] });
 };
 
 const addChannel = (
@@ -98,7 +98,7 @@ export default (
     strategy: findChannelEntities,
     component: Channel,
   },
-  trigger: /\B#([a-zA-Z\u00C0-\u017F]+)$/,
+  trigger: /\B(#[a-zA-Z\u00C0-\u017F]*)$/,
   resourceType: ChannelTypeType,
   onSelected: (
     channel: ChannelSuggestionType,
