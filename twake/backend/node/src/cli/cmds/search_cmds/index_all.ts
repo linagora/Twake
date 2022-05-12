@@ -6,6 +6,7 @@ import { DatabaseServiceAPI } from "../../../core/platform/services/database/api
 import { Pagination } from "../../../core/platform/framework/api/crud-service";
 
 import User, { TYPE as UserTYPE } from "../../../services/user/entities/user";
+import { Channel } from "../../../services/channels/entities";
 import Application, {
   TYPE as ApplicationTYPE,
 } from "../../../services/applications/entities/application";
@@ -33,6 +34,7 @@ class SearchIndexAll {
     const repositories: Map<string, Repository<any>> = new Map();
     repositories.set("messages", await this.database.getRepository(MessageTYPE, Message));
     repositories.set("users", await this.database.getRepository(UserTYPE, User));
+    repositories.set("channel", await this.database.getRepository("channel", Channel));
     repositories.set(
       "applications",
       await this.database.getRepository(ApplicationTYPE, Application),
@@ -88,7 +90,20 @@ class SearchIndexAll {
   }
 }
 
-const services = ["search", "database", "webserver"];
+const services = [
+  "search",
+  "database",
+  "webserver",
+  "auth",
+  "counter",
+  "cron",
+  "pubsub",
+  "push",
+  "realtime",
+  "storage",
+  "tracker",
+  "websocket",
+];
 
 const command: yargs.CommandModule<unknown, unknown> = {
   command: "index",

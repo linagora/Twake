@@ -93,10 +93,6 @@ describe("The /messages API", () => {
       let resources = await search("Reply");
       expect(resources.length).toEqual(4);
 
-      resources.forEach(resource => {
-        expect(resource.last_replies.length).toEqual(1);
-      });
-
       resources = await search("fdfsd");
       expect(resources.length).toEqual(0);
 
@@ -108,10 +104,6 @@ describe("The /messages API", () => {
 
       resources = await search("another");
       expect(resources.length).toEqual(1);
-
-      resources.forEach(resource => {
-        expect(resource.last_replies.length).toEqual(0);
-      });
 
       done();
     });
@@ -140,28 +132,32 @@ describe("The /messages API", () => {
     file.metadata = { external_id: undefined, source: undefined, name: "test" };
 
     const firstThreadId = await createThread("Filtered thread", [participant]);
-    await createReply(firstThreadId, "Filtered message 1");
-    await createReply(firstThreadId, "Filtered message 2");
-    await createReply(firstThreadId, "Filtered message 3");
-    await createReply(firstThreadId, "Filtered message 4", { files: [file] });
+    await createReply(firstThreadId, "Filtered message 1-1");
+    await createReply(firstThreadId, "Filtered message 1-2");
+    await createReply(firstThreadId, "Filtered message 1-3");
+    await createReply(firstThreadId, "Filtered message 1-4", { files: [file] });
 
     const secondThreadId = await createThread("Filtered thread 2", [participant2]);
-    await createReply(secondThreadId, "Filtered message 5");
-    await createReply(secondThreadId, "Filtered message 6");
-    await createReply(secondThreadId, "Filtered message 7");
-    await createReply(secondThreadId, "Filtered message 8");
+    await createReply(secondThreadId, "Filtered message 2-1");
+    await createReply(secondThreadId, "Filtered message 2-2");
+    await createReply(secondThreadId, "Filtered message 2-3");
+    await createReply(secondThreadId, "Filtered message 2-4");
 
     const thirdThreadId = await createThread("Filtered thread 3", [participant]);
-    await createReply(thirdThreadId, "Filtered message 9");
-    await createReply(thirdThreadId, "Filtered message 10", { userId: anotherUserId });
-    await createReply(thirdThreadId, "Filtered message 11", { userId: anotherUserId });
-    await createReply(thirdThreadId, "Filtered message 12", {
+    await createReply(thirdThreadId, "Filtered message 3-1");
+    await createReply(thirdThreadId, "Filtered message 3-2", { userId: anotherUserId });
+    await createReply(thirdThreadId, "Filtered message 3-3", { userId: anotherUserId });
+    await createReply(thirdThreadId, "Filtered message 3-4", {
       userId: anotherUserId,
       files: [file],
     });
 
     //Wait for indexation to happen
     await new Promise(r => setTimeout(r, 3000));
+
+    // no limit
+    const resources0 = await search("Filtered", { limit: 10000 });
+    expect(resources0.length).toEqual(10);
 
     const resources = await search("Filtered", { limit: 9 });
     expect(resources.length).toEqual(9);

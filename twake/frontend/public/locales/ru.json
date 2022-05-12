@@ -870,5 +870,6 @@
     "components.locked_features_components.locked_invite_alert.message_part_1": "Ваша компания достигла максимального лимита в {{$1}} участников. Пожалуйста, ",
     "components.locked_features_components.locked_invite_alert.message_link": "повысьте статус вашей компании",
     "components.locked_features_components.locked_invite_alert.message_part_2": " чтобы пригласить больше участников.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Видеть всех членов моей компании на консоли"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Видеть всех членов моей компании на консоли",
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " обратитесь к владельцу или администратору вашей компании."
 }
