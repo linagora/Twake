@@ -51,20 +51,6 @@ RUN cd ../public_build && yarn build
 RUN cd ../public_build && rm -R node_modules
 RUN mv ../public_build/build/* public/; rm -R ../public_build
 
-
-# Development Stage
-FROM with-frontent as development
-
-ENV NODE_ENV=development
-RUN npm install -g pino-pretty
-RUN npm install -g tsc-watch
-RUN yarn install
-RUN ls
-RUN ls public
-
-CMD ["npm", "run", "dev"]
-
-
 # Production Stage
 FROM with-frontent as production
 
