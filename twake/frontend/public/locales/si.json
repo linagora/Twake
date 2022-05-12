@@ -870,5 +870,6 @@
     "components.locked_features_components.locked_invite_alert.message_part_1": "ඔබේ සමාගම එහි උපරිම සාමාජිකයින්ගේ {{$1}} සීමාවට ළඟා වී ඇත. කරුණාකර ",
     "components.locked_features_components.locked_invite_alert.message_link": "ඔබේ සමාගම උසස් කරන්න",
     "components.locked_features_components.locked_invite_alert.message_part_2": " තවත් සාමාජිකයින්ට ආරාධනා කිරීමට.",
-    "components.locked_features_components.locked_invite_alert.message_magic_link": " ඔබේ සමාගමේ හිමිකරු හෝ පරිපාලක අමතන්න."
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " ඔබේ සමාගමේ හිමිකරු හෝ පරිපාලක අමතන්න.",
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "කොන්සෝලය මත මගේ සියලුම සමාගම් සාමාජිකයින් බලන්න"
 }

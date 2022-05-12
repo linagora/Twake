@@ -870,5 +870,6 @@
     "components.locked_features_components.locked_invite_alert.message_link": "升级您的公司",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " 联系您公司的所有者或管理员。",
     "components.locked_features_components.locked_invite_alert.message_part_1": "贵公司已达到 {{$1}} 成员的最大限制。请 ",
-    "components.locked_features_components.locked_invite_alert.message_part_2": " 邀请更多成员。"
+    "components.locked_features_components.locked_invite_alert.message_part_2": " 邀请更多成员。",
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "在控制台上查看我的所有公司成员"
 }
