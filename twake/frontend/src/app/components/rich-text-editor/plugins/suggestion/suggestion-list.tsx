@@ -1,15 +1,17 @@
 import React, { useState, CSSProperties, useEffect } from 'react';
 import classNames from 'classnames';
 import { Row, Typography } from 'antd';
-import { Frown, Terminal, Search, X } from 'react-feather';
+import { Frown, Terminal, Search, X, Loader } from 'react-feather';
 
 import { isCommandType, isEmojiType, isMentionType } from './utils';
 import Languages from 'app/features/global/services/languages-service';
 
 import './suggestion-list.scss';
+import { LoadingOutlined } from '@ant-design/icons';
 
 type Props<T> = {
   id: string;
+  loading: boolean;
   list: Array<T & { autocomplete_id?: number }> | undefined;
   search: string;
   renderItem: (item: T) => any;
@@ -39,6 +41,7 @@ export const SuggestionList = <T,>(props: Props<T>): JSX.Element => {
     minWidth: suggestionWidth,
     top: (props.position?.y || 0) - DEFAULT_SUGGESTION_PADDING,
     position: 'fixed',
+    zIndex: 20,
   }));
 
   // update the position when ID changes
@@ -143,6 +146,10 @@ export const SuggestionList = <T,>(props: Props<T>): JSX.Element => {
     );
   };
 
+  if (cssPosition.left === 0) {
+    return <></>;
+  }
+
   return (
     <div className="suggestions" style={cssPosition}>
       <div
@@ -150,24 +157,42 @@ export const SuggestionList = <T,>(props: Props<T>): JSX.Element => {
           fade_in: isFocused && props.list?.length,
         })}
       >
-        {props?.list && props.list.length > 0
-          ? props.list.map((item, index) => {
-              return (
-                <div
-                  key={index}
-                  className={classNames('menu', {
-                    is_selected:
-                      !props.disableNavigationKey && item.autocomplete_id === props.selectedIndex,
-                  })}
-                  onClick={() => select(item)}
-                  onMouseDown={() => select(item)}
-                  onFocus={() => console.log('FOCUS', item)}
-                >
-                  {item && props.renderItem(item)}
-                </div>
-              );
-            })
-          : buildSuggestionDefaultMessage()}
+        {props?.list && props.list.length > 0 ? (
+          props.list.map((item, index) => {
+            return (
+              <div
+                key={index}
+                className={classNames('menu', {
+                  is_selected:
+                    !props.disableNavigationKey && item.autocomplete_id === props.selectedIndex,
+                })}
+                onClick={() => select(item)}
+                onMouseDown={() => select(item)}
+                onFocus={() => console.log('FOCUS', item)}
+              >
+                {item && props.renderItem(item)}
+              </div>
+            );
+          })
+        ) : props.loading ? (
+          <></>
+        ) : (
+          buildSuggestionDefaultMessage()
+        )}
+        {props.loading && (
+          <div
+            style={{
+              textAlign: 'center',
+              fontSize: '12px',
+              width: '100%',
+              marginBottom: !!(props?.list && props.list.length > 0) ? 8 : 0,
+              opacity: 0.5,
+            }}
+          >
+            <LoadingOutlined />
+            &nbsp; Looking for more
+          </div>
+        )}
       </div>
     </div>
   );

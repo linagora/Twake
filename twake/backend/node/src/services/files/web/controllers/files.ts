@@ -1,10 +1,18 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Multipart } from "fastify-multipart";
-import { ResourceDeleteResponse } from "../../../../utils/types";
+import { ResourceDeleteResponse, ResourceListResponse } from "../../../../utils/types";
 import { CompanyExecutionContext } from "../types";
 import { UploadOptions } from "../../api";
-import { PublicFile } from "../../entities/file";
+import { File, PublicFile } from "../../entities/file";
 import gr from "../../../global-resolver";
+import {
+  CrudException,
+  ListResult,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
+import uuid from "node-uuid";
+import { expect } from "@jest/globals";
+import { type } from "os";
 
 export class FileController {
   async save(
@@ -92,6 +100,28 @@ export class FileController {
     const deleteResult = await gr.services.files.delete(params.id, context);
 
     return { status: deleteResult.deleted ? "success" : "error" };
+  }
+
+  async list(
+    request: FastifyRequest<{
+      Params: { company_id: string };
+      Querystring: { page_token: null; limit: 100; type: "user_upload" | "user_download" };
+    }>,
+  ): Promise<ResourceListResponse<PublicFile>> {
+    if (request.query.type !== "user_upload") {
+      throw CrudException.notImplemented(`Not implemented for type ${request.query.type}`);
+    }
+
+    const userFiles = await gr.services.files.listUserUploadedFiles(
+      request.currentUser.id,
+      getCompanyExecutionContext(request),
+      new Pagination(request.query.page_token, String(request.query.limit)),
+    );
+
+    return {
+      resources: userFiles.getEntities().map(a => a.getPublicObject()),
+      next_page_token: userFiles.nextPage.page_token,
+    };
   }
 }
 
