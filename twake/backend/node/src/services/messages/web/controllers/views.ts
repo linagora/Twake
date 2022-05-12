@@ -130,7 +130,7 @@ export class ViewsController {
       };
     }>,
     context: ChannelViewExecutionContext,
-  ): Promise<ResourceListResponse<MessageWithReplies>> {
+  ): Promise<ResourceListResponse<Message>> {
     const limit = +request.query.limit || 100;
 
     async function* getNextMessages(): AsyncIterableIterator<Message> {
@@ -189,20 +189,7 @@ export class ViewsController {
       }
     }
 
-    const firstMessagesMap = keyBy(
-      await gr.services.messages.views.getThreadsFirstMessages(messages.map(a => a.thread_id)),
-      item => item.id,
-    );
-
-    const resources = messages.map((resource: Message) => {
-      const firstMessage = firstMessagesMap[resource.thread_id];
-      return {
-        ...firstMessage,
-        last_replies: resource.id != firstMessage.id ? [resource] : [],
-      } as MessageWithReplies;
-    });
-
-    return { resources };
+    return { resources: messages };
   }
 }
 

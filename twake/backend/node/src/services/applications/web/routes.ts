@@ -5,7 +5,7 @@ import { CompanyApplicationController } from "./controllers/company-applications
 import Application from "../entities/application";
 import { applicationEventHookSchema, applicationPostSchema } from "./schemas";
 import { logger as log } from "../../../core/platform/framework";
-import { hasCompanyAdminLevel } from "../../../utils/company";
+import { checkUserBelongsToCompany, hasCompanyAdminLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
 
 const applicationsUrl = "/applications";
@@ -42,18 +42,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
         throw fastify.httpErrors.forbidden(`Company ${companyId} not found`);
       }
 
-      const companyUser = await gr.services.companies.getCompanyUser(
-        { id: companyId },
-        { id: userId },
-      );
-
-      if (!companyUser) {
-        const company = await gr.services.companies.getCompany({ id: companyId });
-        if (!company) {
-          throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
-        }
-        throw fastify.httpErrors.forbidden("User does not belong to this company");
-      }
+      const companyUser = await checkUserBelongsToCompany(userId, companyId);
 
       if (!hasCompanyAdminLevel(companyUser.role)) {
         throw fastify.httpErrors.forbidden("You must be an admin of this company");

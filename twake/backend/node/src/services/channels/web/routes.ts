@@ -100,6 +100,13 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     handler: channelsController.updateRead.bind(channelsController),
   });
 
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/search",
+    preValidation: [fastify.authenticate],
+    handler: channelsController.search.bind(channelsController),
+  });
+
   // members
 
   fastify.route({

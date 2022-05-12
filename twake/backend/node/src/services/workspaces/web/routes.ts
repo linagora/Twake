@@ -23,7 +23,7 @@ import { WorkspaceUsersCrudController } from "./controllers/workspace-users";
 import { hasWorkspaceAdminLevel, hasWorkspaceMemberLevel } from "../../../utils/workspace";
 import { WorkspaceInviteTokensCrudController } from "./controllers/workspace-invite-tokens";
 import WorkspaceUser from "../entities/workspace_user";
-import { hasCompanyMemberLevel } from "../../../utils/company";
+import { checkUserBelongsToCompany, hasCompanyMemberLevel } from "../../../utils/company";
 import gr from "../../global-resolver";
 
 const workspacesUrl = "/companies/:company_id/workspaces";
@@ -46,21 +46,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
   };
 
   const companyCheck = async (request: FastifyRequest<{ Params: WorkspaceBaseRequest }>) => {
-    const companyId = request.params.company_id;
-    const userId = request.currentUser.id;
-
-    const companyUser = await gr.services.companies.getCompanyUser(
-      { id: companyId },
-      { id: userId },
-    );
-
-    if (!companyUser) {
-      const company = await gr.services.companies.getCompany({ id: companyId });
-      if (!company) {
-        throw fastify.httpErrors.notFound(`Company ${companyId} not found`);
-      }
-      throw fastify.httpErrors.forbidden("User does not belong to this company");
-    }
+    await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
   };
 
   const checkWorkspace = async (request: FastifyRequest<{ Params: WorkspaceUsersBaseRequest }>) => {

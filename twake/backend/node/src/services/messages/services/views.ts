@@ -243,21 +243,25 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     options: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>> {
-    return await this.searchRepository.search(
-      {
-        ...(options.hasFiles ? { has_files: true } : {}),
-      },
-      {
-        pagination,
-        ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
-        ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
-        ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
-        ...(options.sender ? { $in: [["user_id", [options.sender]]] } : {}),
-        $text: {
-          $search: options.search,
+    return await this.searchRepository
+      .search(
+        {
+          ...(options.hasFiles ? { has_files: true } : {}),
         },
-      },
-    );
+        {
+          pagination,
+          ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
+          ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
+          ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
+          ...(options.sender ? { $in: [["user_id", [options.sender]]] } : {}),
+          $text: {
+            $search: options.search,
+          },
+        },
+      )
+      .then(a => {
+        return a;
+      });
   }
 
   async getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]> {
