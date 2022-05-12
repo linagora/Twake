@@ -156,7 +156,7 @@ describe("The /messages API", () => {
     await new Promise(r => setTimeout(r, 3000));
 
     // no limit
-    const resources0 = await search("Filtered", { limit: 1000000 });
+    const resources0 = await search("Filtered", { limit: 10000 });
     expect(resources0.length).toEqual(10);
 
     const resources = await search("Filtered", { limit: 9 });
