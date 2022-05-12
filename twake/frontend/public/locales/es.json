@@ -872,8 +872,9 @@
     "components.locked_features_components.locked_invite_alert.message_magic_link": " entre en contacto con el propietario o administrador de su empresa.",
     "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Ver todos los miembros de mi empresa en la consola",
     "scenes.app.popup.appsparameters.pages.amazing_app_description": "¡Describa su aplicación en pocas palabras",
-    "scenes.app.popup.appsparameters.pages.application_creator.title" : "Nueva integración",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Nueva integración",
     "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Entiendo que el propietario y los administradores de esta empresa podrán modificar y publicar esta aplicación.",
     "twake.application.access.title": "Seleccione los alcances adecuados para su aplicación.",
-    "twake.application.access.no_default_scopes_available'": "Esta integración no tiene ningún acceso {{$1}}"
+    "twake.application.access.no_default_scopes_available'": "Esta integración no tiene ningún acceso {{$1}}",
+    "\"": "\""
 }

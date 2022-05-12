@@ -1,17 +1,16 @@
-import { useEffect } from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import {useRecoilState, useSetRecoilState} from 'recoil';
 
-import { ChannelType } from 'app/features/channels/types/channel';
-import { DirectChannelsState } from '../state/channels';
+import {ChannelType} from 'app/features/channels/types/channel';
+import {DirectChannelsState} from '../state/channels';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
-import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
+import {useRealtimeRoom} from 'app/features/global/hooks/use-realtime';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
-import { LoadingState } from 'app/features/global/state/atoms/Loading';
-import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
-import { useSetUserList } from 'app/features/users/hooks/use-user-list';
-import { UserType } from 'app/features/users/types/user';
-import { useSetChannel } from './use-channel';
+import {LoadingState} from 'app/features/global/state/atoms/Loading';
+import {useGlobalEffect} from 'app/features/global/hooks/use-global-effect';
+import {useSetUserList} from 'app/features/users/hooks/use-user-list';
+import {UserType} from 'app/features/users/types/user';
+import {useSetChannel} from './use-channel';
 import ChannelAPIClient from '../api/channel-api-client';
 import MenusManager from 'app/components/menus/menus-manager.js';
 import RouterService from 'app/features/router/services/router-service';

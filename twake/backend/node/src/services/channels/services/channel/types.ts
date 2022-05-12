@@ -70,3 +70,8 @@ export class ChannelObject extends Channel {
     });
   }
 }
+
+export type SearchChannelOptions = {
+  search: string;
+  companyId?: string;
+};

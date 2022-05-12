@@ -1,6 +1,10 @@
 import { plainToClass } from "class-transformer";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  ListResult,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import {
   Channel,
@@ -18,6 +22,7 @@ import {
   ChannelParameters,
   ChannelPendingEmailsDeleteQueryParameters,
   ChannelSaveOptions,
+  ChannelSearchQueryParameters,
   CreateChannelBody,
   ReadChannelBody,
   UpdateChannelBody,
@@ -36,6 +41,9 @@ import _ from "lodash";
 import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
 import { ChannelUserCounterType } from "../../entities/channel-counters";
 import gr from "../../../global-resolver";
+import { checkCompanyAndWorkspaceForUser } from "../middleware";
+import { checkUserBelongsToCompany } from "../../../../utils/company";
+import { Message } from "../../../messages/entities/messages";
 
 const logger = getLogger("channel.controller");
 
@@ -111,6 +119,69 @@ export class ChannelCrudController
       )[0],
       resource: channelObject,
     };
+  }
+
+  async search(
+    request: FastifyRequest<{
+      Querystring: ChannelSearchQueryParameters;
+      Params: { company_id: string };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<Channel>> {
+    await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
+
+    const limit = request.query.limit || 100;
+
+    // const results = await gr.services.channels.channels.search(p, {
+    //   search: request.query.q,
+    //   companyId: request.params.company_id,
+    // });
+
+    async function* getNextChannels(): AsyncIterableIterator<Channel> {
+      let lastPageToken = null;
+      let channels: Channel[] = [];
+      let hasMore = true;
+      do {
+        channels = await gr.services.channels.channels
+          .search(new Pagination(lastPageToken, limit.toString()), {
+            search: request.query.q,
+            companyId: request.params.company_id,
+          })
+          .then((a: ListResult<Channel>) => {
+            lastPageToken = a.nextPage.page_token;
+            if (!lastPageToken) {
+              hasMore = false;
+            }
+            return a.getEntities();
+          });
+
+        if (channels.length) {
+          for (const channel of channels) {
+            yield channel;
+          }
+        } else {
+          hasMore = false;
+        }
+      } while (hasMore);
+    }
+
+    const channels = [] as Channel[];
+
+    for await (const ch of getNextChannels()) {
+      const isChannelMember = await gr.services.channels.members.isChannelMember(
+        { id: request.currentUser.id },
+        ch,
+        50,
+      );
+      if (!isChannelMember) continue;
+
+      channels.push(ch);
+      if (channels.length == limit) {
+        break;
+      }
+    }
+
+    return { resources: channels };
   }
 
   async getForPHP(

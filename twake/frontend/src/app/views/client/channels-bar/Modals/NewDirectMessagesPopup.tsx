@@ -16,6 +16,7 @@ const NewDirectMessagesPopup: FC = () => {
 
   const upsertDirectMessage = async (): Promise<any> => {
     setLoading(true);
+    console.log('!!!! new newUserDiscussion',newUserDiscussion);
     await openDiscussion(newUserDiscussion);
     return MediumPopupComponent.closeAll();
   };

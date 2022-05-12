@@ -4,10 +4,12 @@ import { ChannelType, ChannelVisibility } from "../types";
 import { ChannelMember } from "./channel-member";
 import { UserObject } from "../../user/web/types";
 import { merge } from "lodash";
+import search from "./channel.search";
 
 @Entity("channels", {
   primaryKey: [["company_id", "workspace_id"], "id"],
   type: "channels",
+  search,
 })
 export class Channel {
   // uuid-v4

@@ -25,7 +25,7 @@ import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
-import { NewUserInWorkspaceNotification } from "./services/channel/types";
+import { NewUserInWorkspaceNotification, SearchChannelOptions } from "./services/channel/types";
 import { ChannelCounterPrimaryKey } from "./entities/channel-counters";
 import { UserPrimaryKey } from "../user/entities/user";
 import { WorkspacePrimaryKey } from "../workspaces/entities/workspace";
@@ -154,6 +154,8 @@ export interface ChannelService
     channel: Channel,
     context?: WorkspaceExecutionContext,
   ): Promise<UsersIncludedChannel>;
+
+  search(pagination: Pagination, options: SearchChannelOptions): Promise<ListResult<Channel>>;
 }
 export interface MemberService
   extends TwakeServiceProvider,
