@@ -62,5 +62,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           workdir: twake
           context: .
+          target: production
           buildoptions: "-t twaketech/twake-node -f docker/twake-node/Dockerfile"
           tags: "${{ env.DOCKERTAG }},${{ env.DOCKERTAGVERSION }}"
