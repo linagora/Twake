@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "oppgradere bedriften din",
     "components.locked_features_components.locked_invite_alert.message_part_2": " å invitere flere medlemmer.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " kontakt eieren eller administratoren av bedriften din.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Se alle firmamedlemmene mine på konsollen"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Se alle firmamedlemmene mine på konsollen",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "Fjernet applikasjonen {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Feil under fjerning av applikasjonen {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Vellykket {{$1}}-applikasjon!",
+    "scenes.app.integrations_parameters.add_application": "Ny integrasjon",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Utviklerinnstillinger",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "Twake API-dokumentasjonen",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Privat nøkkel",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Beskriv søknaden din med noen få ord",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Ny integrasjon",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Jeg forstår at eieren og administratorene av dette selskapet vil kunne endre og publisere denne applikasjonen.",
+    "twake.application.access.title": "Velg de riktige omfangene for applikasjonen din.",
+    "twake.application.access.no_default_scopes_available'": "Denne integrasjonen har ingen {{$1}}-tilgang",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Hvis du ikke vet hvordan du fyller disse, gå til ",
+    "components.rich_text_editor.plugins.suggestions.loading": "Ser etter mer"
 }

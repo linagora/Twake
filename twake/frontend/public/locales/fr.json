@@ -884,5 +884,6 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "L'application {{$1}} a été supprimée avec succès !",
     "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Erreur lors de la suppression de l'application {{$1}} !",
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Application {{$1}} réussie !",
-    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Paramètres du développeur"
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Paramètres du développeur",
+    "scenes.app.integrations_parameters.add_application": "Nouvelle intégration"
 }

@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "nâng cấp công ty của bạn",
     "components.locked_features_components.locked_invite_alert.message_part_2": " để mời thêm thành viên.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " liên hệ với chủ sở hữu hoặc quản trị viên của công ty bạn.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Xem tất cả các thành viên công ty của tôi trên bảng điều khiển"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Xem tất cả các thành viên công ty của tôi trên bảng điều khiển",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Mô tả ứng dụng của bạn bằng một vài từ",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Tích hợp mới",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Nếu bạn không biết làm thế nào để điền vào những điều này, hãy truy cập ",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Khóa cá nhân",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "Đã xóa ứng dụng {{$1}} thành công!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Lỗi khi xóa ứng dụng {{$1}}!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Ứng dụng {{$1}} thành công!",
+    "scenes.app.integrations_parameters.add_application": "Tích hợp mới",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Cài đặt nhà phát triển",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Tôi hiểu rằng chủ sở hữu và quản trị viên của công ty này sẽ có thể sửa đổi và xuất bản ứng dụng này.",
+    "twake.application.access.title": "Chọn phạm vi phù hợp cho ứng dụng của bạn.",
+    "twake.application.access.no_default_scopes_available'": "Tích hợp này không có bất kỳ quyền truy cập {{$1}} nào",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "tài liệu API Twake",
+    "components.rich_text_editor.plugins.suggestions.loading": "Tìm kiếm thêm"
 }

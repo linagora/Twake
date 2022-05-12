@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "şirketini yükselt",
     "components.locked_features_components.locked_invite_alert.message_part_2": " daha fazla üye davet etmek için.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " şirketinizin sahibi veya yöneticisiyle iletişime geçin.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Tüm şirket üyelerimi konsolda görün"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Tüm şirket üyelerimi konsolda görün",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Özel anahtar",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Uygulamanızı birkaç kelimeyle tanımlayın",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Yeni entegrasyon",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Bu şirketin sahibi ve yöneticilerinin bu uygulamayı değiştirebileceğini ve yayınlayabileceğini anlıyorum.",
+    "twake.application.access.title": "Uygulamanız için doğru kapsamları seçin.",
+    "twake.application.access.no_default_scopes_available'": "Bu entegrasyon herhangi bir {{$1}} erişimine sahip değil",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "Twake API belgeleri",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Bunları nasıl dolduracağınızı bilmiyorsanız, adresine gidin. ",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "{{$1}} uygulaması başarıyla kaldırıldı!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "{{$1}} uygulaması kaldırılırken hata oluştu!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Başarıyla {{$1}} uygulaması!",
+    "scenes.app.integrations_parameters.add_application": "Yeni entegrasyon",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Geliştirici ayarları",
+    "components.rich_text_editor.plugins.suggestions.loading": "daha fazlasını arıyorum"
 }

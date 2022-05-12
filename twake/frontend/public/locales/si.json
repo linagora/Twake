@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "ඔබේ සමාගම උසස් කරන්න",
     "components.locked_features_components.locked_invite_alert.message_part_2": " තවත් සාමාජිකයින්ට ආරාධනා කිරීමට.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " ඔබේ සමාගමේ හිමිකරු හෝ පරිපාලක අමතන්න.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "කොන්සෝලය මත මගේ සියලුම සමාගම් සාමාජිකයින් බලන්න"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "කොන්සෝලය මත මගේ සියලුම සමාගම් සාමාජිකයින් බලන්න",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "නව ඒකාබද්ධ කිරීම",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "මෙම සමාගමේ හිමිකරුට සහ පරිපාලකයින්ට මෙම යෙදුම වෙනස් කිරීමට සහ ප්‍රකාශ කිරීමට හැකි වනු ඇති බව මට වැටහේ.",
+    "twake.application.access.title": "ඔබගේ යෙදුම සඳහා නිවැරදි විෂය පථයන් තෝරන්න.",
+    "twake.application.access.no_default_scopes_available'": "මෙම අනුකලනයට කිසිදු {{$1}} ප්‍රවේශයක් නොමැත",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "Twake API ලේඛනගත කිරීම",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "ඔබ මේවා පුරවන්නේ කෙසේදැයි නොදන්නේ නම්, යන්න ",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "යෙදුම සාර්ථකව ඉවත් කරන ලදී {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "යෙදුම ඉවත් කිරීමේදී දෝෂයක් {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "{{$1}} යෙදුම සාර්ථකයි!",
+    "scenes.app.integrations_parameters.add_application": "නව ඒකාබද්ධ කිරීම",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "සංවර්ධක සැකසුම්",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "ඔබේ යෙදුම වචන කිහිපයකින් විස්තර කරන්න",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "පුද්ගලික යතුර",
+    "components.rich_text_editor.plugins.suggestions.loading": "තව හොයනවා"
 }

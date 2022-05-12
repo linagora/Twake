@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "päivittää yritystäsi",
     "components.locked_features_components.locked_invite_alert.message_part_2": " kutsua lisää jäseniä.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " ota yhteyttä yrityksesi omistajaan tai ylläpitäjään.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Katso kaikki yritykseni jäsenet konsolissa"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Katso kaikki yritykseni jäsenet konsolissa",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Jos et tiedä kuinka täyttää nämä, mene osoitteeseen ",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Yksityinen avain",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "Sovelluksen {{$1}} poistaminen onnistui!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Virhe poistettaessa sovellusta {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Kuvaile hakemustasi muutamalla sanalla",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Uusi integraatio",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Ymmärrän, että tämän yrityksen omistaja ja järjestelmänvalvojat voivat muokata ja julkaista tätä sovellusta.",
+    "twake.application.access.title": "Valitse sovelluksellesi oikeat laajuudet.",
+    "twake.application.access.no_default_scopes_available'": "Tällä integraatiolla ei ole {{$1}}-käyttöoikeutta",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "Twake API -dokumentaatio",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "{{$1}} -sovellus onnistui!",
+    "scenes.app.integrations_parameters.add_application": "Uusi integraatio",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Kehittäjäasetukset",
+    "components.rich_text_editor.plugins.suggestions.loading": "Etsitkö lisää"
 }
