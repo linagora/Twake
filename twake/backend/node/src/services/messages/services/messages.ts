@@ -18,6 +18,7 @@ import {
 import { MessageFile, TYPE as MsgFileTableName } from "../entities/message-files";
 import {
   BookmarkOperation,
+  CompanyExecutionContext,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
@@ -26,10 +27,10 @@ import {
   ReactionOperation,
   ThreadExecutionContext,
 } from "../types";
-import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 import _ from "lodash";
+
+import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 import { ThreadMessagesOperationsService } from "./messages-operations";
-// import { getDefaultMessageInstance } from "./utils";
 import { Thread } from "../entities/threads";
 import { UserObject } from "../../user/web/types";
 import { formatUser } from "../../../utils/users";
@@ -38,15 +39,19 @@ import { getDefaultMessageInstance } from "../../../utils/messages";
 import { buildMessageListPagination, getMentions } from "./utils";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
 import {
-  KnowledgeGraphGenericEventPayload,
   KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
 } from "../../../core/platform/services/knowledge-graph/types";
+import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
+import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs-reversed";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
   repository: Repository<Message>;
   msgFilesRepository: Repository<MessageFile>;
   operations: ThreadMessagesOperationsService;
+  private messageUserInboxRefsRepository: Repository<MessageUserInboxRefReversed>;
+  private threadRepository: Repository<Thread>;
 
   constructor() {
     this.operations = new ThreadMessagesOperationsService(this);
@@ -58,6 +63,12 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       MsgFileTableName,
       MessageFile,
     );
+    this.messageUserInboxRefsRepository = await gr.database.getRepository<MessageUserInboxRef>(
+      "message_user_inbox_refs",
+      MessageUserInboxRef,
+    );
+
+    this.threadRepository = await gr.database.getRepository<Thread>("threads", Thread);
     await this.operations.init(context);
     return this;
   }
@@ -673,5 +684,62 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     }
 
     return message;
+  }
+
+  async inbox(
+    userId: string,
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<Message>> {
+    let nextPage = null;
+
+    async function* getNextThreads(
+      refRepo: Repository<MessageUserInboxRefReversed>,
+    ): AsyncIterableIterator<string> {
+      let lastPageToken = pagination.page_token;
+      let hasMore = true;
+      do {
+        const threadsIds = await refRepo
+          .find(
+            {
+              company_id: context.company.id,
+              user_id: userId,
+            },
+            { pagination: new Pagination(lastPageToken, pagination.limitStr) },
+          )
+          .then((a: ListResult<MessageUserInboxRef>) => {
+            lastPageToken = a.nextPage.page_token;
+            nextPage = a.nextPage;
+            if (!lastPageToken) {
+              hasMore = false;
+            }
+            return a.getEntities().map(a => a.thread_id);
+          });
+
+        if (threadsIds.length) {
+          for (const threadId of threadsIds) {
+            yield threadId;
+          }
+        } else {
+          hasMore = false;
+        }
+      } while (hasMore);
+    }
+
+    const threadsIds = [];
+    const threadsIdsMap: { [key: string]: boolean } = {};
+
+    for await (const id of getNextThreads(this.messageUserInboxRefsRepository)) {
+      if (!threadsIdsMap[id]) {
+        threadsIdsMap[id] = true;
+        threadsIds.push(id);
+      }
+      if (threadsIds.length == +pagination.limitStr) {
+        break;
+      }
+    }
+
+    const msgPromises = threadsIds.map(id => this.repository.findOne({ thread_id: id, id }));
+    return new ListResult<Message>("message", await Promise.all(msgPromises), nextPage);
   }
 }

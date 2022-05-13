@@ -15,6 +15,8 @@ import Repository from "../../src/core/platform/services/database/services/orm/r
 import Device from "../../src/services/user/entities/device";
 
 import gr from "../../src/services/global-resolver";
+import { Channel } from "../../src/services/channels/entities";
+import { get as getChannelUtils } from "./channels/utils";
 
 export type uuid = string;
 
@@ -251,5 +253,16 @@ export class TestDbService {
 
   defaultWorkspace() {
     return this.workspaces[0].workspace;
+  }
+
+  async createChannel(userId): Promise<Channel> {
+    const channelUtils = getChannelUtils(this.testPlatform);
+    const channel = channelUtils.getChannel(userId);
+    const creationResult = await gr.services.channels.channels.save(
+      channel,
+      {},
+      channelUtils.getContext({ id: userId }),
+    );
+    return creationResult.entity;
   }
 }
