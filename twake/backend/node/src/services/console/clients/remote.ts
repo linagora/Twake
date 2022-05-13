@@ -265,6 +265,10 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         .replace(/ +/g, "_");
 
       if (await gr.services.users.isEmailAlreadyInUse(userDTO.email)) {
+        //TODO if this email is related to a console user:
+        //TODO look at this console user if it exists on the console
+        //TODO if not then anonymise this user and continue to create the new one
+
         throw CrudException.badRequest("Console user not created because email already exists");
       }
 
@@ -319,7 +323,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       return company;
     };
 
-    const companies = [];
+    const updatedListOfCompanies = [];
     if (roles) {
       for (const role of roles) {
         const companyConsoleCode = role.targetCode;
@@ -330,7 +334,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         }
         //Make sure user is active, if not we remove it
         if (role.status !== "deactivated") {
-          companies.push(company);
+          updatedListOfCompanies.push(company);
           const applications = role.applications.map(a => a.code);
           await gr.services.companies.setUserRole(company.id, user.id, roleName, applications);
         }
@@ -340,7 +344,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     // Remove user from companies not in the console
     const currentCompanies = await gr.services.companies.getAllForUser(user.id);
     for (const company of currentCompanies) {
-      if (!companies.map(c => c.id).includes(company.group_id)) {
+      if (!updatedListOfCompanies.map(c => c.id).includes(company.group_id)) {
         await gr.services.companies.removeUserFromCompany(
           { id: company.group_id },
           { id: user.id },
