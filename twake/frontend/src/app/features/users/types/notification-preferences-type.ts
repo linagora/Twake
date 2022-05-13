@@ -1,5 +1,3 @@
-import { Resource } from 'app/deprecated/CollectionsReact/Collections';
-
 export type preferencesType = {
   highlight_words: string[];
   night_break: {
@@ -19,8 +17,3 @@ export type NotificationPreferencesType = {
   workspace_id: string;
   preferences: preferencesType;
 };
-
-export class NotificationPreferencesResource extends Resource<NotificationPreferencesType> {
-  _type = 'notification_preferences';
-  _resourcePrimaryKey = ['user_id', 'company_id', 'workspace_id'];
-}

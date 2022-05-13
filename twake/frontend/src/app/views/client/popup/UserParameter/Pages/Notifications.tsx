@@ -4,7 +4,6 @@ import { isEqual } from 'lodash';
 
 import Languages from 'app/features/global/services/languages-service';
 import NotificationParameters from 'app/deprecated/user/notification_parameters.js';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import NotificationPreferences from 'app/deprecated/user/NotificationPreferences';
 
 import ButtonWithTimeout from 'components/buttons/button-with-timeout.js';
@@ -14,19 +13,19 @@ import Radio from 'components/inputs/radio.js';
 
 import {
   preferencesType,
-  NotificationPreferencesResource,
+  NotificationPreferencesType,
 } from 'app/features/users/types/notification-preferences-type';
 
 export default () => {
   const loading = useRef(true);
   const url = '/notifications/v1/preferences/';
-  const notificationPreferencesCollection = Collection.get(url, NotificationPreferencesResource);
-  const notificationPreferences = notificationPreferencesCollection.useWatcher({});
+
+  const notificationPreferences: NotificationPreferencesType[] = [];
 
   const [newPreferences, setNewPreferences] = useState<preferencesType>();
 
   if (loading.current && !!notificationPreferences && notificationPreferences.length) {
-    setNewPreferences(notificationPreferences[0].data.preferences);
+    setNewPreferences(notificationPreferences[0].preferences);
     loading.current = false;
   }
 
@@ -275,7 +274,7 @@ export default () => {
       <div style={{ textAlign: 'right' }}>
         <ButtonWithTimeout
           className="small buttonValidation"
-          disabled={isEqual(newPreferences, notificationPreferences[0].data.preferences)}
+          disabled={isEqual(newPreferences, notificationPreferences[0].preferences)}
           onClick={() => saveNewPreferences(newPreferences)}
           value={Languages.t('general.update')}
         />

@@ -4,7 +4,6 @@ import classNames from 'classnames';
 import { Skeleton } from 'antd';
 
 import { NotificationResource } from 'app/features/users/types/notification-types';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
 import { useWorkspaceNotifications } from 'app/features/users/hooks/use-notifications';

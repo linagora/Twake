@@ -4,7 +4,6 @@ import { ChannelType } from 'app/features/channels/types/channel';
 
 import Languages from 'app/features/global/services/languages-service';
 import ModalManager from 'app/components/modal/modal-manager';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 
 import ChannelCategory from '../Parts/Channel/ChannelCategory';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';

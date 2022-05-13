@@ -1,5 +1,3 @@
-import { Resource } from 'app/deprecated/CollectionsReact/Collections';
-
 export type NotificationType = {
   id: string;
   user_id: string;
@@ -11,9 +9,3 @@ export type NotificationType = {
 
   count: number;
 };
-
-export class NotificationResource extends Resource<NotificationType> {
-  _type = 'notification';
-  _resourcePrimaryKey = ['channel_id', 'thread_id'];
-  _resourceIdKey = 'id';
-}

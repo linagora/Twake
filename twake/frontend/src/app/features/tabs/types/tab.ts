@@ -1,5 +1,3 @@
-import { Resource } from 'app/deprecated/CollectionsReact/Collections';
-
 export type TabType = {
   id?: string;
   channel_id?: string;
@@ -9,7 +7,3 @@ export type TabType = {
   name?: string;
   configuration?: object;
 };
-
-export class TabResource extends Resource<TabType> {
-  _type = 'tab';
-}
