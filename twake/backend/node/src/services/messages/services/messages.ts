@@ -28,7 +28,6 @@ import {
   ThreadExecutionContext,
 } from "../types";
 import _, { first } from "lodash";
-import _ from "lodash";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 import { ThreadMessagesOperationsService } from "./messages-operations";
 import { Thread } from "../entities/threads";
