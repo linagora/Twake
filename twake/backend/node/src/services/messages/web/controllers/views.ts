@@ -13,6 +13,7 @@ import {
 } from "../../types";
 import { keyBy } from "lodash";
 import gr from "../../../global-resolver";
+import { CompanyExecutionContext } from "../../../applications/web/types";
 
 export class ViewsController {
   async feed(
@@ -118,8 +119,25 @@ export class ViewsController {
   }
 
   // Latest messages of user from all over workspace
-  async inbox(): Promise<ResourceListResponse<MessageWithReplies>> {
-    return { resources: [] };
+  async inbox(
+    request: FastifyRequest<{
+      Querystring: MessageViewListQueryParameters;
+      Params: {
+        company_id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<Message>> {
+    const context = getCompanyExecutionContext(request);
+    const messages = await gr.services.messages.messages.inbox(
+      request.currentUser.id,
+      context,
+      new Pagination(null, String(request.query.limit)),
+    );
+
+    return {
+      resources: messages.getEntities(),
+    };
   }
 
   async search(
@@ -228,5 +246,20 @@ function getChannelViewExecutionContext(
       company_id: request.params.company_id,
       workspace_id: request.params.workspace_id,
     },
+  };
+}
+
+function getCompanyExecutionContext(
+  request: FastifyRequest<{
+    Params: { company_id: string };
+  }>,
+): CompanyExecutionContext {
+  return {
+    user: request.currentUser,
+    company: { id: request.params.company_id },
+    url: request.url,
+    method: request.routerMethod,
+    reqId: request.id,
+    transport: "http",
   };
 }
