@@ -104,6 +104,12 @@ export interface MessageThreadMessagesServiceAPI
   includeUsersInMessageWithReplies(
     message: MessageWithReplies,
   ): Promise<MessageWithRepliesWithUsers>;
+
+  inbox(
+    userId: string,
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<Message>>;
 }
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {

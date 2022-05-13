@@ -130,6 +130,10 @@ export type SearchMessageOptions = {
   sender?: string;
 };
 
+export type InboxOptions = {
+  companyId: string;
+};
+
 export type FlatFileFromMessage = {
   file: any;
   thread: any;

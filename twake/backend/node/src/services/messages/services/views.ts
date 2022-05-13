@@ -10,8 +10,10 @@ import { Message } from "../entities/messages";
 import { Thread } from "../entities/threads";
 import {
   ChannelViewExecutionContext,
+  CompanyExecutionContext,
   FlatFileFromMessage,
   FlatPinnedFromMessage,
+  InboxOptions,
   MessageViewListOptions,
   MessageWithReplies,
   SearchMessageOptions,
@@ -24,6 +26,7 @@ import { uuid } from "../../../utils/types";
 import { MessageFileRef } from "../entities/message-file-refs";
 import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
 import gr from "../../global-resolver";
+import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
 
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
