@@ -128,6 +128,10 @@ export class ChannelCrudController
     }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<Channel>> {
+    if (request.query.q.length < 2) {
+      return { resources: [] };
+    }
+
     await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
 
     const limit = request.query.limit || 100;
