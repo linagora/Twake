@@ -2,7 +2,7 @@ import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import _ from 'lodash';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import userNotificationApiClient from '../api/user-notification-api-client';
 import {
   NotificationsBadgesState,
@@ -15,22 +15,44 @@ import { NotificationType } from '../types/notification-types';
 import ElectronService from 'app/features/global/framework/electron-service';
 import windowState from 'app/features/global/utils/window';
 import RouterService from '../../router/services/router-service';
+import { useCallback } from 'react';
 
 export const useNotifications = () => {
   const [badges, setBadges] = useRecoilState(NotificationsBadgesState);
   const companyId = useRouterCompany();
 
-  const addBadges = (newBadges: NotificationType[]) => {
-    setBadges(_.uniqBy([...badges, ...newBadges], 'id'));
-  };
+  const addBadges = useRecoilCallback(
+    ({ snapshot }) =>
+      (newBadges: NotificationType[]) => {
+        const badges = snapshot.getLoadable(NotificationsBadgesState).getValue();
+        const list = _.uniqBy([...badges, ...newBadges], 'id');
+        setBadges(list);
+      },
+    [setBadges, badges],
+  );
 
-  const removeBadges = (removedBadges: NotificationType[]) => {
-    setBadges(_.differenceBy(badges, removedBadges, 'id'));
-  };
+  const removeBadges = useRecoilCallback(
+    ({ snapshot }) =>
+      (removedBadges: NotificationType[]) => {
+        const badges = snapshot.getLoadable(NotificationsBadgesState).getValue();
+        const list = _.differenceBy(badges, removedBadges, 'id');
+        setBadges(list);
+      },
+    [setBadges, badges],
+  );
 
-  const setCompanyBadges = (newBadges: NotificationType[], companyId: string) => {
-    setBadges(_.uniqBy([...badges.filter(b => b.company_id !== companyId), ...newBadges], 'id'));
-  };
+  const setCompanyBadges = useRecoilCallback(
+    ({ snapshot }) =>
+      (newBadges: NotificationType[], companyId: string) => {
+        const badges = snapshot.getLoadable(NotificationsBadgesState).getValue();
+        let list = _.uniqBy(
+          [...badges.filter(b => b.company_id !== companyId), ...newBadges],
+          'id',
+        );
+        setBadges(list);
+      },
+    [setBadges, badges],
+  );
 
   useGlobalEffect(
     'useNotifications',
@@ -41,9 +63,6 @@ export const useNotifications = () => {
           request.then(function (result) {});
         }
       }
-
-      const updatedBadges = await userNotificationApiClient.getAllCompaniesBadges();
-      addBadges(updatedBadges);
     },
     [],
   );
@@ -53,7 +72,8 @@ export const useNotifications = () => {
     async () => {
       if (companyId) {
         const updatedBadges = await userNotificationApiClient.getCompanyBadges(companyId);
-        setCompanyBadges(updatedBadges, companyId);
+        const updatedOtherCompaniesBadges = await userNotificationApiClient.getAllCompaniesBadges();
+        setCompanyBadges([...updatedOtherCompaniesBadges, ...updatedBadges], companyId);
       }
     },
     [companyId],
@@ -95,11 +115,15 @@ export const useNotifications = () => {
     [badges],
   );
 
+  const realtimeEvent = useCallback(
+    async (action, resource) => {
+      if (action === 'saved') addBadges([resource]);
+      if (action === 'deleted') removeBadges([resource]);
+    },
+    [addBadges, removeBadges],
+  );
   let room = userNotificationApiClient.websocket();
-  useRealtimeRoom<any>(room, 'useNotifications', async (action, resource) => {
-    if (action === 'saved') addBadges([resource]);
-    if (action === 'deleted') removeBadges([resource]);
-  });
+  useRealtimeRoom<any>(room, 'useNotifications', realtimeEvent);
 
   return {
     badges,

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useWebSocket from 'app/features/global/hooks/use-websocket';
 import Logger from 'app/features/global/framework/logger-service';
 import {
@@ -38,12 +38,15 @@ const useRealtimeRoom = <T>(
   // subscribe once
   const subscribed = useRef(false);
 
-  const newEvent = (event: { action: RealtimeBaseAction; payload: T }) => {
-    if (event) {
-      setLastEvent(event);
-      onEvent(event.action, event.payload);
-    }
-  };
+  const newEvent = useCallback(
+    (event: { action: RealtimeBaseAction; payload: T }) => {
+      if (event) {
+        setLastEvent(event);
+        onEvent(event.action, event.payload);
+      }
+    },
+    [onEvent],
+  );
 
   useEffect(() => {
     if (room !== roomConf) {
