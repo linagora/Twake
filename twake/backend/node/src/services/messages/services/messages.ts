@@ -27,7 +27,7 @@ import {
   ThreadExecutionContext,
 } from "../types";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
-import _ from "lodash";
+import _, { first } from "lodash";
 import { ThreadMessagesOperationsService } from "./messages-operations";
 // import { getDefaultMessageInstance } from "./utils";
 import { Thread } from "../entities/threads";
@@ -359,14 +359,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return new DeleteResult<Message>("message", message, true);
   }
 
-  async getSingleMessage(pk: Pick<Message, "thread_id" | "id">) {
-    let message = await this.repository.findOne(pk);
-    if (message) {
-      message = await this.completeMessage(message, { files: message.files || [] });
-    }
-    return message;
-  }
-
   async get(
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
@@ -375,12 +367,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const thread = await gr.services.messages.threads.get({ id: pk.id }, context);
     let message;
     if (thread) {
-      message = await this.getThread(thread);
+      message = await this.getThread(thread, options);
     } else {
-      message = await this.getSingleMessage(pk);
+      message = await this.getSingleMessage(pk, options);
     }
-    if (options?.includeQuoteInMessage !== false)
-      message = await this.includeQuoteInMessage(message);
+    return message;
+  }
+
+  private async getSingleMessage(
+    pk: Pick<Message, "thread_id" | "id">,
+    options?: { includeQuoteInMessage?: boolean },
+  ) {
+    let message = await this.repository.findOne(pk);
+    if (message) {
+      message = await this.completeMessage(message, {
+        files: message.files || [],
+        includeQuoteInMessage: options.includeQuoteInMessage,
+      });
+    }
     return message;
   }
 
@@ -451,24 +455,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let extendedList = [];
     for (const m of list.getEntities()) {
-      extendedList.push(await this.includeQuoteInMessage(m));
+      extendedList.push(await this.completeMessage(m));
     }
 
     return new ListResult("messages", extendedList, list.nextPage);
-  }
-
-  async includeQuoteInMessage(message: MessageWithUsers): Promise<MessageWithUsers> {
-    if (message.quote_message && (message.quote_message as Message["quote_message"]).id) {
-      message.quote_message = await this.get(
-        {
-          thread_id: (message.quote_message as Message["quote_message"]).thread_id,
-          id: (message.quote_message as Message["quote_message"]).id,
-        },
-        undefined,
-        { includeQuoteInMessage: false },
-      );
-    }
-    return message;
   }
 
   async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
@@ -588,7 +578,10 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   //Complete message with all missing information and cache
-  async completeMessage(message: Message, options: { files?: Message["files"] } = {}) {
+  async completeMessage(
+    message: Message,
+    options: { files?: Message["files"]; includeQuoteInMessage?: boolean } = {},
+  ) {
     this.fixReactionsFormat(message);
     try {
       if (options.files) message = await this.completeMessageFiles(message, options.files || []);
@@ -605,6 +598,24 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       });
     }
 
+    //Add quote message
+    if (options?.includeQuoteInMessage !== false)
+      message = await this.includeQuoteInMessage(message);
+
+    return message;
+  }
+
+  async includeQuoteInMessage(message: MessageWithUsers): Promise<MessageWithUsers> {
+    if (message.quote_message && (message.quote_message as Message["quote_message"]).id) {
+      message.quote_message = await this.get(
+        {
+          thread_id: (message.quote_message as Message["quote_message"]).thread_id,
+          id: (message.quote_message as Message["quote_message"]).id,
+        },
+        undefined,
+        { includeQuoteInMessage: false },
+      );
+    }
     return message;
   }
 

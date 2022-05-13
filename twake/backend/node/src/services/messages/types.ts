@@ -118,6 +118,7 @@ export interface MessagesSaveOptions {
 }
 export interface MessagesGetThreadOptions {
   replies_per_thread?: number;
+  includeQuoteInMessage?: boolean;
 }
 
 export type SearchMessageOptions = {
