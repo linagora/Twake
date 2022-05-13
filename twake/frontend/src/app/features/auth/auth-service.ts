@@ -15,7 +15,6 @@ import JWT, { JWTDataType } from 'app/features/auth/jwt-storage-service';
 import UserAPIClient from '../../features/users/api/user-api-client';
 import Application from 'app/features/applications/services/application-service';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
-import Collections from 'app/deprecated/CollectionsV2/Collections';
 import Globals from 'app/features/global/services/globals-twake-app-service';
 
 type AccountType = 'console' | 'internal';
@@ -223,7 +222,6 @@ class AuthService {
   clear() {
     this.resetCurrentUser();
     LocalStorage.clear();
-    Collections.clear();
     JWT.clear();
   }
 
