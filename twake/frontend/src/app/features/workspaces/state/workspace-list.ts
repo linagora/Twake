@@ -8,18 +8,23 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 const logger = Logger.getLogger('WorkspaceListState');
 
+let workspacesCompanyMap: { [key: string]: WorkspaceType[] } = {};
+
+export const getWorkspacesByCompany = (companyId: string) => {
+  return workspacesCompanyMap[companyId] || [];
+};
+
 export const WorkspaceListStateFamily = atomFamily<WorkspaceType[], string>({
   key: 'WorkspaceListStateFamily',
   default: () => [],
-
-  //Depreciated
-  effects_UNSTABLE: [
+  effects_UNSTABLE: companyId => [
     ({ onSet }) => {
-      onSet(workspaces =>
+      onSet(workspaces => {
+        workspacesCompanyMap[companyId] = workspaces;
         workspaces.map(w => {
           Collections.get('workspaces').updateObject(_.cloneDeep(w));
-        }),
-      );
+        });
+      });
     },
   ],
 });
@@ -56,27 +61,27 @@ export const WorkspaceGetOrFetch = selectorFamily<
     },
 });
 
-export const getWorkspacesForCompany = selectorFamily<WorkspaceType[], string>({
-  key: 'getWorkspacesForCompany',
+export const getWorkspacesForCompanySelector = selectorFamily<WorkspaceType[], string>({
+  key: 'getWorkspacesForCompanySelector',
   get:
     companyId =>
     ({ get }) => {
-      logger.debug('getWorkspacesForCompany', companyId);
+      logger.debug('getWorkspacesForCompanySelector', companyId);
 
       return get(WorkspaceListStateFamily(companyId)).filter(ws => ws.company_id === companyId);
     },
 });
 
-export const getWorkspaceInCompany = selectorFamily<
+export const getWorkspaceInCompanySelector = selectorFamily<
   WorkspaceType | undefined,
   { companyId: string; workspaceId: string }
 >({
-  key: 'getWorkspaceInCompany',
+  key: 'getWorkspaceInCompanySelector',
   get:
     ({ companyId, workspaceId }) =>
     ({ get }) => {
-      logger.debug('getWorkspaceInCompany', companyId, workspaceId);
-      const workspaces = get(getWorkspacesForCompany(companyId));
+      logger.debug('getWorkspaceInCompanySelector', companyId, workspaceId);
+      const workspaces = get(getWorkspacesForCompanySelector(companyId));
 
       return (workspaces || []).find(ws => ws.id === workspaceId);
     },

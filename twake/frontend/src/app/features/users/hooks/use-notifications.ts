@@ -16,6 +16,7 @@ import ElectronService from 'app/features/global/framework/electron-service';
 import windowState from 'app/features/global/utils/window';
 import RouterService from '../../router/services/router-service';
 import { useCallback } from 'react';
+import { pushDesktopNotification } from '../services/push-desktop-notification';
 
 export const useNotifications = () => {
   const [badges, setBadges] = useRecoilState(NotificationsBadgesState);
@@ -52,19 +53,6 @@ export const useNotifications = () => {
         setBadges(list);
       },
     [setBadges, badges],
-  );
-
-  useGlobalEffect(
-    'useNotifications',
-    async () => {
-      if ('Notification' in window && window.Notification.requestPermission) {
-        const request = window.Notification.requestPermission();
-        if (request && request.then) {
-          request.then(function (result) {});
-        }
-      }
-    },
-    [],
   );
 
   useGlobalEffect(
@@ -117,6 +105,8 @@ export const useNotifications = () => {
 
   const realtimeEvent = useCallback(
     async (action, resource) => {
+      if (action === 'event' && resource._type === 'notification:desktop')
+        pushDesktopNotification(resource);
       if (action === 'saved') addBadges([resource]);
       if (action === 'deleted') removeBadges([resource]);
     },

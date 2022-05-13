@@ -11,7 +11,6 @@ import AlertManager from 'app/features/global/services/alert-manager-service';
 import UserService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
-import Notifications from 'app/features/users/services/user-notifications-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import { NotificationResource } from 'app/features/users/types/notification-types';
 import RouterServices from 'app/features/router/services/router-service';

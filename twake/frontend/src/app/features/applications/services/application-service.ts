@@ -6,7 +6,6 @@ import Languages from 'app/features/global/services/languages-service';
 import JWT from 'app/features/auth/jwt-storage-service';
 import Collections from 'app/deprecated/CollectionsV2/Collections';
 import Globals from 'app/features/global/services/globals-twake-app-service';
-import UserNotifications from 'app/features/users/services/user-notifications-service';
 import WorkspacesListener from '../../workspaces/services/workspaces-listener-service';
 import LocalStorage from '../../global/framework/local-storage-service';
 import WebSocket from '../../global/types/websocket-types';
@@ -38,7 +37,6 @@ class Application {
     WorkspacesListener.startListen();
     AccessRightsService.resetLevels();
 
-    UserNotifications.start();
     CurrentUser.start();
   }
 
