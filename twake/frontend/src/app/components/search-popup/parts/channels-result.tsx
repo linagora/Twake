@@ -6,6 +6,7 @@ import {useWorkspace} from "features/workspaces/hooks/use-workspaces";
 import assert from "assert";
 import Emojione from "components/emojione/emojione";
 import RouterServices from "features/router/services/router-service";
+import {highlightText} from "components/search-popup/parts/common";
 const emoji = require("emoji-name-map");
 
 type PropsType = {
@@ -20,8 +21,6 @@ export default ({channel,highlight,onClick}: PropsType): JSX.Element => {
     assert(channel.name);
     assert(channel.icon);
     const {workspace} = useWorkspace(channel.workspace_id);
-    const reg = new RegExp('('+highlight+')','ig');
-    const highlightedText = (text:string) => text?.replace(reg,"<span class='highlight'>$1</span>");
     const thumbnail = emoji.get(channel.icon);
 
     const onItemClick = async()=>{
@@ -39,11 +38,11 @@ export default ({channel,highlight,onClick}: PropsType): JSX.Element => {
 
     return (
             <div className="result-item" onClick={onItemClick}>
-                <div className="result-item-icon">
+                <div className="result-item-channel-icon">
                     <div className="result-item-icon-title">{thumbnail}</div>
                 </div>
                 <div className="result-item-content">
-                    <div className="channel-title" dangerouslySetInnerHTML={{__html: highlightedText(channel.name)}}></div>
+                    <div className="channel-title" dangerouslySetInnerHTML={{__html: highlightText(channel.name, highlight)}}/>
                     <div className="channel-description">{workspace?.name}</div>
                 </div>
                 <div className="result-item-postfix"></div>
