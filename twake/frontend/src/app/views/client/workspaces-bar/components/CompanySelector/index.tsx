@@ -79,7 +79,7 @@ export const CurrentCompanyLogo = ({
   withCompanyName?: boolean;
 }) => {
   const { company } = useCurrentCompany();
-  const { badges } = useOtherCompanyNotifications(company.id || '');
+  const { badges } = useOtherCompanyNotifications(company?.id || '');
 
   if (!company) {
     return <></>;
