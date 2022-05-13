@@ -6,7 +6,8 @@ import {Tooltip} from "antd";
 import User from 'features/users/services/current-user-service';
 import {useWorkspace} from "features/workspaces/hooks/use-workspaces";
 import RouterServices from "features/router/services/router-service";
-
+import Strings from "features/global/utils/strings";
+import {highlightText} from "./common";
 type PropsType = {
     message : {
         id: string
@@ -53,8 +54,6 @@ export default ({message,highlight,onClick}: PropsType): JSX.Element => {
     let {workspace_id, channel_id} = message.cache;
     const { channel } = useChannel(channel_id);
     const { workspace } = useWorkspace(workspace_id);
-    const reg = new RegExp('('+highlight+')','ig');
-    const highlightedText = (text:string) => text.replace(reg,"<span class='highlight'>$1</span>");
     const trimmedText = (text:string)=> (text.length>MSG_TRIM_LENGTH) ? text.substr(0,MSG_TRIM_LENGTH) + '…' : text;
 
     const msgDate = () => format(new Date(message.created_at));
@@ -86,7 +85,7 @@ export default ({message,highlight,onClick}: PropsType): JSX.Element => {
                 <div className="messages-author">{sender?.first_name} {sender?.last_name}</div>
                 <div className="messages-text">
                     <Tooltip title={message.text} placement="bottom" mouseEnterDelay={0.5} >
-                    <div dangerouslySetInnerHTML={{__html: highlightedText(trimmedText(message.text))}}/>
+                    <div dangerouslySetInnerHTML={{__html: highlightText(trimmedText(message.text), highlight)}}/>
                     </Tooltip>
                 </div>
             </div>

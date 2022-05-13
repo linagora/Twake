@@ -149,6 +149,10 @@ export class ViewsController {
     }>,
     context: ChannelViewExecutionContext,
   ): Promise<ResourceListResponse<Message>> {
+    if (request.query.q.length < 2) {
+      return { resources: [] };
+    }
+
     const limit = +request.query.limit || 100;
 
     async function* getNextMessages(): AsyncIterableIterator<Message> {

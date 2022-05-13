@@ -8,6 +8,7 @@ import UserAPIClient from 'app/features/users/api/user-api-client';
 import {UserType} from "features/users/types/user";
 import Strings from "features/global/utils/strings";
 import Workspaces from "deprecated/workspaces/workspaces";
+import {delayRequest} from "features/global/utils/managedSearchRequest";
 
 type ResultTypes = {
     messages: Message[]
@@ -94,9 +95,13 @@ class SearchService extends Observable {
     }
 
     search() {
-        this.searchMessages();
-        this.searchChannels();
-        this.searchUsers();
+        delayRequest("search-service",()=>{
+            if (this.value && this.value.length >1){
+                this.searchMessages();
+                this.searchChannels();
+                this.searchUsers();
+            }
+        });
     }
 
 
