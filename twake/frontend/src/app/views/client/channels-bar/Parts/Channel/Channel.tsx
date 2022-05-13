@@ -89,7 +89,7 @@ export default (props: Props) => {
           {props.name + ' '}
           {props.visibility === 'private' && <Icon type="lock merge-icon black-icon" />}
         </div>
-        <div className="writing_Activity">{!selected && writingActivity && <WritingLoader />}</div>
+        <div className="writing_activity">{!selected && writingActivity && <WritingLoader />}</div>
         <div className="more">
           {props.muted && <Icon type="bell-slash merge-icon grey-icon" />}
           {props.notifications > 0 && (

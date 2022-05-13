@@ -136,7 +136,7 @@ export default ({ companyId, threadId }: Props) => {
           loadMore={loadMoreMessages}
         />
       )}
-      {!(atBottom && window.reachedEnd) && window.loaded && (
+      {!(atBottom && window.reachedEnd) && window.loaded && messages.length > 0 && (
         <GoToBottom
           onClick={() => {
             jumpToBottom();

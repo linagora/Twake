@@ -12,6 +12,7 @@ import { useCurrentCompanyRealtime } from '../../features/companies/hooks/use-co
 
 import './workspaces-bar/styles.scss';
 import { usePreloadSomeUsers } from 'app/features/users/hooks/use-user-list';
+import { useNotifications } from 'app/features/users/hooks/use-notifications';
 
 export default () => {
   const companyId = useRouterCompany();
@@ -21,6 +22,7 @@ export default () => {
 
   // We call this hook here to be able to preload some users in user list state
   usePreloadSomeUsers();
+  useNotifications();
 
   if (loading) {
     return <LoadingSidebar />;

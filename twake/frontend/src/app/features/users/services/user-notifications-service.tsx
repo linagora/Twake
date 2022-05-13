@@ -70,85 +70,6 @@ class Notifications extends Observable {
       return;
     }
     this.started = true;
-
-    if ('Notification' in window && window.Notification.requestPermission) {
-      const request = window.Notification.requestPermission();
-      if (request && request.then) {
-        request.then(function (result) {});
-      }
-    }
-
-    const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/',
-      NotificationResource,
-    );
-
-    notificationsCollection.getTransport().start();
-    notificationsCollection.addEventListener(
-      'notification:desktop',
-      this.triggerUnreadMessagesPushNotification,
-    );
-
-    //Listen websockets
-    notificationsCollection.addWatcher(() => {
-      this.getNotifications();
-    }, {});
-  }
-
-  //This method is called each time we change our current company
-  subscribeToCurrentCompanyNotifications(companyId: string) {
-    const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/',
-      NotificationResource,
-    );
-    notificationsCollection.setOptions({
-      reloadStrategy: 'ontime',
-      queryParameters: {
-        company_id: companyId,
-        all_companies: true,
-      },
-    });
-    notificationsCollection.find({}, { limit: 1000, refresh: true });
-  }
-
-  getNotifications() {
-    const notificationsCollection = Collection.get(
-      '/notifications/v1/badges/',
-      NotificationResource,
-    );
-    const notifications = notificationsCollection.find({});
-
-    // Count notifications:
-    // - other group notifications are not counted
-    // - other workspace notifications count as one
-    // - if I don't know a channel, don't count it + mark it as read => /!\ need to be very sure we are not in the channel
-    let badgeCount = 0;
-    const state = RouterService.getStateFromRoute();
-    const ignore: any = [];
-    for (let i = 0; i < notifications.length; i++) {
-      const notification = notifications[i];
-      if (
-        ignore.indexOf(notification.data.company_id) >= 0 ||
-        ignore.indexOf(notification.data.workspace_id) >= 0
-      ) {
-        return;
-      }
-
-      if (
-        notification.data.company_id !== state.companyId ||
-        (notification.data.workspace_id !== state.workspaceId &&
-          notification.data.workspace_id !== 'direct')
-      ) {
-        badgeCount++;
-        ignore.push(notification.data.company_id);
-        ignore.push(notification.data.workspace_id);
-      } else {
-        badgeCount++;
-      }
-    }
-    this.updateAppBadge(badgeCount);
-    NotificationPreferences.init();
-    this.notify();
   }
 
   async triggerUnreadMessagesPushNotification(newNotification: DesktopNotification | null = null) {
@@ -239,16 +160,6 @@ class Notifications extends Observable {
           n.close();
         };
       }
-    }
-  }
-
-  updateAppBadge(notifications = 0) {
-    windowState.setPrefix(notifications);
-
-    if (notifications > 0) {
-      ElectronService.setBadge('' + notifications);
-    } else {
-      ElectronService.setBadge('');
     }
   }
 
