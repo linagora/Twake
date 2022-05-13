@@ -2,7 +2,11 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ResourceListResponse } from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { handleError } from "../../../../utils/handleError";
-import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
+import {
+  CrudException,
+  ListResult,
+  Pagination,
+} from "../../../../core/platform/framework/api/crud-service";
 import {
   ChannelViewExecutionContext,
   FlatFileFromMessage,
@@ -14,6 +18,7 @@ import {
 import { keyBy } from "lodash";
 import gr from "../../../global-resolver";
 import { CompanyExecutionContext } from "../../../applications/web/types";
+import { PublicFile } from "../../../files/entities/file";
 
 export class ViewsController {
   async feed(
@@ -114,8 +119,26 @@ export class ViewsController {
   }
 
   // Uploaded and downloaded files of user from all over workspace
-  async files(): Promise<ResourceListResponse<MessageWithReplies>> {
-    return { resources: [] };
+  async files(
+    request: FastifyRequest<{
+      Params: { company_id: string };
+      Querystring: { page_token: null; limit: 100; type: "user_upload" | "user_download" };
+    }>,
+  ): Promise<ResourceListResponse<PublicFile>> {
+    if (request.query.type !== "user_upload") {
+      throw CrudException.notImplemented(`Not implemented for type ${request.query.type}`);
+    }
+
+    const userFiles = await gr.services.files.listUserUploadedFiles(
+      request.currentUser.id,
+      getCompanyExecutionContext(request),
+      new Pagination(request.query.page_token, String(request.query.limit)),
+    );
+
+    return {
+      resources: userFiles.getEntities().map(a => a.getPublicObject()),
+      next_page_token: userFiles.nextPage.page_token,
+    };
   }
 
   // Latest messages of user from all over workspace

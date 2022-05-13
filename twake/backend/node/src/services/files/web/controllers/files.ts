@@ -101,28 +101,6 @@ export class FileController {
 
     return { status: deleteResult.deleted ? "success" : "error" };
   }
-
-  async list(
-    request: FastifyRequest<{
-      Params: { company_id: string };
-      Querystring: { page_token: null; limit: 100; type: "user_upload" | "user_download" };
-    }>,
-  ): Promise<ResourceListResponse<PublicFile>> {
-    if (request.query.type !== "user_upload") {
-      throw CrudException.notImplemented(`Not implemented for type ${request.query.type}`);
-    }
-
-    const userFiles = await gr.services.files.listUserUploadedFiles(
-      request.currentUser.id,
-      getCompanyExecutionContext(request),
-      new Pagination(request.query.page_token, String(request.query.limit)),
-    );
-
-    return {
-      resources: userFiles.getEntities().map(a => a.getPublicObject()),
-      next_page_token: userFiles.nextPage.page_token,
-    };
-  }
 }
 
 function getCompanyExecutionContext(
