@@ -16,7 +16,7 @@ type PropsType = {
   // user username
   username?: string;
   // should we hide the user image?
-  hideUserImage: boolean;
+  hideUserImage?: boolean;
 };
 
 export default (props: PropsType): JSX.Element => {

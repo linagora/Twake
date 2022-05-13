@@ -27,7 +27,7 @@ const findEntities = (contentBlock: ContentBlock, callback: any, contentState: C
 const resolver = (
   text: string,
   max: number,
-  callback: (commands: CommandSuggestionType[]) => void,
+  callback: (args: { items: CommandSuggestionType[] }) => void,
 ) => {
   let commands: CommandSuggestionType[] = [];
 
@@ -41,11 +41,12 @@ const resolver = (
       );
     }
   });
-  callback(
-    commands
-      .filter(c => c.command.startsWith(`/${text}`))
+
+  callback({
+    items: commands
+      .filter(c => c.command.startsWith(text))
       .map((c, index) => ({ ...c, ...{ autocomplete_id: index } })),
-  );
+  });
 };
 
 const addCommand = (command: CommandSuggestionType, editorState: EditorState): EditorState => {
@@ -80,7 +81,7 @@ export default (
     strategy: findEntities,
     component: Command,
   },
-  trigger: /^\/([a-z0-9]*)$/,
+  trigger: /^(\/[a-z0-9]*)$/,
   resourceType: CommandResourceType,
   onSelected: (command: CommandSuggestionType, editorState: EditorState) =>
     addCommand(command, editorState),

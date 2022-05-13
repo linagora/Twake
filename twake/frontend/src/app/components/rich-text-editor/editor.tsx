@@ -52,6 +52,9 @@ type CurrentSuggestion<T> = {
    */
   items: Array<T>;
 
+  /** Is the list loading content from backend */
+  loading: boolean;
+
   /**
    * unique id for the current suggestion results
    */
@@ -335,12 +338,13 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
       const trigger = isMatching(plugin.trigger, searchMatch.text);
 
       if (trigger && trigger.text) {
-        plugin.resolver(trigger.text, items => {
+        plugin.resolver(trigger.text, ({ items, loading }) => {
           const position = getCaretCoordinates();
           const activeSuggestion = {
             position,
             searchText: trigger.text,
             items,
+            loading: loading || false,
             // unicity is for a given position and a given start index in the search terms
             id: `y=${position?.y},index=${searchMatch.start}`,
           };
@@ -682,6 +686,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
             id={this.state.activeSuggestion?.id || ''}
             search={this.state.activeSuggestion?.searchText || ''}
             list={this.state.activeSuggestion?.items}
+            loading={this.state.activeSuggestion?.loading || false}
             position={this.state.activeSuggestion ? this.state.activeSuggestion.position : null}
             editorPosition={(this.editor as any)?.editorContainer?.getBoundingClientRect()}
             renderItem={(props: any) => this.renderSuggestion(props, this.state.suggestionType)}

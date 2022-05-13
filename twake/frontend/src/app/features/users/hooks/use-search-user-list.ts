@@ -5,7 +5,7 @@ import { UserType } from 'app/features/users/types/user';
 import { getCurrentUserList, setUserList, useSetUserList, useUserList } from './use-user-list';
 import UserAPIClient, { SearchContextType } from '../api/user-api-client';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
-import Strings from 'app/features/global/utils/strings';
+import Strings, { distanceFromQuery } from 'app/features/global/utils/strings';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import _ from 'lodash';
 
@@ -72,13 +72,21 @@ export const searchFrontend = (
 
   if (query) {
     result = result
-      .filter(
-        ({ email, first_name, last_name, username }) =>
-          Strings.removeAccents(`${email} ${first_name} ${last_name} ${username}`)
-            .toLocaleLowerCase()
-            .indexOf(Strings.removeAccents(query).toLocaleLowerCase()) > -1,
+      .filter(({ email, first_name, last_name, username }) =>
+        query
+          .split(' ')
+          .every(
+            word =>
+              Strings.removeAccents(`${email} ${first_name} ${last_name} ${username}`)
+                .toLocaleLowerCase()
+                .indexOf(Strings.removeAccents(word).toLocaleLowerCase()) > -1,
+          ),
       )
-      .sort((a, b) => a.username.length - b.username.length);
+      .sort(
+        (a, b) =>
+          distanceFromQuery([a.last_name, a.first_name, a.email, a.username].join(' '), query) -
+          distanceFromQuery([b.last_name, b.first_name, b.email, b.username].join(' '), query),
+      );
   }
 
   if (!query) {
