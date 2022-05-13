@@ -11,6 +11,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 import PublicMainView from 'app/views/client/main-view/PublicMainView';
 import Observable from '../../../deprecated/Observable/Observable';
+import { getWorkspacesByCompany } from 'app/features/workspaces/state/workspace-list';
 
 export type RouteType = {
   path: string;
@@ -215,6 +216,14 @@ class RouterServices extends Observable {
     options: { replace?: boolean; keepSearch?: boolean } = {},
   ): string {
     const currentState = { ...this.getStateFromRoute() };
+
+    if (params.workspaceId === 'direct') {
+      //Find a workspace to open as direct isn't a real workspace
+      const workspace = getWorkspacesByCompany(params.companyId || currentState.companyId || '');
+      if (workspace.length > 0) {
+        params.workspaceId = workspace[0].id;
+      }
+    }
 
     if (params.channelId && params.channelId !== currentState.channelId) {
       currentState.threadId = undefined;

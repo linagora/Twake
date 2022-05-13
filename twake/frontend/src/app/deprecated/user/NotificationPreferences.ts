@@ -4,10 +4,9 @@ import Observable from 'app/deprecated/Observable/Observable';
 import Languages from 'app/features/global/services/languages-service';
 import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
 import Login from 'app/features/auth/login-service';
-import { Collection } from '../CollectionsReact/Collections';
 import {
+  NotificationPreferencesType,
   preferencesType,
-  NotificationPreferencesResource,
 } from 'app/features/users/types/notification-preferences-type';
 
 type Keys = keyof preferencesType;
@@ -15,20 +14,10 @@ type Values = preferencesType[Keys];
 
 class NotificationPreferencesService extends Observable {
   url = '/notifications/v1/preferences/';
-  notificationPreferences!: NotificationPreferencesResource;
+  notificationPreferences: NotificationPreferencesType | null = null;
 
   async init(): Promise<void> {
-    const collection = Collection.get(this.url, NotificationPreferencesResource);
-
-    collection.addWatcher(
-      () => {
-        //Will be called each time something happen on this collection
-        this.notificationPreferences = collection.findOne({}, { withoutBackend: true }); //Get preferences from collection store
-        this.notify(); //Tell all subscribed components to reload
-      },
-      {},
-      {},
-    );
+    //TODO
   }
 
   /**
@@ -43,33 +32,20 @@ class NotificationPreferencesService extends Observable {
 
     preferences.map(({ key, value }) => (newPreferences[key] = value));
 
-    const collection = Collection.get(this.url, NotificationPreferencesResource);
-    const currentPreferences = collection.findOne({ user_id, workspace_id, company_id });
-
-    await collection.upsert(
-      new NotificationPreferencesResource({
-        ...currentPreferences.data,
-        preferences: {
-          ...currentPreferences.data.preferences,
-          ...newPreferences,
-        },
-      }),
-    );
-
     Toaster.success(Languages.t('services.user.notification_parameters_update_alert'), 3);
   }
 
   areNotificationsAllowed(): boolean {
     if (this.notificationPreferences) {
       const nightBreakIntrv = this.transformPeriod(
-        this.notificationPreferences.data.preferences.night_break.from,
-        this.notificationPreferences.data.preferences.night_break.to,
+        this.notificationPreferences.preferences.night_break.from,
+        this.notificationPreferences.preferences.night_break.to,
         -new Date().getTimezoneOffset() / 60,
       );
 
       const isNightBreak = this.isInPeriod(nightBreakIntrv[0], nightBreakIntrv[1]);
       const isDeactivate = moment
-        .unix(this.notificationPreferences.data.preferences.deactivate_notifications_until)
+        .unix(this.notificationPreferences.preferences.deactivate_notifications_until)
         .diff(moment());
 
       return isNightBreak ? false : isDeactivate > 0 ? false : true;

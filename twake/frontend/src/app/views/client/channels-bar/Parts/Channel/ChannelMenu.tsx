@@ -5,13 +5,11 @@ import { ChannelType } from 'app/features/channels/types/channel';
 import ChannelMembersList from 'app/views/client/channels-bar/Modals/ChannelMembersList';
 import Icon from 'app/components/icon/icon';
 import Menu from 'components/menus/menu';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import Languages from 'app/features/global/services/languages-service';
 import AlertManager from 'app/features/global/services/alert-manager-service';
 import UserService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
-import Notifications from 'app/features/users/services/user-notifications-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import { NotificationResource } from 'app/features/users/types/notification-types';
 import RouterServices from 'app/features/router/services/router-service';
@@ -29,6 +27,7 @@ import { useRefreshFavoriteChannels } from 'app/features/channels/hooks/use-favo
 import FeatureTogglesService from 'app/features/global/services/feature-toggles-service';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import { useRefreshDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
 
 type PropsType = {
   channel: ChannelType;
@@ -53,9 +52,9 @@ export default (props: PropsType): JSX.Element => {
 };
 
 const FullMenu = (props: PropsType): JSX.Element => {
-  const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
   const companyId = props.channel.company_id;
   const workspaceId = useRouterWorkspace();
+  const { badges } = useChannelNotifications(props.channel.id || '');
   const { user: currentUser } = useCurrentUser();
   const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
   const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
@@ -183,12 +182,12 @@ const FullMenu = (props: PropsType): JSX.Element => {
     {
       type: 'menu',
       text: Languages.t(
-        notificationsCollection.find({ channel_id: props.channel.id }).length > 0
+        badges.length > 0
           ? 'scenes.app.channelsbar.read_sign'
           : 'scenes.app.channelsbar.unread_sign',
       ),
       onClick: () => {
-        notificationsCollection.find({ channel_id: props.channel.id }).length > 0
+        badges.length > 0
           ? ChannelAPIClient.read(
               props.channel.company_id || '',
               props.channel.workspace_id || '',

@@ -33,7 +33,9 @@ const MessageType = () => {
   const { message } = useMessage(context);
   const { highlight } = useHighlightMessage();
   const highlighted =
-    (highlight && (highlight.threadId === context.id || highlight.answerId === context.id)) ||
+    (highlight &&
+      ((highlight.threadId === context.id && !listContext.hideReplies) ||
+        highlight.answerId === context.id)) ||
     false;
   const [firstMessageId, setFirstMessageId] = useState(
     message.last_replies?.[0]?.id || message.thread_id,

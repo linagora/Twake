@@ -112,6 +112,10 @@ export default React.memo(
         return false;
       }, [items]);
 
+      if (items.length === 0) {
+        return <div style={{ flex: 1 }}>{emptyListComponent}</div>;
+      }
+
       return (
         <Virtuoso
           ref={refVirtuoso}

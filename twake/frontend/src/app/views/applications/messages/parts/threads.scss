@@ -50,9 +50,10 @@
   padding-top: 8px;
   padding-bottom: 8px;
 
-  &.highlighted {
-    background-color: #fff892;
-    box-shadow: 0 0 0 8px #fff892;
+  &.highlighted .thread,
+  &.highlighted .thread.with-block {
+    border-radius: var(--border-radius-base);
+    box-shadow: 0 0 0 4px #fff892;
     .thread-section .message {
       border-radius: var(--border-radius-base);
     }
