@@ -185,7 +185,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           }}
         />
       )}
-      {!(atBottom && window.reachedEnd) && window.loaded && (
+      {!(atBottom && window.reachedEnd) && window.loaded && messages.length > 0 && (
         <GoToBottom
           onClick={() => {
             jumpToBottom();

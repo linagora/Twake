@@ -4,9 +4,9 @@ import classNames from 'classnames';
 import { Skeleton } from 'antd';
 
 import { NotificationResource } from 'app/features/users/types/notification-types';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
 import { addApiUrlIfNeeded } from 'app/features/global/utils/URLUtils';
 import { WorkspaceType } from 'app/features/workspaces/types/workspace';
+import { useWorkspaceNotifications } from 'app/features/users/hooks/use-notifications';
 
 type Props = {
   workspace: WorkspaceType;
@@ -15,10 +15,8 @@ type Props = {
 };
 
 export default (props: Props): JSX.Element => {
-  const notificationsCollection = Collection.get('/notifications/v1/badges/', NotificationResource);
-  const unreadInWorkspace = notificationsCollection.useWatcher({
-    workspace_id: props.workspace.id,
-  }).length;
+  const { badges } = useWorkspaceNotifications(props.workspace.id || '');
+  const unreadInWorkspace = badges.length;
   const workspace = props.workspace || {};
   const name = workspace.mininame || workspace.name || '';
 

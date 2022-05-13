@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
-import { Collection } from 'app/deprecated/CollectionsReact/Collections';
-import { ChannelType } from 'app/features/channels/types/channel';
 
 import MediumPopupComponent from 'app/components/modal/modal-manager';
 import NewDirectMessagesPopup from 'app/views/client/channels-bar/Modals/NewDirectMessagesPopup';

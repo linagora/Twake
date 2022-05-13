@@ -1,4 +1,3 @@
-import { Resource } from 'app/deprecated/CollectionsReact/Collections';
 import {
   CompanyRoleType,
   CompanyStatusType,
@@ -69,7 +68,3 @@ export type UserType = {
   _persisted?: boolean;
   _updating?: boolean;
 };
-
-export class UserResource extends Resource<UserType> {
-  _type = 'user';
-}
