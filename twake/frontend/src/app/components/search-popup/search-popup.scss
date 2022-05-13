@@ -253,7 +253,7 @@ input:focus {
   height: 58px;
   width: 58px;
   position: relative;
-  background: #80808036;
+  background: var(--messagebubblelight);
   border-radius: 50%;
 }
 
@@ -288,8 +288,8 @@ input:focus {
 
 .search .result-item .result-item-channel-icon .result-item-icon-title {
   line-height: 44pt;
-  font-size: 24pt;
-  padding-left: 13px;
+  font-size: 20pt;
+  padding-left: 16px;
 }
 
 
