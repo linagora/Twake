@@ -202,6 +202,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       company.plan = { name: "", limits: undefined, features: undefined };
     }
 
+    const limits = companyDTO.limits.twake || companyDTO.limits;
+
     //FIXME this is a hack right now!
     let planFeatures: any = {
       [CompanyFeaturesEnum.CHAT_GUESTS]: true,
@@ -212,7 +214,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]: true,
     };
 
-    if (companyDTO.limits.members < 0 && this.infos.type === "remote") {
+    if (limits.members < 0 && this.infos.type === "remote") {
       //Hack to say this is free version
       planFeatures = {
         [CompanyFeaturesEnum.CHAT_GUESTS]: false,
@@ -228,7 +230,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company.plan.features = { ...planFeatures };
     company.plan.limits = {
       [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000, // To remove duplicata since we define this in formatCompany function
-      [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: companyDTO.limits["members"],
+      [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: limits["members"],
     };
 
     company.stats = coalesce(companyDTO.stats, company.stats);
@@ -247,7 +249,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       throw CrudException.badRequest("User not found on Console");
     }
 
-    const roles = userDTO.roles;
+    const roles = userDTO.roles.filter(role => role.applications.find(a => a.code === "twake"));
 
     let user = await gr.services.users.getByConsoleId(userDTO._id);
 
@@ -318,7 +320,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     };
 
     const companies = [];
-    if (userDTO.roles) {
+    if (roles) {
       for (const role of roles) {
         const companyConsoleCode = role.targetCode;
         const roleName = role.roleCode;
@@ -329,7 +331,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         //Make sure user is active, if not we remove it
         if (role.status !== "deactivated") {
           companies.push(company);
-          await gr.services.companies.setUserRole(company.id, user.id, roleName);
+          const applications = role.applications.map(a => a.code);
+          await gr.services.companies.setUserRole(company.id, user.id, roleName, applications);
         }
       }
     }

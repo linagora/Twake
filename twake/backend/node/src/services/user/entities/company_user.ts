@@ -25,6 +25,9 @@ export default class CompanyUser {
   @Column("role", "string")
   role: CompanyUserRole = "member";
 
+  @Column("applications", "json")
+  applications: string[] = [];
+
   @Column("nb_workspace", "number")
   nbWorkspaces: number;
 
