@@ -23,7 +23,7 @@ import Company, {
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
-import _ from "lodash";
+import _, { gt } from "lodash";
 import { CompanyFeaturesEnum, CompanyLimitsEnum } from "../../user/web/types";
 import gr from "../../global-resolver";
 
@@ -249,7 +249,9 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       throw CrudException.badRequest("User not found on Console");
     }
 
-    const roles = userDTO.roles.filter(role => role.applications.find(a => a.code === "twake"));
+    const roles = userDTO.roles.filter(
+      role => role.applications === undefined || role.applications.find(a => a.code === "twake"),
+    );
 
     let user = await gr.services.users.getByConsoleId(userDTO._id);
 
@@ -265,11 +267,23 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         .replace(/ +/g, "_");
 
       if (await gr.services.users.isEmailAlreadyInUse(userDTO.email)) {
-        //TODO if this email is related to a console user:
-        //TODO look at this console user if it exists on the console
-        //TODO if not then anonymise this user and continue to create the new one
+        const user = await gr.services.users.getByEmail(userDTO.email);
 
-        throw CrudException.badRequest("Console user not created because email already exists");
+        if (user.identity_provider === "console") {
+          const emailUserOnConsole = await this.fetchUserInfo(user.identity_provider_id);
+          if (emailUserOnConsole?._id) {
+            throw CrudException.badRequest(
+              `Console user not created because email already exists on console with different id: ${emailUserOnConsole._id} while requested to provision user with id: ${userDTO._id}`,
+            );
+          }
+
+          //If not present on console, then anonymise this one and create a new one
+          await gr.services.users.anonymizeAndDelete(user, {
+            user: { id: user.id, server_request: true },
+          });
+
+          //Now we can create the new user
+        }
       }
 
       username = await gr.services.users.getAvailableUsername(username);
