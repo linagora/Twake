@@ -100,6 +100,8 @@ class SearchService extends Observable {
                 this.searchMessages();
                 this.searchChannels();
                 this.searchUsers();
+            } else {
+                this.clear();
             }
         });
     }

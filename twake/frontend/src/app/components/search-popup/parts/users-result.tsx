@@ -34,8 +34,7 @@ export default ({user,highlight, onClick}: PropsType): JSX.Element => {
                 </div>
                 <div className="result-item-content">
                     <div className="channel-title">
-                        <span dangerouslySetInnerHTML={{__html: highlightText(user.first_name, highlight)}}></span>
-                        <span dangerouslySetInnerHTML={{__html: highlightText(user.last_name, highlight)}}></span>
+                        <span dangerouslySetInnerHTML={{__html: highlightText(user.first_name, highlight)}}></span> <span dangerouslySetInnerHTML={{__html: highlightText(user.last_name, highlight)}}></span>
                     </div>
                     <div className="channel-description" dangerouslySetInnerHTML={{__html: highlightText(user.email, highlight)}}></div>
                 </div>
