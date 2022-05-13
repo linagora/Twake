@@ -15,6 +15,7 @@ import {
   useCompanyNotifications,
   useOtherCompanyNotifications,
 } from 'app/features/users/hooks/use-notifications';
+import menusManager from 'app/components/menus/menus-manager';
 
 type MenuObjectType = { [key: string]: any };
 
@@ -44,6 +45,7 @@ export default ({
                 className="company-in-menu menu"
                 onClick={() => {
                   PopupService.closeAll();
+                  menusManager.closeMenu();
                   RouterService.push(
                     RouterService.generateRouteFromState(
                       {
