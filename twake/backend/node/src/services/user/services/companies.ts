@@ -144,7 +144,7 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
       group_id: company.id,
       user_id: user.id,
     });
-    companyUser.applications = [];
+    if (companyUser) companyUser.applications = [];
     return companyUser;
   }
 
