@@ -214,6 +214,7 @@ describe("The Messages feature", () => {
         created_by: "",
         id: channel.id,
         type: "channel",
+        workspace_id: "direct",
       };
 
       for (let i = 0; i < 6; i++) {
