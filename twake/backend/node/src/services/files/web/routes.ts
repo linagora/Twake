@@ -1,7 +1,6 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { FileController } from "./controllers/files";
+import { FileController } from "./controllers";
 import { File } from "../entities/file";
-import { listUserFiles } from "./schemas";
 
 const filesUrl = "/companies/:company_id/files";
 
@@ -48,13 +47,6 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     handler: fileController.delete.bind(fileController),
   });
 
-  fastify.route({
-    method: "GET",
-    url: `${filesUrl}`,
-    preValidation: [fastify.authenticate],
-    schema: listUserFiles,
-    handler: fileController.list.bind(fileController),
-  });
   next();
 };
 
