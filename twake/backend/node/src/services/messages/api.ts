@@ -136,6 +136,4 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     options: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>>;
-
-  getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]>;
 }

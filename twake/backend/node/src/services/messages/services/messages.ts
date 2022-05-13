@@ -370,13 +370,18 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   async get(
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
-  ): Promise<Message> {
+    options?: { includeQuoteInMessage?: boolean },
+  ): Promise<MessageWithUsers> {
     const thread = await gr.services.messages.threads.get({ id: pk.id }, context);
+    let message;
     if (thread) {
-      return await this.getThread(thread);
+      message = await this.getThread(thread);
     } else {
-      return await this.getSingleMessage(pk);
+      message = await this.getSingleMessage(pk);
     }
+    if (options?.includeQuoteInMessage !== false)
+      message = await this.includeQuoteInMessage(message);
+    return message;
   }
 
   async getThread(
@@ -419,7 +424,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     pagination: Pagination,
     options?: ListOption,
     context?: ThreadExecutionContext,
-  ): Promise<ListResult<Message>> {
+  ): Promise<ListResult<MessageWithUsers>> {
     const list = await this.repository.find(
       { thread_id: context.thread.id },
       buildMessageListPagination(pagination, "id"),
@@ -444,7 +449,26 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       });
     }
 
-    return list;
+    let extendedList = [];
+    for (const m of list.getEntities()) {
+      extendedList.push(await this.includeQuoteInMessage(m));
+    }
+
+    return new ListResult("messages", extendedList, list.nextPage);
+  }
+
+  async includeQuoteInMessage(message: MessageWithUsers): Promise<MessageWithUsers> {
+    if (message.quote_message && (message.quote_message as Message["quote_message"]).id) {
+      message.quote_message = await this.get(
+        {
+          thread_id: (message.quote_message as Message["quote_message"]).thread_id,
+          id: (message.quote_message as Message["quote_message"]).id,
+        },
+        undefined,
+        { includeQuoteInMessage: false },
+      );
+    }
+    return message;
   }
 
   async includeUsersInMessage(message: Message): Promise<MessageWithUsers> {
@@ -472,7 +496,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       });
     }
 
-    const messageWithUsers = { ...message, users, application };
+    const messageWithUsers: MessageWithUsers = { ...message, users, application };
+
+    if (message.quote_message && (message.quote_message as any).id) {
+      messageWithUsers.quote_message = await this.includeUsersInMessage(
+        message.quote_message as any,
+      );
+    }
+
     return messageWithUsers;
   }
 

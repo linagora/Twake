@@ -71,6 +71,9 @@ export class Message {
   @Column("pinned_info", "encoded_json")
   pinned_info: null | MessagePinnedInfo;
 
+  @Column("quote_message", "encoded_json")
+  quote_message: null | Partial<MessageWithUsers>;
+
   @Column("reactions", "encoded_json")
   reactions: null | MessageReaction[];
 
@@ -125,7 +128,7 @@ export function getInstance(message: Partial<Message>): Message {
   });
 }
 
-export class MessageWithUsers extends Message {
-  users: UserObject[];
+export type MessageWithUsers = Message & {
+  users?: UserObject[];
   application?: Partial<Application>;
-}
+};
