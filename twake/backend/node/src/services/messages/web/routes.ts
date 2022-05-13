@@ -5,6 +5,7 @@ import {
   UserBookmarksController,
   ViewsController,
 } from "./controllers";
+import { listUserFiles } from "./schemas";
 
 const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) => {
   const threadsController = new ThreadsController();
@@ -140,6 +141,7 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     method: "GET",
     url: "/companies/:company_id/files",
     preValidation: [fastify.authenticate],
+    schema: listUserFiles,
     handler: viewsController.files.bind(viewsController),
   });
 
