@@ -200,6 +200,8 @@ export class PubsubServiceProcessor<In, Out>
   }
 
   async doSubscribe(): Promise<void> {
+    //TODO this is where we do not receive the call
+
     if (this.handler.topics && this.handler.topics.in) {
       logger.info(
         `PubsubServiceProcessor.handler.${this.handler.name} - Subscribing to topic ${this.handler?.topics?.in} with options %o`,
