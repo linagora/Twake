@@ -6,6 +6,7 @@ const LOG_PREFIX = "service.pubsub.Processor";
 export class Processor {
   // TODO: Add state
   private registry: ProcessorRegistry;
+  private started = false;
 
   constructor(private pubsub: PubsubServiceAPI) {
     this.registry = new ProcessorRegistry(this.pubsub);
@@ -16,6 +17,7 @@ export class Processor {
   }
 
   async start(): Promise<void> {
+    this.started = true;
     await Promise.all(
       Array.from(this.registry.processors.keys()).map(async name => {
         logger.info(`${LOG_PREFIX} - Starting notification processor ${name}`);
@@ -26,6 +28,7 @@ export class Processor {
   }
 
   async stop(): Promise<void> {
+    this.started = false;
     await Promise.all(
       Array.from(this.registry.processors.keys()).map(async name => {
         this.removeHandler(name);
@@ -34,13 +37,16 @@ export class Processor {
   }
 
   addHandler<In, Out>(handler: PubsubHandler<In, Out>): void {
-    // TODO: Start the handler if added when service is already started
     if (!handler) {
       throw new Error(`${LOG_PREFIX} - Can not add null handler`);
     }
 
     logger.info(`${LOG_PREFIX} - Adding pubsub handler ${handler.name}`);
     this.registry.register(handler);
+
+    if (this.started) {
+      this.startHandler(handler.name);
+    }
   }
 
   async startHandler(name: string): Promise<void> {
