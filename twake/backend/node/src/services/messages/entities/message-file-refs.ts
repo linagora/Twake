@@ -41,8 +41,8 @@ export class MessageFileRef {
   message_id: string;
 
   @Type(() => String)
-  @Column("file_id", "string")
-  file_id: string;
+  @Column("message_file_id", "string")
+  message_file_id: string;
 }
 
 export type MessageFileRefPrimaryKey = Pick<MessageFileRef, "target_type" | "target_id" | "id">;

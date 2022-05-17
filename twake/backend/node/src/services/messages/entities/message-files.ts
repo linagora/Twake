@@ -5,7 +5,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "message_files";
 @Entity(TYPE, {
-  primaryKey: [["message_id"], "id"],
+  primaryKey: [["message_id", "company_id"], "id"],
   type: TYPE,
 })
 export class MessageFile {
@@ -15,10 +15,10 @@ export class MessageFile {
 
   @Type(() => String)
   @Column("id", "timeuuid", { order: "DESC" })
-  id?: string;
+  id: string;
 
   @Column("company_id", "timeuuid")
-  company_id?: string;
+  company_id: string;
 
   @Column("metadata", "encoded_json")
   metadata: MessageFileMetadata;

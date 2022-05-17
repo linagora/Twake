@@ -199,6 +199,7 @@ describe("List user files", () => {
 
       const messageFile: MessageFile = {
         id: uuid.v1(),
+        company_id: platform.workspace.company_id,
         metadata: {
           source: "internal",
           external_id: {
