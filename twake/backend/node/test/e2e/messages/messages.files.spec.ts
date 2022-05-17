@@ -11,6 +11,9 @@ import { Message } from "../../../src/services/messages/entities/messages";
 // @ts-ignore
 import fs from "fs";
 import formAutoContent from "form-auto-content";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import uuid from "node-uuid";
 
 describe("The Messages Threads feature", () => {
   const url = "/internal/services/messages/v1";
@@ -143,6 +146,7 @@ describe("List user files", () => {
     platform = await init({
       services: ["webserver", "database", "storage", "pubsub", "files", "previews"],
     });
+    await platform.database.getConnector().drop();
   });
 
   afterAll(async done => {
@@ -194,8 +198,15 @@ describe("List user files", () => {
       const resource = uploadedFile.json().resource;
 
       const messageFile: MessageFile = {
-        id: resource.id,
-        metadata: resource.metadata,
+        id: uuid.v1(),
+        metadata: {
+          source: "internal",
+          external_id: {
+            company_id: platform.workspace.company_id,
+            id: resource.id,
+          },
+          ...resource.metadata,
+        },
       };
 
       await e2e_createThread(
