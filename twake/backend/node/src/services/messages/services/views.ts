@@ -31,7 +31,6 @@ import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
   repositoryChannelRefs: Repository<MessageChannelRef>;
-  repository: Repository<Message>;
   repositoryThreads: Repository<Thread>;
   repositoryFilesRef: Repository<MessageFileRef>;
   repositoryMarkedRef: Repository<MessageChannelMarkedRef>;
@@ -39,7 +38,6 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
 
   async init(context: TwakeContext): Promise<this> {
     this.searchRepository = gr.platformServices.search.getRepository<Message>("messages", Message);
-    this.repository = await gr.database.getRepository<Message>("messages", Message);
     this.repositoryThreads = await gr.database.getRepository<Thread>("threads", Thread);
     this.repositoryChannelRefs = await gr.database.getRepository<MessageChannelRef>(
       "message_channel_refs",
@@ -74,7 +72,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
         replies_per_thread: options.replies_per_thread || 1,
       });
 
-      const message = await this.repository.findOne({
+      const message = await gr.services.messages.messages.get({
         thread_id: ref.thread_id,
         id: ref.message_id,
       });
@@ -132,7 +130,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       const extendedThread = threads.find(th => th.id === ref.thread_id);
       if (extendedThread) {
         extendedThread.highlighted_replies = [];
-        const message = await this.repository.findOne({
+        const message = await gr.services.messages.messages.get({
           thread_id: ref.thread_id,
           id: ref.message_id,
         });
@@ -265,15 +263,5 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       .then(a => {
         return a;
       });
-  }
-
-  async getThreadsFirstMessages(threadsIds: uuid[]): Promise<Message[]> {
-    threadsIds = uniqWith(threadsIds, isEqual);
-    const items = threadsIds.map(threadId =>
-      this.repository
-        .find({ thread_id: threadId }, { pagination: new Pagination("", "1", true) })
-        .then(a => a.getEntities()[0]),
-    );
-    return Promise.all(items);
   }
 }
