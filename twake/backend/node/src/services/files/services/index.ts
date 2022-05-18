@@ -18,12 +18,14 @@ import {
 } from "../../../core/platform/framework/api/crud-service";
 import gr from "../../global-resolver";
 import { MessageFileRef } from "../../messages/entities/message-file-refs";
+import { MessageFile } from "../../messages/entities/message-files";
 
 export class FileServiceImpl implements FileServiceAPI {
   version: "1";
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";
   private max_preview_file_size = 50000000;
+  private messageFileRepository: Repository<MessageFile>;
   private messageFileRefsRepository: Repository<MessageFileRef>;
 
   async init(): Promise<this> {
@@ -33,6 +35,10 @@ export class FileServiceImpl implements FileServiceAPI {
         (this.messageFileRefsRepository = await gr.database.getRepository<MessageFileRef>(
           "message_file_refs",
           MessageFileRef,
+        )),
+        (this.messageFileRepository = await gr.database.getRepository<MessageFile>(
+          "message_files",
+          MessageFile,
         )),
         gr.platformServices.pubsub.processor.addHandler(
           new PreviewFinishedProcessor(this, this.repository),
@@ -289,7 +295,7 @@ export class FileServiceImpl implements FileServiceAPI {
 
     const refs = await this.messageFileRefsRepository
       .find(
-        { target_type: "user_upload", target_id: userId },
+        { target_type: "user_upload", target_id: userId, company_id: context.company.id },
         {
           pagination,
         },
@@ -299,8 +305,19 @@ export class FileServiceImpl implements FileServiceAPI {
         return a.getEntities();
       });
 
-    const filePromises: Promise<File>[] = refs
-      .map(ref => this.repository.findOne({ company_id: context.company.id, id: ref.file_id }))
+    const messageFilePromises: Promise<MessageFile>[] = refs.map(ref =>
+      this.messageFileRepository.findOne({ message_id: ref.message_id }),
+    );
+
+    const messageFiles = await Promise.all(messageFilePromises);
+
+    const filePromises: Promise<File>[] = messageFiles
+      .map(ref =>
+        this.repository.findOne({
+          company_id: ref.metadata.external_id.company_id,
+          id: ref.metadata.external_id.id,
+        }),
+      )
       .filter(a => a);
     return new ListResult<File>("file", await Promise.all(filePromises), nextPage);
   }

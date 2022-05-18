@@ -1,6 +1,6 @@
 version: "3.4"
 
-# docker-compose -f docker-compose.yml.dist.dev.tests.mongo stop mongo; rm -R docker-data/mongo/; docker-compose -f docker-compose.yml.dist.dev.tests.mongo run -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb node npm run test:e2e
+# docker-compose -f docker-compose.dev.tests.mongo.yml stop mongo; rm -R docker-data/mongo/; docker-compose -f docker-compose.dev.tests.mongo.yml run -e SEARCH_DRIVER=mongodb -e DB_DRIVER=mongodb node npm run test:e2e
 
 services:
   mongo:

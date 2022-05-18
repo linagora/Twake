@@ -15,10 +15,10 @@ export class MessageFile {
 
   @Type(() => String)
   @Column("id", "timeuuid", { order: "DESC" })
-  id?: string;
+  id: string;
 
   @Column("company_id", "timeuuid")
-  company_id?: string;
+  company_id: string;
 
   @Column("metadata", "encoded_json")
   metadata: MessageFileMetadata;
