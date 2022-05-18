@@ -30,6 +30,7 @@ export class FilesViewProcessor {
             thread_id: thread.id,
             message_id: message.resource.id,
             message_file_id: file.id,
+            company_id: file.company_id,
           });
           this.repository.save(fileRef);
         }
@@ -45,6 +46,7 @@ export class FilesViewProcessor {
           thread_id: thread.id,
           message_id: message.resource.id,
           message_file_id: file.id,
+          company_id: file.company_id,
         });
         this.repository.save(fileRef);
       }

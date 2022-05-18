@@ -295,7 +295,7 @@ export class FileServiceImpl implements FileServiceAPI {
 
     const refs = await this.messageFileRefsRepository
       .find(
-        { target_type: "user_upload", target_id: userId },
+        { target_type: "user_upload", target_id: userId, company_id: context.company.id },
         {
           pagination,
         },

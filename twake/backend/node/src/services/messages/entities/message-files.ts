@@ -5,7 +5,7 @@ import { Column, Entity } from "../../../core/platform/services/database/service
 
 export const TYPE = "message_files";
 @Entity(TYPE, {
-  primaryKey: [["message_id", "company_id"], "id"],
+  primaryKey: [["message_id"], "id"],
   type: TYPE,
 })
 export class MessageFile {
