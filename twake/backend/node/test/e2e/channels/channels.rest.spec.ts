@@ -24,6 +24,8 @@ import { TestDbService } from "../utils.prepare.db";
 import { ChannelObject } from "../../../src/services/channels/services/channel/types";
 import { Api } from "../utils.api";
 import gr from "../../../src/services/global-resolver";
+import { createMessage, e2e_createThread } from "../messages/utils";
+import { ParticipantObject } from "../../../src/services/messages/entities/threads";
 
 describe("The /internal/services/channels/v1 API", () => {
   const url = "/internal/services/channels/v1";
@@ -35,6 +37,7 @@ describe("The /internal/services/channels/v1 API", () => {
   beforeEach(async () => {
     platform = await init();
     testDbService = new TestDbService(platform);
+    await testDbService.createDefault(platform);
     api = new Api(platform);
     channelUtils = getChannelUtils(platform);
   });
@@ -1226,6 +1229,84 @@ describe("The /internal/services/channels/v1 API", () => {
         );
         done();
       });
+    });
+  });
+
+  describe("The GET /companies/:companyId/workspaces/:workspaceId/recent route", () => {
+    it("should return list of recent channels for workspace", async done => {
+      const channels = [];
+
+      for (let i = 0; i < 5; i++) {
+        const channel = new Channel();
+        channel.name = `Regular Channel ${i}`;
+        const creationResult = await gr.services.channels.channels.save(channel, {}, getContext());
+        channels.push(creationResult.entity);
+      }
+
+      const context = getContext();
+      context.workspace.workspace_id = "direct";
+
+      for (let i = 0; i < 5; i++) {
+        const channel = new Channel();
+        channel.name = `Direct Channel ${i}`;
+        const creationResult = await gr.services.channels.channels.save(channel, {}, context);
+        channels.push(creationResult.entity);
+      }
+
+      await e2e_createThread(
+        platform,
+        [
+          {
+            company_id: platform.workspace.company_id,
+            created_at: 0,
+            created_by: "",
+            id: channels[3].id,
+            type: "channel",
+            workspace_id: platform.workspace.workspace_id,
+          },
+        ],
+        createMessage({ text: "Initial thread message for regular channel" }),
+      );
+
+      await e2e_createThread(
+        platform,
+        [
+          {
+            company_id: platform.workspace.company_id,
+            created_at: 0,
+            created_by: "",
+            id: channels[3].id,
+            type: "channel",
+            workspace_id: "direct",
+          },
+        ],
+        createMessage({ text: "Initial thread message for direct channel" }),
+      );
+
+      const jwtToken = await platform.auth.getJWTToken();
+
+      const response = await platform.app.inject({
+        method: "GET",
+        url: `${url}/companies/${platform.workspace.company_id}/channels/recent`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+
+      const result: ResourceListResponse<ChannelObject> = deserialize(
+        ResourceListResponse,
+        response.body,
+      );
+
+      console.log(result.resources);
+      expect(result.resources.length).toEqual(10);
+
+      expect(result.resources[0].name == "Direct Channel 3");
+      expect(result.resources[1].name == "Regular Channel 3");
+
+      done();
     });
   });
 });

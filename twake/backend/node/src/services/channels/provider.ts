@@ -156,6 +156,8 @@ export interface ChannelService
   ): Promise<UsersIncludedChannel>;
 
   search(pagination: Pagination, options: SearchChannelOptions): Promise<ListResult<Channel>>;
+
+  getAllChannelsInWorkspace(company_id: string, id: string): Promise<Channel[]>;
 }
 export interface MemberService
   extends TwakeServiceProvider,

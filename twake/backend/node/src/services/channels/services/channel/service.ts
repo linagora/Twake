@@ -785,4 +785,8 @@ export class ChannelServiceImpl implements ChannelService {
       },
     );
   }
+
+  async getAllChannelsInWorkspace(company_id: string, workspace_id: string): Promise<Channel[]> {
+    return null;
+  }
 }

@@ -486,6 +486,42 @@ export class ChannelCrudController
       }),
     );
   }
+
+  async recent(
+    request: FastifyRequest<{
+      Querystring: ChannelListQueryParameters;
+      Params: BaseChannelsParameters;
+    }>,
+  ): Promise<ResourceListResponse<ChannelObject>> {
+    const context = getExecutionContext(request);
+
+    const directChannels = await gr.services.channels.channels.getDirectChannelsForUsersInCompany(
+      context.workspace.company_id,
+      request.currentUser.id,
+    );
+
+    const workspaces = (
+      await gr.services.workspaces.getAllForCompany(context.workspace.company_id)
+    ).map(a => a.id);
+
+    const channels = Promise.all(
+      workspaces.map(id =>
+        gr.services.channels.channels.getAllChannelsInWorkspace(context.workspace.company_id, id),
+      ),
+    );
+
+    console.log(workspaces);
+
+    // const list = await gr.services.channels.channels.list(
+    //   new Pagination(request.query.page_token, request.query.limit),
+    //   { ...request.query },
+    //   context,
+    // );
+
+    return {
+      resources: [],
+    };
+  }
 }
 
 function getExecutionContext(
