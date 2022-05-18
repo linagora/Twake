@@ -34,7 +34,7 @@ class SearchIndexAll {
     const repositories: Map<string, Repository<any>> = new Map();
     repositories.set("messages", await this.database.getRepository(MessageTYPE, Message));
     repositories.set("users", await this.database.getRepository(UserTYPE, User));
-    repositories.set("channel", await this.database.getRepository("channel", Channel));
+    repositories.set("channels", await this.database.getRepository("channels", Channel));
     repositories.set(
       "applications",
       await this.database.getRepository(ApplicationTYPE, Application),
