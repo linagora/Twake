@@ -196,7 +196,9 @@ export class ConsoleController {
           break;
         case "company_created":
           await this.companyUpdated(request.body.content as ConsoleHookBodyContent);
-          await this.userUpdated((request.body.content as ConsoleHookBodyContent).user._id);
+          if ((request.body.content as ConsoleHookBodyContent)?.user?._id) {
+            await this.userUpdated((request.body.content as ConsoleHookBodyContent).user._id);
+          }
           break;
         case "company_updated":
           await this.companyUpdated(request.body.content as ConsoleHookBodyContent);
