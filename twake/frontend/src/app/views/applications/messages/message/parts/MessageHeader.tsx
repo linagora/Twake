@@ -124,7 +124,6 @@ export default (props: Props) => {
             rel="noreferrer"
           >
             <Moment
-              tz={moment.tz.guess()}
               format={
                 new Date().getTime() - message.created_at > 12 * 60 * 60 * 1000 ? 'lll' : 'LT'
               }

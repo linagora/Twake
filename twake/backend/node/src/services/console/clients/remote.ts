@@ -349,7 +349,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         //Make sure user is active, if not we remove it
         if (role.status !== "deactivated") {
           updatedListOfCompanies.push(company);
-          const applications = role.applications.map(a => a.code);
+          const applications = (role.applications || []).map(a => a.code);
           await gr.services.companies.setUserRole(company.id, user.id, roleName, applications);
         }
       }
