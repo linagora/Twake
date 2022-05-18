@@ -392,7 +392,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     if (message) {
       message = await this.completeMessage(message, {
         files: message.files || [],
-        includeQuoteInMessage: options.includeQuoteInMessage,
+        includeQuoteInMessage: options?.includeQuoteInMessage,
       });
     }
     return message;
