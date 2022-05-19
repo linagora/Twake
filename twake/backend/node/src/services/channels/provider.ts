@@ -122,6 +122,8 @@ export interface ChannelService
     context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>>;
 
+  getChannelActivity(channel: Channel): Promise<number>;
+
   /**
    * Get the list of all default channels for the given workspace.
    *

@@ -13,6 +13,7 @@ import {
   ChannelPendingEmailsPrimaryKey,
   getChannelPendingEmailsInstance,
   UserChannel,
+  UsersIncludedChannel,
 } from "../../entities";
 import { ChannelPrimaryKey } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
@@ -495,31 +496,55 @@ export class ChannelCrudController
   ): Promise<ResourceListResponse<ChannelObject>> {
     const context = getExecutionContext(request);
 
-    const directChannels = await gr.services.channels.channels.getDirectChannelsForUsersInCompany(
-      context.workspace.company_id,
-      request.currentUser.id,
-    );
-
     const workspaces = (
       await gr.services.workspaces.getAllForCompany(context.workspace.company_id)
     ).map(a => a.id);
 
-    const channels = Promise.all(
+    workspaces.unshift("direct");
+
+    const channels = await Promise.all(
       workspaces.map(id =>
-        gr.services.channels.channels.getAllChannelsInWorkspace(context.workspace.company_id, id),
+        gr.services.channels.channels
+          .getAllChannelsInWorkspace(context.workspace.company_id, id)
+          .then(channels => {
+            if (id == "direct") {
+              return Promise.all(
+                channels.map(
+                  channel =>
+                    gr.services.channels.channels.includeUsersInDirectChannel(
+                      channel,
+                      context,
+                    ) as Promise<UsersIncludedChannel>,
+                ),
+              );
+            }
+            return channels;
+          }),
       ),
     );
 
-    console.log(workspaces);
+    let res: Channel[] = [];
+    channels.forEach(ch => {
+      res = res.concat(ch);
+    });
 
-    // const list = await gr.services.channels.channels.list(
-    //   new Pagination(request.query.page_token, request.query.limit),
-    //   { ...request.query },
-    //   context,
-    // );
+    const activities = await Promise.all(
+      res.map(channel => gr.services.channels.channels.getChannelActivity(channel)),
+    );
+
+    const response: ChannelObject[] = [];
+
+    for (let i = 0; i < res.length; i++) {
+      const channel = res[i];
+      const chObj = ChannelObject.mapTo(channel);
+      chObj.last_activity = activities[i];
+      response.push(chObj);
+    }
 
     return {
-      resources: [],
+      resources: response.sort(
+        (a: ChannelObject, b: ChannelObject) => b.last_activity - a.last_activity,
+      ),
     };
   }
 }

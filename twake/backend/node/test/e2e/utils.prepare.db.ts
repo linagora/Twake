@@ -50,6 +50,10 @@ export class TestDbService {
     this.database = this.testPlatform.platform.getProvider<DatabaseServiceAPI>("database");
     this.users = [];
     this.workspacesMap = new Map<string, { workspace: Workspace; users: User[] }>();
+    this.workspacesMap.set("direct", {
+      workspace: { id: "direct" } as Workspace,
+      users: [],
+    });
   }
 
   private async init() {
