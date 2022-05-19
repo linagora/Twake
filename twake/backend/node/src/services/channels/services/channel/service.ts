@@ -163,8 +163,10 @@ export class ChannelServiceImpl implements ChannelService {
       channelToSave = cloneDeep(channelToUpdate);
 
       updatableFields.forEach(field => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (channelToSave as any)[field] = channel[field];
+        if (channel[field] !== undefined) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (channelToSave as any)[field] = channel[field];
+        }
       });
 
       localEventBus.publish<ResourceEventsPayload>("channel:updated", {
