@@ -69,7 +69,7 @@ export default function MobileRedirect(props: { children: ReactNode }) {
 
   const origin = (originInUrl || environment?.front_root_url)
     .replace(/https?:\/\//g, '')
-    .replace(/\//g, '');
+    .split('/')[0];
   const redirectOrigin = parameters?.mobile_redirect.replace(/https?:\/\//g, '').replace(/\//g, '');
 
   //For mobile first we ensure to be on the m.domain.com url
