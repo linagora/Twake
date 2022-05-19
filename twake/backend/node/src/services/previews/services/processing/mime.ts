@@ -47,6 +47,7 @@ export const officeExtensions = [
 ];
 export const pdfExtensions = ["pdf"];
 export const imageExtensions = ["jpeg", "jpg", "png", "webp", "avif", "tiff", "gif", "svg"];
+export const videoExtensions = ["mp4", "webm", "mkv", "avi", "mov", "flv", "wmv", "mpg", "mpeg"];
 
 const mimes: any = {
   "123": "application/vnd.lotus-1-2-3",

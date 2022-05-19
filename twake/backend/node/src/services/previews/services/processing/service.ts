@@ -2,9 +2,10 @@ import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
 import { cleanFiles, isFileType } from "../../utils";
-import { imageExtensions, officeExtensions, pdfExtensions } from "./mime";
+import { imageExtensions, officeExtensions, pdfExtensions, videoExtensions } from "./mime";
 import StorageAPI from "../../../../core/platform/services/storage/provider";
 import { PreviewPubsubRequest, PreviewServiceAPI, ThumbnailResult } from "../../types";
+import { generateVideoPreview } from "./video";
 
 export class PreviewProcessService implements PreviewServiceAPI {
   name: "PreviewProcessService";
@@ -49,6 +50,17 @@ export class PreviewProcessService implements PreviewServiceAPI {
       const images = (await thumbnailsFromImages([document.path], options, deleteTmpFile)).output;
       await cleanFiles([document.path]);
       return images;
+    }
+
+    if (isFileType(document.mime, document.filename, videoExtensions)) {
+      try {
+        const images = await generateVideoPreview([document.path], options);
+        await cleanFiles([document.path]);
+
+        return images;
+      } catch (error) {
+        throw Error("failed to generate video preview");
+      }
     }
 
     throw "Can not proccess, file type can't be defined";
