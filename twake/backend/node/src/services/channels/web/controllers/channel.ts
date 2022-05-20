@@ -13,6 +13,7 @@ import {
   ChannelPendingEmailsPrimaryKey,
   getChannelPendingEmailsInstance,
   UserChannel,
+  UsersIncludedChannel,
 } from "../../entities";
 import { ChannelPrimaryKey } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
@@ -485,6 +486,66 @@ export class ChannelCrudController
         a.stats = { members, messages };
       }),
     );
+  }
+
+  async recent(
+    request: FastifyRequest<{
+      Querystring: ChannelListQueryParameters;
+      Params: BaseChannelsParameters;
+    }>,
+  ): Promise<ResourceListResponse<ChannelObject>> {
+    const context = getExecutionContext(request);
+
+    const workspaces = (
+      await gr.services.workspaces.getAllForCompany(context.workspace.company_id)
+    ).map(a => a.id);
+
+    workspaces.unshift("direct");
+
+    const channels = await Promise.all(
+      workspaces.map(id =>
+        gr.services.channels.channels
+          .getAllChannelsInWorkspace(context.workspace.company_id, id)
+          .then(channels => {
+            if (id == "direct") {
+              return Promise.all(
+                channels.map(
+                  channel =>
+                    gr.services.channels.channels.includeUsersInDirectChannel(
+                      channel,
+                      context,
+                    ) as Promise<UsersIncludedChannel>,
+                ),
+              );
+            }
+            return channels;
+          }),
+      ),
+    );
+
+    let res: Channel[] = [];
+    channels.forEach(ch => {
+      res = res.concat(ch);
+    });
+
+    const activities = await Promise.all(
+      res.map(channel => gr.services.channels.channels.getChannelActivity(channel)),
+    );
+
+    const response: ChannelObject[] = [];
+
+    for (let i = 0; i < res.length; i++) {
+      const channel = res[i];
+      const chObj = ChannelObject.mapTo(channel);
+      chObj.last_activity = activities[i];
+      response.push(chObj);
+    }
+
+    return {
+      resources: response.sort(
+        (a: ChannelObject, b: ChannelObject) => b.last_activity - a.last_activity,
+      ),
+    };
   }
 }
 

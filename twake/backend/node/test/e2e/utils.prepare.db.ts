@@ -50,6 +50,10 @@ export class TestDbService {
     this.database = this.testPlatform.platform.getProvider<DatabaseServiceAPI>("database");
     this.users = [];
     this.workspacesMap = new Map<string, { workspace: Workspace; users: User[] }>();
+    this.workspacesMap.set("direct", {
+      workspace: { id: "direct" } as Workspace,
+      users: [],
+    });
   }
 
   private async init() {
@@ -60,10 +64,11 @@ export class TestDbService {
     );
     this.deviceRepository = await this.database.getRepository<Device>("device", Device);
   }
+
   public get workspaces() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return [...this.workspacesMap.values()];
+    return [...this.workspacesMap.values()].filter(w => w.workspace.id !== "direct");
   }
 
   async createCompany(id?: uuid, name?: string): Promise<Company> {
