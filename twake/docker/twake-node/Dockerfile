@@ -15,6 +15,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN apt-get update && apt-get install -y libc6
 RUN ln -s /lib/libc.musl-x86_64.so.1 /lib/ld-linux-x86-64.so.2
 
+# FFmpeg
+RUN apt-get install -y ffmpeg
+
 ### Install Twake
 
 WORKDIR /usr/src/app
