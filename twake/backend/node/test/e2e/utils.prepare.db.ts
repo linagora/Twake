@@ -68,7 +68,7 @@ export class TestDbService {
   public get workspaces() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return [...this.workspacesMap.values().filter(w => w.id !== "direct")];
+    return [...this.workspacesMap.values()].filter(w => w.workspace.id !== "direct");
   }
 
   async createCompany(id?: uuid, name?: string): Promise<Company> {
