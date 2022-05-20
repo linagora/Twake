@@ -34,8 +34,9 @@ describe("The Files feature", () => {
       "assets/sample.pdf",
       "assets/sample.doc",
       "assets/sample.zip",
+      "assets/sample.mp4",
     ].map(p => `${__dirname}/${p}`);
-    const thumbnails = [1, 1, 2, 5, 0];
+    const thumbnails = [1, 1, 2, 5, 0, 1];
 
     it("should save file and generate previews", async done => {
       for (const i in files) {

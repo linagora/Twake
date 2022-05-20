@@ -63,3 +63,9 @@ export type ThumbnailResult = {
   size: number;
   type: string;
 };
+
+export type temporaryThumbnailFile = {
+  filePath: string;
+  fileName: string;
+  folder: string;
+};
