@@ -155,7 +155,9 @@ describe("The console API hooks", () => {
           payload: getPayload("user_updated", {
             user: {
               _id: user.identity_provider_id,
-              roles: [{ targetCode: companyId, roleCode: "owner" }],
+              roles: [
+                { targetCode: companyId, roleCode: "owner", applications: [{ code: "twake" }] },
+              ],
               email: firstEmail,
               firstName: "firstName",
               lastName: "lastName",
@@ -210,7 +212,9 @@ describe("The console API hooks", () => {
           payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
-              roles: [{ targetCode: companyId, roleCode: "admin" }],
+              roles: [
+                { targetCode: companyId, roleCode: "admin", applications: [{ code: "twake" }] },
+              ],
               email: secondEmail,
               firstName: "consoleFirst",
               lastName: "consoleSecond",
@@ -267,7 +271,9 @@ describe("The console API hooks", () => {
           payload: getPayload("user_updated", {
             user: {
               _id: newUserConsoleId,
-              roles: [{ targetCode: companyId, roleCode: "member" }],
+              roles: [
+                { targetCode: companyId, roleCode: "member", applications: [{ code: "twake" }] },
+              ],
               email: thirdEmail,
               firstName: "superman",
               lastName: "superman-lastname",

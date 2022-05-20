@@ -23,7 +23,7 @@ import Company, {
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
-import _ from "lodash";
+import _, { gt } from "lodash";
 import { CompanyFeaturesEnum, CompanyLimitsEnum } from "../../user/web/types";
 import gr from "../../global-resolver";
 
@@ -202,6 +202,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       company.plan = { name: "", limits: undefined, features: undefined };
     }
 
+    const limits = companyDTO.limits.twake || companyDTO.limits;
+
     //FIXME this is a hack right now!
     let planFeatures: any = {
       [CompanyFeaturesEnum.CHAT_GUESTS]: true,
@@ -212,7 +214,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       [CompanyFeaturesEnum.COMPANY_INVITE_MEMBER]: true,
     };
 
-    if (companyDTO.limits.members < 0 && this.infos.type === "remote") {
+    if (limits.members < 0 && this.infos.type === "remote") {
       //Hack to say this is free version
       planFeatures = {
         [CompanyFeaturesEnum.CHAT_GUESTS]: false,
@@ -228,7 +230,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     company.plan.features = { ...planFeatures };
     company.plan.limits = {
       [CompanyLimitsEnum.CHAT_MESSAGE_HISTORY_LIMIT]: 10000, // To remove duplicata since we define this in formatCompany function
-      [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: companyDTO.limits["members"],
+      [CompanyLimitsEnum.COMPANY_MEMBERS_LIMIT]: limits["members"],
     };
 
     company.stats = coalesce(companyDTO.stats, company.stats);
@@ -247,7 +249,9 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       throw CrudException.badRequest("User not found on Console");
     }
 
-    const roles = userDTO.roles;
+    const roles = userDTO.roles.filter(
+      role => role.applications === undefined || role.applications.find(a => a.code === "twake"),
+    );
 
     let user = await gr.services.users.getByConsoleId(userDTO._id);
 
@@ -263,7 +267,23 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         .replace(/ +/g, "_");
 
       if (await gr.services.users.isEmailAlreadyInUse(userDTO.email)) {
-        throw CrudException.badRequest("Console user not created because email already exists");
+        const user = await gr.services.users.getByEmail(userDTO.email);
+
+        if (user.identity_provider === "console") {
+          const emailUserOnConsole = await this.fetchUserInfo(user.identity_provider_id);
+          if (emailUserOnConsole?._id) {
+            throw CrudException.badRequest(
+              `Console user not created because email already exists on console with different id: ${emailUserOnConsole._id} while requested to provision user with id: ${userDTO._id}`,
+            );
+          }
+
+          //If not present on console, then anonymise this one and create a new one
+          await gr.services.users.anonymizeAndDelete(user, {
+            user: { id: user.id, server_request: true },
+          });
+
+          //Now we can create the new user
+        }
       }
 
       username = await gr.services.users.getAvailableUsername(username);
@@ -317,8 +337,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
       return company;
     };
 
-    const companies = [];
-    if (userDTO.roles) {
+    const updatedListOfCompanies = [];
+    if (roles) {
       for (const role of roles) {
         const companyConsoleCode = role.targetCode;
         const roleName = role.roleCode;
@@ -328,8 +348,9 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
         }
         //Make sure user is active, if not we remove it
         if (role.status !== "deactivated") {
-          companies.push(company);
-          await gr.services.companies.setUserRole(company.id, user.id, roleName);
+          updatedListOfCompanies.push(company);
+          const applications = (role.applications || []).map(a => a.code);
+          await gr.services.companies.setUserRole(company.id, user.id, roleName, applications);
         }
       }
     }
@@ -337,7 +358,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
     // Remove user from companies not in the console
     const currentCompanies = await gr.services.companies.getAllForUser(user.id);
     for (const company of currentCompanies) {
-      if (!companies.map(c => c.id).includes(company.group_id)) {
+      if (!updatedListOfCompanies.map(c => c.id).includes(company.group_id)) {
         await gr.services.companies.removeUserFromCompany(
           { id: company.group_id },
           { id: user.id },

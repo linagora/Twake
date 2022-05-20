@@ -29,7 +29,8 @@ export class FilesViewProcessor {
             channel_id: participant.id,
             thread_id: thread.id,
             message_id: message.resource.id,
-            file_id: file.id,
+            message_file_id: file.id,
+            company_id: file.company_id,
           });
           this.repository.save(fileRef);
         }
@@ -44,7 +45,8 @@ export class FilesViewProcessor {
           channel_id: "",
           thread_id: thread.id,
           message_id: message.resource.id,
-          file_id: file.id,
+          message_file_id: file.id,
+          company_id: file.company_id,
         });
         this.repository.save(fileRef);
       }

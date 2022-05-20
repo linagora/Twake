@@ -6,6 +6,7 @@ import { preparse, preunparse } from './Blocks.utils';
 import User from 'components/twacode/blocks/user';
 import Chan from 'components/twacode/blocks/chan';
 import { blocksToTwacode, formatData } from 'app/components/twacode/blocksCompiler';
+import environment from 'app/environment/environment';
 
 type Props = {
   blocks: any;
@@ -23,8 +24,22 @@ const Code = ({ className, children }: { className: string; children: string }) 
 };
 
 const Link = ({ href, children }: { href: string; children: string }) => {
+  let target = '_blank';
+  //If same domain, stay on the same tab
+  if (
+    href
+      .replace(/https?:\/\//g, '')
+      .split('/')[0]
+      ?.toLocaleLowerCase() ===
+    environment.front_root_url
+      .replace(/https?:\/\//g, '')
+      .split('/')[0]
+      ?.toLocaleLowerCase()
+  ) {
+    target = '_self';
+  }
   return (
-    <a target="_blank" href={href}>
+    <a target={target} href={href}>
       {children}
     </a>
   );
