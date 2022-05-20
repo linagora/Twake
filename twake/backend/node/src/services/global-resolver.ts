@@ -73,6 +73,7 @@ import { ApplicationHooksService } from "./applications/services/hooks";
 import { OnlineServiceAPI } from "./online/api";
 import OnlineServiceImpl from "./online/service";
 import { PreviewEngine } from "./previews/services/engine";
+import { ChannelsPubsubListener } from "./channels/services/pubsub";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -120,6 +121,7 @@ type TwakeServices = {
   channels: {
     channels: ChannelService;
     members: MemberService;
+    pubsub: ChannelsPubsubListener;
   };
   channelPendingEmail: ChannelPendingEmailService;
   tab: TabService;
@@ -196,6 +198,7 @@ class GlobalResolver {
       channels: {
         channels: await new ChannelServiceImpl().init(),
         members: await new MemberServiceImpl().init(),
+        pubsub: await new ChannelsPubsubListener().init(),
       },
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
