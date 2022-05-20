@@ -60,7 +60,11 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies | FlatFileFromMessage>> {
     const refs = await this.repositoryFilesRef.find(
-      { target_type: "channel", target_id: context.channel.id },
+      {
+        target_type: "channel",
+        target_id: context.channel.id,
+        company_id: context.channel.company_id,
+      },
       buildMessageListPagination(pagination, "id"),
     );
 

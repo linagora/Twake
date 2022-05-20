@@ -6,7 +6,7 @@ import { NewPendingEmailsInWorkspaceJoinChannelsProcessor } from "./new-pending-
 import { NewWorkspaceProcessor } from "./new-workspace";
 import gr from "../../../global-resolver";
 
-export class PubsubListener implements Initializable {
+export class ChannelsPubsubListener implements Initializable {
   async init(): Promise<this> {
     const channelActivityProcessor = await new NewChannelActivityProcessor().init();
     gr.platformServices.pubsub.processor.addHandler(channelActivityProcessor);
