@@ -64,10 +64,11 @@ export class TestDbService {
     );
     this.deviceRepository = await this.database.getRepository<Device>("device", Device);
   }
+
   public get workspaces() {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return [...this.workspacesMap.values()];
+    return [...this.workspacesMap.values().filter(w => w.id !== "direct")];
   }
 
   async createCompany(id?: uuid, name?: string): Promise<Company> {
