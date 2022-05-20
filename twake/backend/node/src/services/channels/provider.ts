@@ -122,6 +122,8 @@ export interface ChannelService
     context: WorkspaceExecutionContext,
   ): Promise<UpdateResult<ChannelActivity>>;
 
+  getChannelActivity(channel: Channel): Promise<number>;
+
   /**
    * Get the list of all default channels for the given workspace.
    *
@@ -156,6 +158,8 @@ export interface ChannelService
   ): Promise<UsersIncludedChannel>;
 
   search(pagination: Pagination, options: SearchChannelOptions): Promise<ListResult<Channel>>;
+
+  getAllChannelsInWorkspace(company_id: string, id: string): Promise<Channel[]>;
 }
 export interface MemberService
   extends TwakeServiceProvider,

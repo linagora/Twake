@@ -394,7 +394,7 @@ export class ChannelServiceImpl implements ChannelService {
     return new UpdateResult<ChannelActivity>("channel_activity", entity);
   }
 
-  private async getChannelActivity(channel: Channel): Promise<number> {
+  public async getChannelActivity(channel: Channel): Promise<number> {
     let result = 0;
 
     if (!channel) {
@@ -432,7 +432,7 @@ export class ChannelServiceImpl implements ChannelService {
 
     let user_id = context.user.id;
     if (context.user.application_id) {
-      user_id ||= options.user_id;
+      user_id = user_id || options.user_id;
     }
 
     if ((options?.mine || isDirectWorkspace) && user_id) {
@@ -786,5 +786,26 @@ export class ChannelServiceImpl implements ChannelService {
         },
       },
     );
+  }
+
+  async getAllChannelsInWorkspace(company_id: string, workspace_id: string): Promise<Channel[]> {
+    let pagination = new Pagination(null, "100");
+
+    const channels: Channel[] = [];
+    do {
+      const res = await this.channelRepository.find(
+        {
+          company_id: company_id,
+          workspace_id: workspace_id,
+        },
+        {
+          pagination,
+        },
+      );
+      pagination = new Pagination(res.nextPage.page_token, res.nextPage.limitStr);
+      channels.push(...res.getEntities());
+    } while (pagination.page_token);
+
+    return channels;
   }
 }

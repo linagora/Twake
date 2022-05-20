@@ -1,5 +1,10 @@
 import { FastifyInstance, FastifyPluginCallback } from "fastify";
-import { BaseChannelsParameters, ChannelParameters, PaginationQueryParameters } from "./types";
+import {
+  BaseChannelsParameters,
+  ChannelParameters,
+  PaginationQueryParameters,
+  RecentChannelsParameters,
+} from "./types";
 import {
   createChannelMemberSchema,
   createChannelSchema,
@@ -15,6 +20,7 @@ import {
 } from "./controllers";
 import { checkCompanyAndWorkspaceForUser } from "./middleware";
 import { FastifyRequest } from "fastify/types/request";
+import { checkUserBelongsToCompany } from "../../../utils/company";
 
 const channelsUrl = "/companies/:company_id/workspaces/:workspace_id/channels";
 const membersUrl = `${channelsUrl}/:id/members`;
@@ -25,6 +31,12 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
   const channelsController = new ChannelCrudController();
   const membersController = new ChannelMemberCrudController();
   const tabsController = new ChannelTabCrudController();
+
+  const accessControlCompanyOnly = async (
+    request: FastifyRequest<{ Params: RecentChannelsParameters }>,
+  ) => {
+    await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
+  };
 
   const accessControl = async (request: FastifyRequest<{ Params: BaseChannelsParameters }>) => {
     const authorized = await checkCompanyAndWorkspaceForUser(
@@ -105,6 +117,14 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     url: "/companies/:company_id/search",
     preValidation: [fastify.authenticate],
     handler: channelsController.search.bind(channelsController),
+  });
+
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/channels/recent",
+    preHandler: accessControlCompanyOnly,
+    preValidation: [fastify.authenticate],
+    handler: channelsController.recent.bind(tabsController),
   });
 
   // members
