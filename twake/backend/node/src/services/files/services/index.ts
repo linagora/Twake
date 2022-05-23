@@ -312,6 +312,7 @@ export class FileServiceImpl implements FileServiceAPI {
     const messageFiles = await Promise.all(messageFilePromises);
 
     const filePromises: Promise<File>[] = messageFiles
+      .filter(ref => ref)
       .map(ref =>
         this.repository.findOne({
           company_id: ref.metadata.external_id.company_id,
