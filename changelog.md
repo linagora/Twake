@@ -1,3 +1,18 @@
+# Twake 2022.Q2.975
+
+### Backend
+
+- Implemented the list of uploaded in our backend
+- Jump to a message
+- Scrolling message feed isn't smooth
+
+### Bug fixed
+
+- Fixed thumbnail rotatation when uploaded from mobile
+
+- https://github.com/linagora/Twake/pull/2092
+
+
 # Twake 2022.Q2.930
 
 ### Backend
