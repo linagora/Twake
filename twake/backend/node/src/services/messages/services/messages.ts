@@ -681,6 +681,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       entity.id = file.id || undefined;
       entity.company_id = file.company_id;
 
+      //If it is defined it should exists
+      if (
+        entity.id &&
+        !(await this.msgFilesRepository.findOne({ message_id: message.id, id: entity.id }))
+      ) {
+        entity.id = undefined;
+      }
+
       //For internal files, we have a special additional sync
       if (file.metadata?.source == "internal") {
         //Test external id format

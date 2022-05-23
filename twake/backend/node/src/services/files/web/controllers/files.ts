@@ -5,14 +5,6 @@ import { CompanyExecutionContext } from "../types";
 import { UploadOptions } from "../../api";
 import { File, PublicFile } from "../../entities/file";
 import gr from "../../../global-resolver";
-import {
-  CrudException,
-  ListResult,
-  Pagination,
-} from "../../../../core/platform/framework/api/crud-service";
-import uuid from "node-uuid";
-import { expect } from "@jest/globals";
-import { type } from "os";
 
 export class FileController {
   async save(

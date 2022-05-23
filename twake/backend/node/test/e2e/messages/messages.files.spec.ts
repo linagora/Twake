@@ -13,7 +13,7 @@ import fs from "fs";
 import formAutoContent from "form-auto-content";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import uuid from "node-uuid";
+import uuid, { v1 } from "node-uuid";
 
 describe("The Messages Threads feature", () => {
   const url = "/internal/services/messages/v1";
@@ -163,8 +163,26 @@ describe("List user files", () => {
     "../files/assets/sample.zip",
   ].map(p => `${__dirname}/${p}`);
 
-  it("should not return downloaded files yet", async done => {
-    const jwtToken = await platform.auth.getJWTToken();
+  it("should return downloaded files", async done => {
+    const jwtToken = await platform.auth.getJWTToken({ sub: v1() });
+
+    /*
+    const form = formAutoContent({ file: fs.createReadStream(files[0]) });
+    form.headers["authorization"] = `Bearer ${await platform.auth.getJWTToken()}`;
+    const uploadedFile = await platform.app.inject({
+      method: "POST",
+      url: `${filesUrl}/companies/${platform.workspace.company_id}/files?thumbnail_sync=1`,
+      ...form,
+    });
+    await platform.app.inject({
+      method: "GET",
+      url: `/internal/services/files/v1/companies/${platform.workspace.company_id}/files/${
+        uploadedFile.json().resource.id
+      }/download`,
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 1000));*/
+
     const response = await platform.app.inject({
       method: "GET",
       url: `${messagesUrl}/companies/${platform.workspace.company_id}/files?type=user_download`,
@@ -173,7 +191,9 @@ describe("List user files", () => {
       },
     });
 
-    expect(response.statusCode).toBe(501); // not implemented
+    expect(response.statusCode).toBe(200);
+
+    expect(response.json().resources.length).toBe(0);
 
     done();
   });
