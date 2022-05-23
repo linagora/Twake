@@ -1,3 +1,24 @@
+# Twake 2022.Q2.975
+
+### Backend
+
+- [Implemented the list of uploaded in our backend](https://github.com/linagora/Twake/issues/2127)
+- [Jump to a message](https://github.com/linagora/Twake/issues/1926)
+- [Search for messages](https://github.com/linagora/Twake/issues/1710)
+
+### Bug fixed
+
+- [Fixed thumbnail rotatation when uploaded from mobile](https://github.com/linagora/Twake/issues/2111)
+- [Scrolling message feed isn't smooth](https://github.com/linagora/Twake/issues/2039)
+- [Position of Close (x) buttons are not consistent](https://github.com/linagora/Twake/issues/2031) 
+- [Mention user by any namu or identifier](https://github.com/linagora/Twake/issues/2042)
+- [Update workspace name reset the logo](https://github.com/linagora/Twake/issues/1950)
+- [Empty channel isn't working](https://github.com/linagora/Twake/issues/2146)
+- [On Twake desktop I have notifications only inside Twake window and when it's collapsed I don't see them](https://github.com/linagora/Twake/issues/2043)
+- [Windows notification has no redirection](https://github.com/linagora/Twake/issues/125)
+- [Clicking on push notification does not open the right message](https://github.com/linagora/Twake/issues/396)
+
+
 # Twake 2022.Q2.930
 
 ### Backend
