@@ -19,6 +19,7 @@ import {
 import gr from "../../global-resolver";
 import { MessageFileRef } from "../../messages/entities/message-file-refs";
 import { MessageFile } from "../../messages/entities/message-files";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
 
 export class FileServiceImpl implements FileServiceAPI {
   version: "1";
@@ -199,6 +200,12 @@ export class FileServiceImpl implements FileServiceAPI {
       encryptionKey: entity.encryption_key,
     });
 
+    //Register download action for reference
+    localEventBus.publish("file:download", {
+      user: context.user,
+      file: { id: entity.id, company_id: entity.company_id, user_id: entity.user_id },
+    });
+
     return {
       file: readable,
       name: entity.metadata.name,
@@ -286,8 +293,9 @@ export class FileServiceImpl implements FileServiceAPI {
     return new DeleteResult("files", fileToDelete, true);
   }
 
-  async listUserUploadedFiles(
+  async listUserMarkedFiles(
     userId: string,
+    type: "user_upload" | "user_download",
     context: CompanyExecutionContext,
     pagination: Pagination,
   ): Promise<ListResult<File>> {
@@ -295,7 +303,7 @@ export class FileServiceImpl implements FileServiceAPI {
 
     const refs = await this.messageFileRefsRepository
       .find(
-        { target_type: "user_upload", target_id: userId, company_id: context.company.id },
+        { target_type: type, target_id: userId, company_id: context.company.id },
         {
           pagination,
         },

@@ -82,6 +82,16 @@ export class MessagesEngine implements Initializable {
       this.dispatchMessage(e);
     });
 
+    localEventBus.subscribe(
+      "file:download",
+      async (e: {
+        user: { id: string };
+        file: { id: string; company_id: string; user_id: string };
+      }) => {
+        await this.filesViewProcessor.processDownloaded(e.user.id, e.file);
+      },
+    );
+
     return this;
   }
 }

@@ -81,8 +81,9 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
   getThumbnailRoute(file: File, index: string): string;
   getDownloadRoute(file: File): string;
 
-  listUserUploadedFiles(
+  listUserMarkedFiles(
     userId: string,
+    type: "user_upload" | "user_download",
     context: CompanyExecutionContext,
     pagination: Pagination,
   ): Promise<ListResult<File>>;

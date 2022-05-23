@@ -44,6 +44,10 @@ export class MessageFileRef {
   @Column("message_file_id", "string")
   message_file_id: string;
 
+  @Type(() => String)
+  @Column("file_id", "string")
+  file_id: string;
+
   @Column("company_id", "timeuuid")
   company_id: string;
 }

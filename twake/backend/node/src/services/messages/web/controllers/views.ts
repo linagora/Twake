@@ -125,12 +125,13 @@ export class ViewsController {
       Querystring: { page_token: null; limit: 100; type: "user_upload" | "user_download" };
     }>,
   ): Promise<ResourceListResponse<PublicFile>> {
-    if (request.query.type !== "user_upload") {
+    if (request.query.type !== "user_upload" && request.query.type !== "user_download") {
       throw CrudException.notImplemented(`Not implemented for type ${request.query.type}`);
     }
 
-    const userFiles = await gr.services.files.listUserUploadedFiles(
+    const userFiles = await gr.services.files.listUserMarkedFiles(
       request.currentUser.id,
+      request.query.type,
       getCompanyExecutionContext(request),
       new Pagination(request.query.page_token, String(request.query.limit)),
     );
