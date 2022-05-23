@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y graphicsmagick
 #Unoconv
 RUN apt-get update && apt-get install -y --force-yes unoconv libxml2-dev
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-RUN apt install wget
+RUN apt-get update && apt-get install wget
 # upgrade unoconv
 RUN wget -N https://raw.githubusercontent.com/dagwieers/unoconv/master/unoconv -O /usr/bin/unoconv
 RUN chmod ugo+x /usr/bin/unoconv
