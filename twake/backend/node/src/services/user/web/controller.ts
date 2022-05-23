@@ -5,6 +5,7 @@ import {
   ListResult,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
+import { uniq, orderBy } from "lodash";
 
 import { CrudController } from "../../../core/platform/services/webserver/types";
 import {
@@ -34,6 +35,8 @@ import { getCompanyRooms, getUserRooms } from "../realtime";
 import { formatCompany, getCompanyStats } from "../utils";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
+import { UsersIncludedChannel } from "../../channels/entities";
+import { ChannelObject } from "../../channels/services/channel/types";
 
 export class UsersCrudController
   implements
@@ -276,6 +279,42 @@ export class UsersCrudController
     reply.status(204);
     return {
       status: "success",
+    };
+  }
+
+  async recent(
+    request: FastifyRequest<{ Params: CompanyParameters }>,
+    reply: FastifyReply,
+  ): Promise<ResourceListResponse<UserObject>> {
+    const companyId = request.params.id;
+
+    let channels = await gr.services.channels.channels.getAllChannelsInWorkspace(
+      companyId,
+      "direct",
+    );
+
+    channels = await Promise.all(
+      channels.map(
+        channel =>
+          gr.services.channels.channels.includeUsersInDirectChannel(
+            channel,
+            request.currentUser.id,
+          ) as Promise<UsersIncludedChannel>,
+      ),
+    );
+
+    const filledChannels = await gr.services.channels.channels.fillChannelActivities(channels);
+
+    const users: UserObject[] = [];
+
+    for (const channel of orderBy(filledChannels, "last_activity", "desc")) {
+      for (const user of channel.users) {
+        if (user.id != request.currentUser.id) users.push(user);
+      }
+    }
+
+    return {
+      resources: [...uniq(users)],
     };
   }
 }

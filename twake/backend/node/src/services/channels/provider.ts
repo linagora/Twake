@@ -25,7 +25,11 @@ import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
 import { ChannelPendingEmailsListQueryParameters } from "./web/types";
-import { NewUserInWorkspaceNotification, SearchChannelOptions } from "./services/channel/types";
+import {
+  ChannelObject,
+  NewUserInWorkspaceNotification,
+  SearchChannelOptions,
+} from "./services/channel/types";
 import { ChannelCounterPrimaryKey } from "./entities/channel-counters";
 import { UserPrimaryKey } from "../user/entities/user";
 import { WorkspacePrimaryKey } from "../workspaces/entities/workspace";
@@ -123,6 +127,7 @@ export interface ChannelService
   ): Promise<UpdateResult<ChannelActivity>>;
 
   getChannelActivity(channel: Channel): Promise<number>;
+  fillChannelActivities(channel: Channel[]): Promise<ChannelObject[]>;
 
   /**
    * Get the list of all default channels for the given workspace.
@@ -154,7 +159,7 @@ export interface ChannelService
    */
   includeUsersInDirectChannel(
     channel: Channel,
-    context?: WorkspaceExecutionContext,
+    excludeUserId: string,
   ): Promise<UsersIncludedChannel>;
 
   search(pagination: Pagination, options: SearchChannelOptions): Promise<ListResult<Channel>>;
