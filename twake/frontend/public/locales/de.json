@@ -876,5 +876,14 @@
     "scenes.app.popup.appsparameters.pages.application_creator.title": "Neue Integration",
     "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Mir ist bekannt, dass der Inhaber und die Verwalter dieses Unternehmens diesen Antrag ändern und veröffentlichen können.",
     "twake.application.access.title": "Wählen Sie die richtigen Bereiche für Ihre Anwendung.",
-    "twake.application.access.no_default_scopes_available'": "Diese Integration hat keinen Zugang zu {{$1}}"
+    "twake.application.access.no_default_scopes_available'": "Diese Integration hat keinen Zugang zu {{$1}}",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "die Twake-API-Dokumentation",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Wenn Sie nicht wissen, wie Sie diese ausfüllen sollen, gehen Sie zu ",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Privat Schlüssel",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "Anwendung {{$1}} erfolgreich entfernt!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Fehler beim Entfernen der Anwendung {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Erfolgreiche {{$1}} Bewerbung!",
+    "scenes.app.integrations_parameters.add_application": "Neue Einbindung",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Entwicklereinstellungen",
+    "components.rich_text_editor.plugins.suggestions.loading": "Auf der Suche nach mehr"
 }

@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "повысьте статус вашей компании",
     "components.locked_features_components.locked_invite_alert.message_part_2": " чтобы пригласить больше участников.",
     "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Видеть всех членов моей компании на консоли",
-    "components.locked_features_components.locked_invite_alert.message_magic_link": " обратитесь к владельцу или администратору вашей компании."
+    "components.locked_features_components.locked_invite_alert.message_magic_link": " обратитесь к владельцу или администратору вашей компании.",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "Приложение {{$1}} успешно удалено!",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Опишите ваше приложение в нескольких словах",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Новая интеграция",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Я понимаю, что владелец и администраторы этой компании смогут изменять и публиковать это приложение.",
+    "twake.application.access.title": "Выберите правильные области для вашего приложения.",
+    "twake.application.access.no_default_scopes_available'": "У этой интеграции нет доступа {{$1}}",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "документация по API Twake",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Если вы не знаете, как их заполнить, перейдите на ",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Закрытый ключ",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Ошибка при удалении приложения {{$1}}!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Успешная заявка {{$1}}!",
+    "scenes.app.integrations_parameters.add_application": "Новая интеграция",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Настройки разработчика",
+    "components.rich_text_editor.plugins.suggestions.loading": "Ищете больше"
 }
