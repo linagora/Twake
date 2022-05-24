@@ -117,6 +117,7 @@ export default ({
   };
 
   const computedWidth = file.thumbnail_ratio * 200;
+  const isMediaFile = ["image", "video"].includes(file.type);
 
   return (
     <div
@@ -125,7 +126,11 @@ export default ({
       onClick={() => companyId && onClickFile()}
     >
       {large && <LargePreview file={file} />}
-      <div className="file-info-container">
+      <div
+        className={classNames('file-info-container', {
+          'media-file-info-container': isMediaFile,
+        })}
+      >
         <FileThumbnail file={file} />
         <FileDetails file={file} source={source} />
         <FileActions

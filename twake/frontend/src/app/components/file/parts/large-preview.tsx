@@ -17,7 +17,15 @@ const LargePreview = ({ file: { thumbnail, type } }: PropsType): JSX.Element => 
         alignItems: 'center',
       }}
     >
-      {type === 'video' && <Play size={32} />}
+      {type === 'video' && (
+        <div className='file-large-preview-play-container'>
+          <Play
+            size={32} 
+            color={'white'}
+            strokeWidth={3}
+          />
+        </div>
+      )}
     </div>
   );
 };
