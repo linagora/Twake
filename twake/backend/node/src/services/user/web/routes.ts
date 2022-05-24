@@ -106,6 +106,14 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     handler: usersController.deregisterUserDevice.bind(usersController),
   });
 
+  // recent users the current user has interacted with
+  fastify.route({
+    method: "GET",
+    url: "/companies/:id/users/recent",
+    preValidation: [fastify.authenticateOptional],
+    handler: usersController.recent.bind(usersController),
+  });
+
   next();
 };
 

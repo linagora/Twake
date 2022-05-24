@@ -45,6 +45,7 @@ import gr from "../../../global-resolver";
 import { checkCompanyAndWorkspaceForUser } from "../middleware";
 import { checkUserBelongsToCompany } from "../../../../utils/company";
 import { Message } from "../../../messages/entities/messages";
+import { orderBy } from "lodash";
 
 const logger = getLogger("channel.controller");
 
@@ -94,7 +95,7 @@ export class ChannelCrudController
     if (request.query.include_users)
       channel = await gr.services.channels.channels.includeUsersInDirectChannel(
         channel,
-        getExecutionContext(request),
+        getExecutionContext(request).user.id,
       );
 
     const member = await gr.services.channels.members.get(
@@ -244,7 +245,7 @@ export class ChannelCrudController
       if (request.query.include_users)
         entityWithUsers = await gr.services.channels.channels.includeUsersInDirectChannel(
           entityWithUsers,
-          context,
+          context.user.id,
         );
 
       const resultEntity = {
@@ -330,7 +331,9 @@ export class ChannelCrudController
     if (request.query.include_users) {
       entities = [];
       for (const e of list.getEntities()) {
-        entities.push(await gr.services.channels.channels.includeUsersInDirectChannel(e, context));
+        entities.push(
+          await gr.services.channels.channels.includeUsersInDirectChannel(e, context.user.id),
+        );
       }
     } else {
       entities = list.getEntities();
@@ -513,7 +516,7 @@ export class ChannelCrudController
                   channel =>
                     gr.services.channels.channels.includeUsersInDirectChannel(
                       channel,
-                      context,
+                      context.user.id,
                     ) as Promise<UsersIncludedChannel>,
                 ),
               );
@@ -528,23 +531,10 @@ export class ChannelCrudController
       res = res.concat(ch);
     });
 
-    const activities = await Promise.all(
-      res.map(channel => gr.services.channels.channels.getChannelActivity(channel)),
-    );
-
-    const response: ChannelObject[] = [];
-
-    for (let i = 0; i < res.length; i++) {
-      const channel = res[i];
-      const chObj = ChannelObject.mapTo(channel);
-      chObj.last_activity = activities[i];
-      response.push(chObj);
-    }
+    const filledChannels = await gr.services.channels.channels.fillChannelActivities(res);
 
     return {
-      resources: response.sort(
-        (a: ChannelObject, b: ChannelObject) => b.last_activity - a.last_activity,
-      ),
+      resources: orderBy(filledChannels, "last_activity", "desc"),
     };
   }
 }
