@@ -155,7 +155,7 @@ export interface ChannelService
   /**
    * Include users to channel itself, also generate the channel name
    * @param channel
-   * @param context
+   * @param excludeUserId
    */
   includeUsersInDirectChannel(
     channel: Channel,

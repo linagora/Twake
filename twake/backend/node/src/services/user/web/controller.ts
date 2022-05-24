@@ -283,7 +283,7 @@ export class UsersCrudController
   }
 
   async recent(
-    request: FastifyRequest<{ Params: CompanyParameters }>,
+    request: FastifyRequest<{ Params: CompanyParameters; Querystring: { limit: 100 } }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<UserObject>> {
     const companyId = request.params.id;
@@ -314,7 +314,7 @@ export class UsersCrudController
     }
 
     return {
-      resources: [...uniq(users)],
+      resources: [...uniq(users).slice(0, request.query.limit)],
     };
   }
 }
