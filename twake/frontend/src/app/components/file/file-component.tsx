@@ -16,6 +16,7 @@ import './file.scss';
 import { PendingFileRecoilType } from 'app/features/files/types/file';
 import Api from 'app/features/global/framework/api-service';
 import FileUploadAPIClient from '../../features/files/api/file-upload-api-client';
+import LargePreview from './parts/large-preview';
 
 type PropsType = {
   source: 'internal' | 'drive' | string;
@@ -123,20 +124,7 @@ export default ({
       style={large ? { width: computedWidth } : {}}
       onClick={() => companyId && onClickFile()}
     >
-      {large && (
-        <div
-          className="file-large-preview"
-          style={{
-            backgroundImage:
-              'url(' +
-              FileUploadService.getDownloadRoute({
-                companyId: companyId || '',
-                fileId: file.id,
-              }) +
-              ')',
-          }}
-        ></div>
-      )}
+      {large && <LargePreview file={file} />}
       <div className="file-info-container">
         <FileThumbnail file={file} />
         <FileDetails file={file} source={source} />
