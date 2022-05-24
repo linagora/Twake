@@ -1,8 +1,6 @@
 //@import url("https://fonts.googleapis.com/css?family=Inter:400,500,600,700");
 
-
 :root {
-
   --white: #fff;
   --border-radius-base: 8px;
 
@@ -28,8 +26,7 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-
-  --font-family-inter: "Inter", Helvetica;
+  --font-family-inter: 'Inter', Helvetica;
 }
 
 .screen input:focus {
@@ -75,7 +72,6 @@ input:focus {
   box-sizing: border-box;
 }
 
-
 /* screen - search */
 
 .search-popup .overlay {
@@ -102,7 +98,6 @@ input:focus {
   margin-top: 30vh;
 }
 
-
 .search {
   align-items: flex-start;
 
@@ -128,14 +123,12 @@ input:focus {
   border-radius: var(--border-radius-base);
   box-sizing: border-box;
   overflow: hidden;
-
 }
-
 
 .search .input-wrapper {
   position: relative;
   width: 100%;
-  padding: 0 12px
+  padding: 0 12px;
 }
 
 .search .input-wrapper .input.big {
@@ -155,9 +148,8 @@ input:focus {
   position: absolute;
   top: 6px;
   right: 24px;
-  cursor:pointer;
+  cursor: pointer;
 }
-
 
 .search .header-wrapper {
   display: flex;
@@ -173,9 +165,7 @@ input:focus {
   position: relative;
 }
 
-
 .search .header-title-wrapper {
-
   height: 44px;
   left: 312px;
   position: absolute;
@@ -183,15 +173,13 @@ input:focus {
   width: 175px;
 }
 
-
 .search .header-title {
-
   color: var(--textprimarylight);
   font-family: var(--font-family-inter);
   font-size: var(--font-size-xxxl);
   font-style: normal;
   font-weight: 700;
-  letter-spacing: 0.00px;
+  letter-spacing: 0px;
   line-height: 26px;
   mix-blend-mode: normal;
   position: relative;
@@ -199,7 +187,6 @@ input:focus {
   white-space: nowrap;
   width: auto;
 }
-
 
 .search .header-close-btn {
   border-radius: 10px;
@@ -228,9 +215,8 @@ input:focus {
 .search .search-results {
   border: 1px solid white;
   padding: 10px 15px;
-  width: 100%
+  width: 100%;
 }
-
 
 .search .result-items {
   margin-top: 10px;
@@ -240,13 +226,13 @@ input:focus {
 .search .result-item {
   display: flex;
   margin-bottom: 20px;
-  cursor:pointer;
+  cursor: pointer;
 }
 
 .search .result-item .result-item-icon {
   height: 58px;
   width: 58px;
-  position: relative
+  position: relative;
 }
 
 .search .result-item .result-item-channel-icon {
@@ -283,7 +269,7 @@ input:focus {
 
 .search .result-item .result-item-icon .result-item-icon-title {
   line-height: 38pt;
-  font-size:46pt;
+  font-size: 46pt;
 }
 
 .search .result-item .result-item-channel-icon .result-item-icon-title {
@@ -291,7 +277,6 @@ input:focus {
   font-size: 20pt;
   padding-left: 16px;
 }
-
 
 .search .result-item .result-item-icon .result-item-icon-back {
   height: 56px;
@@ -303,7 +288,6 @@ input:focus {
   background-size: cover;
   background-position: center;
 }
-
 
 .search .result-item .result-item-content .channel-title {
   letter-spacing: -0.41px;
@@ -318,7 +302,6 @@ input:focus {
   font-weight: var(--font-weight-semibold);
   margin-bottom: 1px;
 }
-
 
 .search .result-item .result-item-content .channel-description {
   color: #6d7885;
@@ -359,9 +342,7 @@ input:focus {
   mix-blend-mode: normal;
   text-align: center;
   white-space: nowrap;
-
 }
-
 
 .search .result-item .result-item-content .messages-text {
   font-style: normal;
@@ -384,7 +365,6 @@ input:focus {
   font-style: normal;
   font-weight: var(--font-weight-medium);
   letter-spacing: -0.02px;
-
 }
 
 .search .tabs-wrapper {
@@ -407,15 +387,12 @@ input:focus {
   margin-top: -11px;
 }
 
-
 .search .tab-items-wrapper {
   align-items: flex-start;
   display: flex;
   justify-content: flex-start;
   overflow: hidden;
-
 }
-
 
 .search .tab-item-wrapper {
   align-items: center;
@@ -428,11 +405,9 @@ input:focus {
   z-index: 1;
 }
 
-
 .search .tab-item-active {
   border-bottom: 2px solid var(--accentlight);
 }
-
 
 .search .tab-item-title {
   color: var(--iconlight);
@@ -450,7 +425,6 @@ input:focus {
   padding: 0px 10px;
 }
 
-
 .search .tab-item-active .tab-item-title {
   color: var(--accentlight);
 }
@@ -461,8 +435,6 @@ input:focus {
   height: 6.5px;
   position: relative;
 }
-
-
 
 .search .dismiss-btn {
   visibility: visible;

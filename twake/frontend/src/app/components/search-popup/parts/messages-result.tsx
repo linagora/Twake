@@ -6,8 +6,8 @@ import { Tooltip } from 'antd';
 import User from 'features/users/services/current-user-service';
 import { useWorkspace } from 'features/workspaces/hooks/use-workspaces';
 import RouterServices from 'features/router/services/router-service';
-import Strings from 'features/global/utils/strings';
 import { highlightText } from './common';
+
 type PropsType = {
   message: {
     id: string;
