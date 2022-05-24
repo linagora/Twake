@@ -63,7 +63,6 @@ export const distanceFromQuery = (candidate: string, query: string) => {
         const dist = Strings.removeAccents(field)
           .toLocaleLowerCase()
           .replace(Strings.removeAccents(word).toLocaleLowerCase(), '').length;
-        console.log(field, word, dist);
         if (dist < score) score = dist;
       }
     });
