@@ -2,6 +2,7 @@ import { merge } from "lodash";
 import { Channel } from "../../entities/channel";
 import { ChannelActivity } from "../../entities/channel-activity";
 import { ChannelMember } from "../../entities";
+import { UserObject } from "../../../user/web/types";
 
 export type NewUserInWorkspaceNotification = {
   user_id: string;
@@ -49,7 +50,7 @@ export class ChannelObject extends Channel {
   default: boolean;
   type: ChannelType;
   user_member: ChannelMemberObject;
-
+  users: UserObject[];
   stats: ChannelStats;
 
   constructor() {
