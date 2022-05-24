@@ -493,7 +493,7 @@ export class ChannelCrudController
 
   async recent(
     request: FastifyRequest<{
-      Querystring: ChannelListQueryParameters;
+      Querystring: { limit: 100 };
       Params: BaseChannelsParameters;
     }>,
   ): Promise<ResourceListResponse<ChannelObject>> {
@@ -534,7 +534,7 @@ export class ChannelCrudController
     const filledChannels = await gr.services.channels.channels.fillChannelActivities(res);
 
     return {
-      resources: orderBy(filledChannels, "last_activity", "desc"),
+      resources: orderBy(filledChannels, "last_activity", "desc").slice(0, request.query.limit),
     };
   }
 }
