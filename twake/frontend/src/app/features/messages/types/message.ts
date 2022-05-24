@@ -61,6 +61,15 @@ export type Message = {
   text?: string;
 };
 
+export interface MessageExtended extends Message {
+  id: string;
+  text: string;
+  cache: { company_id: string; workspace_id: string; channel_id: string };
+  created_at: number;
+  user_id: string;
+  thread_id: string;
+}
+
 export type DeprecatedMessageKeys = {
   parent_message_id?: string | null;
 };

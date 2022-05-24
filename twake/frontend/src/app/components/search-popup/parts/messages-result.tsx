@@ -8,15 +8,9 @@ import { useWorkspace } from 'features/workspaces/hooks/use-workspaces';
 import RouterServices from 'features/router/services/router-service';
 import Strings from 'features/global/utils/strings';
 import { highlightText } from './common';
+import { MessageExtended } from 'features/messages/types/message';
 type PropsType = {
-  message: {
-    id: string;
-    text: string;
-    cache: { company_id: string; workspace_id: string; channel_id: string };
-    created_at: number;
-    user_id: string;
-    thread_id: string;
-  };
+  message: MessageExtended;
   highlight: string;
   onClick: any;
 };
