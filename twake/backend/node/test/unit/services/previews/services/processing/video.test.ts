@@ -1,6 +1,6 @@
 import { describe, expect, it, jest, beforeEach, afterEach, afterAll } from "@jest/globals";
 import { generateVideoPreview } from "../../../../../../src/services/previews/services/processing/video";
-import ffmpeg from "fluent-ffmpeg";
+import ffmpeg, { ffprobe } from "fluent-ffmpeg";
 import { cleanFiles, getTmpFile } from "../../../../../../src/services/previews/utils";
 import fs from "fs";
 
@@ -21,6 +21,16 @@ beforeEach(() => {
   (ffmpeg as any).mockImplementation(() => ffmpegMock);
   (cleanFiles as any).mockImplementation(() => jest.fn());
   (getTmpFile as any).mockImplementation(() => "/tmp/file");
+  (ffprobe as any).mockImplementation((i, cb) => {
+    cb(null, {
+      streams: [
+        {
+          width: 320,
+          height: 240,
+        },
+      ],
+    });
+  });
 });
 
 afterEach(() => {
@@ -33,24 +43,29 @@ afterAll(() => {
 
 describe("the generateVideoPreview function", () => {
   it("should return a promise", () => {
-    const result = generateVideoPreview([], { provider: "local", path: "foo" });
+    const result = generateVideoPreview([]);
     expect(result).toBeInstanceOf(Promise);
   });
 
   it("should attempt to create a screenshot using ffmpeg", async () => {
-    await generateVideoPreview(["/foo/bar"], { provider: "local", path: "foo" });
+    await generateVideoPreview(["/foo/bar"]);
     expect(ffmpeg as any).toBeCalledWith("/foo/bar");
   });
 
-  it("should call ffmpeg screenshot method with the correct arguments", async () => {
+  it("should call ffmpeg screenshot method with the original video dimentions", async () => {
     (getTmpFile as any).mockImplementation(() => "/tmp/some-random-file");
-
-    await generateVideoPreview(["/foo/bar"], {
-      provider: "local",
-      path: "foo",
-      width: 500,
-      height: 500,
+    (ffprobe as any).mockImplementation((i, cb) => {
+      cb(null, {
+        streams: [
+          {
+            width: 500,
+            height: 500,
+          },
+        ],
+      });
     });
+
+    await generateVideoPreview(["/foo/bar"]);
     expect(ffmpegMock.screenshot).toBeCalledWith({
       count: 1,
       filename: "some-random-file.png",
@@ -61,27 +76,35 @@ describe("the generateVideoPreview function", () => {
   });
 
   it("should attempt to generate a temporary file", async () => {
-    await generateVideoPreview(["/foo/bar"], { provider: "local", path: "foo" });
+    await generateVideoPreview(["/foo/bar"]);
 
     expect(getTmpFile).toBeCalled();
   });
 
   it("should attempt to clean up the temporary file in case of errors", async () => {
-    const error = new Error("foo");
     const expectedError = new Error("failed to generate video preview: Error: foo");
     (ffmpeg as any).mockImplementation(() => {
-      throw error;
+      throw new Error("foo");
     });
 
-    await expect(
-      generateVideoPreview(["/foo/bar"], { provider: "local", path: "foo" }),
-    ).rejects.toThrow(expectedError);
+    (ffprobe as any).mockImplementation((i, cb) => {
+      cb(null, {
+        streams: [
+          {
+            width: 500,
+            height: 500,
+          },
+        ],
+      });
+    });
+
+    await expect(generateVideoPreview(["/foo/bar"])).rejects.toThrow(expectedError);
 
     expect(cleanFiles).toBeCalledWith(["/tmp/file.png"]);
   });
 
   it("should return the thumbnail information", async () => {
-    const result = await generateVideoPreview(["/foo/bar"], { provider: "local", path: "foo" });
+    const result = await generateVideoPreview(["/foo/bar"]);
     expect(result).toEqual([
       {
         width: 320,
@@ -93,17 +116,33 @@ describe("the generateVideoPreview function", () => {
     ]);
   });
 
-  it("should return the thumbnail information with the supplied dimensions", async () => {
-    const result = await generateVideoPreview(["/foo/bar"], {
-      provider: "local",
-      path: "foo",
-      width: 500,
-      height: 500,
+  it("should generate thumbnails for multiple files", async () => {
+    const result = await generateVideoPreview(["/foo/bar", "/foo/baz", "/foo/tar"]);
+    expect(result).toHaveLength(3);
+  });
+
+  it("should use ffprobe to get the video dimensions", async () => {
+    await generateVideoPreview(["/foo/bar"]);
+    expect(ffprobe).toBeCalledWith("/foo/bar", expect.any(Function));
+  });
+
+  it("should use 1080p as the maximum video dimensions", async () => {
+    (ffprobe as any).mockImplementation((i, cb) => {
+      cb(null, {
+        streams: [
+          {
+            width: 5000,
+            height: 5000,
+          },
+        ],
+      });
     });
+
+    const result = await generateVideoPreview(["/foo/bar"]);
     expect(result).toEqual([
       {
-        width: 500,
-        height: 500,
+        width: 1920,
+        height: 1080,
         type: "image/png",
         size: 1,
         path: "/tmp/file.png",
@@ -111,11 +150,27 @@ describe("the generateVideoPreview function", () => {
     ]);
   });
 
-  it("should generate thumbnails for multiple files", async () => {
-    const result = await generateVideoPreview(["/foo/bar", "/foo/baz", "/foo/tar"], {
-      provider: "local",
-      path: "foo",
+  it("should use 320x240 as the minimum video dimensions", async () => {
+    (ffprobe as any).mockImplementation((i, cb) => {
+      cb(null, {
+        streams: [
+          {
+            width: 320,
+            height: 180,
+          },
+        ],
+      });
     });
-    expect(result).toHaveLength(3);
+
+    const result = await generateVideoPreview(["/foo/bar"]);
+    expect(result).toEqual([
+      {
+        width: 320,
+        height: 240,
+        type: "image/png",
+        size: 1,
+        path: "/tmp/file.png",
+      },
+    ]);
   });
 });

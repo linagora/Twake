@@ -54,7 +54,7 @@ export class PreviewProcessService implements PreviewServiceAPI {
 
     if (isFileType(document.mime, document.filename, videoExtensions)) {
       try {
-        const images = await generateVideoPreview([document.path], options);
+        const images = await generateVideoPreview([document.path]);
         await cleanFiles([document.path]);
 
         return images;
