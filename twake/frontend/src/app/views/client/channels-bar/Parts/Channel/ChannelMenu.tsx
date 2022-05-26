@@ -11,7 +11,6 @@ import UserService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import { NotificationResource } from 'app/features/users/types/notification-types';
 import RouterServices from 'app/features/router/services/router-service';
 import GuestManagement from 'app/views/client/channels-bar/Modals/GuestManagement';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
@@ -28,6 +27,7 @@ import FeatureTogglesService from 'app/features/global/services/feature-toggles-
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import { useRefreshDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
+import consoleService from 'app/features/console/services/console-service';
 
 type PropsType = {
   channel: ChannelType;
@@ -117,8 +117,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
       ) : (
         <LockedGuestsPopup
           companySubscriptionUrl={
-            InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url ||
-            ''
+            consoleService.getCompanySubscriptionUrl(props.channel.company_id || "")
           }
         />
       ),

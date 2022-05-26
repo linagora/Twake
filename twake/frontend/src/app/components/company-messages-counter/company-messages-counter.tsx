@@ -10,6 +10,7 @@ import FeatureTogglesService, {
   FeatureNames,
 } from 'app/features/global/services/feature-toggles-service';
 import MessageHistoryService from 'app/features/messages/services/message-history-service';
+import consoleService from 'app/features/console/services/console-service';
 
 const { Text, Title, Link } = Typography;
 const CompanyMessagesCounter = () => {
@@ -18,8 +19,7 @@ const CompanyMessagesCounter = () => {
 
   const { company } = useCurrentCompany();
 
-  const companySubscriptionUrl =
-    InitService.server_infos?.configuration.accounts.console?.company_subscription_url || '';
+  const companySubscriptionUrl = consoleService.getCompanySubscriptionUrl(company.id);
 
   const onClickLink = () => window.open(companySubscriptionUrl, 'blank');
 

@@ -5,12 +5,17 @@ import Emojione from 'app/components/emojione/emojione';
 import Languages from 'app/features/global/services/languages-service';
 import './locked-history-banner.scss';
 import InitService from 'app/features/global/services/init-service';
+import consoleService from 'app/features/console/services/console-service';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 const { Title, Text } = Typography;
 const LockedHistoryBanner = (): JSX.Element => {
+
+  const companyId = useRouterCompany();
+
   const onClickBtn = () =>
     window.open(
-      InitService.server_infos?.configuration?.accounts?.console?.company_subscription_url || '',
+      consoleService.getCompanySubscriptionUrl(companyId),
       'blank',
     );
 
