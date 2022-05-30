@@ -1,4 +1,4 @@
-import React, { Suspense, useContext, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import 'moment-timezone';
 import classNames from 'classnames';
 import Reactions from './Reactions';
@@ -25,16 +25,15 @@ type Props = {
   threadHeader?: string;
 };
 
+let loadingInteractionTimeout: any = 0;
+
 export default (props: Props) => {
   const [active, setActive] = useState(false);
   const [loadingAction, setLoadingAction] = useState(false);
   const [didMouseOver, setDidMouseOver] = useState(false);
-  let loading_interaction_timeout: any = 0;
 
   const context = useContext(MessageContext);
   let { message } = useMessage(context);
-
-  const companyId = context.companyId;
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
     var app_id = message.application_id;
@@ -51,13 +50,17 @@ export default (props: Props) => {
   const onAction = (type: string, id: string, context: any, passives: any, evt: any) => {
     if (type === 'interactive_action') {
       setLoadingAction(true);
-      clearTimeout(loading_interaction_timeout);
-      loading_interaction_timeout = setTimeout(() => {
+      clearTimeout(loadingInteractionTimeout);
+      loadingInteractionTimeout = setTimeout(() => {
         setLoadingAction(false);
       }, 5000);
       onInteractiveMessageAction(id, context, passives, evt);
     }
   };
+
+  useEffect(() => {
+    setLoadingAction(false);
+  }, [JSON.stringify(message.blocks)]);
 
   const deleted = message.subtype === 'deleted';
 

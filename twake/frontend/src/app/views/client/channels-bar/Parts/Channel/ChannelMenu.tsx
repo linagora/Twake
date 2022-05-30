@@ -186,19 +186,12 @@ const FullMenu = (props: PropsType): JSX.Element => {
           : 'scenes.app.channelsbar.unread_sign',
       ),
       onClick: () => {
-        badges.length > 0
-          ? ChannelAPIClient.read(
-              props.channel.company_id || '',
-              props.channel.workspace_id || '',
-              props.channel.id || '',
-              { status: true, now: true },
-            )
-          : ChannelAPIClient.read(
-              props.channel.company_id || '',
-              props.channel.workspace_id || '',
-              props.channel.id || '',
-              { status: false, now: true },
-            );
+        ChannelAPIClient.read(
+          props.channel.company_id || '',
+          props.channel.workspace_id || '',
+          props.channel.id || '',
+          { status: badges.length > 0, now: true },
+        );
       },
     },
     {

@@ -27,15 +27,20 @@ export default (props: Props) => {
     companyId,
   };
 
+  const hasEphemeral = !(
+    !lastEphemeral ||
+    !(lastEphemeral.thread_id === props.threadId || (!props.threadId && !lastEphemeral.thread_id))
+  );
+
   useEffect(() => {
-    if (lastEphemeral) {
+    if (lastEphemeral && hasEphemeral) {
       props.onHasEphemeralMessage();
     } else {
       props.onNotEphemeralMessage();
     }
-  }, [lastEphemeral]);
+  }, [lastEphemeral, hasEphemeral]);
 
-  if (!lastEphemeral || (props.threadId && lastEphemeral.thread_id !== props.threadId)) {
+  if (!hasEphemeral) {
     return <div />;
   }
 
