@@ -11,7 +11,6 @@ import UserService from 'app/features/users/services/current-user-service';
 import ModalManager from 'app/components/modal/modal-manager';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
-import { NotificationResource } from 'app/features/users/types/notification-types';
 import RouterServices from 'app/features/router/services/router-service';
 import GuestManagement from 'app/views/client/channels-bar/Modals/GuestManagement';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
@@ -187,19 +186,12 @@ const FullMenu = (props: PropsType): JSX.Element => {
           : 'scenes.app.channelsbar.unread_sign',
       ),
       onClick: () => {
-        badges.length > 0
-          ? ChannelAPIClient.read(
-              props.channel.company_id || '',
-              props.channel.workspace_id || '',
-              props.channel.id || '',
-              { status: true, now: true },
-            )
-          : ChannelAPIClient.read(
-              props.channel.company_id || '',
-              props.channel.workspace_id || '',
-              props.channel.id || '',
-              { status: false, now: true },
-            );
+        ChannelAPIClient.read(
+          props.channel.company_id || '',
+          props.channel.workspace_id || '',
+          props.channel.id || '',
+          { status: badges.length > 0, now: true },
+        );
       },
     },
     {

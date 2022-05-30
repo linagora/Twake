@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import Compile from './compile';
@@ -15,12 +15,13 @@ type Props = {
   onAction?: (type: string, id: string, context: any, value: any, evt: any) => void;
 };
 
+let loadingInteractionTimeout: any = 0;
+
 export default React.memo((props: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let container: any = null;
   let passives: any = {};
-  let loadingInteraction_timeout: any = 0;
-  let saved_stringified: string = '';
+  let savedStringified = useRef('');
 
   const [loadingInteraction, setLoadingInteraction] = useState(false);
 
@@ -30,9 +31,9 @@ export default React.memo((props: Props) => {
       if (type === 'interactive_action') {
         if (props.onAction) {
           setLoadingInteraction(true);
-          clearTimeout(loadingInteraction_timeout);
-          loadingInteraction_timeout = setTimeout(() => {
-            saved_stringified = '';
+          clearTimeout(loadingInteractionTimeout);
+          loadingInteractionTimeout = setTimeout(() => {
+            savedStringified.current = '';
             setLoadingInteraction(false);
           }, 5000);
           props.onAction(type, id, context, JSON.parse(JSON.stringify(passives)), evt);
@@ -51,17 +52,18 @@ export default React.memo((props: Props) => {
 
   useEffect(() => {
     var stringified = JSON.stringify([props.content]);
-    if (stringified !== saved_stringified) {
-      clearTimeout(loadingInteraction_timeout);
+    if (stringified !== savedStringified.current) {
+      clearTimeout(loadingInteractionTimeout);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      saved_stringified = stringified;
+      savedStringified.current = stringified;
       setLoadingInteraction(false);
+      console.log('called setLoadingInteraction');
     }
     return () => {
       //Called when element is unmounted
-      clearTimeout(loadingInteraction_timeout);
+      clearTimeout(loadingInteractionTimeout);
     };
-  }, [props.content]);
+  }, [JSON.stringify(props.content)]);
 
   return (
     <div
