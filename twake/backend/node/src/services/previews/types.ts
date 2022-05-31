@@ -8,6 +8,10 @@ export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
   ): Promise<ThumbnailResult[]>;
 }
 
+export interface LinkPreviewServiceAPI extends TwakeServiceProvider, Initializable {
+  generatePreviews(links: LinkPreviewPubsubRequest["links"]): Promise<LinkPreview[]>;
+}
+
 export type PreviewPubsubRequest = {
   document: {
     id: string;
@@ -68,4 +72,30 @@ export type temporaryThumbnailFile = {
   filePath: string;
   fileName: string;
   folder: string;
+};
+
+export type LinkPreview = {
+  title: string;
+  description: string | null;
+  domain: string;
+  favicon: string | null;
+  img: string | null;
+  img_height: number | null;
+  img_width: number | null;
+};
+
+export type LinkPreviewPubsubRequest = {
+  links: string[];
+  message: {
+    id: string;
+    thread_id: string;
+  };
+};
+
+export type LinkPreviewPubsubCallback = {
+  message: {
+    id: string;
+    thread_id: string;
+  };
+  previews: LinkPreview[];
 };

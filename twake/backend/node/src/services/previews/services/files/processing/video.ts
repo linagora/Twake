@@ -1,6 +1,6 @@
 import ffmpeg from "fluent-ffmpeg";
-import { temporaryThumbnailFile, ThumbnailResult } from "../../types";
-import { cleanFiles, getTmpFile } from "../../utils";
+import { temporaryThumbnailFile, ThumbnailResult } from "../../../types";
+import { cleanFiles, getTmpFile } from "../../../utils";
 import fs from "fs";
 
 /**

@@ -1,7 +1,7 @@
-import { PreviewPubsubHandler } from "../../api";
-import { logger, TwakeContext } from "../../../../core/platform/framework";
-import { PreviewClearPubsubRequest, PreviewPubsubCallback } from "../../types";
-import gr from "../../../global-resolver";
+import { PreviewPubsubHandler } from "../../../api";
+import { logger, TwakeContext } from "../../../../../core/platform/framework";
+import { PreviewClearPubsubRequest, PreviewPubsubCallback } from "../../../types";
+import gr from "../../../../global-resolver";
 
 /**
  * Clear thumbnails when the delete task is called

@@ -1,9 +1,9 @@
 import fs, { promises as fsPromise } from "fs";
-import { PreviewPubsubHandler } from "../../api";
-import { logger, TwakeContext } from "../../../../core/platform/framework";
-import { PreviewPubsubCallback, PreviewPubsubRequest, ThumbnailResult } from "../../types";
-import { getTmpFile } from "../../utils";
-import gr from "../../../global-resolver";
+import { PreviewPubsubHandler } from "../../../api";
+import { logger, TwakeContext } from "../../../../../core/platform/framework";
+import { PreviewPubsubCallback, PreviewPubsubRequest, ThumbnailResult } from "../../../types";
+import { getTmpFile } from "../../../utils";
+import gr from "../../../../global-resolver";
 
 const { unlink } = fsPromise;
 /**
@@ -77,7 +77,7 @@ export class PreviewProcessor
     let localThumbnails: ThumbnailResult[] = [];
 
     try {
-      localThumbnails = await gr.services.preview.generateThumbnails(
+      localThumbnails = await gr.services.preview.files.generateThumbnails(
         { path: inputPath, mime: message.document.mime, filename: message.document.filename },
         message.output,
         true,

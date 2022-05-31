@@ -1,7 +1,7 @@
-import { Initializable } from "../../../../core/platform/framework";
+import { Initializable } from "../../../../../core/platform/framework";
 import { ClearProcessor } from "./clear";
 import { PreviewProcessor } from "./service";
-import gr from "../../../global-resolver";
+import gr from "../../../../global-resolver";
 
 /**
  * The notification engine is in charge of processing data and delivering user notifications on the right place

@@ -89,6 +89,9 @@ export class Message {
     workspace_id: string;
     channel_id: string;
   };
+
+  @Column("links", "encoded_json")
+  links: null | MessageLinks[];
 }
 
 export type MessageReaction = { count: number; name: string; users: string[] };
@@ -131,4 +134,14 @@ export function getInstance(message: Partial<Message>): Message {
 export type MessageWithUsers = Message & {
   users?: UserObject[];
   application?: Partial<Application>;
+};
+
+export type MessageLinks = {
+  title: string;
+  description: string | null;
+  domain: string;
+  img: string | null;
+  favicon: string | null;
+  img_width: number | null;
+  img_height: number | null;
 };

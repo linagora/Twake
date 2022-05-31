@@ -35,7 +35,7 @@ import { UserObject } from "../../user/web/types";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
 import { getDefaultMessageInstance } from "../../../utils/messages";
-import { buildMessageListPagination, getMentions } from "./utils";
+import { buildMessageListPagination, getLinks, getMentions } from "./utils";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
 import {
   KnowledgeGraphEvents,
@@ -43,6 +43,7 @@ import {
 } from "../../../core/platform/services/knowledge-graph/types";
 import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
 import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs-reversed";
+import { LinkPreviewPubsubRequest } from "../../../services/previews/types";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -545,6 +546,18 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     },
   ])
   async onSaved(message: Message, options: { created?: boolean }, context: ThreadExecutionContext) {
+    const messageLinks = getLinks(message);
+
+    gr.platformServices.pubsub.publish<LinkPreviewPubsubRequest>("services:preview:links", {
+      data: {
+        links: messageLinks,
+        message: {
+          id: message.id,
+          thread_id: message.thread_id,
+        },
+      },
+    });
+
     if (options.created && !message.ephemeral) {
       await gr.services.messages.threads.addReply(message.thread_id);
     }

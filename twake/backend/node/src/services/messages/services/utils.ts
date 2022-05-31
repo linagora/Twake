@@ -48,3 +48,14 @@ export const getMentions = async (
     specials: (globalOutput || []).map(g => (g || "").trim().split("@").pop()) as specialMention[],
   };
 };
+
+/**
+ * extracts the links from a message
+ *
+ * @param {Message} messageResource - The message to be parsed
+ * @returns {String} - links found in the message
+ */
+export const getLinks = (messageResource: Message): string[] => {
+  const links = (messageResource.text || "").match(/https?:\/\/[^ ]+/gm);
+  return links || [];
+};
