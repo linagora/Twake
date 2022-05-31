@@ -5,7 +5,7 @@ import './search-popup.scss';
 import InputIcon from 'components/inputs/input-icon.js';
 
 import Languages from 'app/features/global/services/languages-service';
-import SearchAll from './tabs/all';
+import SearchAll from './tabs/all/index';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {

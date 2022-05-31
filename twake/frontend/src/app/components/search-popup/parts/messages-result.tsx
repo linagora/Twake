@@ -26,6 +26,7 @@ const format = (inputDate: Date) => {
   const today = new Date();
 
   if (matchDate(today)) {
+    // @ts-ignore
     return new Intl.DateTimeFormat(locale, { timeStyle: 'short' }).format(inputDate);
   }
 

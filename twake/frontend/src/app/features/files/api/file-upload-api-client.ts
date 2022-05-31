@@ -1,5 +1,5 @@
 import Api from 'app/features/global/framework/api-service';
-import { FileType } from 'app/features/files/types/file';
+import { FileType, MetaDataType } from 'app/features/files/types/file';
 import { MessageFileType } from 'app/features/messages/types/message';
 import extensionToMime from '../utils/extension-to-mime';
 
@@ -113,6 +113,54 @@ class FileUploadAPIClient {
 
   public extensionToMime(extension: string): string {
     return extensionToMime[extension] || '';
+  }
+
+  async recent(companyId: string, filter: 'file' | 'media', limit: number): Promise<FileType[]> {
+    if (filter === 'file') {
+      return [
+        {
+          metadata: {
+            name: 'covenant.xlsx',
+            mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          } as MetaDataType,
+        } as FileType,
+        {
+          metadata: {
+            name: 'report.doc',
+            mime: 'application/msword',
+          } as MetaDataType,
+        } as FileType,
+        {
+          metadata: {
+            name: 'meeting_notes.pdf',
+            mime: 'application/pdf',
+          } as MetaDataType,
+        } as FileType,
+        {
+          metadata: {
+            name: 'covenant.xlsx',
+            mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          } as MetaDataType,
+        } as FileType,
+      ] as FileType[];
+    } else {
+      const files = [
+        '15a579ac-23f9-470e-b856-07a7a1a834ca',
+        '62746ee9-6101-4476-9e20-be55e9eea4ea',
+      ];
+
+      return files.map(file => {
+        return {
+          metadata: {
+            source: 'internal',
+            external_id: {
+              id: file,
+              company_id: '56393af2-e5fe-11e9-b894-0242ac120004',
+            },
+          } as any,
+        } as FileType;
+      });
+    }
   }
 }
 

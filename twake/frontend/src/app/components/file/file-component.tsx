@@ -84,6 +84,8 @@ export default ({
   }, [_file]);
 
   const onClickFile = async () => {
+    console.log('!!! onClickFile', source, file);
+
     if (source === 'internal') {
       //Only if upload has ended
       if ((!status || isPendingFileStatusSuccess(status)) && file.id)

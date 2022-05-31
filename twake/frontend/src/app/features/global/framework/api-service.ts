@@ -49,7 +49,7 @@ export default class Api {
     raw: boolean = false,
     options: { disableJWTAuthentication?: boolean; withBlob?: boolean } = {},
   ): Promise<Response> {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       route = Globals.api_root_url + route;
 
       Requests.request(
@@ -57,7 +57,11 @@ export default class Api {
         route,
         '',
         (resp: any) => {
-          const result: Response = raw ? resp : JSON.parse(resp);
+          const result = raw ? resp : JSON.parse(resp);
+          if (result.statusCode === 500) {
+            callback && callback(result);
+            return reject(result);
+          }
 
           resolve(result);
           callback && callback(result);

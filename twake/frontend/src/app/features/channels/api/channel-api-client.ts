@@ -2,7 +2,7 @@ import Api from '../../global/framework/api-service';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
-
+import Workspaces from 'deprecated/workspaces/workspaces';
 const PREFIX = '/internal/services/channels/v1/companies';
 
 @TwakeService('ChannelAPIClientService')
@@ -53,6 +53,35 @@ class ChannelAPIClientService {
       { doInitialCall: now, timeout: 2000 },
     );
   }
+
+  async recent(companyId: string, limit: number): Promise<ChannelType[]> {
+    try {
+      const res = await Api.get<{ resources: ChannelType[] }>(
+        `${PREFIX}/${companyId}/channels/recent`,
+      );
+
+      return res.resources;
+    } catch (e) {
+      console.error("Can't retrieve channels", e);
+      return [];
+    }
+  }
+
+  // async recent(companyId: string, limit: number): Promise<ChannelType[]> {
+  //   console.log('!!! a');
+  //
+  //   const direct = await Api.get<{ resources: ChannelType[] }>(
+  //     `${PREFIX}/${companyId}/workspaces/direct/channels`,
+  //   ).then(a => a.resources.slice(0, 5));
+  //
+  //   console.log('!!! direct', direct);
+  //
+  //   const regular = await Api.get<{ resources: ChannelType[] }>(
+  //     `${PREFIX}/${companyId}/workspaces/${Workspaces.currentWorkspaceId}/channels`,
+  //   ).then(a => a.resources.slice(0, 5));
+  //
+  //   return [...direct, ...regular];
+  // }
 }
 
 const ChannelAPIClient = new ChannelAPIClientService();

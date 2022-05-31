@@ -35,6 +35,7 @@ export type UserType = {
   isRobot?: boolean;
   language?: string;
   last_name?: string;
+
   mail_hash?: string;
   mail_verification_override?: any;
   mail_verification_override_mail?: any;
@@ -49,7 +50,7 @@ export type UserType = {
   username: string;
   companies?: UserCompanyType[];
   preferences: UserPreferencesType;
-
+  full_name?: string;
   /**
    * this field is filled when available and so we cannot rely on it except on search service for filtering
    **/
