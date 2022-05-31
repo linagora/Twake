@@ -20,6 +20,7 @@ import gr from "../../global-resolver";
 import { MessageFileRef } from "../../messages/entities/message-file-refs";
 import { MessageFile } from "../../messages/entities/message-files";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { compareTimeuuid } from "../../../utils/uuid";
 
 export class FileServiceImpl implements FileServiceAPI {
   version: "1";
@@ -295,40 +296,72 @@ export class FileServiceImpl implements FileServiceAPI {
 
   async listUserMarkedFiles(
     userId: string,
-    type: "user_upload" | "user_download",
+    type: "user_upload" | "user_download" | "both",
+    media: "file_only" | "media_only" | "both",
     context: CompanyExecutionContext,
     pagination: Pagination,
   ): Promise<ListResult<File>> {
+    let final: File[] = [];
     let nextPage = null;
+    while (final.length < (parseInt(pagination.limitStr) || 100) && nextPage !== null) {
+      const uploads =
+        type === "user_upload" || type === "both"
+          ? await this.messageFileRefsRepository
+              .find(
+                { target_type: "user_upload", target_id: userId, company_id: context.company.id },
+                {
+                  pagination: { ...pagination, page_token: nextPage },
+                },
+              )
+              .then(a => {
+                nextPage = a.nextPage;
+                return a.getEntities();
+              })
+          : [];
 
-    const refs = await this.messageFileRefsRepository
-      .find(
-        { target_type: type, target_id: userId, company_id: context.company.id },
-        {
-          pagination,
-        },
-      )
-      .then(a => {
-        nextPage = a.nextPage;
-        return a.getEntities();
+      const downloads =
+        type === "user_download" || type === "both"
+          ? await this.messageFileRefsRepository
+              .find(
+                { target_type: "user_download", target_id: userId, company_id: context.company.id },
+                {
+                  pagination: { ...pagination, page_token: nextPage },
+                },
+              )
+              .then(a => {
+                nextPage = a.nextPage;
+                return a.getEntities();
+              })
+          : [];
+
+      let refs = [...uploads, ...downloads];
+
+      const messageFilePromises: Promise<MessageFile>[] = refs.map(ref =>
+        this.messageFileRepository.findOne({ message_id: ref.message_id }),
+      );
+
+      const messageFiles = await Promise.all(messageFilePromises);
+
+      const filePromises: Promise<File>[] = messageFiles
+        .filter(ref => ref)
+        .map(async ref =>
+          this.repository.findOne({
+            company_id: ref.metadata.external_id.company_id,
+            id: ref.metadata.external_id.id,
+          }),
+        )
+        .filter(a => a);
+
+      final = [...final, ...(await Promise.all(filePromises))].filter(ref => {
+        //Apply media filer
+        const isMedia =
+          ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
+        return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
       });
+      final = final.sort((a, b) => b.created_at - a.created_at);
+    }
 
-    const messageFilePromises: Promise<MessageFile>[] = refs.map(ref =>
-      this.messageFileRepository.findOne({ message_id: ref.message_id }),
-    );
-
-    const messageFiles = await Promise.all(messageFilePromises);
-
-    const filePromises: Promise<File>[] = messageFiles
-      .filter(ref => ref)
-      .map(ref =>
-        this.repository.findOne({
-          company_id: ref.metadata.external_id.company_id,
-          id: ref.metadata.external_id.id,
-        }),
-      )
-      .filter(a => a);
-    return new ListResult<File>("file", await Promise.all(filePromises), nextPage);
+    return new ListResult<File>("file", final, nextPage);
   }
 }
 

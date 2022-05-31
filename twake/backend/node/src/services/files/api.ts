@@ -83,7 +83,8 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
 
   listUserMarkedFiles(
     userId: string,
-    type: "user_upload" | "user_download",
+    type: "user_upload" | "user_download" | "both",
+    media: "file_only" | "media_only" | "both",
     context: CompanyExecutionContext,
     pagination: Pagination,
   ): Promise<ListResult<File>>;

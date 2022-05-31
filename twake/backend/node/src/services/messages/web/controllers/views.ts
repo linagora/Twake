@@ -122,7 +122,12 @@ export class ViewsController {
   async files(
     request: FastifyRequest<{
       Params: { company_id: string };
-      Querystring: { page_token: null; limit: 100; type: "user_upload" | "user_download" };
+      Querystring: {
+        page_token: null;
+        limit: 100;
+        type: "user_upload" | "user_download";
+        media: "media_only" | "file_only";
+      };
     }>,
   ): Promise<ResourceListResponse<PublicFile>> {
     if (request.query.type !== "user_upload" && request.query.type !== "user_download") {
@@ -131,7 +136,8 @@ export class ViewsController {
 
     const userFiles = await gr.services.files.listUserMarkedFiles(
       request.currentUser.id,
-      request.query.type,
+      request.query.type || "both",
+      request.query.media || "both",
       getCompanyExecutionContext(request),
       new Pagination(request.query.page_token, String(request.query.limit)),
     );
