@@ -9,10 +9,11 @@ type PropsType = {
 
 export const FileThumbnail = ({ file }: PropsType): JSX.Element => {
   const type = file.type;
+  const canHavePreview = ['image', 'video', 'pdf', 'document', 'slides', 'spreadsheet'].includes(type);
 
   return (
     <div className={classNames('file-thumbnail-container', 'small-right-margin')}>
-      {type === 'image' && file.thumbnail && (
+      {canHavePreview && file.thumbnail && (
         <div
           className="ant-image file-thumbnail-component"
           style={{
@@ -25,11 +26,13 @@ export const FileThumbnail = ({ file }: PropsType): JSX.Element => {
         />
       )}
       {type === 'image' && !file.thumbnail && <Image size={20} />}
-      {type === 'video' && <Film size={20} />}
+      {type === 'video' && !file.thumbnail && <Film size={20} />}
+      {['pdf', 'document', 'slides', 'spreadsheet', 'other'].includes(type) && !file.thumbnail && (
+        <FileText size={20} />
+      )}
       {type === 'sound' && <Headphones size={20} />}
       {type === 'archive' && <Archive size={20} />}
       {type === 'link' && <Link size={20} />}
-      {type === 'other' && <FileText size={20} />}
     </div>
   );
 };

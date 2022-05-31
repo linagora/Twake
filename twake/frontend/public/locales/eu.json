@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "berritu zure enpresa",
     "components.locked_features_components.locked_invite_alert.message_part_2": " kide gehiago gonbidatzeko.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " jarri harremanetan zure enpresaren jabearekin edo administratzailearekin.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Ikusi nire konpainiako kide guztiak kontsolan"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Ikusi nire konpainiako kide guztiak kontsolan",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Deskribatu zure aplikazioa hitz gutxitan",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Integrazio berria",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Ulertzen dut enpresa honen jabeak eta administratzaileak aplikazio hau aldatu eta argitaratu ahal izango dutela.",
+    "twake.application.access.title": "Hautatu zure aplikaziorako esparru egokiak.",
+    "twake.application.access.no_default_scopes_available'": "Integrazio honek ez du {{$1}} sarbiderik",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "Twake APIaren dokumentazioa",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Hauek nola bete ez badakizu, joan hona ",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Gako pribatua",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "Behar bezala kendu da aplikazioa {{$1}}!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Errore bat gertatu da {{$1}} aplikazioa kentzean!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Arrakastaz {{$1}} aplikazioa!",
+    "scenes.app.integrations_parameters.add_application": "Integrazio berria",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Garatzaileen ezarpenak",
+    "components.rich_text_editor.plugins.suggestions.loading": "Gehiagoren bila"
 }

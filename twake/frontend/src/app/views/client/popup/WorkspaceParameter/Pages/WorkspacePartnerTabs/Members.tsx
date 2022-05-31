@@ -22,6 +22,11 @@ import Icon from 'app/components/icon/icon';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { WorkspaceUserType } from 'app/features/workspaces/types/workspace';
 import { useSetUserList } from 'app/features/users/hooks/use-user-list';
+import {
+  searchBackend,
+  searchFrontend,
+  useSearchUserList,
+} from 'app/features/users/hooks/use-search-user-list';
 
 type ColumnObjectType = { [key: string]: any };
 
@@ -47,9 +52,10 @@ export default ({ filter }: { filter: string }) => {
   const [data, setData] = useState<ColumnObjectType[]>([]);
   const [pageToken, setPageToken] = useState<string | null>(null);
   const [serverSearchedData, setServerSearchedData] = useState<ColumnObjectType[]>([]);
-  const [filteredData, setFilteredData] = useState<ColumnObjectType[] | null>(null);
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
+
+  const { search, result } = useSearchUserList({ scope: 'workspace' });
 
   const prefixRoute = '/internal/services/workspaces/v1';
   const workspaceUsersRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/users`;
@@ -64,58 +70,20 @@ export default ({ filter }: { filter: string }) => {
   }, []);
 
   useEffect(() => {
-    onSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, data]);
+    delayRequest('workspace_partners_search', () => search(filter));
+  }, [filter]);
 
-  const onSearch = async () => {
-    if (filter.length) {
-      delayRequest('workspace_members_search', async () => {
-        try {
-          setLoading(true);
-          await UserAPIClient.search<WorkspaceUserType>(
-            filter,
-            { scope: 'workspace', companyId, workspaceId },
-            wsUsers => {
-              const resources: ColumnObjectType[] = wsUsers;
-
-              // Make sure we have unicity in this combined list
-              setServerSearchedData(
-                _.uniqBy([...serverSearchedData, ...(resources || [])], col => col.user.id),
-              );
-              updateFilteredData();
-              wsUsers &&
-                setUserList(
-                  wsUsers.map(wsUser => ({
-                    ...wsUser.user,
-                    workspaces: [{ id: workspaceId, company_id: companyId }],
-                  })),
-                );
-            },
-          );
-
-          setLoading(false);
-        } catch (e) {
-          console.error(e);
-        }
-      });
-    }
-    updateFilteredData();
-  };
-
-  const updateFilteredData = () => {
-    if (filter.length) {
-      // Make sure we have unicity in this combined list
-      const filtered = _.uniqBy([...data, ...serverSearchedData], col => col.user.id).filter(col =>
-        `${col.user.email} ${UserService.getFullName(col.user)}`
-          .toLocaleLowerCase()
-          .includes(filter.toLocaleLowerCase()),
-      );
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(null);
-    }
-  };
+  const filteredData: WorkspaceUserType[] | null = filter
+    ? (result
+        .map(u => ({
+          user: u,
+          ...u,
+          role: u.workspaces?.find(w => w.id === workspaceId)?.role,
+          user_id: u.id || '',
+          workspace_id: workspaceId || '',
+        }))
+        .slice(0, 50) as WorkspaceUserType[])
+    : null;
 
   const requestWorkspaceUsers = async (pageToken?: string) => {
     try {
@@ -142,7 +110,6 @@ export default ({ filter }: { filter: string }) => {
 
   const updateData = (updater: (data: ColumnObjectType[]) => ColumnObjectType[]) => {
     setData(updater(data));
-    setFilteredData(filteredData !== null ? updater(filteredData || []) : null);
     setServerSearchedData(updater(serverSearchedData));
   };
 
@@ -313,7 +280,7 @@ export default ({ filter }: { filter: string }) => {
       dataIndex: 'menu',
       width: 50,
       render: (text, col, index) =>
-        workspaceUserRightsService.hasWorkspacePrivilege() && buildMenu(col),
+        false && workspaceUserRightsService.hasWorkspacePrivilege() && buildMenu(col),
     },
   ];
 

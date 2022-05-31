@@ -494,7 +494,7 @@ export class ChannelCrudController
 
   async recent(
     request: FastifyRequest<{
-      Querystring: ChannelListQueryParameters;
+      Querystring: { limit: 100 };
       Params: BaseChannelsParameters;
     }>,
   ): Promise<ResourceListResponse<UsersIncludedChannel>> {

@@ -876,5 +876,14 @@
     "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Entiendo que el propietario y los administradores de esta empresa podrán modificar y publicar esta aplicación.",
     "twake.application.access.title": "Seleccione los alcances adecuados para su aplicación.",
     "twake.application.access.no_default_scopes_available'": "Esta integración no tiene ningún acceso {{$1}}",
-    "\"": "\""
+    "\"": "\"",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "la documentación de la API de Twake",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Si no sabe cómo llenarlos, vaya a ",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Llave privada",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "¡Aplicación eliminada con éxito {{$1}}!",
+    "scenes.app.integrations_parameters.add_application": "Nueva integración",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Configuración de desarrollador",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "¡Error al eliminar la aplicación {{$1}}!",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "¡Aplicación exitosa {{$1}}!",
+    "components.rich_text_editor.plugins.suggestions.loading": "Buscando por mas"
 }

@@ -64,6 +64,10 @@ class ApplicationApi
 
                         $group_app = $this->doctrine->getRepository("Twake\Workspaces:GroupApp")->findOneBy(Array("app_id" => $application->getId(), "group" => $group_id));
 
+                        if($group_app->getPrivileges() === null){
+                            return $application;
+                        }
+
                         if ((!$group_id || !$group_app) && (count($capabilities) > 0 || count($privileges) > 0)) {
                             return Array("error" => "you_need_to_provide_a_valid_group_id_field_in_any_api_request", "group_id" => $group_id);
                         }

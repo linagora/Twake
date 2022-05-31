@@ -112,7 +112,6 @@ export default () => {
           <Input
             placeholder={Languages.t('components.listmanager.filter')}
             prefix={<Search size={16} color="var(--grey-dark)" />}
-            value={searchValue}
             onChange={e => setSearchValue(e.target.value)}
           />
         </Col>

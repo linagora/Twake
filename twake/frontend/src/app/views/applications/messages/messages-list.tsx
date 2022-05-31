@@ -162,7 +162,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           style={virtuosoLoading ? { opacity: 0 } : {}}
           onScroll={(e: any) => {
             const scrollBottom = e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight;
-            const closeToBottom = scrollBottom < 100;
+            const closeToBottom = scrollBottom < 500;
             if (closeToBottom !== atBottom) setAtBottom(closeToBottom);
             cancelHighlight();
           }}

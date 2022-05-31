@@ -1,5 +1,5 @@
 import ffmpeg from "fluent-ffmpeg";
-import { PreviewPubsubRequest, temporaryThumbnailFile, ThumbnailResult } from "../../types";
+import { temporaryThumbnailFile, ThumbnailResult } from "../../types";
 import { cleanFiles, getTmpFile } from "../../utils";
 import fs from "fs";
 
@@ -7,21 +7,22 @@ import fs from "fs";
  * Generate thumbnails for given video files.
  *
  * @param {String[]} videoPaths - the input video paths
- * @param { PreviewPubsubRequest["output"]} options - the options for the thumbnails
  * @returns {Promise<ThumbnailResult[]>} - resolves when the thumbnails are generated
  */
-export async function generateVideoPreview(
-  videoPaths: string[],
-  options: PreviewPubsubRequest["output"],
-): Promise<ThumbnailResult[]> {
+export async function generateVideoPreview(videoPaths: string[]): Promise<ThumbnailResult[]> {
   const output: ThumbnailResult[] = [];
 
   for (const videoPath of videoPaths) {
     const { fileName, folder, filePath } = getTemporaryThumbnailFile();
 
     try {
-      await takeVideoScreenshot(videoPath, folder, fileName, options);
-      output.push(getThumbnailInformation(filePath, options));
+      const { width, height } = await takeVideoScreenshot(videoPath, folder, fileName);
+
+      output.push({
+        ...getThumbnailInformation(filePath),
+        width,
+        height,
+      });
     } catch (error) {
       cleanFiles([filePath]);
       throw Error(`failed to generate video preview: ${error}`);
@@ -44,23 +45,32 @@ const takeVideoScreenshot = async (
   inputPath: string,
   outputFolder: string,
   outputFile: string,
-  options: PreviewPubsubRequest["output"],
-): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    ffmpeg(inputPath)
-      .screenshot({
-        count: 1,
-        filename: outputFile,
-        folder: outputFolder,
-        timemarks: ["0"],
-        size: `${options.width || 320}x${options.height || 240}`,
-      })
-      .on("end", () => {
-        resolve();
-      })
-      .on("error", error => {
-        reject(error);
-      });
+): Promise<{ width: number; height: number }> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { width, height } = await getVideoDimensions(inputPath);
+      const { width: outputWidth, height: outputHeight } = calculateThumbnailDimensions(
+        width,
+        height,
+      );
+
+      ffmpeg(inputPath)
+        .screenshot({
+          count: 1,
+          filename: outputFile,
+          folder: outputFolder,
+          timemarks: ["0"],
+          size: `${outputWidth}x${outputHeight}`,
+        })
+        .on("end", () => {
+          resolve({ width: outputWidth, height: outputHeight });
+        })
+        .on("error", error => {
+          reject(error);
+        });
+    } catch (error) {
+      reject(error);
+    }
   });
 };
 
@@ -69,21 +79,21 @@ const takeVideoScreenshot = async (
  *
  * @param {String} path - the path to the thumbnail
  * @param {PreviewPubsubRequest["output"]} options - the options for the thumbnails
- * @returns {ThumbnailResult} - the thumbnail information
+ * @returns { { path: string, type: string, size: number } } - the thumbnail information
  */
 const getThumbnailInformation = (
   path: string,
-  options: PreviewPubsubRequest["output"],
-): ThumbnailResult => {
-  const { width, height } = options;
+): {
+  path: string;
+  type: string;
+  size: number;
+} => {
   const stats = fs.statSync(path);
 
   return {
-    width: width || 320,
-    height: height || 240,
-    type: "image/png",
-    path: path,
     size: stats.size,
+    type: "image/png",
+    path,
   };
 };
 
@@ -103,3 +113,55 @@ const getTemporaryThumbnailFile = (): temporaryThumbnailFile => {
     filePath,
   };
 };
+
+/**
+ * Detect video dimensions
+ *
+ * @param {String} videoPath - the video path
+ * @returns {Promise<{ width: number, height: number }>} - the video dimensions
+ */
+async function getVideoDimensions(videoPath: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(videoPath, (err, metadata) => {
+      if (err) {
+        reject(err);
+      }
+
+      const { width, height } = metadata.streams[0];
+      resolve({ width, height });
+    });
+  });
+}
+
+/**
+ * Calculate the thumbnail dimensions.
+ * maximum dimension is 1080p and the minimum dimension is 320x240.
+ * The aspect ratio is preserved.
+ *
+ * @param {Number} width - the video width
+ * @param {Number} height - the video height
+ * @returns { { width: number, height: number } } - the thumbnail dimensions
+ */
+function calculateThumbnailDimensions(
+  width: number,
+  height: number,
+): {
+  width: number;
+  height: number;
+} {
+  let newWidth = Math.min(width, 1920);
+  let newHeight = Math.min(height, 1080);
+  const ratio = width / height;
+
+  if (width > 1920 || height > 1080) {
+    newWidth = Math.min(1920, width);
+    newHeight = Math.min(1080, newWidth / ratio);
+  }
+
+  if (width < 320 || height < 240) {
+    newWidth = Math.max(320, width);
+    newHeight = Math.max(240, newWidth / ratio);
+  }
+
+  return { width: newWidth, height: newHeight };
+}

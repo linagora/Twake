@@ -18,6 +18,8 @@ import RouterService from '../../router/services/router-service';
 import { useCallback } from 'react';
 import { pushDesktopNotification } from '../services/push-desktop-notification';
 
+export let removeBadgesNow = (type: 'channel' | 'workspace' | 'company', id: string) => {};
+
 export const useNotifications = () => {
   const [badges, setBadges] = useRecoilState(NotificationsBadgesState);
   const companyId = useRouterCompany();
@@ -41,6 +43,22 @@ export const useNotifications = () => {
       },
     [setBadges, badges],
   );
+
+  const removeObjectBadges = useRecoilCallback(
+    ({ snapshot }) =>
+      (type: 'channel' | 'workspace' | 'company', id: string) => {
+        const badges = snapshot.getLoadable(NotificationsBadgesState).getValue();
+        const list = badges.filter(
+          b =>
+            (type === 'channel' && b.channel_id !== id) ||
+            (type === 'workspace' && b.workspace_id !== id) ||
+            (type === 'company' && b.company_id !== id),
+        );
+        setBadges(list);
+      },
+    [setBadges, badges],
+  );
+  removeBadgesNow = removeObjectBadges;
 
   const setCompanyBadges = useRecoilCallback(
     ({ snapshot }) =>

@@ -596,7 +596,8 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     try {
       if (options.files) message = await this.completeMessageFiles(message, options.files || []);
     } catch (err) {
-      logger.warn("Error while completing message files", err);
+      console.log(err);
+      logger.warn("Error while completing message files");
     }
 
     //Mobile retro compatibility
@@ -675,17 +676,22 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     const previousMessageFiles = message.files;
     message.files = [];
     for (const file of files) {
-      const existing = existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0];
+      let existing = existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0];
       const entity = existing || new MessageFile();
       entity.message_id = message.id;
       entity.id = file.id || undefined;
       entity.company_id = file.company_id;
 
       //If it is defined it should exists
-      if (
-        entity.id &&
-        !(await this.msgFilesRepository.findOne({ message_id: message.id, id: entity.id }))
-      ) {
+      let messageFileExistOnDb = false;
+      try {
+        messageFileExistOnDb = !!(await this.msgFilesRepository.findOne({
+          message_id: message.id,
+          id: entity.id,
+        }));
+      } catch (e) {}
+      if (entity.id && !messageFileExistOnDb) {
+        existing = null;
         entity.id = undefined;
       }
 
@@ -719,7 +725,6 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
       if (!existing || !_.isEqual(existing.metadata, entity.metadata)) {
         didChange = true;
-
         await this.msgFilesRepository.save(entity);
       }
 
