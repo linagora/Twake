@@ -46,6 +46,7 @@ import { checkCompanyAndWorkspaceForUser } from "../middleware";
 import { checkUserBelongsToCompany } from "../../../../utils/company";
 import { Message } from "../../../messages/entities/messages";
 import { orderBy } from "lodash";
+import { DirectChannel } from "../../entities/direct-channel";
 
 const logger = getLogger("channel.controller");
 
@@ -496,45 +497,37 @@ export class ChannelCrudController
       Querystring: ChannelListQueryParameters;
       Params: BaseChannelsParameters;
     }>,
-  ): Promise<ResourceListResponse<ChannelObject>> {
+  ): Promise<ResourceListResponse<UsersIncludedChannel>> {
     const context = getExecutionContext(request);
+    const companyId = context.workspace.company_id;
+    const userId = context.user.id;
 
     const workspaces = (
-      await gr.services.workspaces.getAllForCompany(context.workspace.company_id)
+      await gr.services.workspaces.getAllForUser({ userId }, { id: companyId })
     ).map(a => a.id);
 
-    workspaces.unshift("direct");
+    let channels: UserChannel[] = await gr.services.channels.channels
+      .getChannelsForUsersInWorkspace(companyId, "direct", userId)
+      .then(list => list.getEntities());
 
-    const channels = await Promise.all(
-      workspaces.map(id =>
-        gr.services.channels.channels
-          .getAllChannelsInWorkspace(context.workspace.company_id, id)
-          .then(channels => {
-            if (id == "direct") {
-              return Promise.all(
-                channels.map(
-                  channel =>
-                    gr.services.channels.channels.includeUsersInDirectChannel(
-                      channel,
-                      context.user.id,
-                    ) as Promise<UsersIncludedChannel>,
-                ),
-              );
-            }
-            return channels;
-          }),
-      ),
+    for (const workspaceId in workspaces) {
+      const workspaceChannels = await gr.services.channels.channels
+        .getChannelsForUsersInWorkspace(companyId, workspaceId, userId)
+        .then(list => list.getEntities());
+      channels = [...channels, ...workspaceChannels];
+    }
+
+    channels = channels.sort((a, b) => b.last_activity - a.last_activity);
+    channels = channels.slice(0, 100);
+
+    const userIncludedChannels: UsersIncludedChannel[] = await Promise.all(
+      channels.map(channel => {
+        return gr.services.channels.channels.includeUsersInDirectChannel(channel, userId);
+      }),
     );
 
-    let res: Channel[] = [];
-    channels.forEach(ch => {
-      res = res.concat(ch);
-    });
-
-    const filledChannels = await gr.services.channels.channels.fillChannelActivities(res);
-
     return {
-      resources: orderBy(filledChannels, "last_activity", "desc"),
+      resources: userIncludedChannels,
     };
   }
 }

@@ -17,6 +17,7 @@ import {
   ChannelTabPrimaryKey,
   DefaultChannel,
   DefaultChannelPrimaryKey,
+  UserChannel,
   UsersIncludedChannel,
 } from "./entities";
 import { ChannelExecutionContext, WorkspaceExecutionContext } from "./types";
@@ -86,6 +87,18 @@ export interface ChannelService
    * @param userId
    */
   getDirectChannelsForUsersInCompany(companyId: string, userId: string): Promise<DirectChannel[]>;
+
+  /**
+   * Get all the direct channels in a company for the given user
+   *
+   * @param companyId
+   * @param userId
+   */
+  getChannelsForUsersInWorkspace(
+    companyId: string,
+    workspaceId: string,
+    userId: string,
+  ): Promise<ListResult<UserChannel>>;
 
   /**
    * Mark the channel as read for the given user
