@@ -143,10 +143,7 @@ export class ViewsController {
     );
 
     return {
-      resources: userFiles
-        .getEntities()
-        .filter(a => a)
-        .map(a => a.getPublicObject()),
+      resources: userFiles.getEntities().filter(a => a),
       next_page_token: userFiles.nextPage.page_token,
     };
   }

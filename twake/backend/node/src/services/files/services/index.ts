@@ -2,7 +2,7 @@ import { randomBytes } from "crypto";
 import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
 import { FileServiceAPI, UploadOptions } from "../api";
-import { File } from "../entities/file";
+import { File, PublicFile } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
@@ -20,7 +20,7 @@ import gr from "../../global-resolver";
 import { MessageFileRef } from "../../messages/entities/message-file-refs";
 import { MessageFile } from "../../messages/entities/message-files";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
-import { compareTimeuuid } from "../../../utils/uuid";
+import User from "../../user/entities/user";
 
 export class FileServiceImpl implements FileServiceAPI {
   version: "1";
@@ -300,10 +300,10 @@ export class FileServiceImpl implements FileServiceAPI {
     media: "file_only" | "media_only" | "both",
     context: CompanyExecutionContext,
     pagination: Pagination,
-  ): Promise<ListResult<File>> {
-    let final: File[] = [];
+  ): Promise<ListResult<PublicFile>> {
+    let files: File[] = [];
     let nextPage = null;
-    while (final.length < (parseInt(pagination.limitStr) || 100) && nextPage !== null) {
+    while (files.length < (parseInt(pagination.limitStr) || 100) && nextPage !== null) {
       const uploads =
         type === "user_upload" || type === "both"
           ? await this.messageFileRefsRepository
@@ -352,16 +352,22 @@ export class FileServiceImpl implements FileServiceAPI {
         )
         .filter(a => a);
 
-      final = [...final, ...(await Promise.all(filePromises))].filter(ref => {
+      files = [...files, ...(await Promise.all(filePromises))].filter(ref => {
         //Apply media filer
         const isMedia =
           ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
         return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
       });
-      final = final.sort((a, b) => b.created_at - a.created_at);
+      files = files.sort((a, b) => b.created_at - a.created_at);
     }
 
-    return new ListResult<File>("file", final, nextPage);
+    const fileWithUserPromise: Promise<PublicFile & { user: User }>[] = files.map(async file => ({
+      user: await gr.services.users.get({ id: file.user_id }),
+      ...file.getPublicObject(),
+    }));
+    const fileWithUser = await Promise.all(fileWithUserPromise);
+
+    return new ListResult<PublicFile>("file", fileWithUser, nextPage);
   }
 }
 
