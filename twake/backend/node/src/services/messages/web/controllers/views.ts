@@ -144,7 +144,7 @@ export class ViewsController {
 
     return {
       resources: userFiles.getEntities().filter(a => a),
-      next_page_token: userFiles.nextPage.page_token,
+      next_page_token: userFiles?.nextPage?.page_token,
     };
   }
 
