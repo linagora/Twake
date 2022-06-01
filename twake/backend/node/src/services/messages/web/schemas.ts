@@ -7,9 +7,10 @@ const publicFileSchema = {
     application_id: { type: "string" },
     updated_at: { type: "number" },
     created_at: { type: "number" },
-    metadata: { type: "object" },
+    metadata: { type: "object", additionalProperties: true },
     thumbnails: { type: "array" },
-    upload_data: { type: "object" },
+    upload_data: { type: "object", additionalProperties: true },
+    user: { type: "object", additionalProperties: true },
   },
 };
 

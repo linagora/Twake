@@ -21,7 +21,8 @@ import gr from "../../global-resolver";
 import { MessageFileRef } from "../../messages/entities/message-file-refs";
 import { MessageFile } from "../../messages/entities/message-files";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
-import User from "../../user/entities/user";
+import { formatUser } from "../../../utils/users";
+import { UserObject } from "../../user/web/types";
 
 export class FileServiceImpl implements FileServiceAPI {
   version: "1";
@@ -362,10 +363,12 @@ export class FileServiceImpl implements FileServiceAPI {
       files = files.sort((a, b) => b.created_at - a.created_at);
     } while (files.length < (parseInt(pagination.limitStr) || 100) && nextPage?.page_token);
 
-    const fileWithUserPromise: Promise<PublicFile & { user: User }>[] = files.map(async file => ({
-      user: await gr.services.users.get({ id: file.user_id }),
-      ...file.getPublicObject(),
-    }));
+    const fileWithUserPromise: Promise<PublicFile & { user: UserObject }>[] = files.map(
+      async file => ({
+        user: await formatUser(await gr.services.users.get({ id: file.user_id })),
+        ...file.getPublicObject(),
+      }),
+    );
     const fileWithUser = await Promise.all(fileWithUserPromise);
 
     return new ListResult<PublicFile>("file", fileWithUser, nextPage);
