@@ -88,7 +88,9 @@ export class MessagesEngine implements Initializable {
         user: { id: string };
         file: { id: string; company_id: string; user_id: string };
       }) => {
-        await this.filesViewProcessor.processDownloaded(e.user.id, e.file);
+        if (e.user?.id) {
+          await this.filesViewProcessor.processDownloaded(e.user?.id, e.file);
+        }
       },
     );
 

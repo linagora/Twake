@@ -504,13 +504,13 @@ export class ChannelCrudController
 
     const workspaces = (
       await gr.services.workspaces.getAllForUser({ userId }, { id: companyId })
-    ).map(a => a.id);
+    ).map(a => a.workspaceId);
 
     let channels: UserChannel[] = await gr.services.channels.channels
       .getChannelsForUsersInWorkspace(companyId, "direct", userId)
       .then(list => list.getEntities());
 
-    for (const workspaceId in workspaces) {
+    for (const workspaceId of workspaces) {
       const workspaceChannels = await gr.services.channels.channels
         .getChannelsForUsersInWorkspace(companyId, workspaceId, userId)
         .then(list => list.getEntities());

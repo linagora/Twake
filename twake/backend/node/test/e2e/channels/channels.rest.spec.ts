@@ -1244,7 +1244,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       const channels = [];
 
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < 5; i++) {
         const channel = new Channel();
         channel.name = `Regular Channel ${i}`;
         channel.visibility = ChannelVisibility.PUBLIC;

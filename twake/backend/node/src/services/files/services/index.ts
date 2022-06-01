@@ -14,6 +14,7 @@ import {
   CrudException,
   DeleteResult,
   ListResult,
+  Paginable,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
 import gr from "../../global-resolver";
@@ -302,15 +303,15 @@ export class FileServiceImpl implements FileServiceAPI {
     pagination: Pagination,
   ): Promise<ListResult<PublicFile>> {
     let files: File[] = [];
-    let nextPage = null;
-    while (files.length < (parseInt(pagination.limitStr) || 100) && nextPage !== null) {
+    let nextPage: Paginable;
+    do {
       const uploads =
         type === "user_upload" || type === "both"
           ? await this.messageFileRefsRepository
               .find(
                 { target_type: "user_upload", target_id: userId, company_id: context.company.id },
                 {
-                  pagination: { ...pagination, page_token: nextPage },
+                  pagination: { ...pagination, page_token: nextPage?.page_token },
                 },
               )
               .then(a => {
@@ -325,7 +326,7 @@ export class FileServiceImpl implements FileServiceAPI {
               .find(
                 { target_type: "user_download", target_id: userId, company_id: context.company.id },
                 {
-                  pagination: { ...pagination, page_token: nextPage },
+                  pagination: { ...pagination, page_token: nextPage?.page_token },
                 },
               )
               .then(a => {
@@ -359,7 +360,7 @@ export class FileServiceImpl implements FileServiceAPI {
         return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
       });
       files = files.sort((a, b) => b.created_at - a.created_at);
-    }
+    } while (files.length < (parseInt(pagination.limitStr) || 100) && nextPage?.page_token);
 
     const fileWithUserPromise: Promise<PublicFile & { user: User }>[] = files.map(async file => ({
       user: await gr.services.users.get({ id: file.user_id }),
