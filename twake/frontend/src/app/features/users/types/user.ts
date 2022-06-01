@@ -31,11 +31,13 @@ export type UserType = {
   groups_id?: string[];
   id?: string;
   identity_provider?: string;
+  provider_id?: string;
+  provider?: string;
+  last_activity?: number;
   isNew?: boolean;
   isRobot?: boolean;
   language?: string;
   last_name?: string;
-
   mail_hash?: string;
   mail_verification_override?: any;
   mail_verification_override_mail?: any;
@@ -50,6 +52,7 @@ export type UserType = {
   username: string;
   companies?: UserCompanyType[];
   preferences: UserPreferencesType;
+  preference?: UserPreferencesType;
   full_name?: string;
   /**
    * this field is filled when available and so we cannot rely on it except on search service for filtering

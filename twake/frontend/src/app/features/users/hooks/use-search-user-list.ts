@@ -36,7 +36,7 @@ export const searchBackend = async (
         if (result && scope === 'workspace') {
           final = result.map(wsUser => ({
             ...wsUser.user,
-            workspaces: [{ id: workspaceId, company_id: companyId }],
+            workspaces: [{ id: workspaceId, company_id: companyId, role: wsUser.role }],
           }));
         }
 

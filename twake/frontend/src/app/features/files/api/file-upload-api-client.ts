@@ -2,6 +2,7 @@ import Api from 'app/features/global/framework/api-service';
 import { FileType, MetaDataType } from 'app/features/files/types/file';
 import { MessageFileType } from 'app/features/messages/types/message';
 import extensionToMime from '../utils/extension-to-mime';
+import { fileTypeMimes } from '../utils/type-mimes';
 
 type ResponseFileType = { resource: FileType };
 type ResponseDeleteFileType = { status: 'success' | 'error' };
@@ -103,11 +104,16 @@ class FileUploadAPIClient {
   }
 
   public mimeToType(mime: string): FileTypes {
-    if (mime.split('/')[0] === 'image') return 'image';
-    if (mime.split('/')[0] === 'video') return 'video';
-    if (mime.split('/')[0] === 'audio') return 'sound';
-    if (mime === 'application/zip' || mime === 'application/vnd.rar') return 'archive';
-    //TODO add other types
+    const { archives, images, pdf, slides, sound, spreadsheets, videos } = fileTypeMimes;
+
+    if (images.includes(mime)) return 'image';
+    if (videos.includes(mime)) return 'video';
+    if (sound.includes(mime)) return 'sound';
+    if (pdf.includes(mime)) return 'pdf';
+    if (slides.includes(mime)) return 'slides';
+    if (archives.includes(mime)) return 'archive';
+    if (spreadsheets.includes(mime)) return 'spreadsheet';
+    
     return 'other';
   }
 

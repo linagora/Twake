@@ -16,6 +16,7 @@ import './file.scss';
 import { PendingFileRecoilType } from 'app/features/files/types/file';
 import Api from 'app/features/global/framework/api-service';
 import FileUploadAPIClient from '../../features/files/api/file-upload-api-client';
+import LargePreview from './parts/large-preview';
 
 type PropsType = {
   source: 'internal' | 'drive' | string;
@@ -118,6 +119,7 @@ export default ({
   };
 
   const computedWidth = file.thumbnail_ratio * 200;
+  const isMediaFile = ["image", "video"].includes(file.type);
 
   return (
     <div
@@ -125,21 +127,12 @@ export default ({
       style={large ? { width: computedWidth } : {}}
       onClick={() => companyId && onClickFile()}
     >
-      {large && (
-        <div
-          className="file-large-preview"
-          style={{
-            backgroundImage:
-              'url(' +
-              FileUploadService.getDownloadRoute({
-                companyId: companyId || '',
-                fileId: file.id,
-              }) +
-              ')',
-          }}
-        ></div>
-      )}
-      <div className="file-info-container">
+      {large && <LargePreview file={file} />}
+      <div
+        className={classNames('file-info-container', {
+          'media-file-info-container': isMediaFile,
+        })}
+      >
         <FileThumbnail file={file} />
         <FileDetails file={file} source={source} />
         <FileActions

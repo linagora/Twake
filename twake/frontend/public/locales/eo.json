@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "altgradigu vian kompanion",
     "components.locked_features_components.locked_invite_alert.message_part_2": " por inviti pliajn membrojn.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " kontaktu la posedanton aŭ administranton de via kompanio.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Vidu ĉiujn miajn firmaanojn sur la konzolo"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Vidu ĉiujn miajn firmaanojn sur la konzolo",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Priskribu vian aplikaĵon per kelkaj vortoj",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Nova integriĝo",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Mi komprenas, ke la posedanto kaj administrantoj de ĉi tiu kompanio povos modifi kaj publikigi ĉi tiun aplikaĵon.",
+    "twake.application.access.title": "Elektu la ĝustajn mediojn por via aplikaĵo.",
+    "twake.application.access.no_default_scopes_available'": "Ĉi tiu integriĝo ne havas aliron {{$1}}.",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "la Twake API-dokumentado",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Se vi ne scias kiel plenigi ĉi tiujn, iru al ",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Privata ŝlosilo",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "Sukcese forigita aplikaĵo {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Eraro dum forigo de aplikaĵo {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Sukcese {{$1}} aplikaĵo!",
+    "scenes.app.integrations_parameters.add_application": "Nova integriĝo",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Agordoj por programistoj",
+    "components.rich_text_editor.plugins.suggestions.loading": "Serĉante pli"
 }

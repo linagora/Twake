@@ -871,5 +871,19 @@
     "components.locked_features_components.locked_invite_alert.message_link": "migliora la tua azienda",
     "components.locked_features_components.locked_invite_alert.message_part_2": " per invitare più membri.",
     "components.locked_features_components.locked_invite_alert.message_magic_link": " contatta il proprietario o l'amministratore della tua azienda.",
-    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Vedi tutti i membri della mia azienda sulla console"
+    "views.client.popup.workspace_parameter.pages.workspace_members.link_to_console": "Vedi tutti i membri della mia azienda sulla console",
+    "scenes.app.popup.appsparameters.pages.amazing_app_description": "Descrivi la tua candidatura in poche parole",
+    "scenes.app.popup.appsparameters.pages.application_creator.title": "Nuova integrazione",
+    "scenes.app.popup.appsparameters.pages.application_creator.checkbox": "Comprendo che il proprietario e gli amministratori di questa azienda potranno modificare e pubblicare questa applicazione.",
+    "twake.application.access.title": "Seleziona gli ambiti giusti per la tua applicazione.",
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Impostazioni dello sviluppatore",
+    "twake.application.access.no_default_scopes_available'": "Questa integrazione non ha alcun accesso {{$1}}.",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_link": "la documentazione dell'API Twake",
+    "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Se non sai come riempirli, vai a ",
+    "scenes.app.popup.appsparameters.pages.app.private_key": "Chiave privata",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed": "Applicazione rimossa con successo {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Errore durante la rimozione dell'applicazione {{$1}} !",
+    "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Applicazione {{$1}} riuscita!",
+    "scenes.app.integrations_parameters.add_application": "Nuova integrazione",
+    "components.rich_text_editor.plugins.suggestions.loading": "Alla ricerca di più"
 }

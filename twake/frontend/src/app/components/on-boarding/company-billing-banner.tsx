@@ -6,6 +6,7 @@ import Groups from 'app/deprecated/workspaces/groups.js';
 import InitService from 'app/features/global/services/init-service';
 import Languages from 'app/features/global/services/languages-service';
 import { AlertTriangle } from 'react-feather';
+import consoleService from 'app/features/console/services/console-service';
 
 type PropsType = {
   companyId: string;
@@ -13,8 +14,7 @@ type PropsType = {
 
 const { Link } = Typography;
 export default ({ companyId }: PropsType): JSX.Element => {
-  const companySubscriptionUrl =
-    InitService.server_infos?.configuration.accounts.console?.company_subscription_url || '';
+  const companySubscriptionUrl = consoleService.getCompanySubscriptionUrl(companyId);
   const userGroups: { [key: string]: CompanyType } = Groups.user_groups;
   const currentUserGroup = userGroups[companyId];
   const isCurrentUserAdminOrOwner =

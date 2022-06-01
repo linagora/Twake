@@ -2,6 +2,8 @@ import Api from '../../global/framework/api-service';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
+import { removeBadgesNow } from 'app/features/users/hooks/use-notifications';
+
 import Workspaces from 'deprecated/workspaces/workspaces';
 const PREFIX = '/internal/services/channels/v1/companies';
 
@@ -41,6 +43,9 @@ class ChannelAPIClientService {
     { status = true, requireFocus = false, now = false },
   ): Promise<void> {
     if (requireFocus && !document.hasFocus()) return;
+
+    if (status) removeBadgesNow('channel', channelId);
+
     delayRequest(
       'reach-end-read-channel-' + channelId,
       () =>
