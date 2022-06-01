@@ -82,12 +82,6 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const self = this;
 
-      let decipher: Decipher;
-      if (options?.encryptionKey) {
-        const [key, iv] = options.encryptionKey.split(".");
-        decipher = createDecipheriv(options.encryptionAlgo || this.algorithm, key, iv);
-      }
-
       const chunks = options?.totalChunks || 1;
       let count = 1;
       let stream;
@@ -95,6 +89,12 @@ export default class StorageService extends TwakeService<StorageAPI> implements 
         if (count > chunks) {
           callback();
           return;
+        }
+
+        let decipher: Decipher;
+        if (options?.encryptionKey) {
+          const [key, iv] = options.encryptionKey.split(".");
+          decipher = createDecipheriv(options.encryptionAlgo || this.algorithm, key, iv);
         }
 
         const chunk = options?.totalChunks ? `${path}/chunk${count}` : path;
