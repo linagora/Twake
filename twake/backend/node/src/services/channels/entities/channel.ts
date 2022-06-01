@@ -5,6 +5,7 @@ import { ChannelMember } from "./channel-member";
 import { UserObject } from "../../user/web/types";
 import { merge } from "lodash";
 import search from "./channel.search";
+import { ChannelActivity } from "./channel-activity";
 
 @Entity("channels", {
   primaryKey: [["company_id", "workspace_id"], "id"],
@@ -89,6 +90,8 @@ export class Channel {
 
 export class UserChannel extends Channel {
   user_member: ChannelMember;
+  last_activity: ChannelActivity["last_activity"];
+  last_message: ChannelActivity["last_message"];
 }
 
 export class UsersIncludedChannel extends Channel {

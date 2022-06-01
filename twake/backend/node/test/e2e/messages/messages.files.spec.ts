@@ -166,7 +166,6 @@ describe("List user files", () => {
   it("should return downloaded files", async done => {
     const jwtToken = await platform.auth.getJWTToken({ sub: v1() });
 
-    /*
     const form = formAutoContent({ file: fs.createReadStream(files[0]) });
     form.headers["authorization"] = `Bearer ${await platform.auth.getJWTToken()}`;
     const uploadedFile = await platform.app.inject({
@@ -181,7 +180,7 @@ describe("List user files", () => {
       }/download`,
     });
 
-    await new Promise(resolve => setTimeout(resolve, 1000));*/
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const response = await platform.app.inject({
       method: "GET",
@@ -280,7 +279,7 @@ describe("List user files", () => {
     expect(response.statusCode).toBe(200);
 
     resources = response.json().resources;
-    expect(resources.length).toBe(2);
+    expect(resources.length).toBe(5);
 
     resources.forEach(checkResource);
 

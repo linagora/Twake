@@ -2,7 +2,7 @@ import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
 import { CompanyExecutionContext } from "./web/types";
-import { File } from "./entities/file";
+import { File, PublicFile } from "./entities/file";
 import { PubsubHandler } from "../../core/platform/services/pubsub/api";
 import {
   DeleteResult,
@@ -83,10 +83,11 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
 
   listUserMarkedFiles(
     userId: string,
-    type: "user_upload" | "user_download",
+    type: "user_upload" | "user_download" | "both",
+    media: "file_only" | "media_only" | "both",
     context: CompanyExecutionContext,
     pagination: Pagination,
-  ): Promise<ListResult<File>>;
+  ): Promise<ListResult<PublicFile>>;
 }
 
 export interface FilePubsubHandler<InputMessage, OutputMessage>
