@@ -252,6 +252,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       .search(
         {
           ...(options.hasFiles ? { has_files: true } : {}),
+          ...(options.hasMedias ? { has_medias: true } : {}),
         },
         {
           pagination,

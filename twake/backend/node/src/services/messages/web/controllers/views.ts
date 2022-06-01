@@ -130,10 +130,6 @@ export class ViewsController {
       };
     }>,
   ): Promise<ResourceListResponse<PublicFile>> {
-    if (request.query.type !== "user_upload" && request.query.type !== "user_download") {
-      throw CrudException.notImplemented(`Not implemented for type ${request.query.type}`);
-    }
-
     const userFiles = await gr.services.files.listUserMarkedFiles(
       request.currentUser.id,
       request.query.type || "both",
@@ -199,6 +195,7 @@ export class ViewsController {
               channelId: request.query.channel_id,
               companyId: request.params.company_id,
               ...(request.query.has_files ? { hasFiles: true } : {}),
+              ...(request.query.has_medias ? { hasMedias: true } : {}),
               ...(request.query.sender ? { sender: request.query.sender } : {}),
             },
             context,
@@ -258,6 +255,7 @@ export interface MessageViewSearchQueryParameters extends PaginationQueryParamet
   channel_id: string;
   sender: string;
   has_files: boolean;
+  has_medias: boolean;
 }
 
 function getChannelViewExecutionContext(

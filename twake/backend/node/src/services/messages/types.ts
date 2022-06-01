@@ -127,6 +127,7 @@ export type SearchMessageOptions = {
   workspaceId?: string;
   channelId?: string;
   hasFiles?: boolean;
+  hasMedias?: boolean;
   sender?: string;
 };
 
