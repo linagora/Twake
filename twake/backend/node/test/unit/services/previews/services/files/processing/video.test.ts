@@ -1,11 +1,11 @@
 import { describe, expect, it, jest, beforeEach, afterEach, afterAll } from "@jest/globals";
-import { generateVideoPreview } from "../../../../../../src/services/previews/services/processing/video";
+import { generateVideoPreview } from "../../../../../../../src/services/previews/services/files/processing/video";
 import ffmpeg, { ffprobe } from "fluent-ffmpeg";
-import { cleanFiles, getTmpFile } from "../../../../../../src/services/previews/utils";
+import { cleanFiles, getTmpFile } from "../../../../../../../src/services/previews/utils";
 import fs from "fs";
 
 jest.mock("fluent-ffmpeg");
-jest.mock("../../../../../../src/services/previews/utils");
+jest.mock("../../../../../../../src/services/previews/utils");
 
 const ffmpegMock = {
   screenshot: jest.fn().mockReturnValue({
