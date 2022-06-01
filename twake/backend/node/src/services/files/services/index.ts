@@ -304,7 +304,8 @@ export class FileServiceImpl implements FileServiceAPI {
     pagination: Pagination,
   ): Promise<ListResult<PublicFile>> {
     let files: File[] = [];
-    let nextPage: Paginable;
+    let nextPageUploads: Paginable;
+    let nextPageDownloads: Paginable;
     do {
       const uploads =
         type === "user_upload" || type === "both"
@@ -312,11 +313,11 @@ export class FileServiceImpl implements FileServiceAPI {
               .find(
                 { target_type: "user_upload", target_id: userId, company_id: context.company.id },
                 {
-                  pagination: { ...pagination, page_token: nextPage?.page_token },
+                  pagination: { ...pagination, page_token: nextPageUploads?.page_token },
                 },
               )
               .then(a => {
-                nextPage = a.nextPage;
+                nextPageUploads = a.nextPage;
                 return a.getEntities();
               })
           : [];
@@ -327,11 +328,11 @@ export class FileServiceImpl implements FileServiceAPI {
               .find(
                 { target_type: "user_download", target_id: userId, company_id: context.company.id },
                 {
-                  pagination: { ...pagination, page_token: nextPage?.page_token },
+                  pagination: { ...pagination, page_token: nextPageDownloads?.page_token },
                 },
               )
               .then(a => {
-                nextPage = a.nextPage;
+                nextPageDownloads = a.nextPage;
                 return a.getEntities();
               })
           : [];
@@ -339,7 +340,7 @@ export class FileServiceImpl implements FileServiceAPI {
       let refs = [...uploads, ...downloads];
 
       const messageFilePromises: Promise<MessageFile>[] = refs.map(ref =>
-        this.messageFileRepository.findOne({ message_id: ref.message_id }),
+        this.messageFileRepository.findOne({ message_id: ref.message_id, id: ref.message_file_id }),
       );
 
       const messageFiles = await Promise.all(messageFilePromises);
@@ -361,7 +362,10 @@ export class FileServiceImpl implements FileServiceAPI {
         return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
       });
       files = files.sort((a, b) => b.created_at - a.created_at);
-    } while (files.length < (parseInt(pagination.limitStr) || 100) && nextPage?.page_token);
+    } while (
+      files.length < (parseInt(pagination.limitStr) || 100) &&
+      (nextPageDownloads?.page_token || nextPageUploads?.page_token)
+    );
 
     const fileWithUserPromise: Promise<PublicFile & { user: UserObject }>[] = files.map(
       async file => ({
@@ -371,7 +375,7 @@ export class FileServiceImpl implements FileServiceAPI {
     );
     const fileWithUser = await Promise.all(fileWithUserPromise);
 
-    return new ListResult<PublicFile>("file", fileWithUser, nextPage);
+    return new ListResult<PublicFile>("file", fileWithUser, nextPageUploads || nextPageDownloads);
   }
 }
 
