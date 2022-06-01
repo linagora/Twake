@@ -2,27 +2,33 @@ import React from 'react';
 import { FileType } from 'features/files/types/file';
 import FileUploadService from 'features/files/services/file-upload-service';
 import assert from 'assert';
+import FileThumbnail from '../../../file/parts/thumbnail';
 
 type PropsType = {
   file: FileType;
-  onDownloadClick: any;
-  onPreviewClick: any;
+  onClick: any;
 };
 
-export default ({ file, onDownloadClick, onPreviewClick }: PropsType): JSX.Element => {
-  assert(
-    file.metadata.external_id,
-    'external_id is missing for file ' + JSON.stringify(file, null, 2),
-  );
+export default ({ file, onClick }: PropsType): JSX.Element => {
+  // assert(
+  //   file.metadata.external_id,
+  //   'external_id is missing for file ' + JSON.stringify(file, null, 2),
+  // );
 
-  const fileRoute = FileUploadService.getDownloadRoute({
-    companyId: file.metadata.external_id.company_id,
-    fileId: file.metadata.external_id.id,
-  });
+  // let fileRoute = FileUploadService.getDownloadRoute({
+  //   companyId: file.company_id,
+  //   fileId: file.id,
+  // });
+
+  let fileRoute = file.thumbnails[0].url;
+
+  fileRoute = 'https://web.qa.twake.app' + fileRoute;
 
   return (
-    <div className="result-item">
+    <div className="result-item" onClick={onClick}>
       <img src={fileRoute} />
     </div>
   );
+
+  // return <FileThumbnail file={file} />;
 };

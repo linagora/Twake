@@ -85,8 +85,6 @@ export default ({
   }, [_file]);
 
   const onClickFile = async () => {
-    console.log('!!! onClickFile', source, file);
-
     if (source === 'internal') {
       //Only if upload has ended
       if ((!status || isPendingFileStatusSuccess(status)) && file.id)
@@ -119,7 +117,7 @@ export default ({
   };
 
   const computedWidth = file.thumbnail_ratio * 200;
-  const isMediaFile = ["image", "video"].includes(file.type);
+  const isMediaFile = ['image', 'video'].includes(file.type);
 
   return (
     <div

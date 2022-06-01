@@ -62,7 +62,7 @@ class ChannelAPIClientService {
   async recent(companyId: string, limit: number): Promise<ChannelType[]> {
     try {
       const res = await Api.get<{ resources: ChannelType[] }>(
-        `${PREFIX}/${companyId}/channels/recent`,
+        `${PREFIX}/${companyId}/channels/recent?limit=${limit}`,
       );
 
       return res.resources;
@@ -71,22 +71,6 @@ class ChannelAPIClientService {
       return [];
     }
   }
-
-  // async recent(companyId: string, limit: number): Promise<ChannelType[]> {
-  //   console.log('!!! a');
-  //
-  //   const direct = await Api.get<{ resources: ChannelType[] }>(
-  //     `${PREFIX}/${companyId}/workspaces/direct/channels`,
-  //   ).then(a => a.resources.slice(0, 5));
-  //
-  //   console.log('!!! direct', direct);
-  //
-  //   const regular = await Api.get<{ resources: ChannelType[] }>(
-  //     `${PREFIX}/${companyId}/workspaces/${Workspaces.currentWorkspaceId}/channels`,
-  //   ).then(a => a.resources.slice(0, 5));
-  //
-  //   return [...direct, ...regular];
-  // }
 }
 
 const ChannelAPIClient = new ChannelAPIClientService();

@@ -6,6 +6,9 @@ import MediaResult from 'components/search-popup/parts/recent/media-result';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { FileType } from 'features/files/types/file';
 import { ChannelType } from 'features/channels/types/channel';
+import DriveService from 'deprecated/Apps/Drive/Drive';
+import FileUploadService from 'features/files/services/file-upload-service';
+import RouterServices, { ClientStateType } from 'features/router/services/router-service';
 
 export default (): JSX.Element => {
   const [channelsReady, setChannelsReady] = useState(false);
@@ -13,7 +16,7 @@ export default (): JSX.Element => {
   const [mediaReady, setMediaReady] = useState(false);
 
   useEffect(() => {
-    Search.getRecent().then(() => console.log('!!! got all recent', Search.recent.channels));
+    Search.getRecent().then(() => {});
   }, []);
 
   useEffect(() => {
@@ -29,18 +32,41 @@ export default (): JSX.Element => {
   }, [Search.recent.media.length]);
 
   const onChanelClick = (channel: ChannelType) => {
-    console.log('!!!channel', channel);
+    const params = {
+      companyId: channel.company_id,
+      workspaceId: channel.workspace_id,
+      channelId: channel.id,
+    } as ClientStateType;
+    RouterServices.push(RouterServices.generateRouteFromState(params));
     Search.close();
   };
 
   const onFilePreviewClick = (file: FileType) => {
-    console.log('!!!preview', file);
-    Search.close();
+    DriveService.viewDocument(
+      {
+        id: file.id,
+        name: file.metadata.name,
+        url: FileUploadService.getDownloadRoute({
+          companyId: file.company_id || '',
+          fileId: file.id,
+        }),
+        extension: file.metadata.name.split('.').pop(),
+      },
+      true,
+    );
   };
 
   const onFileDownloadClick = (file: FileType) => {
-    console.log('!!!download', file);
-    Search.close();
+    const url = FileUploadService.getDownloadRoute({
+      companyId: file.company_id,
+      fileId: file.id,
+    });
+
+    url && (window.location.href = url);
+  };
+
+  const onMediaClick = (file: FileType) => {
+    onFileDownloadClick(file);
   };
 
   return (
@@ -105,11 +131,8 @@ export default (): JSX.Element => {
               <MediaResult
                 file={file}
                 key={file.id}
-                onPreviewClick={() => {
-                  onFilePreviewClick(file);
-                }}
-                onDownloadClick={() => {
-                  onFileDownloadClick(file);
+                onClick={() => {
+                  onMediaClick(file);
                 }}
               />
             ))}

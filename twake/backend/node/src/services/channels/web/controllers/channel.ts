@@ -527,7 +527,7 @@ export class ChannelCrudController
     );
 
     return {
-      resources: userIncludedChannels,
+      resources: userIncludedChannels.slice(0, request.query.limit),
     };
   }
 }

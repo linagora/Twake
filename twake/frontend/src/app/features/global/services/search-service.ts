@@ -108,7 +108,7 @@ class SearchService extends Observable {
   }
 
   public async recentContacts(): Promise<void> {
-    this.recent.channels = await ChannelAPIClient.recent(Workspaces.currentGroupId, 10);
+    this.recent.channels = await ChannelAPIClient.recent(Workspaces.currentGroupId, 12);
   }
 
   public async recentFiles(): Promise<void> {
@@ -121,8 +121,7 @@ class SearchService extends Observable {
 
   public async getRecent() {
     this.searchInProgress = true;
-    await Promise.all([this.recentContacts()]);
-    // await Promise.all([this.recentContacts(), this.recentFiles(), this.recentMedia()]);
+    await Promise.all([this.recentContacts(), this.recentFiles(), this.recentMedia()]);
     this.searchInProgress = false;
     this.notify();
   }

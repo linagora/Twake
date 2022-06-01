@@ -113,7 +113,7 @@ class FileUploadAPIClient {
     if (slides.includes(mime)) return 'slides';
     if (archives.includes(mime)) return 'archive';
     if (spreadsheets.includes(mime)) return 'spreadsheet';
-    
+
     return 'other';
   }
 
@@ -122,51 +122,8 @@ class FileUploadAPIClient {
   }
 
   async recent(companyId: string, filter: 'file' | 'media', limit: number): Promise<FileType[]> {
-    if (filter === 'file') {
-      return [
-        {
-          metadata: {
-            name: 'covenant.xlsx',
-            mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          } as MetaDataType,
-        } as FileType,
-        {
-          metadata: {
-            name: 'report.doc',
-            mime: 'application/msword',
-          } as MetaDataType,
-        } as FileType,
-        {
-          metadata: {
-            name: 'meeting_notes.pdf',
-            mime: 'application/pdf',
-          } as MetaDataType,
-        } as FileType,
-        {
-          metadata: {
-            name: 'covenant.xlsx',
-            mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          } as MetaDataType,
-        } as FileType,
-      ] as FileType[];
-    } else {
-      const files = [
-        '15a579ac-23f9-470e-b856-07a7a1a834ca',
-        '62746ee9-6101-4476-9e20-be55e9eea4ea',
-      ];
-
-      return files.map(file => {
-        return {
-          metadata: {
-            source: 'internal',
-            external_id: {
-              id: file,
-              company_id: '56393af2-e5fe-11e9-b894-0242ac120004',
-            },
-          } as any,
-        } as FileType;
-      });
-    }
+    let fileRoute = `/internal/services/messages/v1/companies/${companyId}/files?type=user_upload&media=${filter}_only&limit=${limit}`;
+    return Api.get<{ resources: FileType[] }>(fileRoute).then(a => a.resources);
   }
 }
 

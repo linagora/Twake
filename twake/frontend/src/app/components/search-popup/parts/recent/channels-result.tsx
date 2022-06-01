@@ -14,10 +14,6 @@ type PropsType = {
 
 export default ({ channel, onClick }: PropsType): JSX.Element => {
   assert(channel.workspace_id, 'No workspace_id in channel object');
-  // assert(channel.name, 'No name in channel object');
-  // if (!channel.icon) {
-  //   console.log('!!!', channel);
-  // }
 
   const isDirect = channel.visibility === 'direct';
 
