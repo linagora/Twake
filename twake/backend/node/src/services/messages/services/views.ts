@@ -321,8 +321,8 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
 
       let refs = [...uploads, ...downloads];
 
-      const messageFilePromises: Promise<MessageFile & { context: MessageFileRef }>[] = refs
-        .map(async ref => {
+      const messageFilePromises: Promise<MessageFile & { context: MessageFileRef }>[] = refs.map(
+        async ref => {
           try {
             return {
               ...(await this.repositoryMessageFile.findOne({
@@ -334,10 +334,10 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
           } catch (e) {
             return null;
           }
-        })
-        .filter(a => a);
+        },
+      );
 
-      const messageFiles = await Promise.all(messageFilePromises);
+      const messageFiles = (await Promise.all(messageFilePromises)).filter(a => a);
 
       const filePromises: Promise<PublicFile & { context: MessageFileRef }>[] = messageFiles
         .filter(ref => ref)
@@ -355,10 +355,8 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
           } catch (e) {
             return null;
           }
-        })
-        .filter(a => a);
-
-      files = [...files, ...(await Promise.all(filePromises))].filter(ref => {
+        });
+      files = [...files, ...(await Promise.all(filePromises)).filter(a => a)].filter(ref => {
         //Apply media filer
         const isMedia =
           ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
