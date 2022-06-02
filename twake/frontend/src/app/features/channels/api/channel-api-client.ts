@@ -4,6 +4,7 @@ import { TwakeService } from '../../global/framework/registry-decorator-service'
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { removeBadgesNow } from 'app/features/users/hooks/use-notifications';
 
+import Workspaces from 'deprecated/workspaces/workspaces';
 const PREFIX = '/internal/services/channels/v1/companies';
 
 @TwakeService('ChannelAPIClientService')
@@ -56,6 +57,19 @@ class ChannelAPIClientService {
         ),
       { doInitialCall: now, timeout: 2000 },
     );
+  }
+
+  async recent(companyId: string, limit: number): Promise<ChannelType[]> {
+    try {
+      const res = await Api.get<{ resources: ChannelType[] }>(
+        `${PREFIX}/${companyId}/channels/recent?limit=${limit}`,
+      );
+
+      return res.resources;
+    } catch (e) {
+      console.error("Can't retrieve channels", e);
+      return [];
+    }
   }
 }
 

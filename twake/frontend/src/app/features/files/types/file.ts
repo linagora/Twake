@@ -1,10 +1,15 @@
 import Resumable from 'app/features/files/utils/resumable';
 import { ThumbnailType } from '../../messages/types/message';
+import { UserType } from 'app/features/users/types/user';
 
 export type MetaDataType = {
   name: string;
   mime: string;
   thumbnails_status?: string;
+  external_id?: {
+    id: string;
+    company_id: string;
+  };
 };
 
 export type FileUploadDataObjectType = {
@@ -23,6 +28,7 @@ export type FileType = {
   updated_at: number;
   upload_data: FileUploadDataObjectType;
   user_id: string;
+  user?: UserType;
 };
 
 export type PendingFileRecoilType = {

@@ -53,7 +53,7 @@ export type UserType = {
   companies?: UserCompanyType[];
   preferences: UserPreferencesType;
   preference?: UserPreferencesType;
-
+  full_name?: string;
   /**
    * this field is filled when available and so we cannot rely on it except on search service for filtering
    **/
