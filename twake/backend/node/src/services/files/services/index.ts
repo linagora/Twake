@@ -29,21 +29,11 @@ export class FileServiceImpl implements FileServiceAPI {
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";
   private max_preview_file_size = 50000000;
-  private messageFileRepository: Repository<MessageFile>;
-  private messageFileRefsRepository: Repository<MessageFileRef>;
 
   async init(): Promise<this> {
     try {
       await Promise.all([
         (this.repository = await gr.database.getRepository<File>("files", File)),
-        (this.messageFileRefsRepository = await gr.database.getRepository<MessageFileRef>(
-          "message_file_refs",
-          MessageFileRef,
-        )),
-        (this.messageFileRepository = await gr.database.getRepository<MessageFile>(
-          "message_files",
-          MessageFile,
-        )),
         gr.platformServices.pubsub.processor.addHandler(
           new PreviewFinishedProcessor(this, this.repository),
         ),
@@ -245,7 +235,11 @@ export class FileServiceImpl implements FileServiceAPI {
     if (!id || !context.company.id) {
       return null;
     }
-    return this.repository.findOne({ id, company_id: context.company.id });
+    return this.getFile({ id, company_id: context.company.id });
+  }
+
+  async getFile(pk: Pick<File, "company_id" | "id">): Promise<File> {
+    return this.repository.findOne(pk);
   }
 
   getThumbnailRoute(file: File, index: string) {
@@ -288,97 +282,6 @@ export class FileServiceImpl implements FileServiceAPI {
     }
 
     return new DeleteResult("files", fileToDelete, true);
-  }
-
-  async listUserMarkedFiles(
-    userId: string,
-    type: "user_upload" | "user_download" | "both",
-    media: "file_only" | "media_only" | "both",
-    context: CompanyExecutionContext,
-    pagination: Pagination,
-  ): Promise<ListResult<PublicFile>> {
-    let files: File[] = [];
-    let nextPageUploads: Paginable;
-    let nextPageDownloads: Paginable;
-    do {
-      const uploads =
-        type === "user_upload" || type === "both"
-          ? await this.messageFileRefsRepository
-              .find(
-                { target_type: "user_upload", target_id: userId, company_id: context.company.id },
-                {
-                  pagination: { ...pagination, page_token: nextPageUploads?.page_token },
-                },
-              )
-              .then(a => {
-                nextPageUploads = a.nextPage;
-                return a.getEntities();
-              })
-          : [];
-
-      const downloads =
-        type === "user_download" || type === "both"
-          ? await this.messageFileRefsRepository
-              .find(
-                { target_type: "user_download", target_id: userId, company_id: context.company.id },
-                {
-                  pagination: { ...pagination, page_token: nextPageDownloads?.page_token },
-                },
-              )
-              .then(a => {
-                nextPageDownloads = a.nextPage;
-                return a.getEntities();
-              })
-          : [];
-
-      let refs = [...uploads, ...downloads];
-
-      const messageFilePromises: Promise<MessageFile>[] = refs
-        .map(ref => {
-          try {
-            this.messageFileRepository.findOne({
-              message_id: ref.message_id,
-              id: ref.message_file_id,
-            });
-          } catch (e) {
-            return null;
-          }
-        })
-        .filter(a => a);
-
-      const messageFiles = await Promise.all(messageFilePromises);
-
-      const filePromises: Promise<File>[] = messageFiles
-        .filter(ref => ref)
-        .map(async ref =>
-          this.repository.findOne({
-            company_id: ref.metadata.external_id.company_id,
-            id: ref.metadata.external_id.id,
-          }),
-        )
-        .filter(a => a);
-
-      files = [...files, ...(await Promise.all(filePromises))].filter(ref => {
-        //Apply media filer
-        const isMedia =
-          ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
-        return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
-      });
-      files = files.sort((a, b) => b.created_at - a.created_at);
-    } while (
-      files.length < (parseInt(pagination.limitStr) || 100) &&
-      (nextPageDownloads?.page_token || nextPageUploads?.page_token)
-    );
-
-    const fileWithUserPromise: Promise<PublicFile & { user: UserObject }>[] = files.map(
-      async file => ({
-        user: await formatUser(await gr.services.users.get({ id: file.user_id })),
-        ...file.getPublicObject(),
-      }),
-    );
-    const fileWithUser = await Promise.all(fileWithUserPromise);
-
-    return new ListResult<PublicFile>("file", fileWithUser, nextPageUploads || nextPageDownloads);
   }
 }
 

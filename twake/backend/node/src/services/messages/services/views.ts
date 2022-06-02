@@ -1,6 +1,7 @@
 import {
   ExecutionContext,
   ListResult,
+  Paginable,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
 import { TwakeContext } from "../../../core/platform/framework";
@@ -22,17 +23,20 @@ import { MessageChannelRef } from "../entities/message-channel-refs";
 import { buildMessageListPagination } from "./utils";
 import { isEqual, uniqBy, uniqWith } from "lodash";
 import SearchRepository from "../../../core/platform/services/search/repository";
-import { uuid } from "../../../utils/types";
 import { MessageFileRef } from "../entities/message-file-refs";
 import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
 import gr from "../../global-resolver";
-import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
+import { PublicFile, File } from "../../files/entities/file";
+import { MessageFile } from "../entities/message-files";
+import { formatUser } from "../../../utils/users";
+import { UserObject } from "../../user/web/types";
 
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
   repositoryChannelRefs: Repository<MessageChannelRef>;
   repositoryThreads: Repository<Thread>;
   repositoryFilesRef: Repository<MessageFileRef>;
+  repositoryMessageFile: Repository<MessageFile>;
   repositoryMarkedRef: Repository<MessageChannelMarkedRef>;
   searchRepository: SearchRepository<Message>;
 
@@ -50,6 +54,10 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     this.repositoryMarkedRef = await gr.database.getRepository<MessageChannelMarkedRef>(
       "message_channel_marked_refs",
       MessageChannelMarkedRef,
+    );
+    this.repositoryMessageFile = await gr.database.getRepository<MessageFile>(
+      "message_files",
+      MessageFile,
     );
 
     return this;
@@ -268,5 +276,108 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       .then(a => {
         return a;
       });
+  }
+
+  async listUserMarkedFiles(
+    userId: string,
+    type: "user_upload" | "user_download" | "both",
+    media: "file_only" | "media_only" | "both",
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<PublicFile>> {
+    let files: (PublicFile & { context: MessageFileRef })[] = [];
+    let nextPageUploads: Paginable;
+    let nextPageDownloads: Paginable;
+    do {
+      const uploads =
+        type === "user_upload" || type === "both"
+          ? await this.repositoryFilesRef
+              .find(
+                { target_type: "user_upload", target_id: userId, company_id: context.company.id },
+                {
+                  pagination: { ...pagination, page_token: nextPageUploads?.page_token },
+                },
+              )
+              .then(a => {
+                nextPageUploads = a.nextPage;
+                return a.getEntities();
+              })
+          : [];
+
+      const downloads =
+        type === "user_download" || type === "both"
+          ? await this.repositoryFilesRef
+              .find(
+                { target_type: "user_download", target_id: userId, company_id: context.company.id },
+                {
+                  pagination: { ...pagination, page_token: nextPageDownloads?.page_token },
+                },
+              )
+              .then(a => {
+                nextPageDownloads = a.nextPage;
+                return a.getEntities();
+              })
+          : [];
+
+      let refs = [...uploads, ...downloads];
+
+      const messageFilePromises: Promise<MessageFile & { context: MessageFileRef }>[] = refs
+        .map(async ref => {
+          try {
+            return {
+              ...(await this.repositoryMessageFile.findOne({
+                message_id: ref.message_id,
+                id: ref.message_file_id,
+              })),
+              context: ref,
+            };
+          } catch (e) {
+            return null;
+          }
+        })
+        .filter(a => a);
+
+      const messageFiles = await Promise.all(messageFilePromises);
+
+      const filePromises: Promise<PublicFile & { context: MessageFileRef }>[] = messageFiles
+        .filter(ref => ref)
+        .map(async ref => {
+          try {
+            return {
+              ...(
+                await gr.services.files.getFile({
+                  company_id: ref.metadata.external_id.company_id,
+                  id: ref.metadata.external_id.id,
+                })
+              ).getPublicObject(),
+              context: ref.context,
+            };
+          } catch (e) {
+            return null;
+          }
+        })
+        .filter(a => a);
+
+      files = [...files, ...(await Promise.all(filePromises))].filter(ref => {
+        //Apply media filer
+        const isMedia =
+          ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
+        return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
+      });
+      files = files.sort((a, b) => b.created_at - a.created_at);
+    } while (
+      files.length < (parseInt(pagination.limitStr) || 100) &&
+      (nextPageDownloads?.page_token || nextPageUploads?.page_token)
+    );
+
+    const fileWithUserPromise: Promise<PublicFile & { user: UserObject }>[] = files.map(
+      async file => ({
+        user: await formatUser(await gr.services.users.get({ id: file.user_id })),
+        ...file,
+      }),
+    );
+    const fileWithUser = await Promise.all(fileWithUserPromise);
+
+    return new ListResult<PublicFile>("file", fileWithUser, nextPageUploads || nextPageDownloads);
   }
 }

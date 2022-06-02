@@ -130,15 +130,13 @@ export class ViewsController {
       };
     }>,
   ): Promise<ResourceListResponse<PublicFile>> {
-    const userFiles = await gr.services.files.listUserMarkedFiles(
+    const userFiles = await gr.services.messages.views.listUserMarkedFiles(
       request.currentUser.id,
       request.query.type || "both",
       request.query.media || "both",
       getCompanyExecutionContext(request),
       new Pagination(request.query.page_token, String(request.query.limit)),
     );
-
-    //TODO add context
 
     return {
       resources: userFiles.getEntities().filter(a => a),

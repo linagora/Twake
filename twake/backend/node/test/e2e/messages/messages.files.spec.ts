@@ -244,10 +244,24 @@ describe("List user files", () => {
       },
     });
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     expect(response.statusCode).toBe(200);
 
     resources = response.json().resources;
     expect(resources.length).toBe(5);
+
+    expect(response.json().resources[0]).toMatchObject({
+      company_id: expect.any(String),
+      id: expect.any(String),
+      user_id: expect.any(String),
+      updated_at: expect.any(Number),
+      created_at: expect.any(Number),
+      metadata: expect.any(Object),
+      thumbnails: expect.any(Array),
+      user: expect.any(Object),
+      context: expect.any(Object),
+    });
 
     resources.forEach(checkResource);
 
@@ -292,8 +306,6 @@ describe("List user files", () => {
 
       uploadedFiles.push(uploadedFile.json().resource);
 
-      console.log(thread.json());
-
       await platform.app.inject({
         method: "POST",
         url: `${messagesUrl}/companies/${platform.workspace.company_id}/threads/${
@@ -317,9 +329,23 @@ describe("List user files", () => {
       },
     });
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     expect(response.statusCode).toBe(200);
 
     expect(response.json().resources.length).toBe(5);
+
+    expect(response.json().resources[0]).toMatchObject({
+      company_id: expect.any(String),
+      id: expect.any(String),
+      user_id: expect.any(String),
+      updated_at: expect.any(Number),
+      created_at: expect.any(Number),
+      metadata: expect.any(Object),
+      thumbnails: expect.any(Array),
+      user: expect.any(Object),
+      context: expect.any(Object),
+    });
 
     done();
   });
