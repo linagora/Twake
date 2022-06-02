@@ -1,14 +1,14 @@
-import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import { Message } from "../../../../../services/messages/entities/messages";
-import { logger, TwakeContext } from "../../../../../core/platform/framework";
-import { PreviewPubsubHandler } from "../../../api";
-import { LinkPreviewPubsubCallback } from "../../../types";
+import { logger, TwakeContext } from "../../../../../../core/platform/framework";
+import { PubsubHandler } from "../../../../../../core/platform/services/pubsub/api";
+import { Message } from "../../../../entities/messages";
+import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
+import { LinkPreviewPubsubCallback } from "../../../../../previews/types";
 
-export class LinkPreviewFinishedProcessor
-  implements PreviewPubsubHandler<LinkPreviewPubsubCallback, string>
+export class MessageLinksPreviewFinishedProcessor
+  implements PubsubHandler<LinkPreviewPubsubCallback, string>
 {
   constructor(private repository: Repository<Message>) {}
-  readonly name = "LinkPreviewFinishedProcessor";
+  readonly name = "MessageLinksPreviewFinishedProcessor";
   readonly topics = {
     in: "services:preview:links:callback",
   };

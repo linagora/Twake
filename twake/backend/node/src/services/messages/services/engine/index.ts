@@ -15,6 +15,8 @@ import _ from "lodash";
 import { StatisticsMessageProcessor } from "../../../statistics/pubsub/messages";
 import { MessageToHooksProcessor } from "./processors/message-to-hooks";
 import gr from "../../../global-resolver";
+import { MessageLinksPreviewFinishedProcessor } from "./processors/links";
+import { Message } from "../../entities/messages";
 
 export class MessagesEngine implements Initializable {
   private channelViewProcessor: ChannelViewProcessor;
@@ -26,6 +28,7 @@ export class MessagesEngine implements Initializable {
   private messageToHooks: MessageToHooksProcessor;
 
   private threadRepository: Repository<Thread>;
+  private messageRepository: Repository<Message>;
 
   constructor() {
     this.channelViewProcessor = new ChannelViewProcessor();
@@ -68,6 +71,7 @@ export class MessagesEngine implements Initializable {
 
   async init(): Promise<this> {
     this.threadRepository = await gr.database.getRepository<Thread>("threads", Thread);
+    this.messageRepository = await gr.database.getRepository<Message>("messages", Message);
 
     await this.channelViewProcessor.init();
     await this.channelMarkedViewProcessor.init();
@@ -77,6 +81,9 @@ export class MessagesEngine implements Initializable {
 
     gr.platformServices.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor());
     gr.platformServices.pubsub.processor.addHandler(new StatisticsMessageProcessor());
+    gr.platformServices.pubsub.processor.addHandler(
+      new MessageLinksPreviewFinishedProcessor(this.messageRepository),
+    );
 
     localEventBus.subscribe("message:saved", async (e: MessageLocalEvent) => {
       this.dispatchMessage(e);
