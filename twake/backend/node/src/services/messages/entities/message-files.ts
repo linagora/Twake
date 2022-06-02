@@ -17,6 +17,10 @@ export class MessageFile {
   @Column("id", "timeuuid", { order: "DESC" })
   id: string;
 
+  @Type(() => String)
+  @Column("thread_id", "string")
+  thread_id?: string;
+
   @Column("company_id", "timeuuid")
   company_id: string;
 

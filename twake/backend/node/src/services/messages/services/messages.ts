@@ -587,6 +587,14 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
     return this.operations.bookmark(operation, options, context);
   }
 
+  async download(
+    operation: { id: string; thread_id: string; message_file_id: string },
+    options: Record<string, any>,
+    context: ThreadExecutionContext,
+  ): Promise<void> {
+    return this.operations.download(operation, options, context);
+  }
+
   //Complete message with all missing information and cache
   async completeMessage(
     message: Message,
@@ -679,6 +687,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       let existing = existingMsgFiles.filter(e => sameFile(e.metadata, file.metadata))[0];
       const entity = existing || new MessageFile();
       entity.message_id = message.id;
+      entity.thread_id = message.thread_id;
       entity.id = file.id || undefined;
       entity.company_id = file.company_id;
 

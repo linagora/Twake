@@ -1,5 +1,9 @@
 import { TwakeService } from '../../global/framework/registry-decorator-service';
-import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+import {
+  MessageFileType,
+  MessageWithReplies,
+  NodeMessage,
+} from 'app/features/messages/types/message';
 import MessageViewAPIClient from './message-view-api-client';
 import MessageThreadAPIClient from './message-thread-api-client';
 import Api from 'app/features/global/framework/api-service';
@@ -104,6 +108,14 @@ class MessageAPIClient {
       { resource: message, options: { previous_thread: movedFromThread } },
     );
     return response.resource;
+  }
+
+  async download(messageFile: MessageFileType) {
+    if (messageFile.thread_id)
+      await Api.post(
+        `${this.prefixUrl}/companies/${messageFile.company_id}/threads/${messageFile.thread_id}/messages/${messageFile.message_id}/download/${messageFile.id}`,
+        {},
+      );
   }
 }
 

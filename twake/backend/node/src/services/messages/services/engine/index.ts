@@ -1,6 +1,6 @@
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { Initializable } from "../../../../core/platform/framework";
-import { MessageLocalEvent } from "../../types";
+import { MessageFileDownloadEvent, MessageLocalEvent } from "../../types";
 import { ChannelViewProcessor } from "./processors/channel-view";
 import { ChannelMarkedViewProcessor } from "./processors/channel-marked";
 import { UserMarkedViewProcessor } from "./processors/user-marked";
@@ -82,17 +82,11 @@ export class MessagesEngine implements Initializable {
       this.dispatchMessage(e);
     });
 
-    localEventBus.subscribe(
-      "file:download",
-      async (e: {
-        user: { id: string };
-        file: { id: string; company_id: string; user_id: string };
-      }) => {
-        if (e.user?.id) {
-          await this.filesViewProcessor.processDownloaded(e.user?.id, e.file);
-        }
-      },
-    );
+    localEventBus.subscribe("message:download", async (e: MessageFileDownloadEvent) => {
+      if (e.user?.id) {
+        await this.filesViewProcessor.processDownloaded(e.user?.id, e.operation);
+      }
+    });
 
     return this;
   }

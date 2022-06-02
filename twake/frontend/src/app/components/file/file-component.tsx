@@ -17,11 +17,13 @@ import { PendingFileRecoilType } from 'app/features/files/types/file';
 import Api from 'app/features/global/framework/api-service';
 import FileUploadAPIClient from '../../features/files/api/file-upload-api-client';
 import LargePreview from './parts/large-preview';
+import { MessageFileType } from 'app/features/messages/types/message';
 
 type PropsType = {
   source: 'internal' | 'drive' | string;
   externalId: string | any;
   file: DataFileType;
+  messageFile: MessageFileType;
   context: 'input' | 'message' | 'drive';
   progress?: number;
   status?: PendingFileRecoilType['status'];
@@ -34,6 +36,7 @@ export default ({
   source,
   externalId,
   file: _file,
+  messageFile,
   className,
   context,
   progress,
@@ -138,6 +141,7 @@ export default ({
           actionMenu={context === 'message' && source === 'internal'}
           status={status}
           file={file}
+          messageFile={messageFile}
           onRemove={onRemove}
           source={source}
         />

@@ -12,6 +12,8 @@ export async function formatUser(
   user: User,
   options?: { includeCompanies?: boolean },
 ): Promise<UserObject> {
+  if (!user) return null;
+
   let resUser = {
     id: user.id,
     provider: user.identity_provider,

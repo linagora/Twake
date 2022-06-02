@@ -30,6 +30,7 @@ import {
 import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads";
 import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
 import { uuid } from "../../utils/types";
+import { PublicFile } from "../files/entities/file";
 
 export interface MessageUserBookmarksServiceAPI
   extends TwakeServiceProvider,
@@ -87,6 +88,12 @@ export interface MessageThreadMessagesServiceAPI
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
 
+  download(
+    item: { id: string; message_file_id: string; thread_id: string },
+    options: Record<string, any>,
+    context: ThreadExecutionContext,
+  ): Promise<void>;
+
   forceDelete(
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,
@@ -142,4 +149,12 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     options: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>>;
+
+  listUserMarkedFiles(
+    userId: string,
+    type: "user_upload" | "user_download" | "both",
+    media: "file_only" | "media_only" | "both",
+    context: CompanyExecutionContext,
+    pagination: Pagination,
+  ): Promise<ListResult<PublicFile>>;
 }

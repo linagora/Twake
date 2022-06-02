@@ -122,6 +122,13 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
 
   fastify.route({
     method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/download/:message_file_id",
+    preValidation: [fastify.authenticate],
+    handler: messagesController.download.bind(messagesController),
+  });
+
+  fastify.route({
+    method: "POST",
     url: "/companies/:company_id/threads/:thread_id/messages/:message_id/delete",
     preValidation: [fastify.authenticate],
     handler: messagesController.delete.bind(messagesController),

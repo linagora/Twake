@@ -8,6 +8,8 @@ import FileUploadAPIClient from '../api/file-upload-api-client';
 import { isPendingFileStatusPending } from '../utils/pending-files';
 import Logger from 'app/features/global/framework/logger-service';
 import _ from 'lodash';
+import { MessageFileType } from 'app/features/messages/types/message';
+import MessageAPIClient from 'app/features/messages/api/message-api-client';
 
 export enum Events {
   ON_CHANGE = 'notify',
@@ -251,6 +253,10 @@ class FileUploadService {
       companyId: companyId,
       fileId: fileId,
     });
+  }
+
+  public async markAsDownloadedFromMessage(messageFile: MessageFileType) {
+    await MessageAPIClient.download(messageFile);
   }
 }
 
