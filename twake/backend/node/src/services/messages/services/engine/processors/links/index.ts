@@ -38,7 +38,7 @@ export class MessageLinksPreviewFinishedProcessor
 
     const entity = await this.MessageRepository.findOne({
       thread_id: localMessage.message.resource.thread_id,
-      id: localMessage.message.resource.thread_id,
+      id: localMessage.message.resource.id,
     });
 
     if (!entity) {
