@@ -203,12 +203,6 @@ export class FileServiceImpl implements FileServiceAPI {
       encryptionKey: entity.encryption_key,
     });
 
-    //Register download action for reference
-    localEventBus.publish("file:download", {
-      user: context.user,
-      file: { id: entity.id, company_id: entity.company_id, user_id: entity.user_id },
-    });
-
     return {
       file: readable,
       name: entity.metadata.name,

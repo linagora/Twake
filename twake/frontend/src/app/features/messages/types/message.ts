@@ -19,6 +19,7 @@ export type MessageFileType = {
   id?: string;
   company_id?: string; // optional
   message_id?: string; // optional
+  thread_id?: string; // optional
 
   metadata?: {
     //File information when attached (it can change if edited)

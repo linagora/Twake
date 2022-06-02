@@ -113,7 +113,7 @@ class FileUploadAPIClient {
     if (slides.includes(mime)) return 'slides';
     if (archives.includes(mime)) return 'archive';
     if (spreadsheets.includes(mime)) return 'spreadsheet';
-    
+
     return 'other';
   }
 

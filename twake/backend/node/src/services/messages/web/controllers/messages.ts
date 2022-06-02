@@ -316,6 +316,36 @@ export class MessagesController
       handleError(reply, err);
     }
   }
+
+  async download(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        thread_id: string;
+        message_id: string;
+        message_file_id: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<{ status: "ok" }> {
+    const context = getThreadExecutionContext(request);
+    try {
+      await gr.services.messages.messages.download(
+        {
+          id: request.params.message_id,
+          thread_id: request.params.thread_id,
+          message_file_id: request.params.message_file_id,
+        },
+        {},
+        context,
+      );
+      return {
+        status: "ok",
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
+  }
 }
 
 function getThreadExecutionContext(

@@ -87,6 +87,12 @@ export interface MessageThreadMessagesServiceAPI
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;
 
+  download(
+    item: { id: string; message_file_id: string; thread_id: string },
+    options: Record<string, any>,
+    context: ThreadExecutionContext,
+  ): Promise<void>;
+
   forceDelete(
     pk: Pick<Message, "thread_id" | "id">,
     context?: ThreadExecutionContext,

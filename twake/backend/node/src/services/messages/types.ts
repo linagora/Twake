@@ -110,6 +110,11 @@ export interface BookmarkOperation {
   active: boolean;
 }
 
+export type MessageFileDownloadEvent = {
+  user: { id: string };
+  operation: { message_id: string; thread_id: string; message_file_id: string };
+};
+
 export interface MessagesSaveOptions {
   threadInitialMessage?: boolean;
   enforceViewPropagation?: boolean;

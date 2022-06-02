@@ -69,6 +69,7 @@ export default ({ file, onRemove, type, large }: PropsType) => {
       source={file.metadata?.source || 'internal'}
       externalId={file.metadata?.external_id}
       file={formatedFile}
+      messageFile={file}
       large={large}
       status={status}
       progress={progress}
