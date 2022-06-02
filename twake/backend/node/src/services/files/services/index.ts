@@ -333,9 +333,18 @@ export class FileServiceImpl implements FileServiceAPI {
 
       let refs = [...uploads, ...downloads];
 
-      const messageFilePromises: Promise<MessageFile>[] = refs.map(ref =>
-        this.messageFileRepository.findOne({ message_id: ref.message_id, id: ref.message_file_id }),
-      );
+      const messageFilePromises: Promise<MessageFile>[] = refs
+        .map(ref => {
+          try {
+            this.messageFileRepository.findOne({
+              message_id: ref.message_id,
+              id: ref.message_file_id,
+            });
+          } catch (e) {
+            return null;
+          }
+        })
+        .filter(a => a);
 
       const messageFiles = await Promise.all(messageFilePromises);
 
