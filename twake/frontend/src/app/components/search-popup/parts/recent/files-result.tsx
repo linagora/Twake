@@ -1,6 +1,8 @@
 import React from 'react';
 import { ChannelType } from 'features/channels/types/channel';
 import { FileType } from 'features/files/types/file';
+import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
+import { includes } from 'lodash';
 
 const locale = navigator.languages[0];
 
@@ -11,14 +13,9 @@ type PropsType = {
 };
 
 const iconFileByMime = (mimetype: string) => {
-  const type =
-    (~mimetype.indexOf('spreadsheetml') && 'xls') ||
-    (~mimetype.indexOf('msword') && 'doc') ||
-    (~mimetype.indexOf('pdf') && 'pdf') ||
-    (~mimetype.indexOf('zip') && 'zip') ||
-    'unknown';
-
-  return `/public/icons/file-type-${type}.svg`;
+  const type = FileUploadAPIClient.mimeToType(mimetype || '');
+  const existedIcons = ['pdf', 'archive', 'spreadsheet', 'document'];
+  return `/public/icons/file-type-${existedIcons.includes(type) ? type : 'unknown'}.svg`;
 };
 
 export default ({ file, onDownloadClick, onPreviewClick }: PropsType): JSX.Element => {

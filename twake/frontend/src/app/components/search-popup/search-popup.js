@@ -151,10 +151,7 @@ export default class SearchPopup extends React.Component {
                 <div className="header-title">Search</div>
               </div>
               <div className="header-close-btn" onClick={this.onCloseButtonClick}>
-                <img
-                  className="dismiss-btn"
-                  src="data:image/svg+xml;base64, PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggb3BhY2l0eT0iMC4xMiIgZD0iTTEyIDI0QzE4LjYyNzQgMjQgMjQgMTguNjI3NCAyNCAxMkMyNCA1LjM3MjU4IDE4LjYyNzQgMCAxMiAwQzUuMzcyNTggMCAwIDUuMzcyNTggMCAxMkMwIDE4LjYyNzQgNS4zNzI1OCAyNCAxMiAyNFoiIGZpbGw9IiM4MThDOTkiLz4KPHBhdGggZD0iTTE2LjczNjQgNy4yNjM2QzE3LjA4NzkgNy42MTUwOCAxNy4wODc5IDguMTg0OTIgMTYuNzM2NCA4LjUzNjRMMTMuMjczIDEyTDE2LjczNjQgMTUuNDYzNkMxNy4wNTg2IDE1Ljc4NTggMTcuMDg1NCAxNi4yOTE1IDE2LjgxNyAxNi42NDQyTDE2LjczNjQgMTYuNzM2NEMxNi4zODQ5IDE3LjA4NzkgMTUuODE1MSAxNy4wODc5IDE1LjQ2MzYgMTYuNzM2NEwxMiAxMy4yNzNMOC41MzY0IDE2LjczNjRDOC4xODQ5MiAxNy4wODc5IDcuNjE1MDggMTcuMDg3OSA3LjI2MzYgMTYuNzM2NEM2LjkxMjEzIDE2LjM4NDkgNi45MTIxMyAxNS44MTUxIDcuMjYzNiAxNS40NjM2TDEwLjcyNyAxMkw3LjI2MzYgOC41MzY0QzYuOTQxNDIgOC4yMTQyMSA2LjkxNDU3IDcuNzA4NTMgNy4xODMwNiA3LjM1NTc3TDcuMjYzNiA3LjI2MzZDNy42MTUwOCA2LjkxMjEzIDguMTg0OTIgNi45MTIxMyA4LjUzNjQgNy4yNjM2TDEyIDEwLjcyN0wxNS40NjM2IDcuMjYzNkMxNS44MTUxIDYuOTEyMTMgMTYuMzg0OSA2LjkxMjEzIDE2LjczNjQgNy4yNjM2WiIgZmlsbD0iIzgxOEM5OSIvPgo8L3N2Zz4K"
-                />
+                <img src="/public/icons/dismiss.svg" />
               </div>
             </div>
 
@@ -189,7 +186,7 @@ export default class SearchPopup extends React.Component {
 
               {Search.value && (
                 <div className="input-clear-btn" onClick={this.onSearchFieldClearClick}>
-                  <img src="data:image/svg+xml;base64, PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTggMEMxMi40MTgzIDAgMTYgMy41ODE3MiAxNiA4QzE2IDEyLjQxODMgMTIuNDE4MyAxNiA4IDE2QzMuNTgxNzIgMTYgMCAxMi40MTgzIDAgOEMwIDMuNTgxNzIgMy41ODE3MiAwIDggMFpNMTAuNDY1NyA0LjI2MDIyTDggNi43MjdMNS41MzU3IDQuMjYwMjJDNS4xODQyMyAzLjkwODc1IDQuNjE0MzggMy45MDg3NSA0LjI2MjkxIDQuMjYwMjJDMy45MTE0NCA0LjYxMTcgMy45MTE0NCA1LjE4MTU0IDQuMjYyOTEgNS41MzMwMkw2LjcyOCA4LjAwMUw0LjI2MjkxIDEwLjQ3QzMuOTExNDQgMTAuODIxNSAzLjkxMTQ0IDExLjM5MTMgNC4yNjI5MSAxMS43NDI4QzQuNjE0MzggMTIuMDk0MyA1LjE4NDIzIDEyLjA5NDMgNS41MzU3IDExLjc0MjhMOCA5LjI3NUwxMC40NjU3IDExLjc0MjhDMTAuODE3MiAxMi4wOTQzIDExLjM4NyAxMi4wOTQzIDExLjczODUgMTEuNzQyOEMxMi4wOSAxMS4zOTEzIDEyLjA5IDEwLjgyMTUgMTEuNzM4NSAxMC40N0w5LjI3MiA4LjAwMUwxMS43Mzg1IDUuNTMzMDJDMTIuMDkgNS4xODE1NCAxMi4wOSA0LjYxMTcgMTEuNzM4NSA0LjI2MDIyQzExLjM4NyAzLjkwODc1IDEwLjgxNzIgMy45MDg3NSAxMC40NjU3IDQuMjYwMjJaIiBmaWxsPSIjOTlBMkFEIi8+Cjwvc3ZnPgo=" />
+                  <img src="/public/icons/input-clear.svg" />
                 </div>
               )}
             </div>

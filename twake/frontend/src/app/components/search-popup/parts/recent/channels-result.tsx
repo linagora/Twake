@@ -29,28 +29,9 @@ export default ({ channel, onClick }: PropsType): JSX.Element => {
 
   const avatar = ChannelAvatar({ channel, showLabel: true });
 
-  // assert(channel.icon, 'No icon in channel object');
-  const { workspace } = useWorkspace(channel.workspace_id);
-  // const thumbnail = emoji.get(channel.icon);
-
-  const onItemClick = async () => {
-    //   assert(channel.company_id);
-    //   assert(channel.workspace_id);
-    //   assert(channel.id);
-    //   const params = {
-    //     companyId: channel.company_id,
-    //     workspaceId: channel.workspace_id,
-    //     channelId: channel.id,
-    //   };
-    //   RouterServices.push(RouterServices.generateRouteFromState(params));
-    //   onClick();
-  };
-
   return (
     <div className="result-item" onClick={onClick}>
       <div className="result-item-icon">{avatar}</div>
     </div>
   );
-
-  return <div>ok</div>;
 };
