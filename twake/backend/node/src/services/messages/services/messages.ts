@@ -552,8 +552,9 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       data: {
         links: messageLinks,
         message: {
-          id: message.id,
-          thread_id: message.thread_id,
+          context,
+          resource: message,
+          created: options?.created,
         },
       },
     });

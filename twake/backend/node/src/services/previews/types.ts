@@ -1,4 +1,5 @@
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework";
+import { MessageLocalEvent } from "../messages/types";
 
 export interface PreviewServiceAPI extends TwakeServiceProvider, Initializable {
   generateThumbnails(
@@ -86,16 +87,10 @@ export type LinkPreview = {
 
 export type LinkPreviewPubsubRequest = {
   links: string[];
-  message: {
-    id: string;
-    thread_id: string;
-  };
+  message: MessageLocalEvent;
 };
 
 export type LinkPreviewPubsubCallback = {
-  message: {
-    id: string;
-    thread_id: string;
-  };
+  message: MessageLocalEvent;
   previews: LinkPreview[];
 };

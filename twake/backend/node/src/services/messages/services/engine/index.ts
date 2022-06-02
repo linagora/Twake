@@ -82,7 +82,7 @@ export class MessagesEngine implements Initializable {
     gr.platformServices.pubsub.processor.addHandler(new ChannelSystemActivityMessageProcessor());
     gr.platformServices.pubsub.processor.addHandler(new StatisticsMessageProcessor());
     gr.platformServices.pubsub.processor.addHandler(
-      new MessageLinksPreviewFinishedProcessor(this.messageRepository),
+      new MessageLinksPreviewFinishedProcessor(this.messageRepository, this.threadRepository),
     );
 
     localEventBus.subscribe("message:saved", async (e: MessageLocalEvent) => {

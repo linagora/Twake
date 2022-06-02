@@ -3,11 +3,16 @@ import { PubsubHandler } from "../../../../../../core/platform/services/pubsub/a
 import { Message } from "../../../../entities/messages";
 import Repository from "../../../../../../core/platform/services/database/services/orm/repository/repository";
 import { LinkPreviewPubsubCallback } from "../../../../../previews/types";
+import { Thread } from "../../../../entities/threads";
+import { publishMessageInRealtime } from "../../../utils";
 
 export class MessageLinksPreviewFinishedProcessor
   implements PubsubHandler<LinkPreviewPubsubCallback, string>
 {
-  constructor(private repository: Repository<Message>) {}
+  constructor(
+    private MessageRepository: Repository<Message>,
+    private ThreadRepository: Repository<Thread>,
+  ) {}
   readonly name = "MessageLinksPreviewFinishedProcessor";
   readonly topics = {
     in: "services:preview:links:callback",
@@ -26,14 +31,14 @@ export class MessageLinksPreviewFinishedProcessor
     return !!(message && message.previews && message.previews.length);
   }
 
-  async process(message: LinkPreviewPubsubCallback): Promise<string> {
+  async process(localMessage: LinkPreviewPubsubCallback): Promise<string> {
     logger.info(
-      `${this.name} - updating message links with generated previews: ${message.previews.length}`,
+      `${this.name} - updating message links with generated previews: ${localMessage.previews.length}`,
     );
 
-    const entity = await this.repository.findOne({
-      thread_id: message.message.thread_id,
-      id: message.message.id,
+    const entity = await this.MessageRepository.findOne({
+      thread_id: localMessage.message.resource.thread_id,
+      id: localMessage.message.resource.thread_id,
     });
 
     if (!entity) {
@@ -41,9 +46,27 @@ export class MessageLinksPreviewFinishedProcessor
       return "";
     }
 
-    entity.links = message.previews;
+    entity.links = localMessage.previews;
 
-    await this.repository.save(entity);
+    await this.MessageRepository.save(entity);
+
+    const thread: Thread = await this.ThreadRepository.findOne({
+      id: localMessage.message.resource.thread_id,
+    });
+
+    if (!thread) {
+      logger.error(`${this.name} - thread not found`);
+      return "";
+    }
+
+    const updatedMessage = {
+      ...localMessage.message,
+      resource: entity,
+    };
+
+    for (const participant of thread.participants) {
+      publishMessageInRealtime(updatedMessage, participant);
+    }
 
     return "done";
   }
