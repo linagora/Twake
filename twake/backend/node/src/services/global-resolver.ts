@@ -64,17 +64,19 @@ import { MobilePushService } from "./notifications/services/mobile-push";
 import { ChannelMemberPreferencesServiceImpl } from "./notifications/services/channel-preferences";
 import { ChannelThreadUsersServiceImpl } from "./notifications/services/channel-thread-users";
 import { PushServiceAPI } from "../core/platform/services/push/api";
-import { PreviewProcessService } from "./previews/services/processing/service";
-import { PreviewServiceAPI } from "./previews/types";
+import { PreviewProcessService } from "./previews/services/files/processing/service";
+import { LinkPreviewServiceAPI, PreviewServiceAPI } from "./previews/types";
 import { CronAPI } from "../core/platform/services/cron/api";
 import WebSocketAPI from "../core/platform/services/websocket/provider";
 import TrackerAPI from "../core/platform/services/tracker/provider";
 import { ApplicationHooksService } from "./applications/services/hooks";
 import { OnlineServiceAPI } from "./online/api";
 import OnlineServiceImpl from "./online/service";
-import { PreviewEngine } from "./previews/services/engine";
+import { PreviewEngine } from "./previews/services/files/engine";
 import KnowledgeGraphService from "../core/platform/services/knowledge-graph";
 import { ChannelsPubsubListener } from "./channels/services/pubsub";
+import { LinkPreviewProcessService } from "./previews/services/links/processing/service";
+import { LinkPreviewEngine } from "./previews/services/links/engine";
 
 type PlatformServices = {
   auth: AuthServiceAPI;
@@ -105,7 +107,10 @@ type TwakeServices = {
     preferences: UserNotificationPreferencesAPI;
     mobilePush: MobilePushService;
   };
-  preview: PreviewServiceAPI;
+  preview: {
+    files: PreviewServiceAPI;
+    links: LinkPreviewServiceAPI;
+  };
   messages: {
     messages: MessageThreadMessagesServiceAPI;
     threads: MessageThreadsServiceAPI;
@@ -167,6 +172,7 @@ class GlobalResolver {
     });
 
     await new PreviewEngine().init();
+    await new LinkPreviewEngine().init();
 
     this.services = {
       workspaces: await new WorkspaceServiceImpl().init(),
@@ -183,7 +189,10 @@ class GlobalResolver {
         preferences: await new NotificationPreferencesService().init(),
         mobilePush: await new MobilePushService().init(),
       },
-      preview: await new PreviewProcessService().init(),
+      preview: {
+        files: await new PreviewProcessService().init(),
+        links: await new LinkPreviewProcessService().init(),
+      },
       messages: {
         messages: await new ThreadMessagesService().init(platform),
         threads: await new ThreadsService().init(platform),

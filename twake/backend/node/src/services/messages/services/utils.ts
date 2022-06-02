@@ -1,8 +1,18 @@
 import { FindOptions } from "../../../core/platform/services/database/services/orm/repository/repository";
-import { Pagination } from "../../../core/platform/framework/api/crud-service";
+import {
+  CreateResult,
+  Pagination,
+  UpdateResult,
+} from "../../../core/platform/framework/api/crud-service";
 import { Message } from "../entities/messages";
-import { specialMention } from "../types";
+import { MessageLocalEvent, specialMention, ThreadExecutionContext } from "../types";
 import User from "../../../services/user/entities/user";
+import { RealtimeEntityActionType } from "../../../core/platform/services/realtime/types";
+import { getThreadMessagePath } from "../web/realtime";
+import { ResourcePath } from "../../../core/platform/services/realtime/types";
+import { RealtimeLocalBusEvent } from "../../../core/platform/services/realtime/types";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
+import { ParticipantObject } from "../entities/threads";
 
 export const buildMessageListPagination = (
   pagination: Pagination,
@@ -47,4 +57,46 @@ export const getMentions = async (
     ],
     specials: (globalOutput || []).map(g => (g || "").trim().split("@").pop()) as specialMention[],
   };
+};
+
+/**
+ * extracts the links from a message
+ *
+ * @param {Message} messageResource - The message to be parsed
+ * @returns {String} - links found in the message
+ */
+export const getLinks = (messageResource: Message): string[] => {
+  const links = (messageResource.text || "").match(/https?:\/\/[^ ]+/gm);
+  return links || [];
+};
+
+/**
+ * Publish a message to the realtime bus
+ *
+ * @param {MessageLocalEvent} message - The event to be published
+ * @param {ParticipantObject} participant - The participant
+ */
+export const publishMessageInRealtime = (
+  message: MessageLocalEvent,
+  participant: ParticipantObject,
+): void => {
+  if (participant.type !== "channel") return;
+
+  const room = `/companies/${participant.company_id}/workspaces/${participant.workspace_id}/channels/${participant.id}/feed`;
+  const type = "message";
+  const entity = message.resource;
+  const context = message.context;
+
+  localEventBus.publish("realtime:publish", {
+    topic: message.created ? RealtimeEntityActionType.Created : RealtimeEntityActionType.Updated,
+    event: {
+      type,
+      room: ResourcePath.get(room),
+      resourcePath: getThreadMessagePath(context as ThreadExecutionContext) + "/" + entity.id,
+      entity,
+      result: message.created
+        ? new CreateResult<Message>(type, entity)
+        : new UpdateResult<Message>(type, entity),
+    },
+  } as RealtimeLocalBusEvent<Message>);
 };

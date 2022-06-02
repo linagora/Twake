@@ -19,6 +19,7 @@ import {
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { getThreadMessagePath } from "../../../../web/realtime";
 import gr from "../../../../../global-resolver";
+import { publishMessageInRealtime } from "../../../utils";
 
 export class ChannelViewProcessor {
   repository: Repository<MessageChannelRef>;
@@ -111,24 +112,7 @@ export class ChannelViewProcessor {
       }
 
       //Publish message in realtime
-      const room = `/companies/${participant.company_id}/workspaces/${participant.workspace_id}/channels/${participant.id}/feed`;
-      const type = "message";
-      const entity = message.resource;
-      const context = message.context;
-      localEventBus.publish("realtime:publish", {
-        topic: message.created
-          ? RealtimeEntityActionType.Created
-          : RealtimeEntityActionType.Updated,
-        event: {
-          type: type,
-          room: ResourcePath.get(room),
-          resourcePath: getThreadMessagePath(context as ThreadExecutionContext) + "/" + entity.id,
-          entity: entity,
-          result: message.created
-            ? new CreateResult<Message>(type, entity)
-            : new UpdateResult<Message>(type, entity),
-        },
-      } as RealtimeLocalBusEvent<Message>);
+      publishMessageInRealtime(message, participant);
     }
   }
 }

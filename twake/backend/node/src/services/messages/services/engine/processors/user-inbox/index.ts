@@ -22,6 +22,7 @@ import {
 } from "../../../../../../core/platform/framework/api/crud-service";
 import { Message } from "../../../../entities/messages";
 import gr from "../../../../../global-resolver";
+import { publishMessageInRealtime } from "../../../utils";
 
 export class UserInboxViewProcessor {
   repositoryRef: Repository<MessageUserInboxRef>;
@@ -87,24 +88,7 @@ export class UserInboxViewProcessor {
         //Publish message in realtime
 
         //TODO send a thread object instead of a message object
-        const room = `/companies/${channelParticipant.company_id}/users/${userParticipant.id}/inbox`;
-        const type = "message";
-        const entity = message.resource;
-        const context = message.context;
-        localEventBus.publish("realtime:publish", {
-          topic: message.created
-            ? RealtimeEntityActionType.Created
-            : RealtimeEntityActionType.Updated,
-          event: {
-            type: type,
-            room: ResourcePath.get(room),
-            resourcePath: getThreadMessagePath(context as ThreadExecutionContext) + "/" + entity.id,
-            entity: entity,
-            result: message.created
-              ? new CreateResult<Message>(type, entity)
-              : new UpdateResult<Message>(type, entity),
-          },
-        } as RealtimeLocalBusEvent<Message>);
+        publishMessageInRealtime(message, channelParticipant);
       }
     }
   }

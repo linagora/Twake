@@ -1,10 +1,9 @@
 import { generatePreview as thumbnailsFromImages } from "./image";
 import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
-import { cleanFiles, isFileType } from "../../utils";
+import { cleanFiles, isFileType } from "../../../utils";
 import { imageExtensions, officeExtensions, pdfExtensions, videoExtensions } from "./mime";
-import StorageAPI from "../../../../core/platform/services/storage/provider";
-import { PreviewPubsubRequest, PreviewServiceAPI, ThumbnailResult } from "../../types";
+import { PreviewPubsubRequest, PreviewServiceAPI, ThumbnailResult } from "../../../types";
 import { generateVideoPreview } from "./video";
 
 export class PreviewProcessService implements PreviewServiceAPI {

@@ -1,7 +1,7 @@
 import sharp from "sharp";
-import { cleanFiles, getTmpFile } from "../../utils";
-import { PreviewPubsubRequest, ThumbnailResult } from "../../types";
-import { logger } from "../../../../core/platform/framework/logger";
+import { cleanFiles, getTmpFile } from "../../../utils";
+import { PreviewPubsubRequest, ThumbnailResult } from "../../../types";
+import { logger } from "../../../../../core/platform/framework/logger";
 
 export async function generatePreview(
   inputPaths: string[],

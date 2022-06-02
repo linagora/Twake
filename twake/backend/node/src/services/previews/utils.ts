@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import mimes from "./services/processing/mime";
+import mimes from "./services/files/processing/mime";
 import fs, { existsSync, promises as fsPromise } from "fs";
 
 const { unlink } = fsPromise;
