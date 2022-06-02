@@ -10,7 +10,8 @@ const publicFileSchema = {
     metadata: { type: "object", additionalProperties: true },
     thumbnails: { type: "array" },
     upload_data: { type: "object", additionalProperties: true },
-    user: { type: "object", additionalProperties: true },
+    user: { type: "object", additionalProperties: true, nullable: true },
+    context: { type: "object", additionalProperties: true, nullable: true },
   },
 };
 

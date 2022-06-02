@@ -163,40 +163,6 @@ describe("List user files", () => {
     "../files/assets/sample.zip",
   ].map(p => `${__dirname}/${p}`);
 
-  it("should return downloaded files", async done => {
-    const jwtToken = await platform.auth.getJWTToken({ sub: v1() });
-
-    const form = formAutoContent({ file: fs.createReadStream(files[0]) });
-    form.headers["authorization"] = `Bearer ${await platform.auth.getJWTToken()}`;
-    const uploadedFile = await platform.app.inject({
-      method: "POST",
-      url: `${filesUrl}/companies/${platform.workspace.company_id}/files?thumbnail_sync=1`,
-      ...form,
-    });
-    await platform.app.inject({
-      method: "GET",
-      url: `/internal/services/files/v1/companies/${platform.workspace.company_id}/files/${
-        uploadedFile.json().resource.id
-      }/download`,
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    const response = await platform.app.inject({
-      method: "GET",
-      url: `${messagesUrl}/companies/${platform.workspace.company_id}/files?type=user_download`,
-      headers: {
-        authorization: `Bearer ${jwtToken}`,
-      },
-    });
-
-    expect(response.statusCode).toBe(200);
-
-    expect(response.json().resources.length).toBe(0);
-
-    done();
-  });
-
   it("should return uploaded files", async done => {
     const jwtToken = await platform.auth.getJWTToken();
 
@@ -259,6 +225,8 @@ describe("List user files", () => {
       },
     });
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     expect(response.statusCode).toBe(200);
 
     let resources = response.json().resources;
@@ -282,6 +250,76 @@ describe("List user files", () => {
     expect(resources.length).toBe(5);
 
     resources.forEach(checkResource);
+
+    done();
+  });
+
+  it("should return downloaded files", async done => {
+    const jwtToken = await platform.auth.getJWTToken({ sub: v1() });
+    const uploadedFiles = [];
+    for (const i in files) {
+      const file = files[i];
+
+      const form = formAutoContent({ file: fs.createReadStream(file) });
+      form.headers["authorization"] = `Bearer ${await platform.auth.getJWTToken()}`;
+
+      const uploadedFile = await platform.app.inject({
+        method: "POST",
+        url: `${filesUrl}/companies/${platform.workspace.company_id}/files?thumbnail_sync=1`,
+        ...form,
+      });
+
+      const resource = uploadedFile.json().resource;
+
+      const messageFile: MessageFile = {
+        id: uuid.v1(),
+        company_id: platform.workspace.company_id,
+        metadata: {
+          source: "internal",
+          external_id: {
+            company_id: platform.workspace.company_id,
+            id: resource.id,
+          },
+          ...resource.metadata,
+        },
+      };
+
+      const thread = await e2e_createThread(
+        platform,
+        [],
+        createMessage({ text: "Some message", files: [messageFile] }),
+      );
+
+      uploadedFiles.push(uploadedFile.json().resource);
+
+      console.log(thread.json());
+
+      await platform.app.inject({
+        method: "POST",
+        url: `${messagesUrl}/companies/${platform.workspace.company_id}/threads/${
+          thread.json().resource.message.thread_id
+        }/messages/${thread.json().resource.message.id}/download/${
+          thread.json().resource.message.files[0].id
+        }`,
+        headers: {
+          authorization: `Bearer ${jwtToken}`,
+        },
+      });
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const response = await platform.app.inject({
+      method: "GET",
+      url: `${messagesUrl}/companies/${platform.workspace.company_id}/files?type=user_download`,
+      headers: {
+        authorization: `Bearer ${jwtToken}`,
+      },
+    });
+
+    expect(response.statusCode).toBe(200);
+
+    expect(response.json().resources.length).toBe(5);
 
     done();
   });
