@@ -45,7 +45,7 @@ export class MessageFileRef {
   message_file_id: string;
 
   @Type(() => String)
-  @Column("file_id", "string")
+  @Column("file_id", "json")
   file_id: string;
 
   @Column("company_id", "timeuuid")

@@ -14,9 +14,11 @@ import { useUpload } from 'app/features/files/hooks/use-upload';
 import { DataFileType } from '../types';
 import MenuManager from 'app/components/menus/menus-manager';
 import { PendingFileRecoilType } from 'app/features/files/types/file';
+import { MessageFileType } from 'app/features/messages/types/message';
 
 type PropsType = {
   file: DataFileType;
+  messageFile: MessageFileType;
   status?: PendingFileRecoilType['status'];
   deletable?: boolean;
   actionMenu?: boolean;
@@ -26,6 +28,7 @@ type PropsType = {
 
 export const FileActions = ({
   file,
+  messageFile,
   status,
   deletable,
   actionMenu,
@@ -41,6 +44,7 @@ export const FileActions = ({
         companyId: file.company_id,
         fileId: file.id,
         fileName: file.name,
+        messageFile,
       }));
   };
 

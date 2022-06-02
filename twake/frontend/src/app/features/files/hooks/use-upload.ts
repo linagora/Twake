@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { PendingFilesListState } from '../state/atoms/pending-files-list';
 import { CurrentTaskSelector } from '../state/selectors/current-task';
 import RouterServices from 'app/features/router/services/router-service';
+import { MessageFileType } from 'app/features/messages/types/message';
 
 export const useUpload = () => {
   const { companyId } = RouterServices.getStateFromRoute();
@@ -25,13 +26,17 @@ export const useUpload = () => {
     companyId,
     fileId,
     fileName,
+    messageFile,
     blob,
   }: {
     companyId: string;
     fileId: string;
     fileName: string;
+    messageFile: MessageFileType;
     blob?: boolean;
   }) => {
+    if (messageFile) FileUploadService.markAsDownloadedFromMessage(messageFile);
+
     if (blob) {
       return FileUploadService.download({ companyId, fileId });
     }

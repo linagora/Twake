@@ -80,14 +80,7 @@ export interface FileServiceAPI extends TwakeServiceProvider, Initializable {
 
   getThumbnailRoute(file: File, index: string): string;
   getDownloadRoute(file: File): string;
-
-  listUserMarkedFiles(
-    userId: string,
-    type: "user_upload" | "user_download" | "both",
-    media: "file_only" | "media_only" | "both",
-    context: CompanyExecutionContext,
-    pagination: Pagination,
-  ): Promise<ListResult<PublicFile>>;
+  getFile(file: Pick<File, "company_id" | "id">): Promise<File>;
 }
 
 export interface FilePubsubHandler<InputMessage, OutputMessage>

@@ -3,6 +3,7 @@ import { logger, TwakeContext } from "../../../core/platform/framework";
 import { Message, TYPE as MessageTableName } from "../entities/messages";
 import {
   BookmarkOperation,
+  MessageFileDownloadEvent,
   PinOperation,
   ReactionOperation,
   ThreadExecutionContext,
@@ -12,6 +13,7 @@ import Repository from "../../../core/platform/services/database/services/orm/re
 import { ThreadMessagesService } from "./messages";
 import gr from "../../global-resolver";
 import { updateMessageReactions } from "../../../utils/messages";
+import { localEventBus } from "../../../core/platform/framework/pubsub";
 
 export class ThreadMessagesOperationsService {
   constructor(private threadMessagesService: ThreadMessagesService) {}
@@ -134,5 +136,21 @@ export class ThreadMessagesOperationsService {
     this.threadMessagesService.onSaved(message, { created: false }, context);
 
     return new SaveResult<Message>("message", message, OperationType.UPDATE);
+  }
+
+  async download(
+    operation: { id: string; thread_id: string; message_file_id: string },
+    options: Record<string, any>,
+    context: ThreadExecutionContext,
+  ) {
+    //Register download action for reference
+    localEventBus.publish("message:download", {
+      user: context.user,
+      operation: {
+        message_id: operation.id,
+        thread_id: operation.thread_id,
+        message_file_id: operation.message_file_id,
+      },
+    } as MessageFileDownloadEvent);
   }
 }

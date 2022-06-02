@@ -6,6 +6,10 @@ export default {
     const source: any = {
       text: entity.text + " " + (entity.files || []).map(file => file.metadata.name).join(" "),
       has_files: (entity.files || []).length > 0,
+      has_medias:
+        (entity.files || []).filter(
+          f => f.metadata?.mime?.startsWith("video/") || f.metadata?.mime?.startsWith("image/"),
+        ).length > 0,
     };
     if (entity.cache) {
       return {
@@ -31,6 +35,7 @@ export default {
       workspace_id: { type: "keyword" },
       channel_id: { type: "keyword" },
       has_files: { type: "boolean" },
+      has_medias: { type: "boolean" },
     },
   },
 };
