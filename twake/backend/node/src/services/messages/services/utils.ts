@@ -80,6 +80,8 @@ export const publishMessageInRealtime = (
   message: MessageLocalEvent,
   participant: ParticipantObject,
 ): void => {
+  if (participant.type !== "channel") return;
+
   const room = `/companies/${participant.company_id}/workspaces/${participant.workspace_id}/channels/${participant.id}/feed`;
   const type = "message";
   const entity = message.resource;

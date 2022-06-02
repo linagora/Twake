@@ -64,7 +64,7 @@ export class MessageLinksPreviewFinishedProcessor
       resource: entity,
     };
 
-    for (const participant of thread.participants) {
+    for (const participant of thread.participants.filter(p => p.type === "channel")) {
       publishMessageInRealtime(updatedMessage, participant);
     }
 
