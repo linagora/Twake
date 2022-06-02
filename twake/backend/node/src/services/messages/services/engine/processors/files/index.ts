@@ -31,9 +31,8 @@ export class FilesViewProcessor {
       id: operation.message_file_id,
     });
 
-    const message = await gr.services.messages.messages.get({
-      thread_id: operation.thread_id,
-      id: operation.message_id,
+    const thread = await gr.services.messages.threads.get({
+      id: operation.thread_id,
     });
 
     const refs = await this.repository.find(
@@ -55,8 +54,8 @@ export class FilesViewProcessor {
       created_at: new Date().getTime(),
       file_id: messageFile?.metadata?.external_id,
       company_id: messageFile.company_id,
-      workspace_id: "",
-      channel_id: "",
+      workspace_id: thread.participants?.find(p => p.type === "channel")?.workspace_id || "",
+      channel_id: thread.participants?.find(p => p.type === "channel")?.id || "",
       thread_id: messageFile.thread_id,
       message_id: messageFile.message_id,
       message_file_id: messageFile.id,
