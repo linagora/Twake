@@ -4,6 +4,10 @@ import { LinkPreview } from "../../../types";
 import { logger } from "../../../../../core/platform/framework";
 import imageProbe from "probe-image-size";
 
+type HtmlImage = {
+  src: string;
+};
+
 /**
  * Generate a thumbnail for a given url.
  *
@@ -50,13 +54,17 @@ const getUrlInformation = async (url: string): Promise<LinkPreview> => {
     const parsedPage = await parser(url);
     const title = parsedPage.og?.title || parsedPage.meta?.title || null;
     const description = parsedPage.og?.description || parsedPage.meta?.description || null;
-    const img = parsedPage.og?.image || parsedPage.meta?.image || parsedPage.images?.[0] || null;
+    let img = parsedPage.og?.image || parsedPage.meta?.image || parsedPage.images?.[0] || null;
     const favicon = (await getUrlFavicon(url)) || null;
     const domain = getDomain(url);
     let img_height: number | null = null,
       img_width: number | null = null;
 
     if (img) {
+      if (typeof img === "object") {
+        img = (img as HtmlImage).src;
+      }
+
       const dimensions = await imageProbe(img);
       img_height = dimensions.height;
       img_width = dimensions.width;
