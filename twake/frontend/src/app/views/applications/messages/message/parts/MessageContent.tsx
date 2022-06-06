@@ -132,7 +132,8 @@ export default (props: Props) => {
                 <MessageAttachments />
               ) : (
                 message?.links &&
-                (message?.links?.length || 0) > 0 && <LinkPreview preview={message.links[0]} />
+                (message?.links?.length || 0) > 0 &&
+                message.links.map(preview => <LinkPreview preview={preview} />)
               )}
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}
