@@ -1,17 +1,15 @@
-import React from 'react';
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
 import Workspace from 'app/deprecated/workspaces/workspaces.js';
 import Api from 'app/features/global/framework/api-service';
-import { Message, MessageExtended, ThumbnailType } from 'features/messages/types/message';
+import { MessageExtended } from 'features/messages/types/message';
 import { ChannelType } from 'features/channels/types/channel';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
-import FileAPIClient from 'app/features/files/api/file-upload-api-client.ts';
+import FileAPIClient from 'app/features/files/api/file-upload-api-client';
 import UserAPIClient from 'app/features/users/api/user-api-client';
 import { UserType } from 'features/users/types/user';
-import Strings from 'features/global/utils/strings';
 import Workspaces from 'deprecated/workspaces/workspaces';
 import { delayRequest } from 'features/global/utils/managedSearchRequest';
-import { FileType, FileUploadDataObjectType, MetaDataType } from 'features/files/types/file';
+import { FileType } from 'features/files/types/file';
 
 type ResultTypes = {
   messages: MessageExtended[];
@@ -35,6 +33,9 @@ class SearchService extends Observable {
     this.setObservableName('SearchService');
     // Globals.window.searchPopupService = this;
     this.clear();
+    this.recent.channels = [];
+    this.recent.files = [];
+    this.recent.media = [];
   }
 
   isOpen() {
@@ -47,11 +48,9 @@ class SearchService extends Observable {
     this.results.messages = [];
     this.results.channels = [];
     this.results.users = [];
+    this.results.files = [];
 
     // this.recent.messages = [];
-    this.recent.channels = [];
-    this.recent.files = [];
-    this.recent.media = [];
     // this.recent.users = [];
 
     this.notify();
@@ -59,6 +58,7 @@ class SearchService extends Observable {
 
   open() {
     this._isOpen = true;
+    Promise.all([this.recentContacts(), this.recentFiles(), this.recentMedia()]).then(() => {});
     this.notify();
   }
 
@@ -107,22 +107,40 @@ class SearchService extends Observable {
     });
   }
 
+  private async searchFiles() {
+    Api.get<{ resources: MessageExtended[] }>(
+      `/internal/services/messages/v1/companies/${Workspace.currentGroupId}/search?q=${this.value}&hasFiles=true&hasMedias=true`,
+    ).then(res => {
+      this.results.files = [];
+      console.log('!!! file search res', res.resources);
+      const files = [] as any;
+      res.resources.forEach(res => {
+        res.files?.forEach(file => {
+          files.push(file);
+        });
+      });
+      this.results.files = files;
+      this.notify();
+    });
+  }
+
+  private async searchMedia() {}
+
   public async recentContacts(): Promise<void> {
     this.recent.channels = await ChannelAPIClient.recent(Workspaces.currentGroupId, 12);
+    console.log('!!! got recent channels', this.recent.channels.length);
+    this.notify();
   }
 
   public async recentFiles(): Promise<void> {
     this.recent.files = await FileAPIClient.recent(Workspaces.currentGroupId, 'file', 10);
+    console.log('!!! got recent files', this.recent.files.length);
+    this.notify();
   }
 
   public async recentMedia(): Promise<void> {
     this.recent.media = await FileAPIClient.recent(Workspaces.currentGroupId, 'media', 10);
-  }
-
-  public async getRecent() {
-    this.searchInProgress = true;
-    await Promise.all([this.recentContacts(), this.recentFiles(), this.recentMedia()]);
-    this.searchInProgress = false;
+    console.log('!!! got recent media', this.recent.media.length);
     this.notify();
   }
 
@@ -132,12 +150,15 @@ class SearchService extends Observable {
       if (this.value) {
         if (this.value.length > 1) {
           this.notify();
-          Promise.all([this.searchMessages(), this.searchChannels(), this.searchUsers()]).then(
-            () => {
-              this.searchInProgress = false;
-              this.notify();
-            },
-          );
+          Promise.all([
+            this.searchMessages(),
+            this.searchChannels(),
+            this.searchUsers(),
+            this.searchFiles(),
+          ]).then(() => {
+            this.searchInProgress = false;
+            this.notify();
+          });
         }
       } else {
         this.clear();
@@ -145,6 +166,18 @@ class SearchService extends Observable {
         this.notify();
       }
     });
+  }
+
+  readyToSearch() {
+    return this.value && this.value.length > 1;
+  }
+
+  getFiles() {
+    this.readyToSearch() ? this.searchFiles() : this.recentFiles();
+  }
+
+  getMedia() {
+    this.readyToSearch() ? this.searchMedia() : this.recentMedia();
   }
 }
 

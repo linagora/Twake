@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Search from 'features/global/services/search-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import './search-popup.scss';
 import InputIcon from 'components/inputs/input-icon.js';
 
 import Languages from 'app/features/global/services/languages-service';
-import SearchAll from './tabs/all/index';
+import TabAll from './tabs/all';
+import TabFiles from './tabs/files';
+import TabMedia from './tabs/media';
+import TabChats from './tabs/chats';
+import Tab from './tabs/tab';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -19,7 +23,24 @@ export default class SearchPopup extends React.Component {
       withFilters: Search.withFilters || false,
       hasFilters: Search.hasFilters || false,
       filterType: Search.type || false,
+      activeTab: 'all',
     };
+
+    const tabs = [
+      { key: 'all', title: 'All' },
+      { key: 'files', title: 'Files' },
+    ];
+
+    const experimentalTabs = ['Chats', 'Media'];
+
+    for (let tabName of experimentalTabs) {
+      const tabNameLC = tabName.toLowerCase();
+      if (localStorage.getItem(`search-tabs-${tabNameLC}`)) {
+        tabs.push({ key: tabNameLC, title: tabName });
+      }
+    }
+
+    this.tabs = tabs;
   }
   componentDidMount() {
     document.addEventListener('keydown', this.eventKey);
@@ -102,6 +123,25 @@ export default class SearchPopup extends React.Component {
     Search.clear();
   }
 
+  onTabClick(key) {
+    this.setState({ activeTab: key });
+  }
+
+  getTabContent() {
+    switch (this.state.activeTab) {
+      case 'all':
+        return <TabAll scroller={this.scroller} />;
+      case 'chats':
+        return <TabChats scroller={this.scroller} />;
+      case 'media':
+        return <TabMedia scroller={this.scroller} />;
+      case 'files':
+        return <TabFiles scroller={this.scroller} />;
+      default:
+        return <div>?</div>;
+    }
+  }
+
   render() {
     if (!Search.isOpen()) {
       this.state.selected = 0;
@@ -110,35 +150,7 @@ export default class SearchPopup extends React.Component {
       return '';
     }
 
-    var pos_i = 0;
     this.state.total = 0;
-
-    var tabs = [
-      {
-        filterType: 'message',
-        hasFilters: true,
-        title: Languages.t('components.application.messages', [], 'Messages'),
-        render: '',
-      },
-      {
-        filterType: 'file',
-        hasFilters: true,
-        title: Languages.t('scenes.apps.drive.navigators.navigator_content.files', [], 'Files'),
-        render: '',
-      },
-      {
-        filterType: 'task',
-        hasFilters: true,
-        title: Languages.t('components.searchpopup.tasks', [], 'Tasks'),
-        render: '',
-      },
-      {
-        filterType: 'event',
-        hasFilters: true,
-        title: Languages.t('scenes.app.popup.appsparameters.pages.event_subtitle', [], 'Events'),
-        render: '',
-      },
-    ];
 
     return (
       <div className="search-popup">
@@ -193,17 +205,22 @@ export default class SearchPopup extends React.Component {
 
             <div className="tabs-wrapper">
               <div className="tab-items-wrapper">
-                <div className="tab-item-wrapper">
-                  <div className="tab-item-active">
-                    <div className="tab-item-title">All</div>
-                    <div className="tab-item-indicator"></div>
-                  </div>
-                </div>
+                {this.tabs.map((tab, idx) => (
+                  <Tab
+                    key={tab.title}
+                    active={this.state.activeTab === tab.key}
+                    title={tab.title}
+                    onClick={() => {
+                      this.onTabClick(tab.key);
+                    }}
+                  />
+                ))}
               </div>
+
               <div className="tab-horizontal-separator"></div>
             </div>
 
-            <SearchAll scroller={this.scroller}></SearchAll>
+            {this.getTabContent()}
           </div>
         </div>
       </div>

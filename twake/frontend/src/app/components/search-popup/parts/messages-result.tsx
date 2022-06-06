@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../search-popup.scss';
 import { useChannel } from 'features/channels/hooks/use-channel';
 import { useUser } from 'features/users/hooks/use-user';
@@ -9,6 +9,10 @@ import RouterServices from 'features/router/services/router-service';
 import Strings from 'features/global/utils/strings';
 import { highlightText } from './common';
 import { MessageExtended } from 'features/messages/types/message';
+import ChannelAvatar from 'components/channel-avatar/channel-avatar';
+import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
+import { ChannelType } from 'features/channels/types/channel';
+
 type PropsType = {
   message: MessageExtended;
   highlight: string;
@@ -46,11 +50,18 @@ const format = (inputDate: Date) => {
 const MSG_TRIM_LENGTH = 85;
 
 export default ({ message, highlight, onClick }: PropsType): JSX.Element => {
-  let { workspace_id, channel_id } = message.cache;
-  const { channel } = useChannel(channel_id);
+  let { company_id, workspace_id, channel_id } = message.cache;
   const { workspace } = useWorkspace(workspace_id);
   const trimmedText = (text: string) =>
     text.length > MSG_TRIM_LENGTH ? text.substr(0, MSG_TRIM_LENGTH) + '…' : text;
+
+  const [channel, setChannel] = useState<ChannelType | undefined>(undefined);
+
+  useEffect(() => {
+    ChannelAPIClient.get(company_id, workspace_id, channel_id).then(channel => {
+      setChannel(channel);
+    });
+  }, [message]);
 
   const msgDate = () => format(new Date(message.created_at));
 
@@ -73,11 +84,12 @@ export default ({ message, highlight, onClick }: PropsType): JSX.Element => {
 
   return (
     <div className="result-item" onClick={onItemClick}>
-      <div className="result-item-icon">
-        <div>
-          <img className="result-item-icon-back" src={thumbnail} />
-        </div>
-      </div>
+      {channel ? <ChannelAvatar channel={channel} showLabel={false} /> : <div />}
+      {/*<div className="result-item-icon">*/}
+      {/*  <div>*/}
+      {/*    <img className="result-item-icon-back" src={thumbnail} />*/}
+      {/*  </div>*/}
+      {/*</div>*/}
       <div className="result-item-content">
         <div className="messages-title">
           {workspace?.name}

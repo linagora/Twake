@@ -23,7 +23,7 @@ export default ({ file, onDownloadClick, onPreviewClick }: PropsType): JSX.Eleme
 
   let sizeStr = '';
 
-  if (file.upload_data.size) {
+  if (file.upload_data?.size) {
     let size = file.upload_data.size;
     let pos = 0;
     while (size > 1024) {
@@ -33,16 +33,18 @@ export default ({ file, onDownloadClick, onPreviewClick }: PropsType): JSX.Eleme
     sizeStr = size.toFixed(2) + ' ' + ['B', 'KB', 'MB', 'GB', 'TB', 'PB'][pos];
   }
 
-  let date = new Intl.DateTimeFormat(locale, {
-    year: 'numeric',
-    month: 'numeric',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: 'numeric',
-    second: 'numeric',
-    weekday: 'short',
-    hour12: false,
-  }).format(new Date(file.created_at));
+  let date = file.created_at
+    ? new Intl.DateTimeFormat(locale, {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        weekday: 'short',
+        hour12: false,
+      }).format(new Date(file.created_at))
+    : '';
 
   return (
     <div className="result-item">
@@ -52,7 +54,7 @@ export default ({ file, onDownloadClick, onPreviewClick }: PropsType): JSX.Eleme
       <div className="result-item-info">
         <div className="filename">{file.metadata.name}</div>
         <div className="details">
-          {sizeStr} • {date}{' '}
+          {sizeStr} {date && <span>•</span>} {date}
         </div>
         <div className="sender">{file.user?.full_name}</div>
       </div>
