@@ -64,19 +64,16 @@ export default (): JSX.Element => {
             className="result-items-files"
           >
             {(searchMode ? Search.results.files : Search.recent.files).map(file => (
-              <div>
-                <div>{file.id}</div>
-                <FilesResult
-                  file={file}
-                  key={file.id}
-                  onPreviewClick={() => {
-                    onFilePreviewClick(file);
-                  }}
-                  onDownloadClick={() => {
-                    onFileDownloadClick(file);
-                  }}
-                />
-              </div>
+              <FilesResult
+                file={file}
+                key={file.id}
+                onPreviewClick={() => {
+                  onFilePreviewClick(file);
+                }}
+                onDownloadClick={() => {
+                  onFileDownloadClick(file);
+                }}
+              />
             ))}
           </PerfectScrollbar>
         </div>

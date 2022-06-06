@@ -112,7 +112,6 @@ class SearchService extends Observable {
       `/internal/services/messages/v1/companies/${Workspace.currentGroupId}/search?q=${this.value}&hasFiles=true&hasMedias=true`,
     ).then(res => {
       this.results.files = [];
-      console.log('!!! file search res', res.resources);
       const files = [] as any;
       res.resources.forEach(res => {
         res.files?.forEach(file => {
@@ -128,19 +127,16 @@ class SearchService extends Observable {
 
   public async recentContacts(): Promise<void> {
     this.recent.channels = await ChannelAPIClient.recent(Workspaces.currentGroupId, 12);
-    console.log('!!! got recent channels', this.recent.channels.length);
     this.notify();
   }
 
   public async recentFiles(): Promise<void> {
     this.recent.files = await FileAPIClient.recent(Workspaces.currentGroupId, 'file', 10);
-    console.log('!!! got recent files', this.recent.files.length);
     this.notify();
   }
 
   public async recentMedia(): Promise<void> {
     this.recent.media = await FileAPIClient.recent(Workspaces.currentGroupId, 'media', 10);
-    console.log('!!! got recent media', this.recent.media.length);
     this.notify();
   }
 
