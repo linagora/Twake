@@ -7,6 +7,7 @@ import assert from 'assert';
 import Emojione from 'components/emojione/emojione';
 import RouterServices from 'features/router/services/router-service';
 import { highlightText } from 'components/search-popup/parts/common';
+import ChannelAvatar from 'components/channel-avatar/channel-avatar';
 const emoji = require('emoji-name-map');
 
 type PropsType = {
@@ -18,7 +19,7 @@ type PropsType = {
 export default ({ channel, highlight, onClick }: PropsType): JSX.Element => {
   assert(channel.workspace_id, 'No workspace_id in channel object');
   assert(channel.name, 'No name in channel object');
-  assert(channel.icon, 'No icon in channel object');
+  // assert(channel.icon, 'No icon in channel object');
   const { workspace } = useWorkspace(channel.workspace_id);
   const thumbnail = emoji.get(channel.icon);
 
@@ -37,9 +38,7 @@ export default ({ channel, highlight, onClick }: PropsType): JSX.Element => {
 
   return (
     <div className="result-item" onClick={onItemClick}>
-      <div className="result-item-channel-icon">
-        <div className="result-item-icon-title">{thumbnail}</div>
-      </div>
+      <ChannelAvatar channel={channel} showLabel={false} />
       <div className="result-item-content">
         <div
           className="channel-title"

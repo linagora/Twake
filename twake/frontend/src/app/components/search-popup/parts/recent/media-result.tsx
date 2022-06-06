@@ -11,6 +11,7 @@ type PropsType = {
 
 export default ({ file, onClick }: PropsType): JSX.Element => {
   let fileRoute = file.thumbnails[0].url;
+  fileRoute = 'https://web.qa.twake.app' + fileRoute; // TODO: REMOVE
   return (
     <div className="result-item" onClick={onClick}>
       <img src={fileRoute} />
