@@ -311,8 +311,13 @@ input:focus {
       .result-item {
 
         display: flex;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
         cursor: pointer;
+
+        .component-channel-avatar .channel-icon-wrapper {
+          width:60px;
+          height:60px;
+        }
 
         .result-item-icon {
           height: 58px;

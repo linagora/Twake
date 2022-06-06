@@ -26,12 +26,9 @@ export default class SearchPopup extends React.Component {
       activeTab: 'all',
     };
 
-    const tabs = [
-      { key: 'all', title: 'All' },
-      { key: 'files', title: 'Files' },
-    ];
+    const tabs = [{ key: 'all', title: 'All' }];
 
-    const experimentalTabs = ['Chats', 'Media'];
+    const experimentalTabs = ['Chats', 'Media', 'Files'];
 
     for (let tabName of experimentalTabs) {
       const tabNameLC = tabName.toLowerCase();
