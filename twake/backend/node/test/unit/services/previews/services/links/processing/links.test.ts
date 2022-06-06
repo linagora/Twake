@@ -62,6 +62,7 @@ describe("the generateLinksPreviews service", () => {
         img_width: 320,
         img_height: 240,
         domain: "foo.bar",
+        url: "https://foo.bar",
       },
     ]);
   });
@@ -102,6 +103,7 @@ describe("the generateLinksPreviews service", () => {
         img_width: 320,
         img_height: 240,
         domain: "foo.bar",
+        url: "https://foo.bar",
       },
     ]);
   });
@@ -126,6 +128,7 @@ describe("the generateLinksPreviews service", () => {
         img_width: 320,
         img_height: 240,
         domain: "foo.bar",
+        url: "https://foo.bar",
       },
     ]);
   });
@@ -153,6 +156,7 @@ describe("the generateLinksPreviews service", () => {
         img_width: 320,
         img_height: 240,
         domain: "foo.bar",
+        url: "https://foo.bar",
       },
     ]);
   });
@@ -172,5 +176,21 @@ describe("the generateLinksPreviews service", () => {
 
     await generateLinksPreviews(["https://foo.bar"]);
     expect(imageProbe).not.toHaveBeenCalled();
+  });
+
+  it("should strip www from the domain", async () => {
+    const result = await generateLinksPreviews(["https://www.foo.bar"]);
+    expect(result).toEqual([
+      {
+        title: "Foo",
+        description: "Bar",
+        img: "http://foo.bar/image.jpg",
+        favicon: "http://foo.bar/favicon.ico",
+        img_width: 320,
+        img_height: 240,
+        domain: "foo.bar",
+        url: "https://www.foo.bar",
+      },
+    ]);
   });
 });
