@@ -223,4 +223,5 @@ export type MessageLinkType = {
   favicon: string | undefined;
   img_width: number | undefined;
   img_height: number | undefined;
+  url: string;
 }

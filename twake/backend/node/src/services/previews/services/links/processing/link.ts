@@ -37,7 +37,7 @@ export async function generateLinksPreviews(urls: string[]): Promise<LinkPreview
 const getDomain = (url: string): string => {
   try {
     const domain = new URL(url).hostname;
-    return domain;
+    return domain.replace(/^www\./, "");
   } catch (error) {
     throw Error(`failed to get domain: ${error}`);
   }
@@ -78,6 +78,7 @@ const getUrlInformation = async (url: string): Promise<LinkPreview> => {
       img,
       img_height,
       img_width,
+      url,
     };
   } catch (error) {
     throw Error(`failed to get url information: ${error}`);
