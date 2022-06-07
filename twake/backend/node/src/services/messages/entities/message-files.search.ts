@@ -1,7 +1,7 @@
 import { MessageFile } from "./message-files";
 
 export default {
-  index: "messages_files",
+  index: "message_files",
   source: (entity: MessageFile) => {
     const isMedia =
       entity.metadata?.mime?.startsWith("video/") || entity.metadata?.mime?.startsWith("image/");
