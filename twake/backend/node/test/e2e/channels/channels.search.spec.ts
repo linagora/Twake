@@ -14,10 +14,6 @@ import {
   ChannelVisibility,
   WorkspaceExecutionContext,
 } from "../../../src/services/channels/types";
-import {
-  getPrivateRoomName,
-  getPublicRoomName,
-} from "../../../src/services/channels/services/channel/realtime";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { TestDbService } from "../utils.prepare.db";

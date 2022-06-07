@@ -13,9 +13,6 @@ export default {
     text: {
       name: "text",
     },
-    prefix: {
-      name: "prefix",
-    },
   },
   esMapping: {
     properties: {
