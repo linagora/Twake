@@ -704,6 +704,13 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       entity.thread_id = message.thread_id;
       entity.id = file.id || undefined;
       entity.company_id = file.company_id;
+      entity.cache = {
+        company_id: message.cache?.company_id,
+        workspace_id: message.cache?.workspace_id,
+        channel_id: message.cache?.channel_id,
+        user_id: message.user_id,
+      };
+      entity.created_at = file.created_at;
 
       //If it is defined it should exists
       let messageFileExistOnDb = false;
