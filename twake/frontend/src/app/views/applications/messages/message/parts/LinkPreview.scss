@@ -8,6 +8,7 @@
 
   .ant-card-meta-avatar {
     padding-right: 0px;
+    width: 100%;
 
     span > img {
       width: 16px;
@@ -25,13 +26,29 @@
     font-weight: bold;
   }
 
-  .ant-card-meta-title > a {
-    font-size: 14px;
-    font-weight: bold;
-    color: #000000;
+  .preview-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+
+    a {
+      font-size: 14px;
+      font-weight: bold;
+      color: #000000;
+      float: left;
+    }
   }
 
   .ant-card-meta-description {
     margin-bottom: 10px;
+  }
+
+  .ant-card-cover {
+    cursor: pointer;
+
+    img {
+      border-radius: 8px 8px 8px 8px;
+    }
   }
 }
