@@ -20,7 +20,8 @@ import gr from "../../../global-resolver";
 import { CompanyExecutionContext } from "../../../applications/web/types";
 import { PublicFile } from "../../../files/entities/file";
 import { MessageFile } from "../../entities/message-files";
-import User from "../../../../services/user/entities/user";
+import { formatUser } from "../../../../utils/users";
+import { UserObject } from "../../../user/web/types";
 
 export class ViewsController {
   async feed(
@@ -296,7 +297,7 @@ export class ViewsController {
       } while (hasMoreMessageFiles);
     }
 
-    const messageFiles = [] as (MessageFile & { message: Message; user: User })[];
+    const messageFiles = [] as (MessageFile & { message: Message; user: UserObject })[];
 
     for await (const msgFile of getNextMessageFiles()) {
       const isChannelMember = await gr.services.channels.members.isChannelMember(
@@ -315,7 +316,7 @@ export class ViewsController {
           thread_id: msgFile.thread_id,
           id: msgFile.message_id,
         });
-        const user = await gr.services.users.get({ id: msgFile.cache.user_id });
+        const user = await formatUser(await gr.services.users.get({ id: msgFile.cache.user_id }));
 
         messageFiles.push({ ...msgFile, user, message });
         if (messageFiles.length == limit) {
