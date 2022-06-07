@@ -19,6 +19,7 @@ import { ViewContext } from 'app/views/client/main-view/MainContent';
 import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import MessageAttachments from './MessageAttachments';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
+import LinkPreview from './LinkPreview';
 
 type Props = {
   linkToThread?: boolean;
@@ -128,7 +129,9 @@ export default (props: Props) => {
               </div>
 
               {message?.files && (message?.files?.length || 0) > 0 && <MessageAttachments />}
-
+              {message?.links &&
+                (message?.links?.length || 0) > 0 &&
+                message.links.map(preview => <LinkPreview preview={preview} />)}
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}
             </>

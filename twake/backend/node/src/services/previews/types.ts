@@ -83,6 +83,7 @@ export type LinkPreview = {
   img: string | null;
   img_height: number | null;
   img_width: number | null;
+  url: string;
 };
 
 export type LinkPreviewPubsubRequest = {
