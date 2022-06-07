@@ -3,6 +3,7 @@ import { logger, TwakeContext } from "../../../core/platform/framework";
 import { Message, TYPE as MessageTableName } from "../entities/messages";
 import {
   BookmarkOperation,
+  DeleteLinkOperation,
   MessageFileDownloadEvent,
   PinOperation,
   ReactionOperation,
@@ -152,5 +153,44 @@ export class ThreadMessagesOperationsService {
         message_file_id: operation.message_file_id,
       },
     } as MessageFileDownloadEvent);
+  }
+
+  /**
+   * Delete a link preview from a message
+   *
+   * @param {DeleteLinkOperation} operation - params of the operation
+   * @param {ThreadExecutionContext} context - Thread execution context
+   * @returns {Promise<SaveResult<Message>>} - Result of the operation
+   */
+  async deleteLinkPreview(
+    operation: DeleteLinkOperation,
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    if (
+      !context?.user?.server_request &&
+      !gr.services.messages.threads.checkAccessToThread(context)
+    ) {
+      logger.error(`no access  ${context.thread.id}`);
+      throw Error("can't remove link preview from message.");
+    }
+
+    const message = await this.repository.findOne({
+      thread_id: context.thread.id,
+      id: operation.message_id,
+    });
+
+    if (!message) {
+      logger.error("This message doesn't exists");
+      throw Error("Can't edit message links previews.");
+    }
+
+    const decoded_url = decodeURIComponent(operation.encoded_link);
+
+    message.links = message.links.filter(({ url }: { url: string }) => url !== decoded_url);
+
+    await this.repository.save(message);
+    this.threadMessagesService.onSaved(message, { created: false }, context);
+
+    return new SaveResult<Message>("message", message, OperationType.UPDATE);
   }
 }

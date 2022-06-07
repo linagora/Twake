@@ -117,6 +117,24 @@ class MessageAPIClient {
         {},
       );
   }
+
+  /**
+   * Delete a link preview from a message
+   * 
+   * @param {String} companyId - The company id
+   * @param {String} threadId - The thread id
+   * @param {String} messageId - The message id
+   * @param {String} url - The url to delete from the previews
+   * @returns {Promise<void>}
+   */
+  async deleteLinkPreview(companyId: string, threadId: string, messageId: string, url: string) {
+    const encoded_link = encodeURIComponent(url);
+    const response = await Api.delete<{ resource: NodeMessage }>(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/links/${encoded_link}`,
+    );
+
+    return response.resource;
+  }
 }
 
 export default new MessageAPIClient();

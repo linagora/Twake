@@ -144,4 +144,5 @@ export type MessageLinks = {
   favicon: string | null;
   img_width: number | null;
   img_height: number | null;
+  url: string;
 };

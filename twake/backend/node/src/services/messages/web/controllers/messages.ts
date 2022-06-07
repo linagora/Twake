@@ -346,6 +346,43 @@ export class MessagesController
       handleError(reply, err);
     }
   }
+
+  /**
+   * Delete link preview handler
+   *
+   * @param {FastifyRequest} request - The request object
+   * @param {FastifyReply} reply - The reply object
+   * @returns {Promise<ResourceUpdateResponse<Message>>} - The response object
+   */
+  async deleteLinkPreview(
+    request: FastifyRequest<{
+      Params: {
+        company_id: string;
+        thread_id: string;
+        message_id: string;
+        encoded_url: string;
+      };
+    }>,
+    reply: FastifyReply,
+  ): Promise<ResourceUpdateResponse<Message>> {
+    const context = getThreadExecutionContext(request);
+    try {
+      const result = await gr.services.messages.messages.deleteLinkPreview(
+        {
+          message_id: request.params.message_id,
+          thread_id: request.params.thread_id,
+          encoded_link: request.params.encoded_url,
+        },
+        context,
+      );
+
+      return {
+        resource: result.entity,
+      };
+    } catch (err) {
+      handleError(reply, err);
+    }
+  }
 }
 
 function getThreadExecutionContext(

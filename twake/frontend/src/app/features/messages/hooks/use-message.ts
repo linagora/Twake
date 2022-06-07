@@ -131,7 +131,24 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
-  return { message, get, react, pin, remove, bookmark, save, move };
+  /**
+   * Delete a preview for given url
+   * 
+   * @param {String} url - the url corresponding to the preview to delete
+   * @returns {Promise<void>}
+   */
+  const deleteLinkPreview = async (url: string): Promise<void> => {
+    const updated = await MessageAPIClient.deleteLinkPreview(
+      partialKey.companyId,
+      partialKey.threadId,
+      partialKey.id || '',
+      url,
+    );
+
+    if (updated) setValue(messageToMessageWithReplies(updated));
+  };
+
+  return { message, get, react, pin, remove, bookmark, save, move, deleteLinkPreview };
 };
 
 //Function to recompute reactions after a frontend operation

@@ -117,6 +117,15 @@ export interface MessageThreadMessagesServiceAPI
     context: CompanyExecutionContext,
     pagination: Pagination,
   ): Promise<ListResult<Message>>;
+
+  deleteLinkPreview(
+    item: {
+      message_id: string;
+      thread_id: string;
+      encoded_link: string;
+    },
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>>;
 }
 
 export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializable {
