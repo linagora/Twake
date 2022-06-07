@@ -20,7 +20,7 @@ import gr from "../../../global-resolver";
 import { CompanyExecutionContext } from "../../../applications/web/types";
 import { PublicFile } from "../../../files/entities/file";
 import { MessageFile } from "../../entities/message-files";
-import User from "src/services/user/entities/user";
+import User from "../../../../services/user/entities/user";
 
 export class ViewsController {
   async feed(
