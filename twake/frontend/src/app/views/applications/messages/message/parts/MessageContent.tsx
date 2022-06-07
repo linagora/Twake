@@ -128,13 +128,10 @@ export default (props: Props) => {
                 )}
               </div>
 
-              {message?.files && (message?.files?.length || 0) > 0 ? (
-                <MessageAttachments />
-              ) : (
-                message?.links &&
+              {message?.files && (message?.files?.length || 0) > 0 && <MessageAttachments />}
+              {message?.links &&
                 (message?.links?.length || 0) > 0 &&
-                message.links.map(preview => <LinkPreview preview={preview} />)
-              )}
+                message.links.map(preview => <LinkPreview preview={preview} />)}
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}
             </>
