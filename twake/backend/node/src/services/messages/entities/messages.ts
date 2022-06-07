@@ -60,7 +60,7 @@ export class Message {
   blocks: Block[];
 
   @Column("files", "encoded_json")
-  files: null | MessageFile[];
+  files: null | Partial<MessageFile>[];
 
   @Column("context", "encoded_json")
   context: any;

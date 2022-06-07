@@ -55,6 +55,27 @@ describe("Search files", () => {
         ...form,
       });
 
+      const resource = uploadedFile.json().resource;
+
+      const messageFile: Partial<MessageFile> = {
+        id: uuid.v1(),
+        company_id: platform.workspace.company_id,
+        metadata: {
+          source: "internal",
+          external_id: {
+            company_id: platform.workspace.company_id,
+            id: resource.id,
+          },
+          ...resource.metadata,
+        },
+      };
+
+      await e2e_createThread(
+        platform,
+        [],
+        createMessage({ text: "Some message", files: [messageFile] }),
+      );
+
       uploadedFiles.push(uploadedFile.json().resource);
     }
 
