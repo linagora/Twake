@@ -64,7 +64,7 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       indexedPk[key] = 1;
     });
 
-    const indexedFields: any = entityDefinition.options.search.mongoMapping || {};
+    let indexedFields: any = entityDefinition.options.search.mongoMapping || {};
     if (!entityDefinition.options.search.mongoMapping) {
       Object.keys(columns).forEach(c => {
         const def = columns[c];
@@ -73,6 +73,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
         }
       });
     }
+
+    indexedFields = _.pick(indexedFields, ["text"]);
 
     logger.info(
       `${this.name} - Create indexes ${JSON.stringify(indexedFields)} for ${

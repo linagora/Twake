@@ -20,6 +20,12 @@ export default {
   },
   mongoMapping: {
     text: {
+      first_name: "text",
+      last_name: "text",
+      email: "text",
+      username: "text",
+    },
+    prefix: {
       first_name: "prefix",
       last_name: "prefix",
       email: "prefix",

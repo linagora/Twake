@@ -22,10 +22,11 @@ export function buildSearchQuery<Entity>(
 
   //Build text searches
   if (options.$text) {
-    const mapping = entityDefinition?.options?.search?.mongoMapping?.text;
-    if (Object.values(mapping).includes("prefix")) {
-      query.$or = Object.keys(mapping).map(k => {
-        if (mapping[k] === "prefix") {
+    const prefixMapping = entityDefinition?.options?.search?.mongoMapping?.prefix || {};
+    const textMapping = entityDefinition?.options?.search?.mongoMapping?.text || {};
+    if (Object.values(prefixMapping).length > 0) {
+      query.$or = [...Object.keys(prefixMapping), ...Object.keys(textMapping)].map(k => {
+        if (prefixMapping[k] === "prefix") {
           return {
             [k]: new RegExp(`^${asciiFold(options.$text.$search || "")}`, "i"),
           };
