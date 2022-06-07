@@ -16,7 +16,7 @@ export default {
   },
   esMapping: {
     properties: {
-      name: { type: "text", index_prefixes: {} },
+      name: { type: "text", index_prefixes: { min_chars: 1 } },
       workspace_id: { type: "keyword" },
       company_id: { type: "keyword" },
     },

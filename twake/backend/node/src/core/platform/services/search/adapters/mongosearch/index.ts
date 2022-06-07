@@ -64,7 +64,7 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       indexedPk[key] = 1;
     });
 
-    const indexedFields: any = entityDefinition.options.search.mongoMapping || {};
+    let indexedFields: any = entityDefinition.options.search.mongoMapping || {};
     if (!entityDefinition.options.search.mongoMapping) {
       Object.keys(columns).forEach(c => {
         const def = columns[c];
@@ -74,6 +74,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
       });
     }
 
+    indexedFields = _.pick(indexedFields, ["text"]);
+
     logger.info(
       `${this.name} - Create indexes ${JSON.stringify(indexedFields)} for ${
         entityDefinition.name
@@ -82,7 +84,7 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
 
     //Create one index for each type of indexes ["text"]
     Object.keys(indexedFields).forEach(k => {
-      collection.createIndex(indexedFields[k]);
+      collection.createIndex(indexedFields[k], { default_language: "none" });
     });
   }
 
@@ -195,6 +197,8 @@ export default class MongoSearch extends SearchAdapter implements SearchAdapterI
     const collection = this.mongodb.collection(`${searchPrefix}${index}`);
 
     const { query, sort, project } = buildSearchQuery<EntityType>(entityType, filters, options);
+
+    console.log(query);
 
     let cursor = collection.find({ ...query }).sort(sort);
     if (project) {

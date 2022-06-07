@@ -18,6 +18,7 @@ import {
   MessageViewListOptions,
   MessageWithReplies,
   SearchMessageOptions,
+  SearchMessageFilesOptions,
 } from "../types";
 import { MessageChannelRef } from "../entities/message-channel-refs";
 import { buildMessageListPagination } from "./utils";
@@ -39,9 +40,14 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
   repositoryMessageFile: Repository<MessageFile>;
   repositoryMarkedRef: Repository<MessageChannelMarkedRef>;
   searchRepository: SearchRepository<Message>;
+  searchFilesRepository: SearchRepository<MessageFile>;
 
   async init(context: TwakeContext): Promise<this> {
     this.searchRepository = gr.platformServices.search.getRepository<Message>("messages", Message);
+    this.searchFilesRepository = gr.platformServices.search.getRepository<MessageFile>(
+      "message_files",
+      MessageFile,
+    );
     this.repositoryThreads = await gr.database.getRepository<Thread>("threads", Thread);
     this.repositoryChannelRefs = await gr.database.getRepository<MessageChannelRef>(
       "message_channel_refs",
@@ -268,6 +274,34 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
           ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
           ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
           ...(options.sender ? { $in: [["user_id", [options.sender]]] } : {}),
+          $text: {
+            $search: options.search,
+          },
+        },
+      )
+      .then(a => {
+        return a;
+      });
+  }
+
+  async searchFiles(
+    pagination: Pagination,
+    options: SearchMessageFilesOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<MessageFile>> {
+    return await this.searchFilesRepository
+      .search(
+        {
+          ...(options.isFile ? { is_file: true } : {}),
+          ...(options.isMedia ? { is_media: true } : {}),
+        },
+        {
+          pagination,
+          ...(options.companyId ? { $in: [["cache_company_id", [options.companyId]]] } : {}),
+          ...(options.workspaceId ? { $in: [["cache_workspace_id", [options.workspaceId]]] } : {}),
+          ...(options.channelId ? { $in: [["cache_channel_id", [options.channelId]]] } : {}),
+          ...(options.sender ? { $in: [["cache_user_id", [options.sender]]] } : {}),
+          ...(options.extension ? { $in: [["extension", [options.extension]]] } : {}),
           $text: {
             $search: options.search,
           },

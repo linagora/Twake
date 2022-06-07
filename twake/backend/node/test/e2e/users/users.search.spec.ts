@@ -101,6 +101,9 @@ describe("The /users API", () => {
       resources = await search("AleXis");
       expect(resources[0].email).toBe("alexis.goelans@twake.app");
 
+      resources = await search("alex");
+      expect(resources[0].email).toBe("alexis.goelans@twake.app");
+
       resources = await search("àlèXïs");
       expect(resources[0].email).toBe("alexis.goelans@twake.app");
 

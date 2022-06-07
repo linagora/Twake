@@ -9,15 +9,6 @@ export default {
       last_name: entity.last_name,
       email: entity.email_canonical,
       username: entity.username_canonical,
-      prefix: expandStringForPrefix(
-        entity.first_name +
-          " " +
-          entity.last_name +
-          " " +
-          (entity.email_canonical || "").split("@")[0] +
-          " " +
-          entity.username_canonical,
-      ),
     };
     if (entity.cache?.companies) {
       return {
@@ -33,15 +24,20 @@ export default {
       last_name: "text",
       email: "text",
       username: "text",
-      prefix: "text",
+    },
+    prefix: {
+      first_name: "prefix",
+      last_name: "prefix",
+      email: "prefix",
+      username: "prefix",
     },
   },
   esMapping: {
     properties: {
-      first_name: { type: "text", index_prefixes: {} },
-      last_name: { type: "text", index_prefixes: {} },
-      email: { type: "text", index_prefixes: {} },
-      username: { type: "text", index_prefixes: {} },
+      first_name: { type: "text", index_prefixes: { min_chars: 1 } },
+      last_name: { type: "text", index_prefixes: { min_chars: 1 } },
+      email: { type: "text", index_prefixes: { min_chars: 1 } },
+      username: { type: "text", index_prefixes: { min_chars: 1 } },
       companies: { type: "keyword" },
     },
   },

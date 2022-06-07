@@ -131,7 +131,7 @@ export class ChannelCrudController
     }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<Channel>> {
-    if (request.query.q.length < 2) {
+    if (request.query.q.length < 1) {
       return { resources: [] };
     }
 
