@@ -11,7 +11,7 @@ export default {
   },
   mongoMapping: {
     text: {
-      name: "text",
+      name: "prefix",
     },
   },
   esMapping: {

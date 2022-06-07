@@ -1,3 +1,4 @@
+import { v1 } from "uuid";
 import {
   getInstance as getMessageInstance,
   Message,
@@ -21,7 +22,7 @@ export const e2e_createThread = async (
     },
     payload: {
       resource: {
-        participants: participants,
+        participants: participants || [],
       },
       options: {
         message: message,

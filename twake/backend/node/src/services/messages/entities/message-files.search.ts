@@ -15,16 +15,16 @@ export default {
       is_file: !isMedia,
       created_at: entity.created_at,
 
-      company_id: entity.cache?.company_id,
-      workspace_id: entity.cache?.workspace_id,
-      channel_id: entity.cache?.channel_id,
-      user_id: entity.cache?.user_id,
+      cache_company_id: entity.cache?.company_id,
+      cache_workspace_id: entity.cache?.workspace_id,
+      cache_channel_id: entity.cache?.channel_id,
+      cache_user_id: entity.cache?.user_id,
     };
     return source;
   },
   mongoMapping: {
     text: {
-      name: "text",
+      name: "prefix",
     },
   },
   esMapping: {
@@ -37,10 +37,10 @@ export default {
       is_file: { type: "boolean" },
       created_at: { type: "number" },
 
-      company_id: { type: "keyword" },
-      workspace_id: { type: "keyword" },
-      channel_id: { type: "keyword" },
-      user_id: { type: "keyword" },
+      cache_company_id: { type: "keyword" },
+      cache_workspace_id: { type: "keyword" },
+      cache_channel_id: { type: "keyword" },
+      cache_user_id: { type: "keyword" },
     },
   },
 };

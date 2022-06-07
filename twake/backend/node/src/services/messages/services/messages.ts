@@ -710,7 +710,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
         channel_id: message.cache?.channel_id,
         user_id: message.user_id,
       };
-      entity.created_at = file.created_at;
+      entity.created_at = file.created_at || new Date().getTime();
 
       //If it is defined it should exists
       let messageFileExistOnDb = false;

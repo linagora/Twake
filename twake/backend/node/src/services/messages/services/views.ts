@@ -297,11 +297,11 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
         },
         {
           pagination,
-          ...(options.companyId ? { $in: [["company_id", [options.companyId]]] } : {}),
-          ...(options.workspaceId ? { $in: [["workspace_id", [options.workspaceId]]] } : {}),
-          ...(options.channelId ? { $in: [["channel_id", [options.channelId]]] } : {}),
+          ...(options.companyId ? { $in: [["cache_company_id", [options.companyId]]] } : {}),
+          ...(options.workspaceId ? { $in: [["cache_workspace_id", [options.workspaceId]]] } : {}),
+          ...(options.channelId ? { $in: [["cache_channel_id", [options.channelId]]] } : {}),
+          ...(options.sender ? { $in: [["cache_user_id", [options.sender]]] } : {}),
           ...(options.extension ? { $in: [["extension", [options.extension]]] } : {}),
-          ...(options.sender ? { $in: [["user_id", [options.sender]]] } : {}),
           $text: {
             $search: options.search,
           },
