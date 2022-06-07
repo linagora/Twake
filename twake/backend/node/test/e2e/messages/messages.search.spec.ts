@@ -85,7 +85,7 @@ describe("The /messages API", () => {
 
       const secondThreadId = await createThread("Another thread", [participant]);
       await createReply(secondThreadId, "First reply of second thread");
-      await createReply(secondThreadId, "Second reply of second thread");
+      await createReply(secondThreadId, "Second reply of second thread a");
 
       //Wait for indexation to happen
       await new Promise(r => setTimeout(r, 3000));
@@ -103,6 +103,9 @@ describe("The /messages API", () => {
       expect(resources.length).toEqual(3);
 
       resources = await search("another");
+      expect(resources.length).toEqual(1);
+
+      resources = await search("a");
       expect(resources.length).toEqual(1);
 
       done();
