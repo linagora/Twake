@@ -100,19 +100,12 @@ describe("Search files", () => {
       uploadedFiles.push(uploadedFile.json().resource);
     }
 
-    //sleep 1s
     await new Promise(r => setTimeout(r, 2000));
 
     let resources = await search("sample");
-
-    //sleep 1s
-    await new Promise(r => setTimeout(r, 2000));
     expect(resources.length).toEqual(5);
 
     resources = await search("sample", { extension: "png" });
-
-    //sleep 1s
-    await new Promise(r => setTimeout(r, 2000));
     expect(resources.length).toEqual(1);
 
     resources = await search("sample", { is_file: true });

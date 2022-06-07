@@ -24,7 +24,8 @@ export function buildSearchQuery<Entity>(
   if (options.$text) {
     const prefixMapping = entityDefinition?.options?.search?.mongoMapping?.prefix || {};
     const textMapping = entityDefinition?.options?.search?.mongoMapping?.text || {};
-    if (Object.values(prefixMapping).length > 0) {
+    //Try to detect when we need prefix search
+    if (Object.values(prefixMapping).length > 0 && options.$text.$search.indexOf(" ") < 0) {
       query.$or = [...Object.keys(prefixMapping), ...Object.keys(textMapping)].map(k => {
         if (prefixMapping[k] === "prefix") {
           return {

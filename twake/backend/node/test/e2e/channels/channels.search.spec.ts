@@ -107,7 +107,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       for (let i = 0; i < 10; i++) {
         const channel = getChannel();
-        channel.name = `Test channel ${i}`;
+        channel.name = `test channel ${i}`;
         await gr.services.channels.channels.save(channel, {}, getContext());
 
         if (i == 0) continue;
