@@ -22,7 +22,7 @@ export default {
   esMapping: {
     properties: {
       company_id: { type: "keyword" },
-      name: { type: "text", index_prefixes: {} },
+      name: { type: "text", index_prefixes: { min_chars: 1 } },
       description: { type: "text" },
       categories: { type: "keyword" },
       compatibility: { type: "keyword" },

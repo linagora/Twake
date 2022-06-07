@@ -38,10 +38,10 @@ export default {
   },
   esMapping: {
     properties: {
-      first_name: { type: "text", index_prefixes: {} },
-      last_name: { type: "text", index_prefixes: {} },
-      email: { type: "text", index_prefixes: {} },
-      username: { type: "text", index_prefixes: {} },
+      first_name: { type: "text", index_prefixes: { min_chars: 1 } },
+      last_name: { type: "text", index_prefixes: { min_chars: 1 } },
+      email: { type: "text", index_prefixes: { min_chars: 1 } },
+      username: { type: "text", index_prefixes: { min_chars: 1 } },
       companies: { type: "keyword" },
     },
   },
