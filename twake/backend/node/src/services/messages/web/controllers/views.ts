@@ -15,14 +15,13 @@ import {
   MessageWithReplies,
   PaginationQueryParameters,
 } from "../../types";
-import { keyBy } from "lodash";
+import { keyBy, uniqBy } from "lodash";
 import gr from "../../../global-resolver";
 import { CompanyExecutionContext } from "../../../applications/web/types";
 import { PublicFile } from "../../../files/entities/file";
 import { MessageFile } from "../../entities/message-files";
 import { formatUser } from "../../../../utils/users";
 import { UserObject } from "../../../user/web/types";
-
 export class ViewsController {
   async feed(
     request: FastifyRequest<{
@@ -142,7 +141,10 @@ export class ViewsController {
     );
 
     return {
-      resources: userFiles.getEntities().filter(a => a),
+      resources: uniqBy(
+        userFiles.getEntities().filter(a => a),
+        "id",
+      ),
       next_page_token: userFiles?.nextPage?.page_token,
     };
   }

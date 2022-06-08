@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Search from 'features/global/services/search-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import './search-popup.scss';
@@ -10,10 +10,12 @@ import TabFiles from './tabs/files';
 import TabMedia from './tabs/media';
 import TabChats from './tabs/chats';
 import Tab from './tabs/tab';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
     super(props);
+
     Search.addListener(this);
     this.handleChange = this.handleChange.bind(this);
     this.eventKey = this.eventKey.bind(this);
@@ -26,9 +28,13 @@ export default class SearchPopup extends React.Component {
       activeTab: 'all',
     };
 
-    const tabs = [{ key: 'all', title: 'All' }];
+    const tabs = [
+      { key: 'all', title: 'All' },
+      { key: 'media', title: 'Media' },
+      { key: 'files', title: 'Files' },
+    ];
 
-    const experimentalTabs = ['Chats', 'Media', 'Files'];
+    const experimentalTabs = ['Chats'];
 
     for (let tabName of experimentalTabs) {
       const tabNameLC = tabName.toLowerCase();
@@ -92,7 +98,7 @@ export default class SearchPopup extends React.Component {
       Search.setValue(event.target.value);
     }
     // Search.setType(this.state.filterType);
-    Search.search();
+    Search.search(true);
   }
 
   renderTableData() {
@@ -121,6 +127,7 @@ export default class SearchPopup extends React.Component {
   }
 
   onTabClick(key) {
+    Search.setCurrentTab(key);
     this.setState({ activeTab: key });
   }
 
@@ -156,9 +163,7 @@ export default class SearchPopup extends React.Component {
         <div className="component-container">
           <div className="search screen">
             <div className="header-wrapper">
-              <div className="header-title-wrapper">
-                <div className="header-title">Search</div>
-              </div>
+              <div className="header-title">Search</div>
               <div className="header-close-btn" onClick={this.onCloseButtonClick}>
                 <img src="/public/icons/dismiss.svg" />
               </div>
@@ -188,7 +193,7 @@ export default class SearchPopup extends React.Component {
                 onChange={this.handleChange}
                 onKeyPress={event => {
                   if (event.key === 'Enter') {
-                    Search.search();
+                    Search.search(true);
                   }
                 }}
               />
@@ -217,7 +222,16 @@ export default class SearchPopup extends React.Component {
               <div className="tab-horizontal-separator"></div>
             </div>
 
-            {this.getTabContent()}
+            <PerfectScrollbar
+              options={{ suppressScrollX: true }}
+              component="div"
+              className="results-wrapper"
+              containerRef={node => {
+                this.scroller = node;
+              }}
+            >
+              {this.getTabContent()}
+            </PerfectScrollbar>
           </div>
         </div>
       </div>

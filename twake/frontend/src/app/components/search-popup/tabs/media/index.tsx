@@ -9,8 +9,7 @@ import FileUploadService from 'features/files/services/file-upload-service';
 export default (): JSX.Element => {
   const [pageReady, setPageReady] = useState(false);
   const [searchMode, setSearchMode] = useState(false);
-
-  const loadItems = () => Search.getMedia();
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     setSearchMode(Boolean(Search.value));
@@ -21,9 +20,13 @@ export default (): JSX.Element => {
     const newVal = Boolean(Search.value);
     if (searchMode !== newVal) {
       setSearchMode(newVal);
-      loadItems();
     }
   }, [Search.value]);
+
+  useEffect(() => {
+    setPageReady(!Search.searchInProgress);
+    setNotFound(Boolean(Search.value) && !Search.searchInProgress && !Search.results.media.length);
+  }, [Search.searchInProgress, Search.value]);
 
   const onFilePreviewClick = (file: FileType) => {
     DriveService.viewDocument(
@@ -47,15 +50,17 @@ export default (): JSX.Element => {
   return (
     (pageReady && (
       <div className="recent-results tab-media">
+        <div className="searchLoading">{notFound && <div>Nothing found</div>}</div>
         <div className="results-group">
-          <div className="results-group-title">Recent media</div>
+          {(!searchMode && <div className="results-group-title">Recent media</div>) ||
+            (!notFound && <div className="results-group-title">Media</div>)}
 
           <PerfectScrollbar
             options={{ suppressScrollX: true }}
             component="div"
             className="result-items-media"
           >
-            {Search.recent.media.map(file => (
+            {(searchMode ? Search.results.media : Search.recent.media).map(file => (
               <MediaResult
                 file={file}
                 key={file.id}

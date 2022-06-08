@@ -1,15 +1,16 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import Workspace from 'app/deprecated/workspaces/workspaces.js';
-import Api from 'app/features/global/framework/api-service';
 import { MessageExtended } from 'features/messages/types/message';
 import { ChannelType } from 'features/channels/types/channel';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import FileAPIClient from 'app/features/files/api/file-upload-api-client';
 import UserAPIClient from 'app/features/users/api/user-api-client';
+import MessageAPIClient from 'app/features/messages/api/message-api-client';
 import { UserType } from 'features/users/types/user';
 import Workspaces from 'deprecated/workspaces/workspaces';
 import { delayRequest } from 'features/global/utils/managedSearchRequest';
 import { FileType } from 'features/files/types/file';
+import { isEmpty } from 'lodash';
+import Logger from 'features/global/framework/logger-service';
 
 type ResultTypes = {
   messages: MessageExtended[];
@@ -27,6 +28,9 @@ class SearchService extends Observable {
   private searchLoading: boolean = false;
   private _isOpen: boolean = false;
   public searchInProgress: boolean = false;
+  private currentTab: 'all' | 'chats' | 'media' | 'files' = 'all';
+  public recentInProgress: boolean = true;
+  private logger = Logger.getLogger('SearchService');
 
   constructor() {
     super();
@@ -40,6 +44,12 @@ class SearchService extends Observable {
 
   isOpen() {
     return this._isOpen;
+  }
+
+  setCurrentTab(val: 'all' | 'chats' | 'media' | 'files') {
+    this.currentTab = val;
+    this.search();
+    this.notify();
   }
 
   clear() {
@@ -58,8 +68,10 @@ class SearchService extends Observable {
 
   open() {
     this._isOpen = true;
-    Promise.all([this.recentContacts(), this.recentFiles(), this.recentMedia()]).then(() => {});
-    this.notify();
+    this.setCurrentTab(this.currentTab);
+    this.getRecent().then(a => {
+      this.notify();
+    });
   }
 
   close() {
@@ -76,28 +88,28 @@ class SearchService extends Observable {
   //     this.search(true, { more: true });
   // }
 
-  private searchMessages() {
-    this.results.messages = [];
-    return Api.get<{ resources: MessageExtended[] }>(
-      `/internal/services/messages/v1/companies/${Workspace.currentGroupId}/search?q=${this.value}`,
-    ).then(res => {
-      this.results.messages = res.resources;
-      this.notify();
-    });
+  private async searchMessages(clearResult: boolean, limit?: number) {
+    if (clearResult) {
+      this.results.messages = [];
+    }
+    const res = await MessageAPIClient.search(this.value);
+    this.results.messages = res.resources;
+    this.notify();
   }
 
-  private searchChannels() {
-    this.results.channels = [];
-
-    return Api.get<{ resources: ChannelType[] }>(
-      `/internal/services/channels/v1/companies/${Workspace.currentGroupId}/search?q=${this.value}`,
-    ).then(res => {
-      this.results.channels = res.resources;
-      this.notify();
-    });
+  private async searchChannels(clearResult: boolean, limit?: number) {
+    if (clearResult) {
+      this.results.channels = [];
+    }
+    const res = await ChannelAPIClient.search(this.value, { limit });
+    this.results.channels = res.resources;
+    this.notify();
   }
 
-  private searchUsers() {
+  private searchUsers(clearResult: boolean, limit?: number) {
+    if (clearResult) {
+      this.results.users = [];
+    }
     return UserAPIClient.search<UserType>(this.value, {
       scope: 'company',
       companyId: Workspaces.currentGroupId,
@@ -107,73 +119,113 @@ class SearchService extends Observable {
     });
   }
 
-  private async searchFiles() {
-    Api.get<{ resources: MessageExtended[] }>(
-      `/internal/services/messages/v1/companies/${Workspace.currentGroupId}/search?q=${this.value}&hasFiles=true&hasMedias=true`,
-    ).then(res => {
+  private async searchFiles(clearResult: boolean, limit?: number) {
+    if (clearResult) {
       this.results.files = [];
-      const files = [] as any;
-      res.resources.forEach(res => {
-        res.files?.forEach(file => {
-          files.push(file);
-        });
-      });
-      this.results.files = files;
+    }
+    const res = await MessageAPIClient.searchFile(this.value, {
+      limit,
+      is_file: true,
+    });
+
+    this.results.files = res.resources;
+    this.notify();
+  }
+
+  private async searchMedia(clearResult: boolean, limit?: number) {
+    if (clearResult) {
+      this.results.media = [];
+    }
+    const res = await MessageAPIClient.searchFile(this.value, {
+      limit: limit,
+      is_media: true,
+    });
+
+    this.results.media = res.resources;
+    this.logger.debug('Search for media: got ', res.resources.length);
+
+    this.notify();
+  }
+
+  public async getRecent(): Promise<void> {
+    this.logger.debug('Loading recent');
+    this.recentInProgress = true;
+    this.notify();
+
+    const promises = [
+      ChannelAPIClient.recent(Workspaces.currentGroupId, 12).then(a => {
+        this.recent.channels = a;
+        this.notify();
+      }),
+      FileAPIClient.recent(Workspaces.currentGroupId, 'file', 10).then(a => {
+        this.recent.files = a;
+        this.notify();
+      }),
+      FileAPIClient.recent(Workspaces.currentGroupId, 'media', 10).then(a => {
+        this.recent.media = a;
+        this.notify();
+      }),
+    ];
+
+    Promise.any(promises).then(() => {
+      this.recentInProgress = false;
+      this.logger.debug('Loaded first of items');
       this.notify();
     });
   }
 
-  private async searchMedia() {}
-
-  public async recentContacts(): Promise<void> {
-    this.recent.channels = await ChannelAPIClient.recent(Workspaces.currentGroupId, 12);
-    this.notify();
+  searchContacts(clearResult: boolean, limit?: number) {
+    return Promise.all([
+      this.searchChannels(clearResult, limit),
+      this.searchUsers(clearResult, limit),
+    ]);
   }
 
-  public async recentFiles(): Promise<void> {
-    this.recent.files = await FileAPIClient.recent(Workspaces.currentGroupId, 'file', 10);
-    this.notify();
-  }
+  search(clearResult: boolean = false) {
+    delayRequest(
+      'search-service',
+      () => {
+        if (this.readyToSearch()) {
+          this.searchInProgress = true;
+          let promises = [];
+          switch (this.currentTab) {
+            case 'all':
+              promises = [
+                this.searchContacts(clearResult, 12),
+                this.searchMedia(clearResult, 10),
+                this.searchFiles(clearResult, 4),
+                this.searchMessages(clearResult, 12),
+              ];
+              break;
+            case 'chats':
+              promises = [this.searchMessages(clearResult, 100)];
+              break;
+            case 'media':
+              promises = [this.searchMedia(clearResult, 100)];
+              break;
+            case 'files':
+              promises = [this.searchFiles(clearResult, 100)];
+              break;
+          }
 
-  public async recentMedia(): Promise<void> {
-    this.recent.media = await FileAPIClient.recent(Workspaces.currentGroupId, 'media', 10);
-    this.notify();
-  }
-
-  search() {
-    this.searchInProgress = true;
-    delayRequest('search-service', () => {
-      if (this.value) {
-        if (this.value.length > 1) {
-          this.notify();
-          Promise.all([
-            this.searchMessages(),
-            this.searchChannels(),
-            this.searchUsers(),
-            this.searchFiles(),
-          ]).then(() => {
-            this.searchInProgress = false;
-            this.notify();
-          });
+          // @ts-ignore
+          Promise.all(promises)
+            .then(a => {
+              this.logger.debug(`All searches complete`);
+              this.searchInProgress = false;
+              this.notify();
+            })
+            .catch(e => {
+              console.error(e);
+            });
         }
-      } else {
-        this.clear();
-        this.searchInProgress = false;
-        this.notify();
-      }
-    });
+      },
+      { doInitialCall: false, timeout: 750 },
+    );
   }
 
   readyToSearch() {
-    return this.value && this.value.length > 1;
-  }
-
-  getFiles() {
-    this.readyToSearch() ? this.searchFiles() : this.recentFiles();
-  }
-
-  getMedia() {
-    this.readyToSearch() ? this.searchMedia() : this.recentMedia();
+    return !isEmpty(this.value);
   }
 }
 

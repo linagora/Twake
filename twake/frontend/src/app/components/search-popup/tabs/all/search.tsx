@@ -5,37 +5,27 @@ import MessagesResult from 'components/search-popup/parts/messages-result';
 import React, { useEffect, useState } from 'react';
 
 export default (): JSX.Element => {
-  const [channelsReady, setChannelsReady] = useState(false);
-  const [usersReady, setUsersReady] = useState(false);
-  const [messagesReady, setMessagesReady] = useState(false);
-  const [searchInProgress, setSearchInProgress] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    setChannelsReady(Boolean(Search.results.channels.length));
-    setUsersReady(Boolean(Search.results.users.length));
-    setMessagesReady(Boolean(Search.results.messages.length));
-    setSearchInProgress(Search.searchInProgress);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    Search.results.channels,
-    Search.results.users,
-    Search.results.messages,
-    Search.searchInProgress,
-  ]);
+    setNotFound(
+      Boolean(Search.value) &&
+        !Search.searchInProgress &&
+        !Search.results.channels.length &&
+        !Search.results.users.length &&
+        !Search.results.messages.length,
+    );
+  }, [Search.searchInProgress, Search.value]);
 
   return (
     <div className="search-results">
-      <div className={'searchLoading'}>
-        {(searchInProgress && <div>Searching...</div>) ||
-          (!channelsReady && !usersReady && !messagesReady && <div>Nothing found</div>)}
-      </div>
+      <div className="searchLoading">{notFound && <div>Nothing found</div>}</div>
 
-      {(channelsReady || usersReady) && (
+      {((Search.results.channels.length || Search.results.users.length) && (
         <div>
           <div className="results-group-title ">Channels and contacts</div>
 
-          {channelsReady && (
+          {Search.results.channels.length && (
             <div className="result-items">
               {Search.results.channels.map(channel => (
                 <ChannelsResult
@@ -48,7 +38,7 @@ export default (): JSX.Element => {
             </div>
           )}
 
-          {usersReady && (
+          {Search.results.users.length && (
             <div className="result-items">
               {Search.results.users.map(user => (
                 <UsersResult
@@ -61,8 +51,8 @@ export default (): JSX.Element => {
             </div>
           )}
         </div>
-      )}
-      {messagesReady && (
+      )) || <div />}
+      {(Search.results.messages.length && (
         <div>
           <div className="results-group-title ">Discussions</div>
           <div className="result-items">
@@ -76,7 +66,7 @@ export default (): JSX.Element => {
             ))}
           </div>
         </div>
-      )}
+      )) || <div />}
     </div>
   );
 };
