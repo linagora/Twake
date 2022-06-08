@@ -14,10 +14,6 @@ import {
   ChannelVisibility,
   WorkspaceExecutionContext,
 } from "../../../src/services/channels/types";
-import {
-  getPrivateRoomName,
-  getPublicRoomName,
-} from "../../../src/services/channels/services/channel/realtime";
 import { ChannelMember } from "../../../src/services/channels/entities";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { TestDbService } from "../utils.prepare.db";
@@ -107,7 +103,7 @@ describe("The /internal/services/channels/v1 API", () => {
 
       for (let i = 0; i < 10; i++) {
         const channel = getChannel();
-        channel.name = `Test channel ${i}`;
+        channel.name = `test channel ${i}`;
         await gr.services.channels.channels.save(channel, {}, getContext());
 
         if (i == 0) continue;

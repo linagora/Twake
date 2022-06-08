@@ -203,6 +203,8 @@ export type NodeMessage = {
 
   //Used to display time separator
   _previous_message?: NodeMessage;
+
+  links?: MessageLinkType[];
 };
 
 export type MessageWithReplies = NodeMessage & {
@@ -212,3 +214,14 @@ export type MessageWithReplies = NodeMessage & {
     replies: number;
   };
 };
+
+export type MessageLinkType = {
+  title: string;
+  description: string | undefined;
+  domain: string;
+  img: string | undefined;
+  favicon: string | undefined;
+  img_width: number | undefined;
+  img_height: number | undefined;
+  url: string;
+}

@@ -66,7 +66,9 @@ export const getMentions = async (
  * @returns {String} - links found in the message
  */
 export const getLinks = (messageResource: Message): string[] => {
-  const links = (messageResource.text || "").match(/https?:\/\/[^ ]+/gm);
+  const cleanText = messageResource.text.replace(/\n+/gm, " ");
+  const links = (cleanText || "").match(/https?:\/\/[^ ]+/gm);
+
   return links || [];
 };
 
