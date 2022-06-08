@@ -28,7 +28,7 @@ export default class Signin extends Component {
       newsletter: true,
       page: 1,
       invalidForm: false,
-      patternRegMail: new RegExp('^[w-.]+@([w-]+.)+[w-]{2,4}$'),
+      patternRegMail: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
       mailAvailable: true,
       usernameAvailable: true,
       errorMail: false,
