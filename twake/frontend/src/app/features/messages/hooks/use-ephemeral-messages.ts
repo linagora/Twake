@@ -31,6 +31,7 @@ export const useEphemeralMessages = (key: { companyId: string; channelId: string
         const lastEphemeral = getLastEphemeral(key);
         if (message.ephemeral) {
           message.id = uuidv4();
+          message.thread_id = message.thread_id || uuidv4();
           if (
             message.subtype === 'deleted' &&
             (message.id === lastEphemeral?.id ||
