@@ -102,12 +102,16 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     let messageCreated = !pk.id;
 
-    if (
-      !pk.thread_id ||
-      (!serverRequest && !gr.services.messages.threads.checkAccessToThread(context))
-    ) {
-      logger.error(`Unable to write in thread ${context.thread.id}`);
-      throw Error("Can't write this message.");
+    if (!item.ephemeral) {
+      if (
+        !pk.thread_id ||
+        (!serverRequest && !gr.services.messages.threads.checkAccessToThread(context))
+      ) {
+        logger.error(`Unable to write in thread ${context.thread.id}`);
+        throw Error("Can't write this message.");
+      }
+    } else {
+      pk.id = undefined;
     }
 
     let message = getDefaultMessageInstance(item, context);
