@@ -126,6 +126,7 @@ export type ConsoleType = "remote" | "internal";
 
 export type ConsoleOptions = {
   type: ConsoleType;
+  new_console: boolean;
   username: string;
   password: string;
   url: string;

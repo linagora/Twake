@@ -48,6 +48,8 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
   ): Promise<CreatedConsoleUser> {
     logger.info("Remote: addUserToCompany");
 
+    const isNewConsole = this.infos.new_console;
+
     if (this.dryRun) {
       return {
         _id: uuidv1(),
@@ -76,18 +78,26 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
           },
         ],
         inviter: { email: user.inviterEmail },
+        ...(isNewConsole
+          ? {
+              applicationCodes: ["twake"],
+            }
+          : {}),
       };
 
       const result = await this.client
-        .post(`/api/companies/${company.code}/users/invitation`, invitationData, {
-          auth: this.auth(),
-          headers: {
-            "Content-Type": "application/json",
+        .post(
+          `/api/companies/${company.code}/${isNewConsole ? "invitation" : "users/invitation"}`,
+          invitationData,
+          {
+            auth: this.auth(),
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        })
+        )
         .then(async ({ data, status }) => {
-          //Fixme: When console solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/35
-          //       and solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/36
+          //Fixme: When console solve https://gitlab.com/COMPANY_LINAGORA/software/saas/twake-console-account/-/issues/36
           //       we can remove this fallback
           if ([200, 201].indexOf(status) >= 0) {
             return data;

@@ -208,12 +208,8 @@ describe("List user files", () => {
       expect(resource).toMatchObject({
         company_id: expect.any(String),
         id: expect.any(String),
-        user_id: expect.any(String),
-        updated_at: expect.any(Number),
         created_at: expect.any(Number),
         metadata: expect.any(Object),
-        thumbnails: expect.any(Array),
-        upload_data: expect.any(Object),
       });
     }
 
@@ -254,11 +250,8 @@ describe("List user files", () => {
     expect(response.json().resources[0]).toMatchObject({
       company_id: expect.any(String),
       id: expect.any(String),
-      user_id: expect.any(String),
-      updated_at: expect.any(Number),
       created_at: expect.any(Number),
       metadata: expect.any(Object),
-      thumbnails: expect.any(Array),
       user: expect.any(Object),
       context: expect.any(Object),
     });
@@ -338,11 +331,8 @@ describe("List user files", () => {
     expect(response.json().resources[0]).toMatchObject({
       company_id: expect.any(String),
       id: expect.any(String),
-      user_id: expect.any(String),
-      updated_at: expect.any(Number),
       created_at: expect.any(Number),
       metadata: expect.any(Object),
-      thumbnails: expect.any(Array),
       user: expect.any(Object),
       context: expect.any(Object),
     });

@@ -82,7 +82,7 @@ export default class MainView extends Component {
           <span className="companyName">{group.name}</span>
         </div>
         <div className="right">
-          <a href="https://twake.app" target="_BLANK">
+          <a href="https://twake.app" target="_BLANK" rel="noreferrer">
             <span className="nomobile">
               {Languages.t(
                 'scenes.app.mainview.create_account',

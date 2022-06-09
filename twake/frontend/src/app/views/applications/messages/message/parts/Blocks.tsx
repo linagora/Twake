@@ -39,7 +39,7 @@ const Link = ({ href, children }: { href: string; children: string }) => {
     target = '_self';
   }
   return (
-    <a target={target} href={href}>
+    <a target={target} rel="noreferrer" href={href}>
       {children}
     </a>
   );
