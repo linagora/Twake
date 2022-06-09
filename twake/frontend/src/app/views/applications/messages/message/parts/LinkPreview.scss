@@ -9,21 +9,29 @@
   .delete-link-preview {
     display: none;
     position: absolute;
-    left: -24px;
-    top: 0;
-    color: grey !important;
+    left: -32px;
+    top: -8px;
+    color: var(--grey) !important;
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 8px;
+
+    &:hover {
+      opacity: 1;
+    }
   }  
   &:hover .delete-link-preview {
     display: block;
   }
 
-  .ant-card-body {
+  &.ant-card .ant-card-body {
     padding: 0;
   }
 
-  .ant-card-meta-avatar {
+  &.ant-card .ant-card-meta-avatar {
     padding-right: 0px;
     width: 100%;
+    margin-bottom: 0px;
 
     span > img {
       width: 16px;
@@ -34,6 +42,7 @@
 
     .ant-avatar {
       text-align: start;
+      width: 24px;
     }
   }
 
@@ -50,13 +59,13 @@
     a {
       font-size: 14px;
       font-weight: bold;
-      color: #000000;
       float: left;
     }
   }
 
   .ant-card-meta-description {
     margin-bottom: 10px;
+    color: var(--grey);
   }
 
   .ant-card-cover {
