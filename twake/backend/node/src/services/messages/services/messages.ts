@@ -31,7 +31,7 @@ import {
 import _, { first } from "lodash";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 import { ThreadMessagesOperationsService } from "./messages-operations";
-import { Thread } from "../entities/threads";
+import { Thread, ThreadPrimaryKey } from "../entities/threads";
 import { UserObject } from "../../user/web/types";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";

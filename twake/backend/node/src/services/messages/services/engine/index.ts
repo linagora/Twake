@@ -45,6 +45,11 @@ export class MessagesEngine implements Initializable {
       id: e.resource.thread_id,
     });
 
+    if (e.resource.ephemeral) {
+      await this.channelViewProcessor.process(thread || null, e);
+      return;
+    }
+
     await this.channelViewProcessor.process(thread, e);
     await this.channelMarkedViewProcessor.process(thread, e);
     await this.userInboxViewProcessor.process(thread, e);
