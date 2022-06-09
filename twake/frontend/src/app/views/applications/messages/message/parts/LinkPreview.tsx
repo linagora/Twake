@@ -18,11 +18,9 @@ export default ({ preview }: PropsType): React.ReactElement => {
     <Row>
       <Col>
         <div className="ant-card ant-card-bordered ant-card-small ant-card-type-inner link-preview">
-          <X
-            size={16}
-            onClick={() => deleteLinkPreview(preview.url)}
-            className="delete-link-preview"
-          />
+          <div className="delete-link-preview">
+            <X size={16} onClick={() => deleteLinkPreview(preview.url)} />
+          </div>
           <div className="ant-card-body">
             <div className="ant-card-meta">
               <div className="ant-card-meta-detail">
@@ -42,13 +40,15 @@ export default ({ preview }: PropsType): React.ReactElement => {
                 <div className="ant-card-meta-description">{preview.description}</div>
               </div>
             </div>
-            <div className="ant-card-cover">
-              <img
-                alt={preview.title}
-                src={preview.img}
-                onClick={() => window.open(preview.url, '_blank')}
-              />
-            </div>
+            {preview.img && (
+              <div className="ant-card-cover">
+                <img
+                  alt={preview.title}
+                  src={preview.img}
+                  onClick={() => window.open(preview.url, '_blank')}
+                />
+              </div>
+            )}
           </div>
         </div>
       </Col>
