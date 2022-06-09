@@ -19,6 +19,7 @@ import { MessageFile, TYPE as MsgFileTableName } from "../entities/message-files
 import {
   BookmarkOperation,
   CompanyExecutionContext,
+  DeleteLinkOperation,
   MessagesGetThreadOptions,
   MessagesSaveOptions,
   MessageWithReplies,
@@ -464,7 +465,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       });
     }
 
-    let extendedList = [];
+    const extendedList = [];
     for (const m of list.getEntities()) {
       extendedList.push(await this.completeMessage(m));
     }
@@ -545,21 +546,25 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
       path: getThreadMessagePath(context as ThreadExecutionContext) + "/" + message.id,
     },
   ])
-  async onSaved(message: Message, options: { created?: boolean }, context: ThreadExecutionContext) {
-    const messageLinks = getLinks(message);
-
-    gr.platformServices.pubsub.publish<LinkPreviewPubsubRequest>("services:preview:links", {
-      data: {
-        links: messageLinks,
-        message: {
-          context,
-          resource: message,
-          created: options?.created,
-        },
-      },
-    });
-
+  async onSaved(
+    message: Message,
+    options: { created?: boolean },
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
     if (options.created && !message.ephemeral) {
+      const messageLinks = getLinks(message);
+
+      gr.platformServices.pubsub.publish<LinkPreviewPubsubRequest>("services:preview:links", {
+        data: {
+          links: messageLinks,
+          message: {
+            context,
+            resource: message,
+            created: options?.created,
+          },
+        },
+      });
+
       await gr.services.messages.threads.addReply(message.thread_id);
     }
 
@@ -825,5 +830,19 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
 
     const msgPromises = threadsIds.map(id => this.repository.findOne({ thread_id: id, id }));
     return new ListResult<Message>("message", await Promise.all(msgPromises), nextPage);
+  }
+
+  /**
+   * Deletes a link preview from message operation
+   *
+   * @param {DeleteLinkOperation} operation - The delete link operation
+   * @param {ThreadExecutionContext} context - The thread execution context
+   * @returns
+   */
+  async deleteLinkPreview(
+    operation: DeleteLinkOperation,
+    context: ThreadExecutionContext,
+  ): Promise<SaveResult<Message>> {
+    return this.operations.deleteLinkPreview(operation, context);
   }
 }
