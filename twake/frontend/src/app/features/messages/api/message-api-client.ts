@@ -1,5 +1,6 @@
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import {
+  MessageExtended,
   MessageFileType,
   MessageWithReplies,
   NodeMessage,
@@ -9,16 +10,36 @@ import MessageThreadAPIClient from './message-thread-api-client';
 import Api from 'app/features/global/framework/api-service';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 import Numbers from 'app/features/global/utils/Numbers';
+import { FileType } from 'features/files/types/file';
+import Workspace from 'deprecated/workspaces/workspaces';
+import Logger from 'features/global/framework/logger-service';
 
 /**
  * This service is to get, update, create, list messages in a thread
  */
+
+export interface BaseSearchOptions {
+  company_id?: string;
+  workspace_dd?: string;
+  channel_id?: string;
+  page_token?: string;
+  limit?: number;
+}
+
+export interface FileSearchOptions extends BaseSearchOptions {
+  sender?: string;
+  is_file?: boolean;
+  is_media?: boolean;
+  extension?: string;
+}
+
 @TwakeService('MessageAPIClientService')
 class MessageAPIClient {
   private readonly prefixUrl: string = '/internal/services/messages/v1';
   private realtime: Map<string, WebsocketRoom[]> = new Map();
   private readonly _viewService = MessageViewAPIClient;
   private readonly threadService = MessageThreadAPIClient;
+  private logger = Logger.getLogger('MessageAPIClientService');
 
   websockets(threadId: string): WebsocketRoom[] {
     return this.realtime.get(threadId) || [];
@@ -116,6 +137,34 @@ class MessageAPIClient {
         `${this.prefixUrl}/companies/${messageFile.company_id}/threads/${messageFile.thread_id}/messages/${messageFile.message_id}/download/${messageFile.id}`,
         {},
       );
+  }
+
+  async search(searchString: string, options?: BaseSearchOptions) {
+    let companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
+    let query = `/internal/services/messages/v1/companies/${companyId}/search?q=${searchString}`;
+    const res = await Api.getWithParams<{ resources: MessageExtended[] }>(query, options);
+    this.logger.debug(
+      `Message search by text "${searchString}". Found`,
+      res.resources.length,
+      'messages',
+    );
+
+    return res;
+  }
+
+  async searchFile(searchString: string, options?: FileSearchOptions) {
+    let companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
+    let query = `/internal/services/messages/v1/companies/${companyId}/files/search?q=${searchString}`;
+    const res = await Api.getWithParams<{ resources: FileType[] }>(query, options);
+    this.logger.debug(
+      `FileSearch by name "${searchString}" with options`,
+      options,
+      'Found',
+      res.resources.length,
+      'files',
+    );
+
+    return res;
   }
 }
 
