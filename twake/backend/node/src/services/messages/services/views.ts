@@ -31,6 +31,7 @@ import { PublicFile, File } from "../../files/entities/file";
 import { MessageFile } from "../entities/message-files";
 import { formatUser } from "../../../utils/users";
 import { UserObject } from "../../user/web/types";
+import { FileSearchResult } from "../web/controllers/views/search-files";
 
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
@@ -318,8 +319,8 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     media: "file_only" | "media_only" | "both",
     context: CompanyExecutionContext,
     pagination: Pagination,
-  ): Promise<ListResult<PublicFile>> {
-    let files: (PublicFile & { context: MessageFileRef })[] = [];
+  ): Promise<ListResult<FileSearchResult>> {
+    let files: (MessageFile & { context: MessageFileRef })[] = [];
     let nextPageUploads: Paginable;
     let nextPageDownloads: Paginable;
     do {
@@ -373,24 +374,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
 
       const messageFiles = (await Promise.all(messageFilePromises)).filter(a => a);
 
-      const filePromises: Promise<PublicFile & { context: MessageFileRef }>[] = messageFiles
-        .filter(ref => ref)
-        .map(async ref => {
-          try {
-            return {
-              ...(
-                await gr.services.files.getFile({
-                  company_id: ref.metadata.external_id.company_id,
-                  id: ref.metadata.external_id.id,
-                })
-              ).getPublicObject(),
-              context: ref.context,
-            };
-          } catch (e) {
-            return null;
-          }
-        });
-      files = [...files, ...(await Promise.all(filePromises)).filter(a => a)].filter(ref => {
+      files = [...files, ...messageFiles.filter(a => a)].filter(ref => {
         //Apply media filer
         const isMedia =
           ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
@@ -402,14 +386,23 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       (nextPageDownloads?.page_token || nextPageUploads?.page_token)
     );
 
-    const fileWithUserPromise: Promise<PublicFile & { user: UserObject }>[] = files.map(
-      async file => ({
-        user: await formatUser(await gr.services.users.get({ id: file.user_id })),
-        ...file,
-      }),
+    const fileWithUserAndMessagePromise: Promise<FileSearchResult>[] = files.map(
+      async file =>
+        ({
+          user: await formatUser(await gr.services.users.get({ id: file.cache.user_id })),
+          message: await gr.services.messages.messages.get({
+            id: file.message_id,
+            thread_id: file.thread_id,
+          }),
+          ...file,
+        } as FileSearchResult),
     );
-    const fileWithUser = await Promise.all(fileWithUserPromise);
+    const fileWithUserAndMessage = await Promise.all(fileWithUserAndMessagePromise);
 
-    return new ListResult<PublicFile>("file", fileWithUser, nextPageUploads || nextPageDownloads);
+    return new ListResult<FileSearchResult>(
+      "file",
+      fileWithUserAndMessage,
+      nextPageUploads || nextPageDownloads,
+    );
   }
 }

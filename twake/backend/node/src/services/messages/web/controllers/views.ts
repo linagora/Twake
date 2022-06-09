@@ -2,11 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { ResourceListResponse } from "../../../../utils/types";
 import { Message } from "../../entities/messages";
 import { handleError } from "../../../../utils/handleError";
-import {
-  CrudException,
-  ListResult,
-  Pagination,
-} from "../../../../core/platform/framework/api/crud-service";
+import { ListResult, Pagination } from "../../../../core/platform/framework/api/crud-service";
 import {
   ChannelViewExecutionContext,
   FlatFileFromMessage,
@@ -15,13 +11,11 @@ import {
   MessageWithReplies,
   PaginationQueryParameters,
 } from "../../types";
-import { keyBy } from "lodash";
 import gr from "../../../global-resolver";
 import { CompanyExecutionContext } from "../../../applications/web/types";
 import { PublicFile } from "../../../files/entities/file";
-import { MessageFile } from "../../entities/message-files";
-import { formatUser } from "../../../../utils/users";
-import { UserObject } from "../../../user/web/types";
+import searchFiles from "./views/search-files";
+import recentFiles from "./views/recent-files";
 
 export class ViewsController {
   async feed(
@@ -122,30 +116,7 @@ export class ViewsController {
   }
 
   // Uploaded and downloaded files of user from all over workspace
-  async files(
-    request: FastifyRequest<{
-      Params: { company_id: string };
-      Querystring: {
-        page_token: null;
-        limit: 100;
-        type: "user_upload" | "user_download";
-        media: "media_only" | "file_only";
-      };
-    }>,
-  ): Promise<ResourceListResponse<PublicFile>> {
-    const userFiles = await gr.services.messages.views.listUserMarkedFiles(
-      request.currentUser.id,
-      request.query.type || "both",
-      request.query.media || "both",
-      getCompanyExecutionContext(request),
-      new Pagination(request.query.page_token, String(request.query.limit)),
-    );
-
-    return {
-      resources: userFiles.getEntities().filter(a => a),
-      next_page_token: userFiles?.nextPage?.page_token,
-    };
-  }
+  files = recentFiles;
 
   // Latest messages of user from all over workspace
   async inbox(
@@ -253,101 +224,7 @@ export class ViewsController {
     };
   }
 
-  async searchFiles(
-    request: FastifyRequest<{
-      Querystring: MessageViewSearchFilesQueryParameters & { page_token: string };
-      Params: {
-        company_id: string;
-      };
-    }>,
-    context: ChannelViewExecutionContext,
-  ): Promise<ResourceListResponse<MessageFile>> {
-    if (request.query.q.length < 1) {
-      return { resources: [] };
-    }
-
-    const limit = +request.query.limit || 100;
-
-    async function* getNextMessageFiles(initialPageToken?: string): AsyncIterableIterator<{
-      msgFile: MessageFile;
-      pageToken: string;
-    }> {
-      let lastPageToken = initialPageToken;
-      let messageFiles: MessageFile[] = [];
-      let hasMoreMessageFiles = true;
-      do {
-        messageFiles = await gr.services.messages.views
-          .searchFiles(
-            new Pagination(lastPageToken, limit.toString()),
-            {
-              search: request.query.q,
-              companyId: request.params.company_id,
-              workspaceId: request.query.workspace_id,
-              channelId: request.query.channel_id,
-              ...(request.query.is_file ? { isFile: true } : {}),
-              ...(request.query.is_media ? { isMedia: true } : {}),
-              ...(request.query.sender ? { sender: request.query.sender } : {}),
-              ...(request.query.extension ? { extension: request.query.extension } : {}),
-            },
-            context,
-          )
-          .then((a: ListResult<MessageFile>) => {
-            lastPageToken = a.nextPage.page_token;
-            if (!lastPageToken) {
-              hasMoreMessageFiles = false;
-            }
-            return a.getEntities();
-          });
-
-        if (messageFiles.length) {
-          for (const messageFile of messageFiles) {
-            yield { msgFile: messageFile, pageToken: lastPageToken };
-          }
-        } else {
-          hasMoreMessageFiles = false;
-        }
-      } while (hasMoreMessageFiles);
-    }
-
-    const messageFiles = [] as (MessageFile & { message: Message; user: UserObject })[];
-    let nextPageToken = null;
-
-    for await (const { msgFile, pageToken } of getNextMessageFiles(request.query.page_token)) {
-      nextPageToken = pageToken;
-      const isChannelMember = await gr.services.channels.members.isChannelMember(
-        { id: request.currentUser.id },
-        {
-          company_id: msgFile.cache.company_id,
-          workspace_id: msgFile.cache.workspace_id,
-          id: msgFile.cache.channel_id,
-        },
-        50,
-      );
-      if (!isChannelMember) continue;
-
-      try {
-        const message = await gr.services.messages.messages.get({
-          thread_id: msgFile.thread_id,
-          id: msgFile.message_id,
-        });
-        const user = await formatUser(await gr.services.users.get({ id: msgFile.cache.user_id }));
-
-        messageFiles.push({ ...msgFile, user, message });
-        if (messageFiles.length == limit) {
-          break;
-        }
-      } catch (e) {
-        continue;
-      }
-    }
-
-    return {
-      resources: messageFiles,
-      ...(nextPageToken && {
-        next_page_token: nextPageToken,
-      }),
-    };
-  }
+  searchFiles = searchFiles;
 }
 
 export interface MessageViewListQueryParameters
@@ -364,16 +241,6 @@ export interface MessageViewSearchQueryParameters extends PaginationQueryParamet
   sender: string;
   has_files: boolean;
   has_medias: boolean;
-}
-
-export interface MessageViewSearchFilesQueryParameters extends PaginationQueryParameters {
-  q: string;
-  workspace_id: string;
-  channel_id: string;
-  sender: string;
-  is_file: boolean;
-  is_media: boolean;
-  extension: string;
 }
 
 function getChannelViewExecutionContext(
@@ -399,7 +266,7 @@ function getChannelViewExecutionContext(
   };
 }
 
-function getCompanyExecutionContext(
+export function getCompanyExecutionContext(
   request: FastifyRequest<{
     Params: { company_id: string };
   }>,

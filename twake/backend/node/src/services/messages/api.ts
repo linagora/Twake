@@ -33,6 +33,7 @@ import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/message
 import { uuid } from "../../utils/types";
 import { PublicFile } from "../files/entities/file";
 import { MessageFile } from "./entities/message-files";
+import { FileSearchResult } from "./web/controllers/views/search-files";
 
 export interface MessageUserBookmarksServiceAPI
   extends TwakeServiceProvider,
@@ -164,5 +165,5 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     media: "file_only" | "media_only" | "both",
     context: CompanyExecutionContext,
     pagination: Pagination,
-  ): Promise<ListResult<PublicFile>>;
+  ): Promise<ListResult<FileSearchResult>>;
 }
