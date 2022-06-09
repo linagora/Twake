@@ -1,10 +1,25 @@
 .link-preview {
   border-radius: 0px !important;
-  border: 4px solid #dddddd !important;
+  border: 4px solid var(--primary) !important;
   border-width: 0 0 0 4px !important;
   width: 450px;
   margin-top: 15px !important;
   padding-left: 15px !important;
+
+  .delete-link-preview {
+    display: none;
+    position: absolute;
+    left: -24px;
+    top: 0;
+    color: grey !important;
+  }  
+  &:hover .delete-link-preview {
+    display: block;
+  }
+
+  .ant-card-body {
+    padding: 0;
+  }
 
   .ant-card-meta-avatar {
     padding-right: 0px;
@@ -51,10 +66,4 @@
       border-radius: 8px 8px 8px 8px;
     }
   }
-}
-
-.delete-link-preview {
-  margin-right: 10px;
-  padding-top: 15px;
-  color: grey !important;
 }
