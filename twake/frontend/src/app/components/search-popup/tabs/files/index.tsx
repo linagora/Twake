@@ -9,8 +9,8 @@ import FileUploadService from 'features/files/services/file-upload-service';
 export default (): JSX.Element => {
   const [pageReady, setPageReady] = useState(false);
   const [searchMode, setSearchMode] = useState(false);
+  const [notFound, setNotFound] = useState(false);
 
-  const loadItems = () => Search.getFiles();
   useEffect(() => {
     setSearchMode(Boolean(Search.value));
     setPageReady(true);
@@ -20,9 +20,13 @@ export default (): JSX.Element => {
     const newVal = Boolean(Search.value);
     if (searchMode !== newVal) {
       setSearchMode(newVal);
-      loadItems();
     }
   }, [Search.value]);
+
+  useEffect(() => {
+    setPageReady(!Search.searchInProgress);
+    setNotFound(Boolean(Search.value) && !Search.searchInProgress && !Search.results.files.length);
+  }, [Search.searchInProgress, Search.value]);
 
   useEffect(() => {}, [Search.results.files, Search.recent.files]);
 
@@ -53,10 +57,13 @@ export default (): JSX.Element => {
   return (
     (pageReady && (
       <div className="recent-results tab-files">
+        <div className="searchLoading">{notFound && <div>Nothing found</div>}</div>
+
         <div className="results-group">
-          {(searchMode && <div className="results-group-title">Files</div>) || (
-            <div className="results-group-title">Recent files</div>
-          )}
+          {(!searchMode && <div className="results-group-title">Recent files</div>) ||
+            (!notFound && !Search.searchInProgress && (
+              <div className="results-group-title">Files</div>
+            ))}
 
           <PerfectScrollbar
             options={{ suppressScrollX: true }}

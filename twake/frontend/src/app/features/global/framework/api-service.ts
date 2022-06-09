@@ -43,6 +43,24 @@ class GroupedQueryApi {
 const GroupedQueryApiInstance = new GroupedQueryApi();
 
 export default class Api {
+  static getWithParams<Response>(
+    route: string,
+    params: any,
+    options: { disableJWTAuthentication?: boolean; withBlob?: boolean } = {},
+  ) {
+    let query = '';
+
+    if (params) {
+      for (let k of Object.keys(params)) {
+        query += `&${k}=${params[k]}`;
+      }
+      if (!~route.indexOf('?')) {
+        query = '?' + query.slice(1);
+      }
+    }
+    return Api.get<Response>(route + query, () => {}, false, options);
+  }
+
   static get<Response>(
     route: string,
     callback?: (result: Response) => void,

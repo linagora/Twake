@@ -15,7 +15,7 @@ import formAutoContent from "form-auto-content";
 // @ts-ignore
 import uuid, { v1 } from "node-uuid";
 
-describe("The Messages Threads feature", () => {
+describe("The Messages Files feature", () => {
   const url = "/internal/services/messages/v1";
   let platform: TestPlatform;
 

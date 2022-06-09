@@ -4,11 +4,20 @@ import { TwakeService } from '../../global/framework/registry-decorator-service'
 import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { removeBadgesNow } from 'app/features/users/hooks/use-notifications';
 
-import Workspaces from 'deprecated/workspaces/workspaces';
+import Workspace from 'deprecated/workspaces/workspaces';
+import Logger from 'features/global/framework/logger-service';
 const PREFIX = '/internal/services/channels/v1/companies';
+
+export type SearchOptions = {
+  company_id?: string;
+  page_token?: string;
+  limit?: number;
+};
 
 @TwakeService('ChannelAPIClientService')
 class ChannelAPIClientService {
+  private logger = Logger.getLogger('ChannelAPIClientService');
+
   async getDirect(companyId: string, membersId: string[]) {
     return Api.post<{ options: { members: string[] }; resource: any }, { resource: ChannelType }>(
       `${PREFIX}/${companyId}/workspaces/direct/channels`,
@@ -70,6 +79,20 @@ class ChannelAPIClientService {
       console.error("Can't retrieve channels", e);
       return [];
     }
+  }
+
+  async search(searchString: string, options?: SearchOptions): Promise<any> {
+    const companyId = options?.company_id || Workspace.currentGroupId;
+    let query = `/internal/services/channels/v1/companies/${companyId}/search?q=${searchString}`;
+    let res = await Api.getWithParams<{ resources: ChannelType[] }>(query, options);
+    this.logger.debug(
+      `Search by name "${searchString}" with options`,
+      options,
+      '. Found',
+      res.resources.length,
+      'channels',
+    );
+    return res;
   }
 }
 

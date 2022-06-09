@@ -26,8 +26,8 @@ export default (): JSX.Element => {
         component="div"
         className="result-items-channel"
       >
-        {Search.recent.channels &&
-          Search.recent.channels.map(channel => (
+        {(Search.recent.channels.length &&
+          Search.recent.channels.slice(0, 14).map(channel => (
             <ChannelItem
               channel={channel}
               key={channel.id}
@@ -35,7 +35,7 @@ export default (): JSX.Element => {
                 onClick(channel);
               }}
             />
-          ))}
+          ))) || <div />}
       </PerfectScrollbar>
     </div>
   );

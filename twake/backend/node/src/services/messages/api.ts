@@ -23,6 +23,7 @@ import {
   MessageViewListOptions,
   MessageWithReplies,
   MessageWithRepliesWithUsers,
+  SearchMessageFilesOptions,
   SearchMessageOptions,
   ThreadExecutionContext,
 } from "./types";
@@ -31,6 +32,7 @@ import { ParticipantObject, Thread, ThreadPrimaryKey } from "./entities/threads"
 import { Message, MessagePrimaryKey, MessageWithUsers } from "./entities/messages";
 import { uuid } from "../../utils/types";
 import { PublicFile } from "../files/entities/file";
+import { MessageFile } from "./entities/message-files";
 
 export interface MessageUserBookmarksServiceAPI
   extends TwakeServiceProvider,
@@ -158,6 +160,12 @@ export interface MessageViewsServiceAPI extends TwakeServiceProvider, Initializa
     options: SearchMessageOptions,
     context?: ExecutionContext,
   ): Promise<ListResult<Message>>;
+
+  searchFiles(
+    pagination: Pagination,
+    options: SearchMessageFilesOptions,
+    context?: ExecutionContext,
+  ): Promise<ListResult<MessageFile>>;
 
   listUserMarkedFiles(
     userId: string,

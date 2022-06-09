@@ -180,6 +180,13 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
     handler: viewsController.search.bind(viewsController),
   });
 
+  fastify.route({
+    method: "GET",
+    url: "/companies/:company_id/files/search",
+    preValidation: [fastify.authenticate],
+    handler: viewsController.searchFiles.bind(viewsController),
+  });
+
   next();
 };
 

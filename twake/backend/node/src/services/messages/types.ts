@@ -136,6 +136,17 @@ export type SearchMessageOptions = {
   sender?: string;
 };
 
+export type SearchMessageFilesOptions = {
+  search?: string;
+  companyId?: string;
+  workspaceId?: string;
+  channelId?: string;
+  sender?: string;
+  isFile?: boolean;
+  isMedia?: boolean;
+  extension?: string;
+};
+
 export type InboxOptions = {
   companyId: string;
 };

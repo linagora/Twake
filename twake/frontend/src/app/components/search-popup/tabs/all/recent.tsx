@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Search from 'features/global/services/search-service';
 import FilesResult from 'components/search-popup/parts/recent/files-result';
 import MediaResult from 'components/search-popup/parts/recent/media-result';
@@ -52,7 +52,7 @@ export default (): JSX.Element => {
             component="div"
             className="result-items-files"
           >
-            {Search.recent.files.map(file => (
+            {Search.recent.files.slice(0, 8).map(file => (
               <FilesResult
                 file={file}
                 key={file.id}
@@ -77,7 +77,7 @@ export default (): JSX.Element => {
             component="div"
             className="result-items-media"
           >
-            {Search.recent.media.map(file => (
+            {Search.recent.media.slice(0, 7).map(file => (
               <MediaResult
                 file={file}
                 key={file.id}

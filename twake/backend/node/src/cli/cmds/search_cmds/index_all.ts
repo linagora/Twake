@@ -15,6 +15,10 @@ import { SearchServiceAPI } from "../../../core/platform/services/search/api";
 import CompanyUser, { TYPE as CompanyUserTYPE } from "../../../services/user/entities/company_user";
 import { Message, TYPE as MessageTYPE } from "../../../services/messages/entities/messages";
 import gr from "../../../services/global-resolver";
+import {
+  MessageFile,
+  TYPE as MessageFileTYPE,
+} from "../../../services/messages/entities/message-files";
 
 type Options = {
   repository?: string;
@@ -33,6 +37,10 @@ class SearchIndexAll {
   public async run(options: Options = {}): Promise<void> {
     const repositories: Map<string, Repository<any>> = new Map();
     repositories.set("messages", await this.database.getRepository(MessageTYPE, Message));
+    repositories.set(
+      "message_files",
+      await this.database.getRepository(MessageFileTYPE, MessageFile),
+    );
     repositories.set("users", await this.database.getRepository(UserTYPE, User));
     repositories.set("channels", await this.database.getRepository("channels", Channel));
     repositories.set(
@@ -42,7 +50,10 @@ class SearchIndexAll {
 
     const repository = repositories.get(options.repository);
     if (!repository) {
-      throw "No such repository ready for indexation, available are: users, applications";
+      throw (
+        "No such repository ready for indexation, available are: " +
+        Object.keys(repositories).join(", ")
+      );
     }
 
     // Complete user with companies in cache
