@@ -171,7 +171,7 @@ export class ViewsController {
 
   async search(
     request: FastifyRequest<{
-      Querystring: MessageViewSearchQueryParameters;
+      Querystring: MessageViewSearchQueryParameters & { page_token: string };
       Params: {
         company_id: string;
       };
@@ -184,8 +184,10 @@ export class ViewsController {
 
     const limit = +request.query.limit || 100;
 
-    async function* getNextMessages(): AsyncIterableIterator<Message> {
-      let lastPageToken = null;
+    async function* getNextMessages(
+      initialPageToken?: string,
+    ): AsyncIterableIterator<{ msg: Message; pageToken: string }> {
+      let lastPageToken = initialPageToken;
       let messages: Message[] = [];
       let hasMoreMessages = true;
       do {
@@ -213,7 +215,7 @@ export class ViewsController {
 
         if (messages.length) {
           for (const message of messages) {
-            yield message;
+            yield { msg: message, pageToken: lastPageToken };
           }
         } else {
           hasMoreMessages = false;
@@ -222,8 +224,10 @@ export class ViewsController {
     }
 
     const messages = [] as Message[];
+    let lastPageToken = null;
 
-    for await (const msg of getNextMessages()) {
+    for await (const { msg, pageToken } of getNextMessages(request.query.page_token)) {
+      lastPageToken = pageToken;
       const isChannelMember = await gr.services.channels.members.isChannelMember(
         { id: request.currentUser.id },
         {
@@ -241,12 +245,17 @@ export class ViewsController {
       }
     }
 
-    return { resources: messages };
+    return {
+      resources: messages,
+      ...(lastPageToken && {
+        next_page_token: lastPageToken,
+      }),
+    };
   }
 
   async searchFiles(
     request: FastifyRequest<{
-      Querystring: MessageViewSearchFilesQueryParameters;
+      Querystring: MessageViewSearchFilesQueryParameters & { page_token: string };
       Params: {
         company_id: string;
       };
@@ -259,8 +268,11 @@ export class ViewsController {
 
     const limit = +request.query.limit || 100;
 
-    async function* getNextMessageFiles(): AsyncIterableIterator<MessageFile> {
-      let lastPageToken = null;
+    async function* getNextMessageFiles(initialPageToken?: string): AsyncIterableIterator<{
+      msgFile: MessageFile;
+      pageToken: string;
+    }> {
+      let lastPageToken = initialPageToken;
       let messageFiles: MessageFile[] = [];
       let hasMoreMessageFiles = true;
       do {
@@ -289,7 +301,7 @@ export class ViewsController {
 
         if (messageFiles.length) {
           for (const messageFile of messageFiles) {
-            yield messageFile;
+            yield { msgFile: messageFile, pageToken: lastPageToken };
           }
         } else {
           hasMoreMessageFiles = false;
@@ -298,8 +310,10 @@ export class ViewsController {
     }
 
     const messageFiles = [] as (MessageFile & { message: Message; user: UserObject })[];
+    let nextPageToken = null;
 
-    for await (const msgFile of getNextMessageFiles()) {
+    for await (const { msgFile, pageToken } of getNextMessageFiles(request.query.page_token)) {
+      nextPageToken = pageToken;
       const isChannelMember = await gr.services.channels.members.isChannelMember(
         { id: request.currentUser.id },
         {
@@ -327,7 +341,12 @@ export class ViewsController {
       }
     }
 
-    return { resources: messageFiles };
+    return {
+      resources: messageFiles,
+      ...(nextPageToken && {
+        next_page_token: nextPageToken,
+      }),
+    };
   }
 }
 
