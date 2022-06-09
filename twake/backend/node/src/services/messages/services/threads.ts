@@ -125,7 +125,11 @@ export class ThreadsService
       thread.created_at = (item as Thread)?.created_at || thread.created_at;
     }
 
-    await this.repository.save(thread);
+    if (message && message.ephemeral) {
+      //We should not save if this is an ephemeral message
+    } else {
+      await this.repository.save(thread);
+    }
 
     if (message) {
       await gr.services.messages.messages.save(
