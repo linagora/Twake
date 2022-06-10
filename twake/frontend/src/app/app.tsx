@@ -13,6 +13,7 @@ import useTimeout from 'app/features/global/hooks/use-timeout';
 import ApplicationLoader from './components/loader/application-loader';
 
 import 'app/styles/index.less';
+import DebugState from './components/debug/debug-state';
 
 const delayMessage = 5000;
 
@@ -51,6 +52,7 @@ export default () => {
 
   return (
     <RecoilRoot>
+      <DebugState />
       <MobileRedirect>
         <Integration>
           <Router history={RouterServices.history}>
