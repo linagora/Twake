@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Search from 'features/global/services/search-service';
-import { FileType } from 'features/files/types/file';
-import DriveService from 'deprecated/Apps/Drive/Drive';
-import FileUploadService from 'features/files/services/file-upload-service';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import FilesResult from 'components/search-popup/parts/recent/files-result';
+import { onFileDownloadClick, onFilePreviewClick } from 'components/search-popup/parts/common';
+import { isEmpty } from 'lodash';
 
 export default (): JSX.Element => {
   const [pageReady, setPageReady] = useState(false);
@@ -25,34 +24,10 @@ export default (): JSX.Element => {
 
   useEffect(() => {
     setPageReady(!Search.searchInProgress);
-    setNotFound(Boolean(Search.value) && !Search.searchInProgress && !Search.results.files.length);
+    setNotFound(Boolean(Search.value) && !Search.searchInProgress && isEmpty(Search.results.media));
   }, [Search.searchInProgress, Search.value]);
 
   useEffect(() => {}, [Search.results.files, Search.recent.files]);
-
-  const onFilePreviewClick = (file: FileType) => {
-    DriveService.viewDocument(
-      {
-        id: file.id,
-        name: file.metadata.name,
-        url: FileUploadService.getDownloadRoute({
-          companyId: file.company_id || '',
-          fileId: file.id,
-        }),
-        extension: file.metadata.name.split('.').pop(),
-      },
-      true,
-    );
-  };
-
-  const onFileDownloadClick = (file: FileType) => {
-    const url = FileUploadService.getDownloadRoute({
-      companyId: file.company_id,
-      fileId: file.id,
-    });
-
-    url && (window.location.href = url);
-  };
 
   return (
     (pageReady && (
@@ -72,7 +47,7 @@ export default (): JSX.Element => {
           >
             {(searchMode ? Search.results.files : Search.recent.files).map(file => (
               <FilesResult
-                file={file}
+                fileSearchResult={file}
                 key={file.id}
                 onPreviewClick={() => {
                   onFilePreviewClick(file);
