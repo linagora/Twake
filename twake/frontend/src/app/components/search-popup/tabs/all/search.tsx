@@ -25,7 +25,7 @@ export default (): JSX.Element => {
         <div>
           <div className="results-group-title ">Channels and contacts</div>
 
-          {Search.results.channels.length && (
+          {(Search.results.channels.length && (
             <div className="result-items">
               {Search.results.channels.map(channel => (
                 <ChannelsResult
@@ -36,9 +36,9 @@ export default (): JSX.Element => {
                 />
               ))}
             </div>
-          )}
+          )) || <div />}
 
-          {Search.results.users.length && (
+          {(Search.results.users.length && (
             <div className="result-items">
               {Search.results.users.map(user => (
                 <UsersResult
@@ -49,7 +49,7 @@ export default (): JSX.Element => {
                 />
               ))}
             </div>
-          )}
+          )) || <div />}
         </div>
       )) || <div />}
       {(Search.results.messages.length && (

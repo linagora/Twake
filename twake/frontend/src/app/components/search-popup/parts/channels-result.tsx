@@ -38,7 +38,7 @@ export default ({ channel, highlight, onClick }: PropsType): JSX.Element => {
 
   return (
     <div className="result-item" onClick={onItemClick}>
-      <ChannelAvatar channel={channel} showLabel={false} />
+      <ChannelAvatar channel={channel} showLabel={false} collapseToOne={true} />
       <div className="result-item-content">
         <div
           className="channel-title"

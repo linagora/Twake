@@ -84,7 +84,11 @@ export default ({ message, highlight, onClick }: PropsType): JSX.Element => {
 
   return (
     <div className="result-item" onClick={onItemClick}>
-      {channel ? <ChannelAvatar channel={channel} showLabel={false} /> : <div />}
+      {channel ? (
+        <ChannelAvatar channel={channel} showLabel={false} collapseToOne={true} />
+      ) : (
+        <div />
+      )}
       {/*<div className="result-item-icon">*/}
       {/*  <div>*/}
       {/*    <img className="result-item-icon-back" src={thumbnail} />*/}

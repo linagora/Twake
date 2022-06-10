@@ -12,9 +12,10 @@ const emoji = require('emoji-name-map');
 type PropsType = {
   channel: ChannelType;
   showLabel: boolean;
+  collapseToOne?: boolean;
 };
 
-export default ({ channel, showLabel }: PropsType): JSX.Element => {
+export default ({ channel, showLabel, collapseToOne }: PropsType): JSX.Element => {
   if (channel.visibility === 'direct') {
     let channelMembers = (channel.members || []).filter(e => e !== UsersService.getCurrentUserId());
     channelMembers = channelMembers.filter((e, i) => channelMembers.indexOf(e) === i);
@@ -29,12 +30,14 @@ export default ({ channel, showLabel }: PropsType): JSX.Element => {
 
     users.forEach(member => {
       channelName.push(UserService.getFullName(member));
-      icons.push(getThumbnail(member));
+      if (!(collapseToOne && icons.length > 0)) {
+        icons.push(getThumbnail(member));
+      }
     });
 
     let width = 64;
 
-    if (channelMembers.length > 1) {
+    if (!collapseToOne && channelMembers.length > 1) {
       const shift = 64 - (64 * 2) / 5;
       width = 64 + (channelMembers.length - 1) * shift;
     }

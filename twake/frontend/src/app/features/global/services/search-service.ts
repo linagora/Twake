@@ -153,18 +153,43 @@ class SearchService extends Observable {
     this.notify();
 
     const promises = [
-      ChannelAPIClient.recent(Workspaces.currentGroupId, 12).then(a => {
+      ChannelAPIClient.recent(Workspaces.currentGroupId, 14).then(a => {
         this.recent.channels = a;
         this.notify();
       }),
-      FileAPIClient.recent(Workspaces.currentGroupId, 'file', 10).then(a => {
-        this.recent.files = a;
-        this.notify();
-      }),
-      FileAPIClient.recent(Workspaces.currentGroupId, 'media', 10).then(a => {
-        this.recent.media = a;
-        this.notify();
-      }),
+
+      MessageAPIClient.searchFile(null, {
+        limit: 10,
+        is_file: true,
+      })
+        .then(a => {
+          this.recent.files = a.resources;
+          this.notify();
+        })
+        .catch(e => {
+          this.logger.error(e);
+        }),
+
+      MessageAPIClient.searchFile(null, {
+        limit: 10,
+        is_media: true,
+      })
+        .then(a => {
+          this.recent.media = a.resources;
+          this.notify();
+        })
+        .catch(e => {
+          this.logger.error(e);
+        }),
+
+      // FileAPIClient.recent(Workspaces.currentGroupId, 'file', 10).then(a => {
+      //   this.recent.files = a;
+      //   this.notify();
+      // }),
+      // FileAPIClient.recent(Workspaces.currentGroupId, 'media', 10).then(a => {
+      //   this.recent.media = a;
+      //   this.notify();
+      // }),
     ];
 
     Promise.any(promises).then(() => {
