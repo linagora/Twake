@@ -63,12 +63,18 @@ export default (): React.ReactElement => {
   twakeDebugState.dumpStateSnapshot = useRecoilCallback(
     ({ snapshot }) =>
       async () => {
-        const result: Record<string, any> = {};
+        const result: Record<string, any> = {
+          localStorage: {},
+        };
 
         for (const node of snapshot.getNodes_UNSTABLE()) {
           const value = await snapshot.getPromise(node);
 
           result[node.key] = value;
+        }
+
+        for (const key of Object.keys(window.localStorage)) {
+          result.localStorage[key] = window.localStorage.getItem(key);
         }
 
         const json = JSON.stringify(result, null, 2);
