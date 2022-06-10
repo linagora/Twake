@@ -30,7 +30,7 @@ export default (): JSX.Element => {
           Search.recent.channels.slice(0, 14).map(channel => (
             <ChannelItem
               channel={channel}
-              key={channel.id}
+              key={channel.id || '' + Math.random()}
               onClick={() => {
                 onClick(channel);
               }}
@@ -43,7 +43,7 @@ export default (): JSX.Element => {
 
 const ChannelItem = ({ channel, onClick }: { channel: ChannelType; onClick: any }): JSX.Element => {
   assert(channel.workspace_id, 'No workspace_id in channel object');
-  const avatar = ChannelAvatar({ channel, showLabel: true });
+  const avatar = ChannelAvatar({ channel, showLabel: true, collapseToOne: true });
   return (
     <div className="result-item" onClick={onClick}>
       <div className="result-item-icon">{avatar}</div>

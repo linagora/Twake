@@ -1,7 +1,5 @@
 import { FastifyRequest } from "fastify";
-import { PublicFile } from "../../../../../services/files/entities/file";
-import { ListResult } from "../../../../../core/platform/framework/api/crud-service";
-import { Pagination } from "../../../../../core/platform/framework/api/crud-service";
+import { ListResult, Pagination } from "../../../../../core/platform/framework/api/crud-service";
 import { MessageFile } from "../../../../../services/messages/entities/message-files";
 import { Message } from "../../../../../services/messages/entities/messages";
 import { ChannelViewExecutionContext } from "../../../../../services/messages/types";
@@ -11,6 +9,7 @@ import { formatUser } from "../../../../../utils/users";
 import gr from "../../../../global-resolver";
 import { MessageFileRef } from "../../../../../services/messages/entities/message-file-refs";
 import recentFiles from "./recent-files";
+import { isEmpty } from "lodash";
 
 interface MessageViewSearchFilesQueryParameters extends PaginationQueryParameters {
   q: string;
@@ -41,7 +40,7 @@ export default async (
   }>,
   context: ChannelViewExecutionContext,
 ): Promise<ResourceListResponse<MessageFile>> => {
-  if (request.query.q.length < 1) {
+  if (isEmpty(request)) {
     return recentFiles(request);
   }
 

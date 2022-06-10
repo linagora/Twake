@@ -141,7 +141,7 @@ class MessageAPIClient {
 
   /**
    * Delete a link preview from a message
-   * 
+   *
    * @param {String} companyId - The company id
    * @param {String} threadId - The thread id
    * @param {String} messageId - The message id
@@ -156,7 +156,7 @@ class MessageAPIClient {
 
     return response.resource;
   }
-    
+
   async search(searchString: string, options?: BaseSearchOptions) {
     let companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
     let query = `/internal/services/messages/v1/companies/${companyId}/search?q=${searchString}`;
@@ -170,9 +170,12 @@ class MessageAPIClient {
     return res;
   }
 
-  async searchFile(searchString: string, options?: FileSearchOptions) {
+  async searchFile(searchString: string | null, options?: FileSearchOptions) {
     let companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
-    let query = `/internal/services/messages/v1/companies/${companyId}/files/search?q=${searchString}`;
+    let query = `/internal/services/messages/v1/companies/${companyId}/files/search`;
+    if (searchString) {
+      query += `q=${searchString}`;
+    }
     const res = await Api.getWithParams<{ resources: FileType[] }>(query, options);
     this.logger.debug(
       `FileSearch by name "${searchString}" with options`,

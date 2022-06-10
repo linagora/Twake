@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Search from 'features/global/services/search-service';
-import FilesResult from 'components/search-popup/parts/recent/files-result';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { FileType } from 'features/files/types/file';
 import DriveService from 'deprecated/Apps/Drive/Drive';
 import FileUploadService from 'features/files/services/file-upload-service';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import FilesResult from 'components/search-popup/parts/recent/files-result';
 
 export default (): JSX.Element => {
   const [pageReady, setPageReady] = useState(false);
@@ -85,6 +85,6 @@ export default (): JSX.Element => {
           </PerfectScrollbar>
         </div>
       </div>
-    )) || <div />
+    )) || <div></div>
   );
 };

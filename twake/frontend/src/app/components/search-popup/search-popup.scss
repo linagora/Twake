@@ -117,7 +117,7 @@ input:focus {
   //position: absolute;
 
   width: 100vw;
-  height: 90vh;
+  height: 100vh;
 
   max-width: 1000px;
 
@@ -456,7 +456,7 @@ input:focus {
       mask-image: linear-gradient(to right, black 92%, transparent 100%);
 
       .result-item {
-        margin-right: 5px;
+        margin-right: 4px;
         cursor: pointer;
       }
 
