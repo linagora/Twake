@@ -26,6 +26,7 @@ import MainViewService from 'app/features/router/services/main-view-service';
 import Emojione from 'app/components/emojione/emojione';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
+import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 
 type Props = {
   onOpen?: () => void;
@@ -108,12 +109,8 @@ export default (props: Props) => {
           threadId: message.thread_id,
           messageId: message.id,
         })}`;
-        const el = document.createElement('textarea');
-        el.value = url;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
+
+        copyToClipboard(url);
       },
     });
 

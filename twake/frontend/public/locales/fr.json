@@ -290,6 +290,7 @@
     "scenes.app.channelsbar.guest_management": "Gestion des invités",
     "scenes.app.channelsbar.read_sign": "Marquer comme lu",
     "scenes.app.channelsbar.unread_sign": "Marquer comme non lu",
+    "scenes.app.channelsbar.channel_copy_link": "Copier le lien de la chaîne",
     "scenes.app.channelsbar.channel_leaving": "Quitter la chaîne",
     "scenes.app.channelsbar.channel_removing": "Supprimer la chaîne",
     "scenes.app.channelsbar.company_invitation_alert_subtitle": "Vous pouvez importer ces chaînes dans votre entreprise pour rester organisé en cliquant sur ce cadre.",
