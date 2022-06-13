@@ -1,5 +1,5 @@
 import Observable from 'app/deprecated/CollectionsV1/observable.js';
-import { MessageExtended } from 'features/messages/types/message';
+import { FileSearchResult, MessageExtended } from 'features/messages/types/message';
 import { ChannelType } from 'features/channels/types/channel';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import FileAPIClient from 'app/features/files/api/file-upload-api-client';
@@ -15,8 +15,8 @@ import Logger from 'features/global/framework/logger-service';
 type ResultTypes = {
   messages: MessageExtended[];
   channels: ChannelType[];
-  files: FileType[];
-  media: FileType[];
+  files: FileSearchResult[];
+  media: FileSearchResult[];
   users: UserType[];
 };
 

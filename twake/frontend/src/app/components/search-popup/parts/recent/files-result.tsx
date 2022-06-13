@@ -3,11 +3,13 @@ import { ChannelType } from 'features/channels/types/channel';
 import { FileType } from 'features/files/types/file';
 import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
 import { includes } from 'lodash';
+import { FileSearchResult } from 'features/messages/types/message';
+import Logger from 'features/global/framework/logger-service';
 
 const locale = navigator.languages[0];
 
 type PropsType = {
-  file: FileType;
+  fileSearchResult: FileSearchResult;
   onDownloadClick: any;
   onPreviewClick: any;
 };
@@ -18,7 +20,17 @@ const iconFileByMime = (mimetype: string) => {
   return `/public/icons/file-type-${existedIcons.includes(type) ? type : 'unknown'}.svg`;
 };
 
-export default ({ file, onDownloadClick, onPreviewClick }: PropsType): JSX.Element => {
+export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType): JSX.Element => {
+  let file: FileType;
+  try {
+    // @ts-ignore
+    file = fileSearchResult.message.files[0];
+  } catch (e) {
+    Logger.getLogger('SearchPopup:FilesResult').error(e);
+    console.error(fileSearchResult);
+    return <div />;
+  }
+
   const icon = iconFileByMime(file.metadata.mime);
 
   let sizeStr = '';

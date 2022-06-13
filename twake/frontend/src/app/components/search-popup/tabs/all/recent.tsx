@@ -7,37 +7,15 @@ import { FileType } from 'features/files/types/file';
 import DriveService from 'deprecated/Apps/Drive/Drive';
 import FileUploadService from 'features/files/services/file-upload-service';
 import RecentChannelsAndContacts from 'components/search-popup/parts/recent-channels-and-contacts';
+import { FileSearchResult, MessageFileType } from 'features/messages/types/message';
+import Logger from 'features/global/framework/logger-service';
+import assert from 'assert';
+import { onFileDownloadClick, onFilePreviewClick } from 'components/search-popup/parts/common';
 
 export default (): JSX.Element => {
   useEffect(() => {}, []);
 
-  const onFilePreviewClick = (file: FileType) => {
-    DriveService.viewDocument(
-      {
-        id: file.id,
-        name: file.metadata.name,
-        url: FileUploadService.getDownloadRoute({
-          companyId: file.company_id || '',
-          fileId: file.id,
-        }),
-        extension: file.metadata.name.split('.').pop(),
-      },
-      true,
-    );
-  };
-
-  const onFileDownloadClick = (file: FileType) => {
-    const url = FileUploadService.getDownloadRoute({
-      companyId: file.company_id,
-      fileId: file.id,
-    });
-
-    url && (window.location.href = url);
-  };
-
-  const onMediaClick = (file: FileType) => {
-    onFilePreviewClick(file);
-  };
+  // let logger = Logger.getLogger('SearchPopup:TabsRecent');
 
   return (
     <div className="recent-results tab-all">
@@ -54,7 +32,7 @@ export default (): JSX.Element => {
           >
             {Search.recent.files.slice(0, 8).map(file => (
               <FilesResult
-                file={file}
+                fileSearchResult={file}
                 key={file.id}
                 onPreviewClick={() => {
                   onFilePreviewClick(file);
@@ -79,10 +57,10 @@ export default (): JSX.Element => {
           >
             {Search.recent.media.slice(0, 7).map(file => (
               <MediaResult
-                file={file}
+                fileSearchResult={file}
                 key={file.id}
                 onClick={() => {
-                  onMediaClick(file);
+                  onFilePreviewClick(file);
                 }}
               />
             ))}

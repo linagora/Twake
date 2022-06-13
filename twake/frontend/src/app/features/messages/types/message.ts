@@ -32,6 +32,11 @@ export type MessageFileType = {
   };
 };
 
+export type FileSearchResult = MessageFileType & {
+  message: Message;
+  user: UserType;
+};
+
 export type Message = {
   id?: string;
   application_id?: string | null;
@@ -224,4 +229,4 @@ export type MessageLinkType = {
   img_width: number | undefined;
   img_height: number | undefined;
   url: string;
-}
+};

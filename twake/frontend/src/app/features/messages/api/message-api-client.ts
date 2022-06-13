@@ -1,5 +1,6 @@
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import {
+  FileSearchResult,
   MessageExtended,
   MessageFileType,
   MessageWithReplies,
@@ -170,20 +171,31 @@ class MessageAPIClient {
     return res;
   }
 
-  async searchFile(searchString: string | null, options?: FileSearchOptions) {
+  async searchFile(
+    searchString: string | null,
+    options?: FileSearchOptions,
+  ): Promise<{ resources: FileSearchResult[]; next_page_token: string | null }> {
     let companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
     let query = `/internal/services/messages/v1/companies/${companyId}/files/search`;
     if (searchString) {
-      query += `q=${searchString}`;
+      query += `?q=${searchString}`;
     }
-    const res = await Api.getWithParams<{ resources: FileType[] }>(query, options);
-    this.logger.debug(
-      `FileSearch by name "${searchString}" with options`,
+    const res = await Api.getWithParams<{ resources: FileSearchResult[]; next_page_token: string }>(
+      query,
       options,
-      'Found',
-      res.resources.length,
-      'files',
     );
+    try {
+      this.logger.debug(
+        `FileSearch by name "${searchString}" with options`,
+        options,
+        'Found',
+        res.resources.length,
+        'files',
+      );
+    } catch (e) {
+      this.logger.error(e, res);
+      return { resources: [], next_page_token: null };
+    }
 
     return res;
   }
