@@ -293,6 +293,7 @@
     "scenes.app.channelsbar.guest_management": "Guest management",
     "scenes.app.channelsbar.read_sign": "Mark as read",
     "scenes.app.channelsbar.unread_sign": "Mark as unread",
+    "scenes.app.channelsbar.channel_copy_link": "Copy channel link",
     "scenes.app.channelsbar.channel_leaving": "Leave channel",
     "scenes.app.channelsbar.channel_removing": "Delete channel",
     "scenes.app.channelsbar.company_invitation_alert_subtitle": "You can import these channels into your business to stay organized by clicking on this frame.",
