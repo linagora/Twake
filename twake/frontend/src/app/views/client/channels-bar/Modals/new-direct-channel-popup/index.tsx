@@ -3,20 +3,20 @@ import React, { FC, useState } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import MediumPopupComponent from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
-import UserListManager from 'components/user-list-manager/user-list-manager';
 import ModalManager from 'app/components/modal/modal-manager';
 import { Button, Typography } from 'antd';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
+import SelectUsers from './select-users';
+import './style.scss';
 
-const NewDirectMessagesPopup: FC = () => {
+export default () => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { openDiscussion } = useDirectChannels();
 
   const upsertDirectMessage = async (): Promise<any> => {
     setLoading(true);
-    console.log('!!!! new newUserDiscussion',newUserDiscussion);
     await openDiscussion(newUserDiscussion);
     return MediumPopupComponent.closeAll();
   };
@@ -55,22 +55,9 @@ const NewDirectMessagesPopup: FC = () => {
       }
     >
       <div className="x-margin">
-        <UserListManager
-          max={max}
-          disabled={newUserDiscussion.length >= max}
-          inputText={
-            newUserDiscussion.length >= max
-              ? Languages.t(
-                  'scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_input_placeholder',
-                )
-              : undefined
-          }
-          users={[]}
-          canRemoveMyself
-          noPlaceholder
-          scope="company"
-          autoFocus
-          onUpdate={(ids: string[]) => setNewUserDiscussion(ids)}
+        <SelectUsers
+          onChange={users => setNewUserDiscussion(users.map(u => u.id as string))}
+          initialUsers={[]}
         />
 
         <>
@@ -93,5 +80,3 @@ const NewDirectMessagesPopup: FC = () => {
     </ObjectModal>
   );
 };
-
-export default NewDirectMessagesPopup;

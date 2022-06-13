@@ -1,0 +1,39 @@
+
+.new-direct-channel-proposed-user, .new-direct-channel-added-user {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  margin: 0px -4px;
+  border-radius: 12px;
+
+  &.new-direct-channel-proposed-user{
+    .user-name {
+      opacity: 0.8;
+    }  
+  }
+
+  .user-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+
+    .email {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-left: 4px;
+    }
+  }
+
+  &:hover {
+    background-color: var(--primary-background);
+  }
+
+  .button.small {
+    height: 24px;
+    line-height: 24px;
+    margin-left: 8px;
+  }
+}
