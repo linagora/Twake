@@ -27,10 +27,11 @@ export default (props: Props) => {
     companyId,
   };
 
-  const hasEphemeral = !(
-    !lastEphemeral ||
-    !(lastEphemeral.thread_id === props.threadId || (!props.threadId && !lastEphemeral.thread_id))
-  );
+  const hasEphemeral =
+    lastEphemeral &&
+    (lastEphemeral.thread_id === props.threadId ||
+      (!props.threadId &&
+        (!lastEphemeral.thread_id || lastEphemeral.thread_id === lastEphemeral.id)));
 
   useEffect(() => {
     if (lastEphemeral && hasEphemeral) {
