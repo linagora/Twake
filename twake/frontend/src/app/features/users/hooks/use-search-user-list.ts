@@ -112,6 +112,7 @@ export const useSearchUserList = ({
   scope: SearchContextType['scope'];
 }): {
   search: (str?: string) => UserType[];
+  query: string | undefined;
   result: UserType[];
 } => {
   const { set: setUserList } = useSetUserList('use-search-user-list');
@@ -132,5 +133,5 @@ export const useSearchUserList = ({
 
   const result = searchFrontend(query, { workspaceId, scope, companyId, userList: userList || [] });
 
-  return { search, result };
+  return { search, query, result };
 };
