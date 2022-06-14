@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
 import Search from 'features/global/services/search-service';
-import MediaResult from 'components/search-popup/parts/recent/media-result';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import { onFilePreviewClick } from 'components/search-popup/parts/common';
 import Media from 'components/search-popup/parts/media';
 
 export default (): JSX.Element => {

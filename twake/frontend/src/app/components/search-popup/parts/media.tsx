@@ -1,4 +1,3 @@
-import Search from 'features/global/services/search-service';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { onFilePreviewClick } from 'components/search-popup/parts/common';
 import React from 'react';

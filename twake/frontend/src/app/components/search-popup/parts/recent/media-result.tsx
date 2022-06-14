@@ -1,10 +1,7 @@
 import React from 'react';
-import { FileType } from 'features/files/types/file';
 import { FileSearchResult } from 'features/messages/types/message';
 import Logger from 'features/global/framework/logger-service';
-import {
-  getFileMessageDownloadRoute,
-} from 'components/search-popup/parts/common';
+import { getFileMessageDownloadRoute } from 'components/search-popup/parts/common';
 import assert from 'assert';
 
 type PropsType = {
@@ -17,11 +14,6 @@ export default ({ fileSearchResult, onClick }: PropsType): JSX.Element => {
   try {
     assert(fileSearchResult.message.files?.[0], JSON.stringify(fileSearchResult.message));
     fileRoute = getFileMessageDownloadRoute(fileSearchResult.message.files?.[0]);
-    assert(fileSearchResult.message.files?.[0].metadata?.thumbnails?.[0].url);
-    fileRoute = `/internal/services/files/v1${fileSearchResult.message.files?.[0].metadata?.thumbnails?.[0].url}`;
-    if (window.location.hostname === 'localhost') {
-      fileRoute = 'https://staging-web.twake.app' + fileRoute;
-    }
   } catch (e) {
     Logger.getLogger('SearchPopup:MediaResult').error(e);
     console.error(fileSearchResult);

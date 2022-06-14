@@ -1,5 +1,5 @@
 import Search from 'features/global/services/search-service';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ChannelsAndContacts from 'components/search-popup/parts/channels-and-contacts';
 import Discussions from 'components/search-popup/parts/discussions';
 import Files from 'components/search-popup/parts/files';

@@ -1,8 +1,5 @@
 import React, { useEffect } from 'react';
 import Search from 'features/global/services/search-service';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-import FilesResult from 'components/search-popup/parts/recent/files-result';
-import { onFileDownloadClick, onFilePreviewClick } from 'components/search-popup/parts/common';
 import Files from 'components/search-popup/parts/files';
 
 export default (): JSX.Element => {
