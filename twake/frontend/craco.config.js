@@ -1,11 +1,12 @@
-const CracoLessPlugin = require("craco-less");
-const CracoAlias = require("craco-alias");
+const CracoLessPlugin = require('craco-less');
+const CracoAlias = require('craco-alias');
 
 module.exports = {
   plugins: [
     {
       plugin: CracoLessPlugin,
       options: {
+        baseUrl: '.',
         lessLoaderOptions: {
           lessOptions: {
             javascriptEnabled: true,
@@ -16,13 +17,13 @@ module.exports = {
     {
       plugin: CracoAlias,
       options: {
-        source: "tsconfig",
+        source: 'tsconfig',
         // baseUrl SHOULD be specified
         // plugin does not take it from tsconfig
-        baseUrl: ".",
+        baseUrl: '.',
         // tsConfigPath should point to the file where "baseUrl" and "paths" are specified
-        tsConfigPath: "./tsconfig.paths.json"
-      }
-    }
+        tsConfigPath: './tsconfig.paths.json',
+      },
+    },
   ],
 };
