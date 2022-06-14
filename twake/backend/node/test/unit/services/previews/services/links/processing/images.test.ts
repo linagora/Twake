@@ -43,14 +43,13 @@ describe("the generateImageUrlPreview function", () => {
       domain: "foo.bar",
       favicon: "http://foo.bar/favicon.ico",
       url: "https://foo.bar/image.jpg",
-      img_height: 320,
-      img_width: 240,
+      img_height: 240,
+      img_width: 320,
       description: null,
       img: "https://foo.bar/image.jpg",
     });
   });
 
-  // should return nothing in case of error
   it("should return nothing in case of error", async () => {
     (imageProbe as any).mockImplementation(() => {
       throw new Error("failed to probe image");

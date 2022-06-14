@@ -28,6 +28,5 @@ export const generateImageUrlPreview = async (url: string): Promise<LinkPreview 
     };
   } catch (error) {
     logger.error(`failed to generate image url preview: ${error}`);
-    throw Error(`failed to generate image url preview: ${error}`);
   }
 };
