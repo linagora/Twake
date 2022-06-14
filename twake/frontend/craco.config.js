@@ -6,7 +6,6 @@ module.exports = {
     {
       plugin: CracoLessPlugin,
       options: {
-        baseUrl: '.',
         lessLoaderOptions: {
           lessOptions: {
             javascriptEnabled: true,
