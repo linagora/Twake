@@ -33,6 +33,7 @@ export type MessageFileType = {
 };
 
 export type FileSearchResult = MessageFileType & {
+  created_at: number;
   message: Message;
   user: UserType;
 };

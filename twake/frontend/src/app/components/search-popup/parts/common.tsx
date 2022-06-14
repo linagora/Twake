@@ -5,8 +5,11 @@ import DriveService from 'deprecated/Apps/Drive/Drive';
 import FileUploadService from 'features/files/services/file-upload-service';
 
 export const highlightText = (text?: string, highlight?: string) => {
-  if (!text || !highlight) {
+  if (!text) {
     return '';
+  }
+  if (!highlight) {
+    return text;
   }
   const reg = new RegExp('(' + Strings.removeAccents(highlight) + ')', 'ig');
   return Strings.removeAccents(text).replace(reg, "<span class='highlight'>$1</span>");

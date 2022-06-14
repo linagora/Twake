@@ -1,10 +1,7 @@
 import React from 'react';
-import { FileType } from 'features/files/types/file';
 import { FileSearchResult } from 'features/messages/types/message';
 import Logger from 'features/global/framework/logger-service';
-import {
-  getFileMessageDownloadRoute,
-} from 'components/search-popup/parts/common';
+import { getFileMessageDownloadRoute } from 'components/search-popup/parts/common';
 import assert from 'assert';
 
 type PropsType = {
