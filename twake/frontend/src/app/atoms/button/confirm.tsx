@@ -1,17 +1,18 @@
-import { ExclamationCircleIcon } from "@heroicons/react/outline";
-import _ from "lodash";
-import { useState } from "react";
-import { Button } from "./button";
-import { Modal, ModalContent } from "../modal";
+import React from 'react';
+import { ExclamationCircleIcon } from '@heroicons/react/outline';
+import _ from 'lodash';
+import { useState } from 'react';
+import { Button } from './button';
+import { Modal, ModalContent } from '../modal';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  theme?: "primary" | "secondary" | "danger" | "default";
+  theme?: 'primary' | 'secondary' | 'danger' | 'default';
   loading?: boolean;
   disabled?: boolean;
   confirmTitle?: string;
   confirmMessage?: string;
   confirmIcon?: React.ReactNode;
-  confirmButtonTheme?: "primary" | "secondary" | "danger" | "default";
+  confirmButtonTheme?: 'primary' | 'secondary' | 'danger' | 'default';
   confirmButtonText?: string;
   cancelButtonText?: string;
   children: React.ReactNode;
@@ -24,13 +25,13 @@ export const ButtonConfirm = (props: ButtonProps) => {
       <Button
         {..._.omit(
           props,
-          "onClick",
-          "confirmButtonTheme",
-          "confirmButtonText",
-          "cancelButtonText",
-          "confirmTitle",
-          "confirmMessage",
-          "confirmIcon"
+          'onClick',
+          'confirmButtonTheme',
+          'confirmButtonText',
+          'cancelButtonText',
+          'confirmTitle',
+          'confirmMessage',
+          'confirmIcon',
         )}
         onClick={() => {
           setInConfirm(true);
@@ -43,14 +44,14 @@ export const ButtonConfirm = (props: ButtonProps) => {
         }}
       >
         <ModalContent
-          title={props.confirmTitle || "Confirm action ?"}
-          text={props.confirmMessage || "Confirm action by clicking Confirm."}
+          title={props.confirmTitle || 'Confirm action ?'}
+          text={props.confirmMessage || 'Confirm action by clicking Confirm.'}
           icon={props.confirmIcon || ExclamationCircleIcon}
           buttons={
             <>
               <Button
-                theme={props.confirmButtonTheme || "primary"}
-                onClick={(e) => {
+                theme={props.confirmButtonTheme || 'primary'}
+                onClick={e => {
                   setInConfirm(false);
                   setTimeout(() => {
                     props.onClick && props.onClick(e);
@@ -58,16 +59,16 @@ export const ButtonConfirm = (props: ButtonProps) => {
                 }}
                 className="mr-4 my-2"
               >
-                {props.confirmButtonText || "Confirm"}
+                {props.confirmButtonText || 'Confirm'}
               </Button>
               <Button
                 onClick={() => {
                   setInConfirm(false);
                 }}
                 theme="default"
-                className={"mr-4 my-2 shadow-none"}
+                className={'mr-4 my-2 shadow-none'}
               >
-                {props.cancelButtonText || "Cancel"}
+                {props.cancelButtonText || 'Cancel'}
               </Button>
             </>
           }
@@ -77,5 +78,5 @@ export const ButtonConfirm = (props: ButtonProps) => {
   );
 };
 function setInConfirm(arg0: boolean) {
-  throw new Error("Function not implemented.");
+  throw new Error('Function not implemented.');
 }

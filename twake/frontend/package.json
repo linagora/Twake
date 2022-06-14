@@ -10,11 +10,11 @@
     "dev:test": "craco test",
     "dev:prettier": "prettier --write src/",
     "dev:linter": "eslint src/",
-    "storybook": "start-storybook -p 6006 -s public",
     "test": "CI=true craco test --passWithNoTests",
     "start": "npm run dev:start",
     "build": "CI=false craco --max_old_space_size=4096 --optimize-for-size build",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook",
+    "storybook": "concurrently \"start-storybook -p 6006\" \"npm run dev:tailwind\""
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six",
@@ -80,6 +80,8 @@
     "@fullcalendar/moment-timezone": "4.4.2",
     "@fullcalendar/react": "4.4.2",
     "@fullcalendar/timegrid": "4.4.2",
+    "@headlessui/react": "^1.6.4",
+    "@heroicons/react": "^1.0.6",
     "@iconscout/react-unicons": "^1.1.5",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
@@ -250,8 +252,10 @@
     "@storybook/addon-essentials": "^6.5.9",
     "@storybook/addon-interactions": "^6.5.9",
     "@storybook/addon-links": "^6.5.9",
-    "@storybook/builder-webpack5": "^6.5.0-rc.1",
-    "@storybook/manager-webpack5": "^6.5.0-rc.1",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/builder-webpack5": "^6.5.9",
+    "@storybook/cli": "^6.5.9",
+    "@storybook/manager-webpack5": "^6.5.9",
     "@storybook/node-logger": "^6.5.9",
     "@storybook/preset-create-react-app": "^4.1.2",
     "@storybook/react": "^6.5.9",
@@ -265,7 +269,8 @@
     "prettier": "^2.0.5",
     "prop-types": "^15.8.1",
     "sass": "^1.49.9",
+    "storybook-dark-mode": "^1.1.0",
     "storybook-preset-craco": "^0.0.6",
-    "webpack": "^5.73.0"
+    "webpack": "5"
   }
 }

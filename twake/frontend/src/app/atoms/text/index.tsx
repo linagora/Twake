@@ -1,125 +1,106 @@
-import _ from "lodash";
-import { ReactNode } from "react";
+import React from 'react';
+import _ from 'lodash';
+import { ReactNode } from 'react';
 
 type TextProps = {
   type:
-    | "title"
-    | "section"
-    | "section-small"
-    | "menu"
-    | "value-main"
-    | "value-secondary"
-    | "base"
-    | "base-small"
-    | "info"
-    | "info-small";
+    | 'title'
+    | 'section'
+    | 'section-small'
+    | 'menu'
+    | 'value-main'
+    | 'value-secondary'
+    | 'base'
+    | 'base-small'
+    | 'info'
+    | 'info-small';
   children: ReactNode | ReactNode[];
   className?: string;
   noColor?: boolean;
 } & Omit<
   React.ButtonHTMLAttributes<HTMLSpanElement>,
-  "children" | "className" | "type" | "noColor"
+  'children' | 'className' | 'type' | 'noColor'
 >;
 
-type TypedTextProps = Omit<TextProps, "type">;
+type TypedTextProps = Omit<TextProps, 'type'>;
 
-export const Title = (props: TypedTextProps) =>
-  Text({ type: "title", ...props });
+export const Title = (props: TypedTextProps) => Text({ type: 'title', ...props });
 
-export const Section = (props: TypedTextProps) =>
-  Text({ type: "section", ...props });
+export const Section = (props: TypedTextProps) => Text({ type: 'section', ...props });
 
-export const SectionSmall = (props: TypedTextProps) =>
-  Text({ type: "section-small", ...props });
+export const SectionSmall = (props: TypedTextProps) => Text({ type: 'section-small', ...props });
 
-export const Menu = (props: TypedTextProps) => Text({ type: "menu", ...props });
+export const Menu = (props: TypedTextProps) => Text({ type: 'menu', ...props });
 
-export const ValueMain = (props: TypedTextProps) =>
-  Text({ type: "value-main", ...props });
+export const ValueMain = (props: TypedTextProps) => Text({ type: 'value-main', ...props });
 
 export const ValueSecondary = (props: TypedTextProps) =>
-  Text({ type: "value-secondary", ...props });
+  Text({ type: 'value-secondary', ...props });
 
-export const Base = (props: TypedTextProps) => Text({ type: "base", ...props });
+export const Base = (props: TypedTextProps) => Text({ type: 'base', ...props });
 
-export const BaseSmall = (props: TypedTextProps) =>
-  Text({ type: "base-small", ...props });
+export const BaseSmall = (props: TypedTextProps) => Text({ type: 'base-small', ...props });
 
-export const Info = (props: TypedTextProps) => Text({ type: "info", ...props });
+export const Info = (props: TypedTextProps) => Text({ type: 'info', ...props });
 
-export const InfoSmall = (props: TypedTextProps) =>
-  Text({ type: "info-small", ...props });
+export const InfoSmall = (props: TypedTextProps) => Text({ type: 'info-small', ...props });
 
 const Text = (props: TextProps) => {
-  let defaultClassName = "";
+  let defaultClassName = '';
 
   switch (props.type) {
-    case "title":
+    case 'title':
       defaultClassName =
-        "text-2xl font-semibold block " +
-        " " +
-        (props.noColor ? "" : "text-slate-900 dark:text-white");
+        'text-2xl font-semibold block ' +
+        ' ' +
+        (props.noColor ? '' : 'text-slate-900 dark:text-white');
       break;
-    case "section":
+    case 'section':
       defaultClassName =
-        "text-xl font-semibold" +
-        " " +
-        (props.noColor ? "" : "text-slate-800 dark:text-white");
+        'text-xl font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
       break;
-    case "section-small":
+    case 'section-small':
       defaultClassName =
-        "text-lg font-semibold" +
-        " " +
-        (props.noColor ? "" : "text-slate-800 dark:text-white");
+        'text-lg font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
       break;
-    case "menu":
+    case 'menu':
       defaultClassName =
-        "text-base font-semibold" +
-        " " +
-        (props.noColor ? "" : "text-slate-800 dark:text-white");
+        'text-base font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
       break;
-    case "value-main":
+    case 'value-main':
       defaultClassName =
-        "text-3xl font-semibold" +
-        " " +
-        (props.noColor ? "" : "text-slate-800 dark:text-white");
+        'text-3xl font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
       break;
-    case "value-secondary":
+    case 'value-secondary':
       defaultClassName =
-        "text-xl font-semibold" +
-        " " +
-        (props.noColor ? "" : "text-slate-800 dark:text-white");
+        'text-xl font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
       break;
-    case "base":
+    case 'base':
       defaultClassName =
-        "text-base font-normal" +
-        " " +
-        (props.noColor ? "" : "text-slate-800 dark:text-white");
+        'text-base font-normal' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
       break;
-    case "base-small":
+    case 'base-small':
       defaultClassName =
-        "text-sm font-normal" +
-        " " +
-        (props.noColor ? "" : "text-slate-800 dark:text-white");
+        'text-sm font-normal' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
       break;
-    case "info":
+    case 'info':
       defaultClassName =
-        "text-sm font-normal" +
-        " " +
-        (props.noColor ? "" : "text-slate-400 dark:text-white dark:opacity-50");
+        'text-sm font-normal' +
+        ' ' +
+        (props.noColor ? '' : 'text-slate-400 dark:text-white dark:opacity-50');
       break;
-    case "info-small":
+    case 'info-small':
       defaultClassName =
-        "text-xs font-normal" +
-        " " +
-        (props.noColor ? "" : "text-slate-400 dark:text-white dark:opacity-50");
+        'text-xs font-normal' +
+        ' ' +
+        (props.noColor ? '' : 'text-slate-400 dark:text-white dark:opacity-50');
       break;
   }
 
   return (
     <span
-      className={defaultClassName + " " + (props.className || "")}
-      {..._.omit(props, "type", "className", "children", "noColor")}
+      className={defaultClassName + ' ' + (props.className || '')}
+      {..._.omit(props, 'type', 'className', 'children', 'noColor')}
     >
       {props.children}
     </span>
