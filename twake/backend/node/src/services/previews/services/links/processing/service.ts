@@ -1,5 +1,8 @@
 import { LinkPreviewServiceAPI, LinkPreview, LinkPreviewPubsubRequest } from "../../../types";
-import { generateLinksPreviews } from "./link";
+import { generateLinkPreview } from "./link";
+import { checkUrlContents } from "../../../utils";
+import { generateImageUrlPreview } from "./image";
+import { logger } from "../../../../../core/platform/framework";
 
 export class LinkPreviewProcessService implements LinkPreviewServiceAPI {
   name: "LinkPreviewProcessService";
@@ -16,10 +19,28 @@ export class LinkPreviewProcessService implements LinkPreviewServiceAPI {
    * @returns {Promise<LinkPreview[]>} - The generated url previews
    */
   async generatePreviews(links: LinkPreviewPubsubRequest["links"]): Promise<LinkPreview[]> {
-    try {
-      return await generateLinksPreviews(links);
-    } catch (error) {
-      throw Error(`cannot process: failed to generate links previews: ${error}`);
+    const result: LinkPreview[] = [];
+
+    for (const link of links) {
+      try {
+        const contentType = await checkUrlContents(link);
+
+        if (!contentType) {
+          continue;
+        }
+
+        if (contentType.includes("text/html")) {
+          result.push(await generateLinkPreview(link));
+        }
+
+        if (contentType.startsWith("image")) {
+          result.push(await generateImageUrlPreview(link));
+        }
+      } catch (error) {
+        logger.error(`failed to generate link preview: ${error}`);
+      }
     }
+
+    return result.filter(Boolean);
   }
 }

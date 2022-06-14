@@ -1,8 +1,8 @@
 import { parser } from "html-metadata-parser";
-import getFavicons from "get-website-favicon";
 import { LinkPreview } from "../../../types";
 import { logger } from "../../../../../core/platform/framework";
 import imageProbe from "probe-image-size";
+import { getUrlFavicon, getDomain } from "../../../utils";
 
 type HtmlImage = {
   src: string;
@@ -12,36 +12,15 @@ type HtmlImage = {
  * Generate a thumbnail for a given url.
  *
  * @param {String[]} urls - the input urls
- * @returns {Promise<LinkPreview[]>} - resolves when the thumbnails are generated
+ * @returns {Promise<LinkPreview>} - resolves when the preview is generated
  */
-export async function generateLinksPreviews(urls: string[]): Promise<LinkPreview[]> {
-  const output: LinkPreview[] = [];
-
-  for (const url of urls) {
-    try {
-      output.push(await getUrlInformation(url));
-    } catch (error) {
-      logger.error(`failed to generate link preview: ${error}`);
-    }
-  }
-
-  return output;
-}
-
-/**
- * Get domain from a given url.
- *
- * @param {String} url - the input url
- * @returns {String} - resolves when the domain is retrieved
- */
-const getDomain = (url: string): string => {
+export async function generateLinkPreview(url: string): Promise<LinkPreview> {
   try {
-    const domain = new URL(url).hostname;
-    return domain.replace(/^www\./, "");
+    return await getUrlInformation(url);
   } catch (error) {
-    throw Error(`failed to get domain: ${error}`);
+    logger.error(`failed to generate link preview: ${error}`);
   }
-};
+}
 
 /**
  * get url information
@@ -82,24 +61,5 @@ const getUrlInformation = async (url: string): Promise<LinkPreview> => {
     };
   } catch (error) {
     throw Error(`failed to get url information: ${error}`);
-  }
-};
-
-/**
- * get url favicon
- *
- * @param {String} url - the input url
- * @returns {Promise<String | null >} - resolves when the favicon is retrieved
- */
-const getUrlFavicon = async (url: string): Promise<string | null> => {
-  try {
-    const result = await getFavicons(url);
-    if (!result.icons || !result.icons.length) {
-      return;
-    }
-
-    return result.icons[0].src;
-  } catch (error) {
-    logger.error(`failed to get url favicon: ${error}`);
   }
 };
