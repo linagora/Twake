@@ -1,5 +1,5 @@
 import { describe, expect, it, jest, beforeEach, afterEach, afterAll } from "@jest/globals";
-import { generateLinksPreviews } from "../../../../../../../src/services/previews/services/links/processing/link";
+import { generateLinkPreview } from "../../../../../../../src/services/previews/services/links/processing/link";
 import { parser } from "html-metadata-parser";
 import getFavicons from "get-website-favicon";
 import imageProbe from "probe-image-size";
@@ -45,37 +45,35 @@ afterAll(() => {
   jest.restoreAllMocks();
 });
 
-describe("the generateLinksPreviews service", () => {
+describe("the generateLinkPreview service", () => {
   it("should return a promise", () => {
-    const result = generateLinksPreviews([]);
+    const result = generateLinkPreview("http://foo.bar");
     expect(result).toBeInstanceOf(Promise);
   });
 
-  it("should return a promise that resolves to an array of previews", async () => {
-    const result = await generateLinksPreviews(["https://foo.bar"]);
-    expect(result).toEqual([
-      {
-        title: "Foo",
-        description: "Bar",
-        img: "http://foo.bar/image.jpg",
-        favicon: "http://foo.bar/favicon.ico",
-        img_width: 320,
-        img_height: 240,
-        domain: "foo.bar",
-        url: "https://foo.bar",
-      },
-    ]);
+  it("should return a promise that resolves to a preview", async () => {
+    const result = await generateLinkPreview("https://foo.bar");
+    expect(result).toEqual({
+      title: "Foo",
+      description: "Bar",
+      img: "http://foo.bar/image.jpg",
+      favicon: "http://foo.bar/favicon.ico",
+      img_width: 320,
+      img_height: 240,
+      domain: "foo.bar",
+      url: "https://foo.bar",
+    });
   });
 
-  it("should return a promise that resolves to an empty array if no previews are found", async () => {
+  it("should return a promise that resolves to undefined if no previews are found", async () => {
     (parser as any).mockImplementation(() => {
       throw new Error("failed to parse");
     });
     (getFavicons as any).mockImplementation(() => []);
     (imageProbe as any).mockImplementation(() => ({}));
 
-    const result = await generateLinksPreviews(["https://foo.bar"]);
-    expect(result).toEqual([]);
+    const result = await generateLinkPreview("https://foo.bar");
+    expect(result).toBeUndefined();
   });
 
   it("should use og information as first choice", async () => {
@@ -93,19 +91,17 @@ describe("the generateLinksPreviews service", () => {
       images: ["http://foo.bar/test3.jpg"],
     }));
 
-    const result = await generateLinksPreviews(["https://foo.bar"]);
-    expect(result).toEqual([
-      {
-        title: "test",
-        description: "test",
-        img: "http://foo.bar/test.jpg",
-        favicon: "http://foo.bar/favicon.ico",
-        img_width: 320,
-        img_height: 240,
-        domain: "foo.bar",
-        url: "https://foo.bar",
-      },
-    ]);
+    const result = await generateLinkPreview("https://foo.bar");
+    expect(result).toEqual({
+      title: "test",
+      description: "test",
+      img: "http://foo.bar/test.jpg",
+      favicon: "http://foo.bar/favicon.ico",
+      img_width: 320,
+      img_height: 240,
+      domain: "foo.bar",
+      url: "https://foo.bar",
+    });
   });
 
   it("should use meta information as second choice", async () => {
@@ -118,19 +114,17 @@ describe("the generateLinksPreviews service", () => {
       images: [],
     }));
 
-    const result = await generateLinksPreviews(["https://foo.bar"]);
-    expect(result).toEqual([
-      {
-        title: "test2",
-        description: "test2",
-        img: "http://foo.bar/test2.jpg",
-        favicon: "http://foo.bar/favicon.ico",
-        img_width: 320,
-        img_height: 240,
-        domain: "foo.bar",
-        url: "https://foo.bar",
-      },
-    ]);
+    const result = await generateLinkPreview("https://foo.bar");
+    expect(result).toEqual({
+      title: "test2",
+      description: "test2",
+      img: "http://foo.bar/test2.jpg",
+      favicon: "http://foo.bar/favicon.ico",
+      img_width: 320,
+      img_height: 240,
+      domain: "foo.bar",
+      url: "https://foo.bar",
+    });
   });
 
   it("should use the first image found in the url when none are present in the og or meta information", async () => {
@@ -146,19 +140,17 @@ describe("the generateLinksPreviews service", () => {
       images: ["http://foo.bar/test3.jpg", "http://foo.bar/test4.jpg"],
     }));
 
-    const result = await generateLinksPreviews(["https://foo.bar"]);
-    expect(result).toEqual([
-      {
-        title: "test",
-        description: "test",
-        img: "http://foo.bar/test3.jpg",
-        favicon: "http://foo.bar/favicon.ico",
-        img_width: 320,
-        img_height: 240,
-        domain: "foo.bar",
-        url: "https://foo.bar",
-      },
-    ]);
+    const result = await generateLinkPreview("https://foo.bar");
+    expect(result).toEqual({
+      title: "test",
+      description: "test",
+      img: "http://foo.bar/test3.jpg",
+      favicon: "http://foo.bar/favicon.ico",
+      img_width: 320,
+      img_height: 240,
+      domain: "foo.bar",
+      url: "https://foo.bar",
+    });
   });
 
   it("shouldn't attempt to probe for image size when none are found", async () => {
@@ -174,23 +166,21 @@ describe("the generateLinksPreviews service", () => {
       images: [],
     }));
 
-    await generateLinksPreviews(["https://foo.bar"]);
+    await generateLinkPreview("https://foo.bar");
     expect(imageProbe).not.toHaveBeenCalled();
   });
 
   it("should strip www from the domain", async () => {
-    const result = await generateLinksPreviews(["https://www.foo.bar"]);
-    expect(result).toEqual([
-      {
-        title: "Foo",
-        description: "Bar",
-        img: "http://foo.bar/image.jpg",
-        favicon: "http://foo.bar/favicon.ico",
-        img_width: 320,
-        img_height: 240,
-        domain: "foo.bar",
-        url: "https://www.foo.bar",
-      },
-    ]);
+    const result = await generateLinkPreview("https://www.foo.bar");
+    expect(result).toEqual({
+      title: "Foo",
+      description: "Bar",
+      img: "http://foo.bar/image.jpg",
+      favicon: "http://foo.bar/favicon.ico",
+      img_width: 320,
+      img_height: 240,
+      domain: "foo.bar",
+      url: "https://www.foo.bar",
+    });
   });
 });
