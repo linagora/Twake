@@ -5,8 +5,8 @@ import getFavicons from "get-website-favicon";
 import { logger } from "../../core/platform/framework";
 import axios from "axios";
 
-const TIMEOUT = 5 * 1000;
-const MAX_SIZE = 5 * 1024 * 1024;
+export const TIMEOUT = 5 * 1000;
+export const MAX_SIZE = 5 * 1024 * 1024;
 
 const { unlink } = fsPromise;
 

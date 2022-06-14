@@ -2,7 +2,7 @@ import { parser } from "html-metadata-parser";
 import { LinkPreview } from "../../../types";
 import { logger } from "../../../../../core/platform/framework";
 import imageProbe from "probe-image-size";
-import { getUrlFavicon, getDomain } from "../../../utils";
+import { getUrlFavicon, getDomain, TIMEOUT, MAX_SIZE } from "../../../utils";
 
 type HtmlImage = {
   src: string;
@@ -30,7 +30,10 @@ export async function generateLinkPreview(url: string): Promise<LinkPreview> {
  */
 const getUrlInformation = async (url: string): Promise<LinkPreview> => {
   try {
-    const parsedPage = await parser(url);
+    const parsedPage = await parser(url, {
+      timeout: TIMEOUT,
+      maxContentLength: MAX_SIZE,
+    });
     const title = parsedPage.og?.title || parsedPage.meta?.title || null;
     const description = parsedPage.og?.description || parsedPage.meta?.description || null;
     let img = parsedPage.og?.image || parsedPage.meta?.image || parsedPage.images?.[0] || null;
