@@ -18,7 +18,11 @@ import LockedGuestsPopup from 'app/components/locked-features-components/locked-
 import InitService from 'app/features/global/services/init-service';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
-import { isDirectChannel, isPrivateChannel, isPublicChannel } from 'app/features/channels/utils/utils';
+import {
+  isDirectChannel,
+  isPrivateChannel,
+  isPublicChannel,
+} from 'app/features/channels/utils/utils';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { ToasterService as Toaster } from 'app/features/global/services/toaster-service';
@@ -212,9 +216,9 @@ const FullMenu = (props: PropsType): JSX.Element => {
       hide: !(props.channel.visibility && isPublicChannel(props.channel.visibility)),
       onClick: () => {
         const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-          workspaceId: props.channel.workspace_id || '',
+          workspaceId: props.channel.workspace_id || '',
           companyId: props.channel.company_id,
-          channelId: props.channel.id
+          channelId: props.channel.id,
         })}`;
 
         copyToClipboard(url);

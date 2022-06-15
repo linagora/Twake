@@ -17,7 +17,7 @@ export const highlightText = (text?: string, highlight?: string) => {
 
 export const getFileMessageDownloadRoute = (messageFile: MessageFileType): string => {
   assert(messageFile.metadata);
-  let file = messageFile.metadata.external_id;
+  const file = messageFile.metadata.external_id;
   return FileUploadService.getDownloadRoute({
     companyId: file.company_id || '',
     fileId: file.id,
@@ -30,7 +30,7 @@ export const onFilePreviewClick = (fileSearchResult: FileSearchResult) => {
   assert(messageFile.id);
   assert(messageFile.metadata?.name);
 
-  let file = messageFile.metadata.external_id;
+  const file = messageFile.metadata.external_id;
 
   DriveService.viewDocument(
     {
