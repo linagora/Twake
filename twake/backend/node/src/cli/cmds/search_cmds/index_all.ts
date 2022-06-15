@@ -52,7 +52,7 @@ class SearchIndexAll {
     if (!repository) {
       throw (
         "No such repository ready for indexation, available are: " +
-        Object.keys(repositories).join(", ")
+        Array.from(repositories.keys()).join(", ")
       );
     }
 
