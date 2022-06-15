@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { MessageLinkType } from 'app/features/messages/types/message';
 import './LinkPreview.scss';
 import { useMessage } from 'app/features/messages/hooks/use-message';
+import User from 'app/features/users/services/current-user-service';
 import { MessageContext } from '../message-with-replies';
 import { X } from 'react-feather';
 import { Col, Row } from 'antd';
@@ -12,15 +13,17 @@ type PropsType = {
 
 export default ({ preview }: PropsType): React.ReactElement => {
   const context = useContext(MessageContext);
-  const { deleteLinkPreview } = useMessage(context);
+  const { deleteLinkPreview, message } = useMessage(context);
 
   return (
     <Row>
       <Col>
         <div className="ant-card ant-card-bordered ant-card-small ant-card-type-inner link-preview">
-          <div className="delete-link-preview">
-            <X size={16} onClick={() => deleteLinkPreview(preview.url)} />
-          </div>
+          {message.user_id === User.getCurrentUserId() ? (
+            <div className="delete-link-preview">
+              <X size={16} onClick={() => deleteLinkPreview(preview.url)} />
+            </div>
+           ) : null}
           <div className="ant-card-body">
             <div className="ant-card-meta">
               <div className="ant-card-meta-detail">

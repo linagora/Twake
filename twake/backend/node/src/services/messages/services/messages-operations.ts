@@ -184,6 +184,11 @@ export class ThreadMessagesOperationsService {
       throw Error("Can't edit message links previews.");
     }
 
+    if (context.user.id !== message.user_id) {
+      logger.error("You can't remove link preview from another user message.");
+      throw Error("Can't edit message links previews.");
+    }
+
     const decoded_url = decodeURIComponent(operation.encoded_link);
 
     message.links = message.links.filter(({ url }: { url: string }) => url !== decoded_url);
