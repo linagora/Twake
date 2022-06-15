@@ -13,7 +13,7 @@ export default function MobileRedirect(props: { children: ReactNode }) {
   const os = getDevice();
   const searchParams = Object.fromEntries(new URLSearchParams(window.location.search)) as any;
 
-  let parameters = InitService.server_infos?.configuration.mobile;
+  const parameters = InitService.server_infos?.configuration.mobile;
 
   const getapp = searchParams.getapp;
   let forceUseWeb = searchParams.useweb;
@@ -67,7 +67,7 @@ export default function MobileRedirect(props: { children: ReactNode }) {
     return <>{props.children}</>;
   }
 
-  const origin = (originInUrl || environment?.front_root_url)
+  const origin = (originInUrl || environment?.front_root_url || '')
     .replace(/https?:\/\//g, '')
     .split('/')[0];
   const redirectOrigin = parameters?.mobile_redirect.replace(/https?:\/\//g, '').replace(/\//g, '');
@@ -86,7 +86,7 @@ export default function MobileRedirect(props: { children: ReactNode }) {
   }
 
   //Here we are on m.domain.com/some-path and we are on a mobile device
-  const backToWebUrl = (getApp: boolean = true) =>
+  const backToWebUrl = (getApp = true) =>
     `${window.location.protocol}//${origin}${window.location.pathname}?${new URLSearchParams(
       Object.assign({}, searchParams, getApp ? { getapp: 1 } : { useweb: 1 }),
     ).toString()}`;

@@ -11,7 +11,6 @@ import momentTimezonePlugin from '@fullcalendar/moment-timezone';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import FullCalendarPlugin from '@fullcalendar/react';
-import rrulePlugin from '@fullcalendar/rrule';
 
 import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/timegrid/main.css';
@@ -322,7 +321,7 @@ export default class FullCalendar extends Component {
           1000 -
         (event.allDay ? 24 * 60 * 60 : 0),
       all_day: event.allDay,
-      repetition_definition: { string: event.rrule, duration: event.duration },
+      //repetition_definition: { string: event.rrule, duration: event.duration },
     };
   }
 
@@ -349,7 +348,7 @@ export default class FullCalendar extends Component {
       end: moment(to * 1000 + (event.all_day ? 24 * 60 * 60 * 1000 : 0)).toDate(),
       allDay: event.all_day || force_allday,
       title: event.title || Languages.t('scenes.apps.drive.navigators.new_file.untitled'),
-      rrule: (event.repetition_definition || {}).string, //'DTSTART:20190201T103000Z\nRRULE:FREQ=WEEKLY;INTERVAL=5;UNTIL=20190601;BYDAY=MO,FR',
+      //rrule: (event.repetition_definition || {}).string, //'DTSTART:20190201T103000Z\nRRULE:FREQ=WEEKLY;INTERVAL=5;UNTIL=20190601;BYDAY=MO,FR',
       duration: (event.repetition_definition || {}).duration,
       editable: !CalendarService.getIsReadonly(event),
     };
@@ -369,7 +368,6 @@ export default class FullCalendar extends Component {
             momentTimezonePlugin,
             interactionPlugin,
             listPlugin,
-            rrulePlugin,
           ]}
           {...this.options}
         />

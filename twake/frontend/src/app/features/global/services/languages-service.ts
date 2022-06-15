@@ -7,7 +7,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 class LanguagesService extends Observable {
   private i18nt: Function | null = null;
-  private language: string = '';
+  private language = '';
   private default = 'en';
   private available = [
     'de',

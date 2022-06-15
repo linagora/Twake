@@ -13,7 +13,7 @@ import { getUser } from 'app/features/users/hooks/use-user-list';
 
 export default () => {
   const context = useContext(MessageContext);
-  let { message, react } = useMessage(context);
+  const { message, react } = useMessage(context);
 
   if (
     !(!message?.context?.disable_reactions && message?.reactions && message?.reactions.length > 0)

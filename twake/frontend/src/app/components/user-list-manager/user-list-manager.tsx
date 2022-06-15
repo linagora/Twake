@@ -43,7 +43,7 @@ const UserListManager = (props: PropsType) => {
   }, [result]);
 
   const updateStateFromProps = (props: PropsType, force?: boolean) => {
-    let anti_duplicates: string[] = [];
+    const anti_duplicates: string[] = [];
 
     const user_ids = props.users
       .map((item: any) => item.id || item)

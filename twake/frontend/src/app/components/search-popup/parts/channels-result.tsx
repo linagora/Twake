@@ -7,9 +7,8 @@ import assert from 'assert';
 import RouterServices from 'features/router/services/router-service';
 import { highlightText } from 'components/search-popup/parts/common';
 import ChannelAvatar from 'components/channel-avatar/channel-avatar';
+import emoji from 'emoji-name-map';
 import { WorkspaceType } from 'features/workspaces/types/workspace';
-
-const emoji = require('emoji-name-map');
 
 type PropsType = {
   channel: ChannelType;

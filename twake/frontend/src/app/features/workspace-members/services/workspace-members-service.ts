@@ -50,9 +50,9 @@ class WorkspacesUsers extends Observable {
     (Globals.window as any).workspaceUserService = this;
   }
   getAdminLevel(idWorkspace = workspaceService.currentWorkspaceId) {
-    var levels = Collections.get('workspaces').find(idWorkspace).levels;
+    const levels = Collections.get('workspaces').find(idWorkspace).levels;
     if (levels) {
-      for (var i = 0; i < levels.length; i++) {
+      for (let i = 0; i < levels.length; i++) {
         if (levels[i].admin) {
           return levels[i];
         }
@@ -61,9 +61,9 @@ class WorkspacesUsers extends Observable {
     return false;
   }
   getDefaultLevel(idWorkspace = workspaceService.currentWorkspaceId) {
-    var levels = Collections.get('workspaces').find(idWorkspace).levels;
+    const levels = Collections.get('workspaces').find(idWorkspace).levels;
     if (levels) {
-      for (var i = 0; i < levels.length; i++) {
+      for (let i = 0; i < levels.length; i++) {
         if (levels[i].default) {
           return levels[i];
         }
@@ -73,8 +73,8 @@ class WorkspacesUsers extends Observable {
   }
   isGroupManager() {}
   getLevel(idLevel: string) {
-    var levels = Collections.get('workspaces').find(workspaceService.currentWorkspaceId).levels;
-    for (var i = 0; i < levels.length; i++) {
+    const levels = Collections.get('workspaces').find(workspaceService.currentWorkspaceId).levels;
+    for (let i = 0; i < levels.length; i++) {
       if (idLevel === levels[i].id) {
         return levels[i];
       }
@@ -95,12 +95,12 @@ class WorkspacesUsers extends Observable {
       options = {};
     }
 
-    var that = this;
-    var workspace = Collections.get('workspaces').find(workspace_id);
+    const that = this;
+    const workspace = Collections.get('workspaces').find(workspace_id);
     if (!workspace) {
       return;
     }
-    var group_id = workspace?.group?.id || workspace.company_id;
+    const group_id = workspace?.group?.id || workspace.company_id;
 
     if (!this.users_by_group[group_id]) {
       this.users_by_group[group_id] = {};
@@ -116,7 +116,7 @@ class WorkspacesUsers extends Observable {
       this.offset_by_group_id[group_id] = [0, false];
     }
 
-    var loadMembers = (data: any) => {
+    const loadMembers = (data: any) => {
       if (!data) {
         return;
       }
@@ -151,7 +151,7 @@ class WorkspacesUsers extends Observable {
       }
     };
 
-    var data = {
+    const data = {
       workspaceId: workspace_id,
       max: this.offset_by_workspace_id[workspace_id][0] === 0 ? 100 : 40,
     };
@@ -210,12 +210,12 @@ class WorkspacesUsers extends Observable {
         application: false,
         original_workspace: workspaceService.currentWorkspaceId,
       });
-      for (var i = 0; i < channelsInWorkspace.length; i++) {
+      for (let i = 0; i < channelsInWorkspace.length; i++) {
         // check in all channel if 2 chavite are in the same channel
         if (channelsInWorkspace[i].ext_members) {
           let bothAreInChannel = 0; // if 1 : one of 2 users searched is in channel as chavite, 2 : both are in channel as chavite
           const extMembers = channelsInWorkspace[i].ext_members;
-          for (var j = 0; j < extMembers.length; j++) {
+          for (let j = 0; j < extMembers.length; j++) {
             if (extMembers[j] === member || extMembers[j] === CurrentUser.get().id) {
               bothAreInChannel++;
               if (bothAreInChannel >= 2) {

@@ -38,7 +38,9 @@ export default () => {
       setDisplayDelayLoader(false);
       try {
         window.document.getElementById('app_loader')?.remove();
-      } catch (err) {}
+      } catch (err) {
+        //Null
+      }
     }
   }, [server_infos_loaded]);
 

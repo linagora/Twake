@@ -82,7 +82,7 @@ class MessageAPIClient {
     threadId: string,
     messageId: string,
     bookmarkId: string,
-    active: boolean = true,
+    active = true,
   ) {
     const response = await Api.post<
       { bookmark_id: string; active: boolean },
@@ -94,7 +94,7 @@ class MessageAPIClient {
     return response.resource;
   }
 
-  async pin(companyId: string, threadId: string, messageId: string, pin: boolean = true) {
+  async pin(companyId: string, threadId: string, messageId: string, pin = true) {
     const response = await Api.post<{ pin: boolean }, { resource: NodeMessage }>(
       `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/pin`,
       { pin },
@@ -159,8 +159,8 @@ class MessageAPIClient {
   }
 
   async search(searchString: string, options?: BaseSearchOptions) {
-    let companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
-    let query = `/internal/services/messages/v1/companies/${companyId}/search?q=${searchString}`;
+    const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
+    const query = `/internal/services/messages/v1/companies/${companyId}/search?q=${searchString}`;
     const res = await Api.getWithParams<{ resources: MessageExtended[] }>(query, options);
     this.logger.debug(
       `Message search by text "${searchString}". Found`,
@@ -175,7 +175,7 @@ class MessageAPIClient {
     searchString: string | null,
     options?: FileSearchOptions,
   ): Promise<{ resources: FileSearchResult[]; next_page_token: string | null }> {
-    let companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
+    const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
     let query = `/internal/services/messages/v1/companies/${companyId}/files/search`;
     if (searchString) {
       query += `?q=${searchString}`;

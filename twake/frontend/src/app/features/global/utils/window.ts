@@ -3,11 +3,11 @@ import Globals from 'app/features/global/services/globals-twake-app-service';
 
 class WindowState {
   public readonly app_name: string = 'Twake';
-  public prefix: string = '';
-  public suffix: string = '';
+  public prefix = '';
+  public suffix = '';
 
   public allGetParameter() {
-    let result: { [key: string]: string } = {};
+    const result: { [key: string]: string } = {};
     let tmp: string[] = [];
     Globals.window.location.search
       .substr(1)
@@ -48,7 +48,7 @@ class WindowState {
     return this.updateTitle();
   }
 
-  public setPrefix(notifications_count: number = 0) {
+  public setPrefix(notifications_count = 0) {
     this.prefix = notifications_count > 0 ? `(${notifications_count}) ` : '';
 
     return this.updateTitle();

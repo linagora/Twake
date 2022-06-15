@@ -38,14 +38,14 @@ export default (props: Props) => {
   const { openDiscussion } = useDirectChannels();
 
   const context = useContext(MessageContext);
-  let { message } = useMessage(context);
-  let parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
+  const { message } = useMessage(context);
+  const parentMessage: NodeMessage | null = useMessage({ ...context, id: message.thread_id }).message;
 
   const user = useUser(message.user_id);
 
   const companyApplications =
     useRecoilState(CompanyApplicationsStateFamily(context.companyId))[0] || [];
-  let application = companyApplications.find(a => a.id === message.application_id);
+  const application = companyApplications.find(a => a.id === message.application_id);
 
   const scrollToMessage = () => {
     if (message.thread_id !== message.id) {
@@ -65,7 +65,7 @@ export default (props: Props) => {
   let userNameRef: ReactNode = null;
   const displayUserCard = () => {
     if (user) {
-      let box = (window as any).getBoundingClientRect(userNameRef);
+      const box = (window as any).getBoundingClientRect(userNameRef);
       MenusManager.openMenu(
         [
           {

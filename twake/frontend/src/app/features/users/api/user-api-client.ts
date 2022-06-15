@@ -60,7 +60,7 @@ class UserAPIClientService {
           (c, acc) => (Array.isArray(c.companies) ? acc.concat(c.companies) : []),
           [],
         );
-        let callbacks = this.listBuffer.reduce(
+        const callbacks = this.listBuffer.reduce(
           (c, acc) => (Array.isArray(acc) ? acc.push(c.callback) : []),
           [],
         );
@@ -191,7 +191,7 @@ class UserAPIClientService {
     return result;
   }
 
-  getSearchUsersRoute(query: string = '', context: SearchContextType) {
+  getSearchUsersRoute(query = '', context: SearchContextType) {
     let route = '';
 
     if (context.scope === 'company' || context.scope === 'all') {

@@ -24,7 +24,7 @@ export default class OIDCAuthProviderService
 {
   private logger: Logger.Logger;
   private userManager: Oidc.UserManager | null = null;
-  private initialized: boolean = false;
+  private initialized = false;
   private user!: Oidc.User;
   private params?: InitParameters;
 

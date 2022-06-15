@@ -236,6 +236,7 @@ export default (props: Props) => {
         {addon_right_icon.map((app: Application) => {
           return (
             <Button
+              key={app.id}
               type="text"
               size="small"
               className="option"

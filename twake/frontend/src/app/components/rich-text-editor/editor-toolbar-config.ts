@@ -56,7 +56,7 @@ export const BLOCK_TYPE_BUTTONS: StyleConfigList = [
   {label: 'Code Block', style: 'code-block', i18n: 'components.richtexteditor.toolbar.code-block'},
 ];
 
-let EditorToolbarConfig: ToolbarConfig = {
+const EditorToolbarConfig: ToolbarConfig = {
   //display: ['INLINE_STYLE_BUTTONS', 'BLOCK_ALIGNMENT_BUTTONS', 'BLOCK_TYPE_BUTTONS', 'LINK_BUTTONS', 'IMAGE_BUTTON', 'BLOCK_TYPE_DROPDOWN', 'HISTORY_BUTTONS'],
   display: ['INLINE_STYLE_BUTTONS', 'BLOCK_TYPE_BUTTONS'],
   INLINE_STYLE_BUTTONS,

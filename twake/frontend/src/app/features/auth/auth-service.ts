@@ -34,7 +34,7 @@ class AuthService {
   private provider: AuthProvider<any, any, any> | null = null;
   private logger: Logger.Logger;
   private initState: InitState = '';
-  currentUserId: string = '';
+  currentUserId = '';
 
   constructor() {
     this.logger = Logger.getLogger('AuthService');
@@ -177,7 +177,7 @@ class AuthService {
     });
   }
 
-  logout(reload: boolean = true): Promise<void> {
+  logout(reload = true): Promise<void> {
     this.clear();
 
     const shouldReload = reload && window.location.pathname !== '/logout';

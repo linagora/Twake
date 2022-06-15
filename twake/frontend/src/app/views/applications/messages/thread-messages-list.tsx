@@ -27,11 +27,17 @@ export default ({ companyId, threadId }: Props) => {
   const [atBottom, setAtBottom] = useState(true);
 
   const { highlight, cancelHighlight, reachedHighlight } = useHighlightMessage();
-  let { messages, loadMore, window, jumpTo, convertToKeys } = useThreadMessages({
+  const {
+    messages: _messages,
+    loadMore,
+    window,
+    jumpTo,
+    convertToKeys,
+  } = useThreadMessages({
     companyId,
     threadId: threadId || '',
   });
-  messages = withNonMessagesComponents(messages, window.reachedStart);
+  const messages = withNonMessagesComponents(_messages, window.reachedStart);
 
   useEffect(() => {
     loadMore('history');
@@ -42,7 +48,7 @@ export default ({ companyId, threadId }: Props) => {
     limit?: number,
     offsetItem?: MessagesAndComponentsType,
   ) => {
-    let messages = await loadMore(direction, limit, offsetItem?.id);
+    const messages = await loadMore(direction, limit, offsetItem?.id);
     return withNonMessagesComponents(
       convertToKeys(companyId, messages),
       window.reachedStart && direction === 'history',

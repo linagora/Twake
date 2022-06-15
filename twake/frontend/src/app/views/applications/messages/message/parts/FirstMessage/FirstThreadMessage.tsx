@@ -8,7 +8,7 @@ export default ({ noReplies }: { noReplies?: boolean }) => {
     <div className="first_message">
       <div className="content">
         <div className="text">
-          {!!noReplies
+          {noReplies
             ? Languages.t('scenes.apps.messages.message.types.no_message_in_thread')
             : Languages.t('scenes.apps.messages.message.types.first_message_text')}
         </div>

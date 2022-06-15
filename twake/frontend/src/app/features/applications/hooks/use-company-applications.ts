@@ -21,7 +21,7 @@ const logger = Logger.getLogger('useApplications');
  * @param companyId
  * @returns
  */
-export function useCompanyApplications(companyId: string = '') {
+export function useCompanyApplications(companyId = '') {
   const { company } = useCurrentCompany();
   companyId = companyId || company?.id || '';
   const workspaceId = useRouterWorkspace();
@@ -97,7 +97,7 @@ export function useCompanyApplications(companyId: string = '') {
   };
 }
 
-export const useCompanyApplicationsRealtime = (companyId: string = '') => {
+export const useCompanyApplicationsRealtime = (companyId = '') => {
   const { company } = useCurrentCompany();
   companyId = companyId || company?.id || '';
 

@@ -50,7 +50,7 @@ class SearchListManager extends Observable {
     // Mine
     let mineWorkspaceChannels: ChannelType[] = [];
 
-    let usersSearched: UserType[] = opts?.userListState ? opts.userListState : [];
+    const usersSearched: UserType[] = opts?.userListState ? opts.userListState : [];
     if (companyId && workspaceId) {
       channels = await ChannelsReachableAPIClient.get(companyId, workspaceId);
       directChannels = await ChannelsMineAPIClient.get({ companyId, workspaceId: 'direct' });
@@ -158,7 +158,7 @@ class SearchListManager extends Observable {
    * Remove duplicates between direct channels and users
    */
   private removeDuplicate() {
-    let existingUsersIdAsDirectChannels = this.list
+    const existingUsersIdAsDirectChannels = this.list
       .filter(
         userOrChannel =>
           userOrChannel.type === 'direct' &&

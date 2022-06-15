@@ -7,7 +7,7 @@ class ModalManagerService extends Observable {
   private popupStates: any = {};
   private position: any = null;
   private mountedComponent: any = null;
-  private closing: boolean = false;
+  private closing = false;
   private creationTimeout: any = null;
 
   getPosition() {

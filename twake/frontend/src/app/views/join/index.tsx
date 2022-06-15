@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
@@ -39,7 +38,7 @@ export default (props: PropsType): JSX.Element => {
   if (info?.company?.plan) FeatureTogglesService.setFeaturesFromCompanyPlan(info?.company?.plan);
 
   const params = useParams() as any;
-  let service = new MagicLinksJoinService(params.token, (val: boolean) => setBusy(val));
+  const service = new MagicLinksJoinService(params.token, (val: boolean) => setBusy(val));
 
   useEffect(() => {
     service
@@ -53,7 +52,7 @@ export default (props: PropsType): JSX.Element => {
           description: Languages.t('scenes.join.wrong_link_description'),
         }),
       );
-  }, []);
+  }, [service]);
 
   if (info?.auth_required) {
     //Save requested URL for after redirect / sign-in

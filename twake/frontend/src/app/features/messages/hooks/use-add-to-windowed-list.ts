@@ -53,7 +53,7 @@ export const getListWindow = (key: string) => {
     );
   };
 
-  const setLoaded = (loaded: boolean = true) => {
+  const setLoaded = (loaded = true) => {
     const window = windows.get(key) as WindowType;
     windows.set(key, {
       ...window,
@@ -97,7 +97,12 @@ export const useAddToWindowedList = (companyId: string) => {
         const getId = options.getId || ((m: any) => m?.id);
 
         //Update the current window
-        let { window, updateWindowFromIds, reachEdge } = getListWindow(options.windowKey);
+        const {
+          window: _window,
+          updateWindowFromIds,
+          reachEdge,
+        } = getListWindow(options.windowKey);
+        let window = _window;
         if (options.reachedEnd || (options.atBottom && !window.end))
           options = { ...options, reachedEnd: true };
         if (options.reachedEnd || options.reachedStart) window = reachEdge(options);

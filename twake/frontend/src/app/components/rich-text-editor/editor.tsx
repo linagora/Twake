@@ -276,10 +276,10 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
           );
         }
       } else {
-        let content = editorState.getCurrentContent();
+        const content = editorState.getCurrentContent();
         let newContent = Modifier.removeRange(content, selection, 'forward');
-        let newSelection = newContent.getSelectionAfter();
-        let block = newContent.getBlockForKey(newSelection.getStartKey());
+        const newSelection = newContent.getSelectionAfter();
+        const block = newContent.getBlockForKey(newSelection.getStartKey());
         newContent = Modifier.insertText(
           newContent,
           newSelection,
@@ -536,6 +536,7 @@ export class EditorView extends React.Component<EditorProps, EditorViewState> {
     const currentBlockType = block.getType();
     const blockLength = block.getLength();
     const blockText = block.getText();
+    // @ts-ignore
     const regex = new RegExp('\r|\n', 'gm');
 
     if (currentBlockType.indexOf('atomic') === 0) {

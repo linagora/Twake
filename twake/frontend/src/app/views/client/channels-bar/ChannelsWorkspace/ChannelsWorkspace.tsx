@@ -22,10 +22,10 @@ export default () => {
     inGroup: [],
     direct: [],
   };
-  let { privateChannels, publicChannels } = usePublicOrPrivateChannels();
-  let { directChannels } = useDirectChannels();
+  const { privateChannels, publicChannels } = usePublicOrPrivateChannels();
+  const { directChannels } = useDirectChannels();
 
-  let channels: ChannelType[] = [...privateChannels, ...publicChannels];
+  const channels: ChannelType[] = [...privateChannels, ...publicChannels];
 
   channels
     .concat(directChannels)
@@ -48,8 +48,8 @@ export default () => {
     });
 
   const groupsName: string[] = [];
-  let groups: { name: string; channels: ChannelType[] }[] = [];
-  let hasNonGroupWorkspaceChannels = !(
+  const groups: { name: string; channels: ChannelType[] }[] = [];
+  const hasNonGroupWorkspaceChannels = !(
     channelCategory.workspace.length === 0 && channelCategory.inGroup.length !== 0
   );
 

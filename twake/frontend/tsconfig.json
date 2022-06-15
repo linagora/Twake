@@ -21,10 +21,16 @@
     "isolatedModules": true,
     "noEmit": true,
     "baseUrl": ".",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "noFallthroughCasesInSwitch": true
   },
+  "exclude": [
+    "node_modules",
+    "**/deprecated/*",
+    "**/backend/node/*"
+  ],
   "include": [
-    "src"
-  ]
+    "src/**/*"
+  ],
+  "rootDir": "./",
 }

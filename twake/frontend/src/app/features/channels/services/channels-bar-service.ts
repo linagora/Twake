@@ -14,14 +14,14 @@ class ChannelsBarService extends Observable {
     }
   }
 
-  isReady(companyId: string = '', workspaceId: string = '', suffix?: string[]): boolean {
+  isReady(companyId = '', workspaceId = '', suffix?: string[]): boolean {
     return !!this.ready.get(this.getCallbackId(companyId, workspaceId, suffix));
   }
 
   updateCurrentChannelId(
-    companyId: string = '',
-    workspaceId: string = '',
-    channelId: string = '',
+    companyId = '',
+    workspaceId = '',
+    channelId = '',
   ): void {
     LocalStorage.setItem(this.getLocalStorageKey(companyId, workspaceId), channelId);
   }

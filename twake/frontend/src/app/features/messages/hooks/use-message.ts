@@ -59,7 +59,7 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
-  const bookmark = async (bookmarkId: string, status: boolean = true) => {
+  const bookmark = async (bookmarkId: string, status = true) => {
     const updated = await MessageAPIClient.bookmark(
       partialKey.companyId,
       partialKey.threadId,
@@ -70,7 +70,7 @@ export const useMessage = (partialKey: AtomMessageKey) => {
     if (updated) setValue(messageToMessageWithReplies(updated));
   };
 
-  const pin = async (status: boolean = true) => {
+  const pin = async (status = true) => {
     //Three lines to make it instant on frontend
     const quickUpdated = _.cloneDeep(message);
     quickUpdated.pinned_info = {
@@ -191,7 +191,7 @@ const recomputeReactions = (reactions: ReactionType[], selected: string[]) => {
   return reactions;
 };
 
-let messagesStore: { [key: string]: NodeMessage } = {};
+const messagesStore: { [key: string]: NodeMessage } = {};
 
 export const getMessage = (id: string) => {
   return messagesStore[id];

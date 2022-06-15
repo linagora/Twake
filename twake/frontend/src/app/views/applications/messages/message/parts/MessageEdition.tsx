@@ -28,7 +28,7 @@ type Props = {
 
 export default (props: Props) => {
   const context = useContext(MessageContext);
-  let { message, remove, save: updateMessage } = useMessage(context);
+  const { message, remove, save: updateMessage } = useMessage(context);
 
   const location = `message-${context.id}`;
   const subLocation = useContext(ViewContext).type;

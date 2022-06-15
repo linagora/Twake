@@ -43,7 +43,7 @@ const MessageType = () => {
 
   if (message.subtype === 'system') {
     const activity = message?.context?.activity as ActivityType;
-    return <ActivityMessage activity={activity} />;
+    return <ActivityMessage message={message} activity={activity} />;
   }
 
   return (

@@ -43,7 +43,7 @@ const resolver = async (
 ) => {
   text = text.replace(/^@/, '');
   resolverId++;
-  let currentResolverId = resolverId;
+  const currentResolverId = resolverId;
 
   const result: Array<MentionSuggestionType & { autocomplete_id: number }> = [];
   const { companyId, workspaceId, channelId } = RouterService.getStateFromRoute();

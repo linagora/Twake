@@ -34,11 +34,18 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
 
-  let { messages, loadMore, window, jumpTo, convertToKeys } = useChannelMessages({
+  const {
+    messages: _messages,
+    loadMore,
+    window,
+    jumpTo,
+    convertToKeys,
+  } = useChannelMessages({
     companyId,
     workspaceId: workspaceId || '',
     channelId: channelId || '',
   });
+  let messages = _messages;
   const { company } = useCurrentCompany();
   const shouldLimit = MessageHistoryService.shouldLimitMessages(
     company,
@@ -52,7 +59,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
     limit?: number,
     offsetItem?: MessagesAndComponentsType,
   ) => {
-    let messages = await loadMore(direction, limit, offsetItem?.threadId);
+    const messages = await loadMore(direction, limit, offsetItem?.threadId);
     return withNonMessagesComponents(
       convertToKeys(company.id, messages),
       window.reachedStart && direction === 'history',

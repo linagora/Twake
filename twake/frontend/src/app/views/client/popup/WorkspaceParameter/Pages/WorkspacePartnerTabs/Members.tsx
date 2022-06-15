@@ -148,7 +148,7 @@ export default ({ filter }: { filter: string }) => {
   };
 
   const buildMenu = (col: any) => {
-    let menu: any[] = [];
+    const menu: any[] = [];
 
     if (
       workspaceUserRightsService.hasGroupPrivilege() &&

@@ -41,7 +41,7 @@ class FeatureTogglesService {
   }
 
   public setFeaturesFromCompanyPlan(plan: { features: { [key: string]: FeatureValueType } }): void {
-    for (let [featureName, defaultValue] of availableFeaturesWithDefaults) {
+    for (const [featureName, defaultValue] of availableFeaturesWithDefaults) {
       this.setActiveFeatureName(
         featureName,
         plan.features[featureName] !== undefined ? plan.features[featureName] : defaultValue,

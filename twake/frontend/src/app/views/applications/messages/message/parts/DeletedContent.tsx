@@ -27,8 +27,7 @@ export default ({ userId }: PropsType) => {
 
   let user_name_node: any = null;
   const displayUserCard = async () => {
-    //@ts-ignore
-    let box = window.getBoundingClientRect(user_name_node);
+    const box = (window as any).getBoundingClientRect(user_name_node);
     const user = await userAsyncGet(userId);
 
     MenuManager.openMenu(
@@ -51,9 +50,9 @@ export default ({ userId }: PropsType) => {
       key,
       replacements.map((_, i) => `{${i}}`),
     );
-    let list: any[] = [];
+    const list: any[] = [];
     replacements.forEach((replacement, i) => {
-      let split = temp.split(`{${i}}`);
+      const split = temp.split(`{${i}}`);
       list.push(
         <Typography.Text key={i} type="secondary">
           {split[0]}

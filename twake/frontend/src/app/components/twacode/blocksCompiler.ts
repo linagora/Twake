@@ -147,7 +147,6 @@ const createTwacodeElements = (object: any, blocks: any[], type?: any) => {
       break;
     case 'image':
       object = object as BlockElementImage;
-      const format = type === 'image' ? 'image' : 'icon';
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       object.title
         ? blocks.push({
@@ -160,7 +159,7 @@ const createTwacodeElements = (object: any, blocks: any[], type?: any) => {
         : null;
 
       blocks.push({
-        type: format,
+        type: type === 'image' ? 'image' : 'icon',
         src: object.image_url,
       });
       break;
@@ -196,7 +195,6 @@ const createTwacodeElements = (object: any, blocks: any[], type?: any) => {
 
       break;
     case 'plain_text_input':
-      object = object;
       if (object.readonly === true && object.copiable === true) {
         blocks.push({
           type: 'copiable',
@@ -223,7 +221,6 @@ const createTwacodeElements = (object: any, blocks: any[], type?: any) => {
       //not implemented yet
       break;
     case 'context':
-      object = object;
       if (object.elements[0].type === 'mrkdwn') {
         createTwacodeElements(object.elements[0], blocks);
       } else {

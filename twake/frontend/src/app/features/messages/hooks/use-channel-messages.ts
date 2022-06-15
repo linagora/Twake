@@ -23,7 +23,8 @@ const lock = new AwaitLock();
 export const useChannelMessages = (key: AtomChannelKey) => {
   const { window, isInWindow, setWindow, getWindow, setLoaded, updateWindowFromIds } =
     getListWindow(key.channelId);
-  let [messages, setMessages] = useRecoilState(ChannelMessagesState(key));
+  const [_messages, setMessages] = useRecoilState(ChannelMessagesState(key));
+  let messages = _messages;
   const addToChannel = useAddMessageToChannel(key);
   if (messages.length > 0 && !window.loaded) setLoaded(true);
 

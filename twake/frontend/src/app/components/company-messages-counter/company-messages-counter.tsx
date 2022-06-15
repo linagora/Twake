@@ -15,7 +15,7 @@ import consoleService from 'app/features/console/services/console-service';
 const { Text, Title, Link } = Typography;
 const CompanyMessagesCounter = () => {
   const [messagesCount, setMessagesCount] = useState<number>(1);
-  let companyMessagesLimit = MessageHistoryService.getLimitCompanyMessages();
+  const companyMessagesLimit = MessageHistoryService.getLimitCompanyMessages();
 
   const { company } = useCurrentCompany();
 

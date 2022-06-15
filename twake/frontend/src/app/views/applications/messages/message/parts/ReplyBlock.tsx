@@ -14,7 +14,7 @@ type Props = {};
 export default (props: Props) => {
   const context = useContext(MessageContext);
   const channelId = useRouterChannel();
-  let { message } = useMessage(context);
+  const { message } = useMessage(context);
 
   const location = `thread-${message.thread_id}`;
   const subLocation = useContext(ViewContext).type;

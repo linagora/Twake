@@ -10,10 +10,10 @@ export type MessagesAndComponentsType = AtomMessageKey & {
 
 export const withNonMessagesComponents = (
   messages: AtomMessageKey[],
-  reachedStart: boolean = false,
-  shouldLimit: boolean = false,
+  reachedStart = false,
+  shouldLimit = false,
 ) => {
-  let newList: MessagesAndComponentsType[] = [];
+  const newList: MessagesAndComponentsType[] = [];
 
   let first = true;
   let previous: NodeMessage | null = null;

@@ -86,8 +86,8 @@ class ChannelAPIClientService {
     options?: SearchOptions,
   ): Promise<{ resources: ChannelType[] }> {
     const companyId = options?.company_id || Workspace.currentGroupId;
-    let query = `/internal/services/channels/v1/companies/${companyId}/search?q=${searchString}`;
-    let res = await Api.getWithParams<{ resources: ChannelType[] }>(query, options);
+    const query = `/internal/services/channels/v1/companies/${companyId}/search?q=${searchString}`;
+    const res = await Api.getWithParams<{ resources: ChannelType[] }>(query, options);
     this.logger.debug(
       `Search by name "${searchString}" with options`,
       options,

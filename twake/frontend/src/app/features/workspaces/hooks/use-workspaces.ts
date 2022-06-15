@@ -22,7 +22,7 @@ import { useEffect } from 'react';
 
 const logger = Logger.getLogger('useWorkspaces');
 
-export const useWorkspacesCommons = (companyId: string = '') => {
+export const useWorkspacesCommons = (companyId = '') => {
   const [workspaces, setWorkspaces] = useRecoilState(WorkspaceListStateFamily(companyId));
   const [loading, setLoading] = useRecoilState(LoadingState(`workspaces-${companyId}`));
 
@@ -57,7 +57,7 @@ export const useWorkspacesCommons = (companyId: string = '') => {
   return { workspaces, loading, refresh };
 };
 
-export function useWorkspaces(companyId: string = '') {
+export function useWorkspaces(companyId = '') {
   const { workspaces, loading, refresh } = useWorkspacesCommons(companyId);
 
   useRealtimeRoom<WorkspaceType>(

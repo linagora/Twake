@@ -5,7 +5,7 @@ import { CompanyType } from 'app/features/companies/types/company';
 import CompanyAPIClient from 'app/features/companies/api/company-api-client';
 import _ from 'lodash';
 
-let companies: { [key: string]: CompanyType } = {};
+const companies: { [key: string]: CompanyType } = {};
 
 export const getCompany = (companyId: string) => {
   return companies[companyId];
