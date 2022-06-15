@@ -11,7 +11,7 @@ import { getUrlFavicon, getDomain } from "../../../utils";
  */
 export const generateImageUrlPreview = async (url: string): Promise<LinkPreview | null> => {
   try {
-    const favicon = (await getUrlFavicon(url)) || null;
+    const favicon = (await getUrlFavicon(getWebsiteUrl(url))) || null;
     const domain = getDomain(url);
     const title = url.split("/").pop();
     const { height: img_height, width: img_width } = await imageProbe(url);
@@ -29,4 +29,9 @@ export const generateImageUrlPreview = async (url: string): Promise<LinkPreview 
   } catch (error) {
     logger.error(`failed to generate image url preview: ${error}`);
   }
+};
+
+const getWebsiteUrl = (url: string) => {
+  const urlObj = new URL(url);
+  return `${urlObj.protocol}//${urlObj.hostname}`;
 };
