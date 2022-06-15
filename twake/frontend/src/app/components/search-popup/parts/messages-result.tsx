@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import '../search-popup.scss';
-import { useChannel } from 'features/channels/hooks/use-channel';
 import { useUser } from 'features/users/hooks/use-user';
 import { Tooltip } from 'antd';
 import User from 'features/users/services/current-user-service';
 import { useWorkspace } from 'features/workspaces/hooks/use-workspaces';
 import RouterServices from 'features/router/services/router-service';
-import Strings from 'features/global/utils/strings';
 import { highlightText } from './common';
 import { MessageExtended } from 'features/messages/types/message';
 import ChannelAvatar from 'components/channel-avatar/channel-avatar';

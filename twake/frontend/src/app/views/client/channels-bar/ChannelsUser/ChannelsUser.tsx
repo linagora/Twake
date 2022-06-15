@@ -4,7 +4,7 @@ import Languages from 'app/features/global/services/languages-service';
 import RouterServices from 'app/features/router/services/router-service';
 
 import MediumPopupComponent from 'app/components/modal/modal-manager';
-import NewDirectMessagesPopup from 'app/views/client/channels-bar/Modals/NewDirectMessagesPopup';
+import NewDirectMessagesPopup from 'app/views/client/channels-bar/Modals/new-direct-channel-popup';
 import ChannelCategory from 'app/views/client/channels-bar/Parts/Channel/ChannelCategory';
 import { Button } from 'antd';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';

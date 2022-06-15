@@ -4,11 +4,11 @@ import '../search-popup.scss';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { useWorkspace } from 'features/workspaces/hooks/use-workspaces';
 import assert from 'assert';
-import Emojione from 'components/emojione/emojione';
 import RouterServices from 'features/router/services/router-service';
 import { highlightText } from 'components/search-popup/parts/common';
 import ChannelAvatar from 'components/channel-avatar/channel-avatar';
 import emoji from 'emoji-name-map';
+import { WorkspaceType } from 'features/workspaces/types/workspace';
 
 type PropsType = {
   channel: ChannelType;
@@ -17,11 +17,23 @@ type PropsType = {
 };
 
 export default ({ channel, highlight, onClick }: PropsType): JSX.Element => {
-  assert(channel.workspace_id, 'No workspace_id in channel object');
-  assert(channel.name, 'No name in channel object');
+  const info = {
+    workspace: { name: '' } as WorkspaceType,
+  };
+
+  try {
+    assert(channel.workspace_id, 'No workspace_id in channel object');
+    assert(channel.name, 'No name in channel object');
+    const { workspace } = useWorkspace(channel.workspace_id);
+    assert(workspace);
+    info.workspace = workspace as WorkspaceType;
+    const thumbnail = emoji.get(channel.icon);
+  } catch (e) {
+    console.log(channel);
+    console.error(e);
+    return <div />;
+  }
   // assert(channel.icon, 'No icon in channel object');
-  const { workspace } = useWorkspace(channel.workspace_id);
-  const thumbnail = emoji.get(channel.icon);
 
   const onItemClick = async () => {
     assert(channel.company_id);
@@ -44,7 +56,7 @@ export default ({ channel, highlight, onClick }: PropsType): JSX.Element => {
           className="channel-title"
           dangerouslySetInnerHTML={{ __html: highlightText(channel.name, highlight) }}
         />
-        <div className="channel-description">{workspace?.name}</div>
+        <div className="channel-description">{info.workspace.name}</div>
       </div>
       <div className="result-item-postfix"></div>
     </div>

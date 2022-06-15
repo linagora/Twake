@@ -117,7 +117,7 @@ input:focus {
   //position: absolute;
 
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 20px);
 
   max-width: 1000px;
 
@@ -444,7 +444,7 @@ input:focus {
     }
   }
 
-  .recent-results {
+  .search-results {
     .result-items-channel {
       padding: 4px;
       display: flex;
@@ -534,7 +534,7 @@ input:focus {
     .result-items-media {
       display: flex;
       flex-direction: row;
-      height: 130px;
+      height: 128px;
       .result-item {
         //box-shadow: 1px 1px 3px #ccc;
         padding: 4px;
@@ -542,8 +542,8 @@ input:focus {
         img {
           object-fit: cover;
           cursor: pointer;
-          width: 129px;
-          height: 129px;
+          width: 120px;
+          height: 120px;
           border-radius: 8px;
           box-shadow: 1px 1px 3px #ccc;
           transition: transform 0.15s;

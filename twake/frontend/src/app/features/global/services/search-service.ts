@@ -103,6 +103,7 @@ class SearchService extends Observable {
     }
     const res = await ChannelAPIClient.search(this.value, { limit });
     this.results.channels = res.resources;
+    this.logger.debug('search channels, found', res.resources.length);
     this.notify();
   }
 
@@ -115,6 +116,7 @@ class SearchService extends Observable {
       companyId: Workspaces.currentGroupId,
     }).then(users => {
       this.results.users = users;
+      this.logger.debug('search users, found', users.length);
       this.notify();
     });
   }
@@ -223,7 +225,10 @@ class SearchService extends Observable {
               ];
               break;
             case 'chats':
-              promises = [this.searchMessages(clearResult, 100)];
+              promises = [
+                this.searchContacts(clearResult, 12),
+                this.searchMessages(clearResult, 100),
+              ];
               break;
             case 'media':
               promises = [this.searchMedia(clearResult, 100)];

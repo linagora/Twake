@@ -1,10 +1,6 @@
 import React from 'react';
-import { ChannelType } from 'features/channels/types/channel';
-import { FileType } from 'features/files/types/file';
 import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
-import { includes } from 'lodash';
 import { FileSearchResult } from 'features/messages/types/message';
-import Logger from 'features/global/framework/logger-service';
 
 const locale = navigator.languages[0];
 
@@ -21,22 +17,20 @@ const iconFileByMime = (mimetype: string) => {
 };
 
 export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType): JSX.Element => {
-  let file: FileType;
-  try {
-    // @ts-ignore
-    file = fileSearchResult.message.files[0];
-  } catch (e) {
-    Logger.getLogger('SearchPopup:FilesResult').error(e);
-    console.error(fileSearchResult);
-    return <div />;
-  }
+  const info = {
+    mime: fileSearchResult.metadata?.mime || '',
+    size: fileSearchResult.metadata?.size,
+    created_at: fileSearchResult.created_at,
+    filename: fileSearchResult.metadata?.name,
+    username: fileSearchResult.user.full_name,
+  };
 
-  const icon = iconFileByMime(file.metadata.mime);
+  const icon = iconFileByMime(info.mime);
 
   let sizeStr = '';
 
-  if (file.upload_data?.size) {
-    let size = file.upload_data.size;
+  if (info.size) {
+    let size = info.size;
     let pos = 0;
     while (size > 1024) {
       size = size / 1024;
@@ -45,7 +39,7 @@ export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType
     sizeStr = size.toFixed(2) + ' ' + ['B', 'KB', 'MB', 'GB', 'TB', 'PB'][pos];
   }
 
-  const date = file.created_at
+  const date = info.created_at
     ? new Intl.DateTimeFormat(locale, {
         year: 'numeric',
         month: 'numeric',
@@ -55,7 +49,7 @@ export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType
         second: 'numeric',
         weekday: 'short',
         hour12: false,
-      }).format(new Date(file.created_at))
+      }).format(new Date(info.created_at))
     : '';
 
   return (
@@ -64,11 +58,11 @@ export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType
         <img src={icon} />
       </div>
       <div className="result-item-info">
-        <div className="filename">{file.metadata.name}</div>
+        <div className="filename">{info.filename}</div>
         <div className="details">
           {sizeStr} {date && <span>•</span>} {date}
         </div>
-        <div className="sender">{file.user?.full_name}</div>
+        <div className="sender">{info.username}</div>
       </div>
       <div className="result-item-actions">
         <div className="result-item-icon" onClick={onDownloadClick}>

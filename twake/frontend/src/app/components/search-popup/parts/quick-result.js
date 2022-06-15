@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import '../search-popup.scss';
 
 import Emojione from 'components/emojione/emojione';

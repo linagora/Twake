@@ -81,7 +81,10 @@ class ChannelAPIClientService {
     }
   }
 
-  async search(searchString: string, options?: SearchOptions): Promise<any> {
+  async search(
+    searchString: string,
+    options?: SearchOptions,
+  ): Promise<{ resources: ChannelType[] }> {
     const companyId = options?.company_id || Workspace.currentGroupId;
     const query = `/internal/services/channels/v1/companies/${companyId}/search?q=${searchString}`;
     const res = await Api.getWithParams<{ resources: ChannelType[] }>(query, options);
