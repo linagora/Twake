@@ -37,6 +37,8 @@ class MessageFilesCacheMigrator {
       MessageFile,
     );
 
+    let count = 0;
+
     let companyPagination: Paginable = new Pagination(null, "100");
     do {
       const companyList = await gr.services.companies.getCompanies(companyPagination);
@@ -57,7 +59,7 @@ class MessageFilesCacheMigrator {
 
             let threadPagination: Paginable = new Pagination(null, "100");
             do {
-              const threadList = await gr.services.messages.views.listChannelThreads(
+              const threadList = await gr.services.messages.views.listChannel(
                 threadPagination,
                 {},
                 {
@@ -89,39 +91,45 @@ class MessageFilesCacheMigrator {
                   for (const message of messagesList.getEntities()) {
                     if (message.files && message.files.length > 0) {
                       for (const _messageFile of message.files) {
-                        const messageFile = await this.messageFileRepository.findOne({
-                          message_id: message.id,
-                          id: _messageFile.id,
-                        });
-                        if (messageFile) {
-                          //Update user uploads
-                          const fileRef = getInstance({
-                            target_type: "user_upload",
-                            target_id: message.user_id,
-                            id: uuid.v1({ msecs: message.created_at }),
-                            created_at: message.created_at,
-                            company_id: companyId,
-                            workspace_id: workspaceId,
-                            channel_id: channelId,
-                            thread_id: message.thread_id,
+                        count++;
+                        try {
+                          const messageFile = await this.messageFileRepository.findOne({
                             message_id: message.id,
-                            message_file_id: messageFile.id,
-                            file_id: messageFile.metadata.external_id,
+                            id: _messageFile.id,
                           });
-                          await this.repository.save(fileRef);
 
-                          //Update messageFileRepository
+                          if (messageFile) {
+                            console.log(messageFile.metadata.name);
 
-                          messageFile.cache = {
-                            company_id: companyId,
-                            workspace_id: workspaceId,
-                            channel_id: channelId,
-                            user_id: message.user_id,
-                          };
-                          messageFile.thread_id = message.thread_id;
+                            //Update user uploads
+                            const fileRef = getInstance({
+                              target_type: "user_upload",
+                              target_id: message.user_id,
+                              id: uuid.v1({ msecs: message.created_at }),
+                              created_at: message.created_at,
+                              company_id: companyId,
+                              workspace_id: workspaceId,
+                              channel_id: channelId,
+                              thread_id: message.thread_id,
+                              message_id: message.id,
+                              message_file_id: messageFile.id,
+                              file_id: messageFile.metadata.external_id,
+                            });
+                            await this.repository.save(fileRef);
 
-                          await this.messageFileRepository.save(messageFile);
-                        }
+                            //Update messageFileRepository
+
+                            messageFile.cache = {
+                              company_id: companyId,
+                              workspace_id: workspaceId,
+                              channel_id: channelId,
+                              user_id: message.user_id,
+                            };
+                            messageFile.thread_id = message.thread_id;
+
+                            await this.messageFileRepository.save(messageFile);
+                          }
+                        } catch (e) {}
                       }
                     }
                   }
@@ -130,11 +138,13 @@ class MessageFilesCacheMigrator {
 
               threadPagination = threadList.nextPage;
               threadPagination.page_token =
-                threadPagination.page_token && threadList.getEntities()?.[0]?.thread_id;
-            } while (threadPagination.page_token);
+                threadPagination.page_token &&
+                threadList.getEntities()?.[threadList.getEntities().length - 1]?.thread_id;
+            } while (false); // && threadPagination.page_token && threadList.getEntities().length > 50);
           }
         }
       }
+      console.log("updated messages: ", count);
     } while (companyPagination.page_token);
   }
 }
