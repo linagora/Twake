@@ -26,12 +26,12 @@ const WorkspaceIdentity = () => {
   const [workspaceName, setWorkspaceName] = useState<string | undefined>(workspace?.name);
 
   const onClickUpdateWorkspace = async (partials: WorkspaceUpdateResource) => {
-    const updatedObject: WorkspaceUpdateResource = {};
-
-    partials.name && (updatedObject.name = partials.name);
-    partials.default !== undefined && (updatedObject.default = partials.default);
-    partials.logo && (updatedObject.logo = partials.logo);
-    partials.logo_b64 && (updatedObject.logo_b64 = partials.logo_b64);
+    const updatedObject: WorkspaceUpdateResource = {
+      ...(partials.name && {name: partials.name}),
+      ...(partials.default && {default: partials.default}),
+      ...(partials.logo && {logo: partials.logo || ''}),
+      ...(partials.logo_b64 && {logo_b64: partials.logo_b64})
+    };
 
     if (workspace) {
       try {
@@ -44,6 +44,13 @@ const WorkspaceIdentity = () => {
         if (res) {
           res && refresh();
           res.name && setWorkspaceName(res.name);
+
+          Toaster.success(
+            Languages.t(
+              'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update'
+            ),
+          );
+
           return res;
         }
       } catch (e) {
