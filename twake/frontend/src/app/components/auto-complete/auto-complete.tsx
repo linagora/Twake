@@ -44,8 +44,8 @@ type Props = {
 };
 
 export default class AutoComplete extends Component<Props, State> {
-  currentIdFromList: string = '';
-  is_open: boolean = false;
+  currentIdFromList = '';
+  is_open = false;
   input: any;
   container: any;
   outsideClickListener: any;
@@ -66,7 +66,7 @@ export default class AutoComplete extends Component<Props, State> {
     this.keyDown = this.keyDown.bind(this);
   }
   keyDown(ev: any) {
-    let key = ev.which || window.event;
+    const key = ev.which || window.event;
 
     if (
       this.is_open &&
@@ -87,8 +87,8 @@ export default class AutoComplete extends Component<Props, State> {
     }
   }
   keyUp(ev: any) {
-    let key = ev.which;
-    let allText = this.getValueBeforeCaret();
+    const key = ev.which;
+    const allText = this.getValueBeforeCaret();
     if (key === 8 && this.input.value.length === 0 && this.props.onBackspace) {
       this.props.onBackspace();
     }
@@ -148,7 +148,7 @@ export default class AutoComplete extends Component<Props, State> {
     if (!list[pos]) {
       return;
     }
-    let id = list[pos].id || JSON.stringify(list[pos]);
+    const id = list[pos].id || JSON.stringify(list[pos]);
     return id;
   }
 
@@ -158,7 +158,7 @@ export default class AutoComplete extends Component<Props, State> {
     this.input.removeEventListener('keyup', this.keyUp);
   }
   componentDidMount() {
-    let element = this.container;
+    const element = this.container;
     this.outsideClickListener = (event: any) => {
       if (!element.contains(event.target) && document.contains(event.target)) {
         this.setState({ focused: false });
@@ -182,7 +182,7 @@ export default class AutoComplete extends Component<Props, State> {
         return;
       }
 
-      let suggestions: any[] = [];
+      const suggestions: any[] = [];
       for (let j = 0; j < Math.min(this.props.max[this.currentRegexUsed], results.length); j++) {
         results[j].autocomplete_id = j;
         suggestions.push(results[j]);
@@ -215,11 +215,11 @@ export default class AutoComplete extends Component<Props, State> {
   putTextAtCursor(text: string, alreadyTypedLength: any) {
     alreadyTypedLength = alreadyTypedLength || 0;
 
-    let myValue = text;
+    const myValue = text;
 
     if (this.input.selectionStart || this.input.selectionStart === '0') {
-      let startPos = this.input.selectionStart;
-      let endPos = this.input.selectionEnd;
+      const startPos = this.input.selectionStart;
+      const endPos = this.input.selectionEnd;
       this.input.value =
         this.input.value.substring(0, startPos - alreadyTypedLength) +
         myValue +
@@ -245,11 +245,11 @@ export default class AutoComplete extends Component<Props, State> {
       return;
     }
 
-    let m = this.getValueBeforeCaret().match(this.props.regexHooked[this.currentRegexUsed]);
+    const m = this.getValueBeforeCaret().match(this.props.regexHooked[this.currentRegexUsed]);
     if (m === null) {
       return;
     }
-    let alreadyTypedLength = m[0].length;
+    const alreadyTypedLength = m[0].length;
 
     this.putTextAtCursor(
       this.props.renderItemChoosen[this.currentRegexUsed](item),
@@ -263,7 +263,7 @@ export default class AutoComplete extends Component<Props, State> {
   }
   setPositionResult() {
     if (this.input && this.state.resultPosition === '' && this.state.currentList.length > 0) {
-      let size = this.state.currentList.length * 32 + 5;
+      const size = this.state.currentList.length * 32 + 5;
       if (
         //@ts-ignore
         document.documentElement.clientHeight - window.getBoundingClientRect(this.input).bottom <

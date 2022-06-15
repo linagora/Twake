@@ -109,7 +109,7 @@ export const SuggestionList = <T,>(props: Props<T>): JSX.Element => {
   };
 
   const buildSuggestionDefaultMessage = () => {
-    let text: string = '';
+    let text = '';
     let icon: JSX.Element = <div />;
 
     if (props.suggestionType) {
@@ -185,7 +185,7 @@ export const SuggestionList = <T,>(props: Props<T>): JSX.Element => {
               textAlign: 'center',
               fontSize: '12px',
               width: '100%',
-              marginBottom: !!(props?.list && props.list.length > 0) ? 8 : 0,
+              marginBottom: props?.list && props.list.length > 0 ? 8 : 0,
               opacity: 0.5,
             }}
           >

@@ -44,7 +44,7 @@ export function useChannelWritingActivityState(
   return threadIdSelector;
 }
 
-let receivedWritingTimeout = new Map<string, number>();
+const receivedWritingTimeout = new Map<string, number>();
 
 export default function useChannelWritingActivity() {
   const companyId = useRouterCompany();
@@ -129,7 +129,7 @@ export function useChannelWritingActivityEmit(
 /** Keyboard typeing detection helper */
 let writeTimeout = setTimeout(() => {}, 0);
 export const useWritingDetector = () => {
-  let lastEmit = useRef(new Date().getTime());
+  const lastEmit = useRef(new Date().getTime());
 
   const onKeydown = useCallback((emit: (value: boolean) => unknown) => {
     const now = new Date().getTime();

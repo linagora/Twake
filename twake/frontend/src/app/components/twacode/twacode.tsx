@@ -20,8 +20,8 @@ let loadingInteractionTimeout: any = 0;
 export default React.memo((props: Props) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let container: any = null;
-  let passives: any = {};
-  let savedStringified = useRef('');
+  const passives: any = {};
+  const savedStringified = useRef('');
 
   const [loadingInteraction, setLoadingInteraction] = useState(false);
 
@@ -51,7 +51,7 @@ export default React.memo((props: Props) => {
   };
 
   useEffect(() => {
-    var stringified = JSON.stringify([props.content]);
+    const stringified = JSON.stringify([props.content]);
     if (stringified !== savedStringified.current) {
       clearTimeout(loadingInteractionTimeout);
       // eslint-disable-next-line react-hooks/exhaustive-deps

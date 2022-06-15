@@ -7,7 +7,7 @@ import { usePublicOrPrivateChannels } from './use-public-or-private-channels';
 import LocalStorage from 'app/features/global/framework/local-storage-service';
 
 const fromLocalStorage = LocalStorage.getItem('default_channel_id_per_workspace');
-let activeChannelPerWorkspace: { [key: string]: string } =
+const activeChannelPerWorkspace: { [key: string]: string } =
   (typeof fromLocalStorage === 'object' ? (fromLocalStorage as any) : {}) || {};
 
 export function useAutoSelectChannel() {

@@ -150,7 +150,7 @@ export const cleanFrontMessagesFromListOfMessages = (
   return messages;
 };
 
-export const useVisibleMessagesEditorLocation = (location: string, subLocation: string = '') => {
+export const useVisibleMessagesEditorLocation = (location: string, subLocation = '') => {
   const set = useSetRecoilState(VisibleMessagesEditorLocationState);
   const active = useRecoilValue(
     VisibleMessagesEditorLocationActiveSelector({ location, subLocation }),

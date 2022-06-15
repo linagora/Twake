@@ -50,7 +50,7 @@ const format = (inputDate: Date) => {
 const MSG_TRIM_LENGTH = 85;
 
 export default ({ message, highlight, onClick }: PropsType): JSX.Element => {
-  let { company_id, workspace_id, channel_id } = message.cache;
+  const { company_id, workspace_id, channel_id } = message.cache;
   const { workspace } = useWorkspace(workspace_id);
   const trimmedText = (text: string) =>
     text.length > MSG_TRIM_LENGTH ? text.substr(0, MSG_TRIM_LENGTH) + '…' : text;

@@ -9,7 +9,7 @@ import FileUploadAPIClient from 'app/features/files/api/file-upload-api-client';
 
 export default () => {
   const context = useContext(MessageContext);
-  let { message, save } = useMessage(context);
+  const { message, save } = useMessage(context);
 
   const { files, setFiles } = useUploadZones(`message-${message.id}`);
 

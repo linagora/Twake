@@ -25,7 +25,7 @@ export const ApplicationAccess = ({
         <ApplicationHelp />
       </Row>
       {Object.keys(application.access).map((key: string) => {
-        let currentScopes: ApplicationScopes[] = (application.access as any)[key];
+        const currentScopes: ApplicationScopes[] = (application.access as any)[key];
         return (
           <div key={key === 'hooks' ? 'listened events' : key} className="bottom-margin">
             <Row>

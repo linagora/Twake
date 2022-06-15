@@ -8,7 +8,7 @@ import Collections from 'app/deprecated/CollectionsV1/Collections/Collections';
 
 const logger = Logger.getLogger('WorkspaceListState');
 
-let workspacesCompanyMap: { [key: string]: WorkspaceType[] } = {};
+const workspacesCompanyMap: { [key: string]: WorkspaceType[] } = {};
 
 export const getWorkspacesByCompany = (companyId: string) => {
   return workspacesCompanyMap[companyId] || [];

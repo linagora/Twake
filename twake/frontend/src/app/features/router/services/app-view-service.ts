@@ -40,7 +40,7 @@ const defaultConfiguration: ViewConfiguration = {
 };
 
 export default class AppViewService extends Observable {
-  private id: string = '';
+  private id = '';
   private configuration: ViewConfiguration = defaultConfiguration;
 
   public getViewType(): ViewTypes {

@@ -17,7 +17,7 @@ class MessageHistoryService {
     const DELAY = 3 * MONTH;
     const MIN_MESSAGES = 100;
 
-    let currentTotalNumberOfMessagesInCompany = company.stats?.total_messages || 0;
+    const currentTotalNumberOfMessagesInCompany = company.stats?.total_messages || 0;
 
     const firstMessageTimestamp = Numbers.timeuuidToDate(firstMessageId) * 1000;
     const isFirstMessageOlderOrEqualThanDelay = firstMessageTimestamp >= DELAY;

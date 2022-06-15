@@ -22,7 +22,7 @@ type Props = {
   muted: boolean;
   favorite: boolean;
   unreadMessages: boolean;
-  visibility: string; //"private" | "public" | "direct"
+  visibility: string; //"private" | "public" | "direct"
   directMembers?: string[];
   notifications: number;
   menu?: JSX.Element;

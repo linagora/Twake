@@ -116,9 +116,9 @@ const FullMenu = (props: PropsType): JSX.Element => {
         <GuestManagement channel={props.channel} />
       ) : (
         <LockedGuestsPopup
-          companySubscriptionUrl={
-            consoleService.getCompanySubscriptionUrl(props.channel.company_id || "")
-          }
+          companySubscriptionUrl={consoleService.getCompanySubscriptionUrl(
+            props.channel.company_id || '',
+          )}
         />
       ),
       {
@@ -177,7 +177,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
     }
   };
 
-  let menu: object[] = [
+  const menu: object[] = [
     {
       type: 'menu',
       text: Languages.t(

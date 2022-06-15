@@ -47,7 +47,5 @@ export const onFileDownloadClick = (fileSearchResult: FileSearchResult) => {
 };
 
 const getFileFromFileSearchResult = (fileSearchResult: FileSearchResult): MessageFileType => {
-  let file: MessageFileType;
-  [file] = fileSearchResult.message.files;
-  return file;
+  return fileSearchResult.message.files?.[0] as MessageFileType;
 };

@@ -14,8 +14,8 @@ import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channe
 
 export default () => {
   const { companyId } = RouterServices.getStateFromRoute();
-  let { directChannels } = useDirectChannels();
-  let [max, setMax] = useState(20);
+  const { directChannels } = useDirectChannels();
+  const [max, setMax] = useState(20);
 
   const openConv = () => {
     return MediumPopupComponent.open(<NewDirectMessagesPopup />, {

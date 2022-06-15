@@ -1,6 +1,6 @@
 export default class Strings {
   static verifyMail(email: string) {
-    var re =
+    const re =
       // eslint-disable-next-line no-useless-escape
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email.toLowerCase());
@@ -31,21 +31,21 @@ export default class Strings {
   }
 
   static convertBase(src: any, srctable: any, desttable: any) {
-    var srclen = srctable.length;
-    var destlen = desttable.length;
+    const srclen = srctable.length;
+    const destlen = desttable.length;
     // first convert to base 10
-    var val = 0;
-    var numlen = src.length;
-    for (var i = 0; i < numlen; i++) {
+    let val = 0;
+    const numlen = src.length;
+    for (let i = 0; i < numlen; i++) {
       val = val * srclen + srctable.indexOf(src.charAt(i));
     }
     if (val < 0) {
       return 0;
     }
     // then covert to any base
-    var r = val % destlen;
-    var res = desttable.charAt(r);
-    var q = Math.floor(val / destlen);
+    let r = val % destlen;
+    let res = desttable.charAt(r);
+    let q = Math.floor(val / destlen);
     while (q) {
       r = q % destlen;
       q = Math.floor(q / destlen);

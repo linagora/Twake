@@ -28,7 +28,7 @@ class AccessRightsService extends Observable {
    * @param right
    * @returns
    */
-  public hasLevel(workspaceId: string = '', right: RightsOrNone): boolean {
+  public hasLevel(workspaceId = '', right: RightsOrNone): boolean {
     return rightLevels[this.workspaceLevels[workspaceId] || 'none'] >= rightLevels[right];
   }
 
@@ -38,7 +38,7 @@ class AccessRightsService extends Observable {
    * @param workspaceId
    * @returns
    */
-  public getLevel(workspaceId: string = ''): RightsOrNone {
+  public getLevel(workspaceId = ''): RightsOrNone {
     return this.workspaceLevels[workspaceId] || 'none';
   }
 
@@ -79,7 +79,7 @@ class AccessRightsService extends Observable {
    * @param right
    * @returns
    */
-  public hasCompanyLevel(companyId: string = '', right: RightsOrNone) {
+  public hasCompanyLevel(companyId = '', right: RightsOrNone) {
     return rightLevels[this.companyLevels[companyId] || 'none'] >= rightLevels[right];
   }
 
@@ -89,7 +89,7 @@ class AccessRightsService extends Observable {
    * @param companyId
    * @returns
    */
-  public getCompanyLevel(companyId: string = ''): RightsOrNone {
+  public getCompanyLevel(companyId = ''): RightsOrNone {
     return this.companyLevels[companyId] || 'none';
   }
 }

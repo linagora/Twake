@@ -6,8 +6,8 @@
  * - we can avoid the initial instant callback with options.doInitialCallback
  */
 
-let delayedRequests: Map<string, Function> = new Map();
-let delayedRequestsHasTimout: Map<string, boolean> = new Map();
+const delayedRequests: Map<string, Function> = new Map();
+const delayedRequestsHasTimout: Map<string, boolean> = new Map();
 
 export const delayRequest = (
   key: string,

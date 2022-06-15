@@ -19,16 +19,16 @@ class Login extends Observable {
   logger: Logger.Logger;
   firstInit: boolean;
   // FIXME: Make it private and force to use User.getCurrentId() or similar, but this has not too be exposed and used by others...
-  currentUserId: string = '';
+  currentUserId = '';
   emailInit: string;
   server_infos_loaded: boolean;
   server_infos: { branding: {}; ready: {}; auth: {}; help_url: boolean };
   error_secondary_mail_already: boolean;
   addmail_token: string;
   external_login_error: boolean;
-  state: string = '';
-  login_loading: boolean = false;
-  login_error: boolean = false;
+  state = '';
+  login_loading = false;
+  login_error = false;
   parsed_error_code: any;
   error_code: any;
   cookies: Cookies;

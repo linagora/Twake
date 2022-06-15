@@ -24,7 +24,9 @@ export const MessagesEditorState = atomFamily<MessagesEditorType, string>({
     let files = [];
     try {
       files = JSON.parse(LocalStorage.getItem(`editor:${key}:files`) || '[]') || [];
-    } catch (err) {}
+    } catch (err) {
+      //Nothing
+    }
     return { value: LocalStorage.getItem(`editor:${key}:value`) || '', files };
   },
   effects_UNSTABLE: key => [

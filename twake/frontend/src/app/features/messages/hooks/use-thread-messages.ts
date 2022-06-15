@@ -19,7 +19,8 @@ const lock = new AwaitLock();
 export const useThreadMessages = (key: AtomThreadKey) => {
   const { window, getWindow, isInWindow, setLoaded, setWindow, updateWindowFromIds } =
     getListWindow(key.threadId);
-  let [messages, setMessages] = useRecoilState(ThreadMessagesState(key));
+  const [_messages, setMessages] = useRecoilState(ThreadMessagesState(key));
+  let messages = _messages;
 
   if (messages.length > 0 && !window.loaded) setLoaded(true);
 

@@ -45,7 +45,7 @@ export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType
     sizeStr = size.toFixed(2) + ' ' + ['B', 'KB', 'MB', 'GB', 'TB', 'PB'][pos];
   }
 
-  let date = file.created_at
+  const date = file.created_at
     ? new Intl.DateTimeFormat(locale, {
         year: 'numeric',
         month: 'numeric',

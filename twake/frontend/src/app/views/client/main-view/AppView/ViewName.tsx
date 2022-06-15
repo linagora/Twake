@@ -17,7 +17,7 @@ const ViewName: FC<PropsType> = props => {
     props.viewService.getConfiguration().context,
   ]);
 
-  let { channel } = useChannel(props.id);
+  const { channel } = useChannel(props.id);
 
   const { workspace } = useWorkspace(channel?.workspace_id || '');
 

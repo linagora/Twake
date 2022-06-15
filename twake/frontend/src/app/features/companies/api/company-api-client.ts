@@ -36,7 +36,7 @@ class CompanyAPIClient {
    *
    * @param companyId
    */
-  async get(companyId: string, disableJWTAuthentication: boolean = false): Promise<CompanyType> {
+  async get(companyId: string, disableJWTAuthentication = false): Promise<CompanyType> {
     return Api.get<{ resource: CompanyType; websocket: WebsocketRoom }>(
       `${PREFIX}/companies/${companyId}`,
       undefined,

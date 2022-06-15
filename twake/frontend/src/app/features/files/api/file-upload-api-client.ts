@@ -123,7 +123,7 @@ class FileUploadAPIClient {
   }
 
   async recent(companyId: string, filter: 'file' | 'media', limit: number): Promise<FileType[]> {
-    let fileRoute = `/internal/services/messages/v1/companies/${companyId}/files?type=user_upload&media=${filter}_only&limit=${limit}`;
+    const fileRoute = `/internal/services/messages/v1/companies/${companyId}/files?type=user_upload&media=${filter}_only&limit=${limit}`;
     return Api.get<{ resources: FileType[] }>(fileRoute).then(a => a.resources);
   }
 }

@@ -114,7 +114,7 @@ const MemberChannelRow = (props: Props): JSX.Element => {
       </Col>
     );
   } else {
-    let menu: any = [
+    const menu: any = [
       {
         text: (
           <div style={{ color: 'var(--red)' }}>

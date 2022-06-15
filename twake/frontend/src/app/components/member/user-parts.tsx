@@ -43,7 +43,7 @@ export const getUserParts = (props: PropsType): UserPartsType => {
   );
   let channelName: string[] = [];
 
-  let users: UserType[] = [];
+  const users: UserType[] = [];
 
   channelMembers?.forEach(userId => users.push(getUser(userId)));
 

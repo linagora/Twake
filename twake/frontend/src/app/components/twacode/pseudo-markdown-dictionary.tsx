@@ -260,7 +260,7 @@ export const DynamicComponent = ({
         </option>
         {data.values.map((item: any) => {
           return (
-            <option value={item.value} selected={item.selected}>
+            <option key={item.value} value={item.value} selected={item.selected}>
               {item.name}
             </option>
           );

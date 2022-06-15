@@ -55,7 +55,7 @@ export class MessageEditorService extends Observable {
    * @param messageId
    * @returns
    */
-  async getContent(threadId: string = '', messageId: string = ''): Promise<string> {
+  async getContent(threadId = '', messageId = ''): Promise<string> {
     const editorId = this.getEditorId(threadId, messageId);
 
     if (!messageId) {
@@ -84,7 +84,7 @@ export class MessageEditorService extends Observable {
     return all;
   }
 
-  openEditor(threadId: string, messageId: string, context: string = '') {
+  openEditor(threadId: string, messageId: string, context = '') {
     const nextEditor = this.getEditorId(threadId, messageId, context);
     if (nextEditor === this.currentEditor) {
       return;
@@ -176,17 +176,17 @@ export class MessageEditorService extends Observable {
     this.notify();
   }
 
-  hasAttachments(threadId: string = ''): boolean {
+  hasAttachments(threadId = ''): boolean {
     const id = this.getThreadId(threadId);
 
     return !!this.filesAttachements[id]?.length;
   }
 
-  getAttachements(threadId: string = ''): string[] {
+  getAttachements(threadId = ''): string[] {
     return this.filesAttachements[this.getThreadId(threadId)];
   }
 
-  shouldLimitAttachements(threadId: string = ''): boolean {
+  shouldLimitAttachements(threadId = ''): boolean {
     return this.getAttachements(threadId)?.length >= this.ATTACHEMENTS_LIMIT ? true : false;
   }
 
@@ -207,7 +207,7 @@ export class MessageEditorService extends Observable {
     return `${this.channelId}${threadId ? `_thread=${threadId}` : ''}`;
   }
 
-  getEditorId(threadId: string, messageId: string, context: string = ''): string {
+  getEditorId(threadId: string, messageId: string, context = ''): string {
     return threadId + (messageId ? `_${messageId}` : '') + (context ? `_${context}` : '');
   }
 }

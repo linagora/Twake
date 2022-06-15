@@ -64,7 +64,7 @@ export const useNotifications = () => {
     ({ snapshot }) =>
       (newBadges: NotificationType[], companyId: string) => {
         const badges = snapshot.getLoadable(NotificationsBadgesState).getValue();
-        let list = _.uniqBy(
+        const list = _.uniqBy(
           [...badges.filter(b => b.company_id !== companyId), ...newBadges],
           'id',
         );
@@ -130,7 +130,7 @@ export const useNotifications = () => {
     },
     [addBadges, removeBadges],
   );
-  let room = userNotificationApiClient.websocket();
+  const room = userNotificationApiClient.websocket();
   useRealtimeRoom<any>(room, 'useNotifications', realtimeEvent);
 
   return {

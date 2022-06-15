@@ -6,8 +6,7 @@ import UserService from 'features/users/services/current-user-service';
 import { UserType } from 'features/users/types/user';
 import { getUser } from 'features/users/hooks/use-user-list';
 import { addApiUrlIfNeeded } from 'features/global/utils/URLUtils';
-
-const emoji = require('emoji-name-map');
+import emoji from 'emoji-name-map';
 
 type PropsType = {
   channel: ChannelType;
@@ -20,9 +19,9 @@ export default ({ channel, showLabel, collapseToOne }: PropsType): JSX.Element =
     let channelMembers = (channel.members || []).filter(e => e !== UsersService.getCurrentUserId());
     channelMembers = channelMembers.filter((e, i) => channelMembers.indexOf(e) === i);
 
-    let channelName: string[] = [];
+    const channelName: string[] = [];
 
-    let users: UserType[] = [];
+    const users: UserType[] = [];
 
     channelMembers.forEach(userId => users.push(getUser(userId)));
 
@@ -55,7 +54,7 @@ export default ({ channel, showLabel, collapseToOne }: PropsType): JSX.Element =
   }
 
   let thumbnail;
-  let label = channel?.name;
+  const label = channel?.name;
 
   if (channel.icon) {
     thumbnail = emoji.get(channel.icon);
@@ -99,7 +98,7 @@ const getThumbnail = (user: UserType) => {
     inner = <img alt={user.first_name} className="channel-icon-img" src={thumbnail} />;
   } else {
     const fullName = UserService.getFullName(user).toUpperCase().split(' ');
-    let letters = (fullName?.[0]?.[0] || '?') + (fullName?.[1]?.[0] || '');
+    const letters = (fullName?.[0]?.[0] || '?') + (fullName?.[1]?.[0] || '');
     inner = <div className="channel-icon-text">{letters}</div>;
     style = getStyle(user.id);
   }

@@ -18,7 +18,7 @@ type DesktopNotification = {
 
 let firstTime = false;
 let inAppNotificationKey = 0;
-let newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
+const newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
 
 const callback = (
   notificationObject: DesktopNotification | null,
@@ -30,7 +30,7 @@ const callback = (
     return;
   }
   setTimeout(() => {
-    let workspaceId = notificationObject.workspace_id;
+    const workspaceId = notificationObject.workspace_id;
     if (workspaceId) {
       RouterService.push(
         RouterService.generateRouteFromState({

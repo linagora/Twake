@@ -23,13 +23,13 @@ type ResultTypes = {
 class SearchService extends Observable {
   public results: ResultTypes = {} as ResultTypes;
   public recent: ResultTypes = {} as ResultTypes;
-  public value: string = '';
+  public value = '';
   private searchHTTPTimeout: any;
-  private searchLoading: boolean = false;
-  private _isOpen: boolean = false;
-  public searchInProgress: boolean = false;
+  private searchLoading = false;
+  private _isOpen = false;
+  public searchInProgress = false;
   private currentTab: 'all' | 'chats' | 'media' | 'files' = 'all';
-  public recentInProgress: boolean = true;
+  public recentInProgress = true;
   private logger = Logger.getLogger('SearchService');
 
   constructor() {
@@ -206,7 +206,7 @@ class SearchService extends Observable {
     ]);
   }
 
-  search(clearResult: boolean = false) {
+  search(clearResult = false) {
     delayRequest(
       'search-service',
       () => {

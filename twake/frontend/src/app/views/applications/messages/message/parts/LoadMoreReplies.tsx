@@ -7,8 +7,8 @@ import { MessageContext } from '../message-with-replies';
 
 export default (props: { firstMessageId: string; onFirstMessageChanged: Function }) => {
   const context = useContext(MessageContext);
-  let { message } = useMessage(context);
-  let { messages, window, loadMore } = useThreadMessages({
+  const { message } = useMessage(context);
+  const { messages, window, loadMore } = useThreadMessages({
     companyId: context.companyId,
     threadId: message.thread_id,
   });

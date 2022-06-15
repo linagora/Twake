@@ -32,7 +32,8 @@ const useSearchUserList = ({
   search: (str?: string) => UserType[];
   result: UserType[];
 } => {
-  let [userList, setUserList] = useState(getCurrentUserList());
+  const [_userList, setUserList] = useState(getCurrentUserList());
+  let userList = _userList;
   const [query, setQuery] = useState<string | undefined>();
   userList = _.uniqBy(userList, 'id');
 
@@ -82,7 +83,7 @@ const UserListManager = (props: PropsType) => {
   }, [result]);
 
   const updateStateFromProps = (props: PropsType, force?: boolean) => {
-    let anti_duplicates: string[] = [];
+    const anti_duplicates: string[] = [];
 
     const user_ids = props.users
       .map((item: any) => item.id || item)

@@ -138,7 +138,7 @@ export function getTriggerRange(term: string, text: string | null) {
 
 export function getTextToMatch(
   editorState: EditorState,
-  separator: string = ' ',
+  separator = ' ',
   returnFullTextForEntitiesTypes: Array<string> = [],
 ): SearchMatchType | undefined {
   const selection = editorState.getSelection();
@@ -176,7 +176,7 @@ export function getTextToMatch(
 
     // get the index of the next separator after the focusOffset (ie after the current cirsor position)
     let endOfTextIndex = 0;
-    let nextSeparator = selectedBlockText.indexOf(separator, focusOffset);
+    const nextSeparator = selectedBlockText.indexOf(separator, focusOffset);
     softLineIndex = selectedBlockText.indexOf('\n', focusOffset);
 
     if (nextSeparator === -1 && softLineIndex === -1) {

@@ -9,14 +9,14 @@ export default class Numbers {
   }
 
   static humanFileSize(bytes: number, si: boolean) {
-    var thresh = si ? 1000 : 1024;
+    const thresh = si ? 1000 : 1024;
     if (Math.abs(bytes) < thresh) {
       return bytes + ' B';
     }
-    var units = si
+    const units = si
       ? ['kb', 'mb', 'gb', 'gb', 'pb', 'eb', 'zb', 'yb']
       : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-    var u = -1;
+    let u = -1;
     do {
       bytes /= thresh;
       ++u;
@@ -42,9 +42,9 @@ export default class Numbers {
     if (!time_str) {
       return 0;
     }
-    var uuid_arr = time_str.split('-'),
-      // eslint-disable-next-line no-redeclare
-      time_str = [uuid_arr[2].substring(1), uuid_arr[1], uuid_arr[0]].join('');
+    const uuid_arr = time_str.split('-');
+    // eslint-disable-next-line no-redeclare
+    time_str = [uuid_arr[2].substring(1), uuid_arr[1], uuid_arr[0]].join('');
     return parseInt(time_str, 16);
   }
 
@@ -68,38 +68,38 @@ export default class Numbers {
     // orion elenzil
     // 20080905
 
-    var getValueOfDigit = function (digit: string, alphabet: string) {
-      var pos = alphabet.indexOf(digit);
+    const getValueOfDigit = function (digit: string, alphabet: string) {
+      const pos = alphabet.indexOf(digit);
       return pos;
     };
 
-    var srcBase = srcAlphabet.length;
-    var dstBase = dstAlphabet.length;
+    const srcBase = srcAlphabet.length;
+    const dstBase = dstAlphabet.length;
 
-    var wet = src;
-    var val = 0;
-    var mlt = 1;
+    const wet = src;
+    let val = 0;
+    let mlt = 1;
 
     while (src.length > 0) {
-      var digit = src.charAt(src.length - 1);
+      const digit = src.charAt(src.length - 1);
       val += mlt * getValueOfDigit(digit, srcAlphabet);
       src = src.substring(0, src.length - 1);
       mlt *= srcBase;
     }
 
-    var wetint = val;
-    var ret = '';
+    let wetint = val;
+    let ret = '';
 
     while (wetint >= dstBase) {
-      var digitVal = wetint % dstBase;
+      const digitVal = wetint % dstBase;
       // eslint-disable-next-line no-redeclare
-      var digit = dstAlphabet.charAt(digitVal);
+      const digit = dstAlphabet.charAt(digitVal);
       ret = digit + ret;
       wetint /= dstBase;
     }
 
     // eslint-disable-next-line no-redeclare
-    var digit = dstAlphabet.charAt(wetint);
+    const digit = dstAlphabet.charAt(wetint);
     ret = digit + ret;
 
     return ret;

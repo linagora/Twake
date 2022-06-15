@@ -37,9 +37,9 @@ export default (props: Props) => {
   const channelId = useRouterChannel();
   const workspaceId = useRouterWorkspace();
   const context = useContext(MessageContext);
-  let { message, react, remove, pin } = useMessage(context);
-  let { channel } = useChannel(channelId);
-  let { message: thread } = useMessage({
+  const { message, react, remove, pin } = useMessage(context);
+  const { channel } = useChannel(channelId);
+  const { message: thread } = useMessage({
     companyId: channel.company_id || '',
     threadId: message.thread_id,
     id: message.thread_id,
@@ -58,7 +58,7 @@ export default (props: Props) => {
   const menu: any[] = [];
 
   const triggerApp = (app: any) => {
-    var data = {
+    const data = {
       channel: channel,
       thread: thread.id && thread.id !== message.id ? thread : null,
       message: message,
@@ -147,6 +147,7 @@ export default (props: Props) => {
           return apps.map((app: any) => {
             return (
               <div
+                key={app.id}
                 className="menu"
                 onClick={() => {
                   triggerApp(app);

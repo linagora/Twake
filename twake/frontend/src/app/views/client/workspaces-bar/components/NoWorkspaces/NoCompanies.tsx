@@ -19,7 +19,7 @@ import GotALink from './GotALink';
 import './styles.scss';
 
 export default class WelcomePage extends Component {
-  private retrying: boolean = false;
+  private retrying = false;
   constructor(props: {}) {
     super(props);
     this.state = {

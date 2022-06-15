@@ -34,13 +34,13 @@ export default (props: Props) => {
   const [didMouseOver, setDidMouseOver] = useState(false);
 
   const context = useContext(MessageContext);
-  let { message } = useMessage(context);
+  const { message } = useMessage(context);
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
-    var app_id = message.application_id;
-    var type = 'interactive_message_action';
-    var event = action_id;
-    var data = {
+    const app_id = message.application_id;
+    const type = 'interactive_message_action';
+    const event = action_id;
+    const data = {
       interactive_context: context,
       form: passives,
       message: message,
@@ -131,7 +131,7 @@ export default (props: Props) => {
               {message?.files && (message?.files?.length || 0) > 0 && <MessageAttachments />}
               {message?.links &&
                 (message?.links?.length || 0) > 0 &&
-                message.links.map(preview => <LinkPreview preview={preview} />)}
+                message.links.map((preview, i) => <LinkPreview key={i} preview={preview} />)}
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}
             </>

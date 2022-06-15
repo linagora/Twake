@@ -74,7 +74,7 @@ const WorkspaceIdentity = () => {
 
         const getBase64 = (file: File): Promise<string> => {
           return new Promise((result, fail) => {
-            var reader = new FileReader();
+            const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function () {
               result(`${reader.result}`);
@@ -107,8 +107,7 @@ const WorkspaceIdentity = () => {
   useEffect(() => {
     uploadInputRef?.current && (uploadInputRef.current.onchange = onChangeWorkspaceLogo);
     return () => (uploadInputRef.current = undefined);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [uploadInputRef, onChangeWorkspaceLogo]);
 
   return (
     <>

@@ -1554,15 +1554,13 @@ select {
   color: rgb(30 64 175 / var(--tw-text-opacity));
 }
 
-@media (prefers-color-scheme: dark) {
-  .dark\:text-white {
-    --tw-text-opacity: 1;
-    color: rgb(255 255 255 / var(--tw-text-opacity));
-  }
+.dark .dark\:text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+}
 
-  .dark\:opacity-50 {
-    opacity: 0.5;
-  }
+.dark .dark\:opacity-50 {
+  opacity: 0.5;
 }
 
 @media (min-width: 640px) {

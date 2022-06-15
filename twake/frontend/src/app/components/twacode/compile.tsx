@@ -12,8 +12,8 @@ type Props = {
 
 const Compile = (props: Props) => {
   let content = props.content;
-  let isApp = props.isApp;
-  let eventContainer = props.eventContainer;
+  const isApp = props.isApp;
+  const eventContainer = props.eventContainer;
   let textTransform = props.textTransform;
 
   if (!content) {
@@ -103,7 +103,9 @@ const Compile = (props: Props) => {
         })}
       </>
     );
-  } catch (e) {}
+  } catch (e) {
+    //Nothing
+  }
 
   return (
     <span style={textTransform || {}}>

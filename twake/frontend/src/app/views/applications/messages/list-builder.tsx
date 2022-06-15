@@ -53,7 +53,7 @@ export default React.memo(
       const INITIAL_ITEM_COUNT = (_items || []).length;
 
       const [firstItemIndex, setFirstItemIndex] = useState(START_INDEX);
-      let [items, setItems] = useState(_items || []);
+      const [items, setItems] = useState(_items || []);
       const refVirtuoso = useRef<VirtuosoHandle>(null);
 
       useImperativeHandle(ref, () => ({

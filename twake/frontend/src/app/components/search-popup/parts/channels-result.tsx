@@ -8,7 +8,7 @@ import Emojione from 'components/emojione/emojione';
 import RouterServices from 'features/router/services/router-service';
 import { highlightText } from 'components/search-popup/parts/common';
 import ChannelAvatar from 'components/channel-avatar/channel-avatar';
-const emoji = require('emoji-name-map');
+import emoji from 'emoji-name-map';
 
 type PropsType = {
   channel: ChannelType;

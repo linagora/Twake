@@ -52,7 +52,7 @@ export default class Viewer extends Component<PropsType, StateType> {
       }
     });
   }
-  componentWillUpdate(nextProps: any, nextState: any) {
+  UNSAFE_componentWillUpdate(nextProps: any, nextState: any) {
     this.viewed_document = this.props.document || DriveService.viewed_document;
     if (this.viewed_document && this.viewed_document.id !== this.last_viewed_id) {
       this.last_viewed_id = this.viewed_document.id;

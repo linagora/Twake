@@ -18,7 +18,7 @@ export enum Events {
 const logger = Logger.getLogger('Services/FileUploadService');
 class FileUploadService {
   private pendingFiles: PendingFileType[] = [];
-  public currentTaskId: string = '';
+  public currentTaskId = '';
   private recoilHandler: Function = () => {};
 
   setRecoilHandler(handler: Function) {

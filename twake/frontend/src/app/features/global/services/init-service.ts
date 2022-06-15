@@ -49,8 +49,8 @@ export type ServerInfoType = null | {
 
 class InitService extends Observable {
   public server_infos: ServerInfoType = null;
-  public server_infos_loaded: boolean = false;
-  public app_ready: boolean = false;
+  public server_infos_loaded = false;
+  public app_ready = false;
   private logger = Logger.getLogger('InitService');
 
   async getServer() {
