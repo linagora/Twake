@@ -15,7 +15,6 @@
 .env.development.local
 .env.test.local
 .env.production.local
-.storybook
 .bin
 
 npm-debug.log*
@@ -23,7 +22,6 @@ yarn-debug.log*
 yarn-error.log*
 
 /.bin/
-/.storybook/
 /.idea/
 /public/dist/
 /public/public/dist/
