@@ -852,6 +852,7 @@
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.bad_format": "Bad format, only png gif and jpg are allowed",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.unknown": "Unknown error",
     "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.error.prefix": "Error",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Successfully updated",
     "scenes.join.loading": "Loading…",
     "scenes.join.wrong_link_title": "This link is not available anymore",
     "scenes.join.wrong_link_description": "Ask the person who invited you to join this company for a new link or create your own company",

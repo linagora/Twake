@@ -198,7 +198,7 @@ export class WorkspaceServiceImpl implements WorkspaceService {
     }/workspaces/${workspace.id}/thumbnail?t=${new Date().getTime()}`;
     let logoPublicUrl = undefined;
     if (workspace.logo) {
-      if (!item.logo || options.logo_b64) {
+      if (!options.logo_b64) {
         await gr.platformServices.storage.remove(logoInternalPath);
         workspace.logo = null;
       }
