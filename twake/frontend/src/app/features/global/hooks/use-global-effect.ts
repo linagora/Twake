@@ -11,7 +11,7 @@ export const useGlobalEffect = (key: string, callback: Function, deps: ReadonlyA
   useEffect(() => {
     if (isEqual(globalEffectDepsMap.get(key), deps) === false) {
       globalEffectDepsMap.set(key, deps);
-      return (() => callback())();
+      callback();
     }
   }, deps);
 };
