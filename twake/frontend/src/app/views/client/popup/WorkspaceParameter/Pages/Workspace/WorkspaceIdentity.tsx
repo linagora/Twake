@@ -27,10 +27,10 @@ const WorkspaceIdentity = () => {
 
   const onClickUpdateWorkspace = async (partials: WorkspaceUpdateResource) => {
     const updatedObject: WorkspaceUpdateResource = {
-      ...(partials.name && {name: partials.name}),
-      ...(partials.default && {default: partials.default}),
-      ...(partials.logo && {logo: partials.logo || ''}),
-      ...(partials.logo_b64 && {logo_b64: partials.logo_b64})
+      ...(partials.name && { name: partials.name }),
+      ...(partials.default && { default: partials.default }),
+      ...(partials.logo && { logo: partials.logo || '' }),
+      ...(partials.logo_b64 && { logo_b64: partials.logo_b64 }),
     };
 
     if (workspace) {
@@ -47,7 +47,7 @@ const WorkspaceIdentity = () => {
 
           Toaster.success(
             Languages.t(
-              'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update'
+              'scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update',
             ),
           );
 
