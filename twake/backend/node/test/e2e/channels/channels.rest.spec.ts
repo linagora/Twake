@@ -1313,6 +1313,9 @@ describe("The /internal/services/channels/v1 API", () => {
         createMessage({ text: "Some message" }),
       );
 
+      await gr.services.channels.channels.markAsRead(channels[2], { id: platform.currentUser.id });
+      await gr.services.channels.channels.markAsRead(channels[7], { id: platform.currentUser.id });
+
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       const jwtToken = await platform.auth.getJWTToken();
@@ -1337,8 +1340,8 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(result.resources.length).toEqual(10);
 
-      expect(result.resources[0].name).toEqual("FirstName4 LastName4");
-      expect(result.resources[1].name).toEqual("Regular Channel 4");
+      expect(result.resources[0].name).toEqual("FirstName2 LastName2");
+      expect(result.resources[1].name).toEqual("Regular Channel 2");
 
       done();
     });

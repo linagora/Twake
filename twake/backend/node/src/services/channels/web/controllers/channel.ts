@@ -397,12 +397,10 @@ export class ChannelCrudController
         ? await gr.services.channels.channels.markAsRead(
             this.getPrimaryKey(request),
             request.currentUser,
-            getExecutionContext(request),
           )
         : await gr.services.channels.channels.markAsUnread(
             this.getPrimaryKey(request),
             request.currentUser,
-            getExecutionContext(request),
           );
       return result;
     } catch (err) {
