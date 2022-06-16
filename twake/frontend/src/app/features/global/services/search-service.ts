@@ -209,6 +209,9 @@ class SearchService extends Observable {
   }
 
   search(clearResult = false) {
+    if (!this.value) {
+      return;
+    }
     this.searchInProgress = true;
     delayRequest(
       'search-service',
