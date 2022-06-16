@@ -1,6 +1,6 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
+import { ChannelMember, ChannelMemberPrimaryKey, ChannelMemberWithUser } from "../../entities";
 import {
   ChannelMemberParameters,
   ChannelParameters,
@@ -22,6 +22,7 @@ import {
   User,
 } from "../../../../utils/types";
 import gr from "../../../global-resolver";
+import { formatUser } from "../../../../utils/users";
 
 export class ChannelMemberCrudController
   implements
@@ -165,16 +166,26 @@ export class ChannelMemberCrudController
       Querystring: PaginationQueryParameters & { company_role?: string };
       Params: ChannelParameters;
     }>,
-  ): Promise<ResourceListResponse<ChannelMember>> {
+  ): Promise<ResourceListResponse<ChannelMemberWithUser>> {
     const list = await gr.services.channels.members.list(
       new Pagination(request.query.page_token, request.query.limit),
       { company_role: request.query.company_role },
       getExecutionContext(request),
     );
 
+    const channelMembers = list.getEntities() as ChannelMemberWithUser[];
+    const resources = [];
+
+    for (const member of channelMembers) {
+      if (member) {
+        const user = await formatUser(await gr.services.users.get({ id: member.user_id }));
+        resources.push({ ...member, user });
+      }
+    }
+
     return {
       ...{
-        resources: list.getEntities(),
+        resources,
       },
       ...(request.query.websockets && {
         websockets: gr.platformServices.realtime.sign(
