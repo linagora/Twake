@@ -4,9 +4,9 @@ import ChannelsAndContacts from 'components/search-popup/parts/channels-and-cont
 import Discussions from 'components/search-popup/parts/discussions';
 import Files from 'components/search-popup/parts/files';
 import Media from 'components/search-popup/parts/media';
+import Languages from 'features/global/services/languages-service';
 import NotFound from 'components/search-popup/parts/not-found';
 import Loading from 'components/search-popup/parts/loading';
-import Languages from 'features/global/services/languages-service';
 
 export default (): JSX.Element => {
   if (Search.searchInProgress) {

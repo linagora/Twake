@@ -362,6 +362,9 @@ export class MessagesController
         message_id: string;
         encoded_url: string;
       };
+      Body: {
+        url: string;
+      };
     }>,
     reply: FastifyReply,
   ): Promise<ResourceUpdateResponse<Message>> {
@@ -371,7 +374,7 @@ export class MessagesController
         {
           message_id: request.params.message_id,
           thread_id: request.params.thread_id,
-          encoded_link: request.params.encoded_url,
+          link: request.body.url,
         },
         context,
       );

@@ -125,7 +125,7 @@ export interface MessageThreadMessagesServiceAPI
     item: {
       message_id: string;
       thread_id: string;
-      encoded_link: string;
+      link: string;
     },
     context: ThreadExecutionContext,
   ): Promise<SaveResult<Message>>;

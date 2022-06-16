@@ -9,6 +9,20 @@ import Languages from 'features/global/services/languages-service';
 export default (): JSX.Element => {
   useEffect(() => {}, [Search.searchInProgress, Search.value]);
 
+
+  if (Search.searchInProgress) {
+    return Loading();
+  }
+
+  if (
+    Boolean(Search.value) &&
+    !Search.searchInProgress &&
+    !Search.results.channels.length &&
+    !Search.results.users.length &&
+    !Search.results.messages.length
+  ) {
+    return <NotFound searchString={Search.value} />;
+  }
   if (Search.searchInProgress) {
     return Loading();
   }

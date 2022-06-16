@@ -2,7 +2,6 @@
   border-radius: 0px !important;
   border: 4px solid var(--primary) !important;
   border-width: 0 0 0 4px !important;
-  width: 450px;
   margin-top: 15px !important;
   padding-left: 15px !important;
 
@@ -19,7 +18,7 @@
     &:hover {
       opacity: 1;
     }
-  }  
+  }
   &:hover .delete-link-preview {
     display: block;
   }
@@ -50,17 +49,10 @@
     font-weight: bold;
   }
 
-  .preview-title {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    width: 100%;
-
-    a {
-      font-size: 14px;
-      font-weight: bold;
-      float: left;
-    }
+  .preview-title > a {
+    font-size: 14px;
+    font-weight: bold;
+    float: left;
   }
 
   .ant-card-meta-description {

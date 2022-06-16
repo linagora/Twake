@@ -135,8 +135,8 @@ const routes: FastifyPluginCallback = (fastify: FastifyInstance, options, next) 
   });
 
   fastify.route({
-    method: "DELETE",
-    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/links/:encoded_url",
+    method: "POST",
+    url: "/companies/:company_id/threads/:thread_id/messages/:message_id/deletelink",
     preValidation: [fastify.authenticate],
     handler: messagesController.deleteLinkPreview.bind(messagesController),
   });

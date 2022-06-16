@@ -164,5 +164,5 @@ export type FlatPinnedFromMessage = {
 export interface DeleteLinkOperation {
   message_id: string;
   thread_id: string;
-  encoded_link: string;
+  link: string;
 }
