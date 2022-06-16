@@ -3,6 +3,7 @@ import RecentChannelsAndContacts from 'components/search-popup/parts/recent/chan
 import Files from 'components/search-popup/parts/files';
 import Media from 'components/search-popup/parts/media';
 import Search from 'features/global/services/search-service';
+import Languages from 'features/global/services/languages-service';
 
 export default (): JSX.Element => {
   useEffect(() => {}, []);
@@ -10,8 +11,16 @@ export default (): JSX.Element => {
   return (
     <div className="search-results tab-all">
       <RecentChannelsAndContacts />
-      <Files title="Recent files" files={Search.recent.files} limit={3} />
-      <Media title="Recent media" files={Search.recent.media} limit={10} />
+      <Files
+        title={Languages.t('components.searchpopup.recent_files')}
+        files={Search.recent.files}
+        limit={3}
+      />
+      <Media
+        title={Languages.t('components.searchpopup.recent_media')}
+        files={Search.recent.media}
+        limit={10}
+      />
     </div>
   );
 };

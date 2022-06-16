@@ -5,6 +5,7 @@ import RouterServices, { ClientStateType } from 'features/router/services/router
 import { ChannelType } from 'features/channels/types/channel';
 import assert from 'assert';
 import ChannelAvatar from 'components/channel-avatar/channel-avatar';
+import Languages from 'app/features/global/services/languages-service';
 
 export default (): JSX.Element => {
   const onClick = (channel: ChannelType) => {
@@ -19,7 +20,9 @@ export default (): JSX.Element => {
 
   return (
     <div className="results-group">
-      <div className="results-group-title">Recent channels and contacts</div>
+      <div className="results-group-title">
+        {Languages.t('components.searchpopup.recent_channels_and_contacts')}
+      </div>
 
       <PerfectScrollbar
         options={{ suppressScrollY: true }}

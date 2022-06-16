@@ -29,10 +29,10 @@ export default class SearchPopup extends React.Component {
     };
 
     const tabs = [
-      { key: 'all', title: 'All' },
-      { key: 'chats', title: 'Chats' },
-      { key: 'media', title: 'Media' },
-      { key: 'files', title: 'Files' },
+      { key: 'all', title: Languages.t('components.searchpopup.all') },
+      { key: 'chats', title: Languages.t('components.searchpopup.chats') },
+      { key: 'media', title: Languages.t('components.searchpopup.media') },
+      { key: 'files', title: Languages.t('components.searchpopup.files') },
     ];
 
     this.tabs = tabs;
