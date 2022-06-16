@@ -1,7 +1,7 @@
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { onFilePreviewClick } from 'components/search-popup/parts/common';
 import React from 'react';
-import MediaResult from 'components/search-popup/parts/recent/media-result';
+import MediaResult from 'components/search-popup/parts/media-result';
 import { FileSearchResult } from 'features/messages/types/message';
 
 type PropsType = {
@@ -22,7 +22,7 @@ export default ({ title, files, limit }: PropsType): JSX.Element => {
       <PerfectScrollbar
         options={{ suppressScrollY: true }}
         component="div"
-        className="result-items-media"
+        className="flex flex-row"
       >
         {files.slice(0, limit).map(file => (
           <MediaResult

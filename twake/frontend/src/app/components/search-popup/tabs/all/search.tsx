@@ -1,12 +1,17 @@
 import Search from 'features/global/services/search-service';
-import React, { useState } from 'react';
+import React from 'react';
 import ChannelsAndContacts from 'components/search-popup/parts/channels-and-contacts';
 import Discussions from 'components/search-popup/parts/discussions';
 import Files from 'components/search-popup/parts/files';
 import Media from 'components/search-popup/parts/media';
+import NotFound from 'components/search-popup/parts/not-found';
+import Loading from 'components/search-popup/parts/loading';
+import Languages from 'features/global/services/languages-service';
 
 export default (): JSX.Element => {
-  const [notFound, setNotFound] = useState(false);
+  if (Search.searchInProgress) {
+    return Loading();
+  }
 
   if (
     Boolean(Search.value) &&
@@ -15,7 +20,7 @@ export default (): JSX.Element => {
     !Search.results.users.length &&
     !Search.results.messages.length
   ) {
-    return <div className="searchLoading">Nothing found</div>;
+    return <NotFound searchString={Search.value} />;
   }
 
   return (
@@ -24,14 +29,26 @@ export default (): JSX.Element => {
         <ChannelsAndContacts channels={Search.results.channels} users={Search.results.users} />
       )) || <div />}
       {(Search.results.messages?.length && (
-        <Discussions title="Discussions" limit={4} messages={Search.results.messages} />
+        <Discussions
+          title={Languages.t('components.searchpopup.chats')}
+          limit={4}
+          messages={Search.results.messages}
+        />
       )) || <div />}
 
       {(Search.results.files?.length && (
-        <Files title="Files" limit={4} files={Search.results.files} />
+        <Files
+          title={Languages.t('components.searchpopup.files')}
+          limit={4}
+          files={Search.results.files}
+        />
       )) || <div />}
       {(Search.results.media?.length && (
-        <Media title="Media" limit={4} files={Search.results.media} />
+        <Media
+          title={Languages.t('components.searchpopup.media')}
+          limit={4}
+          files={Search.results.media}
+        />
       )) || <div />}
     </div>
   );

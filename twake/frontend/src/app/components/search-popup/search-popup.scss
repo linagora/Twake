@@ -220,7 +220,7 @@ input:focus {
 
     .input-clear-btn {
       position: absolute;
-      top: 6px;
+      top: 10px;
       right: 24px;
       cursor: pointer;
     }
@@ -528,29 +528,6 @@ input:focus {
             }
           }
         }
-      }
-    }
-
-    .result-items-media {
-      display: flex;
-      flex-direction: row;
-      height: 128px;
-      .result-item {
-        //box-shadow: 1px 1px 3px #ccc;
-        padding: 4px;
-
-        img {
-          object-fit: cover;
-          cursor: pointer;
-          width: 120px;
-          height: 120px;
-          border-radius: 8px;
-          box-shadow: 1px 1px 3px #ccc;
-          transition: transform 0.15s;
-        }
-      }
-      img:hover {
-        transform: scale(1.05);
       }
     }
   }
