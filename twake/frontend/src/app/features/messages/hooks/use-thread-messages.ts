@@ -32,6 +32,7 @@ export const useThreadMessages = (key: AtomThreadKey) => {
   const addMore = async (
     direction: 'future' | 'history' | 'replace' = 'future',
     newMessages: NodeMessage[],
+    options?: { reachedEnd?: boolean },
   ) => {
     newMessages?.forEach(m => {
       setMessage(m);
@@ -55,7 +56,10 @@ export const useThreadMessages = (key: AtomThreadKey) => {
     setWindow({
       ...updateWindowFromIds(newList.map(message => message.id || message.threadId)),
       loaded: true,
-      reachedEnd: window.reachedEnd || (newMessages.length <= 1 && direction === 'future'),
+      reachedEnd:
+        window.reachedEnd ||
+        options?.reachedEnd ||
+        (newMessages.length <= 1 && direction === 'future'),
       reachedStart: window.reachedStart || (newMessages.length <= 1 && direction === 'history'),
     });
 
@@ -93,7 +97,12 @@ export const useThreadMessages = (key: AtomThreadKey) => {
       if (!options?.keepOffsetMessage)
         newMessages = newMessages.filter(message => message.id !== offset);
 
-      if (!options?.ignoreStateUpdate) addMore(direction, newMessages);
+      if (!options?.ignoreStateUpdate)
+        addMore(
+          direction,
+          newMessages,
+          direction === 'history' && !offset ? { reachedEnd: true } : {},
+        );
 
       lock.release();
       return newMessages;
