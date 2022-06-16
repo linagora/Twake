@@ -87,7 +87,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
       const result = await this.client
         .post(
-          `/api/companies/${company.code}/${isNewConsole ? "invitation" : "users/invitation"}`,
+          `/api/companies/${company.code}/${isNewConsole ? "invitations" : "users/invitation"}`,
           invitationData,
           {
             auth: this.auth(),
