@@ -1337,8 +1337,8 @@ describe("The /internal/services/channels/v1 API", () => {
 
       expect(result.resources.length).toEqual(10);
 
-      expect(result.resources[0].name).toEqual("FirstName2 LastName2");
-      expect(result.resources[1].name).toEqual("Regular Channel 2");
+      expect(result.resources[0].name).toEqual("FirstName4 LastName4");
+      expect(result.resources[1].name).toEqual("Regular Channel 4");
 
       done();
     });
