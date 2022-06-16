@@ -150,9 +150,9 @@ class MessageAPIClient {
    * @returns {Promise<void>}
    */
   async deleteLinkPreview(companyId: string, threadId: string, messageId: string, url: string) {
-    const encoded_link = encodeURIComponent(url);
-    const response = await Api.delete<{ resource: NodeMessage }>(
-      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/links/${encoded_link}`,
+    const response = await Api.post<{ url: string }, { resource: NodeMessage }>(
+      `${this.prefixUrl}/companies/${companyId}/threads/${threadId}/messages/${messageId}/deletelink`,
+      { url },
     );
 
     return response.resource;
