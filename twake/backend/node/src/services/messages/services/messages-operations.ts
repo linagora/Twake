@@ -189,9 +189,7 @@ export class ThreadMessagesOperationsService {
       throw Error("Can't edit message links previews.");
     }
 
-    const decoded_url = decodeURIComponent(operation.encoded_link);
-
-    message.links = message.links.filter(({ url }: { url: string }) => url !== decoded_url);
+    message.links = message.links.filter(({ url }: { url: string }) => url !== operation.link);
 
     await this.repository.save(message);
     this.threadMessagesService.onSaved(message, { created: false }, context);
