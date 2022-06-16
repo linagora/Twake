@@ -3,8 +3,6 @@ import Search from 'features/global/services/search-service';
 import Media from 'components/search-popup/parts/media';
 import NotFound from 'components/search-popup/parts/not-found';
 import Loading from 'components/search-popup/parts/loading';
-import NotFound from 'components/search-popup/parts/not-found';
-import Loading from 'components/search-popup/parts/loading';
 import Languages from 'features/global/services/languages-service';
 
 export default (): JSX.Element => {
