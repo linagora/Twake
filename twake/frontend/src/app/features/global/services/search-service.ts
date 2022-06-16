@@ -209,11 +209,11 @@ class SearchService extends Observable {
   }
 
   search(clearResult = false) {
+    this.searchInProgress = true;
     delayRequest(
       'search-service',
       () => {
         if (this.readyToSearch()) {
-          this.searchInProgress = true;
           let promises = [];
           switch (this.currentTab) {
             case 'all':
@@ -241,9 +241,11 @@ class SearchService extends Observable {
           // @ts-ignore
           Promise.all(promises)
             .then(a => {
-              this.logger.debug(`All searches complete`);
-              this.searchInProgress = false;
-              this.notify();
+              new Promise(resolve => setTimeout(resolve, 500)).then(() => {
+                this.logger.debug(`All searches complete`);
+                this.searchInProgress = false;
+                this.notify();
+              });
             })
             .catch(e => {
               console.error(e);

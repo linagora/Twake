@@ -4,9 +4,13 @@ import ChannelsAndContacts from 'components/search-popup/parts/channels-and-cont
 import Discussions from 'components/search-popup/parts/discussions';
 import Files from 'components/search-popup/parts/files';
 import Media from 'components/search-popup/parts/media';
+import NotFound from 'components/search-popup/parts/not-found';
+import Loading from 'components/search-popup/parts/loading';
 
 export default (): JSX.Element => {
-  const [notFound, setNotFound] = useState(false);
+  if (Search.searchInProgress) {
+    return Loading();
+  }
 
   if (
     Boolean(Search.value) &&
@@ -15,7 +19,7 @@ export default (): JSX.Element => {
     !Search.results.users.length &&
     !Search.results.messages.length
   ) {
-    return <div className="searchLoading">Nothing found</div>;
+    return <NotFound searchString={Search.value} />;
   }
 
   return (
