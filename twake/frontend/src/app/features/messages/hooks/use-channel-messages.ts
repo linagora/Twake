@@ -34,6 +34,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   const addMore = async (
     direction: 'future' | 'history' | 'replace' = 'future',
     newMessages: MessageWithReplies[],
+    options?: { reachedEnd?: boolean },
   ) => {
     newMessages?.forEach(m => {
       setMessage(m);
@@ -68,7 +69,10 @@ export const useChannelMessages = (key: AtomChannelKey) => {
     setWindow({
       ...updateWindowFromIds(newList.map(message => message.threadId)),
       loaded: true,
-      reachedEnd: window.reachedEnd || (newMessages.length <= 1 && direction === 'future'),
+      reachedEnd:
+        window.reachedEnd ||
+        options?.reachedEnd ||
+        (newMessages.length <= 1 && direction === 'future'),
       reachedStart: window.reachedStart || (newMessages.length <= 1 && direction === 'history'),
     });
 
@@ -109,7 +113,12 @@ export const useChannelMessages = (key: AtomChannelKey) => {
 
       if (!options?.keepOffsetMessage)
         messages = messages.filter(message => message.thread_id !== offset);
-      if (!options?.ignoreStateUpdate) addMore(direction, messages);
+      if (!options?.ignoreStateUpdate)
+        addMore(
+          direction,
+          messages,
+          direction === 'history' && !offset ? { reachedEnd: true } : {},
+        );
 
       lock.release();
       return messages;
