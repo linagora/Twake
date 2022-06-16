@@ -86,4 +86,5 @@ export type Thumbnail = {
   height: number;
 
   url: string;
+  full_url?: string;
 };
