@@ -3,6 +3,7 @@ import Search from 'features/global/services/search-service';
 import Files from 'components/search-popup/parts/files';
 import NotFound from 'components/search-popup/parts/not-found';
 import Loading from 'components/search-popup/parts/loading';
+import Languages from 'features/global/services/languages-service';
 
 export default (): JSX.Element => {
   const isSearchMode = Boolean(Search.value);
@@ -25,7 +26,9 @@ export default (): JSX.Element => {
     return <div />;
   }
 
-  const groupTitle = isSearchMode ? 'Files' : 'Recent files';
+  const groupTitle = isSearchMode
+    ? Languages.t('components.searchpopup.files')
+    : Languages.t('components.searchpopup.recent_files');
 
   return (
     <div className="search-results tab-files">
