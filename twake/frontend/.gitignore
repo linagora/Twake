@@ -27,6 +27,7 @@ yarn-error.log*
 /public/public/dist/
 /storybook-static/
 /public/storybook/
+/public/styles/tailwind.css
 /build/
 /counter-clone/
 __old
