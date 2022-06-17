@@ -397,12 +397,10 @@ export class ChannelCrudController
         ? await gr.services.channels.channels.markAsRead(
             this.getPrimaryKey(request),
             request.currentUser,
-            getExecutionContext(request),
           )
         : await gr.services.channels.channels.markAsUnread(
             this.getPrimaryKey(request),
             request.currentUser,
-            getExecutionContext(request),
           );
       return result;
     } catch (err) {
@@ -517,7 +515,9 @@ export class ChannelCrudController
       channels = [...channels, ...workspaceChannels];
     }
 
-    channels = channels.sort((a, b) => b.last_activity - a.last_activity);
+    channels = channels.sort(
+      (a, b) => (b.user_member.last_access || 0) - (a.user_member.last_access || 0),
+    );
     channels = channels.slice(0, 100);
 
     const userIncludedChannels: UsersIncludedChannel[] = await Promise.all(

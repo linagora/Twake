@@ -55,7 +55,7 @@ export const getDownloadRoute = (file: File) => {
 };
 
 export const getThumbnailRoute = (file: File, index: string) => {
-  return filesUrl.replace(":company_id", file.company_id) + `/${file.id}/thumbnails/${index}`;
+  return `/internal/services/files/v1/companies/${file.company_id}/files/${file.id}/thumbnails/${index}`;
 };
 
 export default routes;
