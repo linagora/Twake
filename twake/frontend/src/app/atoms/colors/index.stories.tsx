@@ -10,7 +10,7 @@ const Template: ComponentStory<any> = () => {
     <>
       <div className="grid grid-cols-1 gap-8">
         {['slate', 'red', 'orange', 'green', 'blue'].map(color => (
-          <div>
+          <div key={color}>
             <div className="flex flex-col space-y-3 sm:flex-row text-xs sm:space-y-0 sm:space-x-4">
               <div className="w-16 shrink-0">
                 <div className="h-10 flex flex-col justify-center">
@@ -21,7 +21,7 @@ const Template: ComponentStory<any> = () => {
               </div>
               <div className="min-w-0 flex-1 grid grid-cols-5 2xl:grid-cols-10 gap-x-4 gap-y-3 2xl:gap-x-2">
                 {[50, 100, 200, 300, 400, 500, 600, 700, 800, 900].map(shade => (
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5" key={shade}>
                     <div
                       className={
                         'h-10 w-full rounded dark:ring-1 dark:ring-inset dark:ring-white/10 ' +
