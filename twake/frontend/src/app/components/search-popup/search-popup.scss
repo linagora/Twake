@@ -514,20 +514,7 @@ input:focus {
             letter-spacing: -0.24px;
           }
         }
-        .result-item-actions {
-          margin-top: auto;
-          margin-bottom: auto;
-          display: flex;
 
-          .result-item-icon {
-            padding-left: 4px;
-            img {
-              width: 24px;
-              height: 24px;
-              cursor: pointer;
-            }
-          }
-        }
       }
     }
   }
@@ -545,3 +532,5 @@ input:focus {
     }
   }
 }
+
+
