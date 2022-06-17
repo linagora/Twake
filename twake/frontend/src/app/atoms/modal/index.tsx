@@ -1,10 +1,10 @@
-import { Dialog, Transition } from "@headlessui/react";
-import { ExclamationIcon, XIcon } from "@heroicons/react/outline";
-import { Fragment, ReactNode, useCallback, useEffect, useState } from "react";
-import { atom, useRecoilState } from "recoil";
+import { Dialog, Transition } from '@headlessui/react';
+import { ExclamationIcon, XIcon } from '@heroicons/react/outline';
+import { Fragment, ReactNode, useCallback, useEffect, useState } from 'react';
+import { atom, useRecoilState } from 'recoil';
 
 const ModalsCountState = atom({
-  key: "ModalsState",
+  key: 'ModalsState',
   default: 0,
 });
 
@@ -20,8 +20,7 @@ export const Modal = (props: {
   positioned?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
-  const [modalsCountState, setModalsCountState] =
-    useRecoilState(ModalsCountState);
+  const [modalsCountState, setModalsCountState] = useRecoilState(ModalsCountState);
   const [level, setLevel] = useState(0);
 
   const onClose = useCallback(() => {
@@ -52,11 +51,11 @@ export const Modal = (props: {
     };
   }, []);
 
-  const zIndex = "z-" + level + "0";
+  const zIndex = 'z-' + level + '0';
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className={"relative " + zIndex} onClose={() => {}}>
+      <Dialog as="div" className={'relative ' + zIndex} onClose={() => {}}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -68,27 +67,23 @@ export const Modal = (props: {
         >
           <div
             className={
-              "fixed inset-0 bg-opacity-25 transition-opacity " +
-              (level === 1 ? "bg-black" : "bg-transparent")
+              'fixed inset-0 bg-opacity-25 transition-opacity ' +
+              (level === 1 ? 'bg-black' : 'bg-transparent')
             }
           />
         </Transition.Child>
 
         <div
           className={
-            "fixed z-10 inset-0 overflow-y-auto transition-transform " +
+            'fixed z-10 inset-0 overflow-y-auto transition-transform ' +
             (level !== visibleModals && open
-              ? "-translate-y-6 sm:scale-95 opacity-75 "
+              ? '-translate-y-6 sm:scale-95 opacity-75 '
               : level !== visibleModals && !open
-              ? "translate-y-6 sm:scale-95 opacity-75 "
-              : "")
+              ? 'translate-y-6 sm:scale-95 opacity-75 '
+              : '')
           }
         >
-          <div
-            className={
-              "flex items-end justify-center min-h-screen text-center sm:block "
-            }
-          >
+          <div className={'flex items-end justify-center min-h-screen text-center sm:block '}>
             {
               /* This element is to trick the browser into centering the modal contents. */
               !props.positioned && (
@@ -111,8 +106,8 @@ export const Modal = (props: {
             >
               <Dialog.Panel
                 className={
-                  "relative inline-block align-bottom bg-white rounded-tr-xl rounded-tl-xl sm:rounded-xl px-4 pt-5 pb-4 text-left w-full sm:w-auto overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 " +
-                  (props.className || "")
+                  'relative inline-block align-bottom bg-white rounded-tr-xl rounded-tl-xl sm:rounded-md px-4 pt-5 pb-4 text-left w-full sm:w-auto overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 ' +
+                  (props.className || '')
                 }
                 style={props.style || {}}
               >
@@ -144,13 +139,13 @@ export const ModalContent = (props: {
   buttons?: ReactNode;
   children?: ReactNode;
   icon?: any;
-  theme?: "success" | "danger" | "warning" | "gray";
+  theme?: 'success' | 'danger' | 'warning' | 'gray';
 }) => {
-  let color = "indigo";
-  if (props.theme === "success") color = "green";
-  if (props.theme === "danger") color = "red";
-  if (props.theme === "warning") color = "orange";
-  if (props.theme === "gray") color = "gray";
+  let color = 'indigo';
+  if (props.theme === 'success') color = 'green';
+  if (props.theme === 'danger') color = 'red';
+  if (props.theme === 'warning') color = 'orange';
+  if (props.theme === 'gray') color = 'gray';
   return (
     <>
       <div className="sm:flex sm:items-start">
@@ -158,26 +153,15 @@ export const ModalContent = (props: {
           <div
             className={`mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-${color}-100 sm:mx-0 sm:h-10 sm:w-10`}
           >
-            <props.icon
-              className={`h-6 w-6 text-${color}-600`}
-              aria-hidden="true"
-            />
+            <props.icon className={`h-6 w-6 text-${color}-600`} aria-hidden="true" />
           </div>
         )}
-        <div
-          className={
-            "mt-3 text-center sm:mt-0 sm:text-left " +
-            (props.icon ? "sm:ml-4" : "")
-          }
-        >
-          <Dialog.Title
-            as="h3"
-            className="text-lg leading-6 font-medium text-gray-900"
-          >
+        <div className={'mt-3 text-center sm:mt-0 sm:text-left ' + (props.icon ? 'sm:ml-4' : '')}>
+          <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
             {props.title}
           </Dialog.Title>
           <div className="mt-2">
-            <p className="text-sm text-gray-500">{props.text || ""}</p>
+            <p className="text-sm text-gray-500">{props.text || ''}</p>
           </div>
         </div>
       </div>
