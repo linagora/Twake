@@ -12,7 +12,7 @@
     "dev:linter": "eslint src/",
     "test": "CI=true craco test --passWithNoTests",
     "start": "npm run dev:start",
-    "build": "CI=false craco --max_old_space_size=4096 --optimize-for-size build && npm run build-storybook",
+    "build": "npm run build-storybook && CI=false craco --max_old_space_size=4096 --optimize-for-size build",
     "build-storybook": "build-storybook -o public/storybook",
     "storybook": "concurrently \"start-storybook -p 6006\" \"npm run dev:tailwind\""
   },
