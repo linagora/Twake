@@ -77,6 +77,3 @@ export const ButtonConfirm = (props: ButtonProps) => {
     </>
   );
 };
-function setInConfirm(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}

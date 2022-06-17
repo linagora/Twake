@@ -3,17 +3,7 @@ import _ from 'lodash';
 import { ReactNode } from 'react';
 
 type TextProps = {
-  type:
-    | 'title'
-    | 'section'
-    | 'section-small'
-    | 'menu'
-    | 'value-main'
-    | 'value-secondary'
-    | 'base'
-    | 'base-small'
-    | 'info'
-    | 'info-small';
+  type: 'title' | 'subtitle' | 'base' | 'base-small' | 'info' | 'info-small';
   children: ReactNode | ReactNode[];
   className?: string;
   noColor?: boolean;
@@ -26,16 +16,7 @@ type TypedTextProps = Omit<TextProps, 'type'>;
 
 export const Title = (props: TypedTextProps) => Text({ type: 'title', ...props });
 
-export const Section = (props: TypedTextProps) => Text({ type: 'section', ...props });
-
-export const SectionSmall = (props: TypedTextProps) => Text({ type: 'section-small', ...props });
-
-export const Menu = (props: TypedTextProps) => Text({ type: 'menu', ...props });
-
-export const ValueMain = (props: TypedTextProps) => Text({ type: 'value-main', ...props });
-
-export const ValueSecondary = (props: TypedTextProps) =>
-  Text({ type: 'value-secondary', ...props });
+export const Subtitle = (props: TypedTextProps) => Text({ type: 'subtitle', ...props });
 
 export const Base = (props: TypedTextProps) => Text({ type: 'base', ...props });
 
@@ -51,29 +32,13 @@ const Text = (props: TextProps) => {
   switch (props.type) {
     case 'title':
       defaultClassName =
-        'text-2xl font-semibold block ' +
+        'text-lg font-semibold block ' +
         ' ' +
         (props.noColor ? '' : 'text-slate-900 dark:text-white');
       break;
-    case 'section':
-      defaultClassName =
-        'text-xl font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
-      break;
-    case 'section-small':
-      defaultClassName =
-        'text-lg font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
-      break;
-    case 'menu':
+    case 'subtitle':
       defaultClassName =
         'text-base font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
-      break;
-    case 'value-main':
-      defaultClassName =
-        'text-3xl font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
-      break;
-    case 'value-secondary':
-      defaultClassName =
-        'text-xl font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
       break;
     case 'base':
       defaultClassName =

@@ -19,6 +19,7 @@
       "@deprecated/*": ["./src/app/deprecated/*"],
       "@styles/*": ["./src/app/styles/*"],
       "@atoms/*": ["./src/app/atoms/*"],
+      "@molecules/*": ["./src/app/molecules/*"],
       "@views/*": ["./src/app/views/*"]
     }
   }

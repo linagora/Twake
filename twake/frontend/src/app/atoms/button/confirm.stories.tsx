@@ -7,7 +7,6 @@ export default {
   title: '@atoms/button-confirm',
 };
 
-// More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<any> = (props: {
   text: string;
   disabled: boolean;
@@ -50,7 +49,6 @@ const Template: ComponentStory<any> = (props: {
 };
 
 export const Default = Template.bind({});
-// More on args: https://storybook.js.org/docs/react/writing-stories/args
 Default.args = {
   text: 'Text',
   loading: false,
