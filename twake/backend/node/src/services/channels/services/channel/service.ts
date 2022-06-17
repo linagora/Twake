@@ -593,7 +593,7 @@ export class ChannelServiceImpl implements ChannelService {
     return list.getEntities();
   }
 
-  async markAsRead(pk: ChannelPrimaryKey, user: User): Promise<boolean> {
+  async markAsRead(pk: ChannelPrimaryKey, user: Pick<User, "id">): Promise<boolean> {
     const now = Date.now();
     const channel = await this.get(pk);
 

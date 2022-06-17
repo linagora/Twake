@@ -1313,6 +1313,9 @@ describe("The /internal/services/channels/v1 API", () => {
         createMessage({ text: "Some message" }),
       );
 
+      await gr.services.channels.channels.markAsRead(channels[2], { id: platform.currentUser.id });
+      await gr.services.channels.channels.markAsRead(channels[7], { id: platform.currentUser.id });
+
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       const jwtToken = await platform.auth.getJWTToken();
