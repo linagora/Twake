@@ -11,6 +11,8 @@ import TabMedia from './tabs/media';
 import TabChats from './tabs/chats';
 import Tab from './tabs/tab';
 import PerfectScrollbar from 'react-perfect-scrollbar';
+import { DismissIcon } from '@atoms/icons-colored';
+import { InputClearIcon } from '@atoms/icons-agnostic';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -155,9 +157,11 @@ export default class SearchPopup extends React.Component {
         <div className="component-container">
           <div className="search screen">
             <div className="header-wrapper">
-              <div className="header-title">Search</div>
+              <div className="header-title">
+                {Languages.t('components.searchpopup.header_title')}
+              </div>
               <div className="header-close-btn" onClick={this.onCloseButtonClick}>
-                <img src="/public/icons/dismiss.svg" />
+                <DismissIcon />
               </div>
             </div>
 
@@ -192,7 +196,7 @@ export default class SearchPopup extends React.Component {
 
               {Search.value && (
                 <div className="input-clear-btn" onClick={this.onSearchFieldClearClick}>
-                  <img src="/public/icons/input-clear.svg" />
+                  <InputClearIcon className="fill-gray-500" />
                 </div>
               )}
             </div>

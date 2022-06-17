@@ -625,6 +625,7 @@
     "components.workspace.list_manager.current_company": "Current company",
     "components.workspace.list_manager.all": "All",
     "components.workspace.calendar.invalid": "Invalid",
+    "components.searchpopup.header_title": "Search",
     "components.searchpopup.enter_text": "Enter some text to search Twake.",
     "components.searchpopup.loading": "Loading more results",
     "components.searchpopup.filter_ws": "Filter workspaces",
