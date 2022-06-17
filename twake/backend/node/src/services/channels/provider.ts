@@ -106,11 +106,7 @@ export interface ChannelService
    * @param channel
    * @param user
    */
-  markAsRead(
-    channel: ChannelPrimaryKey,
-    user: User,
-    context: WorkspaceExecutionContext,
-  ): Promise<boolean>;
+  markAsRead(channel: ChannelPrimaryKey, user: User): Promise<boolean>;
 
   /**
    * Mark the channel as unread
@@ -119,11 +115,7 @@ export interface ChannelService
    * @param user
    * @param context
    */
-  markAsUnread(
-    channel: ChannelPrimaryKey,
-    user: User,
-    context: WorkspaceExecutionContext,
-  ): Promise<boolean>;
+  markAsUnread(channel: ChannelPrimaryKey, user: User): Promise<boolean>;
 
   /**
    * Update the last activity for the given channel

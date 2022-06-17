@@ -87,7 +87,7 @@ export default async (
     } while (hasMoreMessageFiles);
   }
 
-  const messageFiles = [] as FileSearchResult[];
+  let messageFiles = [] as FileSearchResult[];
   let nextPageToken = null;
 
   for await (const { msgFile, pageToken } of getNextMessageFiles(request.query.page_token)) {
@@ -118,6 +118,8 @@ export default async (
       continue;
     }
   }
+
+  messageFiles = messageFiles.filter(mf => mf.message.subtype !== "deleted");
 
   return {
     resources: messageFiles,
