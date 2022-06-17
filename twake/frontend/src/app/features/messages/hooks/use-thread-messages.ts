@@ -4,7 +4,7 @@ import Numbers from 'app/features/global/utils/Numbers';
 import _ from 'lodash';
 import { useRecoilState } from 'recoil';
 import { AtomMessageKey, AtomThreadKey, ThreadMessagesState } from '../state/atoms/messages';
-import { getMessage, useSetMessage } from './use-message';
+import { useSetMessage } from './use-message';
 import {
   AddToWindowOptions,
   getListWindow,

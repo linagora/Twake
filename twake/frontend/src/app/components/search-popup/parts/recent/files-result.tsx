@@ -1,19 +1,37 @@
 import React from 'react';
 import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
 import { FileSearchResult } from 'features/messages/types/message';
-
+import {
+  FileTypeArchiveIcon,
+  FileTypeDocumentIcon,
+  FileTypePdfIcon,
+  FileTypeSpreadsheetIcon,
+  FileTypeUnknownIcon,
+} from '@atoms/icons-colored';
+import { DownloadIcon, EyeIcon } from '@atoms/icons-agnostic';
 const locale = navigator.languages[0];
 
 type PropsType = {
   fileSearchResult: FileSearchResult;
-  onDownloadClick: any;
-  onPreviewClick: any;
+  onDownloadClick: () => void;
+  onPreviewClick: () => void;
 };
 
 const iconFileByMime = (mimetype: string) => {
   const type = FileUploadAPIClient.mimeToType(mimetype || '');
-  const existedIcons = ['pdf', 'archive', 'spreadsheet', 'document'];
-  return `/public/icons/file-type-${existedIcons.includes(type) ? type : 'unknown'}.svg`;
+  const iconClass = 'w-12 h-12';
+  switch (type) {
+    case 'pdf':
+      return <FileTypePdfIcon className={iconClass} />;
+    case 'archive':
+      return <FileTypeArchiveIcon className={iconClass} />;
+    case 'spreadsheet':
+      return <FileTypeSpreadsheetIcon className={iconClass} />;
+    case 'document':
+      return <FileTypeDocumentIcon className={iconClass} />;
+    default:
+      return <FileTypeUnknownIcon className={iconClass} />;
+  }
 };
 
 export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType): JSX.Element => {
@@ -54,9 +72,7 @@ export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType
 
   return (
     <div className="result-item">
-      <div className="result-item-icon">
-        <img src={icon} />
-      </div>
+      <div className="flex items-center">{icon}</div>
       <div className="result-item-info">
         <div className="filename">{info.filename}</div>
         <div className="details">
@@ -64,12 +80,12 @@ export default ({ fileSearchResult, onDownloadClick, onPreviewClick }: PropsType
         </div>
         <div className="sender">{info.username}</div>
       </div>
-      <div className="result-item-actions">
-        <div className="result-item-icon" onClick={onDownloadClick}>
-          <img src="/public/icons/download.svg" />
+      <div className="flex mr-1 items-center">
+        <div className="px-1" onClick={onDownloadClick}>
+          <DownloadIcon className="w-6 h-6 cursor-pointer fill-blue-500" />
         </div>
-        <div className="result-item-icon" onClick={onPreviewClick}>
-          <img src="/public/icons/eye.svg" />
+        <div className="px-1" onClick={onPreviewClick}>
+          <EyeIcon className="w-6 h-6 cursor-pointer fill-blue-500" />
         </div>
       </div>
     </div>

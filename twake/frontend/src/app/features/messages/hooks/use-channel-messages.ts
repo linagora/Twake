@@ -1,17 +1,15 @@
-import { Message, MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
+import { MessageWithReplies, NodeMessage } from 'app/features/messages/types/message';
 import MessageViewAPIClient from 'app/features/messages/api/message-view-api-client';
 import LoginService from 'app/features/auth/login-service';
 import { useRealtimeRoom } from 'app/features/global/hooks/use-realtime';
-import Numbers from 'app/features/global/utils/Numbers';
-import _, { some } from 'lodash';
+import _ from 'lodash';
 import { useRecoilState } from 'recoil';
 import { AtomChannelKey, AtomMessageKey, ChannelMessagesState } from '../state/atoms/messages';
 import { useSetMessage } from './use-message';
 import { useAddMessageToThread } from './use-thread-messages';
-import { messageToMessageWithReplies } from '../utils/message-with-replies';
 import {
-  getListWindow,
   AddToWindowOptions,
+  getListWindow,
   useAddToWindowedList,
   useRemoveFromWindowedList,
 } from './use-add-to-windowed-list';
@@ -162,6 +160,7 @@ export const useChannelMessages = (key: AtomChannelKey) => {
   useRealtimeRoom<MessageWithReplies>(
     MessageViewAPIClient.feedWebsockets(key.channelId)[0],
     'useChannelMessages',
+    // eslint-disable-next-line
     async (action: string, event: any) => {
       if (action === 'created' || action === 'updated') {
         const message = event as NodeMessage;
