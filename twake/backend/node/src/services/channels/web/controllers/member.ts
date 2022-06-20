@@ -1,6 +1,6 @@
 import { CrudController } from "../../../../core/platform/services/webserver/types";
 import { CrudException, Pagination } from "../../../../core/platform/framework/api/crud-service";
-import { ChannelMember, ChannelMemberPrimaryKey } from "../../entities";
+import { ChannelMember, ChannelMemberPrimaryKey, ChannelMemberWithUser } from "../../entities";
 import {
   ChannelMemberParameters,
   ChannelParameters,
@@ -22,6 +22,7 @@ import {
   User,
 } from "../../../../utils/types";
 import gr from "../../../global-resolver";
+import { formatUser } from "../../../../utils/users";
 
 export class ChannelMemberCrudController
   implements
@@ -162,19 +163,61 @@ export class ChannelMemberCrudController
    */
   async list(
     request: FastifyRequest<{
-      Querystring: PaginationQueryParameters & { company_role?: string };
+      Querystring: PaginationQueryParameters & { company_role?: string; search?: string };
       Params: ChannelParameters;
     }>,
-  ): Promise<ResourceListResponse<ChannelMember>> {
-    const list = await gr.services.channels.members.list(
-      new Pagination(request.query.page_token, request.query.limit),
-      { company_role: request.query.company_role },
-      getExecutionContext(request),
-    );
+  ): Promise<ResourceListResponse<ChannelMemberWithUser>> {
+    let list: ChannelMember[] = [];
+    let nextPageToken: string = null;
+    const resources = [];
+    const context = getExecutionContext(request);
+
+    if (request.query.search) {
+      const users = await gr.services.users.search(
+        new Pagination(request.query.page_token, request.query.limit),
+        {
+          search: request.query.search,
+          companyId: request.params.company_id,
+        },
+        context,
+      );
+
+      nextPageToken = users.nextPage?.page_token;
+
+      for (const user of users.getEntities()) {
+        const channelMember = await gr.services.channels.members.isChannelMember(user, {
+          company_id: request.params.company_id,
+          workspace_id: request.params.workspace_id,
+          id: request.params.id,
+        });
+
+        if (channelMember) {
+          list.push(channelMember);
+        }
+      }
+    } else {
+      const channelMembers = await gr.services.channels.members.list(
+        new Pagination(request.query.page_token, request.query.limit),
+        { company_role: request.query.company_role },
+        context,
+      );
+
+      nextPageToken = channelMembers.nextPage?.page_token;
+      list = channelMembers.getEntities();
+    }
+
+    for (const member of list) {
+      if (member) {
+        const user = await formatUser(await gr.services.users.get({ id: member.user_id }), {
+          includeCompanies: true,
+        });
+        resources.push({ ...member, user });
+      }
+    }
 
     return {
       ...{
-        resources: list.getEntities(),
+        resources,
       },
       ...(request.query.websockets && {
         websockets: gr.platformServices.realtime.sign(
@@ -182,9 +225,7 @@ export class ChannelMemberCrudController
           request.currentUser.id,
         ),
       }),
-      ...(list.page_token && {
-        next_page_token: list.page_token,
-      }),
+      next_page_token: nextPageToken,
     };
   }
 

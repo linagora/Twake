@@ -2,6 +2,7 @@ import { Type } from "class-transformer";
 import { merge } from "lodash";
 import { Column, Entity } from "../../../core/platform/services/database/services/orm/decorators";
 import { ChannelMemberNotificationLevel, ChannelMemberType } from "../types";
+import { UserObject } from "../../../services/user/web/types";
 
 /**
  * Defines the member <-> channel link and member settings in channel
@@ -97,6 +98,8 @@ export type ChannelMemberPrimaryKey = Pick<
 export function getChannelMemberInstance(member: Partial<ChannelMember>): ChannelMember {
   return merge(new ChannelMember(), member);
 }
+
+export type ChannelMemberWithUser = ChannelMember & { user: UserObject };
 
 /**
  * The channel_members table allows to get all the members of a channel.
