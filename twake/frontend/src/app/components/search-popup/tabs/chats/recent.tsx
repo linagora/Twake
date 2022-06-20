@@ -25,9 +25,8 @@ export default (): JSX.Element => {
       }
     });
   });
-
   return (
-    <div className="search-results tab-chats">
+    <div className="search-results tab-chats flex flex-col h-full overflow-y-auto ">
       <RecentChannelsAndContacts />
 
       <ChannelsAndContacts channels={publicChannels} users={users} />

@@ -105,32 +105,14 @@ input:focus {
 }
 
 .search {
-  align-items: flex-start;
-
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   justify-content: flex-start;
-
   mix-blend-mode: normal;
-  overflow-x: hidden;
+
   //position: absolute;
-
-  width: 100vw;
   height: calc(100vh - 20px);
-
-  max-width: 1000px;
-
   transform: translate(-50%, -29%);
-  position: relative;
-  //height: auto;
-  //max-width: 500px;
   background: var(--white);
-  z-index: 1;
   box-shadow: 0 2px 32px rgba(0, 0, 0, 0.2);
-  border-radius: var(--border-radius-base);
-  box-sizing: border-box;
-  overflow: hidden;
 
   .tabs-wrapper {
     width: 100%;
@@ -262,6 +244,7 @@ input:focus {
   .results-wrapper {
     //* {box-shadow: 0 0 0 1px gray;}
 
+    overflow: hidden;
     margin-top: 4px;
     margin-left: 18px;
     width: calc(100% - 36px);
@@ -514,7 +497,6 @@ input:focus {
             letter-spacing: -0.24px;
           }
         }
-
       }
     }
   }
@@ -532,5 +514,3 @@ input:focus {
     }
   }
 }
-
-

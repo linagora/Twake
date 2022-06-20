@@ -18,7 +18,8 @@ export default (): JSX.Element => {
     !Search.searchInProgress &&
     !Search.results.channels.length &&
     !Search.results.users.length &&
-    !Search.results.messages.length
+    !Search.results.messages.length &&
+    !Search.results.files.length
   ) {
     return <NotFound searchString={Search.value} />;
   }

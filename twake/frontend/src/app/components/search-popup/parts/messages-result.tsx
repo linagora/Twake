@@ -87,11 +87,7 @@ export default ({ message, highlight, onClick }: PropsType): JSX.Element => {
       ) : (
         <div />
       )}
-      {/*<div className="result-item-icon">*/}
-      {/*  <div>*/}
-      {/*    <img className="result-item-icon-back" src={thumbnail} />*/}
-      {/*  </div>*/}
-      {/*</div>*/}
+
       <div className="result-item-content">
         <div className="messages-title">
           {workspace?.name}

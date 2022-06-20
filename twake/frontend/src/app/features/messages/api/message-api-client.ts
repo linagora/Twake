@@ -1,6 +1,7 @@
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import {
   FileSearchResult,
+  Message,
   MessageExtended,
   MessageFileType,
   MessageWithReplies,
@@ -11,9 +12,12 @@ import MessageThreadAPIClient from './message-thread-api-client';
 import Api from 'app/features/global/framework/api-service';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 import Numbers from 'app/features/global/utils/Numbers';
-import { FileType } from 'features/files/types/file';
+import { FileType, MetaDataType } from 'features/files/types/file';
 import Workspace from 'deprecated/workspaces/workspaces';
 import Logger from 'features/global/framework/logger-service';
+import { UserType } from 'features/users/types/user';
+import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
+import assert from 'assert';
 
 /**
  * This service is to get, update, create, list messages in a thread
@@ -180,10 +184,17 @@ class MessageAPIClient {
     if (searchString) {
       query += `?q=${searchString}`;
     }
-    const res = await Api.getWithParams<{ resources: FileSearchResult[]; next_page_token: string }>(
-      query,
-      options,
-    );
+    const res = await Api.getWithParams<{
+      resources: MessageFileType &
+        {
+          company_id: string;
+          metadata: MetaDataType;
+          created_at: number;
+          message: Message;
+          user: UserType;
+        }[];
+      next_page_token: string;
+    }>(query, options);
     try {
       this.logger.debug(
         `FileSearch by name "${searchString}" with options`,
@@ -197,7 +208,45 @@ class MessageAPIClient {
       return { resources: [], next_page_token: null };
     }
 
-    return res;
+    const resources = [] as FileSearchResult[];
+
+    for (const resource of res.resources) {
+      const fsr = {
+        company_id: resource.metadata.external_id?.company_id,
+        file_id: resource.metadata.external_id?.id,
+        // thumbnail_url: resource.metadata.thumbnails?.[0]?.url,
+        filetype: FileUploadAPIClient.mimeToType(resource.metadata.mime || ''),
+        size: resource.metadata.size,
+        filename: resource.metadata.name,
+        created_at: resource.message.created_at,
+        message: resource.message,
+        user: resource.user,
+      } as FileSearchResult;
+
+      if (resource.metadata?.thumbnails?.[0]?.index !== undefined) {
+        fsr.thumbnail_url =
+          FileUploadAPIClient.getRoute({
+            companyId: fsr.company_id,
+            fileId: fsr.file_id,
+            fullApiRouteUrl: true,
+          }) + `/thumbnails/${resource.metadata?.thumbnails?.[0]?.index}`;
+      }
+
+      try {
+        assert(resource.metadata.external_id, 'no external_id object for fileSearchResult');
+        ['company_id', 'file_id', 'filename', 'filetype', 'size', 'created_at'].forEach(k => {
+          assert((fsr as any)[k], `no ${k} for fileSearchResult`);
+        });
+        resources.push(fsr);
+      } catch (e) {
+        console.error(e, resource);
+      }
+    }
+
+    return {
+      resources,
+      next_page_token: res.next_page_token,
+    };
   }
 }
 

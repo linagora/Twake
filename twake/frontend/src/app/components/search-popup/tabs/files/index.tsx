@@ -31,7 +31,7 @@ export default (): JSX.Element => {
     : Languages.t('components.searchpopup.recent_files');
 
   return (
-    <div className="search-results tab-files">
+    <div className="search-results tab-files h-full">
       <Files
         title={groupTitle}
         files={isSearchMode ? Search.results.files : Search.recent.files}
