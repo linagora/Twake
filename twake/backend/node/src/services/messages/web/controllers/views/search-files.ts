@@ -119,7 +119,9 @@ export default async (
     }
   }
 
-  messageFiles = messageFiles.filter(mf => mf.message.subtype !== "deleted");
+  messageFiles = messageFiles
+    .filter(mf => mf.message.subtype !== "deleted")
+    .filter(a => a?.metadata?.external_id);
 
   return {
     resources: messageFiles,
