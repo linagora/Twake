@@ -1,4 +1,5 @@
 import { UserType } from 'app/features/users/types/user';
+import { FileTypes } from 'features/files/api/file-upload-api-client';
 
 export type ReactionType = { name: string; count: number; users: string[] };
 
@@ -32,13 +33,20 @@ export type MessageFileType = {
   };
 };
 
-export type FileSearchResult = MessageFileType & {
+export type FileSearchResult = {
+  company_id: string;
+  file_id: string;
+  thumbnail_url: string;
+  filename: string;
+  filetype: FileTypes;
+  size: number;
   created_at: number;
   message: Message;
   user: UserType;
 };
 
 export type Message = {
+  created_at?: number;
   id?: string;
   application_id?: string | null;
   channel_id?: string;

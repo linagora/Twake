@@ -12,7 +12,7 @@ type GetContextType = BaseContentType & { fileId: string };
 type DeleteContextType = BaseContentType & { fileId: string };
 type DownloadContextType = BaseContentType & { fileId: string };
 
-type FileTypes =
+export type FileTypes =
   | 'link'
   | 'code'
   | 'document'

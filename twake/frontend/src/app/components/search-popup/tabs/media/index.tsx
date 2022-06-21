@@ -1,5 +1,6 @@
 import React from 'react';
 import Search from 'features/global/services/search-service';
+import Files from 'components/search-popup/parts/files';
 import Media from 'components/search-popup/parts/media';
 import NotFound from 'components/search-popup/parts/not-found';
 import Loading from 'components/search-popup/parts/loading';
@@ -24,17 +25,26 @@ export default (): JSX.Element => {
     return <div />;
   }
 
-  const groupTitle = isSearchMode
-    ? Languages.t('components.searchpopup.media')
-    : Languages.t('components.searchpopup.recent_media');
+  const SearchView = () => (
+    <Files
+      title={Languages.t('components.searchpopup.media')}
+      files={Search.results.media}
+      limit={10000}
+      showThumbnails={true}
+    />
+  );
+
+  const RecentView = () => (
+    <Media
+      title={Languages.t('components.searchpopup.recent_media')}
+      files={isSearchMode ? Search.results.media : Search.recent.media}
+      limit={10000}
+    />
+  );
 
   return (
-    <div className="search-results tab-media">
-      <Media
-        title={groupTitle}
-        files={isSearchMode ? Search.results.media : Search.recent.media}
-        limit={10000}
-      />
+    <div className="search-results tab-media h-full">
+      {(isSearchMode && SearchView()) || RecentView()}
     </div>
   );
 };

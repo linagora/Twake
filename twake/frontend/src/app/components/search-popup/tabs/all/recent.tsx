@@ -9,7 +9,7 @@ export default (): JSX.Element => {
   useEffect(() => {}, []);
 
   return (
-    <div className="search-results tab-all">
+    <div className="search-results tab-all flex flex-col h-full overflow-y-auto">
       <RecentChannelsAndContacts />
       <Files
         title={Languages.t('components.searchpopup.recent_files')}

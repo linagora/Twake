@@ -28,7 +28,7 @@ export default ({ channels, users }: PropsType): JSX.Element => {
         </div>
       )) || <div />}
 
-      {(false && users && users.length && (
+      {(users && users.length && (
         <div className="result-items">
           {users.map(user => (
             <UsersResult

@@ -1,36 +1,26 @@
 import React from 'react';
 import { FileSearchResult } from 'features/messages/types/message';
-import Logger from 'features/global/framework/logger-service';
-import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
+import { Thumbnail } from 'components/search-popup/parts/thumbnail';
 
 type PropsType = {
   fileSearchResult: FileSearchResult;
-  onClick: any;
+  onClick: () => void;
 };
 
 export default ({ fileSearchResult, onClick }: PropsType): JSX.Element => {
-  let fileRoute = FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(fileSearchResult);
-  if (!fileRoute) {
-    try {
-      fileRoute = FileUploadAPIClient.getFileThumbnailUrl(fileSearchResult.metadata?.external_id);
-    } catch (e) {
-      console.log(e);
-      console.error(fileSearchResult);
-    }
-  }
+  const thumbnail = Thumbnail({
+    fileSearchResult,
+    className:
+      'object-cover cursor-pointer w-24 h-24 rounded-md shadow-md transition-transform hover:scale-105',
+  });
 
-  if (!fileRoute) {
-    Logger.getLogger('SearchPopup:MediaResult').error('No thumbnail for object', fileSearchResult);
+  if (!thumbnail) {
     return <div />;
   }
 
   return (
     <div className="p-1" onClick={onClick}>
-      <img
-        className="object-cover cursor-pointer w-24 h-24 rounded-lg shadow-md transition-transform hover:scale-105"
-        alt={fileSearchResult.metadata?.name}
-        src={fileRoute}
-      />
+      {thumbnail}
     </div>
   );
 };
