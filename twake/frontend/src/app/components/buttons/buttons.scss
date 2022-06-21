@@ -38,8 +38,8 @@
   }
 }
 
-.button {
-  background: var(--primary);
+.button, .button.no-tw {
+  background-color: var(--primary);
   color: var(--white);
   font-weight: 500;
   border: 0px;
@@ -49,17 +49,17 @@
   cursor: pointer;
 
   &:hover {
-    background: var(--primary-hover);
+    background-color: var(--primary-hover);
   }
   &:active {
-    background: var(--primary);
+    background-color: var(--primary);
   }
   &:focus {
     outline: none;
   }
   &.disabled,
   &:disabled {
-    background: var(--primary-background);
+    background-color: var(--primary-background);
     pointer-events: none;
   }
 
@@ -117,7 +117,7 @@
   }
 
   &.secondary-light {
-    background: var(--grey-light);
+    background-color: var(--grey-light);
     color: var(--black);
 
     &:hover,
@@ -126,7 +126,7 @@
     }
     &.disabled,
     &:disabled {
-      background: var(--grey-background);
+      background-color: var(--grey-background);
       color: var(--grey-dark);
     }
   }
@@ -148,10 +148,10 @@
     }
     &:hover {
       color: var(--primary-hover);
-      //      background: var(--primary-background);
+      //      background-color: var(--primary-background);
     }
     &:active {
-      //      background: var(--primary-background);
+      //      background-color: var(--primary-background);
     }
   }
 
@@ -172,7 +172,7 @@
     }
     &:hover {
       color: var(--black);
-      //background: var(--grey-background);
+      //background-color: var(--grey-background);
     }
     &:active {
       color: var(--black);

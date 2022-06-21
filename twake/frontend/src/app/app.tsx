@@ -12,8 +12,8 @@ import InitService from './features/global/services/init-service';
 import useTimeout from 'app/features/global/hooks/use-timeout';
 import ApplicationLoader from './components/loader/application-loader';
 
-import 'app/styles/index.less';
 import DebugState from './components/debug/debug-state';
+import 'app/styles/index.less';
 
 const delayMessage = 5000;
 

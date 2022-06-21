@@ -49,7 +49,8 @@ export default (props: Props) => {
             })
           }
         >
-          <CornerDownRight size={14} /> {Languages.t('scenes.apps.messages.message.reply_button')}
+          <CornerDownRight size={14} className="inline" />{' '}
+          {Languages.t('scenes.apps.messages.message.reply_button')}
         </span>
       </div>
     </ThreadSection>

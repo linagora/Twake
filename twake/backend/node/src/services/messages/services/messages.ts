@@ -28,7 +28,7 @@ import {
   ReactionOperation,
   ThreadExecutionContext,
 } from "../types";
-import _, { first } from "lodash";
+import _, { first, pick } from "lodash";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 import { ThreadMessagesOperationsService } from "./messages-operations";
 import { Thread, ThreadPrimaryKey } from "../entities/threads";
@@ -752,11 +752,19 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
           company: { id: file.metadata.external_id?.company_id as string },
         });
         if (original) {
-          file.metadata = { ...file.metadata, ...original.metadata };
-          file.metadata.thumbnails = (file.metadata.thumbnails || []).map((t, index) => {
-            t.url = gr.services.files.getThumbnailRoute(original, (t.index || index).toString());
-            return t;
-          });
+          file.metadata = {
+            ...file.metadata,
+            ..._.pick(original.metadata, "mime", "name"),
+            ..._.pick(original.upload_data, "size"),
+            source: "internal",
+            external_id: file.metadata.external_id,
+          };
+          file.metadata.thumbnails = (file.metadata.thumbnails || original.thumbnails || []).map(
+            (t, index) => {
+              t.url = gr.services.files.getThumbnailRoute(original, (t.index || index).toString());
+              return t;
+            },
+          );
         }
       }
 
