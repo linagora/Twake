@@ -26,8 +26,7 @@ export default class SearchPopup extends React.Component {
       withFilters: Search.withFilters || false,
       hasFilters: Search.hasFilters || false,
       filterType: Search.type || false,
-      // activeTab: 'all',
-      activeTab: 'media',
+      activeTab: 'all',
     };
 
     this.tabs = [
