@@ -31,7 +31,6 @@ export default ({ title, files, limit, splitByDates }: PropsType): JSX.Element =
 
     files.forEach(f => {
       const date = new Intl.DateTimeFormat(locale, {
-        day: 'numeric',
         month: 'long',
         year: 'numeric',
       }).format(new Date(f.created_at));
@@ -67,8 +66,6 @@ export default ({ title, files, limit, splitByDates }: PropsType): JSX.Element =
 
     return response;
   };
-
-  splitByDates = true;
 
   return (
     <div className="results-group flex flex-col h-full">
