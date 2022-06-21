@@ -39,6 +39,7 @@ export default (): JSX.Element => {
       title={Languages.t('components.searchpopup.recent_media')}
       files={isSearchMode ? Search.results.media : Search.recent.media}
       limit={10000}
+      splitByDates={true}
     />
   );
 
