@@ -40,7 +40,7 @@ export default async (
   }>,
   context: ChannelViewExecutionContext,
 ): Promise<ResourceListResponse<MessageFile>> => {
-  if (isEmpty(request)) {
+  if (isEmpty(request.query)) {
     return recentFiles(request);
   }
 
