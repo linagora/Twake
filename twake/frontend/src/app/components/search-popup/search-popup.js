@@ -10,7 +10,6 @@ import TabFiles from './tabs/files';
 import TabMedia from './tabs/media';
 import TabChats from './tabs/chats';
 import Tab from './tabs/tab';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { DismissIcon } from '@atoms/icons-colored';
 import { InputClearIcon } from '@atoms/icons-agnostic';
 
@@ -27,17 +26,16 @@ export default class SearchPopup extends React.Component {
       withFilters: Search.withFilters || false,
       hasFilters: Search.hasFilters || false,
       filterType: Search.type || false,
-      activeTab: 'all',
+      // activeTab: 'all',
+      activeTab: 'media',
     };
 
-    const tabs = [
+    this.tabs = [
       { key: 'all', title: Languages.t('components.searchpopup.all') },
       { key: 'chats', title: Languages.t('components.searchpopup.chats') },
       { key: 'media', title: Languages.t('components.searchpopup.media') },
       { key: 'files', title: Languages.t('components.searchpopup.files') },
     ];
-
-    this.tabs = tabs;
   }
   componentDidMount() {
     document.addEventListener('keydown', this.eventKey);
@@ -155,7 +153,7 @@ export default class SearchPopup extends React.Component {
         <div className="overlay" onClick={this.onCloseButtonClick}></div>
 
         <div className="component-container">
-          <div className="search screen">
+          <div className="search screen flex flex-col gap-2.5 w-[100vw] max-w-5xl z-1 rounded-lg box-border">
             <div className="header-wrapper">
               <div className="header-title">
                 {Languages.t('components.searchpopup.header_title')}
@@ -218,16 +216,7 @@ export default class SearchPopup extends React.Component {
               <div className="tab-horizontal-separator"></div>
             </div>
 
-            <PerfectScrollbar
-              options={{ suppressScrollX: true }}
-              component="div"
-              className="results-wrapper"
-              containerRef={node => {
-                this.scroller = node;
-              }}
-            >
-              {this.getTabContent()}
-            </PerfectScrollbar>
+            <div className="results-wrapper">{this.getTabContent()}</div>
           </div>
         </div>
       </div>
