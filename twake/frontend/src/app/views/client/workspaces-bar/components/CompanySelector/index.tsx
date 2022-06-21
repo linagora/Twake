@@ -65,7 +65,7 @@ export default ({
       ]}
       position="top"
     >
-      {!children && <CurrentCompanyLogo withCompanyName={withCompanyName} />}
+      {!children && <CurrentCompanyLogo showBadge withCompanyName={withCompanyName} />}
       {!!children && children}
     </Menu>
   );
@@ -74,9 +74,11 @@ export default ({
 export const CurrentCompanyLogo = ({
   size,
   withCompanyName = true,
+  showBadge = false,
 }: {
   size?: number;
   withCompanyName?: boolean;
+  showBadge?: boolean;
 }) => {
   const { company } = useCurrentCompany();
   const { badges } = useOtherCompanyNotifications(company?.id || '');
@@ -87,7 +89,7 @@ export const CurrentCompanyLogo = ({
 
   return (
     <div className={classNames('company-selector-container')}>
-      {badges.length > 0 && <div className="notification_dot" />}
+      {showBadge && badges.length > 0 && <div className="notification_dot" />}
 
       <div
         className={classNames('image', {

@@ -25,6 +25,7 @@
   .global-view-header {
     padding: 8px 0;
     height: 56px;
+    background-color: #FFF;
 
     .ant-divider {
       margin: 0;
@@ -83,6 +84,7 @@
     display: flex;
 
     .main-view-tabs-header {
+      background-color: #FFF;
       height: 47px;
       margin-top: -8px;
       padding: 0 8px;

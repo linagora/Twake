@@ -8,10 +8,6 @@ export type MetaDataType = {
   name: string;
   mime: string;
   thumbnails_status?: string;
-  external_id?: {
-    id: string;
-    company_id: string;
-  };
 };
 
 export type FileUploadDataObjectType = {
