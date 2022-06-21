@@ -19,7 +19,7 @@ export default (): JSX.Element => {
       <Media
         title={Languages.t('components.searchpopup.recent_media')}
         files={Search.recent.media}
-        limit={10}
+        limit={9}
       />
     </div>
   );
