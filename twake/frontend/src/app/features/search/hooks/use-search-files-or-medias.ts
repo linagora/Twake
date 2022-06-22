@@ -22,7 +22,13 @@ const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
     mode === 'files' ? RecentFilesState : RecentMediasState,
   );
 
-  const opt = { limit: 100, is_file: mode === 'files', is_media: mode === 'medias' };
+  const opt = {
+    limit: 100,
+    is_file: mode === 'files',
+    is_media: mode === 'medias',
+    workspace_id: searchInput.workspaceId,
+    channel_id: searchInput.channelId,
+  };
 
   const refresh = async () => {
     setLoading(true);
@@ -61,7 +67,7 @@ const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
         refresh();
       }
     })();
-  }, [searchInput.query]);
+  }, [searchInput.query, searchInput.channelId, searchInput.workspaceId]);
 
   return {
     loading,

@@ -33,7 +33,7 @@ const useSearchChannels = () => {
     if (!isRecent) search(searchInput.query);
 
     const response = await ChannelAPIClient.search(searchInput.query || null, opt);
-    let results = (response.resources || []).sort(
+    const results = (response.resources || []).sort(
       (a, b) =>
         (b.last_activity || 0) / 100 +
         (b.user_member?.last_access || 0) -

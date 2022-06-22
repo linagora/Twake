@@ -25,7 +25,7 @@ import assert from 'assert';
 
 export interface BaseSearchOptions {
   company_id?: string;
-  workspace_dd?: string;
+  workspace_id?: string;
   channel_id?: string;
   page_token?: string;
   limit?: number;
@@ -36,6 +36,8 @@ export interface FileSearchOptions extends BaseSearchOptions {
   is_file?: boolean;
   is_media?: boolean;
   extension?: string;
+  workspace_id?: string;
+  channel_id?: string;
 }
 
 @TwakeService('MessageAPIClientService')

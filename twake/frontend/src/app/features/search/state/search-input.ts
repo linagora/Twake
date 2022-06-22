@@ -4,7 +4,6 @@ export type SearchInput = {
   query: string;
 
   //Scope
-  companyId?: string;
   workspaceId?: string;
   channelId?: string;
 

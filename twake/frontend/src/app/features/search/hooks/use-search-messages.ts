@@ -7,6 +7,8 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { SearchMessagesResultsState } from '../state/search-messages-result';
 import messageApiClient from 'app/features/messages/api/message-api-client';
 import { MessageExtended } from 'app/features/messages/types/message';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 
 const useSearchMessages = () => {
   const companyId = useRouterCompany();
@@ -15,7 +17,12 @@ const useSearchMessages = () => {
 
   const [searched, setSearched] = useRecoilState(SearchMessagesResultsState);
 
-  const opt = { limit: 100, company_id: companyId };
+  const opt = {
+    limit: 100,
+    company_id: companyId,
+    workspace_id: searchInput.workspaceId,
+    channel_id: searchInput.channelId,
+  };
 
   const refresh = async () => {
     setLoading(true);
@@ -50,7 +57,7 @@ const useSearchMessages = () => {
         refresh();
       }
     })();
-  }, [searchInput.query]);
+  }, [searchInput.query, searchInput.channelId, searchInput.workspaceId]);
 
   return { loading, messages: searched, loadMore, refresh };
 };
