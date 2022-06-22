@@ -30,3 +30,25 @@ export type ChannelType = {
   };
   users?: UserType[];
 };
+
+export const createDirectChannelFromUsers = (companyId: string, users: UserType[]): ChannelType => {
+  const id = users.map(u => u.id).join('_') + '_frontend';
+  return {
+    company_id: companyId,
+    workspace_id: 'direct',
+    visibility: 'direct',
+    id: id,
+    members: users.map(u => u.id).filter(a => a) as string[],
+    owner: users[0].id,
+    members_count: users.length,
+    guests_count: 0,
+    messages_count: 0,
+    archived: false,
+    user_member: {
+      user_id: users[0].id,
+      channel_id: id,
+    },
+    connectors: [],
+    users: users,
+  };
+};

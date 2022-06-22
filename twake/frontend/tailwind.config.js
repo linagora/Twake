@@ -18,8 +18,9 @@ module.exports = {
       },
       borderRadius: {
         xl: '24px',
-        lg: '16px',
+        lg: '14px',
         md: '10px',
+        sm: '8px',
       },
       fontSize: {
         lg: '17px',

@@ -1,42 +1,47 @@
-import React, { useEffect } from 'react';
-import Search from 'features/global/services/search-service';
-import Files from 'components/search-popup/parts/files';
-import NotFound from 'components/search-popup/parts/not-found';
-import Loading from 'components/search-popup/parts/loading';
 import Languages from 'features/global/services/languages-service';
+import { useRecoilValue } from 'recoil';
+import { IsThereSearchQuerySelector } from 'app/features/search/state/search-input';
+import { useSearchMessagesFiles } from 'app/features/search/hooks/use-search-files-or-medias';
+import FilesResult from '../../parts/recent/files-result';
+import { onFileDownloadClick, onFilePreviewClick } from 'components/search-popup/parts/common';
 
 export default (): JSX.Element => {
-  const isSearchMode = Boolean(Search.value);
-
-  useEffect(() => {}, [Search.searchInProgress]);
-
-  if (Search.searchInProgress) {
-    return Loading();
-  }
-
-  if (
-    isSearchMode &&
-    !Search.searchInProgress &&
-    (!Search.results.files || !Search.results.files.length)
-  ) {
-    return <NotFound searchString={Search.value} />;
-  }
-
-  if (Search.recent.files === undefined) {
-    return <div />;
-  }
-
-  const groupTitle = isSearchMode
+  const isSearchMode = useRecoilValue(IsThereSearchQuerySelector);
+  const title = isSearchMode
     ? Languages.t('components.searchpopup.files')
     : Languages.t('components.searchpopup.recent_files');
 
   return (
     <div className="search-results tab-files h-full">
-      <Files
-        title={groupTitle}
-        files={isSearchMode ? Search.results.files : Search.recent.files}
-        limit={10000}
-      />
+      <div className="results-group flex flex-col h-full">
+        <div className="results-group-title">{title}</div>
+
+        <FilesResults />
+      </div>
+    </div>
+  );
+};
+
+export const FilesResults = () => {
+  const { files } = useSearchMessagesFiles();
+
+  console.log(files);
+
+  return (
+    <div className="result-items-files overflow-x-hidden overflow-y-auto">
+      {files.map(file => (
+        <FilesResult
+          fileSearchResult={file}
+          key={file.file_id}
+          onPreviewClick={() => {
+            onFilePreviewClick(file);
+          }}
+          onDownloadClick={() => {
+            onFileDownloadClick(file);
+          }}
+          showThumbnails={false}
+        />
+      ))}
     </div>
   );
 };

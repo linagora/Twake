@@ -2,7 +2,6 @@ import React from 'react';
 import Search from 'features/global/services/search-service';
 import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
 import './search-popup.scss';
-import InputIcon from 'components/inputs/input-icon.js';
 
 import Languages from 'app/features/global/services/languages-service';
 import TabAll from './tabs/all';
@@ -12,6 +11,7 @@ import TabChats from './tabs/chats';
 import Tab from './tabs/tab';
 import { DismissIcon } from '@atoms/icons-colored';
 import { InputClearIcon } from '@atoms/icons-agnostic';
+import SearchInput from './search-input';
 
 export default class SearchPopup extends React.Component {
   constructor(props) {
@@ -162,41 +162,7 @@ export default class SearchPopup extends React.Component {
               </div>
             </div>
 
-            <div className="input-wrapper">
-              <InputIcon
-                autoFocus
-                icon="search"
-                className="full_width search-input"
-                big
-                placeholder={
-                  this.state.withFilters
-                    ? Languages.t(
-                        'scenes.app.mainview.advanced_search_placeholder',
-                        [],
-                        'Recherche avancée',
-                      )
-                    : Languages.t(
-                        'scenes.app.mainview.quick_search_placeholder',
-                        [],
-                        'Recherche rapide',
-                      )
-                }
-                value={Search.value}
-                // refInput={node => (this.input = node)}
-                onChange={this.handleChange}
-                onKeyPress={event => {
-                  if (event.key === 'Enter') {
-                    Search.search(true);
-                  }
-                }}
-              />
-
-              {Search.value && (
-                <div className="input-clear-btn" onClick={this.onSearchFieldClearClick}>
-                  <InputClearIcon className="fill-gray-500" />
-                </div>
-              )}
-            </div>
+            <SearchInput />
 
             <div className="tabs-wrapper">
               <div className="tab-items-wrapper">

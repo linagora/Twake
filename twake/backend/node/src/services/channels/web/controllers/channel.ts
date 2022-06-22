@@ -83,7 +83,7 @@ export class ChannelCrudController
     }
 
     if (Channel.isDirectChannel(channel) || Channel.isPrivateChannel(channel)) {
-      const isMember = await gr.services.channels.members.isChannelMember(
+      const isMember = await gr.services.channels.members.getChannelMember(
         request.currentUser,
         channel,
       );
@@ -131,18 +131,15 @@ export class ChannelCrudController
     }>,
     reply: FastifyReply,
   ): Promise<ResourceListResponse<Channel>> {
-    if (request.query.q.length < 1) {
-      return { resources: [] };
+    if (request.query?.q?.length === 0) {
+      return this.recent(request);
     }
+
+    const userId = request.currentUser.id;
 
     await checkUserBelongsToCompany(request.currentUser.id, request.params.company_id);
 
     const limit = request.query.limit || 100;
-
-    // const results = await gr.services.channels.channels.search(p, {
-    //   search: request.query.q,
-    //   companyId: request.params.company_id,
-    // });
 
     async function* getNextChannels(): AsyncIterableIterator<Channel> {
       let lastPageToken = null;
@@ -172,17 +169,22 @@ export class ChannelCrudController
       } while (hasMore);
     }
 
-    const channels = [] as Channel[];
+    const channels = [] as (Channel & { user_member: ChannelMemberObject })[];
 
     for await (const ch of getNextChannels()) {
-      const isChannelMember = await gr.services.channels.members.isChannelMember(
+      const channelMember = await gr.services.channels.members.getChannelMember(
         { id: request.currentUser.id },
         ch,
         50,
       );
-      if (!isChannelMember) continue;
+      if (!channelMember && ch.visibility !== "public") continue;
 
-      channels.push(ch);
+      const chWithUser = await gr.services.channels.channels.includeUsersInDirectChannel(
+        ch,
+        userId,
+      );
+
+      channels.push({ ...chWithUser, user_member: channelMember });
       if (channels.length == limit) {
         break;
       }
@@ -492,13 +494,12 @@ export class ChannelCrudController
 
   async recent(
     request: FastifyRequest<{
-      Querystring: { limit: 100 };
-      Params: BaseChannelsParameters;
+      Querystring: { limit?: string };
+      Params: Pick<BaseChannelsParameters, "company_id">;
     }>,
   ): Promise<ResourceListResponse<UsersIncludedChannel>> {
-    const context = getExecutionContext(request);
-    const companyId = context.workspace.company_id;
-    const userId = context.user.id;
+    const companyId = request.params.company_id;
+    const userId = request.currentUser.id;
 
     const workspaces = (
       await gr.services.workspaces.getAllForUser({ userId }, { id: companyId })
@@ -516,7 +517,10 @@ export class ChannelCrudController
     }
 
     channels = channels.sort(
-      (a, b) => (b.user_member.last_access || 0) - (a.user_member.last_access || 0),
+      (a, b) =>
+        (b.last_activity || 0) / 100 +
+        (b.user_member.last_access || 0) -
+        ((a.user_member.last_access || 0) + (a.last_activity || 0) / 100),
     );
     channels = channels.slice(0, 100);
 
@@ -527,7 +531,7 @@ export class ChannelCrudController
     );
 
     return {
-      resources: userIncludedChannels.slice(0, request.query.limit),
+      resources: userIncludedChannels.slice(0, parseInt(request.query.limit) || 100),
     };
   }
 }

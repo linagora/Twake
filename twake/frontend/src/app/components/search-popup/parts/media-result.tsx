@@ -8,19 +8,18 @@ type PropsType = {
 };
 
 export default ({ fileSearchResult, onClick }: PropsType): JSX.Element => {
-  const thumbnail = Thumbnail({
-    fileSearchResult,
-    className:
-      'object-cover cursor-pointer w-24 h-24 rounded-md shadow-md transition-transform hover:scale-105',
-  });
-
-  if (!thumbnail) {
+  if (!fileSearchResult.thumbnail_url) {
     return <div />;
   }
 
   return (
-    <div className="p-1" onClick={onClick}>
-      {thumbnail}
+    <div className="p-1 cursor-pointer" onClick={onClick}>
+      <div className="rounded-sm border border-slate-200 overflow-hidden">
+        <Thumbnail
+          fileSearchResult={fileSearchResult}
+          className="object-cover w-32 h-32 transition-transform hover:scale-105"
+        />
+      </div>
     </div>
   );
 };
