@@ -1,12 +1,12 @@
 import Languages from 'features/global/services/languages-service';
 import { useRecoilValue } from 'recoil';
-import { IsThereSearchQuerySelector } from 'app/features/search/state/search-input';
+import { HasSearchQuerySelector } from 'app/features/search/state/search-input';
 import { useSearchMessagesFiles } from 'app/features/search/hooks/use-search-files-or-medias';
 import FilesResult from '../../parts/recent/files-result';
 import { onFileDownloadClick, onFilePreviewClick } from 'components/search-popup/parts/common';
 
 export default (): JSX.Element => {
-  const isSearchMode = useRecoilValue(IsThereSearchQuerySelector);
+  const isSearchMode = useRecoilValue(HasSearchQuerySelector);
   const title = isSearchMode
     ? Languages.t('components.searchpopup.files')
     : Languages.t('components.searchpopup.recent_files');
@@ -30,7 +30,7 @@ export const FilesResults = () => {
   return (
     <div className="result-items-files overflow-x-hidden overflow-y-auto">
       {files.map(file => (
-        <FilesResult
+        /*<FilesResult
           fileSearchResult={file}
           key={file.file_id}
           onPreviewClick={() => {
@@ -40,7 +40,7 @@ export const FilesResults = () => {
             onFileDownloadClick(file);
           }}
           showThumbnails={false}
-        />
+        />*/<></>
       ))}
     </div>
   );
