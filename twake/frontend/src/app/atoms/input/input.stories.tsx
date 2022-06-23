@@ -1,6 +1,7 @@
-import React from 'react';
 import { ComponentStory } from '@storybook/react';
 import Input from './input';
+import { SearchIcon } from '@heroicons/react/outline';
+import { Title } from '../text';
 
 export default {
   title: '@atoms/input',
@@ -13,8 +14,14 @@ const Template: ComponentStory<any> = (props: {
 }) => {
   return (
     <>
-      <Input disabled={props.disabled} label="With label" placeholder="Awesome text" />
+      <Title>Sizes</Title>
+      <Input size="sm" disabled={props.disabled} label="size=sm" placeholder="Awesome text" />
       <br />
+      <Input size="md" disabled={props.disabled} label="size=md" placeholder="Awesome text" />
+      <br />
+      <Input size="lg" disabled={props.disabled} label="size=lg" placeholder="Awesome text" />
+      <br />
+      <Title>Labels and errors</Title>
       <Input disabled={props.disabled} placeholder="Awesome text" value={props.text} />
       <br />
       <Input
@@ -32,8 +39,8 @@ const Template: ComponentStory<any> = (props: {
         feedback="Some non-error feedback"
         placeholder="Awesome text area"
         value={props.text}
+        multiline
       />
-      <br />
     </>
   );
 };

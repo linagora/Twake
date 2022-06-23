@@ -2,7 +2,8 @@ import React from 'react';
 import _ from 'lodash';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  theme?: 'primary' | 'secondary' | 'danger' | 'default';
+  theme?: 'primary' | 'secondary' | 'danger' | 'default' | 'outline';
+  size?: 'md' | 'lg' | 'sm';
   loading?: boolean;
   disabled?: boolean;
   children: React.ReactNode;
@@ -11,25 +12,35 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = (props: ButtonProps) => {
   const disabled = props.disabled || props.loading;
 
-  let colors = 'text-white bg-blue-500 hover:bg-blue-700 active:bg-blue-800 border-transparent ';
+  let className = 'text-white bg-blue-500 hover:bg-blue-700 active:bg-blue-800 border-transparent ';
 
   if (props.theme === 'secondary')
-    colors = 'text-blue-500 bg-blue-100 hover:bg-blue-200 active:bg-blue-300 border-transparent ';
+    className =
+      'text-blue-500 bg-blue-100 hover:bg-blue-200 active:bg-blue-300 border-transparent ';
 
   if (props.theme === 'danger')
-    colors = 'text-white bg-rose-500 hover:bg-rose-600 active:bg-rose-700 border-transparent ';
+    className = 'text-white bg-rose-500 hover:bg-rose-600 active:bg-rose-700 border-transparent ';
 
   if (props.theme === 'default')
-    colors = 'text-black bg-white hover:bg-gray-50 active:bg-gray-200 border-gray-300';
+    className =
+      'text-black dark:text-white bg-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 hover:bg-gray-50 active:bg-gray-200 border-gray-300';
 
-  if (disabled) colors += ' opacity-50 pointer-events-none text-white';
+  if (props.theme === 'outline')
+    className =
+      'text-blue-500 bg-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 hover:bg-gray-50 active:bg-gray-200 border-blue-500';
+
+  if (disabled) className += ' opacity-50 pointer-events-none';
+
+  if (props.size === 'lg') className = className + ' text-lg h-11';
+  else if (props.size === 'sm') className = className + ' text-sm h-7 px-3';
+  else className = className + ' text-base h-9';
 
   return (
     <button
       type="button"
       className={
-        ' inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none ' +
-        colors +
+        ' inline-flex items-center px-4 py-2 border font-medium rounded-md focus:outline-none ' +
+        className +
         ' ' +
         props.className
       }
