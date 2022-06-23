@@ -82,7 +82,10 @@ class ConsoleService {
     }
 
     if (res.resources.filter((r: any) => r.status === 'error').length > 0) {
-      if (res.resources.filter((r: any) => r.message.includes('403') && r.status === 'error')) {
+      if (
+        res.resources.filter((r: any) => r.message.includes('403') && r.status === 'error').length >
+        0
+      ) {
         Toaster.warning('You have not the corresponding access rights to invite to this company.');
       } else {
         res.resources
