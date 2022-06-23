@@ -82,20 +82,24 @@ class ConsoleService {
     }
 
     if (res.resources.filter((r: any) => r.status === 'error').length > 0) {
-      res.resources
-        .filter((r: any) => r.status === 'error')
-        .forEach(({ email, message }: { email: string; message: string }) => {
-          // possible error messages are
-          // 1. "User already belonged to the company" (Good typo in it...)
-          // 2. "Unable to invite user ${user.email} to company ${company.code}"
-          this.logger.error('Error while adding email', email, message);
+      if (res.resources.filter((r: any) => r.message.includes('403') && r.status === 'error')) {
+        Toaster.warning('You have not the corresponding access rights to invite to this company.');
+      } else {
+        res.resources
+          .filter((r: any) => r.status === 'error')
+          .forEach(({ email, message }: { email: string; message: string }) => {
+            // possible error messages are
+            // 1. "User already belonged to the company" (Good typo in it...)
+            // 2. "Unable to invite user ${user.email} to company ${company.code}"
+            this.logger.error('Error while adding email', email, message);
 
-          Toaster.warning(
-            Languages.t('services.console_services.toaster.add_email_error_message', [
-              email + ` (${message})`,
-            ]),
-          );
-        });
+            Toaster.warning(
+              Languages.t('services.console_services.toaster.add_email_error_message', [
+                email + ` (${message})`,
+              ]),
+            );
+          });
+      }
     }
 
     if (res.resources.filter((r: any) => r.status !== 'error').length > 0) {
