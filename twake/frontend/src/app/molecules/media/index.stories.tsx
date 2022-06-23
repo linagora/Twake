@@ -1,8 +1,7 @@
 import React from 'react';
 import { ComponentStory } from '@storybook/react';
-import { useArgs } from '@storybook/client-api';
 
-import Media, { MediaSize } from '.';
+import Media from '.';
 
 export default {
   title: '@molecules/media',
@@ -33,14 +32,14 @@ const Template: ComponentStory<any> = () => {
         <div key={m.img} className="flex">
           <div className="flex gap-2 items-center">
             <div className="cursor-pointer">
-              <Media url={m.img} size={MediaSize.LG} duration={m.duration} />
+              <Media url={m.img} size="lg" duration={m.duration} />
             </div>
             <div className="flex flex-col h-full ">
               <div className="cursor-pointer flex items-center justify-center grow">
-                <Media url={m.img} size={MediaSize.MD} duration={m.duration} />
+                <Media url={m.img} size="md" duration={m.duration} />
               </div>
               <div className="cursor-pointer flex items-center justify-center grow">
-                <Media url={m.img} size={MediaSize.SM} duration={m.duration} />
+                <Media url={m.img} size="sm" duration={m.duration} />
               </div>
             </div>
           </div>

@@ -3,29 +3,23 @@ import React from 'react';
 // @ts-ignore
 
 interface MediaProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  size: MediaSize;
+  size: 'lg' | 'md' | 'sm';
   url: string;
   duration?: string;
 }
 
-export enum MediaSize {
-  LG = 32,
-  MD = 16,
-  SM = 12,
-}
-
 export default function Media(props: MediaProps) {
-  const size = props.size.valueOf();
+  const size = { lg: 32, md: 16, sm: 12 }[props.size];
 
   let timing = undefined;
 
   if (props.duration) {
     timing = '▶ ' + props.duration;
     switch (props.size) {
-      case MediaSize.SM:
+      case 'sm':
         timing = '▶';
         break;
-      case MediaSize.MD:
+      case 'md':
         if (props.duration.length > 6) {
           timing = props.duration;
         }
