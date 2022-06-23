@@ -146,7 +146,7 @@ export const ModalContent = (props: {
   icon?: any;
   theme?: 'success' | 'danger' | 'warning' | 'gray';
 }) => {
-  let color = 'indigo';
+  let color = 'blue';
   if (props.theme === 'success') color = 'green';
   if (props.theme === 'danger') color = 'red';
   if (props.theme === 'warning') color = 'orange';
