@@ -14,7 +14,7 @@ export default ({ fileSearchResult, onClick }: PropsType): JSX.Element => {
 
   return (
     <div className="p-1 cursor-pointer" onClick={onClick}>
-      <div className="rounded-sm border border-slate-200 overflow-hidden">
+      <div className="rounded-sm border border-zinc-200 overflow-hidden">
         <Thumbnail
           fileSearchResult={fileSearchResult}
           className="object-cover w-32 h-32 transition-transform hover:scale-105"

@@ -11,10 +11,10 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = (props: ButtonProps) => {
   const disabled = props.disabled || props.loading;
 
-  let colors = 'text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 border-transparent ';
+  let colors = 'text-white bg-blue-500 hover:bg-blue-700 active:bg-blue-800 border-transparent ';
 
   if (props.theme === 'secondary')
-    colors = 'text-blue-600 bg-blue-100 hover:bg-blue-200 active:bg-blue-300 border-transparent ';
+    colors = 'text-blue-500 bg-blue-100 hover:bg-blue-200 active:bg-blue-300 border-transparent ';
 
   if (props.theme === 'danger')
     colors = 'text-white bg-rose-500 hover:bg-rose-600 active:bg-rose-700 border-transparent ';

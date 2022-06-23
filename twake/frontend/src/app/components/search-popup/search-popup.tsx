@@ -1,18 +1,22 @@
-import React from 'react';
-import Search from 'features/global/services/search-service';
-import Collections from 'app/deprecated/CollectionsV1/Collections/Collections.js';
-import './search-popup.scss';
+import { Modal, ModalContent } from '@atoms/modal';
+import Input from '@atoms/input/input';
+import { useSearchModal } from 'app/features/search/hooks/use-search';
+import { Title } from '@atoms/text';
 
-import Languages from 'app/features/global/services/languages-service';
-import TabAll from './tabs/all';
-import TabFiles from './tabs/files';
-import TabMedia from './tabs/media';
-import TabChats from './tabs/chats';
-import Tab from './tabs/tab';
-import { DismissIcon } from '@atoms/icons-colored';
-import { InputClearIcon } from '@atoms/icons-agnostic';
-import SearchInput from './search-input';
+export default () => {
+  const { open, setOpen } = useSearchModal();
 
+  return (
+    <Modal open={open} onClose={() => setOpen(false)}>
+      <ModalContent title={'Search'}>
+        <Input className="mt-4" placeholder="Search in Twake" />
+        Hello there
+      </ModalContent>
+    </Modal>
+  );
+};
+
+/*
 export default class SearchPopup extends React.Component {
   constructor(props) {
     super(props);
@@ -188,3 +192,4 @@ export default class SearchPopup extends React.Component {
     );
   }
 }
+*/

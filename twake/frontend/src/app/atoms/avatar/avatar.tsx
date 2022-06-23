@@ -1,41 +1,38 @@
-import _ from "lodash";
+import _ from 'lodash';
 
 export default function Avatar(
   props: any & {
     avatar: string;
     size: 28 | 14 | 48;
-  }
+  },
 ) {
   const size = props.size || 14;
   const className =
-    " inline-block h-" +
+    ' inline-block h-' +
     size +
-    " w-" +
+    ' w-' +
     size +
-    " rounded-full overflow-hidden bg-slate-200 " +
-    (props.className || "");
+    ' rounded-full overflow-hidden bg-zinc-200 ' +
+    (props.className || '');
 
   if (props.avatar || props.src) {
     return (
       <div
         className={className}
-        {..._.omit(props, "avatar", "className", "src")}
+        {..._.omit(props, 'avatar', 'className', 'src')}
         style={{
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          backgroundImage: "url(" + (props.avatar || props.src) + ")",
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          backgroundImage: 'url(' + (props.avatar || props.src) + ')',
         }}
       />
     );
   }
 
   return (
-    <span
-      className={className}
-      {..._.omit(props, "avatar", "className", "src")}
-    >
+    <span className={className} {..._.omit(props, 'avatar', 'className', 'src')}>
       <svg
-        className="h-full w-full text-slate-400 bg-slate-200"
+        className="h-full w-full text-zinc-400 bg-zinc-200"
         fill="currentColor"
         viewBox="0 0 24 24"
       >

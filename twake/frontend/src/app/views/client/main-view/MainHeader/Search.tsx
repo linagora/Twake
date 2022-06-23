@@ -1,19 +1,18 @@
 import { Button, Col, Input, Row } from 'antd';
-import React from 'react';
 import { Search } from 'react-feather';
 import RouterServices from 'app/features/router/services/router-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import Languages from 'app/features/global/services/languages-service';
-import SearchService from "features/global/services/search-service";
+import { useSearchModal } from 'app/features/search/hooks/use-search';
 
 export default (): JSX.Element => {
   const { workspaceId, companyId } = RouterServices.getStateFromRoute();
+  const { setOpen } = useSearchModal();
 
-  const disable =
-    !(
-      AccessRightsService.hasLevel(workspaceId, 'member') &&
-      AccessRightsService.getCompanyLevel(companyId) !== 'guest'
-    );
+  const disable = !(
+    AccessRightsService.hasLevel(workspaceId, 'member') &&
+    AccessRightsService.getCompanyLevel(companyId) !== 'guest'
+  );
 
   return (
     <>
@@ -27,7 +26,7 @@ export default (): JSX.Element => {
                   maxLength={0}
                   suffix={<Search size={16} style={{ color: 'var(--grey-dark)' }} />}
                   placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
-                  onClick={() => SearchService.open()}
+                  onClick={() => setOpen(true)}
                 />
               )}
             </div>
@@ -42,9 +41,7 @@ export default (): JSX.Element => {
               type="default"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}
               icon={<Search size={16} />}
-              onClick={() => {
-                SearchService.open();
-              }}
+              onClick={() => setOpen(true)}
             />
           )}
         </div>

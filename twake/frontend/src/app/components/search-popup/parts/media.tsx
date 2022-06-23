@@ -46,7 +46,7 @@ export default ({ title, files, limit, splitByDates }: PropsType): JSX.Element =
 
     for (const date of dates.keys()) {
       const files = dates.get(date);
-      response.push(<div className="text-slate-500">{date}</div>);
+      response.push(<div className="text-zinc-500">{date}</div>);
 
       const fileCont = [];
       for (const file of files || []) {

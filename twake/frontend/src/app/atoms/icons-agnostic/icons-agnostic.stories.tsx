@@ -24,7 +24,7 @@ const Icon = ({ icon, title }: PropsType): JSX.Element => {
   return (
     <div className="flex flex-col place-items-center w-[90px] my-3">
       {comp}
-      <div className="m-2 text-xs text-slate-500 break-words max-w-[68px] text-center">{title}</div>
+      <div className="m-2 text-xs text-zinc-500 break-words max-w-[68px] text-center">{title}</div>
     </div>
   );
 };

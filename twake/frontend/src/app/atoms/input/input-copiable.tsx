@@ -1,14 +1,14 @@
-import { CheckIcon, ClipboardCopyIcon } from "@heroicons/react/outline";
-import _ from "lodash";
-import { useCallback, useRef, useState } from "react";
-import { Button } from "../button/button";
+import { CheckIcon, ClipboardCopyIcon } from '@heroicons/react/outline';
+import _ from 'lodash';
+import { useCallback, useRef, useState } from 'react';
+import { Button } from '../button/button';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
 export const defaultInputClassName =
-  "shadow-sm focus:ring-blue-600 focus:border-blue-600 block w-full sm:text-sm border-gray-200 rounded-lg";
+  'shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-200 rounded-lg';
 
 let copiedTimeout: any = 0;
 
@@ -18,12 +18,12 @@ export default function InputCopiable(props: InputProps) {
   //Function to copy to clipboard props.value
   const copyToClipboard = useCallback(() => {
     setCopied(false);
-    const textField = document.createElement("textarea");
+    const textField = document.createElement('textarea');
     textField.innerText = props.value as string;
     document.body.appendChild(textField);
     textField.select();
     if (!navigator.clipboard) {
-      document.execCommand("copy");
+      document.execCommand('copy');
     } else {
       navigator.clipboard.writeText(textField.value);
     }
@@ -42,12 +42,8 @@ export default function InputCopiable(props: InputProps) {
     <div className="mt-1 flex rounded-md shadow-sm">
       <div className="relative flex items-stretch flex-grow focus-within:z-10">
         <input
-          className={
-            defaultInputClassName +
-            " rounded-r-none border px-2 " +
-            props.className
-          }
-          {..._.omit(props, "label", "inputClassName", "className")}
+          className={defaultInputClassName + ' rounded-r-none border px-2 ' + props.className}
+          {..._.omit(props, 'label', 'inputClassName', 'className')}
         />
       </div>
       <Button
@@ -56,10 +52,8 @@ export default function InputCopiable(props: InputProps) {
         onClick={() => copyToClipboard()}
       >
         {copied && <CheckIcon className="h-4 w-4" aria-hidden="true" />}
-        {!copied && (
-          <ClipboardCopyIcon className="h-4 w-4" aria-hidden="true" />
-        )}
-        <span>{copied ? "Copied" : "Copy"}</span>
+        {!copied && <ClipboardCopyIcon className="h-4 w-4" aria-hidden="true" />}
+        <span>{copied ? 'Copied' : 'Copy'}</span>
       </Button>
     </div>
   );
