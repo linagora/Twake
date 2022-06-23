@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { defaultInputClassName, errorInputClassName } from './input';
+import { defaultInputClassName, errorInputClassName } from './input-text';
 
 interface InputProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
   theme?: 'plain' | 'outline';
@@ -22,7 +22,7 @@ export default function Select(props: InputProps) {
   return (
     <select
       className={inputClassName + ' ' + props.className}
-      {..._.omit(props, 'label', 'className')}
+      {..._.omit(props, 'label', 'className', 'size')}
     >
       {props.children}
     </select>

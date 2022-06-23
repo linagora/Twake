@@ -1,8 +1,7 @@
 import { ComponentStory } from '@storybook/react';
-import { Input } from './input';
-import { SearchIcon } from '@heroicons/react/outline';
-import { Title } from '../text';
-import { InputLabel } from './input-label';
+import { Input } from '../input-text';
+import { Title } from '../../text';
+import { InputLabel } from '../input-decoration-label';
 
 export default {
   title: '@atoms/input',

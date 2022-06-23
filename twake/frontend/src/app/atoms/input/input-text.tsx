@@ -29,7 +29,12 @@ export const defaultInputClassName = (theme: 'plain' | 'outline' = 'plain') => {
 };
 
 export const errorInputClassName = (theme: 'plain' | 'outline' = 'plain') => {
-  return baseInputClassName + 'bg-red-200 border-red-200 dark:bg-red-900 dark:border-red-800';
+  return (
+    baseInputClassName +
+    (theme === 'plain'
+      ? 'bg-red-200 border-red-200 dark:bg-red-800 dark:border-red-800'
+      : 'bg-red-50 border-red-300 dark:bg-red-900 dark:border-red-800')
+  );
 };
 
 export const Input = (props: InputProps) => {
@@ -50,7 +55,7 @@ export const Input = (props: InputProps) => {
         (props.multiline ? (
           <textarea
             className={inputClassName + ' ' + props.inputClassName + ' ' + props.className}
-            {..._.omit(props, 'label', 'inputClassName', 'className', 'value', 'size')}
+            {..._.omit(props as any, 'label', 'inputClassName', 'className', 'value', 'size')}
           >
             {props.value}
           </textarea>

@@ -1,7 +1,7 @@
 import { ComponentStory } from '@storybook/react';
-import { Title } from '../text';
-import { InputLabel } from './input-label';
-import Select from './select';
+import { Title } from '@atoms/text';
+import { InputLabel } from '../input-decoration-label';
+import Select from '../input-select';
 
 export default {
   title: '@atoms/select',
