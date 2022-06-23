@@ -1,11 +1,11 @@
 import _ from 'lodash';
-import { Info } from '../text';
 
 interface InputProps
   extends Omit<
     React.InputHTMLAttributes<HTMLInputElement> & React.TextareaHTMLAttributes<HTMLInputElement>,
     'size'
   > {
+  theme?: 'plain' | 'outline';
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   feedback?: string;
@@ -16,47 +16,40 @@ interface InputProps
   className?: string;
 }
 
-export const defaultInputClassName =
-  'tw-input bg-zinc-100 border-zinc-200 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white focus:border-blue-500 focus:ring-0 block w-full rounded-md';
+const baseInputClassName =
+  'tw-input block w-full rounded-md focus:ring-1 focus:ring-blue-500 z-0 focus:z-10 dark:text-white text-black ';
 
-export const errorInputClassName =
-  'tw-input bg-red-100 border-red-200 dark:bg-red-900 dark:border-red-800 dark:text-white focus:border-red-700 focus:ring-0 block w-full rounded-md';
-
-export default function InputLabel(props: InputProps) {
+export const defaultInputClassName = (theme: 'plain' | 'outline' = 'plain') => {
   return (
-    <>
-      {props.label && (
-        <div className={props.className}>
-          <label className="block text-sm text-zinc-400">{props.label}</label>
-          <div className="mt-1">
-            <Input {...props} />
-          </div>
-          {props.feedback && (
-            <Info noColor className={props.hasError ? 'text-red-400' : 'text-blue-500'}>
-              {props.feedback}
-            </Info>
-          )}
-        </div>
-      )}
-      {!props.label && <Input {...props} />}
-    </>
+    baseInputClassName +
+    (theme === 'plain'
+      ? 'bg-zinc-200 border-zinc-200 dark:bg-zinc-800 dark:border-zinc-800'
+      : 'bg-zinc-50 border-zinc-300 dark:bg-zinc-800 dark:border-zinc-700')
   );
-}
+};
+
+export const errorInputClassName = (theme: 'plain' | 'outline' = 'plain') => {
+  return baseInputClassName + 'bg-red-200 border-red-200 dark:bg-red-900 dark:border-red-800';
+};
 
 export const Input = (props: InputProps) => {
-  let inputClassName = props.hasError ? errorInputClassName : defaultInputClassName;
+  let inputClassName = props.hasError
+    ? errorInputClassName(props.theme)
+    : defaultInputClassName(props.theme);
   inputClassName = inputClassName + (props.disabled ? ' opacity-75' : '');
 
-  if (props.size === 'lg') inputClassName = inputClassName + ' h-11';
-  else if (props.size === 'sm') inputClassName = inputClassName + ' h-7';
-  else inputClassName = inputClassName + ' h-9';
+  if (!props.multiline) {
+    if (props.size === 'lg') inputClassName = inputClassName + ' h-11';
+    else if (props.size === 'sm') inputClassName = inputClassName + ' h-7';
+    else inputClassName = inputClassName + ' h-9';
+  }
 
   return (
     <>
       {props.inputComponent ||
         (props.multiline ? (
           <textarea
-            className={inputClassName + ' ' + props.inputClassName}
+            className={inputClassName + ' ' + props.inputClassName + ' ' + props.className}
             {..._.omit(props, 'label', 'inputClassName', 'className', 'value', 'size')}
           >
             {props.value}
@@ -64,7 +57,7 @@ export const Input = (props: InputProps) => {
         ) : (
           <input
             type="text"
-            className={inputClassName + ' ' + props.inputClassName}
+            className={inputClassName + ' ' + props.inputClassName + ' ' + props.className}
             {..._.omit(props, 'label', 'inputClassName', 'className', 'size')}
           />
         ))}

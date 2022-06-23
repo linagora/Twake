@@ -1,7 +1,8 @@
 import { ComponentStory } from '@storybook/react';
-import Input from './input';
+import { Input } from './input';
 import { SearchIcon } from '@heroicons/react/outline';
 import { Title } from '../text';
+import { InputLabel } from './input-label';
 
 export default {
   title: '@atoms/input',
@@ -13,35 +14,55 @@ const Template: ComponentStory<any> = (props: {
   loading: boolean;
 }) => {
   return (
-    <>
-      <Title>Sizes</Title>
-      <Input size="sm" disabled={props.disabled} label="size=sm" placeholder="Awesome text" />
+    <div className="max-w-md">
+      <Title>Sizes and themes plain / outline</Title>
       <br />
-      <Input size="md" disabled={props.disabled} label="size=md" placeholder="Awesome text" />
+
+      <Input size="sm" disabled={props.disabled} placeholder="Awesome text" />
       <br />
-      <Input size="lg" disabled={props.disabled} label="size=lg" placeholder="Awesome text" />
+      <Input size="md" disabled={props.disabled} placeholder="Awesome text" />
+      <br />
+      <Input size="lg" disabled={props.disabled} placeholder="Awesome text" />
+      <br />
+
+      <Input theme="outline" size="sm" disabled={props.disabled} placeholder="Awesome text" />
+      <br />
+      <Input theme="outline" size="md" disabled={props.disabled} placeholder="Awesome text" />
+      <br />
+      <Input theme="outline" size="lg" disabled={props.disabled} placeholder="Awesome text" />
       <br />
       <Title>Labels and errors</Title>
+      <br />
+
       <Input disabled={props.disabled} placeholder="Awesome text" value={props.text} />
       <br />
-      <Input
-        disabled={props.disabled}
+      <InputLabel
         hasError
         label="Label and feedback"
         feedback="The feedback"
-        placeholder="Awesome text"
-        value={props.text}
+        input={
+          <Input
+            disabled={props.disabled}
+            placeholder="Awesome text area"
+            hasError
+            value={props.text}
+          />
+        }
       />
       <br />
-      <Input
-        disabled={props.disabled}
+      <InputLabel
         label="Multi-line"
         feedback="Some non-error feedback"
-        placeholder="Awesome text area"
-        value={props.text}
-        multiline
+        input={
+          <Input
+            disabled={props.disabled}
+            placeholder="Awesome text area"
+            value={props.text}
+            multiline
+          />
+        }
       />
-    </>
+    </div>
   );
 };
 

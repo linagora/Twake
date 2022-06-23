@@ -1,5 +1,5 @@
 import { Modal, ModalContent } from '@atoms/modal';
-import Input from '@atoms/input/input';
+import { Input } from '@atoms/input/input';
 import { useSearchModal } from 'app/features/search/hooks/use-search';
 import { Title } from '@atoms/text';
 

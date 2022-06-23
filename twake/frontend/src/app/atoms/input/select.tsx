@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { defaultInputClassName, errorInputClassName } from './input';
 
 interface InputProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'size'> {
+  theme?: 'plain' | 'outline';
   hasError?: boolean;
   size?: 'md' | 'lg' | 'sm';
   className?: string;
@@ -9,7 +10,9 @@ interface InputProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>,
 }
 
 export default function Select(props: InputProps) {
-  let inputClassName = props.hasError ? errorInputClassName : defaultInputClassName;
+  let inputClassName = props.hasError
+    ? errorInputClassName(props.theme)
+    : defaultInputClassName(props.theme);
   inputClassName = inputClassName + (props.disabled ? ' opacity-75' : '');
 
   if (props.size === 'lg') inputClassName = inputClassName + ' text-lg h-11';

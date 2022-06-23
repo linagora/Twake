@@ -4,9 +4,10 @@ import _ from 'lodash';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   theme?: 'primary' | 'secondary' | 'danger' | 'default' | 'outline';
   size?: 'md' | 'lg' | 'sm';
+  icon?: (props: any) => JSX.Element;
   loading?: boolean;
   disabled?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const Button = (props: ButtonProps) => {
@@ -35,6 +36,12 @@ export const Button = (props: ButtonProps) => {
   else if (props.size === 'sm') className = className + ' text-sm h-7 px-3';
   else className = className + ' text-base h-9';
 
+  if (!props.children) {
+    if (props.size === 'lg') className = className + ' w-11 !p-0 justify-center';
+    else if (props.size === 'sm') className = className + ' w-7 !p-0 justify-center';
+    else className = className + ' w-9 !p-0 justify-center';
+  }
+
   return (
     <button
       type="button"
@@ -50,7 +57,7 @@ export const Button = (props: ButtonProps) => {
       {props.loading && (
         <>
           <svg
-            className="animate-spin -ml-1 mr-3 h-5 w-5"
+            className={'animate-spin w-4 h-4 ' + (props.children ? 'mr-2 -ml-1' : '-mx-1')}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -70,6 +77,9 @@ export const Button = (props: ButtonProps) => {
             ></path>
           </svg>{' '}
         </>
+      )}
+      {props.icon && !(props.loading && !props.children) && (
+        <props.icon className={'w-4 h-4 ' + (props.children ? 'mr-1 -ml-1' : '-mx-1')} />
       )}
       {props.children}
     </button>

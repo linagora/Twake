@@ -1,10 +1,7 @@
-import React from 'react';
 import { ComponentStory } from '@storybook/react';
-import Input, { defaultInputClassName } from './input';
-import { SearchIcon } from '@heroicons/react/outline';
 import { Title } from '../text';
+import { InputLabel } from './input-label';
 import Select from './select';
-import InputLabel from './input';
 
 export default {
   title: '@atoms/select',
@@ -16,8 +13,10 @@ const Template: ComponentStory<any> = (props: {
   loading: boolean;
 }) => {
   return (
-    <>
+    <div className="max-w-md">
       <Title>Sizes and with error</Title>
+      <br />
+
       <Select size="sm" disabled={props.disabled}>
         <option>Option 1</option>
         <option>Option 2</option>
@@ -35,19 +34,20 @@ const Template: ComponentStory<any> = (props: {
       <br />
 
       <Title>Labels</Title>
+      <br />
 
       <InputLabel
         label="Some label"
         hasError
         feedback="Has error"
-        inputComponent={
+        input={
           <Select size="lg" hasError disabled={props.disabled}>
             <option>Option 1</option>
             <option>Option 2</option>
           </Select>
         }
       />
-    </>
+    </div>
   );
 };
 

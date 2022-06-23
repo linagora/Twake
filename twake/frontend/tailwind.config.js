@@ -27,10 +27,28 @@ module.exports = {
         sm: '8px',
       },
       fontSize: {
-        lg: '17px',
-        base: '15px',
-        sm: '13px',
-        xs: '11px',
+        lg: '18px',
+        base: '16px',
+        sm: '14px',
+        xs: '12px',
+      },
+
+      colors: {
+        zinc: {
+          50: '#f7f8f9', //From figma
+          100: '#f2f4f5', //From figma
+          200: '#ebedf0', //From figma
+          300: '#d9dadb', //From figma
+          400: '#b8c1cc', //From figma
+          500: '#818c99', //From figma
+          600: '#52525b',
+          700: '#3f3f46',
+          800: '#27272a',
+          900: '#18181b',
+        },
+        blue: {
+          500: '#007AFF', //From figma
+        },
       },
     },
   },

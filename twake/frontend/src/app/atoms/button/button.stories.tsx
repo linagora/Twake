@@ -58,8 +58,13 @@ const Template: ComponentStory<any> = (props: {
 
       <br />
 
-      <Button className="my-4 mx-2" disabled={props.disabled} loading={props.loading}>
-        <SearchIcon className="w-4 h-4 mr-1 -ml-1" /> Search
+      <Button
+        className="my-4 mx-2"
+        disabled={props.disabled}
+        loading={props.loading}
+        icon={SearchIcon}
+      >
+        Search
       </Button>
 
       <Button
@@ -67,8 +72,9 @@ const Template: ComponentStory<any> = (props: {
         theme="outline"
         disabled={props.disabled}
         loading={props.loading}
+        icon={PlusIcon}
       >
-        <PlusIcon className="w-4 h-4 mr-1 -ml-1" /> Add
+        Add
       </Button>
 
       <Button
@@ -76,9 +82,8 @@ const Template: ComponentStory<any> = (props: {
         theme="danger"
         disabled={props.disabled}
         loading={props.loading}
-      >
-        <TrashIcon className="w-4 h-4 -mx-1.5" />
-      </Button>
+        icon={TrashIcon}
+      />
 
       <br />
 
@@ -120,18 +125,16 @@ const Template: ComponentStory<any> = (props: {
         theme="primary"
         disabled={props.disabled}
         loading={props.loading}
-      >
-        <TrashIcon className="w-4 h-4 -mx-0.5" />
-      </Button>
+        icon={TrashIcon}
+      />
 
       <Button
         className="my-4 mx-2 rounded-full"
         theme="primary"
         disabled={props.disabled}
         loading={props.loading}
-      >
-        <TrashIcon className="w-4 h-4 -mx-1.5" />
-      </Button>
+        icon={TrashIcon}
+      />
 
       <Button
         size="sm"
@@ -139,9 +142,8 @@ const Template: ComponentStory<any> = (props: {
         theme="primary"
         disabled={props.disabled}
         loading={props.loading}
-      >
-        <TrashIcon className="w-4 h-4 -mx-1.5" />
-      </Button>
+        icon={TrashIcon}
+      />
 
       <br />
 
@@ -151,8 +153,9 @@ const Template: ComponentStory<any> = (props: {
         theme="outline"
         disabled={props.disabled}
         loading={props.loading}
+        icon={PlusIcon}
       >
-        <PlusIcon className="w-4 h-4 mr-1 -ml-1" /> Add
+        Add
       </Button>
 
       <Button
