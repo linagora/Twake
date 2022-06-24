@@ -1,13 +1,20 @@
-import { Button, Col, Input, Row } from 'antd';
+import { Col, Row } from 'antd';
 import { Search } from 'react-feather';
 import RouterServices from 'app/features/router/services/router-service';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import Languages from 'app/features/global/services/languages-service';
 import { useSearchModal } from 'app/features/search/hooks/use-search';
+import { Button } from '@atoms/button/button';
+import { SearchIcon } from '@heroicons/react/solid';
+import { Input } from '@atoms/input/input-text';
+import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
+import { useRecoilValue } from 'recoil';
+import { SearchInputState } from 'app/features/search/state/search-input';
 
 export default (): JSX.Element => {
   const { workspaceId, companyId } = RouterServices.getStateFromRoute();
   const { setOpen } = useSearchModal();
+  const searchState = useRecoilValue(SearchInputState);
 
   const disable = !(
     AccessRightsService.hasLevel(workspaceId, 'member') &&
@@ -21,12 +28,18 @@ export default (): JSX.Element => {
           <Col flex="none" style={{ width: 200 }}>
             <div style={{ height: 40 }}>
               {!disable && (
-                <Input
-                  width={200}
-                  maxLength={0}
-                  suffix={<Search size={16} style={{ color: 'var(--grey-dark)' }} />}
-                  placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
-                  onClick={() => setOpen(true)}
+                <InputDecorationIcon
+                  prefix={SearchIcon}
+                  input={({ className }) => (
+                    <Input
+                      value={searchState.query}
+                      className={className + ' text-zinc-500'}
+                      maxLength={0}
+                      readOnly
+                      placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
+                      onClick={() => setOpen(true)}
+                    />
+                  )}
                 />
               )}
             </div>
@@ -38,9 +51,10 @@ export default (): JSX.Element => {
         <div style={{ height: 40 }}>
           {!disable && (
             <Button
-              type="default"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'start' }}
-              icon={<Search size={16} />}
+              theme="outline"
+              size="sm"
+              className="rounded-full"
+              icon={SearchIcon}
               onClick={() => setOpen(true)}
             />
           )}

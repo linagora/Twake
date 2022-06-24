@@ -1,8 +1,9 @@
 import _ from 'lodash';
+import React from 'react';
 
 interface InputProps
   extends Omit<
-    React.InputHTMLAttributes<HTMLInputElement> & React.TextareaHTMLAttributes<HTMLInputElement>,
+    React.InputHTMLAttributes<HTMLInputElement> & React.TextareaHTMLAttributes<HTMLTextAreaElement>,
     'size'
   > {
   theme?: 'plain' | 'outline';
@@ -14,6 +15,7 @@ interface InputProps
   inputComponent?: React.ReactNode;
   inputClassName?: string;
   className?: string;
+  inputRef?: React.Ref<HTMLInputElement | HTMLTextAreaElement>;
 }
 
 const baseInputClassName =
@@ -54,6 +56,7 @@ export const Input = (props: InputProps) => {
       {props.inputComponent ||
         (props.multiline ? (
           <textarea
+            ref={props.inputRef as React.Ref<HTMLTextAreaElement>}
             className={inputClassName + ' ' + props.inputClassName + ' ' + props.className}
             {..._.omit(props as any, 'label', 'inputClassName', 'className', 'value', 'size')}
           >
@@ -61,6 +64,7 @@ export const Input = (props: InputProps) => {
           </textarea>
         ) : (
           <input
+            ref={props.inputRef as React.Ref<HTMLInputElement>}
             type="text"
             className={inputClassName + ' ' + props.inputClassName + ' ' + props.className}
             {..._.omit(props, 'label', 'inputClassName', 'className', 'size')}

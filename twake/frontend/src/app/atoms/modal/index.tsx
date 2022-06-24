@@ -23,6 +23,7 @@ export const Modal = (props: {
   const [open, setOpen] = useState(false);
   const [modalsCountState, setModalsCountState] = useRecoilState(ModalsCountState);
   const [level, setLevel] = useState(0);
+  const [didOpenOnce, setDidOpenOnce] = useState(false);
 
   const onClose = useCallback(() => {
     visibleModals += -1;
@@ -44,6 +45,7 @@ export const Modal = (props: {
         onClose();
       }
     }
+    if (!didOpenOnce && props.open) setDidOpenOnce(true);
   }, [props.open]);
 
   useEffect(() => {
@@ -82,9 +84,9 @@ export const Modal = (props: {
           className={
             'fixed z-10 inset-0 overflow-y-auto transition-transform ' +
             (level !== visibleModals && open
-              ? '-tranzinc-y-6 sm:scale-95 opacity-75 '
+              ? '-translate-y-6 sm:scale-95 opacity-75 '
               : level !== visibleModals && !open
-              ? 'tranzinc-y-6 sm:scale-95 opacity-75 '
+              ? 'translate-y-6 sm:scale-95 opacity-75 '
               : '')
           }
         >
@@ -103,11 +105,11 @@ export const Modal = (props: {
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
-              enterFrom="opacity-0 tranzinc-y-4 sm:tranzinc-y-0 sm:scale-95"
-              enterTo="opacity-100 tranzinc-y-0 sm:scale-100"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
               leave="ease-in duration-200"
-              leaveFrom="opacity-100 tranzinc-y-0 sm:scale-100"
-              leaveTo="opacity-0 tranzinc-y-4 sm:tranzinc-y-0 sm:scale-95"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
                 className={
@@ -127,7 +129,7 @@ export const Modal = (props: {
                     </button>
                   </div>
                 )}
-                {props.children}
+                {didOpenOnce && props.children}
               </Dialog.Panel>
             </Transition.Child>
           </div>

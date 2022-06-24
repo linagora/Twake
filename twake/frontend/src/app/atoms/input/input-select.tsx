@@ -9,7 +9,7 @@ interface InputProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>,
   children?: React.ReactNode;
 }
 
-export default function Select(props: InputProps) {
+export function Select(props: InputProps) {
   let inputClassName = props.hasError
     ? errorInputClassName(props.theme)
     : defaultInputClassName(props.theme);
@@ -28,3 +28,5 @@ export default function Select(props: InputProps) {
     </select>
   );
 }
+
+export default Select;

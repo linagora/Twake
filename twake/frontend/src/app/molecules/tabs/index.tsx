@@ -14,7 +14,7 @@ const activeTabClassName = ' text-blue-500 border-blue-500';
 export default function Tab(props: TabsProps) {
   return (
     <>
-      <div className="flex w-100 border-b border-zinc-200 dark:border-zinc-800 transition-all select-none">
+      <div className="overflow-auto flex w-100 border-b border-zinc-200 dark:border-zinc-800 transition-all select-none">
         {props.tabs.map((tab, idx) => {
           const cl = defaultTabClassName + (idx === props.selected ? activeTabClassName : '');
           return (
