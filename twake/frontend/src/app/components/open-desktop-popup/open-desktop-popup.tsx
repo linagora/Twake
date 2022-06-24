@@ -4,6 +4,7 @@ import { Subtitle } from 'app/atoms/text';
 import A from 'app/atoms/link';
 import { useRecoilState } from 'recoil';
 import { useWebState } from 'app/features/global/state/atoms/use-web';
+import Languages from 'app/features/global/services/languages-service';
 
 export const OpenDesktopPopup = (): React.ReactElement => {
   const [showLink, setShowLink] = useState(false);
@@ -18,8 +19,12 @@ export const OpenDesktopPopup = (): React.ReactElement => {
   return (
     <div className="flex flex-col items-center justify-center h-full overflow-hidden space-y-2">
       <Logo />
-      <Subtitle>Opened in Twake app</Subtitle>
-      {showLink && <A onClick={() => setUseWeb(true)}>open here instead</A>}
+      <Subtitle className="mt-4">{Languages.t('components.open_desktop_popup.subtitle')}</Subtitle>
+      {showLink && (
+        <A onClick={() => setUseWeb(true)}>
+          {Languages.t('components.open_desktop_popup.open_here_link')}
+        </A>
+      )}
     </div>
   );
 };
