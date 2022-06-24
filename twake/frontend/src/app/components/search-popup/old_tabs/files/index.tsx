@@ -2,8 +2,11 @@ import Languages from 'features/global/services/languages-service';
 import { useRecoilValue } from 'recoil';
 import { HasSearchQuerySelector } from 'app/features/search/state/search-input';
 import { useSearchMessagesFiles } from 'app/features/search/hooks/use-search-files-or-medias';
-import FilesResult from '../../parts/recent/files-result';
-import { onFileDownloadClick, onFilePreviewClick } from 'components/search-popup/parts/common';
+import FilesResult from '../../old_parts/recent/files-result';
+import {
+  onFileDownloadClick,
+  onFilePreviewClick,
+} from 'app/components/search-popup/old_parts/common';
 
 export default (): JSX.Element => {
   const isSearchMode = useRecoilValue(HasSearchQuerySelector);
@@ -40,7 +43,7 @@ export const FilesResults = () => {
             onFileDownloadClick(file);
           }}
           showThumbnails={false}
-        />*/<></>
+        />*/ <></>
       ))}
     </div>
   );

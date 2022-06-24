@@ -11,6 +11,11 @@ import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import { createDirectChannelFromUsers } from 'app/features/channels/types/channel';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { UserType } from 'app/features/users/types/user';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+
+export const useSearchChannelsLoading = () => {
+  return useRecoilValue(LoadingState('useSearchChannels'));
+};
 
 export const useSearchChannels = () => {
   const companyId = useRouterCompany();
@@ -55,18 +60,22 @@ export const useSearchChannels = () => {
     console.error('Not implemented');
   };
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      if (searchInput) {
-        delayRequest('useSearchChannels', async () => {
+  useGlobalEffect(
+    'useSearchChannels',
+    () => {
+      (async () => {
+        setLoading(true);
+        if (searchInput) {
+          delayRequest('useSearchChannels', async () => {
+            refresh();
+          });
+        } else {
           refresh();
-        });
-      } else {
-        refresh();
-      }
-    })();
-  }, [searchInput.query]);
+        }
+      })();
+    },
+    [searchInput.query],
+  );
 
   //We have two simultaneous results: users and searched
   let searched = _searched.results;

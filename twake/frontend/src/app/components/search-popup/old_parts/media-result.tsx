@@ -1,6 +1,6 @@
 import React from 'react';
 import { FileSearchResult } from 'features/messages/types/message';
-import { Thumbnail } from 'components/search-popup/parts/thumbnail';
+import { Thumbnail } from 'app/components/search-popup/old_parts/thumbnail';
 
 type PropsType = {
   fileSearchResult: FileSearchResult;

@@ -1,9 +1,9 @@
 import Search from 'features/global/services/search-service';
 import React, { useEffect } from 'react';
-import ChannelsAndContacts from 'components/search-popup/parts/channels-and-contacts';
-import Discussions from 'components/search-popup/parts/discussions';
-import NotFound from 'components/search-popup/parts/not-found';
-import Loading from 'components/search-popup/parts/loading';
+import ChannelsAndContacts from 'app/components/search-popup/old_parts/channels-and-contacts';
+import Discussions from 'app/components/search-popup/old_parts/discussions';
+import NotFound from 'app/components/search-popup/old_parts/not-found';
+import Loading from 'app/components/search-popup/old_parts/loading';
 import Languages from 'features/global/services/languages-service';
 
 export default (): JSX.Element => {

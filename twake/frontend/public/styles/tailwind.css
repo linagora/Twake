@@ -930,8 +930,8 @@ select {
   margin-top: 1.25rem;
 }
 
-.mt-4 {
-  margin-top: 1rem;
+.ml-px {
+  margin-left: 1px;
 }
 
 .ml-\[7px\] {
@@ -944,14 +944,6 @@ select {
 
 .mr-px {
   margin-right: 1px;
-}
-
-.ml-px {
-  margin-left: 1px;
-}
-
-.box-border {
-  box-sizing: border-box;
 }
 
 .block {
@@ -1046,6 +1038,18 @@ select {
   height: 4rem;
 }
 
+.\!h-4 {
+  height: 1rem !important;
+}
+
+.\!h-5 {
+  height: 1.25rem !important;
+}
+
+.\!h-6 {
+  height: 1.5rem !important;
+}
+
 .min-h-full {
   min-height: 100%;
 }
@@ -1102,12 +1106,12 @@ select {
   width: 3rem;
 }
 
-.w-\[100vw\] {
-  width: 100vw;
-}
-
 .w-32 {
   width: 8rem;
+}
+
+.\!w-4 {
+  width: 1rem !important;
 }
 
 .min-w-0 {
@@ -1116,10 +1120,6 @@ select {
 
 .max-w-\[68px\] {
   max-width: 68px;
-}
-
-.max-w-5xl {
-  max-width: 64rem;
 }
 
 .max-w-full {
@@ -1248,10 +1248,6 @@ select {
   gap: 2rem;
 }
 
-.gap-2\.5 {
-  gap: 0.625rem;
-}
-
 .gap-2 {
   gap: 0.5rem;
 }
@@ -1329,12 +1325,12 @@ select {
   border-radius: 0.25rem;
 }
 
-.rounded-lg {
-  border-radius: 14px;
-}
-
 .rounded-sm {
   border-radius: 8px;
+}
+
+.rounded-lg {
+  border-radius: 14px;
 }
 
 .rounded-tr-xl {
@@ -1825,17 +1821,8 @@ select {
   background-color: rgb(30 58 138 / var(--tw-bg-opacity));
 }
 
-.bg-zinc-300 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(217 218 219 / var(--tw-bg-opacity));
-}
-
 .bg-opacity-25 {
   --tw-bg-opacity: 0.25;
-}
-
-.fill-gray-500 {
-  fill: #6b7280;
 }
 
 .fill-blue-500 {
@@ -2262,10 +2249,6 @@ select {
 
 .text-opacity-50 {
   --tw-text-opacity: 0.5;
-}
-
-.text-opacity-75 {
-  --tw-text-opacity: 0.75;
 }
 
 .underline {
@@ -2909,6 +2892,11 @@ input.ant-input {
   color: rgb(184 193 204 / var(--tw-text-opacity));
 }
 
+.dark .dark\:text-zinc-600 {
+  --tw-text-opacity: 1;
+  color: rgb(82 82 91 / var(--tw-text-opacity));
+}
+
 .dark .dark\:text-red-50 {
   --tw-text-opacity: 1;
   color: rgb(254 242 242 / var(--tw-text-opacity));
@@ -3109,11 +3097,6 @@ input.ant-input {
   color: rgb(30 58 138 / var(--tw-text-opacity));
 }
 
-.dark .dark\:text-zinc-600 {
-  --tw-text-opacity: 1;
-  color: rgb(82 82 91 / var(--tw-text-opacity));
-}
-
 .dark .dark\:opacity-50 {
   opacity: 0.5;
 }
@@ -3216,22 +3199,6 @@ input.ant-input {
 
   .sm\:max-w-lg {
     max-width: 32rem;
-  }
-
-  .sm\:max-w-\[80\%\] {
-    max-width: 80%;
-  }
-
-  .sm\:max-w-\[80vw\] {
-    max-width: 80vw;
-  }
-
-  .sm\:max-w-7xl {
-    max-width: 80rem;
-  }
-
-  .sm\:max-w-5xl {
-    max-width: 64rem;
   }
 
   .sm\:max-w-4xl {

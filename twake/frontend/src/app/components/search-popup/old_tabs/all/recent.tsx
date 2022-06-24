@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import RecentChannelsAndContacts from 'components/search-popup/parts/recent/channels-and-contacts';
-import Files from 'components/search-popup/parts/files';
-import Media from 'components/search-popup/parts/media';
+import RecentChannelsAndContacts from 'app/components/search-popup/old_parts/recent/channels-and-contacts';
+import Files from 'app/components/search-popup/old_parts/files';
+import Media from 'app/components/search-popup/old_parts/media';
 import Search from 'features/global/services/search-service';
 import Languages from 'features/global/services/languages-service';
 

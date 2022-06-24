@@ -1,6 +1,6 @@
 import Search from 'features/global/services/search-service';
-import ChannelsResult from 'components/search-popup/parts/channels-result';
-import UsersResult from 'components/search-popup/parts/users-result';
+import ChannelsResult from 'app/components/search-popup/old_parts/channels-result';
+import UsersResult from 'app/components/search-popup/old_parts/users-result';
 import React from 'react';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { UserType } from 'features/users/types/user';

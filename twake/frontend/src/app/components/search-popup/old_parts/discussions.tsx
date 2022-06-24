@@ -1,6 +1,6 @@
 import Search from 'features/global/services/search-service';
 import React from 'react';
-import MessagesResult from 'components/search-popup/parts/messages-result';
+import MessagesResult from 'app/components/search-popup/old_parts/messages-result';
 import { MessageExtended } from 'features/messages/types/message';
 
 type PropsType = {

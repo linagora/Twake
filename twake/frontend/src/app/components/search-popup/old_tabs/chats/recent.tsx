@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import RecentChannelsAndContacts from 'components/search-popup/parts/recent/channels-and-contacts';
+import RecentChannelsAndContacts from 'app/components/search-popup/old_parts/recent/channels-and-contacts';
 import Search from 'features/global/services/search-service';
-import ChannelsAndContacts from 'components/search-popup/parts/channels-and-contacts';
+import ChannelsAndContacts from 'app/components/search-popup/old_parts/channels-and-contacts';
 import { UserType } from 'features/users/types/user';
 
 export default (): JSX.Element => {

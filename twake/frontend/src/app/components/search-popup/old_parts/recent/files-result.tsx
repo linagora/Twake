@@ -10,7 +10,7 @@ import {
 } from '@atoms/icons-colored';
 import { DownloadIcon, EyeIcon } from '@atoms/icons-agnostic';
 
-import { Thumbnail } from 'components/search-popup/parts/thumbnail';
+import { Thumbnail } from 'app/components/search-popup/old_parts/thumbnail';
 
 const locale = navigator.languages[0];
 

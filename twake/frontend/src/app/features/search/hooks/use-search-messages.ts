@@ -8,6 +8,11 @@ import { SearchMessagesResultsState } from '../state/search-messages-result';
 import messageApiClient from 'app/features/messages/api/message-api-client';
 import { MessageExtended } from 'app/features/messages/types/message';
 import _ from 'lodash';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+
+export const useSearchMessagesLoading = () => {
+  return useRecoilValue(LoadingState('useSearchMessages'));
+};
 
 export const useSearchMessages = () => {
   const companyId = useRouterCompany();
@@ -48,18 +53,22 @@ export const useSearchMessages = () => {
     console.error('Not implemented');
   };
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      if (searchInput) {
-        delayRequest('useSearchMessages', async () => {
+  useGlobalEffect(
+    'useSearchMessages',
+    () => {
+      (async () => {
+        setLoading(true);
+        if (searchInput) {
+          delayRequest('useSearchMessages', async () => {
+            refresh();
+          });
+        } else {
           refresh();
-        });
-      } else {
-        refresh();
-      }
-    })();
-  }, [searchInput.query, searchInput.channelId, searchInput.workspaceId]);
+        }
+      })();
+    },
+    [searchInput.query, searchInput.channelId, searchInput.workspaceId],
+  );
 
   return { loading, messages: searched.results, loadMore, refresh };
 };

@@ -1,12 +1,12 @@
 import Search from 'features/global/services/search-service';
 import React from 'react';
-import ChannelsAndContacts from 'components/search-popup/parts/channels-and-contacts';
-import Discussions from 'components/search-popup/parts/discussions';
-import Files from 'components/search-popup/parts/files';
-import Media from 'components/search-popup/parts/media';
+import ChannelsAndContacts from 'app/components/search-popup/old_parts/channels-and-contacts';
+import Discussions from 'app/components/search-popup/old_parts/discussions';
+import Files from 'app/components/search-popup/old_parts/files';
+import Media from 'app/components/search-popup/old_parts/media';
 import Languages from 'features/global/services/languages-service';
-import NotFound from 'components/search-popup/parts/not-found';
-import Loading from 'components/search-popup/parts/loading';
+import NotFound from 'app/components/search-popup/old_parts/not-found';
+import Loading from 'app/components/search-popup/old_parts/loading';
 
 export default (): JSX.Element => {
   if (Search.searchInProgress) {

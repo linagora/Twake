@@ -1,6 +1,6 @@
-import { onFilePreviewClick } from 'components/search-popup/parts/common';
+import { onFilePreviewClick } from 'app/components/search-popup/old_parts/common';
 import React from 'react';
-import MediaResult from 'components/search-popup/parts/media-result';
+import MediaResult from 'app/components/search-popup/old_parts/media-result';
 import { FileSearchResult } from 'features/messages/types/message';
 
 type PropsType = {

@@ -9,6 +9,15 @@ import { RecentFilesState } from '../state/recent-files';
 import { RecentMediasState } from '../state/recent-medias';
 import { SearchMediasResultsState } from '../state/search-medias-result';
 import _ from 'lodash';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+
+export const useSearchMessagesFilesLoading = () => {
+  return useRecoilValue(LoadingState('useSearchMessagesFilesOrMedias-' + 'files'));
+};
+
+export const useSearchMessagesMediasLoading = () => {
+  return useRecoilValue(LoadingState('useSearchMessagesFilesOrMedias-' + 'medias'));
+};
 
 export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
   const searchInput = useRecoilValue(SearchInputState);
@@ -60,18 +69,22 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
     console.error('Not implemented');
   };
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      if (searchInput) {
-        delayRequest('useSearchFiles' + mode, async () => {
+  useGlobalEffect(
+    'useSearchFiles' + mode,
+    () => {
+      (async () => {
+        setLoading(true);
+        if (searchInput) {
+          delayRequest('useSearchFiles' + mode, async () => {
+            refresh();
+          });
+        } else {
           refresh();
-        });
-      } else {
-        refresh();
-      }
-    })();
-  }, [searchInput.query, searchInput.channelId, searchInput.workspaceId]);
+        }
+      })();
+    },
+    [searchInput.query, searchInput.channelId, searchInput.workspaceId],
+  );
 
   return {
     loading,
