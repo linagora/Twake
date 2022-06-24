@@ -8,8 +8,9 @@ import { LoadingState } from 'app/features/global/state/atoms/Loading';
 import { RecentFilesState } from '../state/recent-files';
 import { RecentMediasState } from '../state/recent-medias';
 import { SearchMediasResultsState } from '../state/search-medias-result';
+import _ from 'lodash';
 
-const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
+export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(
     LoadingState('useSearchMessagesFilesOrMedias-' + mode),
@@ -22,13 +23,16 @@ const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
     mode === 'files' ? RecentFilesState : RecentMediasState,
   );
 
-  const opt = {
-    limit: 100,
-    is_file: mode === 'files',
-    is_media: mode === 'medias',
-    workspace_id: searchInput.workspaceId,
-    channel_id: searchInput.channelId,
-  };
+  const opt = _.omitBy(
+    {
+      limit: 100,
+      is_file: mode === 'files' || undefined,
+      is_media: mode === 'medias' || undefined,
+      workspace_id: searchInput.workspaceId,
+      channel_id: searchInput.channelId,
+    },
+    _.isUndefined,
+  );
 
   const refresh = async () => {
     setLoading(true);

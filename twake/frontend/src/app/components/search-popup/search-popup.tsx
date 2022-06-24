@@ -8,10 +8,16 @@ import Languages from 'app/features/global/services/languages-service';
 import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { useSearchModal } from 'app/features/search/hooks/use-search';
-import { SearchInputState } from 'app/features/search/state/search-input';
+import { useSearchChannels } from 'app/features/search/hooks/use-search-channels';
+import {
+  useSearchMessagesFiles,
+  useSearchMessagesMedias,
+} from 'app/features/search/hooks/use-search-files-or-medias';
+import { useSearchMessages } from 'app/features/search/hooks/use-search-messages';
+import { HasSearchQuerySelector, SearchInputState } from 'app/features/search/state/search-input';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 export default () => {
   const { open, setOpen } = useSearchModal();
@@ -78,21 +84,60 @@ const SearchBox = () => {
 };
 
 const SearchResultsIndex = () => {
+  const input = useRecoilValue(SearchInputState);
+  const hasInput = input?.query?.length > 0;
   const [tab, setTab] = useState(0);
+
+  const { channels } = useSearchChannels();
+  const { messages } = useSearchMessages();
+  const { files } = useSearchMessagesFiles();
+  const { files: medias } = useSearchMessagesMedias();
 
   return (
     <>
       <Tabs
         tabs={[
           <div key="all">{Languages.t('components.searchpopup.all')}</div>,
-          <div key="channels">{Languages.t('components.searchpopup.channels')}</div>,
-          <div key="messages">{Languages.t('components.searchpopup.messages')}</div>,
-          <div key="media">{Languages.t('components.searchpopup.media')}</div>,
-          <div key="files">{Languages.t('components.searchpopup.files')}</div>,
+          <div key="messages">
+            <div className="flex">
+              {Languages.t('components.searchpopup.messages')}
+              {hasInput && <SearchCounterBadge count={messages.length} />}
+            </div>
+          </div>,
+          <div key="media">
+            <div className="flex">
+              {Languages.t('components.searchpopup.media')}
+              {hasInput && <SearchCounterBadge count={medias.length} />}
+            </div>
+          </div>,
+          <div key="files">
+            <div className="flex">
+              {Languages.t('components.searchpopup.files')}
+              {hasInput && <SearchCounterBadge count={files.length} />}
+            </div>
+          </div>,
+          ...(!input.channelId
+            ? [
+                <div key="channels">
+                  <div className="flex">
+                    {Languages.t('components.searchpopup.channels')}
+                    {hasInput && <SearchCounterBadge count={channels.length} />}
+                  </div>
+                </div>,
+              ]
+            : []),
         ]}
         selected={tab}
         onClick={idx => setTab(idx)}
       />
     </>
+  );
+};
+
+const SearchCounterBadge = (props: { count: number }) => {
+  return (
+    <div className="bg-zinc-200 ml-2 px-1.5 text-sm rounded-full text-zinc-500 dark:bg-zing-800 dark:text-zinc-600">
+      {props.count}
+    </div>
   );
 };

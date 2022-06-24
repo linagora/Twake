@@ -7,16 +7,16 @@ import { SearchChannelsResultsState } from '../state/search-channels-result';
 import { RecentChannelsState } from '../state/recent-channels';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
+import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import { createDirectChannelFromUsers } from 'app/features/channels/types/channel';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { UserType } from 'app/features/users/types/user';
 
-const useSearchChannels = () => {
+export const useSearchChannels = () => {
   const companyId = useRouterCompany();
   const { user: currentUser } = useCurrentUser();
 
-  const { search, result: users } = useSearchUserList({ scope: 'company' });
+  const { search, result: users } = useSearchUsers({ scope: 'company' });
 
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(LoadingState('useSearchChannels'));

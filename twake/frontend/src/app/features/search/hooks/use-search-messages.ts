@@ -7,22 +7,24 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { SearchMessagesResultsState } from '../state/search-messages-result';
 import messageApiClient from 'app/features/messages/api/message-api-client';
 import { MessageExtended } from 'app/features/messages/types/message';
-import useRouterChannel from 'app/features/router/hooks/use-router-channel';
-import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import _ from 'lodash';
 
-const useSearchMessages = () => {
+export const useSearchMessages = () => {
   const companyId = useRouterCompany();
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(LoadingState('useSearchMessages'));
 
   const [searched, setSearched] = useRecoilState(SearchMessagesResultsState);
 
-  const opt = {
-    limit: 100,
-    company_id: companyId,
-    workspace_id: searchInput.workspaceId,
-    channel_id: searchInput.channelId,
-  };
+  const opt = _.omitBy(
+    {
+      limit: 100,
+      company_id: companyId,
+      workspace_id: searchInput.workspaceId,
+      channel_id: searchInput.channelId,
+    },
+    _.isUndefined,
+  );
 
   const refresh = async () => {
     setLoading(true);
@@ -59,5 +61,5 @@ const useSearchMessages = () => {
     })();
   }, [searchInput.query, searchInput.channelId, searchInput.workspaceId]);
 
-  return { loading, messages: searched, loadMore, refresh };
+  return { loading, messages: searched.results, loadMore, refresh };
 };
