@@ -25,7 +25,7 @@ import assert from 'assert';
 
 export interface BaseSearchOptions {
   company_id?: string;
-  workspace_dd?: string;
+  workspace_id?: string;
   channel_id?: string;
   page_token?: string;
   limit?: number;
@@ -36,6 +36,8 @@ export interface FileSearchOptions extends BaseSearchOptions {
   is_file?: boolean;
   is_media?: boolean;
   extension?: string;
+  workspace_id?: string;
+  channel_id?: string;
 }
 
 @TwakeService('MessageAPIClientService')
@@ -175,24 +177,20 @@ class MessageAPIClient {
     return res;
   }
 
-  async searchFile(
-    searchString: string | null,
-    options?: FileSearchOptions,
-  ): Promise<{ resources: FileSearchResult[]; next_page_token: string | null }> {
+  async searchFile(searchString: string | null, options?: FileSearchOptions) {
     const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
     let query = `/internal/services/messages/v1/companies/${companyId}/files/search`;
     if (searchString) {
       query += `?q=${searchString}`;
     }
     const res = await Api.getWithParams<{
-      resources: MessageFileType &
-        {
-          company_id: string;
-          metadata: MetaDataType;
-          created_at: number;
-          message: Message;
-          user: UserType;
-        }[];
+      resources: (MessageFileType & {
+        company_id: string;
+        metadata: MetaDataType;
+        created_at: number;
+        message: Message;
+        user: UserType;
+      })[];
       next_page_token: string;
     }>(query, options);
     try {
@@ -208,43 +206,8 @@ class MessageAPIClient {
       return { resources: [], next_page_token: null };
     }
 
-    const resources = [] as FileSearchResult[];
-
-    for (const resource of res.resources) {
-      const fsr = {
-        company_id: resource.metadata.external_id?.company_id,
-        file_id: resource.metadata.external_id?.id,
-        // thumbnail_url: resource.metadata.thumbnails?.[0]?.url,
-        filetype: FileUploadAPIClient.mimeToType(resource.metadata.mime || ''),
-        size: resource.metadata.size,
-        filename: resource.metadata.name,
-        created_at: resource.message.created_at,
-        message: resource.message,
-        user: resource.user,
-      } as FileSearchResult;
-
-      if (resource.metadata?.thumbnails?.[0]?.index !== undefined) {
-        fsr.thumbnail_url =
-          FileUploadAPIClient.getRoute({
-            companyId: fsr.company_id,
-            fileId: fsr.file_id,
-            fullApiRouteUrl: true,
-          }) + `/thumbnails/${resource.metadata?.thumbnails?.[0]?.index}`;
-      }
-
-      try {
-        assert(resource.metadata.external_id, 'no external_id object for fileSearchResult');
-        ['company_id', 'file_id', 'filename', 'filetype', 'size', 'created_at'].forEach(k => {
-          assert((fsr as any)[k], `no ${k} for fileSearchResult`);
-        });
-        resources.push(fsr);
-      } catch (e) {
-        console.error(e, resource);
-      }
-    }
-
     return {
-      resources,
+      resources: res.resources,
       next_page_token: res.next_page_token,
     };
   }

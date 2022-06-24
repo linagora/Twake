@@ -9,12 +9,12 @@ const Template: ComponentStory<any> = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-8">
-        {['slate', 'red', 'orange', 'green', 'blue'].map(color => (
+        {['zink', 'red', 'orange', 'green', 'blue'].map(color => (
           <div key={color}>
             <div className="flex flex-col space-y-3 sm:flex-row text-xs sm:space-y-0 sm:space-x-4">
               <div className="w-16 shrink-0">
                 <div className="h-10 flex flex-col justify-center">
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-200">
+                  <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-200">
                     {color}
                   </div>
                 </div>
@@ -29,10 +29,10 @@ const Template: ComponentStory<any> = () => {
                       }
                     ></div>
                     <div className="px-0.5 md:flex md:justify-between md:space-x-2 2xl:space-x-0 2xl:block">
-                      <div className="w-6 font-medium text-slate-900 2xl:w-full dark:text-white">
+                      <div className="w-6 font-medium text-zinc-900 2xl:w-full dark:text-white">
                         {shade}
                       </div>
-                      <div className="text-slate-500 font-mono lowercase dark:text-slate-400">
+                      <div className="text-zinc-500 font-mono lowercase dark:text-zinc-400">
                         #...
                       </div>
                     </div>

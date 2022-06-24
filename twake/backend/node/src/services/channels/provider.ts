@@ -186,7 +186,7 @@ export interface MemberService
   /**
    * Check if user is channel member
    */
-  isChannelMember(
+  getChannelMember(
     user: User,
     channel: Partial<Pick<Channel, "company_id" | "workspace_id" | "id">>,
     cacheTtlSec?: number,

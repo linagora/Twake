@@ -17,14 +17,14 @@ import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { useWorkspace } from 'app/features/workspaces/hooks/use-workspaces';
 
 import './user-list-manager.scss';
-import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
+import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 
 type PropsType = {
   [key: string]: any;
 };
 
 const UserListManager = (props: PropsType) => {
-  const { result, search } = useSearchUserList({ scope: props.scope || 'company' });
+  const { result, search } = useSearchUsers({ scope: props.scope || 'company' });
   const workspaceId = useRouterWorkspace();
   const { workspace } = useWorkspace(workspaceId);
   const [input, setInput] = useState<string>('');

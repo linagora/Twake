@@ -1,7 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { ExclamationIcon, XIcon } from '@heroicons/react/outline';
 import { Fragment, ReactNode, useCallback, useEffect, useState } from 'react';
 import { atom, useRecoilState } from 'recoil';
+import { DismissIcon } from '../icons-colored';
+import { Title } from '../text';
 
 const ModalsCountState = atom({
   key: 'ModalsState',
@@ -22,6 +23,7 @@ export const Modal = (props: {
   const [open, setOpen] = useState(false);
   const [modalsCountState, setModalsCountState] = useRecoilState(ModalsCountState);
   const [level, setLevel] = useState(0);
+  const [didOpenOnce, setDidOpenOnce] = useState(false);
 
   const onClose = useCallback(() => {
     visibleModals += -1;
@@ -43,6 +45,7 @@ export const Modal = (props: {
         onClose();
       }
     }
+    if (!didOpenOnce && props.open) setDidOpenOnce(true);
   }, [props.open]);
 
   useEffect(() => {
@@ -55,7 +58,11 @@ export const Modal = (props: {
 
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className={'relative ' + zIndex} onClose={() => {}}>
+      <Dialog
+        as="div"
+        className={'relative ' + zIndex}
+        onClose={() => props.onClose && props.closable && props.onClose()}
+      >
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -67,7 +74,7 @@ export const Modal = (props: {
         >
           <div
             className={
-              'fixed inset-0 bg-opacity-25 transition-opacity ' +
+              'fixed inset-0 bg-opacity-25 dark:bg-opacity-75 transition-opacity ' +
               (level === 1 ? 'bg-black' : 'bg-transparent')
             }
           />
@@ -106,7 +113,7 @@ export const Modal = (props: {
             >
               <Dialog.Panel
                 className={
-                  'relative inline-block align-bottom bg-white rounded-tr-xl rounded-tl-xl sm:rounded-md px-4 pt-5 pb-4 text-left w-full sm:w-auto overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 ' +
+                  'relative inline-block align-bottom bg-white dark:bg-zinc-900 rounded-tr-xl rounded-tl-xl sm:rounded-md px-4 pt-5 pb-4 text-left w-full sm:w-auto overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-4 ' +
                   (props.className || '')
                 }
                 style={props.style || {}}
@@ -115,15 +122,14 @@ export const Modal = (props: {
                   <div className="absolute top-0 right-0 pt-4 pr-4">
                     <button
                       type="button"
-                      className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none "
+                      className="hover:opacity-75 focus:outline-none "
                       onClick={() => props.onClose && props.onClose()}
                     >
-                      <span className="sr-only">Close</span>
-                      <XIcon className="h-6 w-6" aria-hidden="true" />
+                      <DismissIcon />
                     </button>
                   </div>
                 )}
-                {props.children}
+                {didOpenOnce && props.children}
               </Dialog.Panel>
             </Transition.Child>
           </div>
@@ -136,12 +142,13 @@ export const Modal = (props: {
 export const ModalContent = (props: {
   title: string;
   text?: string;
+  textCenter?: boolean;
   buttons?: ReactNode;
   children?: ReactNode;
   icon?: any;
   theme?: 'success' | 'danger' | 'warning' | 'gray';
 }) => {
-  let color = 'indigo';
+  let color = 'blue';
   if (props.theme === 'success') color = 'green';
   if (props.theme === 'danger') color = 'red';
   if (props.theme === 'warning') color = 'orange';
@@ -156,17 +163,26 @@ export const ModalContent = (props: {
             <props.icon className={`h-6 w-6 text-${color}-600`} aria-hidden="true" />
           </div>
         )}
-        <div className={'mt-3 text-center sm:mt-0 sm:text-left ' + (props.icon ? 'sm:ml-4' : '')}>
-          <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
-            {props.title}
-          </Dialog.Title>
+        <div
+          className={
+            'w-full ' +
+            (props.icon ? 'sm:ml-4 ' : '') +
+            (props.textCenter ? 'text-center' : 'text-left')
+          }
+        >
+          <Title>{props.title}</Title>
           <div className="mt-2">
             <p className="text-sm text-gray-500">{props.text || ''}</p>
           </div>
         </div>
       </div>
       {props.buttons && (
-        <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse text-center sm:text-left">
+        <div
+          className={
+            'mt-5 sm:mt-4 sm:flex sm:flex-row-reverse sm:text-left ' +
+            (props.textCenter ? 'text-center' : 'text-left')
+          }
+        >
           {props.buttons}
         </div>
       )}

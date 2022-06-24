@@ -34,31 +34,31 @@ const Text = (props: TextProps) => {
       defaultClassName =
         'text-lg font-semibold block ' +
         ' ' +
-        (props.noColor ? '' : 'text-slate-900 dark:text-white');
+        (props.noColor ? '' : 'text-zinc-900 dark:text-white');
       break;
     case 'subtitle':
       defaultClassName =
-        'text-base font-semibold' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
+        'text-base font-semibold' + ' ' + (props.noColor ? '' : 'text-zinc-800 dark:text-white');
       break;
     case 'base':
       defaultClassName =
-        'text-base font-normal' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
+        'text-base font-normal' + ' ' + (props.noColor ? '' : 'text-zinc-800 dark:text-white');
       break;
     case 'base-small':
       defaultClassName =
-        'text-sm font-normal' + ' ' + (props.noColor ? '' : 'text-slate-800 dark:text-white');
+        'text-sm font-normal' + ' ' + (props.noColor ? '' : 'text-zinc-800 dark:text-white');
       break;
     case 'info':
       defaultClassName =
         'text-sm font-normal' +
         ' ' +
-        (props.noColor ? '' : 'text-slate-400 dark:text-white dark:opacity-50');
+        (props.noColor ? '' : 'text-zinc-400 dark:text-white dark:opacity-50');
       break;
     case 'info-small':
       defaultClassName =
         'text-xs font-normal' +
         ' ' +
-        (props.noColor ? '' : 'text-slate-400 dark:text-white dark:opacity-50');
+        (props.noColor ? '' : 'text-zinc-400 dark:text-white dark:opacity-50');
       break;
   }
 

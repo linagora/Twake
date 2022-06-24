@@ -40,7 +40,7 @@ export default async (
   }>,
   context: ChannelViewExecutionContext,
 ): Promise<ResourceListResponse<MessageFile>> => {
-  if (isEmpty(request.query)) {
+  if (isEmpty(request.query?.q)) {
     return recentFiles(request);
   }
 
@@ -92,7 +92,7 @@ export default async (
 
   for await (const { msgFile, pageToken } of getNextMessageFiles(request.query.page_token)) {
     nextPageToken = pageToken;
-    const isChannelMember = await gr.services.channels.members.isChannelMember(
+    const getChannelMember = await gr.services.channels.members.getChannelMember(
       { id: request.currentUser.id },
       {
         company_id: msgFile.cache.company_id,
@@ -101,7 +101,7 @@ export default async (
       },
       50,
     );
-    if (!isChannelMember) continue;
+    if (!getChannelMember) continue;
 
     try {
       const message = await gr.services.messages.messages.get({

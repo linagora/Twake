@@ -199,7 +199,7 @@ export class ViewsController {
 
     for await (const { msg, pageToken } of getNextMessages(request.query.page_token)) {
       lastPageToken = pageToken;
-      const isChannelMember = await gr.services.channels.members.isChannelMember(
+      const getChannelMember = await gr.services.channels.members.getChannelMember(
         { id: request.currentUser.id },
         {
           company_id: msg.cache.company_id,
@@ -208,7 +208,7 @@ export class ViewsController {
         },
         50,
       );
-      if (!isChannelMember) continue;
+      if (!getChannelMember) continue;
 
       messages.push(msg);
       if (messages.length == limit) {

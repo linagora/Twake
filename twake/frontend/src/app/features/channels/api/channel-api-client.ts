@@ -9,7 +9,7 @@ import Logger from 'features/global/framework/logger-service';
 const PREFIX = '/internal/services/channels/v1/companies';
 
 export type SearchOptions = {
-  company_id?: string;
+  company_id: string;
   page_token?: string;
   limit?: number;
 };
@@ -82,9 +82,13 @@ class ChannelAPIClientService {
   }
 
   async search(
-    searchString: string,
-    options?: SearchOptions,
+    searchString: string | null,
+    options: SearchOptions,
   ): Promise<{ resources: ChannelType[] }> {
+    if (!searchString) {
+      return { resources: await this.recent(options.company_id, options?.limit || 100) };
+    }
+
     const companyId = options?.company_id || Workspace.currentGroupId;
     const query = `/internal/services/channels/v1/companies/${companyId}/search?q=${searchString}`;
     const res = await Api.getWithParams<{ resources: ChannelType[] }>(query, options);
