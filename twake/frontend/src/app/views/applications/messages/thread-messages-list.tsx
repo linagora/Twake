@@ -14,6 +14,7 @@ import { VirtuosoHandle } from 'react-virtuoso';
 import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
 import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
+import { getMessage } from 'app/features/messages/hooks/use-message';
 
 type Props = {
   companyId: string;
@@ -111,7 +112,7 @@ export default ({ companyId, threadId }: Props) => {
             cancelHighlight();
           }}
           items={messages}
-          itemId={m => m.type + m.id}
+          itemId={m => m.type + (getMessage(m.id)?.context?._front_id || m.id)}
           emptyListComponent={<FirstThreadMessage noReplies />}
           filterOnAppend={messages => {
             return cleanFrontMessagesFromListOfMessages(messages);
