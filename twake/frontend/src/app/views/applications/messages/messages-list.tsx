@@ -20,6 +20,7 @@ import RouterServices from 'app/features/router/services/router-service';
 import GoToBottom from './parts/go-to-bottom';
 import { MessagesPlaceholder } from './placeholder';
 import { cleanFrontMessagesFromListOfMessages } from 'app/features/messages/hooks/use-message-editor';
+import { getMessage } from 'app/features/messages/hooks/use-message';
 
 type Props = {
   companyId: string;
@@ -177,7 +178,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           filterOnAppend={messages => {
             return cleanFrontMessagesFromListOfMessages(messages);
           }}
-          itemId={m => m.type + m.threadId}
+          itemId={m => m.type + (getMessage(m.id)?.context?._front_id || m.threadId)}
           emptyListComponent={<FirstMessage />}
           itemContent={row}
           followOutput={!!window.reachedEnd && 'smooth'}
