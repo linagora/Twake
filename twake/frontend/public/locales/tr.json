@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Başarıyla {{$1}} uygulaması!",
     "scenes.app.integrations_parameters.add_application": "Yeni entegrasyon",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Geliştirici ayarları",
-    "components.rich_text_editor.plugins.suggestions.loading": "daha fazlasını arıyorum"
+    "components.rich_text_editor.plugins.suggestions.loading": "daha fazlasını arıyorum",
+    "components.open_desktop_popup.subtitle": "Twake uygulamasında açıldı",
+    "components.open_desktop_popup.open_here_link": "Bunun yerine burada aç"
 }

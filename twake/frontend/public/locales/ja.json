@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "{{$1}}アプリケーションに成功しました！",
     "scenes.app.integrations_parameters.add_application": "新しい統合",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "開発者設定",
-    "components.rich_text_editor.plugins.suggestions.loading": "もっとお探しですか"
+    "components.rich_text_editor.plugins.suggestions.loading": "もっとお探しですか",
+    "components.open_desktop_popup.subtitle": "Twakeアプリで開きました",
+    "components.open_desktop_popup.open_here_link": "代わりにここを開く"
 }
