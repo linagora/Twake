@@ -63,11 +63,14 @@ export default React.memo(
       useEffect(() => {
         // Detect append or prepend or full replace items
         const ids = items.map(i => itemId(i));
+        //Find the first index in props _items that is already in displayed items
         const first = _items.findIndex(i => ids.includes(itemId(i)));
-        const last =
-          _items.length -
-          1 -
-          _items.findIndex((_, i) => ids.includes(itemId(_items[_items.length - 1 - i])));
+        //Find the last index in props _items that is already in displayed items
+        const lastIndex = _items
+          .slice()
+          .reverse()
+          .findIndex(i => ids.includes(itemId(i)));
+        const last = lastIndex >= 0 ? _items.length - 1 - lastIndex : lastIndex;
         if (first == -1) {
           //Replacement
           setFirstItemIndex(START_INDEX);
