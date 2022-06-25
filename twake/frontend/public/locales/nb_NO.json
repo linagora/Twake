@@ -885,5 +885,22 @@
     "twake.application.access.title": "Velg de riktige omfangene for applikasjonen din.",
     "twake.application.access.no_default_scopes_available'": "Denne integrasjonen har ingen {{$1}}-tilgang",
     "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Hvis du ikke vet hvordan du fyller disse, gå til ",
-    "components.rich_text_editor.plugins.suggestions.loading": "Ser etter mer"
+    "components.rich_text_editor.plugins.suggestions.loading": "Ser etter mer",
+    "scenes.app.channelsbar.channel_copy_link": "Kopier kanallinken",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Vellykket oppdatert",
+    "components.searchpopup.no_results_for": "Det var ingen resultater for",
+    "components.searchpopup.try_new_search": "Prøv et nytt søk",
+    "components.searchpopup.all": "Alle",
+    "components.searchpopup.chats": "Chatter",
+    "components.searchpopup.media": "Media",
+    "components.searchpopup.files": "Filer",
+    "components.searchpopup.recent_chats": "Nylige chatter",
+    "components.searchpopup.recent_media": "Nylige medier",
+    "components.searchpopup.recent_files": "Nylige filer",
+    "components.searchpopup.recent_channels_and_contacts": "Nylige kanaler og kontakter",
+    "components.searchpopup.header_title": "Søk",
+    "components.searchpopup.scope.company": "i alle selskap",
+    "components.searchpopup.scope.channel": "i denne kanalen",
+    "components.searchpopup.channels": "Kanaler",
+    "components.searchpopup.messages": "Meldinger"
 }

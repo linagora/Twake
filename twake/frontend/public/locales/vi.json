@@ -885,5 +885,22 @@
     "twake.application.access.title": "Chọn phạm vi phù hợp cho ứng dụng của bạn.",
     "twake.application.access.no_default_scopes_available'": "Tích hợp này không có bất kỳ quyền truy cập {{$1}} nào",
     "scenes.app.popup.appsparameters.pages.application_editor.help_link": "tài liệu API Twake",
-    "components.rich_text_editor.plugins.suggestions.loading": "Tìm kiếm thêm"
+    "components.rich_text_editor.plugins.suggestions.loading": "Tìm kiếm thêm",
+    "scenes.app.channelsbar.channel_copy_link": "Sao chép liên kết kênh",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Cập nhật thành công",
+    "components.searchpopup.no_results_for": "Không có kết quả cho",
+    "components.searchpopup.try_new_search": "Thử một tìm kiếm mới",
+    "components.searchpopup.all": "Tất cả các",
+    "components.searchpopup.chats": "Trò chuyện",
+    "components.searchpopup.media": "Phương tiện truyền thông",
+    "components.searchpopup.files": "Các tập tin",
+    "components.searchpopup.recent_chats": "Các cuộc trò chuyện gần đây",
+    "components.searchpopup.recent_media": "Phương tiện truyền thông gần đây",
+    "components.searchpopup.recent_files": "Tệp gần đây",
+    "components.searchpopup.recent_channels_and_contacts": "Các kênh và địa chỉ liên hệ gần đây",
+    "components.searchpopup.header_title": "Tìm kiếm",
+    "components.searchpopup.scope.company": "trong tất cả các công ty",
+    "components.searchpopup.messages": "Tin nhắn",
+    "components.searchpopup.scope.channel": "trong kênh này",
+    "components.searchpopup.channels": "Kênh truyền hình"
 }

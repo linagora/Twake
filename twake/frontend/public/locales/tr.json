@@ -885,5 +885,22 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Başarıyla {{$1}} uygulaması!",
     "scenes.app.integrations_parameters.add_application": "Yeni entegrasyon",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Geliştirici ayarları",
-    "components.rich_text_editor.plugins.suggestions.loading": "daha fazlasını arıyorum"
+    "components.rich_text_editor.plugins.suggestions.loading": "daha fazlasını arıyorum",
+    "scenes.app.channelsbar.channel_copy_link": "Kanal bağlantısını kopyala",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Başarıyla güncellendi",
+    "components.searchpopup.no_results_for": "için sonuç bulunamadı",
+    "components.searchpopup.try_new_search": "Yeni bir arama deneyin",
+    "components.searchpopup.all": "Herşey",
+    "components.searchpopup.chats": "sohbetler",
+    "components.searchpopup.media": "medya",
+    "components.searchpopup.files": "Dosyalar",
+    "components.searchpopup.recent_chats": "son sohbetler",
+    "components.searchpopup.recent_media": "son medya",
+    "components.searchpopup.recent_files": "Son Dosyalar",
+    "components.searchpopup.recent_channels_and_contacts": "Son kanallar ve kişiler",
+    "components.searchpopup.header_title": "Arama",
+    "components.searchpopup.scope.company": "tüm şirkette",
+    "components.searchpopup.scope.channel": "bu kanalda",
+    "components.searchpopup.channels": "Kanallar",
+    "components.searchpopup.messages": "Mesajlar"
 }

@@ -885,5 +885,22 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Успешная заявка {{$1}}!",
     "scenes.app.integrations_parameters.add_application": "Новая интеграция",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Настройки разработчика",
-    "components.rich_text_editor.plugins.suggestions.loading": "Ищете больше"
+    "components.rich_text_editor.plugins.suggestions.loading": "В поисках большего",
+    "scenes.app.channelsbar.channel_copy_link": "Скопировать ссылку на канал",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Успешно обновлено",
+    "components.searchpopup.all": "Все",
+    "components.searchpopup.no_results_for": "Не найдено результатов для",
+    "components.searchpopup.try_new_search": "Искать еще раз",
+    "components.searchpopup.chats": "Чаты",
+    "components.searchpopup.media": "Медиа",
+    "components.searchpopup.files": "Файлы",
+    "components.searchpopup.recent_chats": "Недавние чаты",
+    "components.searchpopup.recent_media": "Последние медиа",
+    "components.searchpopup.recent_files": "Последние файлы",
+    "components.searchpopup.recent_channels_and_contacts": "Последние каналы и контакты",
+    "components.searchpopup.header_title": "Поиск",
+    "components.searchpopup.scope.company": "во всей компании",
+    "components.searchpopup.scope.channel": "на этом канале",
+    "components.searchpopup.channels": "каналы",
+    "components.searchpopup.messages": "Сообщения"
 }

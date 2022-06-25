@@ -885,5 +885,22 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Errore durante la rimozione dell'applicazione {{$1}} !",
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Applicazione {{$1}} riuscita!",
     "scenes.app.integrations_parameters.add_application": "Nuova integrazione",
-    "components.rich_text_editor.plugins.suggestions.loading": "Alla ricerca di più"
+    "components.rich_text_editor.plugins.suggestions.loading": "Alla ricerca di più",
+    "scenes.app.channelsbar.channel_copy_link": "Copia il link del canale",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Aggiornato con successo",
+    "components.searchpopup.no_results_for": "Non ci sono risultati per",
+    "components.searchpopup.try_new_search": "Prova una nuova ricerca",
+    "components.searchpopup.chats": "Chat",
+    "components.searchpopup.all": "Tutti",
+    "components.searchpopup.media": "Media",
+    "components.searchpopup.files": "File",
+    "components.searchpopup.recent_chats": "Chat recenti",
+    "components.searchpopup.recent_media": "Media recenti",
+    "components.searchpopup.recent_files": "File recenti",
+    "components.searchpopup.recent_channels_and_contacts": "Canali e contatti recenti",
+    "components.searchpopup.header_title": "Cerca",
+    "components.searchpopup.scope.company": "in tutta compagnia",
+    "components.searchpopup.scope.channel": "in questo canale",
+    "components.searchpopup.channels": "Canali",
+    "components.searchpopup.messages": "Messaggi"
 }

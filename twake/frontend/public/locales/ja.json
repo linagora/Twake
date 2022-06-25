@@ -885,5 +885,22 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "{{$1}}アプリケーションに成功しました！",
     "scenes.app.integrations_parameters.add_application": "新しい統合",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "開発者設定",
-    "components.rich_text_editor.plugins.suggestions.loading": "もっとお探しですか"
+    "components.rich_text_editor.plugins.suggestions.loading": "もっとお探しですか",
+    "scenes.app.channelsbar.channel_copy_link": "チャネルリンクをコピーする",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "正常に更新されました",
+    "components.searchpopup.no_results_for": "の結果はありませんでした",
+    "components.searchpopup.try_new_search": "新しい検索をお試しください",
+    "components.searchpopup.all": "全て",
+    "components.searchpopup.chats": "チャット",
+    "components.searchpopup.media": "メディア",
+    "components.searchpopup.files": "ファイル",
+    "components.searchpopup.recent_chats": "最近のチャット",
+    "components.searchpopup.recent_media": "最近のメディア",
+    "components.searchpopup.recent_files": "最近使用したファイル",
+    "components.searchpopup.recent_channels_and_contacts": "最近のチャンネルと連絡先",
+    "components.searchpopup.header_title": "探す",
+    "components.searchpopup.scope.company": "すべての会社で",
+    "components.searchpopup.scope.channel": "このチャンネルで",
+    "components.searchpopup.channels": "チャネル",
+    "components.searchpopup.messages": "メッセージ"
 }

@@ -885,5 +885,22 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "සංවර්ධක සැකසුම්",
     "scenes.app.popup.appsparameters.pages.amazing_app_description": "ඔබේ යෙදුම වචන කිහිපයකින් විස්තර කරන්න",
     "scenes.app.popup.appsparameters.pages.app.private_key": "පුද්ගලික යතුර",
-    "components.rich_text_editor.plugins.suggestions.loading": "තව හොයනවා"
+    "components.rich_text_editor.plugins.suggestions.loading": "තව හොයනවා",
+    "scenes.app.channelsbar.channel_copy_link": "නාලිකා සබැඳිය පිටපත් කරන්න",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "සාර්ථකව යාවත්කාලීන කරන ලදී",
+    "components.searchpopup.no_results_for": "සඳහා ප්‍රතිඵල තිබුණේ නැත",
+    "components.searchpopup.try_new_search": "නව සෙවීමක් උත්සාහ කරන්න",
+    "components.searchpopup.all": "සියලුම",
+    "components.searchpopup.chats": "කතාබස්",
+    "components.searchpopup.media": "මාධ්ය",
+    "components.searchpopup.files": "ගොනු",
+    "components.searchpopup.recent_chats": "මෑත කතාබස්",
+    "components.searchpopup.recent_media": "මෑත මාධ්ය",
+    "components.searchpopup.recent_files": "මෑත ගොනු",
+    "components.searchpopup.recent_channels_and_contacts": "මෑත නාලිකා සහ සම්බන්ධතා",
+    "components.searchpopup.header_title": "සොයන්න",
+    "components.searchpopup.scope.company": "සියලුම සමාගම තුළ",
+    "components.searchpopup.scope.channel": "මෙම නාලිකාවේ",
+    "components.searchpopup.channels": "නාලිකා",
+    "components.searchpopup.messages": "පණිවිඩ"
 }

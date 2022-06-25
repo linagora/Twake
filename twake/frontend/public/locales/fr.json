@@ -887,5 +887,20 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Erreur lors de la suppression de l'application {{$1}} !",
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Application {{$1}} réussie !",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Paramètres du développeur",
-    "scenes.app.integrations_parameters.add_application": "Nouvelle intégration"
+    "scenes.app.integrations_parameters.add_application": "Nouvelle intégration",
+    "components.searchpopup.no_results_for": "Il n'y a pas eu de résultats pour",
+    "components.searchpopup.try_new_search": "Essayez une nouvelle recherche",
+    "components.searchpopup.all": "Tout",
+    "components.searchpopup.chats": "Chats",
+    "components.searchpopup.media": "Médias",
+    "components.searchpopup.files": "Des dossiers",
+    "components.searchpopup.recent_chats": "Chats récents",
+    "components.searchpopup.recent_media": "Médias récents",
+    "components.searchpopup.recent_files": "Fichiers récents",
+    "components.searchpopup.recent_channels_and_contacts": "Canaux et contacts récents",
+    "components.searchpopup.header_title": "Chercher",
+    "components.searchpopup.scope.company": "dans toute compagnie",
+    "components.searchpopup.scope.channel": "dans ce canal",
+    "components.searchpopup.channels": "Canaux",
+    "components.searchpopup.messages": "messages"
 }

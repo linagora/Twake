@@ -885,5 +885,22 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Arrakastaz {{$1}} aplikazioa!",
     "scenes.app.integrations_parameters.add_application": "Integrazio berria",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Garatzaileen ezarpenak",
-    "components.rich_text_editor.plugins.suggestions.loading": "Gehiagoren bila"
+    "components.rich_text_editor.plugins.suggestions.loading": "Gehiagoren bila",
+    "scenes.app.channelsbar.channel_copy_link": "Kopiatu kanalaren esteka",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Behar bezala eguneratu da",
+    "components.searchpopup.no_results_for": "Ez zen emaitzarik izan",
+    "components.searchpopup.try_new_search": "Saiatu bilaketa berri bat",
+    "components.searchpopup.all": "Denak",
+    "components.searchpopup.chats": "Txatak",
+    "components.searchpopup.media": "Komunikabideak",
+    "components.searchpopup.files": "Fitxategiak",
+    "components.searchpopup.recent_chats": "Azken txatak",
+    "components.searchpopup.recent_media": "Azken komunikabideak",
+    "components.searchpopup.recent_files": "Azken fitxategiak",
+    "components.searchpopup.recent_channels_and_contacts": "Azken kanalak eta kontaktuak",
+    "components.searchpopup.header_title": "Bilatu",
+    "components.searchpopup.scope.company": "konpainia guztietan",
+    "components.searchpopup.scope.channel": "kanal honetan",
+    "components.searchpopup.channels": "Kanalak",
+    "components.searchpopup.messages": "Mezuak"
 }

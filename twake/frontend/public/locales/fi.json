@@ -885,5 +885,22 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "{{$1}} -sovellus onnistui!",
     "scenes.app.integrations_parameters.add_application": "Uusi integraatio",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Kehittäjäasetukset",
-    "components.rich_text_editor.plugins.suggestions.loading": "Etsitkö lisää"
+    "components.rich_text_editor.plugins.suggestions.loading": "Etsitkö lisää",
+    "scenes.app.channelsbar.channel_copy_link": "Kopioi kanavan linkki",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Päivitetty onnistuneesti",
+    "components.searchpopup.no_results_for": "Ei ollut tuloksia kohteelle",
+    "components.searchpopup.try_new_search": "Kokeile uutta hakua",
+    "components.searchpopup.all": "Kaikki",
+    "components.searchpopup.chats": "Chatit",
+    "components.searchpopup.media": "Media",
+    "components.searchpopup.files": "Tiedostot",
+    "components.searchpopup.recent_chats": "Viimeaikaiset keskustelut",
+    "components.searchpopup.recent_media": "Viimeaikainen media",
+    "components.searchpopup.recent_files": "Viimeaikaiset tiedostot",
+    "components.searchpopup.recent_channels_and_contacts": "Viimeisimmät kanavat ja yhteystiedot",
+    "components.searchpopup.header_title": "Hae",
+    "components.searchpopup.scope.company": "kaikessa seurassa",
+    "components.searchpopup.scope.channel": "tällä kanavalla",
+    "components.searchpopup.channels": "Kanavat",
+    "components.searchpopup.messages": "Viestit"
 }

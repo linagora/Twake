@@ -885,5 +885,22 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Configuración de desarrollador",
     "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "¡Error al eliminar la aplicación {{$1}}!",
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "¡Aplicación exitosa {{$1}}!",
-    "components.rich_text_editor.plugins.suggestions.loading": "Buscando por mas"
+    "components.rich_text_editor.plugins.suggestions.loading": "Buscando por mas",
+    "scenes.app.channelsbar.channel_copy_link": "Copiar enlace del canal",
+    "scenes.app.popup.workspaceparameter.pages.workspace_identity.toaster.success.update": "Actualizado exitosamente",
+    "components.searchpopup.media": "Medios de comunicación",
+    "components.searchpopup.files": "archivos",
+    "components.searchpopup.recent_chats": "Chats recientes",
+    "components.searchpopup.recent_media": "Medios recientes",
+    "components.searchpopup.recent_files": "Archivos recientes",
+    "components.searchpopup.recent_channels_and_contacts": "Canales y contactos recientes",
+    "components.searchpopup.no_results_for": "No hubo resultados para",
+    "components.searchpopup.try_new_search": "Prueba una nueva búsqueda",
+    "components.searchpopup.all": "Todos",
+    "components.searchpopup.chats": "charlas",
+    "components.searchpopup.header_title": "Búsqueda",
+    "components.searchpopup.scope.company": "en toda compañía",
+    "components.searchpopup.scope.channel": "en este canal",
+    "components.searchpopup.channels": "Canales",
+    "components.searchpopup.messages": "Mensajes"
 }
