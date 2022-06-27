@@ -12,6 +12,8 @@ export default () => {
       <Text.Subtitle className="block">
         {Languages.t('components.searchpopup.messages')}
       </Text.Subtitle>
+
+      <MessagesResults />
     </div>
   );
 };
@@ -24,11 +26,9 @@ export const MessagesResults = (props: { max?: number }) => {
   if (isRecent) return <NothingSearched />;
   if (messages.length === 0 && !loading) return <NothingFound />;
 
-  if (messages.length === 0 && !loading) return <NothingFound />;
-
   return (
     <>
-      <div className="-mx-2">
+      <div className="">
         {messages
           .map(message => {
             return (

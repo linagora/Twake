@@ -7,8 +7,8 @@ import {
   useSearchMessagesMedias,
 } from 'app/features/search/hooks/use-search-files-or-medias';
 import { useSearchMessages } from 'app/features/search/hooks/use-search-messages';
-import { SearchTabsState } from 'app/features/search/state/search-input';
-import { useSetRecoilState } from 'recoil';
+import { SearchInputState, SearchTabsState } from 'app/features/search/state/search-input';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { ChannelsResults } from './channels';
 import { FilesResults } from './files';
 import { MediasResults } from './medias';
@@ -16,6 +16,9 @@ import { MessagesResults } from './messages';
 
 export default () => {
   const setTab = useSetRecoilState(SearchTabsState);
+
+  const input = useRecoilValue(SearchInputState);
+  const isRecent = input?.query?.length === 0;
 
   const { channels } = useSearchChannels();
   const { messages } = useSearchMessages();
@@ -38,7 +41,7 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className="-mx-2">
+          <div className="">
             <ChannelsResults max={6} />
           </div>
         </>
@@ -56,8 +59,8 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className="-mx-2">
-            <MediasResults max={6} />
+          <div className={isRecent ? '-mx-2' : ''}>
+            <MediasResults max={6} showAsFiles={!isRecent} />
           </div>
         </>
       )}
@@ -74,7 +77,7 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className="-mx-2">
+          <div className="">
             <FilesResults max={6} />
           </div>
         </>
@@ -92,7 +95,7 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className="-mx-2">
+          <div className="">
             <MessagesResults max={6} />
           </div>
         </>

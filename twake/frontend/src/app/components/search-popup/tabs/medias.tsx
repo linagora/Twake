@@ -1,11 +1,11 @@
 import * as Text from '@atoms/text';
+import FileUploadAPIClient from '@features/files/api/file-upload-api-client';
 import Languages from '@features/global/services/languages-service';
 import { useSearchMessagesMedias } from '@features/search/hooks/use-search-files-or-medias';
 import { SearchInputState } from '@features/search/state/search-input';
-import Media from '@molecules/media';
 import { useRecoilValue } from 'recoil';
-import FileUploadAPIClient from '@features/files/api/file-upload-api-client';
-import { onFilePreviewClick } from '../common';
+import FileResult from '../parts/file-result';
+import MediaResult from '../parts/media-result';
 import NothingFound from '../parts/nothing-found';
 
 export default () => {
@@ -21,13 +21,13 @@ export default () => {
       </Text.Subtitle>
 
       <div className="-mx-2">
-        <MediasResults />
+        <MediasResults showAsFiles={!isRecent} />
       </div>
     </div>
   );
 };
 
-export const MediasResults = (props: { max?: number }) => {
+export const MediasResults = (props: { max?: number; showAsFiles?: boolean }) => {
   const { files, loading, loadMore } = useSearchMessagesMedias();
 
   if (files.length === 0 && !loading) return <NothingFound />;
@@ -38,24 +38,11 @@ export const MediasResults = (props: { max?: number }) => {
         .slice(0, props?.max || files.length)
         .map(file => {
           const url = FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file);
-          const type = FileUploadAPIClient.mimeToType(file?.metadata?.mime || '');
           if (url)
-            return (
-              <div
-                className="cursor-pointer hover:opacity-75 inline-block m-2"
-                onClick={() => onFilePreviewClick(file)}
-              >
-                <Media
-                  key={file.id}
-                  size="lg"
-                  url={url}
-                  duration={
-                    type === 'video'
-                      ? file?.metadata?.name?.split('.').slice(-1)?.[0]?.toLocaleUpperCase()
-                      : undefined
-                  }
-                />
-              </div>
+            return props.showAsFiles ? (
+              <div className="mx-2"><FileResult key={file.id} file={file} /></div>
+            ) : (
+              <MediaResult key={file.id} file={file} />
             );
         })
         .filter(a => a)}

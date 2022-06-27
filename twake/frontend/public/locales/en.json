@@ -644,6 +644,7 @@
     "components.searchpopup.hide_filters": "hide filters",
     "components.searchpopup.show_filters": "show filters",
     "components.searchpopup.load_more": "Load more results",
+    "components.searchpopup.start_search": "Enter few keywords to start the search.",
     "components.searchpopup.no_results_for": "There were no results for",
     "components.searchpopup.try_new_search": "Try a new search",
     "components.searchpopup.scope.company": "in all company",

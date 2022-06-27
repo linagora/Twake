@@ -6,6 +6,7 @@ import { useRecoilValue } from 'recoil';
 import NothingFound from '../parts/nothing-found';
 import FileUploadAPIClient from '@features/files/api/file-upload-api-client';
 import { onFilePreviewClick } from '../common';
+import FileResult from '../parts/file-result';
 
 export default () => {
   const input = useRecoilValue(SearchInputState);
@@ -22,7 +23,7 @@ export default () => {
           : Languages.t('components.searchpopup.files')}
       </Text.Subtitle>
 
-      <div className="-mx-2">
+      <div className="">
         <FilesResults />
       </div>
     </div>
@@ -36,22 +37,9 @@ export const FilesResults = (props: { max?: number }) => {
 
   return (
     <>
-      {files
-        .slice(0, props.max || files.length)
-        .map(file => {
-          const url = FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file);
-          const type = FileUploadAPIClient.mimeToType(file?.metadata?.mime || '');
-          if (url)
-            return (
-              <div
-                className="cursor-pointer hover:opacity-75 inline-block m-2"
-                onClick={() => onFilePreviewClick(file)}
-              >
-                TODO
-              </div>
-            );
-        })
-        .filter(a => a)}
+      {files.slice(0, props?.max || files.length).map(file => (
+        <FileResult key={file.id} file={file} />
+      ))}
     </>
   );
 };
