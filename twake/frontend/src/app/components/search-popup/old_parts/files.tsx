@@ -1,8 +1,5 @@
 import FilesResult from 'app/components/search-popup/old_parts/recent/files-result';
-import {
-  onFileDownloadClick,
-  onFilePreviewClick,
-} from 'app/components/search-popup/old_parts/common';
+import { onFileDownloadClick, onFilePreviewClick } from 'app/components/search-popup/common';
 import React from 'react';
 import { FileSearchResult } from 'features/messages/types/message';
 

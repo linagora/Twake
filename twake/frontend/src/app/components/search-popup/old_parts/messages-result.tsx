@@ -5,7 +5,7 @@ import { Tooltip } from 'antd';
 import User from 'features/users/services/current-user-service';
 import { useWorkspace } from 'features/workspaces/hooks/use-workspaces';
 import RouterServices from 'features/router/services/router-service';
-import { highlightText } from './common';
+import { highlightText } from '../common';
 import { MessageExtended } from 'features/messages/types/message';
 import ChannelAvatar from 'components/channel-avatar/channel-avatar';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
