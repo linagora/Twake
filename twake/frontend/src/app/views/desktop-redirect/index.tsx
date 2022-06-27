@@ -2,10 +2,7 @@ import { OpenDesktopPopup } from 'app/components/open-desktop-popup/open-desktop
 import { useWebState } from 'app/features/global/state/atoms/use-web';
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import customProtocolCheck from 'custom-protocol-check';
-import { getDevice } from 'app/features/global/utils/device';
-import isElectron from 'is-electron';
-
+import { detectDesktopAppPresence } from 'src/utils/detection';
 
 type PropsType = {
   children: React.ReactNode;
@@ -15,25 +12,20 @@ export default ({ children }: PropsType): React.ReactElement => {
   const [useWeb, setUseWeb] = useRecoilState(useWebState);
 
   useEffect(() => {
-    customProtocolCheck(
-      'twake://',
-      () => {
+    detectDesktopAppPresence().then(isDesktopAppPresent => {
+      if (!isDesktopAppPresent) {
         setUseWeb(true);
-      },
-      () => {
-        if (getDevice() !== 'other' || isElectron()) {
-          return;
-        }
+        return;
+      }
 
-        setUseWeb(false);
+      try {
         const path = window.location.href.replace(window.location.origin, '');
         window.location.replace(`twake://${path}`);
-      },
-      undefined,
-      () => {
+        setUseWeb(false);
+      } catch (e) {
         setUseWeb(true);
-      },
-    );
+      }
+    });
   }, []);
 
   return (
