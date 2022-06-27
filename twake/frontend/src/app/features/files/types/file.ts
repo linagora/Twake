@@ -3,13 +3,11 @@ import { ThumbnailType } from '../../messages/types/message';
 import { UserType } from 'app/features/users/types/user';
 
 export type MetaDataType = {
+  thumbnails?: ThumbnailType[];
+  size?: number;
   name: string;
   mime: string;
   thumbnails_status?: string;
-  external_id?: {
-    id: string;
-    company_id: string;
-  };
 };
 
 export type FileUploadDataObjectType = {

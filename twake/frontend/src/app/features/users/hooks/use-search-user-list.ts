@@ -23,7 +23,7 @@ export const searchBackend = async (
     callback?: () => void;
   },
 ) => {
-  delayRequest('useSearchUserList', async () => {
+  delayRequest('useSearchUsers', async () => {
     await UserAPIClient.search<any>(
       query,
       {
@@ -106,7 +106,7 @@ export const searchFrontend = (
   return result;
 };
 
-export const useSearchUserList = ({
+export const useSearchUsers = ({
   scope,
 }: {
   scope: SearchContextType['scope'];

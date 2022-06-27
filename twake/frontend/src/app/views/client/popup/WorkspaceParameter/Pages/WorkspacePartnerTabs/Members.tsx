@@ -25,7 +25,7 @@ import { useSetUserList } from 'app/features/users/hooks/use-user-list';
 import {
   searchBackend,
   searchFrontend,
-  useSearchUserList,
+  useSearchUsers,
 } from 'app/features/users/hooks/use-search-user-list';
 
 type ColumnObjectType = { [key: string]: any };
@@ -55,7 +55,7 @@ export default ({ filter }: { filter: string }) => {
   const companyId = useRouterCompany();
   const workspaceId = useRouterWorkspace();
 
-  const { search, result } = useSearchUserList({ scope: 'workspace' });
+  const { search, result } = useSearchUsers({ scope: 'workspace' });
 
   const prefixRoute = '/internal/services/workspaces/v1';
   const workspaceUsersRoute = `${prefixRoute}/companies/${companyId}/workspaces/${workspaceId}/users`;

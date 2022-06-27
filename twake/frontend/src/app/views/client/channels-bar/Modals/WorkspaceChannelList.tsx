@@ -19,7 +19,7 @@ import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-me
 import ChannelsReachableAPIClient from 'app/features/channels/api/channels-reachable-api-client';
 import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-channels';
 import { useSetUserList, useUserList } from 'app/features/users/hooks/use-user-list';
-import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
+import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 
@@ -35,7 +35,7 @@ export default () => {
   const { userList } = useUserList();
   const { openDiscussion } = useDirectChannels();
 
-  const { search: searchUserList, result: searchedUserList } = useSearchUserList({
+  const { search: searchUserList, result: searchedUserList } = useSearchUsers({
     scope: 'company',
   });
 

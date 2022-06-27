@@ -24,7 +24,7 @@ type PropsType = {
   [key: string]: any;
 };
 
-const useSearchUserList = ({
+const useSearchUsers = ({
   scope,
 }: {
   scope: SearchContextType['scope'];
@@ -65,7 +65,7 @@ const useSearchUserList = ({
 };
 
 const UserListManager = (props: PropsType) => {
-  const { result, search } = useSearchUserList({ scope: props.scope || 'company' });
+  const { result, search } = useSearchUsers({ scope: props.scope || 'company' });
   const { workspaceId } = RouterServices.getStateFromRoute();
   const [input, setInput] = useState<string>('');
   const [editing, setEditing] = useState<boolean>(props.autoFocus ? props.autoFocus : false);

@@ -26,7 +26,7 @@ export default async (
   );
 
   return {
-    resources: userFiles.getEntities().filter(a => a) as FileSearchResult[],
+    resources: userFiles.getEntities().filter(a => a?.metadata?.external_id) as FileSearchResult[],
     next_page_token: userFiles?.nextPage?.page_token,
   };
 };

@@ -601,7 +601,7 @@ export class ChannelServiceImpl implements ChannelService {
       throw CrudException.notFound("Channel not found");
     }
 
-    const member = await gr.services.channels.members.isChannelMember(user, channel);
+    const member = await gr.services.channels.members.getChannelMember(user, channel);
 
     if (!member) {
       throw CrudException.badRequest("User is not channel member");
@@ -630,7 +630,7 @@ export class ChannelServiceImpl implements ChannelService {
       throw CrudException.notFound("Channel not found");
     }
 
-    const member = await gr.services.channels.members.isChannelMember(user, channel);
+    const member = await gr.services.channels.members.getChannelMember(user, channel);
 
     if (!member) {
       throw CrudException.badRequest("User is not channel member");

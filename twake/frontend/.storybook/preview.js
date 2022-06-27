@@ -14,4 +14,7 @@ export const parameters = {
   darkMode: {
     stylePreview: true,
   },
+  docs: {
+    source: { type: 'code' }
+  },
 };

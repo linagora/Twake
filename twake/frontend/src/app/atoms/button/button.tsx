@@ -2,34 +2,52 @@ import React from 'react';
 import _ from 'lodash';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  theme?: 'primary' | 'secondary' | 'danger' | 'default';
+  theme?: 'primary' | 'secondary' | 'danger' | 'default' | 'outline';
+  size?: 'md' | 'lg' | 'sm';
+  icon?: (props: any) => JSX.Element;
   loading?: boolean;
   disabled?: boolean;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const Button = (props: ButtonProps) => {
   const disabled = props.disabled || props.loading;
 
-  let colors = 'text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 border-transparent ';
+  let className = 'text-white bg-blue-500 hover:bg-blue-700 active:bg-blue-800 border-transparent ';
 
   if (props.theme === 'secondary')
-    colors = 'text-blue-600 bg-blue-100 hover:bg-blue-200 active:bg-blue-300 border-transparent ';
+    className =
+      'text-blue-500 bg-blue-100 hover:bg-blue-200 active:bg-blue-300 border-transparent ';
 
   if (props.theme === 'danger')
-    colors = 'text-white bg-rose-500 hover:bg-rose-600 active:bg-rose-700 border-transparent ';
+    className = 'text-white bg-rose-500 hover:bg-rose-600 active:bg-rose-700 border-transparent ';
 
   if (props.theme === 'default')
-    colors = 'text-black bg-white hover:bg-gray-50 active:bg-gray-200 border-gray-300';
+    className =
+      'text-black dark:text-white bg-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 hover:bg-gray-50 active:bg-gray-200 border-gray-300';
 
-  if (disabled) colors += ' opacity-50 pointer-events-none text-white';
+  if (props.theme === 'outline')
+    className =
+      'text-blue-500 bg-white dark:bg-zinc-800 dark:hover:bg-zinc-700 dark:active:bg-zinc-900 hover:bg-gray-50 active:bg-gray-200 border-blue-500';
+
+  if (disabled) className += ' opacity-50 pointer-events-none';
+
+  if (props.size === 'lg') className = className + ' text-lg h-11';
+  else if (props.size === 'sm') className = className + ' text-sm h-7 px-3';
+  else className = className + ' text-base h-9';
+
+  if (!props.children) {
+    if (props.size === 'lg') className = className + ' w-11 !p-0 justify-center';
+    else if (props.size === 'sm') className = className + ' w-7 !p-0 justify-center';
+    else className = className + ' w-9 !p-0 justify-center';
+  }
 
   return (
     <button
       type="button"
       className={
-        'inline-flex items-center px-4 py-2 border text-sm font-medium rounded-md focus:outline-none ' +
-        colors +
+        ' inline-flex items-center px-4 py-2 border font-medium rounded-md focus:outline-none ' +
+        className +
         ' ' +
         props.className
       }
@@ -39,7 +57,7 @@ export const Button = (props: ButtonProps) => {
       {props.loading && (
         <>
           <svg
-            className="animate-spin -ml-1 mr-3 h-5 w-5"
+            className={'animate-spin w-4 h-4 ' + (props.children ? 'mr-2 -ml-1' : '-mx-1')}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -59,6 +77,9 @@ export const Button = (props: ButtonProps) => {
             ></path>
           </svg>{' '}
         </>
+      )}
+      {props.icon && !(props.loading && !props.children) && (
+        <props.icon className={'w-4 h-4 ' + (props.children ? 'mr-1 -ml-1' : '-mx-1')} />
       )}
       {props.children}
     </button>

@@ -1,6 +1,7 @@
 import { TwakeService } from '../../global/framework/registry-decorator-service';
 import {
   FileSearchResult,
+  Message,
   MessageExtended,
   MessageFileType,
   MessageWithReplies,
@@ -11,9 +12,12 @@ import MessageThreadAPIClient from './message-thread-api-client';
 import Api from 'app/features/global/framework/api-service';
 import { WebsocketRoom } from 'app/features/global/types/websocket-types';
 import Numbers from 'app/features/global/utils/Numbers';
-import { FileType } from 'features/files/types/file';
+import { FileType, MetaDataType } from 'features/files/types/file';
 import Workspace from 'deprecated/workspaces/workspaces';
 import Logger from 'features/global/framework/logger-service';
+import { UserType } from 'features/users/types/user';
+import FileUploadAPIClient from 'features/files/api/file-upload-api-client';
+import assert from 'assert';
 
 /**
  * This service is to get, update, create, list messages in a thread
@@ -21,7 +25,7 @@ import Logger from 'features/global/framework/logger-service';
 
 export interface BaseSearchOptions {
   company_id?: string;
-  workspace_dd?: string;
+  workspace_id?: string;
   channel_id?: string;
   page_token?: string;
   limit?: number;
@@ -32,6 +36,8 @@ export interface FileSearchOptions extends BaseSearchOptions {
   is_file?: boolean;
   is_media?: boolean;
   extension?: string;
+  workspace_id?: string;
+  channel_id?: string;
 }
 
 @TwakeService('MessageAPIClientService')
@@ -171,19 +177,22 @@ class MessageAPIClient {
     return res;
   }
 
-  async searchFile(
-    searchString: string | null,
-    options?: FileSearchOptions,
-  ): Promise<{ resources: FileSearchResult[]; next_page_token: string | null }> {
+  async searchFile(searchString: string | null, options?: FileSearchOptions) {
     const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
     let query = `/internal/services/messages/v1/companies/${companyId}/files/search`;
     if (searchString) {
       query += `?q=${searchString}`;
     }
-    const res = await Api.getWithParams<{ resources: FileSearchResult[]; next_page_token: string }>(
-      query,
-      options,
-    );
+    const res = await Api.getWithParams<{
+      resources: (MessageFileType & {
+        company_id: string;
+        metadata: MetaDataType;
+        created_at: number;
+        message: Message;
+        user: UserType;
+      })[];
+      next_page_token: string;
+    }>(query, options);
     try {
       this.logger.debug(
         `FileSearch by name "${searchString}" with options`,
@@ -197,7 +206,10 @@ class MessageAPIClient {
       return { resources: [], next_page_token: null };
     }
 
-    return res;
+    return {
+      resources: res.resources,
+      next_page_token: res.next_page_token,
+    };
   }
 }
 

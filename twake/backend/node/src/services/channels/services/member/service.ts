@@ -202,7 +202,7 @@ export class MemberServiceImpl implements MemberService {
         new UpdateResult<ChannelMember>("channel_member", memberToSave),
       );
     } else {
-      const currentUserIsMember = !!(await this.isChannelMember(context.user, channel));
+      const currentUserIsMember = !!(await this.getChannelMember(context.user, channel));
       const isPrivateChannel = ChannelEntity.isPrivateChannel(channel);
       const isPublicChannel = ChannelEntity.isPublicChannel(channel);
       const isDirectChannel = ChannelEntity.isDirectChannel(channel);
@@ -321,7 +321,7 @@ export class MemberServiceImpl implements MemberService {
     }
 
     if (ChannelEntity.isDirectChannel(channel) || ChannelEntity.isPrivateChannel(channel)) {
-      const isMember = await this.isChannelMember(context.user, channel);
+      const isMember = await this.getChannelMember(context.user, channel);
 
       if (!isMember) {
         throw CrudException.badRequest("User does not have enough rights to get channels");
@@ -463,7 +463,7 @@ export class MemberServiceImpl implements MemberService {
         } as ChannelMember);
 
         try {
-          const isAlreadyMember = await this.isChannelMember(user, channel);
+          const isAlreadyMember = await this.getChannelMember(user, channel);
           if (isAlreadyMember) {
             logger.debug("User %s is already member in channel %s", member.user_id, channel.id);
             return { channel, added: false };
@@ -521,7 +521,7 @@ export class MemberServiceImpl implements MemberService {
         });
 
         try {
-          const isAlreadyMember = await this.isChannelMember(user, channel);
+          const isAlreadyMember = await this.getChannelMember(user, channel);
           if (isAlreadyMember) {
             logger.debug("User %s is already member in channel %s", member.user_id, channel.id);
             return { channel, added: false };
@@ -606,7 +606,7 @@ export class MemberServiceImpl implements MemberService {
     return String(member.user_id) === String(user.id);
   }
 
-  async isChannelMember(
+  async getChannelMember(
     user: User,
     channel: Partial<Pick<Channel, "company_id" | "workspace_id" | "id">>,
     cacheTtlSec?: number,
@@ -618,7 +618,7 @@ export class MemberServiceImpl implements MemberService {
     if (cacheTtlSec) {
       const pk = JSON.stringify({ user, channel });
       if (this.cache.has(pk)) return this.cache.get<ChannelMember>(pk);
-      const entity = await this.isChannelMember(user, channel);
+      const entity = await this.getChannelMember(user, channel);
       this.cache.set<ChannelMember>(pk, entity, cacheTtlSec);
       return entity;
     }

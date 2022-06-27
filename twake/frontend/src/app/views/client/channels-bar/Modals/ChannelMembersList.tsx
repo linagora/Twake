@@ -15,7 +15,7 @@ import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import { useChannelMembers } from 'app/features/channel-members/hooks/use-channel-members';
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 import { getUser, useSetUserList } from 'app/features/users/hooks/use-user-list';
-import { useSearchUserList } from 'app/features/users/hooks/use-search-user-list';
+import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 
 type PropsType = {
   closable?: boolean;
@@ -38,7 +38,7 @@ const ChannelMembersList = (props: PropsType) => {
     channelId: id || '',
   });
 
-  const { search: searchUserList, result } = useSearchUserList({
+  const { search: searchUserList, result } = useSearchUsers({
     scope: 'workspace',
   });
 

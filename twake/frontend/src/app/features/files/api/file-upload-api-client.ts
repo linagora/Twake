@@ -1,5 +1,5 @@
 import Api from 'app/features/global/framework/api-service';
-import { FileType, MetaDataType } from 'app/features/files/types/file';
+import { FileType } from 'app/features/files/types/file';
 import { MessageFileType } from 'app/features/messages/types/message';
 import extensionToMime from '../utils/extension-to-mime';
 import { fileTypeMimes } from '../utils/type-mimes';
@@ -12,7 +12,7 @@ type GetContextType = BaseContentType & { fileId: string };
 type DeleteContextType = BaseContentType & { fileId: string };
 type DownloadContextType = BaseContentType & { fileId: string };
 
-type FileTypes =
+export type FileTypes =
   | 'link'
   | 'code'
   | 'document'

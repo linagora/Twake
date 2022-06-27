@@ -185,7 +185,7 @@ export class ChannelMemberCrudController
       nextPageToken = users.nextPage?.page_token;
 
       for (const user of users.getEntities()) {
-        const channelMember = await gr.services.channels.members.isChannelMember(user, {
+        const channelMember = await gr.services.channels.members.getChannelMember(user, {
           company_id: request.params.company_id,
           workspace_id: request.params.workspace_id,
           id: request.params.id,

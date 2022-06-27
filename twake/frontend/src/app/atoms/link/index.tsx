@@ -1,5 +1,5 @@
-import _ from "lodash";
-import { Link } from "react-router-dom";
+import _ from 'lodash';
+import { Link } from 'react-router-dom';
 
 export default function A(
   props: any & {
@@ -7,18 +7,16 @@ export default function A(
     href?: string;
     children: React.ReactNode;
     noColor?: boolean;
-  }
+  },
 ) {
-  const colors = props.noColor
-    ? ""
-    : "hover:text-blue-700 active:text-blue-800 text-blue-600";
+  const colors = props.noColor ? '' : 'hover:text-blue-700 active:text-blue-800 text-blue-500';
 
   if (props.to) {
     return (
       <Link
         to={props.to}
-        className={colors + " " + (props.className || "")}
-        {..._.omit(props, "children", "className", "noColor")}
+        className={colors + ' ' + (props.className || '')}
+        {..._.omit(props, 'children', 'className', 'noColor')}
       >
         {props.children}
       </Link>
@@ -27,9 +25,9 @@ export default function A(
 
   return (
     <a
-      href={props.href || "#"}
-      className={colors + " " + (props.className || "")}
-      {..._.omit(props, "children", "className", "noColor")}
+      href={props.href || '#'}
+      className={colors + ' ' + (props.className || '')}
+      {..._.omit(props, 'children', 'className', 'noColor')}
     >
       {props.children}
     </a>

@@ -161,7 +161,7 @@ class SearchService extends Observable {
       }),
 
       MessageAPIClient.searchFile(null, {
-        limit: 10,
+        limit: 100,
         is_file: true,
       })
         .then(a => {
@@ -173,10 +173,11 @@ class SearchService extends Observable {
         }),
 
       MessageAPIClient.searchFile(null, {
-        limit: 10,
+        limit: 100,
         is_media: true,
       })
         .then(a => {
+          a.resources.sort((a, b) => b.created_at - a.created_at);
           this.recent.media = a.resources;
           this.notify();
         })

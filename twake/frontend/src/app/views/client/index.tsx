@@ -16,7 +16,7 @@ import ConfigBodyLayer from 'components/configurators/config-body-layer.js';
 import Viewer from 'app/views/applications/drive/viewer/viewer';
 import ModalComponent from 'app/components/modal/modal-component';
 import ConnectionIndicator from 'components/connection-indicator/connection-indicator';
-import SearchPopup from 'components/search-popup/search-popup.js';
+import SearchPopup from 'components/search-popup/search-popup';
 import NewVersionComponent from 'components/new-version/new-version-component';
 import SideBars, { LoadingSidebar } from './side-bars';
 import CompanyStatusComponent from 'app/components/on-boarding/company-status-component';
