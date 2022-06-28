@@ -17,7 +17,7 @@ export default () => {
   const topChannels = channels
     .slice()
     .filter(a => Date.now() - (a.last_activity || 0) < 1000 * 60 * 60 * 24 * 31)
-    .sort((a, b) => Math.min(50, b.messages_count || 0) - Math.min(50, a.messages_count || 0))
+    .sort((a, b) => Math.min(50, b?.stats?.messages || 0) - Math.min(50, a?.stats?.messages || 0))
     .slice(0, 5);
 
   return (

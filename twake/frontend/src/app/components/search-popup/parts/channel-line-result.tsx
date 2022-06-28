@@ -38,9 +38,9 @@ export default ({ channel }: PropsType): JSX.Element => {
             textToHighlight={name}
           />
         </Text.Base>
-        <Text.Info className="block">{channel.members_count} members</Text.Info>
+        <Text.Info className="block">{channel?.stats?.members} members</Text.Info>
       </div>
-      <div>Actions todo</div>
+      <div>{/*Actions todo*/}</div>
     </div>
   );
 };

@@ -30,10 +30,10 @@ export default ({
         <>
           {'->'}{' '}
           <span className="opacity-50 mx-2">
-            {workspace?.name
-              ? workspace?.name + ' / '
-              : context?.workspaceId === 'direct'
+            {context?.workspaceId === 'direct'
               ? 'Direct / '
+              : workspace?.name
+              ? workspace?.name + ' / '
               : ''}
           </span>
           <A
