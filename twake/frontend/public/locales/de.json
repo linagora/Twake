@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Erfolgreiche {{$1}} Bewerbung!",
     "scenes.app.integrations_parameters.add_application": "Neue Einbindung",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Entwicklereinstellungen",
-    "components.rich_text_editor.plugins.suggestions.loading": "Auf der Suche nach mehr"
+    "components.rich_text_editor.plugins.suggestions.loading": "Auf der Suche nach mehr",
+    "components.open_desktop_popup.subtitle": "in der Twake-App geöffnet",
+    "components.open_desktop_popup.open_here_link": "Öffnen Sie stattdessen hier"
 }
