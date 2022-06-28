@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { Suspense, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Menu } from 'react-feather';
 import { Layout } from 'antd';
 import classNames from 'classnames';
@@ -26,9 +26,14 @@ import { useFeatureToggles } from 'app/components/locked-features-components/fea
 import useUsetiful from 'app/features/global/hooks/use-usetiful';
 
 import './styles.scss';
+import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
+import LocalStorage from 'app/features/global/framework/local-storage-service';
+import { detectDesktopAppPresence } from 'src/utils/browser-detect';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [showDownloadBanner, setShowDownloadBanner] = useState(false);
+
   const { user } = useCurrentUser();
   useCurrentUserRealtime();
   const { FeatureToggles, activeFeatureNames } = useFeatureToggles();
@@ -38,11 +43,20 @@ export default React.memo((): JSX.Element => {
   PopupService.useListener();
   Languages.useListener();
 
+  useEffect(() => {
+    detectDesktopAppPresence().then(detected => {
+      if (!detected && LocalStorage.getItem('show_app_banner') === null) {
+        setShowDownloadBanner(true);
+      }
+    });
+  }, []);
+
   let page: JSX.Element = <></>;
 
   if (user?.id) {
     page = (
       <Layout className="appPage fade_in">
+        { showDownloadBanner && <DownloadAppBanner />}
         <NewVersionComponent />
         <CompanyStatusComponent />
         <FeatureToggles features={activeFeatureNames}>
