@@ -9,7 +9,7 @@ import {
 import { useSearchMessages } from 'app/features/search/hooks/use-search-messages';
 import { SearchInputState, SearchTabsState } from 'app/features/search/state/search-input';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { ChannelsResults } from './channels';
+import { ChannelsResults, ChannelsRowResults } from './channels';
 import { FilesResults } from './files';
 import { MediasResults } from './medias';
 import { MessagesResults } from './messages';
@@ -40,7 +40,7 @@ export default () => {
             </div>
           </div>
           <div className={'-mx-2'}>
-            <ChannelsResults max={6} />
+            <ChannelsRowResults max={6} />
           </div>
         </>
       )}

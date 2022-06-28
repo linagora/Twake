@@ -51,6 +51,27 @@ export default () => {
   );
 };
 
+export const ChannelsRowResults = (props: { max?: number }) => {
+  const { channels, loading, loadMore } = useSearchChannels();
+
+  if (channels.length === 0 && !loading) return <NothingFound />;
+
+  console.log('channels', channels);
+
+  return (
+    <>
+      {channels.slice(0, props?.max || channels.length).map(channel => (
+        <div
+          className="mx-2 inline-block align-top	hover:opacity-75 cursor-pointer"
+          key={channel.id}
+        >
+          <ChannelResult channel={channel} />
+        </div>
+      ))}
+    </>
+  );
+};
+
 export const ChannelsResults = (props: { max?: number }) => {
   const { channels, loading, loadMore } = useSearchChannels();
 
