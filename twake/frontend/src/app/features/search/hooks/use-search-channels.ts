@@ -21,6 +21,8 @@ export const useSearchChannelsLoading = () => {
   return useRecoilValue(LoadingState('useSearchChannels'));
 };
 
+let currentQuery = '';
+
 export const useSearchChannels = () => {
   const companyId = useRouterCompany();
   const { user: currentUser } = useCurrentUser();
@@ -36,6 +38,9 @@ export const useSearchChannels = () => {
   const refresh = async () => {
     setLoading(true);
     const isRecent = !searchInput.query;
+
+    const query = searchInput.query;
+    currentQuery = query;
 
     const response = await ChannelAPIClient.search(searchInput.query || null, opt);
     let results = (response.resources || []).sort(
@@ -61,6 +66,10 @@ export const useSearchChannels = () => {
       nextPage: null,
     };
 
+    if (currentQuery !== query) {
+      return;
+    }
+
     if (!isRecent) setSearched(update);
     if (isRecent) setRecent(update);
     setLoading(false);
@@ -78,7 +87,7 @@ export const useSearchChannels = () => {
         setLoading(true);
         if (searchInput) {
           delayRequest('useSearchChannels', async () => {
-            refresh();
+            await refresh();
           });
         } else {
           refresh();

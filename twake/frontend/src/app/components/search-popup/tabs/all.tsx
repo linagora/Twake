@@ -27,7 +27,7 @@ export default () => {
 
   return (
     <div className="-mt-4">
-      {channels.length > 0 && (
+      {!input.channelId && channels.length > 0 && (
         <>
           <div className="flex mt-4">
             <Text.Subtitle className="block grow">
@@ -87,13 +87,8 @@ export default () => {
             <Text.Subtitle className="block grow">
               {Languages.t('components.searchpopup.messages')}
             </Text.Subtitle>
-            <div className="w-auto">
-              <A onClick={() => setTab('messages')}>
-                {Languages.t('components.searchpopup.see_more')}
-              </A>
-            </div>
           </div>
-          <div className="-mt-2">
+          <div className="-mx-2">
             <MessagesResults max={6} />
           </div>
         </>

@@ -17,7 +17,7 @@ type PropsType = {
 export default ({ channel, showLabel, collapseToOne }: PropsType): JSX.Element => {
   if (channel.visibility === 'direct') {
     const channelUsers = (channel.users || [])
-      .filter(e => e.id !== UsersService.getCurrentUserId())
+      .filter(e => e.id !== UsersService.getCurrentUserId() || channel.users?.length === 1)
       .filter(a => a);
 
     const channelName: string[] = [];

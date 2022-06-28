@@ -48,6 +48,7 @@ export type FileSearchResult = {
 export type Message = {
   created_at?: number;
   id?: string;
+  thread_id?: string;
   application_id?: string | null;
   channel_id?: string;
   content?: any;

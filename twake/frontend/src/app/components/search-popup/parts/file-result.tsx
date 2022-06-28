@@ -1,5 +1,7 @@
 import * as Text from '@atoms/text';
 import FileUploadAPIClient from '@features/files/api/file-upload-api-client';
+import { Button } from 'app/atoms/button/button';
+import { DownloadIcon, ShareIcon } from 'app/atoms/icons-agnostic';
 import {
   FileTypeArchiveIcon,
   FileTypeDocumentIcon,
@@ -10,16 +12,19 @@ import {
 import { formatDate } from 'app/features/global/utils/format-date';
 import { formatSize } from 'app/features/global/utils/format-file-size';
 import { Message, MessageFileType } from 'app/features/messages/types/message';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import { useSearchModal } from 'app/features/search/hooks/use-search';
 import { SearchInputState } from 'app/features/search/state/search-input';
 import { UserType } from 'app/features/users/types/user';
 import Media from 'app/molecules/media';
 import Highlighter from 'react-highlight-words';
 import { useRecoilValue } from 'recoil';
-import { onFilePreviewClick } from '../common';
+import { onFilePreviewClick, onFileDownloadClick, openMessage } from '../common';
 import ResultContext from './result-context';
 
 export default (props: { file: MessageFileType & { message?: Message } & { user?: UserType } }) => {
   const input = useRecoilValue(SearchInputState);
+  const currentWorkspaceId = useRouterWorkspace();
   const file = props.file;
   const type = FileUploadAPIClient.mimeToType(file?.metadata?.mime || '');
   const name = file?.metadata?.name;
@@ -28,6 +33,8 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
 
   let iconClassName = 'absolute left-0 top-0 bottom-0 right-0 m-auto w-8 h-8';
   if (url) iconClassName = 'absolute bottom-1 left-1 w-6 h-6';
+
+  const { setOpen } = useSearchModal();
 
   return (
     <div
@@ -74,7 +81,33 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
           }}
         />
       </div>
-      <div>Actions todo</div>
+      <div
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        <Button
+          theme="outline"
+          className="w-9 px-1.5 ml-2 rounded-full border-none"
+          onClick={() => onFileDownloadClick(file)}
+        >
+          <DownloadIcon className="text-blue-500 w-6 h-6" />
+        </Button>
+
+        {!!file.message && (
+          <Button
+            theme="outline"
+            className="w-9 px-1.5 ml-2 rounded-full border-none"
+            onClick={() => {
+              openMessage(file.message as Message, currentWorkspaceId);
+              setOpen(false);
+            }}
+          >
+            <ShareIcon className="text-blue-500 w-6 h-6" />
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

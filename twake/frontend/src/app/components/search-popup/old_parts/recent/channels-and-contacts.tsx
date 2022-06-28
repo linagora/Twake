@@ -4,7 +4,7 @@ import React from 'react';
 import RouterServices, { ClientStateType } from 'features/router/services/router-service';
 import { ChannelType } from 'features/channels/types/channel';
 import assert from 'assert';
-import ChannelAvatar from 'components/channel-avatar/channel-avatar';
+import ChannelAvatar from 'app/components/search-popup/parts/channel-avatar/channel-avatar';
 import Languages from 'app/features/global/services/languages-service';
 
 export default (): JSX.Element => {

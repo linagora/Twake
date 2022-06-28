@@ -2,25 +2,42 @@ import A from '@atoms/link';
 import * as Text from '@atoms/text';
 import { formatDate } from '@features/global/utils/format-date';
 import { Message } from '@features/messages/types/message';
-import ChannelAvatar from 'app/components/channel-avatar/channel-avatar';
+import ChannelAvatar from 'app/components/search-popup/parts/channel-avatar/channel-avatar';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
+import { ChannelType } from 'app/features/channels/types/channel';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import routerService from 'app/features/router/services/router-service';
+import { useSearchModal } from 'app/features/search/hooks/use-search';
 import { SearchInputState } from 'app/features/search/state/search-input';
 import { useUser } from 'app/features/users/hooks/use-user';
+import { UserType } from 'app/features/users/types/user';
 import { useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { useRecoilValue } from 'recoil';
+import { openMessage } from '../common';
 import ResultContext from './result-context';
 
-export default ({ message }: { message: Message }) => {
+export default ({
+  message,
+}: {
+  message: Message & { users?: UserType[]; channel?: ChannelType };
+}) => {
   const input = useRecoilValue(SearchInputState);
-  const user = useUser(message.user_id || '');
-  const { channel } = useChannel(message?.cache?.channel_id || '');
+  const currentWorkspaceId = useRouterWorkspace();
+  const user =
+    (message.users || []).find(u => u.id === message.user_id) || useUser(message.user_id || '');
+  const channel = message.channel || useChannel(message?.cache?.channel_id || '').channel;
   const [truncated, setTruncated] = useState(true);
-
-  console.log(user);
+  const { setOpen } = useSearchModal();
 
   return (
-    <div className="block w-full flex items-start p-2 hover:bg-zinc-50 rounded-md cursor-pointer">
+    <div
+      className="block w-full flex items-start p-2 hover:bg-zinc-50 rounded-md cursor-pointer"
+      onClick={() => {
+        openMessage(message, currentWorkspaceId);
+        setOpen(false);
+      }}
+    >
       <div className="mr-3">
         {channel && <ChannelAvatar channel={channel} showLabel={false} collapseToOne={true} />}
       </div>
