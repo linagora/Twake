@@ -3,10 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { HasSearchQuerySelector } from 'app/features/search/state/search-input';
 import { useSearchMessagesFiles } from 'app/features/search/hooks/use-search-files-or-medias';
 import FilesResult from '../../old_parts/recent/files-result';
-import {
-  onFileDownloadClick,
-  onFilePreviewClick,
-} from 'app/components/search-popup/old_parts/common';
+import { onFileDownloadClick, onFilePreviewClick } from 'app/components/search-popup/common';
 
 export default (): JSX.Element => {
   const isSearchMode = useRecoilValue(HasSearchQuerySelector);

@@ -1,8 +1,9 @@
 import { ChannelType } from 'app/features/channels/types/channel';
+import { Message } from 'app/features/messages/types/message';
 import { atom, selector } from 'recoil';
 
 export type SearchMessagesResults = {
-  results: ChannelType[];
+  results: Message[];
   nextPage: string | null;
 };
 

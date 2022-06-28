@@ -1,26 +1,29 @@
 import Tabs from '@molecules/tabs';
 import Languages from 'app/features/global/services/languages-service';
+import useRouterChannel from 'app/features/router/hooks/use-router-channel';
 import { useSearchChannels } from 'app/features/search/hooks/use-search-channels';
 import {
   useSearchMessagesFiles,
   useSearchMessagesMedias,
 } from 'app/features/search/hooks/use-search-files-or-medias';
 import { useSearchMessages } from 'app/features/search/hooks/use-search-messages';
-import { SearchInputState } from 'app/features/search/state/search-input';
-import { useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { SearchInputState, SearchTabsState } from 'app/features/search/state/search-input';
+import { useEffect } from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import SearchResultsAll from './tabs/all';
 import SearchResultsChannels from './tabs/channels';
 import SearchResultsFiles from './tabs/files';
 import SearchResultsMedias from './tabs/medias';
 import SearchResultsMessages from './tabs/messages';
 
+const orderedTabs = ['all', 'messages', 'medias', 'files', 'channels'];
+
 export const SearchResultsIndex = () => {
   const input = useRecoilValue(SearchInputState);
   const hasInput = input?.query?.length > 0;
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useRecoilState(SearchTabsState);
 
-  const { channels } = useSearchChannels();
   const { messages } = useSearchMessages();
   const { files } = useSearchMessagesFiles();
   const { files: medias } = useSearchMessagesMedias();
@@ -51,24 +54,41 @@ export const SearchResultsIndex = () => {
           ...(!input.channelId
             ? [
                 <div key="channels">
-                  <div className="flex">
-                    {Languages.t('components.searchpopup.channels')}
-                    {hasInput && <SearchCounterBadge count={channels.length} />}
-                  </div>
+                  <ChannelsTab />
                 </div>,
               ]
             : []),
         ]}
-        selected={tab}
-        onClick={idx => setTab(idx)}
+        selected={orderedTabs.indexOf(tab)}
+        onClick={idx => setTab(orderedTabs[idx] as any)}
       />
 
-      {tab === 0 && <SearchResultsAll />}
-      {tab === 1 && <SearchResultsMessages />}
-      {tab === 2 && <SearchResultsMedias />}
-      {tab === 3 && <SearchResultsFiles />}
-      {tab === 4 && <SearchResultsChannels />}
+      <PerfectScrollbar
+        className="-mb-4 py-3 overflow-hidden -mx-2 px-2"
+        style={{ maxHeight: 'calc(80vh - 100px)', minHeight: 'calc(80vh - 100px)' }}
+        options={{ suppressScrollX: true, suppressScrollY: false }}
+        component="div"
+      >
+        {tab === 'all' && <SearchResultsAll />}
+        {tab === 'messages' && <SearchResultsMessages />}
+        {tab === 'medias' && <SearchResultsMedias />}
+        {tab === 'files' && <SearchResultsFiles />}
+        {tab === 'channels' && <SearchResultsChannels />}
+      </PerfectScrollbar>
     </>
+  );
+};
+
+const ChannelsTab = () => {
+  const input = useRecoilValue(SearchInputState);
+  const hasInput = input?.query?.length > 0;
+  const { channels } = useSearchChannels();
+
+  return (
+    <div className="flex">
+      {Languages.t('components.searchpopup.channels')}
+      {hasInput && <SearchCounterBadge count={channels.length} />}
+    </div>
   );
 };
 
