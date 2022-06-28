@@ -56,8 +56,6 @@ export const ChannelsRowResults = (props: { max?: number }) => {
 
   if (channels.length === 0 && !loading) return <NothingFound />;
 
-  console.log('channels', channels);
-
   return (
     <>
       {channels.slice(0, props?.max || channels.length).map(channel => (
