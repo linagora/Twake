@@ -2,11 +2,11 @@ import { getOsWaitingTime, twakeApplicationUrlScheme, wait } from './common';
 import { invoke, spawnPopup } from './window'
 
 /**
- * checks if the twake app is installed in the system using the chrome browser
+ * checks if the twake app is installed in the system using the browser
  * 
  * @returns {boolean} true if the twake app is installed
  */
-export const detectUsingChrome = async (): Promise<boolean> => {
+export const detect = async (): Promise<boolean> => {
   let initialLoadingPrimise: Promise<unknown>;
 
   return await invoke('main', async () => {

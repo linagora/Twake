@@ -26,7 +26,7 @@ export const getBrowserInformation = (): BrowserInformation | null => {
  * 
  * @returns {boolean} true if the detected OS is Windows
  */
-export const isWindows = (): boolean => {
+const isWindows = (): boolean => {
   const browser = detect();
   const platformCheck = navigator.platform.indexOf('Win') > -1;
 

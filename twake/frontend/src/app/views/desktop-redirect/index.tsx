@@ -2,7 +2,7 @@ import { OpenDesktopPopup } from 'app/components/open-desktop-popup/open-desktop
 import { useWebState } from 'app/features/global/state/atoms/use-web';
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
-import { detectDesktopAppPresence } from 'src/utils/detection';
+import { detectDesktopAppPresence } from 'src/utils/browser-detect';
 
 type PropsType = {
   children: React.ReactNode;

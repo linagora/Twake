@@ -5,5 +5,3 @@ export type BrowserInformation = {
 };
 
 export type TargetWindow = 'main' | 'popup';
-
-export type WindowMessageType = 'redirected' | 'force_reload';

@@ -1,7 +1,5 @@
 import { getBrowserInformation } from './common';
-import { detectUsingChrome } from './detect-chrome';
-import { detectUsingFirefox } from './detect-firefox';
-import { detectUsingSafari } from './detect-safari';
+import { detect } from './detect';
 
 /**
  * Checks if the twake desktop app is installed in the system.
@@ -19,14 +17,5 @@ export async function detectDesktopAppPresence (): Promise<boolean> {
 
   console.debug(`Desktop app detection: target browser: ${targetBrowser?.name} on ${targetBrowser?.os}`);
 
-  switch (targetBrowser?.name) {
-    case 'chrome':
-      return await detectUsingChrome();
-    case 'firefox':
-      return await detectUsingFirefox();
-    case 'safari':
-      return await detectUsingSafari();
-    default:
-      return false;
-  }
+  return await detect();
 }
