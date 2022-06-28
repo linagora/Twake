@@ -904,5 +904,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Error while removing application {{$1}} !",
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Successfully {{$1}} application!",
     "scenes.app.integrations_parameters.add_application": "New integration",
-    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Developer settings"
+    "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Developer settings",
+    "components.open_desktop_popup.subtitle": "Opened in Twake app",
+    "components.open_desktop_popup.open_here_link": "Open here instead"
 }

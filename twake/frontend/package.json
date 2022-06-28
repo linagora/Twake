@@ -14,7 +14,7 @@
     "start": "npm run dev:start",
     "build": "npm run build-storybook && CI=false craco --max_old_space_size=4096 --optimize-for-size build",
     "build-storybook": "build-storybook -o public/storybook",
-    "storybook": "concurrently \"start-storybook -p 6006\" \"npm run dev:tailwind\""
+    "storybook": "concurrently \"start-storybook -p 6006 -s public\" \"npm run dev:tailwind\""
   },
   "eslintConfig": {
     "extends": "eslint-config-react-app-eslint-six",
@@ -138,6 +138,7 @@
     "craco-less": "^2.0.0",
     "crypto-js": "^4.0.0",
     "css-loader": "3.6.0",
+    "detect-browser": "^5.3.0",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
     "draft-js": "^0.11.7",

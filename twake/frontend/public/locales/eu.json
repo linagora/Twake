@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Arrakastaz {{$1}} aplikazioa!",
     "scenes.app.integrations_parameters.add_application": "Integrazio berria",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Garatzaileen ezarpenak",
-    "components.rich_text_editor.plugins.suggestions.loading": "Gehiagoren bila"
+    "components.rich_text_editor.plugins.suggestions.loading": "Gehiagoren bila",
+    "components.open_desktop_popup.subtitle": "Twake aplikazioan ireki da",
+    "components.open_desktop_popup.open_here_link": "Ireki hemen ordez"
 }
