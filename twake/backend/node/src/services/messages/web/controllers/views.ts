@@ -216,8 +216,21 @@ export class ViewsController {
       }
     }
 
+    const extendedMessages = [];
+    for (const message of messages) {
+      const extended = {
+        ...(await gr.services.messages.messages.includeUsersInMessage(message)),
+        channel: await gr.services.channels.channels.get({
+          company_id: message.cache?.company_id,
+          workspace_id: message.cache?.workspace_id,
+          id: message.cache?.channel_id,
+        }),
+      };
+      extendedMessages.push(extended);
+    }
+
     return {
-      resources: messages,
+      resources: extendedMessages,
       ...(lastPageToken && {
         next_page_token: lastPageToken,
       }),

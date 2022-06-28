@@ -40,7 +40,7 @@ export const MediasResults = (props: { max?: number; showAsFiles?: boolean }) =>
           const url = FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file);
           if (url)
             return props.showAsFiles ? (
-              <div className="mx-2"><FileResult key={file.id} file={file} /></div>
+              <FileResult key={file.id} file={file} />
             ) : (
               <MediaResult key={file.id} file={file} />
             );

@@ -166,7 +166,7 @@ class MessageAPIClient {
 
   async search(searchString: string, options?: BaseSearchOptions) {
     const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
-    const query = `/internal/services/messages/v1/companies/${companyId}/search?q=${searchString}`;
+    const query = `/internal/services/messages/v1/companies/${companyId}/search?q=${searchString}&include_users=1`;
     const res = await Api.getWithParams<{ resources: MessageExtended[] }>(query, options);
     this.logger.debug(
       `Message search by text "${searchString}". Found`,

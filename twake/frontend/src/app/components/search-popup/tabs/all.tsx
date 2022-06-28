@@ -26,9 +26,7 @@ export default () => {
   const { files: medias } = useSearchMessagesMedias();
 
   return (
-    <div>
-      <Text.Subtitle className="block">{Languages.t('components.searchpopup.all')}</Text.Subtitle>
-
+    <div className="-mt-4">
       {channels.length > 0 && (
         <>
           <div className="flex mt-4">
@@ -41,7 +39,7 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className="">
+          <div className={'-mx-2'}>
             <ChannelsResults max={6} />
           </div>
         </>
@@ -59,7 +57,7 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className={isRecent ? '-mx-2' : ''}>
+          <div className={'-mx-2'}>
             <MediasResults max={6} showAsFiles={!isRecent} />
           </div>
         </>
@@ -77,7 +75,7 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className="">
+          <div className={'-mx-2'}>
             <FilesResults max={6} />
           </div>
         </>
@@ -95,7 +93,7 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className="">
+          <div className="-mt-2">
             <MessagesResults max={6} />
           </div>
         </>

@@ -3,15 +3,19 @@ import { useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { SearchInputState } from '../state/search-input';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
-import { SearchChannelsResultsState } from '../state/search-channels-result';
+import {
+  SearchChannelsResultsState,
+  SearchUsersChannelsResultsState,
+} from '../state/search-channels-result';
 import { RecentChannelsState } from '../state/recent-channels';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
+import { searchBackend, useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import { createDirectChannelFromUsers } from 'app/features/channels/types/channel';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
-import { UserType } from 'app/features/users/types/user';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+import _ from 'lodash';
+import UserAPIClient from 'app/features/users/api/user-api-client';
 
 export const useSearchChannelsLoading = () => {
   return useRecoilValue(LoadingState('useSearchChannels'));
@@ -21,12 +25,10 @@ export const useSearchChannels = () => {
   const companyId = useRouterCompany();
   const { user: currentUser } = useCurrentUser();
 
-  const { search, result: users } = useSearchUsers({ scope: 'company' });
-
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(LoadingState('useSearchChannels'));
 
-  const [_searched, setSearched] = useRecoilState(SearchChannelsResultsState);
+  const [searched, setSearched] = useRecoilState(SearchChannelsResultsState);
   const [recent, setRecent] = useRecoilState(RecentChannelsState);
 
   const opt = { limit: 100, company_id: companyId };
@@ -35,15 +37,24 @@ export const useSearchChannels = () => {
     setLoading(true);
     const isRecent = !searchInput.query;
 
-    if (!isRecent) search(searchInput.query);
-
     const response = await ChannelAPIClient.search(searchInput.query || null, opt);
-    const results = (response.resources || []).sort(
+    let results = (response.resources || []).sort(
       (a, b) =>
         (b.last_activity || 0) / 100 +
         (b.user_member?.last_access || 0) -
         ((a.last_activity || 0) / 100 + (a.user_member?.last_access || 0)),
     );
+
+    if (!isRecent) {
+      const users = await UserAPIClient.search<any>(searchInput.query, {
+        scope: 'company',
+        companyId,
+      });
+      results = [
+        ...results,
+        ...(users || []).map(user => createDirectChannelFromUsers(companyId, [currentUser, user])),
+      ];
+    }
 
     const update = {
       results,
@@ -77,18 +88,9 @@ export const useSearchChannels = () => {
     [searchInput.query],
   );
 
-  //We have two simultaneous results: users and searched
-  let searched = _searched.results;
-  if (searchInput?.query) {
-    searched = [
-      ..._searched.results,
-      ...users.map(u => createDirectChannelFromUsers(companyId, [currentUser as UserType, u])),
-    ];
-  }
-
   return {
     loading,
-    channels: searchInput?.query ? searched : recent.results,
+    channels: searchInput?.query ? searched.results : recent.results,
     loadMore,
     refresh,
   };

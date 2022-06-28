@@ -62,8 +62,13 @@ export type Message = {
   pinned?: boolean;
   reactions?: ReactionType[];
   responses_count?: number | null;
-  sender?: string | null;
+  user_id?: string | null;
   user_specific_content?: any;
+  cache?: {
+    company_id?: string;
+    workspace_id?: string;
+    channel_id?: string;
+  };
   _user_ephemeral?: any;
   _last_modified?: string;
   _user_reaction?: any;

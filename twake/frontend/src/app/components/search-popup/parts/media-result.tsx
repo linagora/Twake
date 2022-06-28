@@ -15,7 +15,7 @@ export default (props: { file: MessageFileType }) => {
     >
       <Media
         key={file.id}
-        size="md"
+        size="lg"
         url={url}
         duration={
           type === 'video'

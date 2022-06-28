@@ -23,7 +23,7 @@ export default () => {
           : Languages.t('components.searchpopup.files')}
       </Text.Subtitle>
 
-      <div className="">
+      <div className={'-mx-2'}>
         <FilesResults />
       </div>
     </div>
