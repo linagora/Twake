@@ -59,8 +59,8 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
           </>
         )}
       </div>
-      <div className="grow mr-3">
-        <Text.Base className="block">
+      <div className="grow mr-3 overflow-hidden">
+        <Text.Base className="block whitespace-nowrap overflow-hidden text-ellipsis">
           <Highlighter
             highlightClassName="text-blue-500 p-0 bg-blue-50"
             searchWords={input?.query?.split(' ')}
@@ -82,6 +82,7 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
         />
       </div>
       <div
+        className="whitespace-nowrap"
         onClick={e => {
           e.preventDefault();
           e.stopPropagation();
