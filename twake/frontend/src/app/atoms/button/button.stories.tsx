@@ -3,7 +3,8 @@ import { ComponentStory } from '@storybook/react';
 import { Button } from './button';
 import { PlusIcon, SearchIcon } from '@heroicons/react/solid';
 import { TrashIcon } from '@heroicons/react/outline';
-import Avatar from '@atoms/avatar/avatar';
+import Avatar from '@atoms/avatar';
+import { UserAddIcon } from '@atoms/icons-agnostic/index';
 
 export default {
   title: '@atoms/button',
@@ -165,7 +166,8 @@ const Template: ComponentStory<any> = (props: {
         disabled={props.disabled}
         loading={props.loading}
       >
-        <Avatar size={5} className="-ml-1 mr-1" /> <PlusIcon className="w-4 h-4 mx-1" /> Add user
+        <UserAddIcon className="w-6 h-6" fill="currentColor" />
+        Add user
       </Button>
     </>
   );
