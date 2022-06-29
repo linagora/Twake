@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Sukcese {{$1}} aplikaĵo!",
     "scenes.app.integrations_parameters.add_application": "Nova integriĝo",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Agordoj por programistoj",
-    "components.rich_text_editor.plugins.suggestions.loading": "Serĉante pli"
+    "components.rich_text_editor.plugins.suggestions.loading": "Serĉante pli",
+    "components.open_desktop_popup.subtitle": "malfermita en Twake-aplikaĵo",
+    "components.open_desktop_popup.open_here_link": "Malfermu ĉi tie anstataŭe"
 }

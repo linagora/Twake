@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "Errore durante la rimozione dell'applicazione {{$1}} !",
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Applicazione {{$1}} riuscita!",
     "scenes.app.integrations_parameters.add_application": "Nuova integrazione",
-    "components.rich_text_editor.plugins.suggestions.loading": "Alla ricerca di più"
+    "components.rich_text_editor.plugins.suggestions.loading": "Alla ricerca di più",
+    "components.open_desktop_popup.subtitle": "aperto nell'app Twake",
+    "components.open_desktop_popup.open_here_link": "Apri qui invece"
 }

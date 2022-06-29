@@ -5,8 +5,8 @@ import { ChannelType } from 'app/features/channels/types/channel';
 import { useWorkspace } from 'features/workspaces/hooks/use-workspaces';
 import assert from 'assert';
 import RouterServices from 'features/router/services/router-service';
-import { highlightText } from 'app/components/search-popup/old_parts/common';
-import ChannelAvatar from 'components/channel-avatar/channel-avatar';
+import { highlightText } from 'app/components/search-popup/common';
+import ChannelAvatar from 'app/components/search-popup/parts/channel-avatar/channel-avatar';
 import { WorkspaceType } from 'features/workspaces/types/workspace';
 
 type PropsType = {

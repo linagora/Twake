@@ -885,5 +885,7 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Configuración de desarrollador",
     "scenes.app.popup.appsparameters.pages.application_editor.application_removed_error": "¡Error al eliminar la aplicación {{$1}}!",
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "¡Aplicación exitosa {{$1}}!",
-    "components.rich_text_editor.plugins.suggestions.loading": "Buscando por mas"
+    "components.rich_text_editor.plugins.suggestions.loading": "Buscando por mas",
+    "components.open_desktop_popup.subtitle": "abierto en la aplicación Twake",
+    "components.open_desktop_popup.open_here_link": "Abrir aquí en su lugar"
 }

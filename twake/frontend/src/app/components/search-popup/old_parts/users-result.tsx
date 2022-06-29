@@ -4,7 +4,7 @@ import { UserType } from 'features/users/types/user';
 import User from 'features/users/services/current-user-service';
 import { useDirectChannels } from 'features/channels/hooks/use-direct-channels';
 import assert from 'assert';
-import { highlightText } from 'app/components/search-popup/old_parts/common';
+import { highlightText } from 'app/components/search-popup/common';
 
 type PropsType = {
   user: UserType;

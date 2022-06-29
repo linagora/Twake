@@ -885,5 +885,7 @@
     "twake.application.access.title": "Velg de riktige omfangene for applikasjonen din.",
     "twake.application.access.no_default_scopes_available'": "Denne integrasjonen har ingen {{$1}}-tilgang",
     "scenes.app.popup.appsparameters.pages.application_editor.help_text": "Hvis du ikke vet hvordan du fyller disse, gå til ",
-    "components.rich_text_editor.plugins.suggestions.loading": "Ser etter mer"
+    "components.rich_text_editor.plugins.suggestions.loading": "Ser etter mer",
+    "components.open_desktop_popup.subtitle": "åpnet i Twake-appen",
+    "components.open_desktop_popup.open_here_link": "Åpne her i stedet"
 }

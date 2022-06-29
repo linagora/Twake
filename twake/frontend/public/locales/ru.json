@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Успешная заявка {{$1}}!",
     "scenes.app.integrations_parameters.add_application": "Новая интеграция",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Настройки разработчика",
-    "components.rich_text_editor.plugins.suggestions.loading": "Ищете больше"
+    "components.rich_text_editor.plugins.suggestions.loading": "Ищете больше",
+    "components.open_desktop_popup.subtitle": "открыто в приложении Twake",
+    "components.open_desktop_popup.open_here_link": "Вместо этого откройте здесь"
 }

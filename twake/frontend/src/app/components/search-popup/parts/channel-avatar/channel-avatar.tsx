@@ -16,18 +16,15 @@ type PropsType = {
 
 export default ({ channel, showLabel, collapseToOne }: PropsType): JSX.Element => {
   if (channel.visibility === 'direct') {
-    let channelMembers = (channel.members || []).filter(e => e !== UsersService.getCurrentUserId());
-    channelMembers = channelMembers.filter((e, i) => channelMembers.indexOf(e) === i);
+    const channelUsers = (channel.users || [])
+      .filter(e => e.id !== UsersService.getCurrentUserId() || channel.users?.length === 1)
+      .filter(a => a);
 
     const channelName: string[] = [];
 
-    const users: UserType[] = [];
-
-    channelMembers.forEach(userId => users.push(getUser(userId)));
-
     const icons = [] as JSX.Element[];
 
-    users.forEach(member => {
+    channelUsers.forEach(member => {
       channelName.push(UserService.getFullName(member));
       if (!(collapseToOne && icons.length > 0)) {
         icons.push(getThumbnail(member));
@@ -36,9 +33,9 @@ export default ({ channel, showLabel, collapseToOne }: PropsType): JSX.Element =
 
     let width = 64;
 
-    if (!collapseToOne && channelMembers.length > 1) {
+    if (!collapseToOne && channelUsers.length > 1) {
       const shift = 64 - (64 * 2) / 5;
-      width = 64 + (channelMembers.length - 1) * shift;
+      width = 64 + (channelUsers.length - 1) * shift;
     }
 
     return (

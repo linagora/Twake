@@ -190,6 +190,8 @@ export class ChannelCrudController
       }
     }
 
+    await this.completeWithStatistics(channels as ChannelObject[]);
+
     return { resources: channels };
   }
 

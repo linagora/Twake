@@ -1,4 +1,4 @@
-import { atom, selector } from 'recoil';
+import { atom } from 'recoil';
 
 export type SearchInput = {
   query: string;
@@ -18,10 +18,7 @@ export const SearchInputState = atom<SearchInput>({
   },
 });
 
-export const HasSearchQuerySelector = selector<boolean>({
-  key: 'HasSearchQuerySelector',
-  get: ({ get }) => {
-    const searchInput = get(SearchInputState);
-    return searchInput.query.length > 0;
-  },
+export const SearchTabsState = atom<'all' | 'channels' | 'messages' | 'files' | 'medias'>({
+  key: 'SearchTabsState',
+  default: 'all',
 });

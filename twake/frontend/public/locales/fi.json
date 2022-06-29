@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "{{$1}} -sovellus onnistui!",
     "scenes.app.integrations_parameters.add_application": "Uusi integraatio",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Kehittäjäasetukset",
-    "components.rich_text_editor.plugins.suggestions.loading": "Etsitkö lisää"
+    "components.rich_text_editor.plugins.suggestions.loading": "Etsitkö lisää",
+    "components.open_desktop_popup.subtitle": "avattu Twake-sovelluksessa",
+    "components.open_desktop_popup.open_here_link": "Avaa sen sijaan tästä"
 }

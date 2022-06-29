@@ -885,5 +885,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.help_link": "Twake API 文档",
     "scenes.app.popup.appsparameters.pages.application_editor.help_text": "如果您不知道如何填写这些，请访问 ",
     "scenes.app.popup.appsparameters.pages.app.private_key": "私钥",
-    "components.rich_text_editor.plugins.suggestions.loading": "寻找更多"
+    "components.rich_text_editor.plugins.suggestions.loading": "寻找更多",
+    "components.open_desktop_popup.subtitle": "在 Twake 應用中打開",
+    "components.open_desktop_popup.open_here_link": "改為在此處打開"
 }

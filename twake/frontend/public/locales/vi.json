@@ -885,5 +885,7 @@
     "twake.application.access.title": "Chọn phạm vi phù hợp cho ứng dụng của bạn.",
     "twake.application.access.no_default_scopes_available'": "Tích hợp này không có bất kỳ quyền truy cập {{$1}} nào",
     "scenes.app.popup.appsparameters.pages.application_editor.help_link": "tài liệu API Twake",
-    "components.rich_text_editor.plugins.suggestions.loading": "Tìm kiếm thêm"
+    "components.rich_text_editor.plugins.suggestions.loading": "Tìm kiếm thêm",
+    "components.open_desktop_popup.subtitle": "được mở trong ứng dụng Twake",
+    "components.open_desktop_popup.open_here_link": "Thay vào đó hãy mở ở đây"
 }
