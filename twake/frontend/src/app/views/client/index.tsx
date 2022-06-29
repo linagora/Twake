@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Menu } from 'react-feather';
 import { Layout } from 'antd';
 import classNames from 'classnames';
@@ -30,7 +30,6 @@ import DownloadAppBanner from 'app/components/download-app-banner/download-app-b
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-
   const { user } = useCurrentUser();
   useCurrentUserRealtime();
   const { FeatureToggles, activeFeatureNames } = useFeatureToggles();
