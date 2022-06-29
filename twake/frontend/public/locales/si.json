@@ -887,5 +887,7 @@
     "scenes.app.popup.appsparameters.pages.app.private_key": "පුද්ගලික යතුර",
     "components.rich_text_editor.plugins.suggestions.loading": "තව හොයනවා",
     "components.open_desktop_popup.subtitle": "Twake යෙදුම තුළ විවෘත කරන ලදී",
-    "components.open_desktop_popup.open_here_link": "ඒ වෙනුවට මෙතන විවෘත කරන්න"
+    "components.open_desktop_popup.open_here_link": "ඒ වෙනුවට මෙතන විවෘත කරන්න",
+    "molecules.download_banner.title": "twake වලින් උපරිම ප්‍රයෝජන ලබා ගන්න, දැන් ඩෙස්ක්ටොප් යෙදුම බාගන්න",
+    "molecules.download_banner.download_button": "ඩෙස්ක්ටොප් යෙදුම බාගන්න"
 }

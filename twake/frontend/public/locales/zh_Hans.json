@@ -887,5 +887,7 @@
     "scenes.app.popup.appsparameters.pages.app.private_key": "私钥",
     "components.rich_text_editor.plugins.suggestions.loading": "寻找更多",
     "components.open_desktop_popup.subtitle": "在 Twake 應用中打開",
-    "components.open_desktop_popup.open_here_link": "改為在此處打開"
+    "components.open_desktop_popup.open_here_link": "改為在此處打開",
+    "molecules.download_banner.title": "充分利用 twake，立即下载桌面应用程序",
+    "molecules.download_banner.download_button": "下载桌面应用程序"
 }

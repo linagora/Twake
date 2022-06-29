@@ -887,5 +887,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "¡Aplicación exitosa {{$1}}!",
     "components.rich_text_editor.plugins.suggestions.loading": "Buscando por mas",
     "components.open_desktop_popup.subtitle": "abierto en la aplicación Twake",
-    "components.open_desktop_popup.open_here_link": "Abrir aquí en su lugar"
+    "components.open_desktop_popup.open_here_link": "Abrir aquí en su lugar",
+    "molecules.download_banner.title": "Aproveche al máximo twake, descargue la aplicación de escritorio ahora",
+    "molecules.download_banner.download_button": "Descargar aplicación de escritorio"
 }

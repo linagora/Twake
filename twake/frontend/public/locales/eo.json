@@ -887,5 +887,7 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Agordoj por programistoj",
     "components.rich_text_editor.plugins.suggestions.loading": "Serĉante pli",
     "components.open_desktop_popup.subtitle": "malfermita en Twake-aplikaĵo",
-    "components.open_desktop_popup.open_here_link": "Malfermu ĉi tie anstataŭe"
+    "components.open_desktop_popup.open_here_link": "Malfermu ĉi tie anstataŭe",
+    "molecules.download_banner.title": "Profitu la plej grandan parton de twake, elŝutu la labortablon nun",
+    "molecules.download_banner.download_button": "Elŝutu labortablan apon"
 }
