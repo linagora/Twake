@@ -7,6 +7,8 @@ import {
   EyeIcon,
   InputClearIcon,
   ShareIcon,
+  UserAddIcon,
+  CheckIcon,
 } from '@atoms/icons-agnostic/index';
 
 export default {
@@ -40,6 +42,8 @@ const Template: ComponentStory<any> = (props: ComponentProps<'svg'>) => {
         <Icon icon={<EyeIcon />} title="Eye" />
         <Icon icon={<ShareIcon />} title="Share" />
         <Icon icon={<InputClearIcon />} title="InputClear" />
+        <Icon icon={<UserAddIcon />} title="User" />
+        <Icon icon={<CheckIcon />} title="Check" />
       </div>
     </>
   );
