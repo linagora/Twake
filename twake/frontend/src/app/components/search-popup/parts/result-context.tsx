@@ -24,7 +24,7 @@ export default ({
   const { setOpen } = useSearchModal();
 
   return (
-    <div className="flex">
+    <div className="flex overflow-hidden whitespace-nowrap text-ellipsis">
       {!!user && <>{UsersService.getFullName(user)}</>}{' '}
       {channel && (
         <>

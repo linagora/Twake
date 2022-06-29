@@ -30,8 +30,8 @@ export const useSearchChannels = () => {
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(LoadingState('useSearchChannels'));
 
-  const [searched, setSearched] = useRecoilState(SearchChannelsResultsState);
-  const [recent, setRecent] = useRecoilState(RecentChannelsState);
+  const [searched, setSearched] = useRecoilState(SearchChannelsResultsState(companyId));
+  const [recent, setRecent] = useRecoilState(RecentChannelsState(companyId));
 
   const opt = { limit: 100, company_id: companyId };
 

@@ -815,20 +815,16 @@ select {
   right: 0.25rem;
 }
 
+.-right-2 {
+  right: -0.5rem;
+}
+
 .left-0 {
   left: 0px;
 }
 
 .left-1 {
   left: 0.25rem;
-}
-
-.-top-2 {
-  top: -0.5rem;
-}
-
-.-right-2 {
-  right: -0.5rem;
 }
 
 .z-0 {
@@ -2341,16 +2337,16 @@ select {
           text-decoration-line: underline;
 }
 
-.opacity-50 {
-  opacity: 0.5;
-}
-
 .opacity-25 {
   opacity: 0.25;
 }
 
 .opacity-75 {
   opacity: 0.75;
+}
+
+.opacity-50 {
+  opacity: 0.5;
 }
 
 .opacity-0 {
@@ -2450,6 +2446,10 @@ input.ant-input {
 
 [type='text']:hover:not(.tw-input), [type='email']:hover:not(.tw-input), [type='url']:hover:not(.tw-input), [type='password']:hover:not(.tw-input), [type='number']:hover:not(.tw-input), [type='date']:hover:not(.tw-input), [type='datetime-local']:hover:not(.tw-input), [type='month']:hover:not(.tw-input), [type='search']:hover:not(.tw-input), [type='tel']:hover:not(.tw-input), [type='time']:hover:not(.tw-input), [type='week']:hover:not(.tw-input), [multiple]:hover:not(.tw-input), textarea:hover:not(.tw-input), select:hover:not(.tw-input) {
   border-color: var(--grey-light);
+}
+
+a {
+  color: var(--primary) !important;
 }
 
 .hover\:scale-105:hover {

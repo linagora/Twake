@@ -44,7 +44,7 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
     >
       <div className="relative flex w-16 h-16 bg-zinc-200 mr-3 rounded-md">
         <Media size="md" url={url} duration={type === 'video' ? extension : undefined} />
-        {!['image', 'video'].includes(type) && (
+        {(!['image', 'video'].includes(type) || !url) && (
           <>
             {type === 'archive' ? (
               <FileTypeArchiveIcon className={iconClassName} />

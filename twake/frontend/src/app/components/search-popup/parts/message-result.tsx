@@ -41,8 +41,8 @@ export default ({
       <div className="mr-3">
         {channel && <ChannelAvatar channel={channel} showLabel={false} collapseToOne={true} />}
       </div>
-      <div className="grow mr-3">
-        <div className="messages-title">
+      <div className="grow mr-3 overflow-hidden">
+        <div className="messages-title overflow-hidden whitespace-nowrap text-ellipsis">
           <ResultContext
             user={user}
             context={{

@@ -1,12 +1,12 @@
 import { ChannelType } from 'app/features/channels/types/channel';
-import { atom, selector } from 'recoil';
+import { atomFamily } from 'recoil';
 
 export type RecentChannels = {
   results: ChannelType[];
   nextPage: string | null;
 };
 
-export const RecentChannelsState = atom<RecentChannels>({
+export const RecentChannelsState = atomFamily<RecentChannels, string>({
   key: 'RecentChannelsState',
-  default: { results: [], nextPage: '' },
+  default: () => ({ results: [], nextPage: '' }),
 });

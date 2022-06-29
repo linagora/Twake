@@ -21,7 +21,7 @@ export const useSearchMessages = () => {
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(LoadingState('useSearchMessages'));
 
-  const [searched, setSearched] = useRecoilState(SearchMessagesResultsState);
+  const [searched, setSearched] = useRecoilState(SearchMessagesResultsState(companyId));
 
   const opt = _.omitBy(
     {
