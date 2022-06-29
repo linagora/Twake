@@ -1,11 +1,12 @@
-import React from 'react';
-import { Title } from '../../atoms/text';
-import { Button } from '../../atoms/button/button';
-import { X } from 'react-feather';
+import React, { useEffect, useState } from 'react';
 import InitService from '../../features/global/services/init-service';
 import LocalStorage from '../../features/global/framework/local-storage-service';
+import DownloadBanner from 'app/molecules/download-banner';
+import { detectDesktopAppPresence } from '../../../utils/browser-detect';
 
 export default (): React.ReactElement => {
+  const [showBanner, setShowBanner] = useState(false);
+
   const download = (): void => {
     const appDownloadUrl = InitService?.server_infos?.configuration?.app_download_url;
 
@@ -16,21 +17,23 @@ export default (): React.ReactElement => {
 
   const removeBanner = (): void => {
     LocalStorage.setItem('show_app_banner', 'false');
-  }
+    setShowBanner(false);
+  };
 
-  return (
-    <div className="bg-linear-purple h-[72px] w-full hidden sm:block">
-      <div className="flex items-center justify-center h-full space-x-4 pr-4">
-        <Title className="text-right basis-3/5 !text-white">
-          Get the most out of twake, download the desktop app now
-        </Title>
-        <Button theme="secondary" onClick={() => download()}>
-          Download desktop app
-        </Button>
-        <div className="grow items-end">
-          <X className="text-2xl float-right text-white" onClick={() => removeBanner()} />
-        </div>
-      </div>
-    </div>
-  );
+  useEffect(() => {
+    if (LocalStorage.getItem('show_app_banner') === 'false') {
+      setShowBanner(false);
+      return;
+    }
+
+    detectDesktopAppPresence().then(detected => {
+      if (!detected && LocalStorage.getItem('show_app_banner') === null) {
+        setShowBanner(true);
+      } else {
+        LocalStorage.setItem('show_app_banner', 'false');
+      }
+    });
+  }, []);
+
+  return showBanner ? <DownloadBanner onBannerClose={removeBanner} download={download} /> : <></>;
 };
