@@ -124,7 +124,7 @@ export default (props: Props) => {
                         passives: any,
                         evt: any,
                       ) => {
-                        onAction(type, id, context, passives, evt);
+                        if (isChannelMember) onAction(type, id, context, passives, evt);
                       }}
                       allowAdvancedBlocks={message.subtype === 'application'}
                     />

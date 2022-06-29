@@ -37,7 +37,15 @@ export function useChannel(channelId: string) {
     async () => {
       setLoading(true);
       const ch = await ChannelAPIClient.get(companyId, workspaceId, channelId);
-      if (ch && ch?.id) set(ch);
+      if (ch && ch?.id) {
+        set(ch);
+      } else {
+        set({
+          id: channelId,
+          name: 'You cannot access this content',
+          visibility: 'private',
+        });
+      }
       setLoading(false);
     },
     [],

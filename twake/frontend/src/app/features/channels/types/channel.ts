@@ -10,7 +10,7 @@ export type ChannelType = {
   name?: string;
   description?: string;
   channel_group?: string;
-  visibility?: string;
+  visibility?: 'public' | 'direct' | 'private';
   is_default?: boolean;
   members?: string[];
   owner?: string;
