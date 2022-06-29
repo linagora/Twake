@@ -28,7 +28,7 @@ const MainView: FC<PropsType> = ({ className }) => {
   const workspaceId = useRouterWorkspace();
   const channelId = useRouterChannel();
   const { applications } = useCompanyApplications();
-  const { channel } = useChannel(channelId);
+  const { channel, loading: channelLoading } = useChannel(channelId);
 
   const loaded = useWatcher(ChannelsBarService, async () => {
     return (
@@ -36,7 +36,7 @@ const MainView: FC<PropsType> = ({ className }) => {
       ChannelsBarService.isReady(companyId, 'direct')
     );
   });
-  const ready = loaded && !!companyId && !!workspaceId;
+  const ready = !(channelLoading && !channel) && loaded && !!companyId && !!workspaceId;
 
   const updateView = () => {
     if (channelId) {

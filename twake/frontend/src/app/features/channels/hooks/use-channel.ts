@@ -3,25 +3,52 @@ import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
 import { ChannelType } from 'app/features/channels/types/channel';
 import { ChannelsState, ChannelSelector } from '../state/channels';
 import ChannelAPIClient from '../api/channel-api-client';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
+import { LoadingState } from 'app/features/global/state/atoms/Loading';
 
 //Keep the channels in a easy to use variable
 let channelsKeeper: ChannelType[] = [];
 
 export function useChannel(channelId: string) {
+  const companyId = useRouterCompany();
+  const workspaceId = useRouterWorkspace();
+
+  const hookId = 'useChannel-' + companyId + '-' + workspaceId + '-' + channelId;
+  const [loading, setLoading] = useRecoilState(LoadingState(hookId));
+
   const channel = useRecoilValue(ChannelSelector(channelId)) as ChannelType;
   const { set } = useSetChannel();
 
   const save = async (channel: ChannelType) => {
+    setLoading(true);
     const _ = await ChannelAPIClient.save(channel, {
       companyId: channel.company_id || '',
       workspaceId: channel.workspace_id || '',
       channelId: channel.id,
     });
     set(channel);
+    setLoading(false);
   };
 
-  return { channel, save };
+  useGlobalEffect(
+    hookId,
+    async () => {
+      setLoading(true);
+      const ch = await ChannelAPIClient.get(companyId, workspaceId, channelId);
+      if (ch && ch?.id) set(ch);
+      setLoading(false);
+    },
+    [],
+  );
+
+  return { channel, save, loading };
 }
+
+export const useIsChannelMember = (channelId: string) => {
+  return !!useChannel(channelId)?.channel?.user_member?.user_id;
+};
 
 export function getChannel(channelId: string) {
   return channelsKeeper.find(ch => ch.id === channelId);

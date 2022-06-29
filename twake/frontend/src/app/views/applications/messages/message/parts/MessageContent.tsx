@@ -20,6 +20,7 @@ import PossiblyPendingAttachment from './PossiblyPendingAttachment';
 import MessageAttachments from './MessageAttachments';
 import PseudoMarkdownCompiler from 'app/features/global/services/pseudo-markdown-compiler-service';
 import LinkPreview from './LinkPreview';
+import { useIsChannelMember } from 'app/features/channels/hooks/use-channel';
 
 type Props = {
   linkToThread?: boolean;
@@ -34,6 +35,7 @@ export default (props: Props) => {
   const [didMouseOver, setDidMouseOver] = useState(false);
 
   const context = useContext(MessageContext);
+  const channelId = context.channelId;
   const { message } = useMessage(context);
 
   const onInteractiveMessageAction = (action_id: string, context: any, passives: any, evt: any) => {
@@ -74,6 +76,8 @@ export default (props: Props) => {
   const showEdition = !props.linkToThread && editorIsActive;
   const messageIsLoading = (message as any)._status === 'sending';
   const messageSaveFailed = (message as any)._status === 'failed';
+
+  const isChannelMember = useIsChannelMember(channelId);
 
   return (
     <div
@@ -138,13 +142,18 @@ export default (props: Props) => {
           )}
         </div>
       )}
-      {!showEdition && !deleted && !messageSaveFailed && didMouseOver && !messageIsLoading && (
-        <Options
-          onOpen={() => setActive(true)}
-          onClose={() => setActive(false)}
-          threadHeader={props.threadHeader}
-        />
-      )}
+      {isChannelMember &&
+        !showEdition &&
+        !deleted &&
+        !messageSaveFailed &&
+        didMouseOver &&
+        !messageIsLoading && (
+          <Options
+            onOpen={() => setActive(true)}
+            onClose={() => setActive(false)}
+            threadHeader={props.threadHeader}
+          />
+        )}
     </div>
   );
 };

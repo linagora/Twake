@@ -14,6 +14,7 @@ import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
 import { Badge } from '@atoms/badge';
 import UserService from 'features/users/services/current-user-service';
+import ResultContext from './result-context';
 
 type PropsType = {
   channel: ChannelType;
@@ -56,6 +57,7 @@ export default ({ channel: _channel }: PropsType): JSX.Element => {
         <Text.Info className="block">
           {channel?.stats?.members || channel.users?.length || 0} members
         </Text.Info>
+        <ResultContext context={{ workspaceId: channel.workspace_id || '' }} />
       </div>
       <div className="text-right">
         {!channel.user_member && (

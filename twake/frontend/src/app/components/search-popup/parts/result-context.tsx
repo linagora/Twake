@@ -23,33 +23,33 @@ export default ({
 
   const { setOpen } = useSearchModal();
 
+  const workspaceName =
+    context?.workspaceId === 'direct' ? 'Direct' : workspace?.name ? workspace?.name : '';
+
   return (
     <div className="flex overflow-hidden whitespace-nowrap text-ellipsis">
       {!!user && <>{UsersService.getFullName(user)}</>}{' '}
-      {channel && (
+      {!!user && !!(channel || workspaceName) && '->'}
+      {(channel || workspaceName) && (
         <>
-          {'->'}{' '}
-          <span className="opacity-50 mx-2">
-            {context?.workspaceId === 'direct'
-              ? 'Direct / '
-              : workspace?.name
-              ? workspace?.name + ' / '
-              : ''}
-          </span>
-          <A
-            onClick={() => {
-              setOpen(false);
-              RouterServices.push(
-                RouterServices.generateRouteFromState({
-                  companyId: companyId || '',
-                  workspaceId: workspaceId || '',
-                  channelId: context?.channelId || '',
-                }),
-              );
-            }}
-          >
-            {channel?.name}
-          </A>
+          {!!workspaceName && <span className="opacity-50 mx-2">{workspaceName}</span>}
+          {!!workspaceName && !!channel?.name && ' / '}
+          {!!channel?.name && (
+            <A
+              onClick={() => {
+                setOpen(false);
+                RouterServices.push(
+                  RouterServices.generateRouteFromState({
+                    companyId: companyId || '',
+                    workspaceId: workspaceId || '',
+                    channelId: context?.channelId || '',
+                  }),
+                );
+              }}
+            >
+              {channel?.name}
+            </A>
+          )}
         </>
       )}
     </div>
