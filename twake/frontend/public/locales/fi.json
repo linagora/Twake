@@ -888,6 +888,6 @@
     "components.rich_text_editor.plugins.suggestions.loading": "Etsitkö lisää",
     "components.open_desktop_popup.subtitle": "avattu Twake-sovelluksessa",
     "components.open_desktop_popup.open_here_link": "Avaa sen sijaan tästä",
-    "molecules.download_banner.title": "Ota kaikki irti twakesta ja lataa työpöytäsovellus nyt",
+    "molecules.download_banner.title": "Ota kaikki irti Twakesta ja lataa työpöytäsovellus nyt",
     "molecules.download_banner.download_button": "Lataa työpöytäsovellus"
 }

@@ -888,6 +888,6 @@
     "components.rich_text_editor.plugins.suggestions.loading": "もっとお探しですか",
     "components.open_desktop_popup.subtitle": "Twakeアプリで開きました",
     "components.open_desktop_popup.open_here_link": "代わりにここを開く",
-    "molecules.download_banner.title": "twakeを最大限に活用し、今すぐデスクトップアプリをダウンロードしてください",
+    "molecules.download_banner.title": "Twakeを最大限に活用し、今すぐデスクトップアプリをダウンロードしてください",
     "molecules.download_banner.download_button": "デスクトップアプリをダウンロード"
 }

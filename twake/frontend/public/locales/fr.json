@@ -890,6 +890,6 @@
     "scenes.app.integrations_parameters.add_application": "Nouvelle intégration",
     "components.open_desktop_popup.subtitle": "ouvert dans l'application Twake",
     "components.open_desktop_popup.open_here_link": "Ouvrez plutôt ici",
-    "molecules.download_banner.title": "Tirez le meilleur parti de twake, téléchargez l'application de bureau maintenant",
+    "molecules.download_banner.title": "Tirez le meilleur parti de Twake, téléchargez l'application de bureau maintenant",
     "molecules.download_banner.download_button": "Télécharger l'application de bureau"
 }
