@@ -11,9 +11,12 @@ import { LoadingState } from 'app/features/global/state/atoms/Loading';
 //Keep the channels in a easy to use variable
 let channelsKeeper: ChannelType[] = [];
 
-export function useChannel(channelId: string) {
-  const companyId = useRouterCompany();
-  const workspaceId = useRouterWorkspace();
+export function useChannel(
+  channelId: string,
+  options?: { companyId: string; workspaceId: string },
+) {
+  const companyId = options?.companyId || useRouterCompany();
+  const workspaceId = options?.workspaceId || useRouterWorkspace();
 
   const hookId = 'useChannel-' + companyId + '-' + workspaceId + '-' + channelId;
   const [loading, setLoading] = useRecoilState(LoadingState(hookId));
@@ -35,18 +38,20 @@ export function useChannel(channelId: string) {
   useGlobalEffect(
     hookId,
     async () => {
-      setLoading(true);
-      const ch = await ChannelAPIClient.get(companyId, workspaceId, channelId);
-      if (ch && ch?.id) {
-        set(ch);
-      } else {
-        set({
-          id: channelId,
-          name: 'You cannot access this content',
-          visibility: 'private',
-        });
+      if (!channel) {
+        setLoading(true);
+        const ch = await ChannelAPIClient.get(companyId, workspaceId, channelId);
+        if (ch && ch?.id) {
+          set(ch);
+        } else {
+          set({
+            id: channelId,
+            name: 'You cannot access this content',
+            visibility: 'private',
+          });
+        }
+        setLoading(false);
       }
-      setLoading(false);
     },
     [],
   );

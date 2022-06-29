@@ -21,7 +21,13 @@ type PropsType = {
 };
 
 export default ({ channel: _channel }: PropsType): JSX.Element => {
-  const channel = useChannel(_channel.id || '')?.channel || _channel;
+  const channel =
+    (_channel.visibility !== 'direct'
+      ? useChannel(_channel.id || '', {
+          companyId: _channel.company_id,
+          workspaceId: _channel.workspace_id,
+        })?.channel
+      : undefined) || _channel;
   const currentWorkspaceId = useRouterWorkspace();
   const input = useRecoilValue(SearchInputState);
   const name =
@@ -71,7 +77,7 @@ export default ({ channel: _channel }: PropsType): JSX.Element => {
             </Text.Info>
           </>
         )}
-        {!!channel.user_member && !!notifications?.badges?.length && (
+        {!!channel.user_member && (notifications?.badges?.length || 0) > 0 && (
           <>
             <Badge size="sm" className="rounded-full px-2.5" theme="primary">
               {notifications.badges.length}

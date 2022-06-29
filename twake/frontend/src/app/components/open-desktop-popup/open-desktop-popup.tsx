@@ -13,13 +13,13 @@ export const OpenDesktopPopup = (): React.ReactElement => {
   useEffect(() => {
     setTimeout(() => {
       setShowLink(true);
-    }, 5000);
+    }, 1000);
   }, []);
 
   return (
     <div className="flex flex-col items-center justify-center h-full overflow-hidden space-y-2">
       <Logo />
-      <Subtitle className="mt-4">{Languages.t('components.open_desktop_popup.subtitle')}</Subtitle>
+      <Subtitle className="mt-6">{Languages.t('components.open_desktop_popup.subtitle')}</Subtitle>
       {showLink && (
         <A onClick={() => setUseWeb(true)}>
           {Languages.t('components.open_desktop_popup.open_here_link')}

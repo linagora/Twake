@@ -64,7 +64,7 @@ const MainView: FC<PropsType> = ({ className }) => {
 
   if (channelId && MainViewService.getId() !== channelId) updateView();
 
-  if (!isChannelMember && channel?.visibility === 'private') {
+  if (ready && !isChannelMember && channel?.visibility === 'private') {
     return (
       <>
         <Layout className={'global-view-layout ' + (className ? className : '')}>
