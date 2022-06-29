@@ -13,6 +13,7 @@ import Languages from 'app/features/global/services/languages-service';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
 import { Badge } from '@atoms/badge';
+import UserService from 'features/users/services/current-user-service';
 
 type PropsType = {
   channel: ChannelType;
@@ -22,7 +23,12 @@ export default ({ channel: _channel }: PropsType): JSX.Element => {
   const channel = useChannel(_channel.id || '')?.channel || _channel;
   const currentWorkspaceId = useRouterWorkspace();
   const input = useRecoilValue(SearchInputState);
-  const name = channel.name;
+  const name =
+    channel.name ||
+    (channel.users || [])
+      .filter(u => u.id != UserService.getCurrentUserId() || channel.users?.length === 1)
+      .map(u => UserService.getFullName(u))
+      .join(', ');
   const { setOpen } = useSearchModal();
 
   const notifications = useChannelNotifications(channel.id || '');
@@ -38,16 +44,18 @@ export default ({ channel: _channel }: PropsType): JSX.Element => {
       <div className="mr-3">
         <ChannelAvatar channel={channel} showLabel={false} collapseToOne={true} />
       </div>
-      <div className="grow mr-3">
-        <Text.Base className="block">
+      <div className="grow mr-3 overflow-hidden text-ellipsis whitespace-nowrap">
+        <Text.Base className="block overflow-hidden text-ellipsis whitespace-nowrap">
           <Highlighter
-            highlightClassName="text-blue-500 p-0 bg-blue-50"
+            highlightClassName="text-blue-500 p-0 bg-blue-50 overflow-hidden text-ellipsis whitespace-nowrap"
             searchWords={input?.query?.split(' ')}
             autoEscape={true}
             textToHighlight={name}
           />
         </Text.Base>
-        <Text.Info className="block">{channel?.stats?.members} members</Text.Info>
+        <Text.Info className="block">
+          {channel?.stats?.members || channel.users?.length || 0} members
+        </Text.Info>
       </div>
       <div className="text-right">
         {!channel.user_member && (

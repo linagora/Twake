@@ -11,17 +11,40 @@ import { RecentChannelsState } from '../state/recent-channels';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
 import { searchBackend, useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
-import { createDirectChannelFromUsers } from 'app/features/channels/types/channel';
+import { ChannelType, createDirectChannelFromUsers } from 'app/features/channels/types/channel';
 import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import _ from 'lodash';
 import UserAPIClient from 'app/features/users/api/user-api-client';
+import { getAllChannelsCache } from 'app/features/channels/hooks/use-channel';
+import Strings, { distanceFromQuery } from 'app/features/global/utils/strings';
 
 export const useSearchChannelsLoading = () => {
   return useRecoilValue(LoadingState('useSearchChannels'));
 };
 
 let currentQuery = '';
+
+const frontendSearch = (companyId: string, query: string) => {
+  const result = getAllChannelsCache()
+    .filter(c => c.company_id === companyId)
+    .filter(({ name }) =>
+      query
+        .split(' ')
+        .every(
+          word =>
+            Strings.removeAccents(`${name}`)
+              .toLocaleLowerCase()
+              .indexOf(Strings.removeAccents(word).toLocaleLowerCase()) > -1,
+        ),
+    )
+    .sort(
+      (a, b) =>
+        distanceFromQuery([a.name].join(' '), query) - distanceFromQuery([b.name].join(' '), query),
+    );
+
+  return result as ChannelType[];
+};
 
 export const useSearchChannels = () => {
   const companyId = useRouterCompany();
@@ -84,6 +107,7 @@ export const useSearchChannels = () => {
     'useSearchChannels',
     () => {
       (async () => {
+        setSearched({ results: frontendSearch(companyId, searchInput.query), nextPage: '' });
         setLoading(true);
         if (searchInput) {
           delayRequest('useSearchChannels', async () => {

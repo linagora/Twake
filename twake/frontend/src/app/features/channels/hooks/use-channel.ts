@@ -27,6 +27,10 @@ export function getChannel(channelId: string) {
   return channelsKeeper.find(ch => ch.id === channelId);
 }
 
+export function getAllChannelsCache() {
+  return channelsKeeper;
+}
+
 export function useSetChannel() {
   const set = useRecoilCallback(({ set, snapshot }) => (channel: ChannelType) => {
     if (channel.id) {

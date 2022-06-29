@@ -2,7 +2,6 @@ import { ComponentStory } from '@storybook/react';
 import { Badge } from '.';
 import { PlusIcon, SearchIcon } from '@heroicons/react/solid';
 import { TrashIcon } from '@heroicons/react/outline';
-import Avatar from '@atoms/avatar/avatar';
 
 export default {
   title: '@atoms/button',
@@ -96,15 +95,6 @@ const Template: ComponentStory<any> = (props: {
         icon={PlusIcon}
       >
         Add
-      </Badge>
-
-      <Badge
-        size="md"
-        className="my-4 mx-2 w-full justify-center"
-        theme="outline"
-        loading={props.loading}
-      >
-        <Avatar size={5} className="-ml-1 mr-1" /> <PlusIcon className="w-4 h-4 mx-1" /> Add user
       </Badge>
     </>
   );
