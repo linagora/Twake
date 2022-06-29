@@ -17,6 +17,7 @@ import { useSearchModal } from 'app/features/search/hooks/use-search';
 import { SearchInputState } from 'app/features/search/state/search-input';
 import { UserType } from 'app/features/users/types/user';
 import Media from 'app/molecules/media';
+import { ArrowRight } from 'react-feather';
 import Highlighter from 'react-highlight-words';
 import { useRecoilValue } from 'recoil';
 import { onFilePreviewClick, onFileDownloadClick, openMessage } from '../common';
@@ -105,7 +106,7 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
               setOpen(false);
             }}
           >
-            <ShareIcon className="text-blue-500 w-6 h-6" />
+            <ArrowRight className="text-blue-500 w-6 h-6" />
           </Button>
         )}
       </div>

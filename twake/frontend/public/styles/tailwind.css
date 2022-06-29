@@ -823,6 +823,14 @@ select {
   left: 0.25rem;
 }
 
+.-top-2 {
+  top: -0.5rem;
+}
+
+.-right-2 {
+  right: -0.5rem;
+}
+
 .z-0 {
   z-index: 0;
 }
@@ -1968,6 +1976,11 @@ select {
   padding-right: 0.25rem;
 }
 
+.px-2\.5 {
+  padding-left: 0.625rem;
+  padding-right: 0.625rem;
+}
+
 .pl-5 {
   padding-left: 1.25rem;
 }
@@ -2002,6 +2015,10 @@ select {
 
 .text-center {
   text-align: center;
+}
+
+.text-right {
+  text-align: right;
 }
 
 .align-top {

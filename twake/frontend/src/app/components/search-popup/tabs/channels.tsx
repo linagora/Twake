@@ -22,7 +22,7 @@ export default () => {
 
   return (
     <div>
-      {isRecent && topChannels.length && (
+      {!!isRecent && !!topChannels.length && (
         <div className="mb-4">
           <Text.Subtitle className="block">
             {Languages.t('components.searchpopup.recent_channels_and_contacts')}

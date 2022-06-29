@@ -7,16 +7,25 @@ import ChannelAvatar from 'app/components/search-popup/parts/channel-avatar/chan
 import Highlighter from 'react-highlight-words';
 import { useRecoilValue } from 'recoil';
 import { openChannel } from '../common';
+import { Button } from 'app/atoms/button/button';
+import { ArrowRight } from 'react-feather';
+import Languages from 'app/features/global/services/languages-service';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
+import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
+import { Badge } from '@atoms/badge';
 
 type PropsType = {
   channel: ChannelType;
 };
 
-export default ({ channel }: PropsType): JSX.Element => {
+export default ({ channel: _channel }: PropsType): JSX.Element => {
+  const channel = useChannel(_channel.id || '')?.channel || _channel;
   const currentWorkspaceId = useRouterWorkspace();
   const input = useRecoilValue(SearchInputState);
   const name = channel.name;
   const { setOpen } = useSearchModal();
+
+  const notifications = useChannelNotifications(channel.id || '');
 
   return (
     <div
@@ -40,7 +49,26 @@ export default ({ channel }: PropsType): JSX.Element => {
         </Text.Base>
         <Text.Info className="block">{channel?.stats?.members} members</Text.Info>
       </div>
-      <div>{/*Actions todo*/}</div>
+      <div className="text-right">
+        {!channel.user_member && (
+          <>
+            <Button theme="outline">Preview</Button>
+            <br />
+            <Text.Info>
+              {Languages.t(
+                'scenes.client.channelsbar.modals.workspace_channel_list.workspace_channel_row.tag',
+              )}
+            </Text.Info>
+          </>
+        )}
+        {!!channel.user_member && !!notifications?.badges?.length && (
+          <>
+            <Badge size="sm" className="rounded-full px-2.5" theme="primary">
+              {notifications.badges.length}
+            </Badge>
+          </>
+        )}
+      </div>
     </div>
   );
 };
