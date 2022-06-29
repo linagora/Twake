@@ -31,3 +31,4 @@ yarn-error.log*
 /build/
 /counter-clone/
 __old
+/public/styles/tailwind.css
