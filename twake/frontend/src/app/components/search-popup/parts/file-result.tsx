@@ -17,6 +17,7 @@ import { useSearchModal } from 'app/features/search/hooks/use-search';
 import { SearchInputState } from 'app/features/search/state/search-input';
 import { UserType } from 'app/features/users/types/user';
 import Media from 'app/molecules/media';
+import { ArrowRight } from 'react-feather';
 import Highlighter from 'react-highlight-words';
 import { useRecoilValue } from 'recoil';
 import { onFilePreviewClick, onFileDownloadClick, openMessage } from '../common';
@@ -43,7 +44,7 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
     >
       <div className="relative flex w-16 h-16 bg-zinc-200 mr-3 rounded-md">
         <Media size="md" url={url} duration={type === 'video' ? extension : undefined} />
-        {!['image', 'video'].includes(type) && (
+        {(!['image', 'video'].includes(type) || !url) && (
           <>
             {type === 'archive' ? (
               <FileTypeArchiveIcon className={iconClassName} />
@@ -59,8 +60,8 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
           </>
         )}
       </div>
-      <div className="grow mr-3">
-        <Text.Base className="block">
+      <div className="grow mr-3 overflow-hidden">
+        <Text.Base className="block whitespace-nowrap overflow-hidden text-ellipsis">
           <Highlighter
             highlightClassName="text-blue-500 p-0 bg-blue-50"
             searchWords={input?.query?.split(' ')}
@@ -82,6 +83,7 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
         />
       </div>
       <div
+        className="whitespace-nowrap"
         onClick={e => {
           e.preventDefault();
           e.stopPropagation();
@@ -104,7 +106,7 @@ export default (props: { file: MessageFileType & { message?: Message } & { user?
               setOpen(false);
             }}
           >
-            <ShareIcon className="text-blue-500 w-6 h-6" />
+            <ArrowRight className="text-blue-500 w-6 h-6" />
           </Button>
         )}
       </div>

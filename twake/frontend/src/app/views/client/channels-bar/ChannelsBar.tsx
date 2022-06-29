@@ -31,6 +31,9 @@ import { useSetLastWorkspacePreference } from 'app/features/users/hooks/use-set-
 import { useAutoSelectChannel } from 'app/features/channels/hooks/use-autoselect-channel';
 
 import './ChannelsBar.scss';
+import { useSearchModal } from 'app/features/search/hooks/use-search';
+import { useSetRecoilState } from 'recoil';
+import { SearchInputState } from 'app/features/search/state/search-input';
 
 export default () => {
   const companyId = useRouterCompany();
@@ -47,21 +50,16 @@ export default () => {
   usePublicOrPrivateChannelsSetup();
   useDirectChannelsSetup();
 
+  const { setOpen: setSearchopen } = useSearchModal();
+  const setSearchInput = useSetRecoilState(SearchInputState);
+
   useEffect(() => {
     const openWorkspaceChannelList: ShortcutType = {
       shortcut: defaultShortcutsMap.SEARCH_CHANNEL,
       handler: (event: any) => {
         event.preventDefault();
-        if (ModalManager.isOpen()) {
-          ModalManager.close();
-
-          return;
-        }
-
-        ModalManager.open(<WorkspaceChannelList />, {
-          position: 'center',
-          size: { width: '600px' },
-        });
+        setSearchopen(true);
+        setSearchInput({ query: '' });
       },
     };
 

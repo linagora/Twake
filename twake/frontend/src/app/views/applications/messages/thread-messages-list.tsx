@@ -18,12 +18,12 @@ import { getMessage } from 'app/features/messages/hooks/use-message';
 
 type Props = {
   companyId: string;
-  workspaceId?: string;
-  channelId?: string;
+  workspaceId: string;
+  channelId: string;
   threadId: string;
 };
 
-export default ({ companyId, threadId }: Props) => {
+export default ({ companyId, workspaceId, channelId, threadId }: Props) => {
   const listBuilderRef = useRef<ListBuilderHandle>(null);
   const [atBottom, setAtBottom] = useState(true);
 
@@ -136,7 +136,13 @@ export default ({ companyId, threadId }: Props) => {
 
             return (
               <div key={m.type + m.id}>
-                <MessageWithReplies companyId={m.companyId} threadId={m.threadId} id={m.id} />
+                <MessageWithReplies
+                  companyId={m.companyId}
+                  workspaceId={workspaceId || ''}
+                  channelId={channelId || ''}
+                  threadId={m.threadId}
+                  id={m.id}
+                />
               </div>
             );
           }}

@@ -141,7 +141,12 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
 
       return (
         <div key={m.type + m.threadId}>
-          <MessageWithReplies companyId={m.companyId} threadId={m.threadId} />
+          <MessageWithReplies
+            companyId={m.companyId}
+            workspaceId={workspaceId || ''}
+            channelId={channelId || ''}
+            threadId={m.threadId}
+          />
         </div>
       );
     },

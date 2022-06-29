@@ -51,9 +51,7 @@ export const openChannel = async (channel: ChannelType, currentWorkspaceId: stri
       channel.company_id || '',
       channel.members || [],
     );
-    if (direct) {
-      channel.id === direct.id;
-    }
+    if (direct) channel = { ...channel, id: direct.id };
   }
 
   routerService.push(

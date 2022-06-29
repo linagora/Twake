@@ -11,17 +11,27 @@ import ActivityMessage, { ActivityType } from './parts/ChannelActivity/ActivityM
 import { useHighlightMessage } from 'app/features/messages/hooks/use-highlight-message';
 import { NodeMessage } from 'app/features/messages/types/message';
 
-export const MessageContext = React.createContext({ companyId: '', threadId: '', id: '' });
+export const MessageContext = React.createContext({
+  companyId: '',
+  workspaceId: '',
+  channelId: '',
+  threadId: '',
+  id: '',
+});
 
 type Props = {
   companyId: string;
+  workspaceId: string;
+  channelId: string;
   threadId: string;
   id?: string;
 };
 
-export default React.memo(({ threadId, companyId, id }: Props) => {
+export default React.memo(({ threadId, workspaceId, channelId, companyId, id }: Props) => {
   return (
-    <MessageContext.Provider value={{ companyId, threadId, id: id || threadId }}>
+    <MessageContext.Provider
+      value={{ companyId, workspaceId, channelId, threadId, id: id || threadId }}
+    >
       <MessageType />
     </MessageContext.Provider>
   );
