@@ -1,4 +1,4 @@
-import { onFilePreviewClick } from 'app/components/search-popup/old_parts/common';
+import { onFilePreviewClick } from 'app/components/search-popup/common';
 import React from 'react';
 import MediaResult from 'app/components/search-popup/old_parts/media-result';
 import { FileSearchResult } from 'features/messages/types/message';

@@ -26,8 +26,8 @@ export default function Media(props: MediaProps) {
     }
   }
 
-  const wrpClassName = `relative cursor-inherit w-${size} h-${size}`;
-  const imgClassName = `object-cover rounded-md w-${size} h-${size} border border-zinc-300`;
+  const wrpClassName = `relative border border-zinc-200 rounded-md overflow-hidden cursor-inherit w-${size} h-${size}`;
+  const imgClassName = `object-cover w-${size} h-${size} border border-zinc-300`;
   return (
     <div className={wrpClassName}>
       <img src={props.url} className={imgClassName} />

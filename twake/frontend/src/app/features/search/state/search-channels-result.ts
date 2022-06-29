@@ -6,6 +6,11 @@ export type SearchChannelsResults = {
   nextPage: string | null;
 };
 
+export const SearchUsersChannelsResultsState = atom<SearchChannelsResults>({
+  key: 'SearchChannelsResultsState',
+  default: { results: [], nextPage: '' },
+});
+
 export const SearchChannelsResultsState = atom<SearchChannelsResults>({
   key: 'SearchChannelsResultsState',
   default: { results: [], nextPage: '' },

@@ -14,6 +14,8 @@ export const useSearchMessagesLoading = () => {
   return useRecoilValue(LoadingState('useSearchMessages'));
 };
 
+let currentQuery = '';
+
 export const useSearchMessages = () => {
   const companyId = useRouterCompany();
   const searchInput = useRecoilValue(SearchInputState);
@@ -34,18 +36,23 @@ export const useSearchMessages = () => {
   const refresh = async () => {
     setLoading(true);
 
+    const query = searchInput.query;
+    currentQuery = query;
+
     let results: MessageExtended[] = [];
 
     if (searchInput.query) {
-      const response = await messageApiClient.search(searchInput.query, opt);
+      const response = await messageApiClient.search(query, opt);
       results = response.resources;
     }
 
-    setSearched({
-      results,
-      nextPage: null,
-    });
-    setLoading(false);
+    if (currentQuery === query) {
+      setSearched({
+        results,
+        nextPage: null,
+      });
+      setLoading(false);
+    }
   };
 
   const loadMore = async () => {
@@ -60,7 +67,7 @@ export const useSearchMessages = () => {
         setLoading(true);
         if (searchInput) {
           delayRequest('useSearchMessages', async () => {
-            refresh();
+            await refresh();
           });
         } else {
           refresh();

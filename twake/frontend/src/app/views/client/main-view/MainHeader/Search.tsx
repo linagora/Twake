@@ -8,13 +8,24 @@ import { Button } from '@atoms/button/button';
 import { SearchIcon } from '@heroicons/react/solid';
 import { Input } from '@atoms/input/input-text';
 import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { SearchInputState } from 'app/features/search/state/search-input';
+import input from 'app/views/applications/messages/input/input';
 
 export default (): JSX.Element => {
-  const { workspaceId, companyId } = RouterServices.getStateFromRoute();
-  const { setOpen } = useSearchModal();
-  const searchState = useRecoilValue(SearchInputState);
+  const { workspaceId, companyId, channelId } = RouterServices.getStateFromRoute();
+  const { setOpen: setOpenSearch } = useSearchModal();
+  const [searchState, setSearchState] = useRecoilState(SearchInputState);
+
+  const setOpen = () => {
+    if (
+      searchState.query === '' ||
+      (searchState.channelId && searchState.channelId !== channelId)
+    ) {
+      setSearchState({ query: searchState.query, workspaceId: workspaceId, channelId: channelId });
+    }
+    setOpenSearch(true);
+  };
 
   const disable = !(
     AccessRightsService.hasLevel(workspaceId, 'member') &&
@@ -37,7 +48,7 @@ export default (): JSX.Element => {
                       maxLength={0}
                       readOnly
                       placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
-                      onClick={() => setOpen(true)}
+                      onClick={() => setOpen()}
                     />
                   )}
                 />
@@ -55,7 +66,7 @@ export default (): JSX.Element => {
               size="sm"
               className="rounded-full"
               icon={SearchIcon}
-              onClick={() => setOpen(true)}
+              onClick={() => setOpen()}
             />
           )}
         </div>

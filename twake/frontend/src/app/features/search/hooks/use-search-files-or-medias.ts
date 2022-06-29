@@ -19,6 +19,8 @@ export const useSearchMessagesMediasLoading = () => {
   return useRecoilValue(LoadingState('useSearchMessagesFilesOrMedias-' + 'medias'));
 };
 
+let currentQuery = '';
+
 export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(
@@ -47,6 +49,9 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
     setLoading(true);
     const isRecent = !searchInput.query;
 
+    const query = searchInput.query;
+    currentQuery = query;
+
     const response = await MessagesAPIClient.searchFile(searchInput.query || null, opt);
     let results = response.resources || [];
     if (isRecent)
@@ -58,6 +63,10 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
       results,
       nextPage: response.next_page_token,
     };
+
+    if (currentQuery !== query) {
+      return;
+    }
 
     if (!isRecent) setSearched(update);
     if (isRecent) setRecent(update);
@@ -76,7 +85,7 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
         setLoading(true);
         if (searchInput) {
           delayRequest('useSearchFiles' + mode, async () => {
-            refresh();
+            await refresh();
           });
         } else {
           refresh();

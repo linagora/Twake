@@ -28,6 +28,10 @@ export type ChannelType = {
     title: string;
     text: string;
   };
+  stats?: {
+    members: number;
+    messages: number;
+  };
   users?: UserType[];
 };
 
