@@ -22,7 +22,7 @@ export default () => {
 
   return (
     <div>
-      {isRecent && topChannels.length && (
+      {!!isRecent && !!topChannels.length && (
         <div className="mb-4">
           <Text.Subtitle className="block">
             {Languages.t('components.searchpopup.recent_channels_and_contacts')}
@@ -74,8 +74,6 @@ export const ChannelsResults = (props: { max?: number }) => {
   const { channels, loading, loadMore } = useSearchChannels();
 
   if (channels.length === 0 && !loading) return <NothingFound />;
-
-  console.log('channels', channels);
 
   return (
     <>

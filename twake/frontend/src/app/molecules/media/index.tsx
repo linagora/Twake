@@ -30,7 +30,11 @@ export default function Media(props: MediaProps) {
   const imgClassName = `object-cover w-${size} h-${size} border border-zinc-300`;
   return (
     <div className={wrpClassName}>
-      <img src={props.url} className={imgClassName} />
+      <img
+        src={props.url}
+        className={imgClassName}
+        onError={e => (e.currentTarget.style.display = 'none')}
+      />
       {timing && (
         <div className={'absolute bottom-1 max-w-full right-1'}>
           <div className="ml-[7px] text-white bg-black/50 rounded-md truncate whitespace-nowrap px-1.5 text-xs">

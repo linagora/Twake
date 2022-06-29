@@ -178,38 +178,30 @@ class MessageAPIClient {
   }
 
   async searchFile(searchString: string | null, options?: FileSearchOptions) {
-    const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
-    let query = `/internal/services/messages/v1/companies/${companyId}/files/search`;
-    if (searchString) {
-      query += `?q=${searchString}`;
-    }
-    const res = await Api.getWithParams<{
-      resources: (MessageFileType & {
-        company_id: string;
-        metadata: MetaDataType;
-        created_at: number;
-        message: Message;
-        user: UserType;
-      })[];
-      next_page_token: string;
-    }>(query, options);
     try {
-      this.logger.debug(
-        `FileSearch by name "${searchString}" with options`,
-        options,
-        'Found',
-        res.resources.length,
-        'files',
-      );
+      const companyId = options?.company_id ? options.company_id : Workspace.currentGroupId;
+      let query = `/internal/services/messages/v1/companies/${companyId}/files/search`;
+      if (searchString) {
+        query += `?q=${searchString}`;
+      }
+      const res = await Api.getWithParams<{
+        resources: (MessageFileType & {
+          company_id: string;
+          metadata: MetaDataType;
+          created_at: number;
+          message: Message;
+          user: UserType;
+        })[];
+        next_page_token: string;
+      }>(query, options);
+
+      return {
+        resources: res.resources,
+        next_page_token: res.next_page_token,
+      };
     } catch (e) {
-      this.logger.error(e, res);
       return { resources: [], next_page_token: null };
     }
-
-    return {
-      resources: res.resources,
-      next_page_token: res.next_page_token,
-    };
   }
 }
 

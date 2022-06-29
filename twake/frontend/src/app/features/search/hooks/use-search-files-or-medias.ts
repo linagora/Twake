@@ -10,6 +10,7 @@ import { RecentMediasState } from '../state/recent-medias';
 import { SearchMediasResultsState } from '../state/search-medias-result';
 import _ from 'lodash';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
 
 export const useSearchMessagesFilesLoading = () => {
   return useRecoilValue(LoadingState('useSearchMessagesFilesOrMedias-' + 'files'));
@@ -22,16 +23,17 @@ export const useSearchMessagesMediasLoading = () => {
 let currentQuery = '';
 
 export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
+  const companyId = useRouterCompany();
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(
     LoadingState('useSearchMessagesFilesOrMedias-' + mode),
   );
 
   const [searched, setSearched] = useRecoilState(
-    mode === 'files' ? SearchFilesResultsState : SearchMediasResultsState,
+    mode === 'files' ? SearchFilesResultsState(companyId) : SearchMediasResultsState(companyId),
   );
   const [recent, setRecent] = useRecoilState(
-    mode === 'files' ? RecentFilesState : RecentMediasState,
+    mode === 'files' ? RecentFilesState(companyId) : RecentMediasState(companyId),
   );
 
   const opt = _.omitBy(

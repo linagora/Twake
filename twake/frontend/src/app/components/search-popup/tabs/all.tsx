@@ -39,7 +39,7 @@ export default () => {
               </A>
             </div>
           </div>
-          <div className={'-mx-2'}>
+          <div className="-mx-2 mt-2">
             <ChannelsRowResults max={6} />
           </div>
         </>
