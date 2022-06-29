@@ -1,6 +1,5 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-
 import DownloadAppBanner from './index';
 
 export default {
@@ -13,6 +12,10 @@ const Template: ComponentStory<typeof DownloadAppBanner> = args => <DownloadAppB
 export const Primary = Template.bind({});
 
 Primary.args = {
-  download: () => {},
-  onBannerClose: () => {},
+  download: () => {
+    console.log('Download');
+  },
+  onBannerClose: () => {
+    console.log('Close');
+  },
 };
