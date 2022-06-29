@@ -1,21 +1,22 @@
-import { ChannelType } from 'app/features/channels/types/channel';
 import { Message } from 'app/features/messages/types/message';
-import { atom, selector } from 'recoil';
+import { atomFamily, selectorFamily } from 'recoil';
 
 export type SearchMessagesResults = {
   results: Message[];
   nextPage: string | null;
 };
 
-export const SearchMessagesResultsState = atom<SearchMessagesResults>({
+export const SearchMessagesResultsState = atomFamily<SearchMessagesResults, string>({
   key: 'SearchMessagesResultsState',
-  default: { results: [], nextPage: '' },
+  default: () => ({ results: [], nextPage: '' }),
 });
 
-export const SearchMessagesResultsNumberSelector = selector<number>({
+export const SearchMessagesResultsNumberSelector = selectorFamily<number, string>({
   key: 'SearchMessagesResultsNumberSelector',
-  get: ({ get }) => {
-    const snapshot = get(SearchMessagesResultsState);
-    return snapshot.results.length;
-  },
+  get:
+    (companyId: string) =>
+    ({ get }) => {
+      const snapshot = get(SearchMessagesResultsState(companyId));
+      return snapshot.results.length;
+    },
 });

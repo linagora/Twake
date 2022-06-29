@@ -18,15 +18,6 @@ import { useChannel } from 'app/features/channels/hooks/use-channel';
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
 
-  const redirectToWorkspace = () => {
-    const url = RouterServices.generateRouteFromState({
-      companyId,
-      workspaceId,
-      channelId: '',
-    });
-    return RouterServices.push(url);
-  };
-
   const { channel } = useChannel(channelId || '');
 
   const members = channel?.members || [];
@@ -39,8 +30,6 @@ export default (): JSX.Element => {
 
   if (!channel.user_member?.user_id) {
     ChannelsBarService.updateCurrentChannelId(companyId, workspaceId, '');
-    redirectToWorkspace();
-    return <Col></Col>;
   }
 
   ChannelsBarService.updateCurrentChannelId(companyId, workspaceId, channelId);
@@ -81,34 +70,36 @@ export default (): JSX.Element => {
       )}
 
       <Col xs={0} sm={0} md={0} lg={6} xl={5} xxl={4}>
-        <Row
-          align="middle"
-          justify="end"
-          gutter={[8, 0]}
-          style={{ padding: 0, flexWrap: 'nowrap' }}
-        >
-          {channel.visibility !== 'direct' && channel.workspace_id && (
-            <div className="small-right-margin" style={{ display: 'inline', lineHeight: 0 }}>
-              <ChannelAvatars workspaceId={channel.workspace_id} />
-            </div>
-          )}
-          {channel.visibility !== 'direct' && (
-            <Button
-              size="small"
-              type="text"
-              onClick={() => {
-                ModalManager.open(<ChannelMembersList channel={channel} closable />, {
-                  position: 'center',
-                  size: { width: '600px', minHeight: '329px' },
-                });
-              }}
-            >
-              <Typography.Text>
-                {Languages.t('scenes.apps.parameters.workspace_sections.members')}
-              </Typography.Text>
-            </Button>
-          )}
-        </Row>
+        {!!channel.user_member?.user_id && (
+          <Row
+            align="middle"
+            justify="end"
+            gutter={[8, 0]}
+            style={{ padding: 0, flexWrap: 'nowrap' }}
+          >
+            {channel.visibility !== 'direct' && channel.workspace_id && (
+              <div className="small-right-margin" style={{ display: 'inline', lineHeight: 0 }}>
+                <ChannelAvatars workspaceId={channel.workspace_id} />
+              </div>
+            )}
+            {channel.visibility !== 'direct' && (
+              <Button
+                size="small"
+                type="text"
+                onClick={() => {
+                  ModalManager.open(<ChannelMembersList channel={channel} closable />, {
+                    position: 'center',
+                    size: { width: '600px', minHeight: '329px' },
+                  });
+                }}
+              >
+                <Typography.Text>
+                  {Languages.t('scenes.apps.parameters.workspace_sections.members')}
+                </Typography.Text>
+              </Button>
+            )}
+          </Row>
+        )}
       </Col>
 
       <SearchInput />
