@@ -205,7 +205,6 @@ describe("The /internal/services/channels/v1 API", () => {
           company_id: channel1.company_id,
           user_id: newUser.id,
         } as ChannelMember,
-        {},
         channelUtils.getChannelContext(channel1, platform.currentUser),
       );
 
@@ -676,7 +675,11 @@ describe("The /internal/services/channels/v1 API", () => {
       expect(channelUpdateResult.resource).toBeDefined();
       expect(channelUpdateResult.websocket).toBeDefined();
 
-      return await gr.services.channels.channels.get({ id });
+      return await gr.services.channels.channels.get({
+        id,
+        company_id: platform.workspace.company_id,
+        workspace_id: platform.workspace.workspace_id,
+      });
     }
 
     async function updateChannelFail(
@@ -1268,7 +1271,7 @@ describe("The /internal/services/channels/v1 API", () => {
         };
         await Promise.all([
           // gr.services.channels.channels.save(channel, {}, getContext()),
-          gr.services.channels.channels.save<ChannelSaveOptions>(
+          gr.services.channels.channels.save(
             directChannelIn,
             {
               members,

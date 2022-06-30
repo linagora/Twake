@@ -10,7 +10,6 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { MemberService } from "../../provider";
 
 import {
   Channel as ChannelEntity,
@@ -74,7 +73,7 @@ const CHANNEL_MEMBERS_KEYS = [
 
 const logger = getLogger("channel.member");
 
-export class MemberServiceImpl implements MemberService {
+export class MemberServiceImpl {
   version: "1";
   userChannelsRepository: Repository<ChannelMember>;
   channelMembersRepository: Repository<MemberOfChannel>;

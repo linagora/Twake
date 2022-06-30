@@ -8,7 +8,6 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
-import { TabService } from "../provider";
 import { ChannelTab, ChannelTabPrimaryKey } from "../entities";
 import { ChannelExecutionContext } from "../types";
 import { Channel } from "../../../utils/types";
@@ -16,7 +15,7 @@ import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import gr from "../../global-resolver";
 
-export class TabServiceImpl implements TabService {
+export class TabServiceImpl {
   version: "1";
   repository: Repository<ChannelTab>;
 

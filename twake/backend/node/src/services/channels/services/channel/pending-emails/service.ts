@@ -12,6 +12,7 @@ import {
 import { ChannelExecutionContext } from "../../../types";
 import { getLogger } from "../../../../../core/platform/framework";
 import {
+  Channel,
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
   ChannelPrimaryKey,
@@ -141,7 +142,7 @@ export default class ChannelPendingEmailServiceImpl implements ChannelPendingEma
             workspace_id,
             company_id,
             id: channel_id,
-          },
+          } as Channel,
         ]);
 
         // If added to channel, delete pending email

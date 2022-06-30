@@ -147,7 +147,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
                 company_id: channel.company_id,
                 workspace_id: channel.workspace_id,
                 id: channel.channel_id,
-              },
+              } as Channel,
             ])
             .then(result => ({
               user: wsUser,
@@ -203,7 +203,7 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
 
       logger.info("Adding user %s to channels %s", user, JSON.stringify(channels));
 
-      const regChannels = channels.map(c => ({ id: c.channel_id, ...c }));
+      const regChannels = channels.map(c => ({ id: c.channel_id, ...c } as any as Channel));
 
       return (
         await gr.services.channels.members.addUserToChannels(user, regChannels)
