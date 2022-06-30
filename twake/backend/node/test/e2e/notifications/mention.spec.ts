@@ -85,7 +85,6 @@ describe("The notification for user mentions", () => {
 
     const memberCreationResult = await gr.services.channels.members.save(
       member,
-      {},
       channelUtils.getChannelContext(channel, user),
     );
     return memberCreationResult.entity;
@@ -99,7 +98,6 @@ describe("The notification for user mentions", () => {
     member.notification_level = level;
     await gr.services.channels.members.save(
       member,
-      {},
       channelUtils.getChannelContext(channel, { id: member.user_id }),
     );
 
