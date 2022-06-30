@@ -887,5 +887,7 @@
     "scenes.app.popup.appsparameters.pages.application_editor.help_link": "tài liệu API Twake",
     "components.rich_text_editor.plugins.suggestions.loading": "Tìm kiếm thêm",
     "components.open_desktop_popup.subtitle": "được mở trong ứng dụng Twake",
-    "components.open_desktop_popup.open_here_link": "Thay vào đó hãy mở ở đây"
+    "components.open_desktop_popup.open_here_link": "Thay vào đó hãy mở ở đây",
+    "molecules.download_banner.title": "Tận dụng tối đa twake, tải xuống ứng dụng dành cho máy tính để bàn ngay bây giờ",
+    "molecules.download_banner.download_button": "Tải xuống ứng dụng dành cho máy tính để bàn"
 }
