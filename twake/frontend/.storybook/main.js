@@ -1,5 +1,6 @@
 const path = require('path');
 const alias = require('../tsconfig.paths.json');
+const webpack = require("webpack");
 
 module.exports = {
   stories: ['../src/app/**/*.stories.tsx'],
@@ -47,6 +48,13 @@ module.exports = {
       ],
       include: path.resolve(__dirname, '../'),
     });
+
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /languages-service/,
+        path.resolve(__dirname, './__mocks__/languages-service.js'),
+      )
+    );
 
     return config;
   },

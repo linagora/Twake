@@ -14,6 +14,11 @@ input.ant-input {
     border-color: var(--grey-light);
 }
 
+
+.bg-linear-purple {
+    background: linear-gradient(263.04deg, #007AFF 2.08%, #C600F9 97.25%);
+}
+
 a {
     color: var(--primary) !important;
 }
