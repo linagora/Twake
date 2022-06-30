@@ -65,7 +65,6 @@ describe("The Bookmarks Realtime feature", () => {
                   name: "mybookmarksaved",
                   id: undefined,
                 },
-                {},
                 getContext(platform),
               );
             });
@@ -96,7 +95,6 @@ describe("The Bookmarks Realtime feature", () => {
           name: "mybookmark",
           id: undefined,
         },
-        {},
         getContext(platform),
       );
 

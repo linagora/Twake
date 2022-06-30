@@ -21,7 +21,6 @@ import { NotificationPreferencesService } from "./notifications/services/prefere
 import {
   MessageThreadMessagesServiceAPI,
   MessageThreadsServiceAPI,
-  MessageUserBookmarksServiceAPI,
   MessageViewsServiceAPI,
 } from "./messages/api";
 import { ThreadMessagesService } from "./messages/services/messages";
@@ -101,7 +100,7 @@ type TwakeServices = {
   messages: {
     messages: MessageThreadMessagesServiceAPI;
     threads: MessageThreadsServiceAPI;
-    userBookmarks: MessageUserBookmarksServiceAPI;
+    userBookmarks: UserBookmarksService;
     views: MessageViewsServiceAPI;
     engine: MessagesEngine;
   };

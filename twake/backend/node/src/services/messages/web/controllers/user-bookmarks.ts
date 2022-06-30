@@ -44,7 +44,6 @@ export class UserBookmarksController
           name: request.body.resource.name,
           id: request.params.id || undefined,
         },
-        {},
         context,
       );
       return {
@@ -92,14 +91,10 @@ export class UserBookmarksController
   ): Promise<ResourceListResponse<UserMessageBookmark>> {
     const context = getCompanyExecutionContext(request);
     try {
-      const list = await gr.services.messages.userBookmarks.list(
-        {},
-        {
-          user_id: context.user.id,
-          company_id: request.params.company_id,
-        },
-        context,
-      );
+      const list = await gr.services.messages.userBookmarks.list({
+        user_id: context.user.id,
+        company_id: context.company.id,
+      });
       return {
         websockets: gr.platformServices.realtime.sign(
           [{ room: getUserBookmarksWebsocketRoom(context) }],

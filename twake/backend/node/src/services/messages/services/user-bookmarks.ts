@@ -1,20 +1,26 @@
 import {
   DeleteResult,
+  ExecutionContext,
   ListResult,
   OperationType,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
-import { RealtimeDeleted, RealtimeSaved, TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  RealtimeDeleted,
+  RealtimeSaved,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { MessageUserBookmarksServiceAPI } from "../api";
 import { getInstance, UserMessageBookmark } from "../entities/user-message-bookmarks";
 import { CompanyExecutionContext } from "../types";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import { getUserBookmarksWebsocketRoom } from "../web/realtime";
 import gr from "../../global-resolver";
 
-export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
+export class UserBookmarksService implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<UserMessageBookmark>;
 
@@ -39,15 +45,15 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
       path: getUserBookmarksWebsocketRoom(context as CompanyExecutionContext) + "/" + bookmark.id,
     },
   ])
-  async save<SaveOptions>(
-    item: Pick<UserMessageBookmark, "name" | "id">,
-    options?: SaveOptions,
-    context?: CompanyExecutionContext,
+  async save(
+    { company_id, user_id, id, name }: SaveParams,
+    context: CompanyExecutionContext,
   ): Promise<SaveResult<UserMessageBookmark>> {
     //Disallow duplicates
-    const entities = (await this.list(null, {}, context)).getEntities();
+    const entities = (await this.list({ user_id, company_id })).getEntities();
+
     for (const entity of entities) {
-      if (item.name === entity.name) {
+      if (name === entity.name) {
         return new SaveResult<UserMessageBookmark>(
           "user_message_bookmark",
           entity,
@@ -57,15 +63,19 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
     }
 
     const instance = getInstance({
-      company_id: context.company.id,
-      user_id: context.user.id,
-      ...item,
+      company_id: company_id,
+      user_id: user_id,
+      name,
     });
+    if (id) {
+      instance.id = id;
+    }
     await this.repository.save(instance);
+
     return new SaveResult<UserMessageBookmark>(
       "user_message_bookmark",
       instance,
-      item.id ? OperationType.UPDATE : OperationType.CREATE,
+      id ? OperationType.UPDATE : OperationType.CREATE,
     );
   }
 
@@ -84,15 +94,19 @@ export class UserBookmarksService implements MessageUserBookmarksServiceAPI {
     return new DeleteResult<UserMessageBookmark>("user_message_bookmark", instance, !!instance);
   }
 
-  async list<ListOption>(
-    pagination: Pagination,
-    options?: ListOption,
-    context?: CompanyExecutionContext,
-  ): Promise<ListResult<UserMessageBookmark>> {
-    const list = await this.repository.find(
-      { user_id: context.user.id, company_id: context.company.id },
-      { pagination },
-    );
-    return list;
+  async list({
+    user_id,
+    company_id,
+    pagination,
+  }: ListParams): Promise<ListResult<UserMessageBookmark>> {
+    return this.repository.find({ user_id, company_id }, { pagination });
   }
 }
+
+type SaveParams = { user_id: string; company_id: string; name: string; id: string; test?: string };
+
+type ListParams = {
+  company_id: string;
+  user_id: string;
+  pagination?: Pagination;
+};
