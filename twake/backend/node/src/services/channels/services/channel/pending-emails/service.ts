@@ -1,5 +1,5 @@
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import { ChannelPendingEmailService, ChannelPrimaryKey } from "../../../provider";
+import { ChannelPendingEmailService } from "../../../provider";
 import {
   CreateResult,
   CrudException,
@@ -14,6 +14,7 @@ import { getLogger } from "../../../../../core/platform/framework";
 import {
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
+  ChannelPrimaryKey,
   getChannelPendingEmailsInstance,
 } from "../../../entities";
 import { ChannelPendingEmailsListQueryParameters } from "../../../web/types";

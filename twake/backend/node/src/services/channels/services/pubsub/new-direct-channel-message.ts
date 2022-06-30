@@ -60,11 +60,10 @@ export class NewDirectChannelMessageProcessor implements PubsubHandler<MessageNo
         members.map(async member => {
           try {
             logger.info(`${this.name} - Adding ${member.user_id} to channel ${message.channel_id}`);
-            const memberSaved = await gr.services.channels.members.save(
-              member,
-              {},
-              { channel, user: { id: member.user_id } },
-            );
+            const memberSaved = await gr.services.channels.members.save(member, {
+              channel,
+              user: { id: member.user_id },
+            });
             logger.info(
               `${this.name} - Member added to channel ${message.channel_id} - ${JSON.stringify(
                 memberSaved,

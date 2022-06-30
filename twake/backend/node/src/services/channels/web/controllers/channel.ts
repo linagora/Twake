@@ -11,11 +11,11 @@ import {
   ChannelMember,
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
+  ChannelPrimaryKey,
   getChannelPendingEmailsInstance,
   UserChannel,
   UsersIncludedChannel,
 } from "../../entities";
-import { ChannelPrimaryKey } from "../../provider";
 import { getWebsocketInformation, getWorkspaceRooms } from "../../services/channel/realtime";
 import {
   BaseChannelsParameters,
@@ -42,11 +42,7 @@ import _ from "lodash";
 import { ChannelMemberObject, ChannelObject } from "../../services/channel/types";
 import { ChannelUserCounterType } from "../../entities/channel-counters";
 import gr from "../../../global-resolver";
-import { checkCompanyAndWorkspaceForUser } from "../middleware";
 import { checkUserBelongsToCompany } from "../../../../utils/company";
-import { Message } from "../../../messages/entities/messages";
-import { orderBy } from "lodash";
-import { DirectChannel } from "../../entities/direct-channel";
 
 const logger = getLogger("channel.controller");
 
@@ -73,9 +69,8 @@ export class ChannelCrudController
   ): Promise<ResourceGetResponse<ChannelObject>> {
     const context = getExecutionContext(request);
 
-    let channel = await gr.services.channels.channels.get(
+    let channel: Channel | UsersIncludedChannel = await gr.services.channels.channels.get(
       this.getPrimaryKey(request),
-      getExecutionContext(request),
     );
 
     if (!channel) {
@@ -94,10 +89,7 @@ export class ChannelCrudController
     }
 
     if (request.query.include_users)
-      channel = await gr.services.channels.channels.includeUsersInDirectChannel(
-        channel,
-        getExecutionContext(request).user.id,
-      );
+      channel = await gr.services.channels.channels.includeUsersInDirectChannel(channel);
 
     const member = await gr.services.channels.members.get(
       _.assign(new ChannelMember(), {
@@ -106,7 +98,6 @@ export class ChannelCrudController
         company_id: channel.company_id,
         user_id: context.user.id,
       }),
-      getChannelExecutionContext(request, channel),
     );
 
     const channelObject = ChannelObject.mapTo(channel, {
@@ -199,10 +190,7 @@ export class ChannelCrudController
     request: FastifyRequest<{ Params: ChannelParameters }>,
     reply: FastifyReply,
   ): Promise<void> {
-    const channel = await gr.services.channels.channels.get(
-      this.getPrimaryKey(request),
-      getExecutionContext(request),
-    );
+    const channel = await gr.services.channels.channels.get(this.getPrimaryKey(request));
 
     reply.send(channel);
   }
@@ -242,7 +230,6 @@ export class ChannelCrudController
           company_id: channelResult.entity.company_id,
           user_id: context.user.id,
         }),
-        getChannelExecutionContext(request, channelResult.entity),
       );
 
       let entityWithUsers: Channel = channelResult.entity;
@@ -452,7 +439,6 @@ export class ChannelCrudController
   ): Promise<ResourceCreateResponse<ChannelPendingEmails>> {
     const pendingEmail = await gr.services.channelPendingEmail.create(
       getChannelPendingEmailsInstance(request.body.resource),
-      getChannelPendingEmailsExecutionContext(request),
     );
     logger.debug("reqId: %s - save - PendingEmails input %o", request.id, pendingEmail.entity);
     return { resource: pendingEmail.entity };
@@ -471,7 +457,6 @@ export class ChannelCrudController
         workspace_id: request.params.workspace_id,
         email: request.params.email,
       }),
-      getChannelPendingEmailsExecutionContext(request),
     );
 
     return { status: pendingEmail.deleted ? "success" : "error" };

@@ -76,3 +76,11 @@ export type SearchChannelOptions = {
   search: string;
   companyId?: string;
 };
+
+export type ChannelActivityMessage = {
+  date: number;
+  sender: string;
+  sender_name: string;
+  title: string;
+  text: string;
+};

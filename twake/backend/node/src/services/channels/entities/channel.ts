@@ -101,3 +101,5 @@ export class UsersIncludedChannel extends Channel {
 export function getInstance(channel: Partial<Channel>): Channel {
   return merge(new Channel(), channel);
 }
+
+export type ChannelPrimaryKey = Pick<Channel, "company_id" | "workspace_id" | "id">;

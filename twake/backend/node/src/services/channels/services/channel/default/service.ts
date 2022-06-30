@@ -203,7 +203,11 @@ export default class DefaultChannelServiceImpl implements DefaultChannelService 
 
       logger.info("Adding user %s to channels %s", user, JSON.stringify(channels));
 
-      return (await gr.services.channels.members.addUserToChannels(user, channels)).getEntities();
+      const regChannels = channels.map(c => ({ id: c.channel_id, ...c }));
+
+      return (
+        await gr.services.channels.members.addUserToChannels(user, regChannels)
+      ).getEntities();
     } catch (err) {
       logger.error({ err }, "Error while adding user for default channels");
       throw new Error("Error while adding user for default channels");

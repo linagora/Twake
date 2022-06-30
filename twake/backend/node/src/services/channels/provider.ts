@@ -1,9 +1,12 @@
 import {
+  CreateResult,
   CRUDService,
+  DeleteResult,
   ExecutionContext,
   ListResult,
   Paginable,
   Pagination,
+  SaveResult,
   UpdateResult,
 } from "../../core/platform/framework/api/crud-service";
 import { Initializable, TwakeServiceProvider } from "../../core/platform/framework/api";
@@ -13,6 +16,7 @@ import {
   ChannelMemberPrimaryKey,
   ChannelPendingEmails,
   ChannelPendingEmailsPrimaryKey,
+  ChannelPrimaryKey,
   ChannelTab,
   ChannelTabPrimaryKey,
   DefaultChannel,
@@ -25,7 +29,11 @@ import { User } from "../../utils/types";
 import { DirectChannel } from "./entities/direct-channel";
 import { ChannelActivity } from "./entities/channel-activity";
 import { Observable } from "rxjs";
-import { ChannelPendingEmailsListQueryParameters } from "./web/types";
+import {
+  ChannelListOptions,
+  ChannelMemberSaveOptions,
+  ChannelPendingEmailsListQueryParameters,
+} from "./web/types";
 import {
   ChannelObject,
   NewUserInWorkspaceNotification,
@@ -35,146 +43,22 @@ import { ChannelCounterPrimaryKey } from "./entities/channel-counters";
 import { UserPrimaryKey } from "../user/entities/user";
 import { WorkspacePrimaryKey } from "../workspaces/entities/workspace";
 
-export type ChannelPrimaryKey = {
-  id?: string;
-  company_id?: string;
-  workspace_id?: string;
-};
-
-export type ChannelActivityMessage = {
-  date: number;
-  sender: string;
-  sender_name: string;
-  title: string;
-  text: string;
-};
-
-export interface ChannelService
-  extends TwakeServiceProvider,
-    Initializable,
-    CRUDService<Channel, ChannelPrimaryKey, WorkspaceExecutionContext> {
-  /**
-   * Create direct channel
-   *
-   * @param directChannel
-   */
-  createDirectChannel(directChannel: DirectChannel): Promise<DirectChannel>;
-
-  /**
-   * Get all the direct channels for a user
-   * TODO: Return a list of Channel with a list of users
-   * @param user
-   */
-  getDirectChannel(directChannel: DirectChannel): Promise<DirectChannel>;
-
-  /**
-   * Get a direct channel in company for given company id and set of users
-   */
-  getDirectChannelInCompany(companyId: string, users: string[]): Promise<DirectChannel>;
-
-  /**
-   * Get  direct channels in company for given company id
-   */
-  getDirectChannelsInCompany(
+export interface MemberService extends TwakeServiceProvider, Initializable {
+  list(
     pagination: Pagination,
-    company_id: string,
-  ): Promise<ListResult<Channel>>;
+    options: ChannelListOptions,
+    context: ChannelExecutionContext,
+  ): Promise<ListResult<ChannelMember>>;
 
-  /**
-   * Get all the direct channels in a company for the given user
-   *
-   * @param companyId
-   * @param userId
-   */
-  getDirectChannelsForUsersInCompany(companyId: string, userId: string): Promise<DirectChannel[]>;
+  delete(
+    pk: ChannelMemberPrimaryKey,
+    context: ChannelExecutionContext,
+  ): Promise<DeleteResult<ChannelMember>>;
 
-  /**
-   * Get all the direct channels in a company for the given user
-   *
-   * @param companyId
-   * @param userId
-   */
-  getChannelsForUsersInWorkspace(
-    companyId: string,
-    workspaceId: string,
-    userId: string,
-  ): Promise<ListResult<UserChannel>>;
+  save(member: ChannelMember, context: ChannelExecutionContext): Promise<SaveResult<ChannelMember>>;
 
-  /**
-   * Mark the channel as read for the given user
-   *
-   * @param channel
-   * @param user
-   */
-  markAsRead(channel: ChannelPrimaryKey, user: User): Promise<boolean>;
+  get(pk: ChannelMemberPrimaryKey): Promise<ChannelMember>;
 
-  /**
-   * Mark the channel as unread
-   *
-   * @param channel
-   * @param user
-   * @param context
-   */
-  markAsUnread(channel: ChannelPrimaryKey, user: User): Promise<boolean>;
-
-  /**
-   * Update the last activity for the given channel
-   *
-   * @param channel The channel to update the last_activity
-   */
-  updateLastActivity(
-    payload: {
-      date: number;
-      channel: ChannelPrimaryKey;
-      message: ChannelActivityMessage;
-    },
-    context: WorkspaceExecutionContext,
-  ): Promise<UpdateResult<ChannelActivity>>;
-
-  getChannelActivity(channel: Channel): Promise<number>;
-  fillChannelActivities(channel: Channel[]): Promise<ChannelObject[]>;
-
-  /**
-   * Get the list of all default channels for the given workspace.
-   *
-   * @param workspace
-   */
-  getDefaultChannels(
-    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
-    pagination?: Paginable,
-  ): Promise<DefaultChannel[]>;
-
-  /**
-   * Add user to the default channels of the given workspace
-   *
-   * @param userId
-   * @param workspace
-   * @return a list of ChannelMember objects representing where the user has been added.
-   *  The list will not contain the ChannelMember of the user is already a member.
-   */
-  addUserToDefaultChannels(
-    user: User,
-    workspace: Required<Pick<ChannelPrimaryKey, "company_id" | "workspace_id">>,
-  ): Promise<ChannelMember[]>;
-
-  /**
-   * Include users to channel itself, also generate the channel name
-   * @param channel
-   * @param excludeUserId
-   */
-  includeUsersInDirectChannel(
-    channel: Channel,
-    excludeUserId: string,
-  ): Promise<UsersIncludedChannel>;
-
-  search(pagination: Pagination, options: SearchChannelOptions): Promise<ListResult<Channel>>;
-
-  getAllChannelsInWorkspace(company_id: string, id: string): Promise<Channel[]>;
-}
-export interface MemberService
-  extends TwakeServiceProvider,
-    Initializable,
-    CRUDService<ChannelMember, ChannelMemberPrimaryKey, ChannelExecutionContext> {
   listUserChannels(
     user: User,
     pagination: Pagination,
@@ -233,10 +117,9 @@ export interface TabService
 /**
  * Manage default channels entities
  */
-export interface DefaultChannelService
-  extends TwakeServiceProvider,
-    Initializable,
-    CRUDService<DefaultChannel, DefaultChannelPrimaryKey, ChannelExecutionContext> {
+export interface DefaultChannelService extends TwakeServiceProvider, Initializable {
+  create(channel: DefaultChannel): Promise<CreateResult<DefaultChannel>>;
+  delete(pk: DefaultChannelPrimaryKey): Promise<DeleteResult<DefaultChannel>>;
   /**
    * Get all the default channels in the given workspace
    *
@@ -268,10 +151,18 @@ export interface DefaultChannelService
   ): Promise<Array<{ channel: Channel; member?: ChannelMember; err?: Error; added: boolean }>>;
 }
 
-export interface ChannelPendingEmailService
-  extends TwakeServiceProvider,
-    Initializable,
-    CRUDService<ChannelPendingEmails, ChannelPendingEmailsPrimaryKey, ChannelExecutionContext> {
+export interface ChannelPendingEmailService extends TwakeServiceProvider, Initializable {
+  create(pendingEmail: ChannelPendingEmails): Promise<CreateResult<ChannelPendingEmails>>;
+  delete(pk: ChannelPendingEmailsPrimaryKey): Promise<DeleteResult<ChannelPendingEmails>>;
+  list<ListOptions>(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    pagination: Pagination,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    options?: ListOptions,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    context?: ChannelExecutionContext,
+  ): Promise<ListResult<ChannelPendingEmails>>;
+
   findPendingEmails(
     pk: ChannelPendingEmailsListQueryParameters,
   ): Promise<ListResult<ChannelPendingEmails>>;

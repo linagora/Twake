@@ -157,7 +157,7 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
         (await gr.services.channels.channels.get({
           id: channelId,
           ..._.pick(channelMemberPk, "company_id", "workspace_id"),
-        })) && (await gr.services.channels.members.get(channelMemberPk, context));
+        })) && (await gr.services.channels.members.get(channelMemberPk));
       if (!exists) {
         for (const badge of badges.getEntities()) {
           if (badge.channel_id === channelId) this.removeUserChannelBadges(badge);

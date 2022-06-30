@@ -45,12 +45,7 @@ import { MessagesEngine } from "./messages/services/engine";
 import { FileServiceAPI } from "./files/api";
 import { FileServiceImpl } from "./files/services";
 import { ChannelServiceImpl } from "./channels/services/channel/service";
-import {
-  ChannelPendingEmailService,
-  ChannelService,
-  MemberService,
-  TabService,
-} from "./channels/provider";
+import { ChannelPendingEmailService, MemberService, TabService } from "./channels/provider";
 import { MemberServiceImpl } from "./channels/services/member/service";
 import ChannelPendingEmailServiceImpl from "./channels/services/channel/pending-emails/service";
 import { TabServiceImpl } from "./channels/services/tab";
@@ -125,7 +120,7 @@ type TwakeServices = {
   };
   files: FileServiceAPI;
   channels: {
-    channels: ChannelService;
+    channels: ChannelServiceImpl;
     members: MemberService;
     pubsub: ChannelsPubsubListener;
   };

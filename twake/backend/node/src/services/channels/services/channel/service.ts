@@ -15,16 +15,12 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import {
-  ChannelActivityMessage,
-  ChannelPrimaryKey,
-  ChannelService,
-  DefaultChannelService,
-} from "../../provider";
-import { ChannelObject, SearchChannelOptions } from "./types";
+import { DefaultChannelService } from "../../provider";
+import { ChannelActivityMessage, ChannelObject, SearchChannelOptions } from "./types";
 import {
   Channel,
   ChannelMember,
+  ChannelPrimaryKey,
   DefaultChannel,
   UserChannel,
   UsersIncludedChannel,
@@ -57,7 +53,7 @@ import {
 
 const logger = getLogger("channel.service");
 
-export class ChannelServiceImpl implements ChannelService {
+export class ChannelServiceImpl {
   version: "1";
   activityRepository: Repository<ChannelActivity>;
   channelRepository: Repository<Channel>;
@@ -431,7 +427,6 @@ export class ChannelServiceImpl implements ChannelService {
     options: ChannelListOptions,
     context: WorkspaceExecutionContext,
   ): Promise<ListResult<Channel | UserChannel>> {
-    let channels: ListResult<Channel | UserChannel>;
     const isDirectWorkspace = isDirectChannel(context.workspace);
     const isWorkspaceAdmin =
       !isDirectWorkspace && userIsWorkspaceAdmin(context.user, context.workspace);
@@ -463,7 +458,7 @@ export class ChannelServiceImpl implements ChannelService {
       );
     }
 
-    channels = await this.channelRepository.find(findFilters, { pagination });
+    const channels = await this.channelRepository.find(findFilters, { pagination });
     channels.filterEntities(channel => channel.visibility !== ChannelVisibility.DIRECT);
 
     if (!isWorkspaceAdmin && !context.user.server_request) {
@@ -500,7 +495,7 @@ export class ChannelServiceImpl implements ChannelService {
     );
 
     let activityPerChannel: Map<string, ChannelActivity>;
-    let channels = await this.channelRepository.find(findFilters, {
+    const channels = await this.channelRepository.find(findFilters, {
       $in: [["id", userChannels.getEntities().map(channelMember => channelMember.channel_id)]],
     });
 
@@ -612,7 +607,7 @@ export class ChannelServiceImpl implements ChannelService {
     // cf this.members.onUpdated
     member.last_access = now;
     const updatedMember = (
-      await gr.services.channels.members.save(member, null, {
+      await gr.services.channels.members.save(member, {
         channel,
         user,
       })

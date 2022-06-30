@@ -143,7 +143,6 @@ export class MemberServiceImpl implements MemberService {
   })
   async save(
     member: ChannelMember,
-    options: ChannelMemberSaveOptions,
     context: ChannelExecutionContext,
   ): Promise<SaveResult<ChannelMember>> {
     let memberToSave: ChannelMember;
@@ -469,7 +468,7 @@ export class MemberServiceImpl implements MemberService {
             return { channel, added: false };
           }
 
-          const result = await this.save(member, null, channelContext);
+          const result = await this.save(member, channelContext);
 
           return {
             channel,
@@ -527,7 +526,7 @@ export class MemberServiceImpl implements MemberService {
             return { channel, added: false };
           }
 
-          const result = await this.save(member, null, context);
+          const result = await this.save(member, context);
 
           return { channel, member: result.entity, added: true };
         } catch (err) {
