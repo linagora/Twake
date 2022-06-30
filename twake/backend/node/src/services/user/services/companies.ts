@@ -6,6 +6,7 @@ import {
   ExecutionContext,
   ListResult,
   OperationType,
+  Paginable,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
@@ -13,7 +14,6 @@ import Repository, {
   FindOptions,
 } from "../../../core/platform/services/database/services/orm/repository/repository";
 import { UserPrimaryKey } from "../entities/user";
-import { CompaniesServiceAPI } from "../api";
 import Company, {
   CompanyPrimaryKey,
   CompanySearchKey,
@@ -35,11 +35,11 @@ import { getCompanyRoom, getUserRoom } from "../realtime";
 import gr from "../../global-resolver";
 import { localEventBus } from "../../../core/platform/framework/pubsub";
 import {
-  KnowledgeGraphGenericEventPayload,
   KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
 } from "../../../core/platform/services/knowledge-graph/types";
 
-export class CompanyServiceImpl implements CompaniesServiceAPI {
+export class CompanyServiceImpl {
   version: "1";
   companyRepository: Repository<Company>;
   externalCompanyRepository: Repository<ExternalGroup>;
@@ -170,8 +170,17 @@ export class CompanyServiceImpl implements CompaniesServiceAPI {
     return list;
   }
 
-  getCompanies(pagination?: Pagination): Promise<ListResult<Company>> {
-    return this.companyRepository.find({}, { pagination });
+  getCompanies(paginable?: Paginable): Promise<ListResult<Company>> {
+    return this.companyRepository.find(
+      {},
+      {
+        pagination: new Pagination(
+          paginable?.page_token,
+          paginable?.limitStr || "100",
+          paginable?.reversed,
+        ),
+      },
+    );
   }
 
   @RealtimeSaved<CompanyUser>((companyUser, _) => {

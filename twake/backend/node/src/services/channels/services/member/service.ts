@@ -339,7 +339,7 @@ export class MemberServiceImpl {
       {
         group_id: context.channel.company_id,
       },
-      {},
+      new Pagination(),
       { userIds: result.getEntities().map(member => member.user_id) },
     );
 

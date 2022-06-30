@@ -1,7 +1,10 @@
-import { ApplicationHooksServiceAPI } from "../api";
 import Application from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger as log } from "../../../core/platform/framework";
+import {
+  Initializable,
+  logger as log,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import axios from "axios";
@@ -9,7 +12,7 @@ import * as crypto from "crypto";
 import { isObject } from "lodash";
 import gr from "../../global-resolver";
 
-export class ApplicationHooksService implements ApplicationHooksServiceAPI {
+export class ApplicationHooksService implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<Application>;
   searchRepository: SearchRepository<Application>;

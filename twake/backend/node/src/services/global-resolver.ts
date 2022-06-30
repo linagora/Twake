@@ -1,18 +1,12 @@
 import { TwakePlatform } from "../core/platform/platform";
 import { ConsoleServiceAPI } from "./console/api";
-import {
-  ApplicationHooksServiceAPI,
-  CompanyApplicationServiceAPI,
-  MarketplaceApplicationServiceAPI,
-} from "./applications/api";
+import { CompanyApplicationServiceAPI } from "./applications/api";
 import { StatisticsAPI } from "./statistics/types";
-import { CompaniesServiceAPI, UserExternalLinksService, UsersService } from "./user/api";
 import { CompanyServiceImpl } from "./user/services/companies";
 import { RealtimeServiceAPI } from "../core/platform/services/realtime/api";
 import WebServerAPI from "../core/platform/services/webserver/provider";
 import { FastifyInstance } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { WorkspaceService } from "./workspaces/api";
 import { WorkspaceServiceImpl } from "./workspaces/services/workspace";
 import { UserExternalLinksServiceImpl } from "./user/services/external_links";
 import { UserNotificationBadgeService } from "./notifications/services/bages";
@@ -42,10 +36,8 @@ import { CompanyApplicationServiceImpl } from "./applications/services/company-a
 import { ApplicationServiceImpl } from "./applications/services/applications";
 import { ViewsServiceImpl } from "./messages/services/views";
 import { MessagesEngine } from "./messages/services/engine";
-import { FileServiceAPI } from "./files/api";
 import { FileServiceImpl } from "./files/services";
 import { ChannelServiceImpl } from "./channels/services/channel/service";
-import { ChannelPendingEmailService } from "./channels/provider";
 import { MemberServiceImpl } from "./channels/services/member/service";
 import ChannelPendingEmailServiceImpl from "./channels/services/channel/pending-emails/service";
 import { TabServiceImpl } from "./channels/services/tab";
@@ -88,12 +80,12 @@ type PlatformServices = {
 };
 
 type TwakeServices = {
-  workspaces: WorkspaceService;
-  companies: CompaniesServiceAPI;
-  users: UsersService;
+  workspaces: WorkspaceServiceImpl;
+  companies: CompanyServiceImpl;
+  users: UserServiceImpl;
   console: ConsoleServiceAPI;
   statistics: StatisticsAPI;
-  externalUser: UserExternalLinksService;
+  externalUser: UserExternalLinksServiceImpl;
   notifications: {
     badges: UserNotificationBadgeServiceAPI;
     channelPreferences: ChannelMemberPreferencesServiceAPI;
@@ -114,17 +106,17 @@ type TwakeServices = {
     engine: MessagesEngine;
   };
   applications: {
-    marketplaceApps: MarketplaceApplicationServiceAPI;
+    marketplaceApps: ApplicationServiceImpl;
     companyApps: CompanyApplicationServiceAPI;
-    hooks: ApplicationHooksServiceAPI;
+    hooks: ApplicationHooksService;
   };
-  files: FileServiceAPI;
+  files: FileServiceImpl;
   channels: {
     channels: ChannelServiceImpl;
     members: MemberServiceImpl;
     pubsub: ChannelsPubsubListener;
   };
-  channelPendingEmail: ChannelPendingEmailService;
+  channelPendingEmail: ChannelPendingEmailServiceImpl;
   tab: TabServiceImpl;
   online: OnlineServiceAPI;
   knowledgeGraph: KnowledgeGraphService;

@@ -13,7 +13,6 @@ import {
   UpdateResult,
 } from "../../../core/platform/framework/api/crud-service";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { WorkspaceService } from "../api";
 import WorkspaceUser, {
   formatWorkspaceUser,
   getInstance as getWorkspaceUserInstance,
@@ -43,7 +42,11 @@ import {
   WorkspaceCounterPrimaryKey,
 } from "../entities/workspace_counters";
 import { countRepositoryItems } from "../../../utils/counters";
-import { RealtimeSaved } from "../../../core/platform/framework";
+import {
+  Initializable,
+  RealtimeSaved,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import { getRoomName, getWorkspacePath } from "../realtime";
 import { InviteTokenObject, WorkspaceInviteTokenObject } from "../web/types";
@@ -63,7 +66,7 @@ import {
   KnowledgeGraphGenericEventPayload,
 } from "../../../core/platform/services/knowledge-graph/types";
 
-export class WorkspaceServiceImpl implements WorkspaceService {
+export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   private workspaceUserRepository: Repository<WorkspaceUser>;
   private workspaceRepository: Repository<Workspace>;
@@ -260,14 +263,8 @@ export class WorkspaceServiceImpl implements WorkspaceService {
     return { file };
   }
 
-  async delete(
-    pk: Partial<Pick<Workspace, "id">>,
-    context?: WorkspaceExecutionContext,
-  ): Promise<DeleteResult<Workspace>> {
-    const primaryKey: Workspace = merge(new Workspace(), {
-      company_id: context.company_id,
-      id: pk.id,
-    });
+  async delete(pk: WorkspacePrimaryKey): Promise<DeleteResult<Workspace>> {
+    const primaryKey: Workspace = merge(new Workspace(), pk);
     await this.workspaceRepository.remove(primaryKey);
     return new DeleteResult(TYPE, primaryKey, true);
   }

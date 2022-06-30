@@ -1,5 +1,4 @@
 import Repository from "../../../../../core/platform/services/database/services/orm/repository/repository";
-import { ChannelPendingEmailService } from "../../../provider";
 import {
   CreateResult,
   CrudException,
@@ -25,7 +24,7 @@ import gr from "../../../../global-resolver";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const logger = getLogger("channel.pending_emails");
 
-export default class ChannelPendingEmailServiceImpl implements ChannelPendingEmailService {
+export default class ChannelPendingEmailServiceImpl {
   version: "1";
   repository: Repository<ChannelPendingEmails>;
 

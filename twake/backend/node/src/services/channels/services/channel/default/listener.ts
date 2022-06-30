@@ -2,12 +2,12 @@ import { Channel, getDefaultChannelInstance } from "../../../entities";
 import { getLogger, Initializable } from "../../../../../core/platform/framework";
 import { localEventBus } from "../../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../../utils/types";
-import { DefaultChannelService } from "../../../provider";
+import DefaultChannelServiceImpl from "./service";
 
 const logger = getLogger("channel:default:listener");
 
 export default class DefaultChannelListener implements Initializable {
-  constructor(private service: DefaultChannelService) {}
+  constructor(private service: DefaultChannelServiceImpl) {}
 
   async init(): Promise<this> {
     localEventBus.subscribe<ResourceEventsPayload>(

@@ -13,7 +13,7 @@ import {
   toArray,
 } from "rxjs/operators";
 import { getLogger } from "../../../core/platform/framework";
-import { Paginable } from "../../../core/platform/framework/api/crud-service";
+import { Paginable, Pagination } from "../../../core/platform/framework/api/crud-service";
 import Company from "../../user/entities/company";
 import User from "../../user/entities/user";
 import {
@@ -204,7 +204,13 @@ export class MergeProcess {
   }
 
   private getUserIds(company: Company, paginable?: Paginable): Observable<CompanyUser> {
-    return from(gr.services.companies.getUsers({ group_id: company.id }, paginable)).pipe(
+    const pagination = new Pagination(
+      paginable?.page_token,
+      paginable?.limitStr,
+      paginable?.reversed,
+    );
+
+    return from(gr.services.companies.getUsers({ group_id: company.id }, pagination)).pipe(
       mergeMap(companyUsers => {
         const items$ = from(companyUsers.getEntities());
         const next$ = companyUsers?.nextPage?.page_token

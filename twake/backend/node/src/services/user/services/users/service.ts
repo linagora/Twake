@@ -15,7 +15,6 @@ import Repository, {
   FindOptions,
 } from "../../../../core/platform/services/database/services/orm/repository/repository";
 import User, { UserPrimaryKey } from "../../entities/user";
-import { UsersService } from "../../api";
 import { ListUserOptions, SearchUserOptions } from "./types";
 import CompanyUser from "../../entities/company_user";
 import SearchRepository from "../../../../core/platform/services/search/repository";
@@ -34,11 +33,11 @@ import { getUserRoom } from "../../realtime";
 import NodeCache from "node-cache";
 import gr from "../../../global-resolver";
 import {
-  KnowledgeGraphGenericEventPayload,
   KnowledgeGraphEvents,
+  KnowledgeGraphGenericEventPayload,
 } from "../../../../core/platform/services/knowledge-graph/types";
 
-export class UserServiceImpl implements UsersService {
+export class UserServiceImpl {
   version: "1";
   repository: Repository<User>;
   searchRepository: SearchRepository<User>;

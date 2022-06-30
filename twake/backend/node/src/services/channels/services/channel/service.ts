@@ -15,7 +15,6 @@ import {
   SaveResult,
   UpdateResult,
 } from "../../../../core/platform/framework/api/crud-service";
-import { DefaultChannelService } from "../../provider";
 import { ChannelActivityMessage, ChannelObject, SearchChannelOptions } from "./types";
 import {
   Channel,
@@ -45,7 +44,6 @@ import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import DefaultChannelServiceImpl from "./default/service";
 import { formatUser } from "../../../../utils/users";
 import gr from "../../../global-resolver";
-import { SearchMessageOptions } from "../../../messages/types";
 import {
   KnowledgeGraphEvents,
   KnowledgeGraphGenericEventPayload,
@@ -58,7 +56,7 @@ export class ChannelServiceImpl {
   activityRepository: Repository<ChannelActivity>;
   channelRepository: Repository<Channel>;
   directChannelRepository: Repository<DirectChannel>;
-  defaultChannelService: DefaultChannelService;
+  defaultChannelService: DefaultChannelServiceImpl;
 
   async init(): Promise<this> {
     this.defaultChannelService = new DefaultChannelServiceImpl();

@@ -41,7 +41,7 @@ const command: yargs.CommandModule<unknown, CLIArgs> = {
       head: ["ID", "Name", "Description"],
       colWidths: [40, 20, 40],
     });
-    unpublished.forEach(app => {
+    unpublished.forEach((app: any) => {
       table.push([app.id, app.identity.name, app.identity.description]);
     });
     spinner.stop();

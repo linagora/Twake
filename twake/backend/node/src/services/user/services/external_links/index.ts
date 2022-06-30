@@ -1,12 +1,12 @@
 import Repository from "../../../../core/platform/services/database/services/orm/repository/repository";
 import ExternalUser from "../../entities/external_user";
 import ExternalGroup from "../../entities/external_company";
-import { UserExternalLinksService } from "../../api";
+
 import Company from "../../entities/company";
 import User from "../../entities/user";
 import gr from "../../../global-resolver";
 
-export class UserExternalLinksServiceImpl implements UserExternalLinksService {
+export class UserExternalLinksServiceImpl {
   version: "1";
   private externalUserRepository: Repository<ExternalUser>;
   private externalGroupRepository: Repository<ExternalGroup>;

@@ -1,4 +1,3 @@
-import { MarketplaceApplicationServiceAPI } from "../api";
 import Application, {
   ApplicationPrimaryKey,
   getInstance as getApplicationInstance,
@@ -6,7 +5,7 @@ import Application, {
   TYPE,
 } from "../entities/application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger } from "../../../core/platform/framework";
+import { Initializable, logger, TwakeServiceProvider } from "../../../core/platform/framework";
 import {
   DeleteResult,
   ExecutionContext,
@@ -21,7 +20,7 @@ import assert from "assert";
 import gr from "../../global-resolver";
 import { InternalToHooksProcessor } from "./internal-event-to-hooks";
 
-export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI {
+export class ApplicationServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<Application>;
   searchRepository: SearchRepository<Application>;
@@ -50,7 +49,6 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
   async list<ListOptions>(
     pagination: Pagination,
     options?: { search?: string },
-    context?: ExecutionContext,
   ): Promise<ListResult<PublicApplicationObject>> {
     let entities: ListResult<Application>;
     if (options.search) {
@@ -81,13 +79,7 @@ export class ApplicationServiceImpl implements MarketplaceApplicationServiceAPI 
     return entities.getEntities();
   }
 
-  async listDefaults<ListOptions>(
-    pagination: Pagination,
-    options?: ListOptions,
-    context?: ExecutionContext,
-  ): Promise<ListResult<PublicApplicationObject>> {
-    //Fixme: this is not great if we have a lot of applications in the future
-
+  async listDefaults<ListOptions>(): Promise<ListResult<PublicApplicationObject>> {
     const entities = [];
 
     let page: Pagination = { limitStr: "100" };

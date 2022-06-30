@@ -235,10 +235,10 @@ export class WorkspacesCrudController
       }
     }
 
-    const deleteResult = await gr.services.workspaces.delete(
-      { id: request.params.id, company_id: context.company_id },
-      context,
-    );
+    const deleteResult = await gr.services.workspaces.delete({
+      id: request.params.id,
+      company_id: context.company_id,
+    });
 
     if (deleteResult.deleted) {
       reply.code(204);

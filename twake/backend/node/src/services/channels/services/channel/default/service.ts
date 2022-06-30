@@ -22,12 +22,11 @@ import { getLogger } from "../../../../../core/platform/framework";
 
 import { User } from "../../../../../utils/types";
 import WorkspaceUser from "../../../../workspaces/entities/workspace_user";
-import { DefaultChannelService } from "../../../provider";
 import gr from "../../../../global-resolver";
 
 const logger = getLogger("channel.default");
 
-export default class DefaultChannelServiceImpl implements DefaultChannelService {
+export default class DefaultChannelServiceImpl {
   version: "1";
   repository: Repository<DefaultChannel>;
   listener: DefaultChannelListener;

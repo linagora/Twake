@@ -15,6 +15,7 @@ import Application, {
 import {
   CrudException,
   ExecutionContext,
+  Pagination,
 } from "../../../../core/platform/framework/api/crud-service";
 import _ from "lodash";
 import { randomBytes } from "crypto";
@@ -58,12 +59,9 @@ export class ApplicationController
       Querystring: PaginationQueryParameters & { search: string };
     }>,
   ): Promise<ResourceListResponse<PublicApplicationObject>> {
-    const context = getExecutionContext(request);
-    const entities = await gr.services.applications.marketplaceApps.list(
-      request.query,
-      { search: request.query.search },
-      context,
-    );
+    const entities = await gr.services.applications.marketplaceApps.list(new Pagination(), {
+      search: request.query.search,
+    });
     return {
       resources: entities.getEntities(),
       next_page_token: entities.nextPage.page_token,

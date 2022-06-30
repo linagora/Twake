@@ -1,14 +1,15 @@
-import { FilePubsubHandler, FileServiceAPI } from "../api";
 import { logger, TwakeContext } from "../../../core/platform/framework";
 import { PreviewPubsubCallback } from "../../../../src/services/previews/types";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { File } from "../entities/file";
+import { FileServiceImpl } from "./index";
+import { PubsubHandler } from "../../../core/platform/services/pubsub/api";
 
 /**
  * Update the file metadata and upload the thumbnails in storage
  */
-export class PreviewFinishedProcessor implements FilePubsubHandler<PreviewPubsubCallback, string> {
-  constructor(readonly service: FileServiceAPI, private repository: Repository<File>) {}
+export class PreviewFinishedProcessor implements PubsubHandler<PreviewPubsubCallback, string> {
+  constructor(readonly service: FileServiceImpl, private repository: Repository<File>) {}
 
   async init(context?: TwakeContext): Promise<this> {
     return this;

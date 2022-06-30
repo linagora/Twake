@@ -58,7 +58,7 @@ export class UsersCrudController
       id = context.user.id;
     }
 
-    const user = await gr.services.users.get({ id: id }, getExecutionContext(request));
+    const user = await gr.services.users.get({ id: id });
 
     if (!user) {
       throw CrudException.notFound(`User ${id} not found`);
@@ -82,7 +82,7 @@ export class UsersCrudController
   ): Promise<ResourceCreateResponse<UserObject>> {
     const context = getExecutionContext(request);
 
-    const user = await gr.services.users.get({ id: context.user.id }, getExecutionContext(request));
+    const user = await gr.services.users.get({ id: context.user.id });
     if (!user) {
       reply.notFound(`User ${context.user.id} not found`);
       return;
@@ -153,7 +153,7 @@ export class UsersCrudController
   ): Promise<ResourceListResponse<CompanyObject>> {
     const context = getExecutionContext(request);
 
-    const user = await gr.services.users.get({ id: request.params.id }, context);
+    const user = await gr.services.users.get({ id: request.params.id });
 
     if (!user) {
       throw CrudException.notFound(`User ${request.params.id} not found`);

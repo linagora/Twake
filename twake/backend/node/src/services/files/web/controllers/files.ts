@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Multipart } from "fastify-multipart";
-import { ResourceDeleteResponse, ResourceListResponse } from "../../../../utils/types";
+import { ResourceDeleteResponse } from "../../../../utils/types";
 import { CompanyExecutionContext } from "../types";
-import { UploadOptions } from "../../api";
-import { File, PublicFile } from "../../entities/file";
+import { UploadOptions } from "../../types";
+import { PublicFile } from "../../entities/file";
 import gr from "../../../global-resolver";
 
 export class FileController {

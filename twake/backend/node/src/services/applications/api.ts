@@ -17,12 +17,12 @@ import {
   CompanyApplicationPrimaryKey,
   CompanyApplicationWithApplication,
 } from "./entities/company-application";
-import { CompaniesServiceAPI } from "../user/api";
+import { CompanyServiceImpl } from "../user/services/companies";
 
 export interface ApplicationServiceAPI extends TwakeServiceProvider, Initializable {
   applications: MarketplaceApplicationServiceAPI;
   companyApplications: CompanyApplicationServiceAPI;
-  companies: CompaniesServiceAPI;
+  companies: CompanyServiceImpl;
   hooks: ApplicationHooksServiceAPI;
 }
 

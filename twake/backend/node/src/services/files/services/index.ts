@@ -1,8 +1,8 @@
 import { randomBytes } from "crypto";
 import { Readable } from "stream";
 import { Multipart } from "fastify-multipart";
-import { FileServiceAPI, UploadOptions } from "../api";
-import { File, PublicFile } from "../entities/file";
+import { UploadOptions } from "../types";
+import { File } from "../entities/file";
 import Repository from "../../../../src/core/platform/services/database/services/orm/repository/repository";
 import { CompanyExecutionContext } from "../web/types";
 import { logger } from "../../../core/platform/framework";
@@ -10,21 +10,10 @@ import { PreviewClearPubsubRequest, PreviewPubsubRequest } from "../../previews/
 import { PreviewFinishedProcessor } from "./preview";
 import _ from "lodash";
 import { getDownloadRoute, getThumbnailRoute } from "../web/routes";
-import {
-  CrudException,
-  DeleteResult,
-  ListResult,
-  Paginable,
-  Pagination,
-} from "../../../core/platform/framework/api/crud-service";
+import { CrudException, DeleteResult } from "../../../core/platform/framework/api/crud-service";
 import gr from "../../global-resolver";
-import { MessageFileRef } from "../../messages/entities/message-file-refs";
-import { MessageFile } from "../../messages/entities/message-files";
-import { localEventBus } from "../../../core/platform/framework/pubsub";
-import { formatUser } from "../../../utils/users";
-import { UserObject } from "../../user/web/types";
 
-export class FileServiceImpl implements FileServiceAPI {
+export class FileServiceImpl {
   version: "1";
   repository: Repository<File>;
   private algorithm = "aes-256-cbc";

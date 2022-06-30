@@ -45,6 +45,7 @@ import {
 import { MessageUserInboxRef } from "../entities/message-user-inbox-refs";
 import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs-reversed";
 import { LinkPreviewPubsubRequest } from "../../../services/previews/types";
+import { Thumbnail } from "../../files/entities/file";
 
 export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   version: "1";
@@ -760,7 +761,7 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
             external_id: file.metadata.external_id,
           };
           file.metadata.thumbnails = (file.metadata.thumbnails || original.thumbnails || []).map(
-            (t, index) => {
+            (t: Thumbnail, index: number) => {
               t.url = gr.services.files.getThumbnailRoute(original, (t.index || index).toString());
               return t;
             },
