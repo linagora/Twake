@@ -189,6 +189,8 @@ describe("List user files", () => {
         ...form,
       });
 
+      expect(uploadedFile.statusCode).toBe(200);
+
       const resource = uploadedFile.json().resource;
 
       const messageFile: MessageFile = {
