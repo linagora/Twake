@@ -35,28 +35,30 @@ export function useChannel(
     setLoading(false);
   };
 
+  const refresh = async () => {
+    setLoading(true);
+    const ch = await ChannelAPIClient.get(companyId, workspaceId, channelId);
+    if (ch && ch?.id) {
+      set(ch);
+    } else {
+      set({
+        id: channelId,
+        name: '',
+        visibility: 'private',
+      });
+    }
+    setLoading(false);
+  };
+
   useGlobalEffect(
     hookId,
     async () => {
-      if (!channel) {
-        setLoading(true);
-        const ch = await ChannelAPIClient.get(companyId, workspaceId, channelId);
-        if (ch && ch?.id) {
-          set(ch);
-        } else {
-          set({
-            id: channelId,
-            name: 'You cannot access this content',
-            visibility: 'private',
-          });
-        }
-        setLoading(false);
-      }
+      if (!channel) refresh();
     },
     [],
   );
 
-  return { channel, save, loading };
+  return { channel, save, loading, refresh };
 }
 
 export const useIsChannelMember = (channelId: string) => {

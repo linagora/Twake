@@ -32,11 +32,11 @@ export default ({
   return (
     <div className="flex overflow-hidden whitespace-nowrap text-ellipsis">
       {!!user && <>{UsersService.getFullName(user)}</>}
-      {!!user && !!(channel || workspaceName) && ' -> '}
+      {!!user && !!(channel || workspaceName) && <span className="mx-2"> {'->'} </span>}
       {(channel || workspaceName) && (
         <>
-          {!!workspaceName && <span className="opacity-50 mx-2">{workspaceName}</span>}
-          {!!workspaceName && !!channel?.name && ' / '}
+          {!!workspaceName && <span className="opacity-50">{workspaceName}</span>}
+          {!!workspaceName && !!channel?.name && <span className="mx-2"> / </span>}
           {!!channel?.name && (
             <A
               onClick={(e: any) => {

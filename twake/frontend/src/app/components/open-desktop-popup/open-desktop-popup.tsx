@@ -17,9 +17,11 @@ export const OpenDesktopPopup = (): React.ReactElement => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full overflow-hidden space-y-2">
+    <div className="flex flex-col items-center justify-center h-full overflow-hidden">
       <Logo />
-      <Subtitle className="mt-6">{Languages.t('components.open_desktop_popup.subtitle')}</Subtitle>
+      <Subtitle className="mt-4 mb-2 block">
+        {Languages.t('components.open_desktop_popup.subtitle')}
+      </Subtitle>
       {showLink && (
         <A onClick={() => setUseWeb(true)}>
           {Languages.t('components.open_desktop_popup.open_here_link')}
