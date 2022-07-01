@@ -15,7 +15,6 @@ import {
 } from "../types";
 
 import User, { getInstance } from "../../user/entities/user";
-import { ConsoleServiceAPI } from "../api";
 import Company, {
   CompanySearchKey,
   getInstance as getCompanyInstance,
@@ -23,9 +22,10 @@ import Company, {
 import { CrudException } from "../../../core/platform/framework/api/crud-service";
 import coalesce from "../../../utils/coalesce";
 import { logger } from "../../../core/platform/framework/logger";
-import _, { gt } from "lodash";
+import _ from "lodash";
 import { CompanyFeaturesEnum, CompanyLimitsEnum } from "../../user/web/types";
 import gr from "../../global-resolver";
+import { ConsoleServiceImpl } from "../service";
 
 export class ConsoleRemoteClient implements ConsoleServiceClient {
   version: "1";
@@ -33,7 +33,7 @@ export class ConsoleRemoteClient implements ConsoleServiceClient {
 
   private infos: ConsoleOptions;
 
-  constructor(consoleInstance: ConsoleServiceAPI, private dryRun: boolean) {
+  constructor(consoleInstance: ConsoleServiceImpl, private dryRun: boolean) {
     this.infos = consoleInstance.consoleOptions;
     this.client = axios.create({ baseURL: this.infos.url });
   }

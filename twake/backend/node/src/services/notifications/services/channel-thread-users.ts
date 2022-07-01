@@ -9,11 +9,11 @@ import {
   ChannelThreadUsersPrimaryKey,
   ChannelThreadUsersType,
 } from "../entities";
-import { ChannelThreadUsersServiceAPI } from "../api";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import gr from "../../global-resolver";
+import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
 
-export class ChannelThreadUsersServiceImpl implements ChannelThreadUsersServiceAPI {
+export class ChannelThreadUsersServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<ChannelThreadUsers>;
 

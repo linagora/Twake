@@ -1,10 +1,10 @@
 import { assign, merge } from "lodash";
 import { ChannelMemberNotificationPreference, UserNotificationBadge } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
-import { NotificationPubsubHandler } from "../../../api";
 import { Channel, ChannelMember } from "../../../../channels/entities";
 import { isDirectChannel } from "../../../../channels/utils";
 import gr from "../../../../global-resolver";
+import { NotificationPubsubHandler } from "../../../types";
 
 type LeaveChannelMessage = { channel: Channel; member: ChannelMember };
 

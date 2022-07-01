@@ -1,10 +1,10 @@
 import { LinkPreview, LinkPreviewPubsubCallback, LinkPreviewPubsubRequest } from "../../../types";
-import { PreviewPubsubHandler } from "../../../api";
-import { logger, TwakeContext } from "./../../../../../core/platform/framework";
+import { logger, TwakeContext } from "../../../../../core/platform/framework";
 import gr from "../../../../global-resolver";
+import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 
 export class LinkPreviewProcessor
-  implements PreviewPubsubHandler<LinkPreviewPubsubRequest, LinkPreviewPubsubCallback>
+  implements PubsubHandler<LinkPreviewPubsubRequest, LinkPreviewPubsubCallback>
 {
   readonly name = "LinkPreviewProcessor";
 

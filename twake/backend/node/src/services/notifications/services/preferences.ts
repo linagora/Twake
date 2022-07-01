@@ -1,4 +1,3 @@
-import { UserNotificationPreferencesAPI } from "../api";
 import {
   CrudException,
   DeleteResult,
@@ -14,8 +13,9 @@ import {
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import { assign, pick } from "lodash";
 import gr from "../../global-resolver";
+import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
 
-export class NotificationPreferencesService implements UserNotificationPreferencesAPI {
+export class NotificationPreferencesService implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<UserNotificationPreferences>;
 

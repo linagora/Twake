@@ -4,6 +4,7 @@ import { UserNotificationPreferences } from "./entities";
 import { PaginationQueryParameters } from "../channels/web/types";
 import { specialMention } from "../messages/types";
 import { uuid } from "../../utils/types";
+import { PubsubHandler } from "../../core/platform/services/pubsub/api";
 
 export type NotificationConfiguration = {
   push: {
@@ -75,3 +76,8 @@ export interface NotificationPreferenceListQueryParameters extends PaginationQue
   company_id: uuid | "all";
   user_id: uuid;
 }
+
+export type NotificationPubsubHandler<InputMessage, OutputMessage> = PubsubHandler<
+  InputMessage,
+  OutputMessage
+>;

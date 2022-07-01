@@ -1,16 +1,16 @@
 import fs, { promises as fsPromise } from "fs";
-import { PreviewPubsubHandler } from "../../../api";
 import { logger, TwakeContext } from "../../../../../core/platform/framework";
 import { PreviewPubsubCallback, PreviewPubsubRequest, ThumbnailResult } from "../../../types";
 import { getTmpFile } from "../../../utils";
 import gr from "../../../../global-resolver";
+import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 
 const { unlink } = fsPromise;
 /**
  * Generate thumbnails when the upload is finished
  */
 export class PreviewProcessor
-  implements PreviewPubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback>
+  implements PubsubHandler<PreviewPubsubRequest, PreviewPubsubCallback>
 {
   readonly name = "PreviewProcessor";
 

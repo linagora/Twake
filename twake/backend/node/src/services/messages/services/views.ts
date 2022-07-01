@@ -4,9 +4,12 @@ import {
   Paginable,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
-import { TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { MessageViewsServiceAPI } from "../api";
 import { Message } from "../entities/messages";
 import { Thread } from "../entities/threads";
 import {
@@ -14,26 +17,23 @@ import {
   CompanyExecutionContext,
   FlatFileFromMessage,
   FlatPinnedFromMessage,
-  InboxOptions,
   MessageViewListOptions,
   MessageWithReplies,
-  SearchMessageOptions,
   SearchMessageFilesOptions,
+  SearchMessageOptions,
 } from "../types";
 import { MessageChannelRef } from "../entities/message-channel-refs";
 import { buildMessageListPagination } from "./utils";
-import { isEqual, uniqBy, uniqWith } from "lodash";
+import { uniqBy } from "lodash";
 import SearchRepository from "../../../core/platform/services/search/repository";
 import { MessageFileRef } from "../entities/message-file-refs";
 import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
 import gr from "../../global-resolver";
-import { PublicFile, File } from "../../files/entities/file";
 import { MessageFile } from "../entities/message-files";
 import { formatUser } from "../../../utils/users";
-import { UserObject } from "../../user/web/types";
 import { FileSearchResult } from "../web/controllers/views/search-files";
 
-export class ViewsServiceImpl implements MessageViewsServiceAPI {
+export class ViewsServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repositoryChannelRefs: Repository<MessageChannelRef>;
   repositoryThreads: Repository<Thread>;
@@ -203,7 +203,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
    * @returns
    */
   async listChannel(
-    pagination: Pagination,
+    pagination: Paginable,
     options?: MessageViewListOptions,
     context?: ChannelViewExecutionContext,
   ): Promise<ListResult<MessageWithReplies>> {
@@ -213,7 +213,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
         workspace_id: context.channel.workspace_id,
         channel_id: context.channel.id,
       },
-      buildMessageListPagination(pagination, "message_id"),
+      buildMessageListPagination(Pagination.fromPaginable(pagination), "message_id"),
     );
 
     const threads = uniqBy(
@@ -354,7 +354,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
               })
           : [];
 
-      let refs = [...uploads, ...downloads];
+      const refs = [...uploads, ...downloads];
 
       const messageFilePromises: Promise<MessageFile & { context: MessageFileRef }>[] = refs.map(
         async ref => {

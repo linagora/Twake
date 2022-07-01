@@ -102,6 +102,7 @@ export class ApplicationsApiController {
     const companyApplication = gr.services.applications.companyApps.get({
       company_id,
       application_id: request.currentUser.application_id,
+      id: undefined,
     });
     if (!companyApplication) {
       throw CrudException.forbidden("This application is not installed in the requested company");

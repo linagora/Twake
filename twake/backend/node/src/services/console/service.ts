@@ -1,15 +1,14 @@
 import { DatabaseServiceAPI } from "../../core/platform/services/database/api";
-import { ConsoleServiceAPI } from "./api";
 import { MergeProcess } from "./processing/merge";
 import { ConsoleOptions, ConsoleType, MergeProgress } from "./types";
 import { ConsoleServiceClient } from "./client-interface";
 import { ConsoleClientFactory } from "./client-factory";
 import User from "../user/entities/user";
 import gr from "../global-resolver";
-import { Configuration } from "../../core/platform/framework";
+import { Configuration, TwakeServiceProvider } from "../../core/platform/framework";
 import assert from "assert";
 
-export class ConsoleServiceImpl implements ConsoleServiceAPI {
+export class ConsoleServiceImpl implements TwakeServiceProvider {
   version: "1";
 
   consoleType: ConsoleType;

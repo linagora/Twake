@@ -141,7 +141,7 @@ export class FileServiceImpl {
             });
 
             if (options.waitForThumbnail) {
-              for (let i = 1; i < 10; i++) {
+              for (let i = 1; i < 100; i++) {
                 entity = await this.repository.findOne({
                   company_id: context.company.id,
                   id: entity.id,

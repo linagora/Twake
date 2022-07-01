@@ -1,6 +1,6 @@
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 
-import { OnlineGetRequest, OnlineGetResponse, OnlineServiceAPI } from "../api";
+import { OnlineGetRequest, OnlineGetResponse } from "../types";
 import OnlineJob from "../cron";
 import { OnlinePubsubService } from "../pubsub";
 import { DISCONNECTED_DELAY } from "../constants";
@@ -8,9 +8,9 @@ import UserOnline, { getInstance, TYPE as ONLINE_TYPE } from "../entities/user-o
 import gr from "../../global-resolver";
 import { getLogger, TwakeLogger, TwakeServiceProvider } from "../../../core/platform/framework";
 
-export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineServiceAPI {
+export default class OnlineServiceImpl implements TwakeServiceProvider {
   version = "1";
-  service: OnlineServiceAPI;
+  service: OnlineServiceImpl;
   private job: OnlineJob;
   private pubsubService: OnlinePubsubService;
   onlineRepository: Repository<UserOnline>;
@@ -20,7 +20,7 @@ export default class OnlineServiceImpl implements TwakeServiceProvider, OnlineSe
     this.logger = getLogger("online.service");
   }
 
-  api(): OnlineServiceAPI {
+  api(): OnlineServiceImpl {
     return this.service;
   }
 

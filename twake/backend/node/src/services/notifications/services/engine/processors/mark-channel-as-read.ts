@@ -1,8 +1,7 @@
 import _ from "lodash";
 import { UserNotificationBadge } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
-import { NotificationPubsubHandler } from "../../../api";
-import { ChannelReadMessage } from "../../../types";
+import { ChannelReadMessage, NotificationPubsubHandler } from "../../../types";
 import gr from "../../../../global-resolver";
 
 export class MarkChannelAsReadMessageProcessor

@@ -1,9 +1,9 @@
-import { NotificationPubsubHandler } from "../../../api";
 import { logger } from "../../../../../core/platform/framework";
 import { MobilePushNotifier } from "../../../notifiers";
 import {
   MentionNotification,
   MentionNotificationResult,
+  NotificationPubsubHandler,
   PushNotificationMessage,
 } from "../../../types";
 import { ChannelMemberNotificationPreference } from "../../../entities";

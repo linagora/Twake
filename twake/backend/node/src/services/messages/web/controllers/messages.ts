@@ -6,7 +6,7 @@ import {
   ResourceListResponse,
   ResourceUpdateResponse,
 } from "../../../../utils/types";
-import { Message } from "../../entities/messages";
+import { getInstance as getMessageInstance, Message } from "../../entities/messages";
 import { MessageListQueryParameters, ThreadExecutionContext } from "../../types";
 import { handleError } from "../../../../utils/handleError";
 import { Pagination } from "../../../../core/platform/framework/api/crud-service";
@@ -100,10 +100,10 @@ export class MessagesController
     const context = getThreadExecutionContext(request);
     try {
       await gr.services.messages.messages.forceDelete(
-        {
+        getMessageInstance({
           thread_id: request.params.thread_id,
           id: request.params.message_id,
-        },
+        }),
         context,
       );
       return {
@@ -127,10 +127,10 @@ export class MessagesController
     const context = getThreadExecutionContext(request);
     try {
       await gr.services.messages.messages.delete(
-        {
+        getMessageInstance({
           thread_id: request.params.thread_id,
           id: request.params.message_id,
-        },
+        }),
         context,
       );
       return {

@@ -5,7 +5,7 @@ import {
   ResourcePath,
 } from "../../../core/platform/services/realtime/types";
 import { eventBus } from "../../../core/platform/services/realtime/bus";
-import { UsersOnlineMessage } from "../api";
+import { UsersOnlineMessage } from "../types";
 import { ONLINE_TOPIC } from "../constants";
 
 export class UserOnlineProcessor implements PubsubHandler<UsersOnlineMessage, void> {

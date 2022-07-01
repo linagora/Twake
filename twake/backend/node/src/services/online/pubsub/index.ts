@@ -1,6 +1,6 @@
 import { getLogger, Initializable, TwakeLogger } from "../../../core/platform/framework";
 import { PubsubServiceAPI } from "../../../core/platform/services/pubsub/api";
-import { UsersOnlineMessage } from "../api";
+import { UsersOnlineMessage } from "../types";
 import { ONLINE_TOPIC } from "../constants";
 import { UserOnlineProcessor } from "./processor";
 import gr from "../../global-resolver";

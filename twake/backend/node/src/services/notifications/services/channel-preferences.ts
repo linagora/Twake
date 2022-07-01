@@ -9,14 +9,13 @@ import {
   ChannelMemberNotificationPreference,
   ChannelMemberNotificationPreferencePrimaryKey,
 } from "../entities";
-import { ChannelMemberPreferencesServiceAPI } from "../api";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger } from "../../../core/platform/framework";
+import { Initializable, logger, TwakeServiceProvider } from "../../../core/platform/framework";
 import gr from "../../global-resolver";
 
 const TYPE = "channel_members_notification_preferences";
 
-export class ChannelMemberPreferencesServiceImpl implements ChannelMemberPreferencesServiceAPI {
+export class ChannelMemberPreferencesServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<ChannelMemberNotificationPreference>;
 
@@ -75,8 +74,8 @@ export class ChannelMemberPreferencesServiceImpl implements ChannelMemberPrefere
       ChannelMemberNotificationPreferencePrimaryKey,
       "channel_id" | "company_id"
     >,
-    users: string[] | null = null,
-    lastRead: {
+    users?: string[] | null,
+    lastRead?: {
       lessThan: number;
     },
   ): Promise<ListResult<ChannelMemberNotificationPreference>> {

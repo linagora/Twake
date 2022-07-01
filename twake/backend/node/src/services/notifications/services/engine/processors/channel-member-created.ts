@@ -3,9 +3,9 @@ import {
   getNotificationPreferenceInstance,
 } from "../../../entities";
 import { logger } from "../../../../../core/platform/framework";
-import { NotificationPubsubHandler } from "../../../api";
 import { Channel, ChannelMember } from "../../../../channels/entities";
 import gr from "../../../../global-resolver";
+import { NotificationPubsubHandler } from "../../../types";
 
 type JoinChannelMessage = { channel: Channel; member: ChannelMember };
 

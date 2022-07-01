@@ -2,13 +2,19 @@ import {
   DeleteResult,
   ListResult,
   OperationType,
+  Paginable,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
-import { logger, RealtimeSaved, TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  logger,
+  RealtimeSaved,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { MessageThreadMessagesServiceAPI } from "../api";
 import {
   getInstance,
   Message,
@@ -28,10 +34,10 @@ import {
   ReactionOperation,
   ThreadExecutionContext,
 } from "../types";
-import _, { first, pick } from "lodash";
+import _ from "lodash";
 import { getThreadMessagePath, getThreadMessageWebsocketRoom } from "../web/realtime";
 import { ThreadMessagesOperationsService } from "./messages-operations";
-import { Thread, ThreadPrimaryKey } from "../entities/threads";
+import { Thread } from "../entities/threads";
 import { UserObject } from "../../user/web/types";
 import { formatUser } from "../../../utils/users";
 import gr from "../../global-resolver";
@@ -47,7 +53,7 @@ import { MessageUserInboxRefReversed } from "../entities/message-user-inbox-refs
 import { LinkPreviewPubsubRequest } from "../../../services/previews/types";
 import { Thumbnail } from "../../files/entities/file";
 
-export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
+export class ThreadMessagesService implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<Message>;
   msgFilesRepository: Repository<MessageFile>;
@@ -442,13 +448,13 @@ export class ThreadMessagesService implements MessageThreadMessagesServiceAPI {
   }
 
   async list<ListOption>(
-    pagination: Pagination,
+    pagination: Paginable,
     options?: ListOption,
     context?: ThreadExecutionContext,
   ): Promise<ListResult<MessageWithUsers>> {
     const list = await this.repository.find(
       { thread_id: context.thread.id },
-      buildMessageListPagination(pagination, "id"),
+      buildMessageListPagination(Pagination.fromPaginable(pagination), "id"),
     );
 
     //Get complete details about initial message

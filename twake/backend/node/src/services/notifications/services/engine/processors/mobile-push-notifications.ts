@@ -1,6 +1,9 @@
-import { NotificationPubsubHandler } from "../../../api";
 import { logger } from "../../../../../core/platform/framework";
-import { PushNotificationMessage, PushNotificationMessageResult } from "../../../types";
+import {
+  NotificationPubsubHandler,
+  PushNotificationMessage,
+  PushNotificationMessageResult,
+} from "../../../types";
 import gr from "../../../../global-resolver";
 
 /**

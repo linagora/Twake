@@ -1,15 +1,21 @@
-import { CompanyApplicationServiceAPI } from "../api";
 import CompanyApplication, {
   CompanyApplicationPrimaryKey,
   CompanyApplicationWithApplication,
   TYPE,
 } from "../entities/company-application";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { logger, RealtimeDeleted, RealtimeSaved } from "../../../core/platform/framework";
+import {
+  Initializable,
+  logger,
+  RealtimeDeleted,
+  RealtimeSaved,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import {
   DeleteResult,
   ListResult,
   OperationType,
+  Paginable,
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
@@ -17,7 +23,7 @@ import { CompanyExecutionContext } from "../web/types";
 import { getCompanyApplicationRoom } from "../realtime";
 import gr from "../../global-resolver";
 
-export class CompanyApplicationServiceImpl implements CompanyApplicationServiceAPI {
+export class CompanyApplicationServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<CompanyApplication>;
 
@@ -129,7 +135,7 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
   }
 
   async list<ListOptions>(
-    pagination: Pagination,
+    pagination: Paginable,
     options?: ListOptions,
     context?: CompanyExecutionContext,
   ): Promise<ListResult<CompanyApplicationWithApplication>> {
@@ -137,7 +143,7 @@ export class CompanyApplicationServiceImpl implements CompanyApplicationServiceA
       {
         group_id: context.company.id,
       },
-      { pagination },
+      { pagination: Pagination.fromPaginable(pagination) },
     );
 
     const applications = [];

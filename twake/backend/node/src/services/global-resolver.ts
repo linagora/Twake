@@ -1,35 +1,31 @@
-import { TwakePlatform } from "../core/platform/platform";
-import { ConsoleServiceAPI } from "./console/api";
-import { CompanyApplicationServiceAPI } from "./applications/api";
-import { StatisticsAPI } from "./statistics/types";
-import { CompanyServiceImpl } from "./user/services/companies";
-import { RealtimeServiceAPI } from "../core/platform/services/realtime/api";
-import WebServerAPI from "../core/platform/services/webserver/provider";
 import { FastifyInstance } from "fastify";
 import { IncomingMessage, Server, ServerResponse } from "http";
-import { WorkspaceServiceImpl } from "./workspaces/services/workspace";
-import { UserExternalLinksServiceImpl } from "./user/services/external_links";
-import { UserNotificationBadgeService } from "./notifications/services/bages";
-import {
-  ChannelMemberPreferencesServiceAPI,
-  ChannelThreadUsersServiceAPI,
-  UserNotificationBadgeServiceAPI,
-  UserNotificationPreferencesAPI,
-} from "./notifications/api";
-import { DatabaseServiceAPI } from "../core/platform/services/database/api";
-import { NotificationPreferencesService } from "./notifications/services/preferences";
-import {
-  MessageThreadMessagesServiceAPI,
-  MessageThreadsServiceAPI,
-  MessageViewsServiceAPI,
-} from "./messages/api";
-import { ThreadMessagesService } from "./messages/services/messages";
-import { ThreadsService } from "./messages/services/threads";
-import { UserBookmarksService } from "./messages/services/user-bookmarks";
+
+import { TwakePlatform } from "../core/platform/platform";
+import { RealtimeServiceAPI } from "../core/platform/services/realtime/api";
+import WebServerAPI from "../core/platform/services/webserver/provider";
 import { SearchServiceAPI } from "../core/platform/services/search/api";
 import StorageAPI from "../core/platform/services/storage/provider";
 import { PubsubServiceAPI } from "../core/platform/services/pubsub/api";
 import { CounterAPI } from "../core/platform/services/counter/types";
+import { DatabaseServiceAPI } from "../core/platform/services/database/api";
+import AuthServiceAPI from "../core/platform/services/auth/provider";
+import { PushServiceAPI } from "../core/platform/services/push/api";
+import { CronAPI } from "../core/platform/services/cron/api";
+import WebSocketAPI from "../core/platform/services/websocket/provider";
+import TrackerAPI from "../core/platform/services/tracker/provider";
+import KnowledgeGraphService from "../core/platform/services/knowledge-graph";
+
+import { logger } from "../core/platform/framework";
+import assert from "assert";
+import { CompanyServiceImpl } from "./user/services/companies";
+import { WorkspaceServiceImpl } from "./workspaces/services/workspace";
+import { UserExternalLinksServiceImpl } from "./user/services/external_links";
+import { UserNotificationBadgeService } from "./notifications/services/bages";
+import { NotificationPreferencesService } from "./notifications/services/preferences";
+import { ThreadMessagesService } from "./messages/services/messages";
+import { ThreadsService } from "./messages/services/threads";
+import { UserBookmarksService } from "./messages/services/user-bookmarks";
 import { UserServiceImpl } from "./user/services/users/service";
 import { CompanyApplicationServiceImpl } from "./applications/services/company-applications";
 import { ApplicationServiceImpl } from "./applications/services/applications";
@@ -40,26 +36,16 @@ import { ChannelServiceImpl } from "./channels/services/channel/service";
 import { MemberServiceImpl } from "./channels/services/member/service";
 import ChannelPendingEmailServiceImpl from "./channels/services/channel/pending-emails/service";
 import { TabServiceImpl } from "./channels/services/tab";
-import AuthServiceAPI from "../core/platform/services/auth/provider";
 import { ConsoleServiceImpl } from "./console/service";
 import { StatisticsServiceImpl } from "./statistics/service";
-import { logger } from "../core/platform/framework";
-import assert from "assert";
 import { NotificationEngine } from "./notifications/services/engine";
 import { MobilePushService } from "./notifications/services/mobile-push";
 import { ChannelMemberPreferencesServiceImpl } from "./notifications/services/channel-preferences";
 import { ChannelThreadUsersServiceImpl } from "./notifications/services/channel-thread-users";
-import { PushServiceAPI } from "../core/platform/services/push/api";
 import { PreviewProcessService } from "./previews/services/files/processing/service";
-import { LinkPreviewServiceAPI, PreviewServiceAPI } from "./previews/types";
-import { CronAPI } from "../core/platform/services/cron/api";
-import WebSocketAPI from "../core/platform/services/websocket/provider";
-import TrackerAPI from "../core/platform/services/tracker/provider";
 import { ApplicationHooksService } from "./applications/services/hooks";
-import { OnlineServiceAPI } from "./online/api";
 import OnlineServiceImpl from "./online/service";
 import { PreviewEngine } from "./previews/services/files/engine";
-import KnowledgeGraphService from "../core/platform/services/knowledge-graph";
 import { ChannelsPubsubListener } from "./channels/services/pubsub";
 import { LinkPreviewProcessService } from "./previews/services/links/processing/service";
 import { LinkPreviewEngine } from "./previews/services/links/engine";
@@ -76,37 +62,38 @@ type PlatformServices = {
   tracker: TrackerAPI;
   webserver: WebServerAPI;
   websocket: WebSocketAPI;
+  knowledgeGraph: KnowledgeGraphService;
 };
 
 type TwakeServices = {
   workspaces: WorkspaceServiceImpl;
   companies: CompanyServiceImpl;
   users: UserServiceImpl;
-  console: ConsoleServiceAPI;
-  statistics: StatisticsAPI;
+  console: ConsoleServiceImpl;
+  statistics: StatisticsServiceImpl;
   externalUser: UserExternalLinksServiceImpl;
   notifications: {
-    badges: UserNotificationBadgeServiceAPI;
-    channelPreferences: ChannelMemberPreferencesServiceAPI;
-    channelThreads: ChannelThreadUsersServiceAPI;
+    badges: UserNotificationBadgeService;
+    channelPreferences: ChannelMemberPreferencesServiceImpl;
+    channelThreads: ChannelThreadUsersServiceImpl;
     engine: NotificationEngine;
-    preferences: UserNotificationPreferencesAPI;
+    preferences: NotificationPreferencesService;
     mobilePush: MobilePushService;
   };
   preview: {
-    files: PreviewServiceAPI;
-    links: LinkPreviewServiceAPI;
+    files: PreviewProcessService;
+    links: LinkPreviewProcessService;
   };
   messages: {
-    messages: MessageThreadMessagesServiceAPI;
-    threads: MessageThreadsServiceAPI;
+    messages: ThreadMessagesService;
+    threads: ThreadsService;
     userBookmarks: UserBookmarksService;
-    views: MessageViewsServiceAPI;
+    views: ViewsServiceImpl;
     engine: MessagesEngine;
   };
   applications: {
     marketplaceApps: ApplicationServiceImpl;
-    companyApps: CompanyApplicationServiceAPI;
+    companyApps: CompanyApplicationServiceImpl;
     hooks: ApplicationHooksService;
   };
   files: FileServiceImpl;
@@ -117,8 +104,7 @@ type TwakeServices = {
   };
   channelPendingEmail: ChannelPendingEmailServiceImpl;
   tab: TabServiceImpl;
-  online: OnlineServiceAPI;
-  knowledgeGraph: KnowledgeGraphService;
+  online: OnlineServiceImpl;
 };
 
 class GlobalResolver {
@@ -148,6 +134,7 @@ class GlobalResolver {
       tracker: platform.getProvider<TrackerAPI>("tracker"),
       webserver: platform.getProvider<WebServerAPI>("webserver"),
       websocket: platform.getProvider<WebSocketAPI>("websocket"),
+      knowledgeGraph: await new KnowledgeGraphService().init(),
     };
 
     this.fastify = this.platformServices.webserver.getServer();
@@ -200,7 +187,6 @@ class GlobalResolver {
       channelPendingEmail: await new ChannelPendingEmailServiceImpl().init(),
       tab: await new TabServiceImpl().init(),
       online: await new OnlineServiceImpl().init(),
-      knowledgeGraph: await new KnowledgeGraphService().init(),
     };
 
     Object.keys(this.services).forEach((key: keyof TwakeServices) => {

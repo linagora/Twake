@@ -1,13 +1,13 @@
-import { PreviewPubsubHandler } from "../../../api";
 import { logger, TwakeContext } from "../../../../../core/platform/framework";
 import { PreviewClearPubsubRequest, PreviewPubsubCallback } from "../../../types";
 import gr from "../../../../global-resolver";
+import { PubsubHandler } from "../../../../../core/platform/services/pubsub/api";
 
 /**
  * Clear thumbnails when the delete task is called
  */
 export class ClearProcessor
-  implements PreviewPubsubHandler<PreviewClearPubsubRequest, PreviewPubsubCallback>
+  implements PubsubHandler<PreviewClearPubsubRequest, PreviewPubsubCallback>
 {
   readonly name = "ClearProcessor";
 

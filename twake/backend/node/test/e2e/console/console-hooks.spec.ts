@@ -3,8 +3,8 @@ import { init, TestPlatform } from "../setup";
 import { TestDbService } from "../utils.prepare.db";
 import { v1 as uuidv1 } from "uuid";
 import { sign as cryptoSign } from "crypto";
-import { ConsoleServiceAPI } from "../../../src/services/console/api";
 import gr from "../../../src/services/global-resolver";
+import { ConsoleServiceImpl } from "../../../src/services/console/service";
 /*
  THIS TESTS RUNS ONLY FOR THE CONSOLE-MODE (CONSOLE TYPE: REMOTE)
 */
@@ -66,7 +66,7 @@ describe("The console API hooks", () => {
       username: "superman",
     });
 
-    const console = platform.platform.getProvider<ConsoleServiceAPI>("console");
+    const console = platform.platform.getProvider<ConsoleServiceImpl>("console");
 
     ends();
   });

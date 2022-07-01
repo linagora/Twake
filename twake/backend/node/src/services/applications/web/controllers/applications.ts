@@ -218,6 +218,7 @@ export class ApplicationController
     const applicationInCompany = await gr.services.applications.companyApps.get({
       company_id: request.body.company_id,
       application_id: request.params.application_id,
+      id: undefined,
     });
 
     if (!applicationInCompany) {

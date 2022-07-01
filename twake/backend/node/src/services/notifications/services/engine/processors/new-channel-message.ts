@@ -1,14 +1,13 @@
 import { isDirectChannel } from "../../../../channels/utils";
 import { logger } from "../../../../../core/platform/framework";
 import { MessageNotification } from "../../../../messages/types";
-import { NotificationPubsubHandler } from "../../../api";
 import {
   ChannelMemberNotificationPreference,
   ChannelThreadUsers,
   getChannelThreadUsersInstance,
 } from "../../../entities";
 import { ChannelMemberNotificationLevel } from "../../../../channels/types";
-import { MentionNotification } from "../../../types";
+import { MentionNotification, NotificationPubsubHandler } from "../../../types";
 import { ChannelType } from "../../../../../utils/types";
 import gr from "../../../../global-resolver";
 

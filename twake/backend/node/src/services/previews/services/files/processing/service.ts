@@ -3,10 +3,11 @@ import { convertFromOffice } from "./office";
 import { convertFromPdf } from "./pdf";
 import { cleanFiles, isFileType } from "../../../utils";
 import { imageExtensions, officeExtensions, pdfExtensions, videoExtensions } from "./mime";
-import { PreviewPubsubRequest, PreviewServiceAPI, ThumbnailResult } from "../../../types";
+import { PreviewPubsubRequest, ThumbnailResult } from "../../../types";
 import { generateVideoPreview } from "./video";
+import { Initializable, TwakeServiceProvider } from "../../../../../core/platform/framework";
 
-export class PreviewProcessService implements PreviewServiceAPI {
+export class PreviewProcessService implements TwakeServiceProvider, Initializable {
   name: "PreviewProcessService";
   version: "1";
 

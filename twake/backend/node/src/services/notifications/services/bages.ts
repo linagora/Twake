@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { RealtimeDeleted, RealtimeSaved, TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  RealtimeDeleted,
+  RealtimeSaved,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import { ResourcePath } from "../../../core/platform/services/realtime/types";
 import {
   CrudException,
@@ -9,7 +15,6 @@ import {
   Pagination,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
-import { UserNotificationBadgeServiceAPI } from "../api";
 import {
   getUserNotificationBadgeInstance,
   UserNotificationBadge,
@@ -20,10 +25,9 @@ import { NotificationExecutionContext } from "../types";
 import { getNotificationRoomName } from "./realtime";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import gr from "../../global-resolver";
-import { pick, uniq } from "lodash";
-import _ from "lodash";
+import _, { pick, uniq } from "lodash";
 
-export class UserNotificationBadgeService implements UserNotificationBadgeServiceAPI {
+export class UserNotificationBadgeService implements TwakeServiceProvider, Initializable {
   version: "1";
   repository: Repository<UserNotificationBadge>;
 
@@ -49,8 +53,6 @@ export class UserNotificationBadgeService implements UserNotificationBadgeServic
   })
   async save<SaveOptions>(
     badge: UserNotificationBadge,
-    options: SaveOptions,
-    context: NotificationExecutionContext,
   ): Promise<SaveResult<UserNotificationBadge>> {
     await this.repository.save(getUserNotificationBadgeInstance(badge));
 

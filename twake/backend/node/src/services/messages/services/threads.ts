@@ -1,5 +1,4 @@
 import {
-  CRUDService,
   DeleteResult,
   ExecutionContext,
   ListResult,
@@ -7,19 +6,21 @@ import {
   Paginable,
   SaveResult,
 } from "../../../core/platform/framework/api/crud-service";
-import { logger, TwakeContext } from "../../../core/platform/framework";
+import {
+  Initializable,
+  logger,
+  TwakeContext,
+  TwakeServiceProvider,
+} from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
-import { MessageThreadsServiceAPI } from "../api";
-import { ParticipantObject, Thread, ThreadPrimaryKey } from "../entities/threads";
+import { ParticipantObject, Thread } from "../entities/threads";
 import { CompanyExecutionContext, ThreadExecutionContext } from "../types";
 import { Message } from "../entities/messages";
 import _ from "lodash";
 import { extendExecutionContentWithChannel } from "../web/controllers";
 import gr from "../../global-resolver";
 
-export class ThreadsService
-  implements MessageThreadsServiceAPI, CRUDService<Thread, ThreadPrimaryKey, ExecutionContext>
-{
+export class ThreadsService implements TwakeServiceProvider, Initializable {
   version: "1";
   name: "ThreadsService";
   repository: Repository<Thread>;
@@ -232,7 +233,10 @@ export class ThreadsService
     const thread = await this.get(pk);
     return {
       ...thread,
-      message: await gr.services.messages.messages.get({ id: pk.id, thread_id: pk.id }, context),
+      message: await gr.services.messages.messages.get(
+        { id: pk.id, thread_id: pk.id },
+        context as ThreadExecutionContext,
+      ),
     };
   }
 

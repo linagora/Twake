@@ -3,18 +3,13 @@ import twake from "../../../twake";
 import ora from "ora";
 import { TwakePlatform } from "../../../core/platform/platform";
 import { DatabaseServiceAPI } from "../../../core/platform/services/database/api";
-import {
-  ExecutionContext,
-  Paginable,
-  Pagination,
-} from "../../../core/platform/framework/api/crud-service";
-import User, { TYPE as userTYPE } from "../../../services/user/entities/user";
-import _ from "lodash";
+import { Paginable, Pagination } from "../../../core/platform/framework/api/crud-service";
 import gr from "../../../services/global-resolver";
 import { getInstance, MessageFileRef } from "../../../services/messages/entities/message-file-refs";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import uuid from "node-uuid";
 import { MessageFile } from "../../../services/messages/entities/message-files";
+import { ThreadExecutionContext } from "../../../services/messages/types";
 
 type Options = {};
 
@@ -84,7 +79,7 @@ class MessageFilesCacheMigrator {
                       workspace: { id: workspaceId },
                       channel: { id: channelId },
                       user: { id: null },
-                    } as ExecutionContext,
+                    } as ThreadExecutionContext,
                   );
                   messagesPagination = messagesList.nextPage;
 

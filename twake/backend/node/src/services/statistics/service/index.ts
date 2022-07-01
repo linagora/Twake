@@ -1,12 +1,13 @@
-import { STATISTICS_GLOBAL_KEY, StatisticsAPI } from "../types";
+import { STATISTICS_GLOBAL_KEY } from "../types";
 import StatisticsEntity, {
   getInstance as getStatisticsEntityInstance,
   TYPE as StatisticsEntityType,
 } from "../entities/statistics";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
 import gr from "../../global-resolver";
+import { Initializable, TwakeServiceProvider } from "../../../core/platform/framework";
 
-export class StatisticsServiceImpl implements StatisticsAPI {
+export class StatisticsServiceImpl implements TwakeServiceProvider, Initializable {
   version: "1";
   private repository: Repository<StatisticsEntity>;
 

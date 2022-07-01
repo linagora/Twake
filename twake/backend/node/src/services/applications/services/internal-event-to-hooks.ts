@@ -36,6 +36,7 @@ export class InternalToHooksProcessor implements PubsubHandler<MessageHook, void
       !(await gr.services.applications.companyApps.get({
         company_id: message.company_id,
         application_id: message.application_id,
+        id: undefined,
       }))
     ) {
       logger.error(

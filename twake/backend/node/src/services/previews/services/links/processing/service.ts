@@ -1,10 +1,14 @@
-import { LinkPreviewServiceAPI, LinkPreview, LinkPreviewPubsubRequest } from "../../../types";
+import { LinkPreview, LinkPreviewPubsubRequest } from "../../../types";
 import { generateLinkPreview } from "./link";
 import { checkUrlContents } from "../../../utils";
 import { generateImageUrlPreview } from "./image";
-import { logger } from "../../../../../core/platform/framework";
+import {
+  Initializable,
+  logger,
+  TwakeServiceProvider,
+} from "../../../../../core/platform/framework";
 
-export class LinkPreviewProcessService implements LinkPreviewServiceAPI {
+export class LinkPreviewProcessService implements TwakeServiceProvider, Initializable {
   name: "LinkPreviewProcessService";
   version: "1";
 

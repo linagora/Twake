@@ -53,7 +53,6 @@ export class ChannelSystemActivityMessageProcessor
       },
       {
         message,
-        participants,
       },
       {
         user: {
