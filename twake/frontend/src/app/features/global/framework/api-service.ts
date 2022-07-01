@@ -76,13 +76,13 @@ export default class Api {
         '',
         (resp: any) => {
           const result = raw ? resp : JSON.parse(resp);
-          if (result.statusCode === 500) {
+          if (resp.statusCode === 500) {
             callback && callback(result);
             return reject(result);
           }
 
-          resolve(result);
-          callback && callback(result);
+          resolve({ ...result, _statusCode: resp.statusCode });
+          callback && callback({ ...result, _statusCode: resp.statusCode });
         },
         options,
       );

@@ -51,7 +51,7 @@ export const SearchResultsIndex = () => {
               {hasInput && <SearchCounterBadge count={files.length} />}
             </div>
           </div>,
-          ...(!input.channelId
+          ...(!input.channelId || true
             ? [
                 <div key="channels">
                   <ChannelsTab />

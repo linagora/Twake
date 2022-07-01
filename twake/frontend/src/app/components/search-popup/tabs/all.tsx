@@ -27,7 +27,7 @@ export default () => {
 
   return (
     <div className="-mt-4">
-      {!input.channelId && channels.length > 0 && (
+      {(!input.channelId || true) && channels.length > 0 && (
         <>
           <div className="flex mt-4">
             <Text.Subtitle className="block grow">

@@ -46,7 +46,7 @@ export function useChannel(
         } else {
           set({
             id: channelId,
-            name: 'You cannot access this content',
+            name: '',
             visibility: 'private',
           });
         }
