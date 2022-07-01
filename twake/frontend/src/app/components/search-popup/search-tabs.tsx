@@ -51,13 +51,13 @@ export const SearchResultsIndex = () => {
               {hasInput && <SearchCounterBadge count={files.length} />}
             </div>
           </div>,
-          ...(!input.channelId || true
-            ? [
-                <div key="channels">
-                  <ChannelsTab />
-                </div>,
-              ]
-            : []),
+          .../*!input.channelId
+            ?*/ [
+            <div key="channels">
+              <ChannelsTab />
+            </div>,
+          ],
+          /*: []*/
         ]}
         selected={orderedTabs.indexOf(tab)}
         onClick={idx => setTab(orderedTabs[idx] as any)}
