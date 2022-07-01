@@ -3,5 +3,3 @@ export type BrowserInformation = {
   version: string | null;
   os: string | null;
 };
-
-export type TargetWindow = 'main' | 'popup';
