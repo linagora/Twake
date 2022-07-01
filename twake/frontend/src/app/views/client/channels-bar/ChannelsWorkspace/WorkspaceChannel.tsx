@@ -9,7 +9,6 @@ import ChannelCategory from '../Parts/Channel/ChannelCategory';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
-import WorkspaceChannelList from 'app/views/client/channels-bar/Modals/WorkspaceChannelList';
 
 import Menu from 'components/menus/menu.js';
 import Icon from 'app/components/icon/icon';

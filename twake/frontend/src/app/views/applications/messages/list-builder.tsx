@@ -87,7 +87,15 @@ export default React.memo(
           setFirstItemIndex(() => nextFirstItemIndex);
           setItems([...newItems, ...items]);
         } else {
-          //Nothing changed
+          if (
+            _.intersection(
+              items.map(i => itemId(i)),
+              _items.map(i => itemId(i)),
+            ).length > 0
+          ) {
+            const newList = [...items, ..._items];
+            if (filterOnAppend) setItems(filterOnAppend(newList));
+          }
         }
       }, [_items]);
 

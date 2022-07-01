@@ -136,11 +136,19 @@ export const useMessageEditor = (key: EditorKey) => {
 export const cleanFrontMessagesFromListOfMessages = (
   messages: (AtomMessageKey | MessagesAndComponentsType)[],
 ) => {
-  messages = messages.filter(
-    i =>
-      (i as MessagesAndComponentsType)?.type !== 'message' ||
-      getMessage(i.id || '')?._status !== 'sent',
-  );
+  messages = messages.filter(i => {
+    if (getMessage(i.id || '') && getMessage(i.id || '')?._status !== 'sent') return true;
+
+    if (getMessage(i.id || '')?._status !== undefined) {
+      //This message was created in frontend
+      //If this message was retrieved from the backend, then we should not keep the frontend one
+      return !messages.find(
+        j =>
+          getMessage(j.id || '')?.context?._front_id ===
+            getMessage(i.id || '')?.context?._front_id && j.id !== i.id,
+      );
+    }
+  });
   messages = _.uniqBy(
     messages,
     a =>

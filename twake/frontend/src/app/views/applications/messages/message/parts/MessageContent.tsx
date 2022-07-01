@@ -91,6 +91,7 @@ export default (props: Props) => {
       }}
       onClick={() => setActive(false)}
     >
+      {message._status + ' - ' + message.id + ' - ' + message.thread_id}
       <MessageHeader linkToThread={props.linkToThread} />
       {!!showEdition && !deleted && (
         <div className="content-parent">

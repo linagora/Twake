@@ -14,6 +14,7 @@ import { useFavoriteChannels } from 'app/features/channels/hooks/use-favorite-ch
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 
 import './ChannelRow.scss';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 type PropsType = {
   channel: ChannelType;
@@ -24,6 +25,7 @@ type PropsType = {
 export default ({ channel, joined, active }: PropsType) => {
   const { refresh: refreshFavoriteChannels } = useFavoriteChannels();
   const userId: string = UsersService.getCurrentUserId();
+  const { refresh: refreshChannel } = useChannel(channel.id || '');
 
   const ref = createRef<HTMLDivElement>();
 
@@ -61,6 +63,8 @@ export default ({ channel, joined, active }: PropsType) => {
         channelId: channel.id,
       }),
     );
+
+    refreshChannel();
   };
 
   return (
