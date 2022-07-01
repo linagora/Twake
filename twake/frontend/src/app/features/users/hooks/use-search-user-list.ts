@@ -91,8 +91,6 @@ export const searchFrontend = (
 
   if (!query) {
     // TODO return list with users sorted by favorite
-    // eslint-disable-next-line no-self-assign
-    result = result;
   }
 
   if (scope === 'company') {
