@@ -46,7 +46,10 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
             return (
               <div key={user.id} className="new-direct-channel-proposed-user">
                 <div className="user-name">
-                  <User data={user} /> <span className="email">({user.email})</span>
+                  <User data={user} />{' '}
+                  <span className="email overflow-hidden text-ellipsis whitespace-nowrap">
+                    ({user.email})
+                  </span>
                 </div>
                 <div>
                   <Button onClick={() => addUser(user)} size="sm">
@@ -63,7 +66,10 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
             return (
               <div key={user.id} className="new-direct-channel-added-user">
                 <div className="user-name">
-                  <User data={user} /> <span className="email">({user.email})</span>
+                  <User data={user} />{' '}
+                  <span className="email overflow-hidden text-ellipsis whitespace-nowrap">
+                    ({user.email})
+                  </span>
                 </div>
                 <div>
                   <Button theme={'danger'} onClick={() => removeUser(user)} size="sm">

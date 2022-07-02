@@ -102,8 +102,6 @@ export default React.memo(
       }, [_items]);
 
       const appendItems = useCallback(() => {
-        console.log('kafelkafeal appendItemsappendItems');
-
         if (appendMoreLock) return;
         appendMoreLock = true;
 
