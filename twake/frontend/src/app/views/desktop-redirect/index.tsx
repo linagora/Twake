@@ -1,7 +1,8 @@
 import { OpenDesktopPopup } from 'app/components/open-desktop-popup/open-desktop-popup';
+import Electron from 'app/features/global/framework/electron-service';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
-import { useWebState } from 'app/features/global/state/atoms/use-web';
-import React, { useEffect } from 'react';
+import { isPreferUserWeb, useWebState } from 'app/features/global/state/atoms/use-web';
+import React from 'react';
 import { useRecoilState } from 'recoil';
 import { detectDesktopAppPresence } from 'src/utils/browser-detect';
 
@@ -15,6 +16,8 @@ export default ({ children }: PropsType): React.ReactElement => {
   useGlobalEffect(
     'desktopRedirect',
     () => {
+      if (Electron.isElectron()) return;
+      if (isPreferUserWeb()) return;
       try {
         const path = window.location.href.replace(window.location.origin, '');
         detectDesktopAppPresence(`twake://${path}`).then(isDesktopAppPresent => {

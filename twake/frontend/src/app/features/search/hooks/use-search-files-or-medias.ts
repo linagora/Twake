@@ -85,7 +85,7 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
     () => {
       (async () => {
         setLoading(true);
-        if (searchInput) {
+        if (searchInput.query) {
           delayRequest('useSearchFiles' + mode, async () => {
             await refresh();
           });

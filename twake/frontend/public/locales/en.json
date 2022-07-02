@@ -910,6 +910,7 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Developer settings",
     "components.open_desktop_popup.subtitle": "Opened in Twake app",
     "components.open_desktop_popup.open_here_link": "Open here instead",
+    "components.open_desktop_popup.open_here_link_forever": "Never try to open app again",
     "molecules.download_banner.title": "Get the most out of Twake, download the desktop app now",
     "molecules.download_banner.download_button": "Download desktop app"
 }
