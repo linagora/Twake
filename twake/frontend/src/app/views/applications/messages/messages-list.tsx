@@ -183,7 +183,7 @@ export default ({ channelId, companyId, workspaceId, threadId }: Props) => {
           filterOnAppend={messages => {
             return cleanFrontMessagesFromListOfMessages(messages);
           }}
-          itemId={m => m.type + (getMessage(m.id)?.context?._front_id || m.threadId)}
+          itemId={m => m.type + (getMessage(m.id)?.context?._front_id || m.threadId) + m.id}
           emptyListComponent={<FirstMessage />}
           itemContent={row}
           followOutput={!!window.reachedEnd && 'smooth'}

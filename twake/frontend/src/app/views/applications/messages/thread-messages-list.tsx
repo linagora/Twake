@@ -112,7 +112,7 @@ export default ({ companyId, workspaceId, channelId, threadId }: Props) => {
             cancelHighlight();
           }}
           items={messages}
-          itemId={m => m.type + (getMessage(m.id)?.context?._front_id || m.id)}
+          itemId={m => m.type + (getMessage(m.id)?.context?._front_id || m.id) + m.id}
           emptyListComponent={<FirstThreadMessage noReplies />}
           filterOnAppend={messages => {
             return cleanFrontMessagesFromListOfMessages(messages);

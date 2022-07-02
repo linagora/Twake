@@ -8,11 +8,13 @@ import Numbers from 'app/features/global/utils/Numbers';
 
 type Props = {
   companyId: string;
+  workspaceId: string;
+  channelId: string;
   threadId: string;
   firstMessageId: string;
 };
 
-export default ({ threadId, companyId, firstMessageId }: Props) => {
+export default ({ threadId, companyId, channelId, workspaceId, firstMessageId }: Props) => {
   const { messages } = useThreadMessages({ companyId, threadId });
 
   return (
@@ -22,7 +24,10 @@ export default ({ threadId, companyId, firstMessageId }: Props) => {
         .filter(m => m.threadId !== m.id)
         .map(m => {
           return (
-            <MessageContext.Provider key={m.id} value={{ ...m, id: m.id || '' }}>
+            <MessageContext.Provider
+              key={m.id}
+              value={{ ...m, id: m.id || '', channelId, workspaceId, companyId }}
+            >
               <Reply />
             </MessageContext.Provider>
           );

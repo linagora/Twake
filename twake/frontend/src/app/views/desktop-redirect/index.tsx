@@ -1,4 +1,5 @@
 import { OpenDesktopPopup } from 'app/components/open-desktop-popup/open-desktop-popup';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { useWebState } from 'app/features/global/state/atoms/use-web';
 import React, { useEffect } from 'react';
 import { useRecoilState } from 'recoil';
@@ -11,22 +12,25 @@ type PropsType = {
 export default ({ children }: PropsType): React.ReactElement => {
   const [useWeb, setUseWeb] = useRecoilState(useWebState);
 
-  useEffect(() => {
-    detectDesktopAppPresence().then(isDesktopAppPresent => {
-      if (!isDesktopAppPresent) {
-        setUseWeb(true);
-        return;
-      }
-
+  useGlobalEffect(
+    'desktopRedirect',
+    () => {
       try {
         const path = window.location.href.replace(window.location.origin, '');
         window.location.replace(`twake://${path}`);
-        setUseWeb(false);
+
+        detectDesktopAppPresence().then(isDesktopAppPresent => {
+          if (isDesktopAppPresent) {
+            setUseWeb(false);
+            return;
+          }
+        });
       } catch (e) {
         setUseWeb(true);
       }
-    });
-  }, []);
+    },
+    [],
+  );
 
   return (
     <>

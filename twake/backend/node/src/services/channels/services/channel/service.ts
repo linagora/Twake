@@ -270,8 +270,14 @@ export class ChannelServiceImpl implements ChannelService {
 
   async get(pk: ChannelPrimaryKey): Promise<ChannelObject> {
     const primaryKey = this.getPrimaryKey(pk);
-    const channel = await this.channelRepository.findOne(primaryKey);
+    let channel = await this.channelRepository.findOne(primaryKey);
+    if (!channel) {
+      channel = await this.channelRepository.findOne({ ...primaryKey, workspace_id: "direct" });
+    }
     const last_activity = await this.getChannelActivity(channel);
+
+    if (channel.visibility === ChannelVisibility.DIRECT)
+      channel = await this.includeUsersInDirectChannel(channel);
 
     return ChannelObject.mapTo(channel, { last_activity });
   }
@@ -693,7 +699,7 @@ export class ChannelServiceImpl implements ChannelService {
       for (const user of channel.members) {
         if (user) {
           const e = await formatUser(await gr.services.users.getCached({ id: user }));
-          users.push(e);
+          if (e) users.push(e);
         }
       }
       channelWithUsers.users = users;
