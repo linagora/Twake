@@ -1,5 +1,5 @@
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
-import { getAllChannelsCache } from 'app/features/channels/hooks/use-channel';
+import { getAllChannelsCache, useSetChannel } from 'app/features/channels/hooks/use-channel';
 import { ChannelType, createDirectChannelFromUsers } from 'app/features/channels/types/channel';
 import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
 import { LoadingState } from 'app/features/global/state/atoms/Loading';
@@ -88,7 +88,15 @@ export const useSearchChannels = () => {
       return;
     }
 
-    if (!isRecent) setSearched(update);
+    if (!isRecent)
+      setSearched({
+        results: update.results.sort(
+          (a, b) =>
+            distanceFromQuery([a.name].join(' '), query) -
+            distanceFromQuery([b.name].join(' '), query),
+        ),
+        nextPage: update.nextPage,
+      });
     if (isRecent) setRecent(update);
     setLoading(false);
   };
@@ -102,9 +110,9 @@ export const useSearchChannels = () => {
     'useSearchChannels',
     () => {
       (async () => {
-        setSearched({ results: frontendSearch(companyId, searchInput.query), nextPage: '' });
         setLoading(true);
         if (searchInput) {
+          setSearched({ results: frontendSearch(companyId, searchInput.query), nextPage: '' });
           delayRequest('useSearchChannels', async () => {
             await refresh();
           });
