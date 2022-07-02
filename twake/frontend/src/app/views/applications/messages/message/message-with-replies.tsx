@@ -69,6 +69,8 @@ const MessageType = () => {
           />
           <Responses
             companyId={context.companyId}
+            workspaceId={context.workspaceId}
+            channelId={context.channelId}
             threadId={context.threadId}
             firstMessageId={firstMessageId}
           />

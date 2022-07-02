@@ -7,13 +7,13 @@ import { useWebState } from 'app/features/global/state/atoms/use-web';
 import Languages from 'app/features/global/services/languages-service';
 
 export const OpenDesktopPopup = (): React.ReactElement => {
-  const [showLink, setShowLink] = useState(false);
+  const [showLink, setShowLink] = useState(true);
   const [, setUseWeb] = useRecoilState(useWebState);
 
   useEffect(() => {
     setTimeout(() => {
       setShowLink(true);
-    }, 1000);
+    }, 5000);
   }, []);
 
   return (
