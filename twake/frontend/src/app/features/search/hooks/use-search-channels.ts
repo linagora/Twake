@@ -1,23 +1,18 @@
-import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
-import { useEffect } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { SearchInputState } from '../state/search-input';
-import { LoadingState } from 'app/features/global/state/atoms/Loading';
-import {
-  SearchChannelsResultsState,
-  SearchUsersChannelsResultsState,
-} from '../state/search-channels-result';
-import { RecentChannelsState } from '../state/recent-channels';
 import ChannelAPIClient from 'app/features/channels/api/channel-api-client';
-import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import { searchBackend, useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
-import { ChannelType, createDirectChannelFromUsers } from 'app/features/channels/types/channel';
-import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
-import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
-import _ from 'lodash';
-import UserAPIClient from 'app/features/users/api/user-api-client';
 import { getAllChannelsCache } from 'app/features/channels/hooks/use-channel';
+import { ChannelType, createDirectChannelFromUsers } from 'app/features/channels/types/channel';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+import { LoadingState } from 'app/features/global/state/atoms/Loading';
+import { delayRequest } from 'app/features/global/utils/managedSearchRequest';
 import Strings, { distanceFromQuery } from 'app/features/global/utils/strings';
+import useRouterCompany from 'app/features/router/hooks/use-router-company';
+import UserAPIClient from 'app/features/users/api/user-api-client';
+import { useCurrentUser } from 'app/features/users/hooks/use-current-user';
+import _ from 'lodash';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { RecentChannelsState } from '../state/recent-channels';
+import { SearchChannelsResultsState } from '../state/search-channels-result';
+import { SearchInputState } from '../state/search-input';
 
 export const useSearchChannelsLoading = () => {
   return useRecoilValue(LoadingState('useSearchChannels'));
@@ -121,9 +116,13 @@ export const useSearchChannels = () => {
     [searchInput.query],
   );
 
+  const channels = _.uniqBy(searchInput?.query ? searched.results : recent.results, a =>
+    a.visibility === 'direct' ? (a.members || []).slice().sort()?.join('+') : a.id,
+  );
+
   return {
     loading,
-    channels: searchInput?.query ? searched.results : recent.results,
+    channels,
     loadMore,
     refresh,
   };

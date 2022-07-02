@@ -6,7 +6,7 @@ import { detect } from './detect';
  *
  * @returns {Promise<boolean>} true if the twake app is installed
  */
-export async function detectDesktopAppPresence (): Promise<boolean> {
+export async function detectDesktopAppPresence(path: string): Promise<boolean> {
   const targetBrowser = getBrowserInformation();
 
   // Chrome on linux is not supported
@@ -15,7 +15,9 @@ export async function detectDesktopAppPresence (): Promise<boolean> {
     return false;
   }
 
-  console.debug(`Desktop app detection: target browser: ${targetBrowser?.name} on ${targetBrowser?.os}`);
+  console.debug(
+    `Desktop app detection: target browser: ${targetBrowser?.name} on ${targetBrowser?.os}`,
+  );
 
-  return await detect();
+  return await detect(path);
 }

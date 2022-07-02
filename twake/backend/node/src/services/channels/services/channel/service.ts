@@ -705,7 +705,8 @@ export class ChannelServiceImpl implements ChannelService {
       channelWithUsers.users = users;
       channelWithUsers.name = users
         .filter(u => u.id != excludeUserId)
-        .map(u => u.full_name)
+        .map(u => u.full_name?.trim())
+        .filter(a=>a)
         .join(", ");
     }
     return channelWithUsers;

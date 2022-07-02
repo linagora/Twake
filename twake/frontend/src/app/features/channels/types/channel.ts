@@ -1,5 +1,6 @@
 import { ChannelMemberType } from 'app/features/channel-members/types/channel-member-types';
 import { UserType } from 'app/features/users/types/user';
+import _ from 'lodash';
 
 export type ChannelType = {
   company_id?: string;
@@ -36,6 +37,7 @@ export type ChannelType = {
 };
 
 export const createDirectChannelFromUsers = (companyId: string, users: UserType[]): ChannelType => {
+  users = _.uniqBy(users, 'id');
   const id = users.map(u => u.id).join('_') + '_frontend';
   return {
     company_id: companyId,
