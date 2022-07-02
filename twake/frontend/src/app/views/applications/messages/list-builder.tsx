@@ -87,19 +87,23 @@ export default React.memo(
           setFirstItemIndex(() => nextFirstItemIndex);
           setItems([...newItems, ...items]);
         } else {
-          if (
-            _.intersection(
-              items.map(i => itemId(i)),
-              _items.map(i => itemId(i)),
-            ).length > 0
-          ) {
-            const newList = [...items, ..._items];
-            if (filterOnAppend) setItems(filterOnAppend(newList));
+          if (filterOnAppend) {
+            const newList = filterOnAppend([...items, ..._items]);
+            if (
+              _.difference(
+                items.map(i => itemId(i)),
+                newList.map(i => itemId(i)),
+              ).length > 0
+            ) {
+              setItems(newList);
+            }
           }
         }
       }, [_items]);
 
       const appendItems = useCallback(() => {
+        console.log('kafelkafeal appendItemsappendItems');
+
         if (appendMoreLock) return;
         appendMoreLock = true;
 
