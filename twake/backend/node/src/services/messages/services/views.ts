@@ -148,7 +148,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     for (const ref of refs.getEntities()) {
       const extendedThread = threads.find(th => th.id === ref.thread_id);
       if (extendedThread) {
-        extendedThread.highlighted_replies = [];
+        extendedThread.highlighted_replies = extendedThread.highlighted_replies || [];
         const message = await gr.services.messages.messages.get({
           thread_id: ref.thread_id,
           id: ref.message_id,
@@ -158,16 +158,16 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     }
 
     if (options.flat) {
-      const files: FlatPinnedFromMessage[] = [];
+      const messages: FlatPinnedFromMessage[] = [];
       for (const thread of threads) {
         for (const message of thread.highlighted_replies) {
-          files.push({
+          messages.push({
             message,
             thread,
           });
         }
       }
-      return new ListResult("message", files, refs.nextPage);
+      return new ListResult("message", messages, refs.nextPage);
     }
 
     return new ListResult("thread", threads, null);
