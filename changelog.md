@@ -1,6 +1,8 @@
 # Twake 2022.Q3.1050
 
-- [Search anything on Twake](https://github.com/linagora/Twake/issues/1710)
+- Open desktop app if present in the system
+- Preview public channels before to join them
+- Updated [Search anything on Twake](https://github.com/linagora/Twake/issues/1710)
 - Started using Tailwindcss for future new design
 - Started using Storybooks
 

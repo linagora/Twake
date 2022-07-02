@@ -177,7 +177,16 @@ export class ChannelCrudController
         ch,
         50,
       );
+
+      //If not public channel and not member then ignore
       if (!channelMember && ch.visibility !== "public") continue;
+
+      //If public channel but not in the workspace then ignore
+      if (
+        !channelMember &&
+        !(await gr.services.workspaces.getUser({ workspaceId: ch.workspace_id, userId }))
+      )
+        continue;
 
       const chWithUser = await gr.services.channels.channels.includeUsersInDirectChannel(
         ch,

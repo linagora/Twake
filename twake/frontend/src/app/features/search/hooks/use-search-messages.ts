@@ -65,7 +65,7 @@ export const useSearchMessages = () => {
     () => {
       (async () => {
         setLoading(true);
-        if (searchInput) {
+        if (searchInput.query) {
           delayRequest('useSearchMessages', async () => {
             await refresh();
           });
