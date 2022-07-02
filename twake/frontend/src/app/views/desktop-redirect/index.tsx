@@ -17,9 +17,7 @@ export default ({ children }: PropsType): React.ReactElement => {
     () => {
       try {
         const path = window.location.href.replace(window.location.origin, '');
-        window.location.replace(`twake://${path}`);
-
-        detectDesktopAppPresence().then(isDesktopAppPresent => {
+        detectDesktopAppPresence(`twake://${path}`).then(isDesktopAppPresent => {
           if (isDesktopAppPresent) {
             setUseWeb(false);
             return;
@@ -34,10 +32,9 @@ export default ({ children }: PropsType): React.ReactElement => {
 
   return (
     <>
-      {useWeb ? (
-        children
-      ) : (
-        <div className="bg-white h-full overflow-hidden">
+      {children}
+      {!useWeb && (
+        <div className="bg-white h-full overflow-hidden fixed top-0 left-0 w-full z-50">
           <OpenDesktopPopup />
         </div>
       )}
