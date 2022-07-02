@@ -90,7 +90,7 @@ export const useSearchChannels = () => {
 
     if (!isRecent)
       setSearched({
-        results: update.results.sort(
+        results: [...frontendSearch(companyId, query), ...update.results].sort(
           (a, b) =>
             distanceFromQuery([a.name].join(' '), query) -
             distanceFromQuery([b.name].join(' '), query),
@@ -111,7 +111,7 @@ export const useSearchChannels = () => {
     () => {
       (async () => {
         setLoading(true);
-        if (searchInput) {
+        if (searchInput.query) {
           setSearched({ results: frontendSearch(companyId, searchInput.query), nextPage: '' });
           delayRequest('useSearchChannels', async () => {
             await refresh();

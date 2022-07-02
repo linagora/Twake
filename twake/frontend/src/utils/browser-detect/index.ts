@@ -1,3 +1,5 @@
+import Electron from 'app/features/global/framework/electron-service';
+import { getDevice } from 'app/features/global/utils/device';
 import { getBrowserInformation } from './common';
 import { detect } from './detect';
 
@@ -6,8 +8,21 @@ import { detect } from './detect';
  *
  * @returns {Promise<boolean>} true if the twake app is installed
  */
-export async function detectDesktopAppPresence(path: string): Promise<boolean> {
+export async function detectDesktopAppPresence(
+  path?: string,
+  options?: { returnFalseIfOnDesktopApp: false },
+): Promise<boolean> {
   const targetBrowser = getBrowserInformation();
+
+  //If we are already on the desktop app
+  if (Electron.isElectron()) {
+    return options?.returnFalseIfOnDesktopApp ? false : true;
+  }
+
+  //Do not run this on mobile
+  if (['ios', 'android'].includes(getDevice())) {
+    return false;
+  }
 
   // Chrome on linux is not supported
   if (targetBrowser?.name === 'chrome' && targetBrowser?.os === 'Linux') {
@@ -19,5 +34,5 @@ export async function detectDesktopAppPresence(path: string): Promise<boolean> {
     `Desktop app detection: target browser: ${targetBrowser?.name} on ${targetBrowser?.os}`,
   );
 
-  return await detect(path);
+  return await detect(path || 'twake://check');
 }
