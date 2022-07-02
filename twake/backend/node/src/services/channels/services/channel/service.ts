@@ -699,7 +699,7 @@ export class ChannelServiceImpl implements ChannelService {
       for (const user of channel.members) {
         if (user) {
           const e = await formatUser(await gr.services.users.getCached({ id: user }));
-          users.push(e);
+          if (e) users.push(e);
         }
       }
       channelWithUsers.users = users;
