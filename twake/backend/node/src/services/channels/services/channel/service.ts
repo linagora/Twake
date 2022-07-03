@@ -274,6 +274,8 @@ export class ChannelServiceImpl implements ChannelService {
     if (!channel) {
       channel = await this.channelRepository.findOne({ ...primaryKey, workspace_id: "direct" });
     }
+    if (!channel) return null;
+
     const last_activity = await this.getChannelActivity(channel);
 
     if (channel.visibility === ChannelVisibility.DIRECT)
@@ -706,7 +708,7 @@ export class ChannelServiceImpl implements ChannelService {
       channelWithUsers.name = users
         .filter(u => u.id != excludeUserId)
         .map(u => u.full_name?.trim())
-        .filter(a=>a)
+        .filter(a => a)
         .join(", ");
     }
     return channelWithUsers;

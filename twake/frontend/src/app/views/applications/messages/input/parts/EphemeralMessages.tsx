@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
 import Languages from 'app/features/global/services/languages-service';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
 import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import MessageContent from '../../message/parts/MessageContent';
+import { useEffect } from 'react';
 import { MessageContext } from '../../message/message-with-replies';
+import MessageContent from '../../message/parts/MessageContent';
 import ThreadSection from '../../parts/thread-section';
 
 type Props = {
@@ -16,6 +16,8 @@ type Props = {
 
 export default (props: Props) => {
   const companyId = useRouterCompany();
+  const workspaceId = props.workspaceId;
+  const channelId = props.channelId;
   const { lastEphemeral, remove } = useEphemeralMessages({
     companyId,
     channelId: props.channelId,
@@ -54,7 +56,7 @@ export default (props: Props) => {
         {Languages.t('scenes.apps.messages.just_you', [], 'Visible uniquement par vous')}
       </div>
 
-      <MessageContext.Provider value={messageKey}>
+      <MessageContext.Provider value={{ ...messageKey, companyId, workspaceId, channelId }}>
         <ThreadSection withAvatar head>
           <MessageContent key={updatedKey} />
         </ThreadSection>
