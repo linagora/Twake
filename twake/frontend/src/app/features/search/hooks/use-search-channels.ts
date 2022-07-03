@@ -51,7 +51,7 @@ export const useSearchChannels = () => {
   const [searched, setSearched] = useRecoilState(SearchChannelsResultsState(companyId));
   const [recent, setRecent] = useRecoilState(RecentChannelsState(companyId));
 
-  const opt = { limit: 100, company_id: companyId };
+  const opt = { limit: 25, company_id: companyId };
 
   const refresh = async () => {
     setLoading(true);
