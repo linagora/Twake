@@ -28,7 +28,7 @@ import PasswordEncoder from "../../../../utils/password-encoder";
 import assert from "assert";
 import { localEventBus } from "../../../../core/platform/framework/pubsub";
 import { ResourceEventsPayload } from "../../../../utils/types";
-import { isNumber } from "lodash";
+import { isNumber, isString } from "lodash";
 import { RealtimeSaved } from "../../../../core/platform/framework";
 import { getUserRoom } from "../../realtime";
 import NodeCache from "node-cache";
@@ -236,6 +236,7 @@ export class UserServiceImpl implements UsersService {
   }
 
   async getCached(pk: UserPrimaryKey): Promise<User> {
+    if (!(pk.id && isString(pk.id))) return null;
     if (this.cache.has(pk.id)) return this.cache.get<User>(pk.id);
     const entity = await this.get(pk);
     this.cache.set<User>(pk.id, entity);
