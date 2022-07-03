@@ -40,7 +40,7 @@ export const useSearchMessagesFilesOrMedias = (mode: 'files' | 'medias') => {
 
   const opt = _.omitBy(
     {
-      limit: 100,
+      limit: 25,
       is_file: mode === 'files' || undefined,
       is_media: mode === 'medias' || undefined,
       workspace_id: searchInput.workspaceId,
