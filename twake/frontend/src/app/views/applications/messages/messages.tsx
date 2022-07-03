@@ -68,7 +68,7 @@ export default (props: Props) => {
 
 const JoinChanneBlock = ({ channelId }: { channelId: string }) => {
   const [loading, setLoading] = useState(false);
-  const { channel } = useChannel(channelId);
+  const { channel, refresh } = useChannel(channelId);
 
   if (!channel) {
     return <></>;
@@ -86,6 +86,7 @@ const JoinChanneBlock = ({ channelId }: { channelId: string }) => {
             channel.id || '',
             UserService.getCurrentUserId(),
           );
+          refresh();
           setLoading(false);
         }}
         className="mb-4"

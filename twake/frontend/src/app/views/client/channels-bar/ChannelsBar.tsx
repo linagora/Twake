@@ -117,9 +117,21 @@ export const ChannelLoading = () => {
   return (
     <div className="channels_view_loader ">
       <div className="small-x-margin">
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 3, width: '100%' }} />
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
-        <Skeleton title={{ width: '50%' }} paragraph={{ rows: 4, width: '100%' }} />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 3, width: '100%' }}
+        />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 4, width: '100%' }}
+        />
+        <Skeleton
+          className="mt-8"
+          title={{ width: '50%' }}
+          paragraph={{ rows: 4, width: '100%' }}
+        />
       </div>
     </div>
   );
