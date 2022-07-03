@@ -32,6 +32,7 @@ import { MessageFile } from "../entities/message-files";
 import { formatUser } from "../../../utils/users";
 import { UserObject } from "../../user/web/types";
 import { FileSearchResult } from "../web/controllers/views/search-files";
+import _ from "lodash";
 
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
@@ -372,7 +373,10 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
         },
       );
 
-      const messageFiles = (await Promise.all(messageFilePromises)).filter(a => a);
+      const messageFiles = _.uniqBy(
+        (await Promise.all(messageFilePromises)).filter(a => a),
+        a => a.metadata?.source + JSON.stringify(a.metadata?.external_id),
+      );
 
       files = [...files, ...messageFiles.filter(a => a)].filter(ref => {
         //Apply media filer
@@ -389,7 +393,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     const fileWithUserAndMessagePromise: Promise<FileSearchResult>[] = files.map(
       async file =>
         ({
-          user: await formatUser(await gr.services.users.get({ id: file.cache?.user_id })),
+          user: await formatUser(await gr.services.users.getCached({ id: file.cache?.user_id })),
           message: await gr.services.messages.messages.get({
             id: file.message_id,
             thread_id: file.thread_id,

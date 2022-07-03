@@ -108,7 +108,9 @@ export default async (
         thread_id: msgFile.thread_id,
         id: msgFile.message_id,
       });
-      const user = await formatUser(await gr.services.users.get({ id: msgFile.cache?.user_id }));
+      const user = await formatUser(
+        await gr.services.users.getCached({ id: msgFile.cache?.user_id }),
+      );
 
       messageFiles.push({ ...msgFile, user, message });
       if (messageFiles.length == limit) {
