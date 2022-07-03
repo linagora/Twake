@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Input } from '@atoms/input/input-text';
 import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import User from 'app/components/ui/user';
@@ -11,6 +11,11 @@ import { SearchIcon } from '@heroicons/react/solid';
 export default (props: { onChange: (users: UserType[]) => void; initialUsers: UserType[] }) => {
   const [users, setUsers] = useState<UserType[]>(props.initialUsers);
   const { search, query, result } = useSearchUsers({ scope: 'company' });
+
+  const inputElement = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (inputElement.current) inputElement.current.focus();
+  }, []);
 
   useEffect(() => {
     props.onChange(users);
@@ -33,7 +38,7 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
             placeholder="Search users"
             className={className + ' mt-2 mb-4 w-full'}
             theme="plain"
-            autoFocus
+            inputRef={inputElement}
             onChange={(e: any) => search(e.target.value)}
           />
         )}

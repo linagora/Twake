@@ -87,6 +87,7 @@ class MessageFilesCacheMigrator {
                     } as ExecutionContext,
                   );
                   messagesPagination = messagesList.nextPage;
+                  messagesPagination.page_token = messagesList.getEntities()[0]?.id;
 
                   for (const message of messagesList.getEntities()) {
                     if (message.files && message.files.length > 0) {

@@ -95,9 +95,9 @@ export default async (
     const getChannelMember = await gr.services.channels.members.getChannelMember(
       { id: request.currentUser.id },
       {
-        company_id: msgFile.cache.company_id,
-        workspace_id: msgFile.cache.workspace_id,
-        id: msgFile.cache.channel_id,
+        company_id: msgFile.cache?.company_id,
+        workspace_id: msgFile.cache?.workspace_id,
+        id: msgFile.cache?.channel_id,
       },
       50,
     );
@@ -108,7 +108,7 @@ export default async (
         thread_id: msgFile.thread_id,
         id: msgFile.message_id,
       });
-      const user = await formatUser(await gr.services.users.get({ id: msgFile.cache.user_id }));
+      const user = await formatUser(await gr.services.users.get({ id: msgFile.cache?.user_id }));
 
       messageFiles.push({ ...msgFile, user, message });
       if (messageFiles.length == limit) {

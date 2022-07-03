@@ -389,7 +389,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
     const fileWithUserAndMessagePromise: Promise<FileSearchResult>[] = files.map(
       async file =>
         ({
-          user: await formatUser(await gr.services.users.get({ id: file.cache.user_id })),
+          user: await formatUser(await gr.services.users.get({ id: file.cache?.user_id })),
           message: await gr.services.messages.messages.get({
             id: file.message_id,
             thread_id: file.thread_id,
