@@ -3,6 +3,7 @@ import { LinkPreview } from "../../../types";
 import { logger } from "../../../../../core/platform/framework";
 import imageProbe from "probe-image-size";
 import { getUrlFavicon, getDomain, TIMEOUT, MAX_SIZE } from "../../../utils";
+import ua from "random-useragent";
 
 type HtmlImage = {
   src: string;
@@ -33,6 +34,9 @@ const getUrlInformation = async (url: string): Promise<LinkPreview> => {
     const parsedPage = await parser(url, {
       timeout: TIMEOUT,
       maxContentLength: MAX_SIZE,
+      headers: {
+        "User-Agent": ua.getRandom(),
+      },
     });
     const title = parsedPage.og?.title || parsedPage.meta?.title || null;
     const description = parsedPage.og?.description || parsedPage.meta?.description || null;
