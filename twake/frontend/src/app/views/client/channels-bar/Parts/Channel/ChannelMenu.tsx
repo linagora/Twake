@@ -33,6 +33,7 @@ import { useRefreshDirectChannels } from 'app/features/channels/hooks/use-direct
 import { useChannelNotifications } from 'app/features/users/hooks/use-notifications';
 import consoleService from 'app/features/console/services/console-service';
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 type PropsType = {
   channel: ChannelType;
@@ -63,6 +64,7 @@ const FullMenu = (props: PropsType): JSX.Element => {
   const { user: currentUser } = useCurrentUser();
   const { refresh: refreshFavoriteChannels } = useRefreshFavoriteChannels();
   const { refresh: refreshDirectChannels } = useRefreshDirectChannels();
+  const { refresh: refreshChannel } = useChannel(props.channel.id || '');
   const { Feature, FeatureNames } = useFeatureToggles();
   const channelMember = props.channel.user_member || {};
 
@@ -148,6 +150,8 @@ const FullMenu = (props: PropsType): JSX.Element => {
         refreshFavoriteChannels();
         refreshDirectChannels();
       }
+
+      refreshChannel();
     }
   };
 

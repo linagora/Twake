@@ -1,14 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import Input from 'app/components/inputs/input';
+import React, { useEffect, useRef, useState } from 'react';
+import { Input } from '@atoms/input/input-text';
 import { useSearchUsers } from 'app/features/users/hooks/use-search-user-list';
 import User from 'app/components/ui/user';
-import Button from 'app/components/buttons/button';
+import { Button } from '@atoms/button/button';
 import { UserType } from 'app/features/users/types/user';
 import { Trash, Trash2, X, XCircle } from 'react-feather';
+import { InputDecorationIcon } from 'app/atoms/input/input-decoration-icon';
+import { SearchIcon } from '@heroicons/react/solid';
 
 export default (props: { onChange: (users: UserType[]) => void; initialUsers: UserType[] }) => {
   const [users, setUsers] = useState<UserType[]>(props.initialUsers);
   const { search, query, result } = useSearchUsers({ scope: 'company' });
+
+  const inputElement = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (inputElement.current) inputElement.current.focus();
+  }, []);
 
   useEffect(() => {
     props.onChange(users);
@@ -23,11 +30,18 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
   };
 
   return (
-    <>
-      <Input
-        placeholder="Search users"
-        style={{ width: '100%', marginBottom: '12px' }}
-        onChange={(e: any) => search(e.target.value)}
+    <div style={{ width: '100vw', maxWidth: '400px' }}>
+      <InputDecorationIcon
+        prefix={SearchIcon}
+        input={({ className }) => (
+          <Input
+            placeholder="Search users"
+            className={className + ' mt-2 mb-4 w-full'}
+            theme="plain"
+            inputRef={inputElement}
+            onChange={(e: any) => search(e.target.value)}
+          />
+        )}
       />
       {query &&
         result
@@ -37,10 +51,13 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
             return (
               <div key={user.id} className="new-direct-channel-proposed-user">
                 <div className="user-name">
-                  <User data={user} /> <span className="email">({user.email})</span>
+                  <User data={user} />{' '}
+                  <span className="email overflow-hidden text-ellipsis whitespace-nowrap">
+                    ({user.email})
+                  </span>
                 </div>
                 <div>
-                  <Button onClick={() => addUser(user)} small>
+                  <Button onClick={() => addUser(user)} size="sm">
                     Add
                   </Button>
                 </div>
@@ -54,10 +71,13 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
             return (
               <div key={user.id} className="new-direct-channel-added-user">
                 <div className="user-name">
-                  <User data={user} /> <span className="email">({user.email})</span>
+                  <User data={user} />{' '}
+                  <span className="email overflow-hidden text-ellipsis whitespace-nowrap">
+                    ({user.email})
+                  </span>
                 </div>
                 <div>
-                  <Button className={'danger'} onClick={() => removeUser(user)} small>
+                  <Button theme={'danger'} onClick={() => removeUser(user)} size="sm">
                     Remove
                   </Button>
                 </div>
@@ -66,6 +86,6 @@ export default (props: { onChange: (users: UserType[]) => void; initialUsers: Us
           })}
         </div>
       )}
-    </>
+    </div>
   );
 };

@@ -887,5 +887,7 @@
     "scenes.app.integrations_parameters.add_application": "Nuova integrazione",
     "components.rich_text_editor.plugins.suggestions.loading": "Alla ricerca di più",
     "components.open_desktop_popup.subtitle": "aperto nell'app Twake",
-    "components.open_desktop_popup.open_here_link": "Apri qui invece"
+    "components.open_desktop_popup.open_here_link": "Apri qui invece",
+    "molecules.download_banner.title": "Ottieni il massimo da Twake, scarica subito l'app desktop",
+    "molecules.download_banner.download_button": "Scarica l'app desktop"
 }

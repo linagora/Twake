@@ -19,6 +19,7 @@ import { usePendingEmails } from 'app/features/pending-emails/hooks/use-pending-
 import PendingEmailsAPIClient from 'app/features/pending-emails/api/pending-emails-api-client';
 
 import './MemberChannelRow.scss';
+import { useChannel } from 'app/features/channels/hooks/use-channel';
 
 const { Text } = Typography;
 
@@ -39,6 +40,7 @@ const MemberChannelRow = (props: Props): JSX.Element => {
   const workspaceId = useRouterWorkspace();
   const [isMember, setIsMember] = useState<boolean>(false);
   const [selected, setSelected] = useState<boolean>(false);
+  const { refresh: refreshChannel } = useChannel(props.channelId);
   const { refresh: refreshChannelMembers } = useChannelMembers({
     companyId,
     workspaceId,
@@ -74,7 +76,7 @@ const MemberChannelRow = (props: Props): JSX.Element => {
     await ChannelsReachableAPIClient.removeUser(companyId, workspaceId, channelId, userId)
       .then(refreshChannelMembers)
       .finally(() => setIsMember(false));
-
+    refreshChannel();
     currentUserId === props.userId && ModalManager.close();
   };
 

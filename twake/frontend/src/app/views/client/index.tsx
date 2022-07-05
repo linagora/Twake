@@ -26,6 +26,7 @@ import { useFeatureToggles } from 'app/components/locked-features-components/fea
 import useUsetiful from 'app/features/global/hooks/use-usetiful';
 
 import './styles.scss';
+import DownloadAppBanner from 'app/components/download-app-banner/download-app-banner';
 
 export default React.memo((): JSX.Element => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -43,6 +44,7 @@ export default React.memo((): JSX.Element => {
   if (user?.id) {
     page = (
       <Layout className="appPage fade_in">
+        <DownloadAppBanner />
         <NewVersionComponent />
         <CompanyStatusComponent />
         <FeatureToggles features={activeFeatureNames}>

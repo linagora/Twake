@@ -9,12 +9,14 @@ import ChannelCategory from '../Parts/Channel/ChannelCategory';
 import ChannelIntermediate from '../Parts/Channel/ChannelIntermediate';
 
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
-import WorkspaceChannelList from 'app/views/client/channels-bar/Modals/WorkspaceChannelList';
 
 import Menu from 'components/menus/menu.js';
 import Icon from 'app/components/icon/icon';
 import AccessRightsService from 'app/features/workspace-members/services/workspace-members-access-rights-service';
 import RouterServices from 'app/features/router/services/router-service';
+import { useSearchModal } from 'app/features/search/hooks/use-search';
+import { SearchInputState, SearchTabsState } from 'app/features/search/state/search-input';
+import { useSetRecoilState } from 'recoil';
 
 type Props = {
   sectionTitle: string;
@@ -36,11 +38,14 @@ export default (props: Props) => {
     );
   };
 
+  const { setOpen: setSearchopen } = useSearchModal();
+  const setSearchInput = useSetRecoilState(SearchInputState);
+  const setSearchTab = useSetRecoilState(SearchTabsState);
+
   const joinChannel = () => {
-    return ModalManager.open(<WorkspaceChannelList />, {
-      position: 'center',
-      size: { width: '600px' },
-    });
+    setSearchopen(true);
+    setSearchInput({ query: '' });
+    setSearchTab('channels');
   };
 
   return (

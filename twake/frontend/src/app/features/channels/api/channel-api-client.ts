@@ -28,7 +28,7 @@ class ChannelAPIClientService {
   async get(companyId: string, workspaceId: string, channelId: string): Promise<ChannelType> {
     return Api.get<{ resource: ChannelType }>(
       `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}`,
-    ).then(result => result.resource);
+    ).then(result => result?.resource);
   }
 
   async save(

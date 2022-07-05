@@ -1,6 +1,8 @@
 import { OpenDesktopPopup } from 'app/components/open-desktop-popup/open-desktop-popup';
-import { useWebState } from 'app/features/global/state/atoms/use-web';
-import React, { useEffect } from 'react';
+import Electron from 'app/features/global/framework/electron-service';
+import { useGlobalEffect } from 'app/features/global/hooks/use-global-effect';
+import { isPreferUserWeb, useWebState } from 'app/features/global/state/atoms/use-web';
+import React from 'react';
 import { useRecoilState } from 'recoil';
 import { detectDesktopAppPresence } from 'src/utils/browser-detect';
 
@@ -11,29 +13,31 @@ type PropsType = {
 export default ({ children }: PropsType): React.ReactElement => {
   const [useWeb, setUseWeb] = useRecoilState(useWebState);
 
-  useEffect(() => {
-    detectDesktopAppPresence().then(isDesktopAppPresent => {
-      if (!isDesktopAppPresent) {
-        setUseWeb(true);
-        return;
-      }
-
+  useGlobalEffect(
+    'desktopRedirect',
+    () => {
+      if (Electron.isElectron()) return;
+      if (isPreferUserWeb()) return;
       try {
         const path = window.location.href.replace(window.location.origin, '');
-        window.location.replace(`twake://${path}`);
-        setUseWeb(false);
+        detectDesktopAppPresence(`twake://${path}`).then(isDesktopAppPresent => {
+          if (isDesktopAppPresent) {
+            setUseWeb(false);
+            return;
+          }
+        });
       } catch (e) {
         setUseWeb(true);
       }
-    });
-  }, []);
+    },
+    [],
+  );
 
   return (
     <>
-      {useWeb ? (
-        children
-      ) : (
-        <div className="bg-white h-full overflow-hidden">
+      {children}
+      {!useWeb && (
+        <div className="bg-white h-full overflow-hidden fixed top-0 left-0 w-full z-50">
           <OpenDesktopPopup />
         </div>
       )}

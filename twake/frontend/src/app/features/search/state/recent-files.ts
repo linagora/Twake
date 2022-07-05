@@ -1,12 +1,12 @@
 import { MessageFileType } from 'app/features/messages/types/message';
-import { atom, selector } from 'recoil';
+import { atomFamily } from 'recoil';
 
 export type RecentFiles = {
   results: MessageFileType[];
   nextPage: string | null;
 };
 
-export const RecentFilesState = atom<RecentFiles>({
+export const RecentFilesState = atomFamily<RecentFiles, string>({
   key: 'RecentFilesState',
-  default: { results: [], nextPage: '' },
+  default: () => ({ results: [], nextPage: '' }),
 });

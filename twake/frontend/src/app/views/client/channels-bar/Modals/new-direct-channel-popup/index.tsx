@@ -4,13 +4,15 @@ import Languages from 'app/features/global/services/languages-service';
 import MediumPopupComponent from 'app/components/modal/modal-manager';
 import ObjectModal from 'components/object-modal/object-modal';
 import ModalManager from 'app/components/modal/modal-manager';
-import { Button, Typography } from 'antd';
+import { Typography } from 'antd';
 import ChannelWorkspaceEditor from 'app/views/client/channels-bar/Modals/ChannelWorkspaceEditor';
 import { useDirectChannels } from 'app/features/channels/hooks/use-direct-channels';
 import SelectUsers from './select-users';
 import './style.scss';
+import { Button } from '@atoms/button/button';
+import { ModalContent } from 'app/atoms/modal';
 
-export default () => {
+export default (props: { onClose: () => void }) => {
   const [newUserDiscussion, setNewUserDiscussion] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const { openDiscussion } = useDirectChannels();
@@ -18,11 +20,11 @@ export default () => {
   const upsertDirectMessage = async (): Promise<any> => {
     setLoading(true);
     await openDiscussion(newUserDiscussion);
-    return MediumPopupComponent.closeAll();
+    props.onClose();
   };
 
   const onClickLink = () => {
-    ModalManager.closeAll();
+    props.onClose();
     return ModalManager.open(
       <ChannelWorkspaceEditor
         title={'scenes.app.channelsbar.channelsworkspace.create_channel'}
@@ -37,46 +39,39 @@ export default () => {
 
   const max = 10;
   return (
-    <ObjectModal
-      title={Languages.t('scenes.app.channelsbar.channelsuser.new_private_discussion')}
-      closable
-      footer={
-        <Button
-          loading={loading}
-          block={true}
-          type="primary"
-          className="small primary"
-          style={{ width: 'auto', float: 'right' }}
-          disabled={newUserDiscussion.length === 0 || newUserDiscussion.length > max}
-          onClick={upsertDirectMessage}
-        >
-          {Languages.t('general.continue', [], 'Continue')}
-        </Button>
-      }
-    >
-      <div className="x-margin">
-        <SelectUsers
-          onChange={users => setNewUserDiscussion(users.map(u => u.id as string))}
-          initialUsers={[]}
-        />
+    <ModalContent title={Languages.t('scenes.app.channelsbar.channelsuser.new_private_discussion')}>
+      <SelectUsers
+        onChange={users => setNewUserDiscussion(users.map(u => u.id as string))}
+        initialUsers={[]}
+      />
 
-        <>
-          {newUserDiscussion.length >= max && (
+      <>
+        {newUserDiscussion.length >= max && (
+          <Typography.Text>
+            <Typography.Link onClick={onClickLink}>
+              {Languages.t(
+                'scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_link',
+              )}
+            </Typography.Link>
             <Typography.Text>
-              <Typography.Link onClick={onClickLink}>
-                {Languages.t(
-                  'scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_link',
-                )}
-              </Typography.Link>
-              <Typography.Text>
-                {Languages.t(
-                  'scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_text',
-                )}
-              </Typography.Text>
+              {Languages.t(
+                'scenes.app.channelsbar.channelsuser.new_private_discussion.limit_reached_text',
+              )}
             </Typography.Text>
-          )}
-        </>
-      </div>
-    </ObjectModal>
+          </Typography.Text>
+        )}
+      </>
+
+      <Button
+        loading={loading}
+        theme="primary"
+        size="md"
+        className="mt-4 float-right"
+        disabled={newUserDiscussion.length === 0 || newUserDiscussion.length > max}
+        onClick={upsertDirectMessage}
+      >
+        {Languages.t('general.continue', [], 'Continue')}
+      </Button>
+    </ModalContent>
   );
 };

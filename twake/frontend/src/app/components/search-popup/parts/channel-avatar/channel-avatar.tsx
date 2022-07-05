@@ -7,6 +7,7 @@ import { UserType } from 'features/users/types/user';
 import { getUser } from 'features/users/hooks/use-user-list';
 import { addApiUrlIfNeeded } from 'features/global/utils/URLUtils';
 import emoji from 'emoji-name-map';
+import _ from 'lodash';
 
 type PropsType = {
   channel: ChannelType;
@@ -16,9 +17,13 @@ type PropsType = {
 
 export default ({ channel, showLabel, collapseToOne }: PropsType): JSX.Element => {
   if (channel.visibility === 'direct') {
-    const channelUsers = (channel.users || [])
+    let channelUsers = _.uniqBy(channel.users || [], 'id')
       .filter(e => e.id !== UsersService.getCurrentUserId() || channel.users?.length === 1)
       .filter(a => a);
+
+    if (channelUsers.length === 0) {
+      channelUsers = [UsersService.getCurrentUser()];
+    }
 
     const channelName: string[] = [];
 

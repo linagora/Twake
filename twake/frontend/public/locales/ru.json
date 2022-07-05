@@ -887,5 +887,7 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Настройки разработчика",
     "components.rich_text_editor.plugins.suggestions.loading": "Ищете больше",
     "components.open_desktop_popup.subtitle": "открыто в приложении Twake",
-    "components.open_desktop_popup.open_here_link": "Вместо этого откройте здесь"
+    "components.open_desktop_popup.open_here_link": "Вместо этого откройте здесь",
+    "molecules.download_banner.title": "Получите максимум от Twake, загрузите настольное приложение прямо сейчас",
+    "molecules.download_banner.download_button": "Скачать настольное приложение"
 }

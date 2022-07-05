@@ -887,5 +887,7 @@
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "開発者設定",
     "components.rich_text_editor.plugins.suggestions.loading": "もっとお探しですか",
     "components.open_desktop_popup.subtitle": "Twakeアプリで開きました",
-    "components.open_desktop_popup.open_here_link": "代わりにここを開く"
+    "components.open_desktop_popup.open_here_link": "代わりにここを開く",
+    "molecules.download_banner.title": "Twakeを最大限に活用し、今すぐデスクトップアプリをダウンロードしてください",
+    "molecules.download_banner.download_button": "デスクトップアプリをダウンロード"
 }

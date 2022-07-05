@@ -87,7 +87,17 @@ export default React.memo(
           setFirstItemIndex(() => nextFirstItemIndex);
           setItems([...newItems, ...items]);
         } else {
-          //Nothing changed
+          if (filterOnAppend) {
+            const newList = filterOnAppend([...items, ..._items]);
+            if (
+              _.difference(
+                items.map(i => itemId(i)),
+                newList.map(i => itemId(i)),
+              ).length > 0
+            ) {
+              setItems(newList);
+            }
+          }
         }
       }, [_items]);
 

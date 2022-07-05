@@ -21,11 +21,11 @@ export const useSearchMessages = () => {
   const searchInput = useRecoilValue(SearchInputState);
   const [loading, setLoading] = useRecoilState(LoadingState('useSearchMessages'));
 
-  const [searched, setSearched] = useRecoilState(SearchMessagesResultsState);
+  const [searched, setSearched] = useRecoilState(SearchMessagesResultsState(companyId));
 
   const opt = _.omitBy(
     {
-      limit: 100,
+      limit: 50,
       company_id: companyId,
       workspace_id: searchInput.workspaceId,
       channel_id: searchInput.channelId,
@@ -65,7 +65,7 @@ export const useSearchMessages = () => {
     () => {
       (async () => {
         setLoading(true);
-        if (searchInput) {
+        if (searchInput.query) {
           delayRequest('useSearchMessages', async () => {
             await refresh();
           });
