@@ -37,7 +37,7 @@ export default ({ preview }: PropsType): React.ReactElement => {
                 href={preview.url}
                 target="_blank"
                 rel="noreferrer"
-                className="truncate text-ellipsis	max-w-full"
+                className="truncate text-ellipsis	w-full"
               >
                 {preview.title}
               </a>
