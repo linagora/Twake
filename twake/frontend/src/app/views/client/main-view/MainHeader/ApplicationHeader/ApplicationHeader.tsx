@@ -56,7 +56,7 @@ export default (): JSX.Element => {
 
   return (
     <div
-      className="flex flex-nowrap items-center px-2"
+      className="flex flex-nowrap items-center px-2 h-10"
       style={{ lineHeight: '47px', flexWrap: 'nowrap' }}
     >
       <Col flex="auto">

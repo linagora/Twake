@@ -217,7 +217,6 @@ const FullMenu = (props: PropsType): JSX.Element => {
     {
       type: 'menu',
       text: Languages.t('scenes.app.channelsbar.channel_copy_link'),
-      hide: !(props.channel.visibility && isPublicChannel(props.channel.visibility)),
       onClick: () => {
         const url = addUrlTryDesktop(
           `${document.location.origin}${RouterServices.generateRouteFromState({

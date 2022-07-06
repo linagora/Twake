@@ -12,24 +12,27 @@ type PropsType = {
 };
 
 export const addUrlTryDesktop = (url: string) => {
-  const base = url.split('?')[0];
-  const search = url.split('?')[1];
-  return base + '?' + [...search.split('&'), 'try_desktop'].join('&');
+  url = url || '';
+  const base = url.split('?')[0] || '';
+  const search = url.split('?')[1] || '';
+  return base + '?' + [...search.split('&').filter(a => a), 'try_desktop'].join('&');
 };
+
+const initialPath = document.location.pathname;
+const initialParams = new URLSearchParams(document.location.search);
 
 export default ({ children }: PropsType): React.ReactElement => {
   const [useWeb, setUseWeb] = useRecoilState(useWebState);
   const { user } = useCurrentUser();
 
-  const params = new URLSearchParams(document.location.search);
-  const shoudlTryDesktop =
-    user?.id && (document.location.pathname.length <= 1 || params.get('try_desktop'));
+  const shouldTryDesktop =
+    user?.id && (initialPath.length <= 1 || initialParams.get('try_desktop') !== null);
 
   useGlobalEffect(
     'desktopRedirect',
     () => {
       if (Electron.isElectron()) return;
-      if (shoudlTryDesktop) return;
+      if (!shouldTryDesktop) return;
       try {
         const path = window.location.href.replace(window.location.origin, '');
         detectDesktopAppPresence(`twake://${path}`).then(isDesktopAppPresent => {
