@@ -61,7 +61,6 @@ export default (props: { onClose: () => void }) => {
           </Typography.Text>
         )}
       </>
-
       <Button
         loading={loading}
         theme="primary"

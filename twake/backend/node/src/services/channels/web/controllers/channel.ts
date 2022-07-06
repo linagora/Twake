@@ -512,6 +512,8 @@ export class ChannelCrudController
     const companyId = request.params.company_id;
     const userId = request.currentUser.id;
 
+    const limit = parseInt(request.query.limit) || 100;
+
     const workspaces = (
       await gr.services.workspaces.getAllForUser({ userId }, { id: companyId })
     ).map(a => a.workspaceId);
@@ -535,6 +537,26 @@ export class ChannelCrudController
     );
     channels = channels.slice(0, 100);
 
+    if (channels.length < limit) {
+      let otherChannels: UserChannel[] = [];
+      for (const workspaceId of workspaces) {
+        //Include channels we could join in this result
+        otherChannels = [
+          ...otherChannels,
+          ...(
+            await gr.services.channels.channels.getAllChannelsInWorkspace(companyId, workspaceId)
+          ).map(ch => {
+            return {
+              ...ch,
+              user_member: null,
+            } as UserChannel;
+          }),
+        ];
+      }
+
+      channels = _.unionBy(channels, otherChannels, "id");
+    }
+
     const userIncludedChannels: UsersIncludedChannel[] = await Promise.all(
       channels.map(channel => {
         return gr.services.channels.channels.includeUsersInDirectChannel(channel, userId);
@@ -542,7 +564,7 @@ export class ChannelCrudController
     );
 
     return {
-      resources: userIncludedChannels.slice(0, parseInt(request.query.limit) || 100),
+      resources: userIncludedChannels.slice(0, limit),
     };
   }
 }

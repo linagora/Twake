@@ -38,7 +38,7 @@ export const MediasResults = (props: { max?: number; showAsFiles?: boolean }) =>
         .slice(0, props?.max || files.length)
         .map(file => {
           const url = FileUploadAPIClient.getFileThumbnailUrlFromMessageFile(file);
-          if (url)
+          if (url || props.showAsFiles)
             return props.showAsFiles ? (
               <FileResult key={file.id} file={file} />
             ) : (

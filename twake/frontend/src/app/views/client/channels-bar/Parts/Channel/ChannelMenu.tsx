@@ -15,7 +15,6 @@ import RouterServices from 'app/features/router/services/router-service';
 import GuestManagement from 'app/views/client/channels-bar/Modals/GuestManagement';
 import { useFeatureToggles } from 'app/components/locked-features-components/feature-toggles-hooks';
 import LockedGuestsPopup from 'app/components/locked-features-components/locked-guests-popup/locked-guests-popup';
-import InitService from 'app/features/global/services/init-service';
 import ChannelsMineAPIClient from 'app/features/channels/api/channels-mine-api-client';
 import ChannelMembersAPIClient from 'app/features/channel-members/api/channel-members-api-client';
 import {
@@ -34,6 +33,7 @@ import { useChannelNotifications } from 'app/features/users/hooks/use-notificati
 import consoleService from 'app/features/console/services/console-service';
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
+import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 
 type PropsType = {
   channel: ChannelType;
@@ -217,13 +217,14 @@ const FullMenu = (props: PropsType): JSX.Element => {
     {
       type: 'menu',
       text: Languages.t('scenes.app.channelsbar.channel_copy_link'),
-      hide: !(props.channel.visibility && isPublicChannel(props.channel.visibility)),
       onClick: () => {
-        const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-          workspaceId: props.channel.workspace_id || '',
-          companyId: props.channel.company_id,
-          channelId: props.channel.id,
-        })}`;
+        const url = addUrlTryDesktop(
+          `${document.location.origin}${RouterServices.generateRouteFromState({
+            workspaceId: props.channel.workspace_id || '',
+            companyId: props.channel.company_id,
+            channelId: props.channel.id,
+          })}`,
+        );
 
         copyToClipboard(url);
       },

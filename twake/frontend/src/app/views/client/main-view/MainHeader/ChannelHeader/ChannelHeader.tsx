@@ -35,20 +35,23 @@ export default (): JSX.Element => {
   ChannelsBarService.updateCurrentChannelId(companyId, workspaceId, channelId);
 
   return (
-    <Row align="middle" style={{ lineHeight: '47px', padding: 0, flexWrap: 'nowrap' }}>
+    <div
+      className="flex flex-nowrap items-center px-2 h-10"
+      style={{ lineHeight: '47px', flexWrap: 'nowrap' }}
+    >
       {
         // Temporary, it's for spacing when the hamburger menu is displayed
         <Col xs={1} sm={1} md={1} lg={0} xl={0} xxl={0}></Col>
       }
       {channel.visibility === 'direct' && (
-        <Col xs={21} sm={21} md={22} lg={12} xl={14} xxl={16}>
+        <Col className="grow overflow-hidden text-ellipsis whitespace-nowrap">
           <ChannelUsersHeader channel={channel} />
         </Col>
       )}
       {channel.visibility !== 'direct' && (
-        <Col xs={21} sm={21} md={22} lg={12} xl={14} xxl={16}>
+        <Col className="grow overflow-hidden text-ellipsis whitespace-nowrap">
           <span
-            className="left-margin text-overflow channel-name"
+            className="ml-2 text-overflow channel-name"
             style={{ display: 'flex', alignItems: 'center' }}
           >
             <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>
@@ -102,7 +105,9 @@ export default (): JSX.Element => {
         )}
       </Col>
 
+      <div className="w-2"></div>
+
       <SearchInput />
-    </Row>
+    </div>
   );
 };
