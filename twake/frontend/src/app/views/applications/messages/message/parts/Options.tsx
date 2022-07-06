@@ -27,6 +27,7 @@ import Emojione from 'app/components/emojione/emojione';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
 import { useEphemeralMessages } from 'app/features/messages/hooks/use-ephemeral-messages';
 import { copyToClipboard } from 'app/features/global/utils/CopyClipboard';
+import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 
 type Props = {
   onOpen?: () => void;
@@ -103,12 +104,14 @@ export default (props: Props) => {
       icon: 'link',
       text: Languages.t('scenes.apps.messages.message.copy_link', [], 'Copy link to message'),
       onClick: () => {
-        const url = `${document.location.origin}${RouterServices.generateRouteFromState({
-          workspaceId: workspaceId,
-          channelId: channelId,
-          threadId: message.thread_id,
-          messageId: message.id,
-        })}`;
+        const url = addUrlTryDesktop(
+          `${document.location.origin}${RouterServices.generateRouteFromState({
+            workspaceId: workspaceId,
+            channelId: channelId,
+            threadId: message.thread_id,
+            messageId: message.id,
+          })}`,
+        );
 
         copyToClipboard(url);
       },

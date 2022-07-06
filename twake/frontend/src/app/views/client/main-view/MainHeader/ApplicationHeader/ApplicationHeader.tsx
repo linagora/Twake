@@ -55,13 +55,12 @@ export default (): JSX.Element => {
   };
 
   return (
-    <Row
-      justify="space-between"
-      align="middle"
-      style={{ lineHeight: '47px', padding: 0, flexWrap: 'nowrap' }}
+    <div
+      className="flex flex-nowrap items-center px-2"
+      style={{ lineHeight: '47px', flexWrap: 'nowrap' }}
     >
       <Col flex="auto">
-        <span className="left-margin app-name" style={{ display: 'flex', alignItems: 'center' }}>
+        <span className="ml-2 app-name" style={{ display: 'flex', alignItems: 'center' }}>
           <div className="small-right-margin" style={{ lineHeight: 0, width: 16 }}>
             {getDefaultApplicationIcon(application)}
           </div>
@@ -73,6 +72,6 @@ export default (): JSX.Element => {
       </Col>
 
       <SearchInput />
-    </Row>
+    </div>
   );
 };

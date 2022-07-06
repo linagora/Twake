@@ -66,11 +66,11 @@ export const Modal = (props: {
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
-          enterFrom="opacity-0"
+          enterFrom="opacity-0 pointer-events-none"
           enterTo="opacity-100"
           leave="ease-in duration-200"
           leaveFrom="opacity-100"
-          leaveTo="opacity-0"
+          leaveTo="opacity-0 pointer-events-none"
         >
           <div
             className={
@@ -105,11 +105,11 @@ export const Modal = (props: {
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
-              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterFrom="opacity-0 pointer-events-none translate-y-4 sm:translate-y-0 sm:scale-95"
               enterTo="opacity-100 translate-y-0 sm:scale-100"
               leave="ease-in duration-200"
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              leaveTo="opacity-0 pointer-events-none translate-y-4 sm:translate-y-0 sm:scale-95"
             >
               <Dialog.Panel
                 className={

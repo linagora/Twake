@@ -2,7 +2,7 @@
   "general": {
     "help_url": false,
     "pricing_plan_url": "",
-    "app_download_url": "https://github.com/linagora/Twake-Desktop/tree/master/download",
+    "app_download_url": "https://twake.app/fr/download/",
     "mobile": {
       "mobile_redirect": "mobile.twake.app",
       "mobile_appstore": "https://apps.apple.com/fr/app/twake/id1588764852?l=en",

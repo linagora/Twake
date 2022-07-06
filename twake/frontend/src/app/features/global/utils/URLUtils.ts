@@ -1,5 +1,6 @@
 import environment from 'app/environment/environment';
 import Globals from 'app/features/global/services/globals-twake-app-service';
+import { addUrlTryDesktop } from 'app/views/desktop-redirect';
 
 export function addApiUrlIfNeeded(url: string, asCssUrl?: boolean): string {
   function _wrap(url: string): string {
@@ -18,5 +19,5 @@ export function addApiUrlIfNeeded(url: string, asCssUrl?: boolean): string {
 }
 
 export function getAsFrontUrl(path: string): string {
-  return `${environment.front_root_url || ''}${path}`;
+  return addUrlTryDesktop(`${environment.front_root_url || ''}${path}`);
 }

@@ -3,7 +3,7 @@ import { Logo } from 'app/atoms/logo';
 import { Subtitle } from 'app/atoms/text';
 import A from 'app/atoms/link';
 import { useRecoilState } from 'recoil';
-import { useWebState, preferUserWeb } from 'app/features/global/state/atoms/use-web';
+import { useWebState } from 'app/features/global/state/atoms/use-web';
 import Languages from 'app/features/global/services/languages-service';
 
 export const OpenDesktopPopup = (): React.ReactElement => {
@@ -27,20 +27,10 @@ export const OpenDesktopPopup = (): React.ReactElement => {
           <A
             className="mb-2 block"
             onClick={() => {
-              preferUserWeb();
               setUseWeb(true);
             }}
           >
             {Languages.t('components.open_desktop_popup.open_here_link')}
-          </A>
-          <A
-            className="mb-2 block opacity-50"
-            onClick={() => {
-              preferUserWeb(1000 * 60 * 60 * 24 * 90); //For 3 months
-              setUseWeb(true);
-            }}
-          >
-            {Languages.t('components.open_desktop_popup.open_here_link_forever')}
           </A>
         </>
       )}

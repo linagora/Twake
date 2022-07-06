@@ -888,8 +888,8 @@
     "scenes.app.popup.appsparameters.pages.application_editor.application_published": "Application {{$1}} réussie !",
     "scenes.app.integrations_parameters.company_applications_table.more_menu.developer_settings": "Paramètres du développeur",
     "scenes.app.integrations_parameters.add_application": "Nouvelle intégration",
-    "components.open_desktop_popup.subtitle": "ouvert dans l'application Twake",
-    "components.open_desktop_popup.open_here_link": "Ouvrez plutôt ici",
+    "components.open_desktop_popup.subtitle": "Ouvert dans l'application Twake",
+    "components.open_desktop_popup.open_here_link": "Ouvrir dans la version web",
     "molecules.download_banner.title": "Tirez le meilleur parti de Twake, téléchargez l'application de bureau maintenant",
     "molecules.download_banner.download_button": "Télécharger l'application de bureau"
 }
