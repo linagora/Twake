@@ -34,43 +34,35 @@ export default (): JSX.Element => {
 
   return (
     <>
-      <Col xs={0} sm={0} md={0} lg={6} xl={5} xxl={4}>
-        <Row justify="center">
-          <Col flex="none" style={{ width: 200 }}>
-            <div style={{ height: 40 }}>
-              {!disable && (
-                <InputDecorationIcon
-                  prefix={SearchIcon}
-                  input={({ className }) => (
-                    <Input
-                      value={searchState.query}
-                      className={className + ' text-zinc-500'}
-                      maxLength={0}
-                      readOnly
-                      placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
-                      onClick={() => setOpen()}
-                    />
-                  )}
-                />
-              )}
-            </div>
-          </Col>
-        </Row>
-      </Col>
+      <div className="hidden sm:block w-48">
+        {!disable && (
+          <InputDecorationIcon
+            prefix={SearchIcon}
+            input={({ className }) => (
+              <Input
+                value={searchState.query}
+                className={className + ' text-zinc-500'}
+                maxLength={0}
+                readOnly
+                placeholder={Languages.t('scenes.client.main_view.main_header.search_input')}
+                onClick={() => setOpen()}
+              />
+            )}
+          />
+        )}
+      </div>
 
-      <Col xs={1} sm={1} md={1} lg={0} xl={0} xxl={0}>
-        <div style={{ height: 40 }}>
-          {!disable && (
-            <Button
-              theme="outline"
-              size="sm"
-              className="rounded-full"
-              icon={SearchIcon}
-              onClick={() => setOpen()}
-            />
-          )}
-        </div>
-      </Col>
+      <div className="sm:hidden">
+        {!disable && (
+          <Button
+            theme="outline"
+            size="sm"
+            className="rounded-full"
+            icon={SearchIcon}
+            onClick={() => setOpen()}
+          />
+        )}
+      </div>
     </>
   );
 };

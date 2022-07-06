@@ -85,7 +85,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       buildMessageListPagination(pagination, "id"),
     );
 
-    const threads: MessageWithReplies[] = [];
+    const threads: (MessageWithReplies & { context: MessageFileRef })[] = [];
     for (const ref of refs.getEntities()) {
       const thread = await this.repositoryThreads.findOne({ id: ref.thread_id });
       const extendedThread = await gr.services.messages.messages.getThread(thread, {
@@ -98,7 +98,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
       });
       if (message && extendedThread) {
         extendedThread.highlighted_replies = [message];
-        threads.push(extendedThread);
+        threads.push({ ...extendedThread, context: ref });
       }
     }
 
@@ -108,8 +108,9 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
         for (const reply of thread.highlighted_replies) {
           for (const file of reply.files || []) {
             files.push({
-              file,
+              file: file as MessageFile,
               thread,
+              context: thread.context,
             });
           }
         }
