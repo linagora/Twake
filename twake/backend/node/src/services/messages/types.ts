@@ -3,6 +3,8 @@ import { uuid } from "../../utils/types";
 import { HookType } from "../applicationsapi/types";
 import { Channel } from "../channels/entities";
 import { UserObject } from "../user/web/types";
+import { MessageFileRef } from "./entities/message-file-refs";
+import { MessageFile } from "./entities/message-files";
 import { Message, MessageWithUsers } from "./entities/messages";
 import { Thread } from "./entities/threads";
 
@@ -152,8 +154,9 @@ export type InboxOptions = {
 };
 
 export type FlatFileFromMessage = {
-  file: any;
-  thread: any;
+  file: MessageFile;
+  thread: MessageWithReplies;
+  context: MessageFileRef;
 };
 
 export type FlatPinnedFromMessage = {

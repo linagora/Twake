@@ -31,7 +31,9 @@ export default () => {
         <>
           <div className="flex mt-4">
             <Text.Subtitle className="block grow">
-              {Languages.t('components.searchpopup.channels')}
+              {isRecent
+                ? Languages.t('components.searchpopup.recent_channels_and_contacts')
+                : Languages.t('components.searchpopup.channels')}
             </Text.Subtitle>
             {channels.length > 6 && (
               <div className="w-auto">
@@ -58,7 +60,9 @@ export default () => {
         <>
           <div className="flex mt-4">
             <Text.Subtitle className="block grow">
-              {Languages.t('components.searchpopup.media')}
+              {isRecent
+                ? Languages.t('components.searchpopup.recent_media')
+                : Languages.t('components.searchpopup.media')}
             </Text.Subtitle>
             {medias.length > 6 && (
               <div className="w-auto">
@@ -78,7 +82,9 @@ export default () => {
         <>
           <div className="flex mt-4">
             <Text.Subtitle className="block grow">
-              {Languages.t('components.searchpopup.files')}
+              {isRecent
+                ? Languages.t('components.searchpopup.recent_files')
+                : Languages.t('components.searchpopup.files')}
             </Text.Subtitle>
             {files.length > 6 && (
               <div className="w-auto">
