@@ -135,7 +135,9 @@ export default (props: Props) => {
               {message?.files && (message?.files?.length || 0) > 0 && <MessageAttachments />}
               {message?.links &&
                 (message?.links?.length || 0) > 0 &&
-                message.links.map((preview, i) => <LinkPreview key={i} preview={preview} />)}
+                message.links
+                  .filter(link => link && (link.title || link.description || link.img))
+                  .map((preview, i) => <LinkPreview key={i} preview={preview} />)}
               {!messageSaveFailed && <Reactions />}
               {messageSaveFailed && !messageIsLoading && <RetryButtons />}
             </>
