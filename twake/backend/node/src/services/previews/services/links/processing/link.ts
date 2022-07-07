@@ -41,6 +41,11 @@ const getUrlInformation = async (url: string): Promise<LinkPreview> => {
     const title = parsedPage.og?.title || parsedPage.meta?.title || null;
     const description = parsedPage.og?.description || parsedPage.meta?.description || null;
     let img = parsedPage.og?.image || parsedPage.meta?.image || parsedPage.images?.[0] || null;
+
+    if (!title && !description && !img) {
+      throw new Error("not enough information to generate link preview");
+    }
+
     const favicon = (await getUrlFavicon(url)) || null;
     const domain = getDomain(url);
     let img_height: number | null = null,
