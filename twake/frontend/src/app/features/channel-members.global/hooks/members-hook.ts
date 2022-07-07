@@ -10,7 +10,7 @@ import useRouterWorkspace from "app/features/router/hooks/use-router-workspace";
 // backend/node/src/services/channels/entities/channel-member.ts
 
 export function useChannelMembers(params?: ParamsChannelMember): {
-    members: ChannelMemberWithUser[],
+    channelMembers: ChannelMemberWithUser[],
     loading: boolean,
     refresh: () => Promise<void>
 } {
@@ -24,13 +24,11 @@ export function useChannelMembers(params?: ParamsChannelMember): {
     const [members, setMembers] = useRecoilState(listChannelMembersStateFamily(parameters));
 
     const refresh = async () => {
-        console.log("referesh ", )
         setLoading(true);
-        const members = await ChannelMembersApiClient.getMembers(parameters);
-        console.log("members", members);
+        const listMembers = await ChannelMembersApiClient.getMembers(parameters);
 
-        if(members) {
-            setMembers(members);
+        if(listMembers) {
+            setMembers(listMembers);
         }
         setLoading(false);
     };
@@ -46,7 +44,7 @@ export function useChannelMembers(params?: ParamsChannelMember): {
     );
 
     return {
-        members,
+        channelMembers: members,
         loading,
         refresh
     }

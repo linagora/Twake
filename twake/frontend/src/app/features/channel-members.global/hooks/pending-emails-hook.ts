@@ -2,13 +2,15 @@ import { LoadingState } from "app/features/global/state/atoms/Loading";
 import useRouterChannel from "app/features/router/hooks/use-router-channel";
 import useRouterCompany from "app/features/router/hooks/use-router-company";
 import useRouterWorkspace from "app/features/router/hooks/use-router-workspace";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { listPendingEmailsStateFamily } from "../state/store";
 import { ChannelPendingEmail, ParamsChannelMember } from "../types/channel-members";
 import ChannelPendingEmailApiClient from "app/features/channel-members.global/api/pending-emails-api-client";
+import { useGlobalEffect } from "app/features/global/hooks/use-global-effect";
+import { SearchChannelMemberInputState } from "../state/search-channel-member";
 
 export function useChannelPendingEmails(params?: ParamsChannelMember): {
-    emails: ChannelPendingEmail[],
+    pendingEmails: ChannelPendingEmail[],
     loading: boolean,
     refresh: () => Promise<void>
 }{
@@ -23,18 +25,25 @@ export function useChannelPendingEmails(params?: ParamsChannelMember): {
 
     const refresh = async () => {
         setLoading(true);
-        const pendingEmails = await ChannelPendingEmailApiClient.list(parameters);
+        const listPendingEmails = await ChannelPendingEmailApiClient.list(parameters);
 
-        if(pendingEmails) {
-            setEmails(pendingEmails);
+        if(listPendingEmails) {
+            setEmails(listPendingEmails);
         }
         setLoading(false);
     };
 
+    useGlobalEffect(
+        "useChannelPendingEmails",
+        () => {
+            refresh();
+        },
+        [channelId]
+    );
+
     return {
-        emails,
+        pendingEmails: emails,
         loading,
         refresh
     }
-
 }

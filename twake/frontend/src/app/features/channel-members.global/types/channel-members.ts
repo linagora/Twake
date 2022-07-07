@@ -59,4 +59,4 @@ export type ResponseChannelPendingEmail = {
 
 export type ResponseDeletePendingEmailResponse = { status: 'success' | 'error' };
 
-export type ChannelMemberWithUser = ChannelMemberType & { user: Partial<UserType> };
+export type ChannelMemberWithUser = ChannelMemberType & { user: UserType };

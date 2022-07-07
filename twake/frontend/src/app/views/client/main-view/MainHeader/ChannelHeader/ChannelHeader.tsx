@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Lock } from 'react-feather';
 import { Button, Col, Row, Typography } from 'antd';
 
@@ -14,6 +14,7 @@ import Languages from 'app/features/global/services/languages-service';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
+import { useUsersSearchModal } from 'app/features/channel-members.global/state/search-channel-member';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
@@ -21,6 +22,8 @@ export default (): JSX.Element => {
   const { channel } = useChannel(channelId || '');
 
   const members = channel?.members || [];
+
+  const { setOpen } = useUsersSearchModal();
 
   useUsersListener(members);
 
@@ -86,12 +89,7 @@ export default (): JSX.Element => {
               <Button
                 size="small"
                 type="text"
-                onClick={() => {
-                  ModalManager.open(<ChannelMembersList channel={channel} closable />, {
-                    position: 'center',
-                    size: { width: '600px', minHeight: '329px' },
-                  });
-                }}
+                onClick={() => setOpen(true)}
               >
                 <Typography.Text>
                   {Languages.t('scenes.apps.parameters.workspace_sections.members')}

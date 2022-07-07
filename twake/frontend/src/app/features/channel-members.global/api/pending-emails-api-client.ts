@@ -30,7 +30,7 @@ class ChannelPendingEmailApiClient {
 
         return Api.post<PayloadChannelPendingEmail, ResponseChannelPendingEmail>(
             `${this.apiBaseUrl}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/pending_emails`,
-            { resource: guest }
+            { resource: guest }
         ).then(({resource}) => resource);
     }
 
