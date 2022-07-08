@@ -1,5 +1,5 @@
 import { notification as antNotification } from 'antd';
-import RouterService from '../../router/services/router-service';
+import RouterService, { ClientStateType } from '../../router/services/router-service';
 import popupManager from 'app/deprecated/popupManager/popupManager';
 import emojione from 'emojione';
 import React from 'react';
@@ -21,7 +21,7 @@ let inAppNotificationKey = 0;
 const newNotificationAudio = new window.Audio('/public/sounds/newnotification.wav');
 
 const callback = (
-  notificationObject: DesktopNotification | null,
+  notificationObject: (DesktopNotification & { routerState: ClientStateType }) | null,
   inAppNotificationKey?: string,
 ) => {
   inAppNotificationKey && antNotification.close(inAppNotificationKey);
@@ -29,6 +29,15 @@ const callback = (
   if (!notificationObject) {
     return;
   }
+
+  const routerState = notificationObject.routerState;
+  const channelId = routerState.channelId;
+  const workspaceId = routerState.workspaceId;
+  const companyId = routerState.companyId;
+  if (notificationObject.workspace_id === 'direct' && notificationObject.company_id === companyId)
+    notificationObject.workspace_id = workspaceId || '';
+  if (notificationObject.channel_id === channelId) return;
+
   setTimeout(() => {
     const workspaceId = notificationObject.workspace_id;
     if (workspaceId) {
@@ -61,7 +70,9 @@ const openNotification = (
   });
 };
 
-export const pushDesktopNotification = (notification: DesktopNotification) => {
+export const pushDesktopNotification = (
+  notification: DesktopNotification & { routerState: ClientStateType },
+) => {
   //Init notification on the browser
   if (firstTime) {
     if ('Notification' in window && window.Notification.requestPermission) {
