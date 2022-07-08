@@ -1,12 +1,21 @@
+import _, { uniqBy } from "lodash";
+import { TwakeContext } from "../../../core/platform/framework";
 import {
   ExecutionContext,
   ListResult,
   Paginable,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
-import { TwakeContext } from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
+import SearchRepository from "../../../core/platform/services/search/repository";
+import { fileIsMedia } from "../../../services/files/utils";
+import { formatUser } from "../../../utils/users";
+import gr from "../../global-resolver";
 import { MessageViewsServiceAPI } from "../api";
+import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
+import { MessageChannelRef } from "../entities/message-channel-refs";
+import { MessageFileRef } from "../entities/message-file-refs";
+import { MessageFile } from "../entities/message-files";
 import { Message } from "../entities/messages";
 import { Thread } from "../entities/threads";
 import {
@@ -14,26 +23,13 @@ import {
   CompanyExecutionContext,
   FlatFileFromMessage,
   FlatPinnedFromMessage,
-  InboxOptions,
   MessageViewListOptions,
   MessageWithReplies,
-  SearchMessageOptions,
   SearchMessageFilesOptions,
+  SearchMessageOptions,
 } from "../types";
-import { MessageChannelRef } from "../entities/message-channel-refs";
-import { buildMessageListPagination } from "./utils";
-import { isEqual, uniqBy, uniqWith } from "lodash";
-import SearchRepository from "../../../core/platform/services/search/repository";
-import { MessageFileRef } from "../entities/message-file-refs";
-import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
-import gr from "../../global-resolver";
-import { PublicFile, File } from "../../files/entities/file";
-import { MessageFile } from "../entities/message-files";
-import { formatUser } from "../../../utils/users";
-import { UserObject } from "../../user/web/types";
 import { FileSearchResult } from "../web/controllers/views/search-files";
-import _ from "lodash";
-import { fileIsMedia } from "../../../services/files/utils";
+import { buildMessageListPagination } from "./utils";
 
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
