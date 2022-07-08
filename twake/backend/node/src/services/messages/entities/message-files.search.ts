@@ -3,7 +3,7 @@ import { fileIsMedia } from "../../../services/files/utils";
 import { MessageFile } from "./message-files";
 
 export const expandFileNameForSearch = (name: string) => {
-  return name + " " + _.snakeCase(name).replace(/[^a-zA-Z0-9]/, " ");
+  return name + " " + _.snakeCase(name).replace(/[^a-zA-Z0-9]/gm, " ");
 };
 
 export default {

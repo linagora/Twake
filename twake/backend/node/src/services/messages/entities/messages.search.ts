@@ -5,6 +5,9 @@ import { Message } from "./messages";
 export default {
   index: "messages",
   source: (entity: Message) => {
+    const links = entity.text
+      .match(/(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi)
+      .join(" ");
     const source: any = {
       created_at: entity.created_at,
       text: entity.text,
@@ -13,6 +16,12 @@ export default {
       attachments_names: (entity.files || [])
         .map(file => expandFileNameForSearch(file.metadata.name))
         .join(" "),
+      links:
+        links +
+        " " +
+        links.replace(/https?:\/\//gm, "") +
+        " " +
+        links.replace(/[^A-Z-a-z0-9]/gm, " "),
     };
     if (entity.cache) {
       return {
@@ -35,6 +44,7 @@ export default {
     properties: {
       text: { type: "text" },
       attachments_names: { type: "text", index_prefixes: { min_chars: 1 } },
+      links: { type: "text", index_prefixes: { min_chars: 1 } },
       user_id: { type: "keyword" },
       company_id: { type: "keyword" },
       workspace_id: { type: "keyword" },

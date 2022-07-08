@@ -316,6 +316,9 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
           $text: {
             $search: options.search,
           },
+          $sort: {
+            created_at: "desc",
+          },
         },
       )
       .then(a => {
