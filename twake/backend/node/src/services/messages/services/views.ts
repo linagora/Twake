@@ -1,12 +1,21 @@
+import _, { uniqBy } from "lodash";
+import { TwakeContext } from "../../../core/platform/framework";
 import {
   ExecutionContext,
   ListResult,
   Paginable,
   Pagination,
 } from "../../../core/platform/framework/api/crud-service";
-import { TwakeContext } from "../../../core/platform/framework";
 import Repository from "../../../core/platform/services/database/services/orm/repository/repository";
+import SearchRepository from "../../../core/platform/services/search/repository";
+import { fileIsMedia } from "../../../services/files/utils";
+import { formatUser } from "../../../utils/users";
+import gr from "../../global-resolver";
 import { MessageViewsServiceAPI } from "../api";
+import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
+import { MessageChannelRef } from "../entities/message-channel-refs";
+import { MessageFileRef } from "../entities/message-file-refs";
+import { MessageFile } from "../entities/message-files";
 import { Message } from "../entities/messages";
 import { Thread } from "../entities/threads";
 import {
@@ -14,25 +23,13 @@ import {
   CompanyExecutionContext,
   FlatFileFromMessage,
   FlatPinnedFromMessage,
-  InboxOptions,
   MessageViewListOptions,
   MessageWithReplies,
-  SearchMessageOptions,
   SearchMessageFilesOptions,
+  SearchMessageOptions,
 } from "../types";
-import { MessageChannelRef } from "../entities/message-channel-refs";
-import { buildMessageListPagination } from "./utils";
-import { isEqual, uniqBy, uniqWith } from "lodash";
-import SearchRepository from "../../../core/platform/services/search/repository";
-import { MessageFileRef } from "../entities/message-file-refs";
-import { MessageChannelMarkedRef } from "../entities/message-channel-marked-refs";
-import gr from "../../global-resolver";
-import { PublicFile, File } from "../../files/entities/file";
-import { MessageFile } from "../entities/message-files";
-import { formatUser } from "../../../utils/users";
-import { UserObject } from "../../user/web/types";
 import { FileSearchResult } from "../web/controllers/views/search-files";
-import _ from "lodash";
+import { buildMessageListPagination } from "./utils";
 
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
@@ -78,7 +75,11 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
   ): Promise<ListResult<MessageWithReplies | FlatFileFromMessage>> {
     const refs = await this.repositoryFilesRef.find(
       {
-        target_type: "channel",
+        target_type: options?.media_only
+          ? "channel_media"
+          : options?.file_only
+          ? "channel_file"
+          : "channel",
         target_id: context.channel.id,
         company_id: context.channel.company_id,
       },
@@ -280,6 +281,9 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
           $text: {
             $search: options.search,
           },
+          $sort: {
+            created_at: "desc",
+          },
         },
       )
       .then(a => {
@@ -307,6 +311,9 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
           ...(options.extension ? { $in: [["extension", [options.extension]]] } : {}),
           $text: {
             $search: options.search,
+          },
+          $sort: {
+            created_at: "desc",
           },
         },
       )
@@ -381,8 +388,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
 
       files = [...files, ...messageFiles.filter(a => a)].filter(ref => {
         //Apply media filer
-        const isMedia =
-          ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
+        const isMedia = fileIsMedia(ref);
         return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
       });
       files = files.sort((a, b) => b.created_at - a.created_at);

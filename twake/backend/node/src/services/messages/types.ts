@@ -90,6 +90,8 @@ export interface MessageViewListOptions {
   replies_per_thread?: number;
   flat?: boolean;
   emojis?: boolean;
+  media_only?: boolean;
+  file_only?: boolean;
 }
 
 export interface MessageListQueryParameters extends PaginationQueryParameters {
