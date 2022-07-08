@@ -19,5 +19,5 @@ export function addApiUrlIfNeeded(url: string, asCssUrl?: boolean): string {
 }
 
 export function getAsFrontUrl(path: string): string {
-  return addUrlTryDesktop(`${environment.front_root_url || ''}${path}`);
+  return `${environment.front_root_url || ''}${path}`;
 }
