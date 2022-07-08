@@ -5,12 +5,12 @@ import { Message } from "./messages";
 export default {
   index: "messages",
   source: (entity: Message) => {
-    const links = entity.text
+    const links = (entity.text || "")
       .match(/(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi)
       .join(" ");
     const source: any = {
       created_at: entity.created_at,
-      text: entity.text,
+      text: entity.text || "",
       has_files: (entity.files || []).length > 0,
       has_medias: (entity.files || []).filter(f => fileIsMedia(f)).length > 0,
       attachments_names: (entity.files || [])
