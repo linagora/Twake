@@ -2,17 +2,11 @@ import { afterEach, beforeEach, describe, expect, it } from "@jest/globals";
 import { v1 as uuidv1 } from "uuid";
 import { deserialize } from "class-transformer";
 import { init, TestPlatform } from "../setup";
-import {
-  ResourceCreateResponse,
-  ResourceListResponse,
-  User,
-  Workspace,
-} from "../../../src/utils/types";
+import { ResourceCreateResponse, ResourceListResponse, User, Workspace } from "../../../src/utils/types";
 import { Channel } from "../../../src/services/channels/entities";
 import { ChannelVisibility, WorkspaceExecutionContext } from "../../../src/services/channels/types";
 import { ChannelUtils, get as getChannelUtils } from "./utils";
 import { DirectChannel } from "../../../src/services/channels/entities/direct-channel";
-import { ChannelSaveOptions } from "../../../src/services/channels/web/types";
 import gr from "../../../src/services/global-resolver";
 
 describe("The direct channels API", () => {

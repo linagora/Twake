@@ -103,7 +103,7 @@ export class CompanyServiceImpl {
     return new SaveResult<Company>("company", company, OperationType.UPDATE);
   }
 
-  async createCompany(company: Company): Promise<Company> {
+  async createCompany(company: Company, context?: ExecutionContext): Promise<Company> {
     const companyToCreate: Company = getCompanyInstance({
       ...company,
       ...{
@@ -124,7 +124,10 @@ export class CompanyServiceImpl {
     return result.entity;
   }
 
-  async getCompany(companySearchKey: CompanySearchKey): Promise<Company> {
+  async getCompany(
+    companySearchKey: CompanySearchKey,
+    context?: ExecutionContext,
+  ): Promise<Company> {
     if (companySearchKey.id) {
       return this.companyRepository.findOne(companySearchKey);
     } else if (companySearchKey.identity_provider_id) {
@@ -139,7 +142,11 @@ export class CompanyServiceImpl {
     }
   }
 
-  async getCompanyUser(company: CompanyPrimaryKey, user: UserPrimaryKey): Promise<CompanyUser> {
+  async getCompanyUser(
+    company: CompanyPrimaryKey,
+    user: UserPrimaryKey,
+    context?: ExecutionContext,
+  ): Promise<CompanyUser> {
     const companyUser = await this.companyUserRepository.findOne({
       group_id: company.id,
       user_id: user.id,
@@ -148,7 +155,7 @@ export class CompanyServiceImpl {
     return companyUser;
   }
 
-  async getAllForUser(userId: uuid): Promise<CompanyUser[]> {
+  async getAllForUser(userId: uuid, context?: ExecutionContext): Promise<CompanyUser[]> {
     const list = await this.companyUserRepository
       .find({ user_id: userId })
       .then(a => a.getEntities());
@@ -164,13 +171,13 @@ export class CompanyServiceImpl {
     ) {
       if (!user.cache) user.cache = { companies: [] };
       user.cache.companies = list.map(c => c.group_id);
-      await gr.services.users.save(user, {}, { user: { id: user.id, server_request: true } });
+      await gr.services.users.save(user, { user: { id: user.id, server_request: true } });
     }
 
     return list;
   }
 
-  getCompanies(paginable?: Paginable): Promise<ListResult<Company>> {
+  getCompanies(paginable?: Paginable, context?: ExecutionContext): Promise<ListResult<Company>> {
     return this.companyRepository.find(
       {},
       {
@@ -194,6 +201,7 @@ export class CompanyServiceImpl {
   async removeUserFromCompany(
     companyPk: CompanyPrimaryKey,
     userPk: UserPrimaryKey,
+    context?: ExecutionContext,
   ): Promise<DeleteResult<CompanyUser>> {
     const entity = await this.companyUserRepository.findOne({
       group_id: companyPk.id,
@@ -206,7 +214,7 @@ export class CompanyServiceImpl {
       if ((user.cache?.companies || []).includes(companyPk.id)) {
         // Update user cache with companies
         user.cache.companies = user.cache.companies.filter(id => id != companyPk.id);
-        await gr.services.users.save(user, {}, { user: { id: user.id, server_request: true } });
+        await gr.services.users.save(user, { user: { id: user.id, server_request: true } });
       }
 
       localEventBus.publish<ResourceEventsPayload>("company:user:deleted", {
@@ -222,6 +230,7 @@ export class CompanyServiceImpl {
     companyId: CompanyUserPrimaryKey,
     pagination?: Pagination,
     options?: ListUserOptions,
+    context?: ExecutionContext,
   ): Promise<ListResult<CompanyUser>> {
     const findOptions: FindOptions = {
       pagination,
@@ -253,6 +262,7 @@ export class CompanyServiceImpl {
     userId: uuid,
     role: CompanyUserRole = "member",
     applications: string[] = [],
+    context?: ExecutionContext,
   ): Promise<SaveResult<CompanyUser>> {
     const key = {
       group_id: companyId,
@@ -273,13 +283,13 @@ export class CompanyServiceImpl {
       // Update user cache with companies
       if (!user.cache) user.cache = { companies: [] };
       user.cache.companies.push(companyId);
-      await gr.services.users.save(user, {}, { user: { id: user.id, server_request: true } });
+      await gr.services.users.save(user, { user: { id: user.id, server_request: true } });
     }
 
     return new SaveResult("company_user", entity, OperationType.UPDATE);
   }
 
-  async removeCompany(searchKey: CompanySearchKey): Promise<void> {
+  async removeCompany(searchKey: CompanySearchKey, context?: ExecutionContext): Promise<void> {
     if (searchKey.identity_provider_id) {
       const extCompany = await this.getExtCompany({
         service_id: searchKey.identity_provider,
@@ -302,11 +312,15 @@ export class CompanyServiceImpl {
     return Promise.resolve(null);
   }
 
-  getUsersCount(companyId: string): Promise<number> {
+  getUsersCount(companyId: string, context?: ExecutionContext): Promise<number> {
     return this.getCompany({ id: companyId }).then(a => a.memberCount);
   }
 
-  async getUserRole(companyId: uuid, userId: uuid): Promise<CompanyUserRole> {
+  async getUserRole(
+    companyId: uuid,
+    userId: uuid,
+    context?: ExecutionContext,
+  ): Promise<CompanyUserRole> {
     const companyUser = await this.getCompanyUser({ id: companyId }, { id: userId });
     if (!companyUser) {
       return "guest";
@@ -314,7 +328,7 @@ export class CompanyServiceImpl {
     return companyUser.role;
   }
 
-  async ensureDeletedUserNotInCompanies(userPk: UserPrimaryKey) {
+  async ensureDeletedUserNotInCompanies(userPk: UserPrimaryKey, context?: ExecutionContext) {
     const user = await gr.services.users.get(userPk);
     if (user.deleted) {
       const companies = await this.getAllForUser(user.id);

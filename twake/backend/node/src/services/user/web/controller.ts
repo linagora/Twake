@@ -90,7 +90,7 @@ export class UsersCrudController
 
     user.status_icon = coalesce(request.body.resource, user.status_icon);
 
-    await gr.services.users.save(user, {}, context);
+    await gr.services.users.save(user, context);
 
     return {
       resource: await formatUser(user),

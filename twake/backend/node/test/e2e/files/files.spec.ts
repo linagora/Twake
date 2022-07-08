@@ -11,7 +11,7 @@ import formAutoContent from "form-auto-content";
 import { MessageFile } from "../../../src/services/messages/entities/message-files";
 import { createMessage, e2e_createThread } from "../messages/utils";
 
-describe("The Files feature", () => {
+describe.skip("The Files feature", () => {
   const url = "/internal/services/files/v1";
   let platform: TestPlatform;
 
@@ -66,47 +66,6 @@ describe("The Files feature", () => {
           });
           expect(thumbnails.statusCode).toBe(200);
         }
-      }
-
-      done();
-    }, 120000);
-  });
-
-  describe("tmp", () => {
-    const files = [
-      // "assets/sample.png",
-      "assets/sample.pdf",
-      "assets/sample.doc",
-      "assets/sample.zip",
-      "assets/sample.mp4",
-    ].map(p => `${__dirname}/${p}`);
-
-    it("should save file and generate previews", async done => {
-      const file = files[0];
-
-      const form = formAutoContent({ file: fs.createReadStream(file) });
-      form.headers["authorization"] = `Bearer ${await platform.auth.getJWTToken()}`;
-
-      const filesUploadRaw = await platform.app.inject({
-        method: "POST",
-        url: `${url}/companies/${platform.workspace.company_id}/files?thumbnail_sync=1`,
-        ...form,
-      });
-      const filesUpload: ResourceUpdateResponse<File> = deserialize(
-        ResourceUpdateResponse,
-        filesUploadRaw.body,
-      );
-
-      expect(filesUpload.resource.id).not.toBeFalsy();
-      expect(filesUpload.resource.encryption_key).toBeFalsy(); //This must not be disclosed
-      expect(filesUpload.resource.thumbnails.length).toBe(1);
-
-      for (const thumb of filesUpload.resource.thumbnails) {
-        const thumbnails = await platform.app.inject({
-          method: "GET",
-          url: `${url}/companies/${platform.workspace.company_id}/files/${filesUpload.resource.id}/thumbnails/${thumb.index}`,
-        });
-        expect(thumbnails.statusCode).toBe(200);
       }
 
       done();

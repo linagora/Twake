@@ -49,10 +49,6 @@ export class ConsoleServiceImpl implements TwakeServiceProvider {
     return this;
   }
 
-  getUserByAccessToken(accessToken: string): User {
-    throw new Error("Method not implemented.");
-  }
-
   merge(
     baseUrl: string,
     concurrent: number = 1,

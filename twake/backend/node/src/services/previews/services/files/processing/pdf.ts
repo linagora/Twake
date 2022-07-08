@@ -28,10 +28,10 @@ export async function convertFromPdf(
         );
       }
     } catch (err) {
-      //Just no more page to convert
       if (!pages.length) {
         throw err;
       }
+      //Just no more page to convert
     }
   } catch (error) {
     console.error(error);

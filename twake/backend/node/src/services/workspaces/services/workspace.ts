@@ -151,14 +151,6 @@ export class WorkspaceServiceImpl implements TwakeServiceProvider, Initializable
     return new CreateResult<Workspace>(TYPE, created.entity);
   }
 
-  update?(
-    pk: Partial<Pick<Workspace, "id">>,
-    item: Workspace,
-    context?: ExecutionContext,
-  ): Promise<UpdateResult<Workspace>> {
-    throw new Error("Method not implemented.");
-  }
-
   @RealtimeSaved<Workspace>((workspace, context) => [
     {
       // FIXME: For now the room is defined at the company level
