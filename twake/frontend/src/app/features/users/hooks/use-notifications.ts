@@ -14,9 +14,10 @@ import {
 import { NotificationType } from '../types/notification-types';
 import ElectronService from 'app/features/global/framework/electron-service';
 import windowState from 'app/features/global/utils/window';
-import RouterService from '../../router/services/router-service';
+import RouterService, { ClientStateType } from '../../router/services/router-service';
 import { useCallback } from 'react';
 import { pushDesktopNotification } from '../services/push-desktop-notification';
+import { RouterState } from 'app/features/router/state/atoms/router';
 
 export let removeBadgesNow = (type: 'channel' | 'workspace' | 'company', id: string) => {};
 
@@ -121,13 +122,17 @@ export const useNotifications = () => {
     [badges],
   );
 
-  const realtimeEvent = useCallback(
-    async (action, resource) => {
-      if (action === 'event' && resource._type === 'notification:desktop')
-        pushDesktopNotification(resource);
-      if (action === 'saved') addBadges([resource]);
-      if (action === 'deleted') removeBadges([resource]);
-    },
+  const realtimeEvent = useRecoilCallback(
+    ({ snapshot }) =>
+      async (action: string, resource: any) => {
+        const routerState = snapshot.getLoadable(RouterState).valueMaybe() as ClientStateType;
+
+        if (action === 'event' && resource._type === 'notification:desktop') {
+          pushDesktopNotification({ ...resource, routerState });
+        }
+        if (action === 'saved') addBadges([resource]);
+        if (action === 'deleted') removeBadges([resource]);
+      },
     [addBadges, removeBadges],
   );
   const room = userNotificationApiClient.websocket();

@@ -6,6 +6,7 @@ import gr from "../../../../../global-resolver";
 import uuid from "node-uuid";
 import { Pagination } from "../../../../../../core/platform/framework/api/crud-service";
 import { MessageFile } from "../../../../entities/message-files";
+import { fileIsMedia } from "../../../../../files/utils";
 
 export class FilesViewProcessor {
   repository: Repository<MessageFileRef>;
@@ -68,20 +69,26 @@ export class FilesViewProcessor {
       for (const file of message.resource.files || []) {
         //For each channel, we add the media
         for (const participant of (thread.participants || []).filter(p => p.type === "channel")) {
-          const fileRef = getInstance({
-            target_type: "channel",
-            target_id: participant.id,
-            id: uuid.v1(),
-            created_at: message.resource.created_at,
-            workspace_id: participant.workspace_id,
-            channel_id: participant.id,
-            thread_id: thread.id,
-            message_id: message.resource.id,
-            message_file_id: file.id,
-            company_id: file.company_id,
-            file_id: file.metadata.external_id,
-          });
-          this.repository.save(fileRef);
+          const isMedia = fileIsMedia(file);
+          for (const type of [
+            "channel",
+            isMedia ? "channel_media" : "channel_file",
+          ] as MessageFileRef["target_type"][]) {
+            const fileRef = getInstance({
+              target_type: type,
+              target_id: participant.id,
+              id: uuid.v1(),
+              created_at: message.resource.created_at,
+              workspace_id: participant.workspace_id,
+              channel_id: participant.id,
+              thread_id: thread.id,
+              message_id: message.resource.id,
+              message_file_id: file.id,
+              company_id: file.company_id,
+              file_id: file.metadata.external_id,
+            });
+            this.repository.save(fileRef);
+          }
         }
 
         //For the user we add it as uploaded by user

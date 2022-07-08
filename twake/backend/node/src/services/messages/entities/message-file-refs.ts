@@ -10,7 +10,7 @@ export const TYPE = "message_file_refs";
 export class MessageFileRef {
   @Type(() => String)
   @Column("target_type", "string")
-  target_type: "channel" | "user_upload" | "user_download";
+  target_type: "channel" | "channel_media" | "channel_file" | "user_upload" | "user_download";
 
   @Type(() => String)
   @Column("target_id", "string")
