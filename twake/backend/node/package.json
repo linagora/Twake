@@ -101,6 +101,7 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "7",
+    "@fastify/caching": "^7.0.0",
     "@fastify/formbody": "^6.0.0",
     "@fastify/static": "^5.0.1",
     "@ffprobe-installer/ffprobe": "^1.4.1",
