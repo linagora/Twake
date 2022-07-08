@@ -1,10 +1,10 @@
+import { fileIsMedia } from "../../../services/files/utils";
 import { MessageFile } from "./message-files";
 
 export default {
   index: "message_files",
   source: (entity: MessageFile) => {
-    const isMedia =
-      entity.metadata?.mime?.startsWith("video/") || entity.metadata?.mime?.startsWith("image/");
+    const isMedia = fileIsMedia(entity);
 
     const source = {
       name: entity.metadata?.name || "",

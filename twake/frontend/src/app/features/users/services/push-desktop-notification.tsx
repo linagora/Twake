@@ -55,8 +55,11 @@ const callback = (
 
 const openNotification = (
   notification: { title: string; text: string },
-  newNotification: DesktopNotification | null,
-  callback: (desktopNotification: DesktopNotification | null, id: string) => void,
+  newNotification: (DesktopNotification & { routerState: ClientStateType }) | null,
+  callback: (
+    desktopNotification: (DesktopNotification & { routerState: ClientStateType }) | null,
+    id: string,
+  ) => void,
 ) => {
   antNotification.close(inAppNotificationKey.toString());
   inAppNotificationKey++;

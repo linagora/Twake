@@ -33,6 +33,7 @@ import { formatUser } from "../../../utils/users";
 import { UserObject } from "../../user/web/types";
 import { FileSearchResult } from "../web/controllers/views/search-files";
 import _ from "lodash";
+import { fileIsMedia } from "../../../services/files/utils";
 
 export class ViewsServiceImpl implements MessageViewsServiceAPI {
   version: "1";
@@ -78,7 +79,11 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
   ): Promise<ListResult<MessageWithReplies | FlatFileFromMessage>> {
     const refs = await this.repositoryFilesRef.find(
       {
-        target_type: "channel",
+        target_type: options?.media_only
+          ? "channel_media"
+          : options?.file_only
+          ? "channel_file"
+          : "channel",
         target_id: context.channel.id,
         company_id: context.channel.company_id,
       },
@@ -381,8 +386,7 @@ export class ViewsServiceImpl implements MessageViewsServiceAPI {
 
       files = [...files, ...messageFiles.filter(a => a)].filter(ref => {
         //Apply media filer
-        const isMedia =
-          ref.metadata?.mime?.startsWith("video/") || ref.metadata?.mime?.startsWith("image/");
+        const isMedia = fileIsMedia(ref);
         return !((media === "file_only" && isMedia) || (media === "media_only" && !isMedia));
       });
       files = files.sort((a, b) => b.created_at - a.created_at);

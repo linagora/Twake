@@ -51,6 +51,8 @@ export default async (
         new Pagination(request.query.page_token, limit.toString()),
         {
           flat: true,
+          ...(request.query.media === "file_only" ? { file_only: true } : {}),
+          ...(request.query.media === "media_only" ? { media_only: true } : {}),
         },
         {
           ...context,
