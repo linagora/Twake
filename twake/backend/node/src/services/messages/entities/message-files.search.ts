@@ -1,5 +1,10 @@
+import _ from "lodash";
 import { fileIsMedia } from "../../../services/files/utils";
 import { MessageFile } from "./message-files";
+
+export const expandFileNameForSearch = (name: string) => {
+  return name + " " + _.snakeCase(name).replace(/[^a-zA-Z0-9]/, " ");
+};
 
 export default {
   index: "message_files",
@@ -7,7 +12,7 @@ export default {
     const isMedia = fileIsMedia(entity);
 
     const source = {
-      name: entity.metadata?.name || "",
+      name: expandFileNameForSearch(entity.metadata?.name || ""),
       size: entity.metadata?.size || "",
       source: entity.metadata?.source || "",
       extension: (entity.metadata?.name || "").split(".").pop() || "",
