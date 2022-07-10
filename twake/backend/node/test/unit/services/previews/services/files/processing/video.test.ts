@@ -68,7 +68,7 @@ describe("the generateVideoPreview function", () => {
     await generateVideoPreview(["/foo/bar"]);
     expect(ffmpegMock.screenshot).toBeCalledWith({
       count: 1,
-      filename: "some-random-file.png",
+      filename: "some-random-file.jpg",
       folder: "/tmp",
       timemarks: ["0"],
       size: "500x500",
@@ -100,7 +100,7 @@ describe("the generateVideoPreview function", () => {
 
     await expect(generateVideoPreview(["/foo/bar"])).rejects.toThrow(expectedError);
 
-    expect(cleanFiles).toBeCalledWith(["/tmp/file.png"]);
+    expect(cleanFiles).toBeCalledWith(["/tmp/file.jpg"]);
   });
 
   it("should return the thumbnail information", async () => {
@@ -109,9 +109,9 @@ describe("the generateVideoPreview function", () => {
       {
         width: 320,
         height: 240,
-        type: "image/png",
+        type: "image/jpg",
         size: 1,
-        path: "/tmp/file.png",
+        path: "/tmp/file.jpg",
       },
     ]);
   });
@@ -143,9 +143,9 @@ describe("the generateVideoPreview function", () => {
       {
         width: 1920,
         height: 1080,
-        type: "image/png",
+        type: "image/jpg",
         size: 1,
-        path: "/tmp/file.png",
+        path: "/tmp/file.jpg",
       },
     ]);
   });
@@ -167,9 +167,9 @@ describe("the generateVideoPreview function", () => {
       {
         width: 320,
         height: 240,
-        type: "image/png",
+        type: "image/jpg",
         size: 1,
-        path: "/tmp/file.png",
+        path: "/tmp/file.jpg",
       },
     ]);
   });
