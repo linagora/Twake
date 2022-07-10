@@ -92,7 +92,7 @@ const getThumbnailInformation = (
 
   return {
     size: stats.size,
-    type: "image/png",
+    type: "image/jpg",
     path,
   };
 };
@@ -103,7 +103,7 @@ const getThumbnailInformation = (
  * @returns {temporaryThumbnailFile} - the temporary thumbnail file information
  */
 const getTemporaryThumbnailFile = (): temporaryThumbnailFile => {
-  const filePath = `${getTmpFile()}.png`;
+  const filePath = `${getTmpFile()}.jpg`;
   const fileName = filePath.split("/").pop();
   const folder = filePath.substring(0, filePath.lastIndexOf("/"));
 
