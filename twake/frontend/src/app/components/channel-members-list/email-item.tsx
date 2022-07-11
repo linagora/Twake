@@ -8,10 +8,10 @@ import ChannelPendingEmailApiClient from "app/features/channel-members.global/ap
 import useRouterCompany from "app/features/router/hooks/use-router-company";
 import useRouterWorkspace from "app/features/router/hooks/use-router-workspace";
 import useRouterChannel from "app/features/router/hooks/use-router-channel";
+import { useChannelPendingEmails } from "app/features/channel-members.global/hooks/pending-emails-hook";
 
 type IProps = {
-    email: PendingEmail,
-    onRefreshPendingList: () => void;
+    email: PendingEmail;
 };
 
 export const EmailItem = (props: IProps): JSX.Element => {
@@ -20,6 +20,7 @@ export const EmailItem = (props: IProps): JSX.Element => {
     const workspaceId = useRouterWorkspace();
     const channelId = useRouterChannel();
     const [loading, setLoading] = useRecoilState(LoadingState('cancelPendingEmailLoading'));
+    const { refresh } = useChannelPendingEmails();
 
     const cancelPendingEmailRequest = async (email: string) => {
         setLoading(true);
@@ -31,7 +32,7 @@ export const EmailItem = (props: IProps): JSX.Element => {
         })
         .then(() => {
             setLoading(false);
-            props.onRefreshPendingList();
+            refresh();
         });
     }
 

@@ -6,7 +6,7 @@ import { useChannelPendingEmails } from "app/features/channel-members.global/hoo
 import { SearchIcon } from "@heroicons/react/solid";
 import { InputDecorationIcon } from "app/atoms/input/input-decoration-icon";
 import { EmailItem } from "./email-item";
-import { useSearchChannelMember } from "app/features/channel-members.global/hooks/search-channel-member";
+import { useSearchChannelMembers } from "app/features/channel-members.global/hooks/search-channel-member";
 import { SearchChannelMemberInputState } from "app/features/channel-members.global/state/search-channel-member";
 import { useRecoilState } from "recoil";
 import { useSearchChannelPendingEmail } from "app/features/channel-members.global/hooks/search-pending-email";
@@ -17,9 +17,9 @@ import { UserType } from 'app/features/users/types/user';
 import _ from "lodash";
 import Strings from "app/features/global/utils/strings";
 
-export const ChannelMembersListModal = (): JSX.Element => {
-    const { channelMembers, refresh: refreshChannelMember } = useChannelMembers();
-    const {listChannelMembers, loading: loadingSearchChannnelMemer} = useSearchChannelMember();
+export const ChannelMembersListModal = (props: { channelId: string}): JSX.Element => {
+    const { channelMembers } = useChannelMembers();
+    const {listChannelMembers, } = useSearchChannelMembers(props.channelId);
 
     const [searchState, setSearchState] = useRecoilState(SearchChannelMemberInputState);
 
@@ -43,15 +43,6 @@ export const ChannelMembersListModal = (): JSX.Element => {
                 ),
         )
         : filteredUsers;
-    
-
-    const onRefreshPendingList = () => {
-        refreshPendingEmail();
-    }
-
-    const onRefreshChannelMemberList = () => {
-        refreshChannelMember();
-    }
 
     return (
         <div className="flex flex-col max-w-full space-y-1">
@@ -73,7 +64,7 @@ export const ChannelMembersListModal = (): JSX.Element => {
                 { pendingEmailList && pendingEmailList.map((item, index) => {
                     return (
                         <div key={`key_${index}`}>
-                            <EmailItem email={item} onRefreshPendingList={onRefreshPendingList} />
+                            <EmailItem email={item} />
                         </div>
                     )
                 })}
@@ -84,7 +75,6 @@ export const ChannelMembersListModal = (): JSX.Element => {
                             <MemberItem 
                                 userId={cMember.user_id}
                                 member={cMember}
-                                onRefreshChannelMemberList={onRefreshChannelMemberList}
                             />
                         </div>
                     )
@@ -96,7 +86,7 @@ export const ChannelMembersListModal = (): JSX.Element => {
                     (item) => (item as ChannelMemberWithUser).user_id || (item as UserType).id).map(user => {
                     return (
                         <div key={user.id}>
-                            <UserItem userId={user.id || ''} onRefreshChannelMemberList={onRefreshChannelMemberList} />
+                            <UserItem userId={user.id || ''} />
                         </div>
                     )
                 })}

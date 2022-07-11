@@ -1,13 +1,33 @@
 import ChannelMembersApiClient from "app/features/channel-members.global/api/members-api-client";
 import { useGlobalEffect } from "app/features/global/hooks/use-global-effect";
 import { useRecoilState } from "recoil";
-import { ChannelMemberType, ChannelMemberWithUser, ParamsChannelMember } from "../types/channel-members";
+import { ChannelMemberWithUser, ParamsChannelMember } from "../types/channel-members";
 import { listChannelMembersStateFamily } from "../state/store";
 import { LoadingState } from "app/features/global/state/atoms/Loading";
 import useRouterCompany from "app/features/router/hooks/use-router-company";
 import useRouterChannel from "app/features/router/hooks/use-router-channel";
 import useRouterWorkspace from "app/features/router/hooks/use-router-workspace";
-// backend/node/src/services/channels/entities/channel-member.ts
+
+export const useRefreshChannelMembers = (parameters: ParamsChannelMember) => {
+    const [members, setMembers] = useRecoilState(listChannelMembersStateFamily(parameters));
+    const [loading, setLoading] = useRecoilState(LoadingState('useChannelMembers'));
+
+    const refresh = async () => {
+        setLoading(true);
+        const listMembers = await ChannelMembersApiClient.getMembers(parameters);
+
+        if(listMembers) {
+            setMembers(listMembers);
+        }
+        setLoading(false);
+    };
+
+    return {
+        channelMembers: members,
+        loading,
+        refresh
+    }
+}
 
 export function useChannelMembers(params?: ParamsChannelMember): {
     channelMembers: ChannelMemberWithUser[],
@@ -20,19 +40,7 @@ export function useChannelMembers(params?: ParamsChannelMember): {
 
     const parameters = { companyId, workspaceId, channelId};
 
-    const [loading, setLoading] = useRecoilState(LoadingState('useChannelMembers'));
-    const [members, setMembers] = useRecoilState(listChannelMembersStateFamily(parameters));
-
-    const refresh = async () => {
-        setLoading(true);
-        const listMembers = await ChannelMembersApiClient.getMembers(parameters);
-
-        if(listMembers) {
-            setMembers(listMembers);
-        }
-        setLoading(false);
-    };
-
+    const {refresh, channelMembers, loading} = useRefreshChannelMembers(parameters)
 
     //Will be called once only
     useGlobalEffect(
@@ -44,7 +52,7 @@ export function useChannelMembers(params?: ParamsChannelMember): {
     );
 
     return {
-        channelMembers: members,
+        channelMembers,
         loading,
         refresh
     }

@@ -1,19 +1,12 @@
 import Avatar from 'app/atoms/avatar';
 import UsersService from 'app/features/users/services/current-user-service';
 import { useUser } from 'app/features/users/hooks/use-user';
-import { useRecoilState } from 'recoil';
-import { LoadingState } from 'app/features/global/state/atoms/Loading';
-import ChannelMembersAPIClient from "app/features/channel-members.global/api/members-api-client";
-import useRouterCompany from 'app/features/router/hooks/use-router-company';
-import useRouterChannel from 'app/features/router/hooks/use-router-channel';
-import useRouterWorkspace from 'app/features/router/hooks/use-router-workspace';
 import { Button } from 'app/atoms/button/button';
 import Languages from "app/features/global/services/languages-service";
-import { useState } from 'react';
+import { useChannelMember } from 'app/features/channel-members.global/hooks/member-hook';
 
 type IUserProps = {
     userId: string;
-    onRefreshChannelMemberList: () => void;
 };
 
 export const UserItem = (props : IUserProps): JSX.Element => {
@@ -24,25 +17,8 @@ export const UserItem = (props : IUserProps): JSX.Element => {
         return <></>;
     }
 
-    const companyId = useRouterCompany();
-    const workspaceId = useRouterWorkspace();
-    const channelId = useRouterChannel();
+    const {addMember, loading} = useChannelMember(userId || '');
     const [full_name, avatar] = [UsersService.getFullName(user), UsersService.getThumbnail(user)];
-    const [loading, setLoading] = useRecoilState(LoadingState(`addUserAsChannelMember#${userId}`));
-
-    const addUserAsChannelMember = async (userId: string) => {
-        setLoading(true);
-        
-        await ChannelMembersAPIClient.addMember({user_id: userId}, {
-            companyId,
-            workspaceId,
-            channelId
-        })
-        .then(() => {
-            setLoading(false);
-            props.onRefreshChannelMemberList();
-        });
-    }
 
     return (
         <div className="flex justify-between py-1 hover:bg-zinc-200" key={userId}>
@@ -58,7 +34,7 @@ export const UserItem = (props : IUserProps): JSX.Element => {
                     theme="primary"
                     size="sm"
                     loading={loading}
-                    onClick={() => addUserAsChannelMember(userId || '')}
+                    onClick={() => addMember(userId || '')}
                 >
                     {Languages.t('general.add')}
                 </Button>

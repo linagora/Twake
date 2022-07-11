@@ -1,16 +1,53 @@
+import ChannelMembersAPIClient from "app/features/channel-members.global/api/members-api-client";
 import useRouterChannel from "app/features/router/hooks/use-router-channel";
+import useRouterCompany from "app/features/router/hooks/use-router-company";
+import useRouterWorkspace from "app/features/router/hooks/use-router-workspace";
+import { useState } from "react";
 import { useRecoilValue } from "recoil";
 import { getChannelMember } from "../state/store";
-import { ChannelMemberType, ParamsChannelMember } from "../types/channel-members";
+import { ParamsChannelMember } from "../types/channel-members";
+import { useRefreshChannelMembers } from "./members-hook";
 
-export function useChannelMember(userId: string, params?: ParamsChannelMember): ChannelMemberType | null {
+export function useChannelMember(userId: string, params?: ParamsChannelMember) {
 
     const channelId = params?.channelId ? params.channelId : useRouterChannel();
-    const member = useRecoilValue(getChannelMember({channelId, userId}));
+    const workspaceId = params?.workspaceId ? params.workspaceId : useRouterWorkspace();
+    const companyId = params?.companyId ? params.companyId : useRouterCompany();
+    const parameters = { companyId, workspaceId, channelId};
 
-    if(member) {
-        return member;
+    const member = useRecoilValue(getChannelMember({channelId, userId}));
+    const { refresh } = useRefreshChannelMembers(parameters);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    const leave = async (userId: string) => {
+        setLoading(true);
+        
+        const _ = await ChannelMembersAPIClient.deleteMember(userId, {
+            companyId,
+            workspaceId,
+            channelId
+        });
+        refresh();
+        setLoading(false);
+    };
+
+    const addMember = async (userId: string) => {
+        setLoading(true);
+        
+        const _ = await ChannelMembersAPIClient.addMember({user_id: userId}, {
+            companyId,
+            workspaceId,
+            channelId
+        });
+        setLoading(false);
+        refresh();
     }
 
-    return null;
+    return {
+        member,
+        refresh,
+        leave,
+        addMember,
+        loading
+    };
 }

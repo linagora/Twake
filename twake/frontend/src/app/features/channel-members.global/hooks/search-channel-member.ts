@@ -5,24 +5,17 @@ import { delayRequest } from "app/features/global/utils/managedSearchRequest";
 import useRouterChannel from "app/features/router/hooks/use-router-channel";
 import useRouterCompany from "app/features/router/hooks/use-router-company";
 import useRouterWorkspace from "app/features/router/hooks/use-router-workspace";
-import UserAPIClient, { SearchContextType } from "app/features/users/api/user-api-client";
-import { useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { SearchChannelMemberInputState } from "../state/search-channel-member";
+import { listChannelMembersStateFamily } from "../state/store";
 import { ParamsChannelMember, ChannelMemberWithUser } from "../types/channel-members";
 
-export const useSearchChannelMember = () => {
-    const companyId = useRouterCompany();
-    const workspaceId = useRouterWorkspace();
-    const channelId = useRouterChannel(); // TODO this should be a hook parameter
+
+export const useRefreshSearchChannelMembers = (context: ParamsChannelMember) => {
+
     const searchInput = useRecoilValue(SearchChannelMemberInputState);
-    const [loading, setLoading] = useRecoilState(LoadingState('useSearchChannelMember'));
-    const [listChannelMembers, setChannelMembers] = useState<ChannelMemberWithUser[]>([]);
-    const context: ParamsChannelMember = {
-        companyId,
-        workspaceId,
-        channelId
-    }
+    const setLoading = useSetRecoilState(LoadingState('useSearchChannelMembers'));
+    const [listChannelMembers, setChannelMembers] = useRecoilState<ChannelMemberWithUser[]>(listChannelMembersStateFamily(context));
 
     const refresh = async () => {
         setLoading(true);
@@ -32,14 +25,33 @@ export const useSearchChannelMember = () => {
         setLoading(false);
     };
 
+    return {
+        refresh,
+        listChannelMembers
+    }
+}
+
+export const useSearchChannelMembers = (channelId: string) => {
+    const companyId = useRouterCompany();
+    const workspaceId = useRouterWorkspace();
+
+    const context: ParamsChannelMember = {
+        companyId,
+        workspaceId,
+        channelId: channelId ? channelId : useRouterChannel()
+    }
+
+    const searchInput = useRecoilValue(SearchChannelMemberInputState);
+    const [loading, setLoading] = useRecoilState(LoadingState('useSearchChannelMembers'));
+    const { refresh, listChannelMembers } = useRefreshSearchChannelMembers(context);
 
     useGlobalEffect(
-        'useSearchChannelMember',
+        'useSearchChannelMembers',
         () => {
             (async () => {
                 setLoading(true);
                 if (searchInput) {
-                    delayRequest('useSearchChannelMember', async () => {
+                    delayRequest('useSearchChannelMembers', async () => {
                         await refresh();
                     });
                 }

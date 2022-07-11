@@ -6,7 +6,7 @@ import { useChannelPendingEmails } from "./pending-emails-hook";
 export const useSearchFilteredUsers = () => {
 
     const searchInput = useRecoilValue(SearchChannelMemberInputState);
-    const { result: filteredUsers, search } = useSearchUsers({scope:'company'});
+    const { result: filteredUsers } = useSearchUsers({scope:'company'});
     let filteredList = filteredUsers;
 
     if(searchInput) {
