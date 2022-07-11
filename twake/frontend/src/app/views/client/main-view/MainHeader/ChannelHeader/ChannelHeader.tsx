@@ -14,13 +14,14 @@ import Languages from 'app/features/global/services/languages-service';
 import ChannelsBarService from 'app/features/channels/services/channels-bar-service';
 import { useUsersListener } from 'app/features/users/hooks/use-users-listener';
 import { useChannel } from 'app/features/channels/hooks/use-channel';
+import { useRecoilState } from 'recoil';
+import { channelAttachmentListState } from 'app/features/channels/state/channel-attachment-list';
 
 export default (): JSX.Element => {
   const { companyId, workspaceId, channelId } = RouterServices.getStateFromRoute();
-
   const { channel } = useChannel(channelId || '');
-
   const members = channel?.members || [];
+  const [, setChannelAttachmentState] = useRecoilState(channelAttachmentListState);
 
   useUsersListener(members);
 
@@ -86,20 +87,31 @@ export default (): JSX.Element => {
               </div>
             )}
             {channel.visibility !== 'direct' && (
-              <Button
-                size="small"
-                type="text"
-                onClick={() => {
-                  ModalManager.open(<ChannelMembersList channel={channel} closable />, {
-                    position: 'center',
-                    size: { width: '600px', minHeight: '329px' },
-                  });
-                }}
-              >
-                <Typography.Text>
-                  {Languages.t('scenes.apps.parameters.workspace_sections.members')}
-                </Typography.Text>
-              </Button>
+              <>
+                <Button
+                  size="small"
+                  type="text"
+                  onClick={() => {
+                    ModalManager.open(<ChannelMembersList channel={channel} closable />, {
+                      position: 'center',
+                      size: { width: '600px', minHeight: '329px' },
+                    });
+                  }}
+                >
+                  <Typography.Text>
+                    {Languages.t('scenes.apps.parameters.workspace_sections.members')}
+                  </Typography.Text>
+                </Button>
+                <Button
+                  size="small"
+                  type="text"
+                  onClick={() => {
+                    setChannelAttachmentState(true);
+                  }}
+                >
+                  <Typography.Text>Media</Typography.Text>
+                </Button>
+              </>
             )}
           </Row>
         )}
