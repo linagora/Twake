@@ -18,7 +18,7 @@ export default () => {
   const setTab = useSetRecoilState(SearchTabsState);
 
   const input = useRecoilValue(SearchInputState);
-  const isRecent = input?.query?.length === 0;
+  const isRecent = input?.query?.trim()?.length === 0;
 
   const { channels } = useSearchChannels();
   const { messages } = useSearchMessages();
