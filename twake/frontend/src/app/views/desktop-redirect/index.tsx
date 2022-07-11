@@ -42,8 +42,8 @@ export default ({ children }: PropsType): React.ReactElement => {
       if (!shouldTryDesktop) return;
       setLoading(true);
       try {
-        const path = window.location.href.replace(window.location.origin, '');
-        detectDesktopAppPresence(`twake://${path}`).then(isDesktopAppPresent => {
+        const path = window.location.href.replace(/^https?/, 'twake');
+        detectDesktopAppPresence(path).then(isDesktopAppPresent => {
           setLoading(false);
           if (isDesktopAppPresent) {
             setUseWeb(false);
