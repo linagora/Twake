@@ -16,10 +16,17 @@ import { ChannelMemberWithUser } from "app/features/channel-members.global/types
 import { UserType } from 'app/features/users/types/user';
 import _ from "lodash";
 import Strings from "app/features/global/utils/strings";
+import { useEffect, useState } from "react";
+import { Button } from "app/atoms/button/button";
+import { PlusIcon } from '@heroicons/react/solid';
+import useRouterChannel from "app/features/router/hooks/use-router-channel";
+import { usePendingEmail } from "app/features/channel-members.global/hooks/pending-email-hook";
 
 export const ChannelMembersListModal = (props: { channelId: string}): JSX.Element => {
+    const channelId = useRouterChannel();
+
     const { channelMembers } = useChannelMembers();
-    const {listChannelMembers, } = useSearchChannelMembers(props.channelId);
+    const {listChannelMembers, } = useSearchChannelMembers(props.channelId || channelId);
 
     const [searchState, setSearchState] = useRecoilState(SearchChannelMemberInputState);
 
@@ -43,6 +50,14 @@ export const ChannelMembersListModal = (props: { channelId: string}): JSX.Elemen
                 ),
         )
         : filteredUsers;
+    
+    const [addEmailSuggestion, setEmailSuggestion] = useState<boolean>(false);
+    useEffect(() => {
+        if(!pendingEmailList.length && searchState) {
+            setEmailSuggestion(true)
+        }
+
+    }, [searchState]);
 
     return (
         <div className="flex flex-col max-w-full space-y-1">
@@ -61,6 +76,9 @@ export const ChannelMembersListModal = (props: { channelId: string}): JSX.Elemen
             </div>
             <div>
                 <hr />
+                {addEmailSuggestion && (
+                    <EmailSuggestion email={searchState} />
+                )}
                 { pendingEmailList && pendingEmailList.map((item, index) => {
                     return (
                         <div key={`key_${index}`}>
@@ -91,6 +109,23 @@ export const ChannelMembersListModal = (props: { channelId: string}): JSX.Elemen
                     )
                 })}
             </div>
+        </div>
+    )
+}
+
+const EmailSuggestion = ({ email }: {email: string}) => {
+    const { addInvite } = usePendingEmail(email);
+
+    return (
+        <div className="flex p-2 hover:bg-zinc-200">
+            <Button
+                className="my-2 mx-2"
+                theme="outline"
+                icon={PlusIcon}
+                onClick={() => addInvite()}
+            >
+                { email }
+            </Button>
         </div>
     )
 }

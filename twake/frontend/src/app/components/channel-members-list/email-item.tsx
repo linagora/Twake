@@ -1,14 +1,8 @@
 import Avatar from "app/atoms/avatar";
 import { Button } from "app/atoms/button/button";
 import Languages from "app/features/global/services/languages-service";
-import { LoadingState } from "app/features/global/state/atoms/Loading";
 import { PendingEmail } from "app/features/pending-emails/types/pending-email";
-import { useRecoilState } from "recoil";
-import ChannelPendingEmailApiClient from "app/features/channel-members.global/api/pending-emails-api-client";
-import useRouterCompany from "app/features/router/hooks/use-router-company";
-import useRouterWorkspace from "app/features/router/hooks/use-router-workspace";
-import useRouterChannel from "app/features/router/hooks/use-router-channel";
-import { useChannelPendingEmails } from "app/features/channel-members.global/hooks/pending-emails-hook";
+import { usePendingEmail } from "app/features/channel-members.global/hooks/pending-email-hook";
 
 type IProps = {
     email: PendingEmail;
@@ -16,25 +10,7 @@ type IProps = {
 
 export const EmailItem = (props: IProps): JSX.Element => {
     const { email } = props.email;
-    const companyId = useRouterCompany();
-    const workspaceId = useRouterWorkspace();
-    const channelId = useRouterChannel();
-    const [loading, setLoading] = useRecoilState(LoadingState('cancelPendingEmailLoading'));
-    const { refresh } = useChannelPendingEmails();
-
-    const cancelPendingEmailRequest = async (email: string) => {
-        setLoading(true);
-
-        await ChannelPendingEmailApiClient.delete(email, {
-            companyId,
-            workspaceId,
-            channelId
-        })
-        .then(() => {
-            setLoading(false);
-            refresh();
-        });
-    }
+    const { loading, cancelInvite } = usePendingEmail(email);
 
     return (
         <div className="flex justify-between py-1 hover:bg-zinc-200">
@@ -49,7 +25,7 @@ export const EmailItem = (props: IProps): JSX.Element => {
                     theme="danger"
                     size="sm"
                     loading={loading}
-                    onClick={() => cancelPendingEmailRequest(email || '')}
+                    onClick={() => cancelInvite()}
                 >
                     {Languages.t('general.cancel')}
                 </Button>
