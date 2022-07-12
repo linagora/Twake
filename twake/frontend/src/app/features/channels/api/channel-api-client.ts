@@ -57,8 +57,8 @@ class ChannelAPIClientService {
 
     delayRequest(
       'reach-end-read-channel-' + channelId,
-      () =>
-        Api.post<{ value: boolean }, void>(
+      async () =>
+        await Api.post<{ value: boolean }, void>(
           `${PREFIX}/${companyId}/workspaces/${workspaceId}/channels/${channelId}/read`,
           {
             value: status,

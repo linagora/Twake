@@ -103,7 +103,9 @@ const ChannelMembersList = (props: PropsType) => {
                 setSearch(e.target.value);
                 e.persist();
 
-                delayRequest('channel_members_list_search', () => onSearchMembers(e.target.value));
+                delayRequest('channel_members_list_search', async () =>
+                  onSearchMembers(e.target.value),
+                );
               }}
             />
           </Col>

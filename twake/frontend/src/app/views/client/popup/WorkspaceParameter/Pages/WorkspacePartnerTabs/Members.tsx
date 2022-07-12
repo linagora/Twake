@@ -70,7 +70,9 @@ export default ({ filter }: { filter: string }) => {
   }, []);
 
   useEffect(() => {
-    delayRequest('workspace_partners_search', () => search(filter));
+    delayRequest('workspace_partners_search', async () => {
+      await search(filter);
+    });
   }, [filter]);
 
   const filteredData: WorkspaceUserType[] | null = filter

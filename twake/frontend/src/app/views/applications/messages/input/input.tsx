@@ -290,7 +290,7 @@ export default (props: Props) => {
       onKeydownRealtimeListener(state => iAmWriting(state));
 
     //Delay request make the input faster (getContentOutput is a heavy call)
-    delayRequest(`editor-${editorId}`, () => {
+    delayRequest(`editor-${editorId}`, async () => {
       setValue(getContentOutput(newEditorState));
     });
 
