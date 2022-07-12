@@ -9,7 +9,7 @@
 const delayedRequests: Map<string, () => Promise<void>> = new Map();
 const delayedRequestsHasTimout: Map<string, boolean> = new Map();
 
-let requestIsInProgress: { [key: string]: boolean } = {};
+const requestIsInProgress: { [key: string]: boolean } = {};
 
 export const delayRequest = async (
   key: string,
