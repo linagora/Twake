@@ -22,6 +22,13 @@ export class MessagesFilesService implements Initializable {
     return this;
   }
 
+  /**
+   * Delete a message file and test this files belongs to the right user
+   * @param message_id
+   * @param id
+   * @param user_id
+   * @returns
+   */
   async deleteMessageFile(message_id: string, id: string, user_id: string) {
     const msgFile = await this.getMessageFile(message_id, id);
     if (!msgFile) return null;
@@ -43,6 +50,12 @@ export class MessagesFilesService implements Initializable {
     return msgFile;
   }
 
+  /**
+   * Get a message file and returns more contextual data
+   * @param message_id
+   * @param id
+   * @returns
+   */
   async getMessageFile(
     message_id: string,
     id: string,

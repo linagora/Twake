@@ -23,6 +23,7 @@ export class MessagesFilesController {
 
     reply.send(resp);
   }
+
   async getMessageFile(
     request: FastifyRequest<{
       Params: {
