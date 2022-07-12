@@ -21,6 +21,7 @@ import { Button } from "app/atoms/button/button";
 import { PlusIcon } from '@heroicons/react/solid';
 import useRouterChannel from "app/features/router/hooks/use-router-channel";
 import { usePendingEmail } from "app/features/channel-members.global/hooks/pending-email-hook";
+import PerfectScrollbar from 'react-perfect-scrollbar';
 
 export const ChannelMembersListModal = (props: { channelId: string}): JSX.Element => {
     const channelId = useRouterChannel();
@@ -30,7 +31,7 @@ export const ChannelMembersListModal = (props: { channelId: string}): JSX.Elemen
 
     const [searchState, setSearchState] = useRecoilState(SearchChannelMemberInputState);
 
-    const { pendingEmails, refresh: refreshPendingEmail } = useChannelPendingEmails();
+    const { pendingEmails } = useChannelPendingEmails();
     const { filteredPendingEmails  } = useSearchChannelPendingEmail();
 
     const { result: filteredUsers, } = useSearchUsers({scope:'company'});
@@ -53,7 +54,7 @@ export const ChannelMembersListModal = (props: { channelId: string}): JSX.Elemen
     
     const [addEmailSuggestion, setEmailSuggestion] = useState<boolean>(false);
     useEffect(() => {
-        if(!pendingEmailList.length && searchState) {
+        if(!pendingEmailList.length && !!searchState.length) {
             setEmailSuggestion(true)
         }
 
@@ -75,39 +76,44 @@ export const ChannelMembersListModal = (props: { channelId: string}): JSX.Elemen
                 />
             </div>
             <div>
-                <hr />
-                {addEmailSuggestion && (
-                    <EmailSuggestion email={searchState} />
-                )}
-                { pendingEmailList && pendingEmailList.map((item, index) => {
-                    return (
-                        <div key={`key_${index}`}>
-                            <EmailItem email={item} />
-                        </div>
-                    )
-                })}
-                <hr />
-                { channelMembersList && channelMembersList.map(cMember => {
-                    return (
-                        <div key={cMember.user_id}>
-                            <MemberItem 
-                                userId={cMember.user_id}
-                                member={cMember}
-                            />
-                        </div>
-                    )
-                })}
-                <hr />
-                { 
-                usersList &&
-                _.differenceBy(usersList, channelMembersList || [], 
-                    (item) => (item as ChannelMemberWithUser).user_id || (item as UserType).id).map(user => {
-                    return (
-                        <div key={user.id}>
-                            <UserItem userId={user.id || ''} />
-                        </div>
-                    )
-                })}
+                <PerfectScrollbar
+                    options={{ suppressScrollX: true, suppressScrollY: false }}
+                    component="div"
+                    style={{ width: '100%', height: '200px' }}
+                >
+                    <div>
+                        {addEmailSuggestion && (
+                            <EmailSuggestion email={searchState} />
+                        )}
+                        { pendingEmailList && pendingEmailList.map((item, index) => {
+                            return (
+                                <div key={`key_${index}`}>
+                                    <EmailItem email={item} />
+                                </div>
+                            )
+                        })}
+                        { channelMembersList && channelMembersList.map(cMember => {
+                            return (
+                                <div key={cMember.user_id}>
+                                    <MemberItem 
+                                        userId={cMember.user_id}
+                                        member={cMember}
+                                    />
+                                </div>
+                            )
+                        })}
+                        { 
+                        usersList &&
+                        _.differenceBy(usersList, channelMembersList || [], 
+                            (item) => (item as ChannelMemberWithUser).user_id || (item as UserType).id).map(user => {
+                            return (
+                                <div key={user.id}>
+                                    <UserItem userId={user.id || ''} />
+                                </div>
+                            )
+                        })}
+                    </div>
+                </PerfectScrollbar>
             </div>
         </div>
     )
@@ -115,6 +121,10 @@ export const ChannelMembersListModal = (props: { channelId: string}): JSX.Elemen
 
 const EmailSuggestion = ({ email }: {email: string}) => {
     const { addInvite } = usePendingEmail(email);
+
+    if (!email || !Strings.verifyMail(email)) {
+        return <></>;
+    }
 
     return (
         <div className="flex p-2 hover:bg-zinc-200">
