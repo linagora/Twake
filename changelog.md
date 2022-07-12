@@ -1,3 +1,10 @@
+# Twake 2022.Q3.1065
+
+- New channel members invitation and management modal. ⚙️
+- New file preview and medias gallery with navigation, caption, and message context. 🕶
+- Fixed connection status of users. 🟢
+- Notification when someone react to your message. 👍
+
 # Twake 2022.Q3.1050
 
 - Open desktop app if present in the system
