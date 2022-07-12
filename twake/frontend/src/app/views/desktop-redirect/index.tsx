@@ -60,7 +60,7 @@ export default ({ children }: PropsType): React.ReactElement => {
 
   return (
     <>
-      {children}
+      {!!useWeb && !loading && children}
       {!useWeb && (
         <div className="bg-white h-full overflow-hidden fixed top-0 left-0 w-full z-50">
           <OpenDesktopPopup />

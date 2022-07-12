@@ -55,7 +55,7 @@ export const useSearchChannels = () => {
 
   const refresh = async () => {
     setLoading(true);
-    const isRecent = !searchInput.query;
+    const isRecent = searchInput.query?.trim()?.length === 0;
 
     const query = searchInput.query;
     currentQuery = query;

@@ -10,10 +10,6 @@ import NothingSearched from '../parts/nothing-searched';
 export default () => {
   return (
     <div>
-      <Text.Subtitle className="block">
-        {Languages.t('components.searchpopup.messages')}
-      </Text.Subtitle>
-
       <div className="-mx-2">
         <MessagesResults />
       </div>
@@ -23,7 +19,7 @@ export default () => {
 
 export const MessagesResults = (props: { max?: number }) => {
   const input = useRecoilValue(SearchInputState);
-  const isRecent = input?.query?.length === 0;
+  const isRecent = input?.query?.trim()?.length === 0;
   const { messages, loading, loadMore } = useSearchMessages();
 
   if (isRecent) return <NothingSearched />;

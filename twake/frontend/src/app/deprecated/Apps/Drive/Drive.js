@@ -462,10 +462,10 @@ class Drive extends Observable {
   }
 
   getFileType(file) {
-    var extension = file.extension;
+    var extension = file.extension?.toLocaleLowerCase();
 
     var extension2type = {
-      image: ['png', 'jpg', 'jpeg', 'gif', 'tiff'],
+      image: ['png', 'jpg', 'jpeg', 'gif', 'tiff', 'heic'],
       sound: ['wav', 'aif', 'aiff', 'mp3', 'flac'],
       link: ['url'],
       document: ['doc', 'docx', 'odt', 'rtf', 'txt'],
