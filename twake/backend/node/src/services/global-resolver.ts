@@ -31,6 +31,7 @@ import {
   MessageViewsServiceAPI,
 } from "./messages/api";
 import { ThreadMessagesService } from "./messages/services/messages";
+import { MessagesFilesService } from "./messages/services/messages-files";
 import { ThreadsService } from "./messages/services/threads";
 import { UserBookmarksService } from "./messages/services/user-bookmarks";
 import { SearchServiceAPI } from "../core/platform/services/search/api";
@@ -113,6 +114,7 @@ type TwakeServices = {
   };
   messages: {
     messages: MessageThreadMessagesServiceAPI;
+    messagesFiles: MessagesFilesService;
     threads: MessageThreadsServiceAPI;
     userBookmarks: MessageUserBookmarksServiceAPI;
     views: MessageViewsServiceAPI;
@@ -195,6 +197,7 @@ class GlobalResolver {
       },
       messages: {
         messages: await new ThreadMessagesService().init(platform),
+        messagesFiles: await new MessagesFilesService().init(),
         threads: await new ThreadsService().init(platform),
         userBookmarks: await new UserBookmarksService().init(platform),
         views: await new ViewsServiceImpl().init(platform),

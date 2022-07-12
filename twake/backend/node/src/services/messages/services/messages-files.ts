@@ -22,9 +22,11 @@ export class MessagesFilesService implements Initializable {
     return this;
   }
 
-  async deleteMessageFile(message_id: string, id: string) {
+  async deleteMessageFile(message_id: string, id: string, user_id: string) {
     const msgFile = await this.getMessageFile(message_id, id);
     if (!msgFile) return null;
+
+    if (msgFile.message.user_id !== user_id) return null;
 
     await this.msgFilesRepository.remove(msgFile);
 
