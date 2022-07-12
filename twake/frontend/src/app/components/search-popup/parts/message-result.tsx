@@ -76,7 +76,7 @@ export default ({
             <div
               key={file.id}
               onClick={(e: any) => e.stopPropagation()}
-              className="rounded-md border bg-white border-gray-200 hover:border-gray-300"
+              className="rounded-md border bg-white border-gray-200 hover:border-gray-300 mb-1"
             >
               <MessageResultFile file={{ ...file, message, user }} />
             </div>

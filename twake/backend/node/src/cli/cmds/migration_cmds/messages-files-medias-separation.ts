@@ -62,16 +62,20 @@ class MessageReferenceRepair {
               );
 
               for (const item of items.getEntities()) {
-                const msgFile = await repositoryMessageFile.findOne({
-                  message_id: item.message_id,
-                  id: item.message_file_id,
-                });
-                if (msgFile) {
-                  count++;
-                  const isMedia = fileIsMedia(msgFile);
-                  const ref = _.cloneDeep(item);
-                  ref.target_type = isMedia ? "channel_media" : "channel_file";
-                  await repository.save(ref);
+                try {
+                  const msgFile = await repositoryMessageFile.findOne({
+                    message_id: item.message_id,
+                    id: item.message_file_id,
+                  });
+                  if (msgFile) {
+                    count++;
+                    const isMedia = fileIsMedia(msgFile);
+                    const ref = _.cloneDeep(item);
+                    ref.target_type = isMedia ? "channel_media" : "channel_file";
+                    await repository.save(ref);
+                  }
+                } catch (e) {
+                  console.log("Error", e);
                 }
               }
 
@@ -87,16 +91,18 @@ class MessageReferenceRepair {
 }
 
 const services = [
-  "storage",
-  "counter",
-  "platform-services",
-  "user",
   "search",
-  "channels",
   "database",
   "webserver",
+  "auth",
+  "counter",
+  "cron",
   "pubsub",
-  "messages",
+  "push",
+  "realtime",
+  "storage",
+  "tracker",
+  "websocket",
 ];
 
 const command: yargs.CommandModule<unknown, unknown> = {
