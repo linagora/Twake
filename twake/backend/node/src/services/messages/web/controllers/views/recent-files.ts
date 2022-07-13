@@ -12,8 +12,8 @@ export default async (
     Querystring: {
       page_token: string;
       limit?: string;
-      type: "user_upload" | "user_download";
-      media: "media_only" | "file_only";
+      type?: "user_upload" | "user_download";
+      media?: "media_only" | "file_only";
     };
   }>,
 ): Promise<ResourceListResponse<FileSearchResult>> => {

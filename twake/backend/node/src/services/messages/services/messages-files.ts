@@ -133,4 +133,10 @@ export class MessagesFilesService implements Initializable {
       },
     };
   }
+
+  /**
+   * Message file references are ordered with an id based on the time the file was uploaded
+   * We cannot get this specific ID directly from the message file right now
+   */
+  private async getMessageRefFromMessageFile(message_id: string, id: string) {}
 }
