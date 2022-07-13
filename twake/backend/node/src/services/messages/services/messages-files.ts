@@ -87,30 +87,7 @@ export class MessagesFilesService implements Initializable {
       company_id: channel.company_id,
       target_id: channel.id,
     };
-    let next = (
-      await this.msgFilesRefRepository.find(navigationPk, {
-        pagination: {
-          page_token: null,
-          limitStr: "2",
-          reversed: true,
-        },
-        $gte: [["id", msgFile.id]],
-      })
-    )
-      .getEntities()
-      .filter(a => a.message_file_id !== msgFile.id)?.[0];
-    let previous = (
-      await this.msgFilesRefRepository.find(navigationPk, {
-        pagination: {
-          page_token: null,
-          limitStr: "2",
-          reversed: false,
-        },
-        $gte: [["id", msgFile.id]],
-      })
-    )
-      .getEntities()
-      .filter(a => a.message_file_id !== msgFile.id)?.[0];
+    const { previous, next } = await this.getMessageFileNavigation(navigationPk, id);
 
     return {
       ...msgFile,
@@ -138,5 +115,48 @@ export class MessagesFilesService implements Initializable {
    * Message file references are ordered with an id based on the time the file was uploaded
    * We cannot get this specific ID directly from the message file right now
    */
-  private async getMessageRefFromMessageFile(message_id: string, id: string) {}
+  private async getMessageFileNavigation(
+    navigationPk: { target_type: string; company_id: string; target_id: string },
+    id: string,
+  ) {
+    // Message ref is always created after the message itself, so we can search for messages after
+    const list = (
+      await this.msgFilesRefRepository.find(navigationPk, {
+        pagination: {
+          page_token: null,
+          limitStr: "10",
+          reversed: false,
+        },
+        $gte: [["id", id]],
+      })
+    ).getEntities();
+    const offsetRef = list.find(a => a.message_file_id === id) || null;
+
+    let next = (
+      await this.msgFilesRefRepository.find(navigationPk, {
+        pagination: {
+          page_token: null,
+          limitStr: "2",
+          reversed: true,
+        },
+        $gte: [["id", offsetRef?.id || id]],
+      })
+    )
+      .getEntities()
+      .filter(a => a.message_file_id !== id)?.[0];
+    let previous = (
+      await this.msgFilesRefRepository.find(navigationPk, {
+        pagination: {
+          page_token: null,
+          limitStr: "2",
+          reversed: false,
+        },
+        $gte: [["id", offsetRef?.id || id]],
+      })
+    )
+      .getEntities()
+      .filter(a => a.message_file_id !== id)?.[0];
+
+    return { previous, next };
+  }
 }
