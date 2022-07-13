@@ -8,6 +8,7 @@ import gr from "../../../services/global-resolver";
 import { MessageFileRef, TYPE as TYPERef } from "../entities/message-file-refs";
 import { MessageFile, TYPE } from "../entities/message-files";
 import { Message } from "../entities/messages";
+import _ from "lodash";
 
 export class MessagesFilesService implements Initializable {
   version: "1";
@@ -64,7 +65,7 @@ export class MessagesFilesService implements Initializable {
       user: UserObject;
       message: Message;
       channel: Channel;
-      navigation: { next: string; previous: string };
+      navigation: { next: Partial<MessageFile>; previous: Partial<MessageFile> };
     }
   > {
     const msgFile = await this.msgFilesRepository.findOne({ message_id, id });
@@ -86,7 +87,7 @@ export class MessagesFilesService implements Initializable {
       company_id: channel.company_id,
       target_id: channel.id,
     };
-    const next = (
+    let next = (
       await this.msgFilesRefRepository.find(navigationPk, {
         pagination: {
           page_token: null,
@@ -97,8 +98,8 @@ export class MessagesFilesService implements Initializable {
       })
     )
       .getEntities()
-      .filter(a => a.id !== msgFile.id)?.[0]?.id;
-    const previous = (
+      .filter(a => a.message_file_id !== msgFile.id)?.[0];
+    let previous = (
       await this.msgFilesRefRepository.find(navigationPk, {
         pagination: {
           page_token: null,
@@ -109,7 +110,7 @@ export class MessagesFilesService implements Initializable {
       })
     )
       .getEntities()
-      .filter(a => a.id !== msgFile.id)?.[0]?.id;
+      .filter(a => a.message_file_id !== msgFile.id)?.[0];
 
     return {
       ...msgFile,
@@ -117,8 +118,18 @@ export class MessagesFilesService implements Initializable {
       message,
       channel,
       navigation: {
-        next,
-        previous,
+        next: next
+          ? {
+              id: next.message_file_id,
+              message_id: next.message_id,
+            }
+          : null,
+        previous: previous
+          ? {
+              id: previous.message_file_id,
+              message_id: previous.message_id,
+            }
+          : null,
       },
     };
   }
