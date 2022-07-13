@@ -119,17 +119,28 @@ export class MessagesFilesService implements Initializable {
     navigationPk: { target_type: string; company_id: string; target_id: string },
     id: string,
   ) {
-    // Message ref is always created after the message itself, so we can search for messages after
-    const list = (
-      await this.msgFilesRefRepository.find(navigationPk, {
-        pagination: {
-          page_token: null,
-          limitStr: "10",
-          reversed: false,
-        },
-        $gte: [["id", id]],
-      })
-    ).getEntities();
+    const list = [
+      ...(
+        await this.msgFilesRefRepository.find(navigationPk, {
+          pagination: {
+            page_token: null,
+            limitStr: "5",
+            reversed: false,
+          },
+          $gte: [["id", id]],
+        })
+      ).getEntities(),
+      ...(
+        await this.msgFilesRefRepository.find(navigationPk, {
+          pagination: {
+            page_token: null,
+            limitStr: "5",
+            reversed: true,
+          },
+          $lte: [["id", id]],
+        })
+      ).getEntities(),
+    ];
     const offsetRef = list.find(a => a.message_file_id === id) || null;
 
     let next = (
